@@ -361,9 +361,11 @@
 	* will not be able to find the JUnit classes.
 	-->
 	<target name="test-swing" depends="compile">
-		<fail unless="test.class">Property test.class was not set. Usage: ant -Dtest.class=package.to.some.TestClass</fail>
-		<java classname="${test.class}" classpathref="test.classpath" fork="true">
+		<fail unless="test.class">Property test.class was not set. Usage: ant -Dtest.class=fully.qualified.ClassName</fail>
+		<java classname="junit.swingui.TestRunner" classpathref="test.classpath" fork="true">
 			<jvmarg line="-enableassertions"/>
+			<sysproperty key="webapp.dir" value="${deploy.dir.cms}"/>
+			<arg line="-c ${test.class}"/>
 		</java>
 	</target>
 </project>
