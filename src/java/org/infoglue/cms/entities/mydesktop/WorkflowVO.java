@@ -44,6 +44,14 @@ public class WorkflowVO implements BaseEntityVO
 	private List historySteps = new ArrayList();
 	private List globalActions = new ArrayList();
 
+	public WorkflowVO() {}
+
+	public WorkflowVO(Long workflowId, String name)
+	{
+		setWorkflowId(workflowId);
+		setName(name);
+	}
+
 	public Integer getId()
 	{
 		return new Integer(workflowId.intValue());
@@ -171,6 +179,18 @@ public class WorkflowVO implements BaseEntityVO
 		return availableActions;
 	}
 
+	public String toString()
+	{
+		return new StringBuffer(getClass().getName())
+				.append(" name=").append(name)
+				.append(" workflowId=").append(workflowId)
+				.append(" declaredSteps=").append(declaredSteps.size())
+				.append(" currentSteps=").append(currentSteps.size())
+				.append(" historySteps=").append(historySteps.size())
+				.append(" historySteps=").append(historySteps.size())
+				.append(" globalActions=").append(globalActions.size()).toString();
+	}
+	
 	public ConstraintExceptionBuffer validate()
 	{
 		return new ConstraintExceptionBuffer();
