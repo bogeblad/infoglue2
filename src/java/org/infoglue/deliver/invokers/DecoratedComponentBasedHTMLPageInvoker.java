@@ -204,8 +204,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		try
 		{
-			String extraHeader = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/pageComponentEditorHeader.vm"));
-			String extraBody   = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/pageComponentEditorBody.vm"));
+		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorHeader.vm"));
+		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorBody.vm"));
+			//String extraHeader = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/preview/pageComponentEditorHeader.vm"));
+		    //String extraBody   = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/preview/pageComponentEditorBody.vm"));
 			
 			//List tasks = getTasks();
 			//component.setTasks(tasks);
