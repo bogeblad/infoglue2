@@ -1,5 +1,5 @@
 /**
- * $Id: WorkflowFacade.java,v 1.2 2004/12/28 18:09:56 jed Exp $
+ * $Id: WorkflowFacade.java,v 1.3 2004/12/28 18:49:38 jed Exp $
  * Created by jed on Dec 28, 2004
  */
 package org.infoglue.cms.util.workflow;
@@ -23,7 +23,7 @@ import com.opensymphony.module.propertyset.PropertySet;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.2 $ $Date: 2004/12/28 18:09:56 $
+ * @version $Revision: 1.3 $ $Date: 2004/12/28 18:49:38 $
  */
 public class WorkflowFacade
 {
@@ -34,10 +34,7 @@ public class WorkflowFacade
 	 */
 	private static final int INITIAL_ACTION = 0;
 
-	private static final StepFilter historyStepsFilter = new AllStepFilter();
-
 	private final Workflow workflow;
-	private final StepFilter currentStepsFilter;
 
 	private long workflowId;
 	private WorkflowDescriptor workflowDescriptor;
@@ -49,7 +46,6 @@ public class WorkflowFacade
 	public WorkflowFacade(InfoGluePrincipal userPrincipal)
 	{
 		workflow = new BasicWorkflow(userPrincipal.getName());
-		currentStepsFilter = new OwnerStepFilter(userPrincipal);
 	}
 
 	/**
@@ -213,7 +209,7 @@ public class WorkflowFacade
 	 */
 	public List getCurrentSteps()
 	{
-		return createStepVOs(workflow.getCurrentSteps(workflowId), currentStepsFilter);
+		return createStepVOs(workflow.getCurrentSteps(workflowId));
 	}
 
 	/**
@@ -222,7 +218,7 @@ public class WorkflowFacade
 	 */
 	public List getHistorySteps()
 	{
-		return createStepVOs(workflow.getHistorySteps(workflowId), historyStepsFilter);
+		return createStepVOs(workflow.getHistorySteps(workflowId));
 	}
 
 	/**
@@ -236,21 +232,15 @@ public class WorkflowFacade
 	}
 
 	/**
-	 * Creates a list of WorkflowStepVOs from the given list of steps using the given filter
+	 * Creates a list of WorkflowStepVOs from the given list of steps
 	 * @param steps a list of Steps
-	 * @param filter a filter to determine which steps to create
 	 * @return a list of WorkflowStepVOs corresponding to all steps that pass the filter
 	 */
-	private List createStepVOs(List steps, StepFilter filter)
+	private List createStepVOs(List steps)
 	{
 		List stepVOs = new ArrayList();
-
 		for (Iterator i = steps.iterator(); i.hasNext();)
-		{
-			Step step = (Step)i.next();
-			if (filter.isAllowed(step))
-				stepVOs.add(createStepVO(step));
-		}
+			stepVOs.add(createStepVO((Step)i.next()));
 
 		return stepVOs;
 	}
