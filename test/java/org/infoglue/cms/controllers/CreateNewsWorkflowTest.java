@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsWorkflowTest.java,v 1.2 2004/12/21 17:50:00 jed Exp $
+ * $Id: CreateNewsWorkflowTest.java,v 1.3 2004/12/28 18:50:22 jed Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -73,23 +73,6 @@ public class CreateNewsWorkflowTest extends WorkflowTestCase
 	public void testWorkflow() throws Exception
 	{
 		invokeCreateNews();
-		checkWorkflow(1, 1, 1);
-	}
-
-	public void testWorkflowDifferentUser() throws Exception
-	{
-		invokeCreateNews();
-		setUserPrincipal(getCmsUserPrincipal());
-		setWorkflow(findCurrentWorkflow());
-		checkWorkflow(0, 1, 0);
-	}
-
-	public void testWorkflowDifferentUserAdministrator() throws Exception
-	{
-		setUserPrincipal(getCmsUserPrincipal());
-		checkWorkflow(1, 0, 1);
-		invokeCreateNews();
-		setUserPrincipal(getAdminPrincipal());
 		checkWorkflow(1, 1, 1);
 	}
 
