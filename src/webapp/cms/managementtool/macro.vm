@@ -22,10 +22,10 @@
 <html>
 <head>
 	<title>$title</title>
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
@@ -47,13 +47,13 @@
 <html>
 <head>
 	<title>$title</title>
-	
+
 	<script type="text/javascript">
 	   _editor_url = "applications/HTMLArea/";
 	   _editor_lang = "en";
 	</script>
-	
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/calendar1.js"></script>
 	<script type="text/javascript" src="script/editor.js"></script>
@@ -62,7 +62,7 @@
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	
+
 </head>
 
 <body class="contenttooledit" onload="javascript:refreshContentToolBar('$title', '$toolbarKey', '$arguments', $unrefreshedContentId, $changeTypeId, $addedContentId);">
@@ -79,10 +79,10 @@
 <html>
 <head>
 	<title>$title</title>
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
@@ -99,10 +99,10 @@
 <html>
 <head>
 	<title>$title</title>
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
@@ -122,13 +122,13 @@
 <html>
 <head>
 	<title>$title</title>
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
 	<script language="JavaScript" src="script/infogluecommons.js"></script>
 	<script language="JavaScript" src="script/dom-drag.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
@@ -197,16 +197,16 @@
 		function downHeader(id)
 		{
 			return; // No functionallity in release 1.0
-			var top=document.getElementById("t" + id);	
-			var bot=document.getElementById("b" + id);	
-			var lft=document.getElementById("lleft");	
+			var top=document.getElementById("t" + id);
+			var bot=document.getElementById("b" + id);
+			var lft=document.getElementById("lleft");
 
-			var arrow=document.getElementById("a" + id);	
+			var arrow=document.getElementById("a" + id);
 			if(arrow.src.indexOf("images/listarrowdown.gif") != -1)
 				arrow.src="images/listarrowrdown.gif";
 			else
 				arrow.src="images/listarrowrup.gif";
-			
+
 			top.className = "dark";
 			bot.className = "white";
 
@@ -217,23 +217,23 @@
 			else
 			{
 				id--;
-				top=document.getElementById("t" + id);	
-				bot=document.getElementById("b" + id);	
+				top=document.getElementById("t" + id);
+				bot=document.getElementById("b" + id);
 				top.className = "dark";
 				bot.className = "white";
-				
+
 			}
-						
+
 		}
 
 		function upHeader(id)
 		{
 			return; // No functionallity in release 1.0
-			var top=document.getElementById("t" + id);	
-			var bot=document.getElementById("b" + id);	
-			var lft=document.getElementById("lleft");	
+			var top=document.getElementById("t" + id);
+			var bot=document.getElementById("b" + id);
+			var lft=document.getElementById("lleft");
 
-			var arrow=document.getElementById("a" + id);	
+			var arrow=document.getElementById("a" + id);
 			if(arrow.src.indexOf("images/listarrowrdown.gif") != -1)
 				arrow.src="images/listarrowup.gif";
 			else
@@ -249,17 +249,17 @@
 			else
 			{
 				id--;
-				top=document.getElementById("t" + id);	
-				bot=document.getElementById("b" + id);	
+				top=document.getElementById("t" + id);
+				bot=document.getElementById("b" + id);
 				top.className = "white";
 				bot.className = "dark";
-				
+
 			}
 
 
 		}
 	</script>
-	
+
 	#set( $span = $headers.size() * 2 )
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 
@@ -271,7 +271,7 @@
 			<input type="hidden" name="noDestination" value="$noDestination"/>
 			<input type="hidden" name="message" value="$message"/>
 	#end
-	
+
 		<tr>
 			#foreach( $x in [0..$span] )
 			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1"></td>
@@ -281,15 +281,15 @@
 		<tr class="dark$lvColor" valign="center">
 
 			<td id='lleft' class="white" width=1><img src="images/trans.gif" width="1" height="1"></td>
-			#set( $hcnt=0 )			
+			#set( $hcnt=0 )
 			#foreach( $header in $headers )
-				#set( $hcnt=$hcnt + 1 )			
+				#set( $hcnt=$hcnt + 1 )
 				<td class="listheader" STYLE="cursor:hand;" onMouseDown="downHeader($hcnt);" onMouseUp="upHeader($hcnt);" onMouseOut="upHeader($hcnt);">
 					<!--img id="a$hcnt" align=right valign=middle src='images/listarrowdown.gif'/--><!-- No sorting in release 1.0 -->
-					<div class="minormarginalized">$header</div>	
+					<div class="minormarginalized">$header</div>
 				</td>
 				#if ($velocityCount != $headers.size())
-					#set( $hcnt=$hcnt + 1 )			
+					#set( $hcnt=$hcnt + 1 )
 					<td class="dark$lvColor" width=2><img src="images/listsplit.gif" width="2" /></td>
 				#end
 			#end
@@ -303,7 +303,7 @@
 			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 			#end
 		</tr>
-		
+
 #end
 
 ##**************************************************
@@ -323,7 +323,7 @@
 			<input type="hidden" name="noDestination" value="$noDestination"/>
 			<input type="hidden" name="message" value="$message"/>
 	#end
-	
+
 		<tr class="dark$lvColor">
 			#foreach( $header in $headers )
 				<td class="smalllabel"><div class="minormarginalized">$header</div></td>
@@ -360,7 +360,7 @@
 		#else
 			#set($class = "class='white'")
 		#end
-	#end	
+	#end
 	*#
 	#set( $loccnt = 0)
 	#set( $isOdd = $cnt % 2)
@@ -368,26 +368,26 @@
 		#set($class = "class='light$lvColor'")
 	#else
 		#set($class = "class='white'")
-	#end	
+	#end
 
-	
+
 	<tr id="r$cnt" $class  onMouseOver='listRowHiLight(this);' onMouseOut='listRowUnHiLight(this);'>
 
 		<td></td>
-		
+
 		#foreach( $item in $row )
 			<td valign='middle'>
-				<div class="minormarginalized">	
+				<div class="minormarginalized">
 					#if($loccnt==0)
 						<nobr>
 						#if($lvConstraint==-1)
 							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" onClick="CheckUncheck('r$cnt',this);"/>
-						#end	
+						#end
 						#if($lvConstraint==1)
 							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" onClick="CheckUncheckSingle('r$cnt',this);"/>
 						#end
 						 $item
-						</nobr>						
+						</nobr>
 						#set( $loccnt = 1 )
 					#else
 						$item
@@ -415,13 +415,13 @@
 		</form>
 	#end
 	</table>
-	
+
 	</div>
-	
+
 	#if($lvBorder==1)
 		</td></tr></table>
 	#end
-	
+
 #end
 
 
@@ -430,15 +430,15 @@
 ##**************************************************
 
 #macro(inlineroles $rolelist)
-#foreach($roleVO in $rolelist)#if($velocityCount > 1), #end<a title="$roleVO.name">$roleVO.name</a>#end 
+#foreach($roleVO in $rolelist)#if($velocityCount > 1), #end<a title="$roleVO.name">$roleVO.name</a>#end
 #end
 
 #macro(inlineusers $userlist)
 	#foreach ( $u in $userlist )
-		<a title="$u.toString()"> 
+		<a title="$u.toString()">
 			$u.getUserName()
 		</a>
-	#end 
+	#end
 #end
 
 
@@ -451,10 +451,10 @@
 #end
 
 #macro(editTextField3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $className)
-  $fieldNameLabel 
+  $fieldNameLabel
   #if($errors.hasErrors($errorKey))
     #foreach($errorMessage in $errors.getErrors($errorKey))
-    <font color="red"> - $errorMessage</font> 
+    <font color="red"> - $errorMessage</font>
     #end
   #end
   <br/>
@@ -466,10 +466,10 @@
 #end
 
 #macro(editTextField4 $fieldNameLabel $errorKey $fieldName $fieldValue $length $className $isReadOnly)
-  $fieldNameLabel 
+  $fieldNameLabel
   #if($errors.hasErrors($errorKey))
     #foreach($errorMessage in $errors.getErrors($errorKey))
-    <font color="red"> - $errorMessage</font> 
+    <font color="red"> - $errorMessage</font>
     #end
   #end
   <br/>
@@ -482,10 +482,10 @@
 #end
 
 #macro(editTextArea3 $fieldNameLabel $errorKey $fieldName $fieldValue $cols $rows $className)
-  $fieldNameLabel 
+  $fieldNameLabel
   #if($errors.hasErrors($errorKey))
     #foreach($errorMessage in $errors.getErrors($errorKey))
-    <font color="red"> - $errorMessage</font> 
+    <font color="red"> - $errorMessage</font>
     #end
   #end
   <br/>
@@ -521,7 +521,7 @@
 #end
 
 #macro(editDateField4 $fieldNameLabel $errorKey $fieldName $fieldValue $length $className $url $readOnly)
-  $fieldNameLabel 
+  $fieldNameLabel
   #if($errors.hasErrors($errorKey))
     #foreach($errorMessage in $errors.getErrors($errorKey))
     <font color="red"> - $errorMessage</font>
@@ -561,7 +561,7 @@
 		<td>$ui.getString("entity.${fieldNameKey}.label")
 			#if($errors.hasErrors($errorKey))
 				#foreach($errorMessage in $errors.getErrors($errorKey))
-			    	<font color="red"> - $errorMessage</font> 
+			    	<font color="red"> - $errorMessage</font>
 			    #end
 			#end
 		</td>
@@ -570,7 +570,7 @@
 		<td>
 			<select name="$fieldName" class="dropbox">
 				#foreach($valuePair in $valuePairArray)
-					<option value="$valuePair.get(0)" #if("$valuePair.get(0)" == "$value") selected #end>$valuePair.get(1)</option>				
+					<option value="$valuePair.get(0)" #if("$valuePair.get(0)" == "$value") selected #end>$valuePair.get(1)</option>
 				#end
 			</select>
 		</td>
@@ -603,9 +603,9 @@
 	<COMMENT>
         <EMBED id="CMSTree" type="application/x-java-applet;version=1.4"
         	width="$width"
-           	height="$height" 
-           	align="baseline" 
-           	code="org.infoglue.cms.plugins.opentree.OpenTree.class" 
+           	height="$height"
+           	align="baseline"
+           	code="org.infoglue.cms.plugins.opentree.OpenTree.class"
            	codebase="applications/OpenTree"
            	pluginspage="http://java.sun.com/products/plugin/index.html#download"
            	MAYSCRIPT=true
@@ -655,9 +655,9 @@
 	<COMMENT>
         <EMBED name="${attribute.name}InfoGlueCodeEditor" id="${attributeName}InfoGlueCodeEditor" type="application/x-java-applet;version=1.4"
         	width="$width"
-           	height="$height" 
-           	align="baseline" 
-           	code="org.infoglue.cms.plugins.codeeditor.InfoGlueCodeEditorApplet.class" 
+           	height="$height"
+           	align="baseline"
+           	code="org.infoglue.cms.plugins.codeeditor.InfoGlueCodeEditorApplet.class"
            	codebase="applications/InfoGlueCodeEditor"
            	pluginspage="http://java.sun.com/products/plugin/index.html#download"
            	MAYSCRIPT=true
@@ -684,6 +684,27 @@
   </APPLET>
 #end
 #end
+
+##**********************************************************
+## These show a tree of objects as an indented select list
+## Used in the management tool and content version editor.
+##**********************************************************
+#macro(addCategorySelect $fieldName $categories $selectedValue)
+	<select id="$fieldName" name="$fieldName" class="sitedropbox">
+	#foreach($c in $categories)
+		#addCategoryOption($c $selectedValue "")
+	#end
+	</select>
+#end
+
+#macro(addCategoryOption $categoryOption $selectedValue $prefix)
+	<option value="$categoryOption.categoryId" #if($selectedValue == $categoryOption.categoryId)selected="true"#end><b>$!prefix $categoryOption.name</b></option>
+	#foreach($child in $categoryOption.children)
+		#addCategoryOption($child $selectedValue "$!{prefix}-")
+	#end
+#end
+
+
 
 ##**************************************************
 ## OTHER - PLEASE CLEAN UP						   *
@@ -749,14 +770,14 @@
 #end
 
 
-#macro(viewFieldsHead $fieldNameKeys $counter) 
+#macro(viewFieldsHead $fieldNameKeys $counter)
 <tr>
   #foreach($fieldNameKey in $fieldNameKeys)
   <td class="data-head-center">
     #localizedFieldName($fieldNameKey)
   </td>
   #end
-  #if($counter > 0) 
+  #if($counter > 0)
     #foreach($dummy in [1..$counter])
       <td class="data-head-center">&nbsp;</td>
     #end
@@ -766,7 +787,7 @@
 
 
 #macro(textarea $fieldNameLabel $errorKey $fieldName $fieldValue $rows $cols)
-  $fieldNameLabel 
+  $fieldNameLabel
   #if($errors.hasErrors($errorKey))
     #foreach($errorMessage in $errors.getErrors($errorKey))
     <font color="red"> - $errorMessage</font><br/>
@@ -776,20 +797,20 @@
 #end
 
 #macro(editField3 $fieldNameLabel $errorKey $fieldName $fieldValue $length)
-  $fieldNameLabel 
+  $fieldNameLabel
   	#if($rule.required)
   		&nbsp;<font color="red">* </font>
   	#end
 
   #if($errors.hasErrors($errorKey))
-  
+
 	  	 #set( $MIN=$rule.getValidRange().getLowerLimit() )
 	  	 #set( $MAX=$rule.getValidRange().getUpperLimit() )
-	  	
+
 	    #foreach($errorMessage in $errors.getErrors($errorKey))
 	    <font color="red"> - $errorMessage </font>
 	    #end
-    
+
   #end
   <br/>
   <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/>
@@ -802,14 +823,14 @@
 
 #macro(editField $fieldNameKey $fieldName $fieldValue $length)
 
-  #set($rule=$this.getRule("$fieldNameKey")) 
+  #set($rule=$this.getRule("$fieldNameKey"))
   ## $rule
   #editField3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length)
-  
+
 #end
 
 #macro(editReadOnlyField $fieldNameKey $fieldName $fieldValue $length $readonly)
-  $ui.getString("entity.${fieldNameKey}.label") 
+  $ui.getString("entity.${fieldNameKey}.label")
   <br/>
   <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length" $readonly/>
 #end
@@ -839,7 +860,7 @@
     <input type="text" name="$fieldName" value="$!fieldValue" size="30"/>
   #else
   	#foreach($fieldDefinition in $typeDefinition.getFields())
-    	<input type="radio" name="$fieldName" value="$fieldDefinition.id">$fieldDefinition.label</input>  
+    	<input type="radio" name="$fieldName" value="$fieldDefinition.id">$fieldDefinition.label</input>
   	#end
   #end
   </td>
