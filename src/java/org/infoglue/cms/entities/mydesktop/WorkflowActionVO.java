@@ -44,6 +44,13 @@ public class WorkflowActionVO implements BaseEntityVO
 	private boolean autoExecute;
 	private Map metaAttributes;
 
+	public WorkflowActionVO() {}
+
+	public WorkflowActionVO(Integer id)
+	{
+		setId(id);
+	}
+
 	public Integer getId()
 	{
 		return this.id;
