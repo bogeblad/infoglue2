@@ -80,7 +80,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * Private constructor to enforce factory-use
 	 */
 
-	private NodeDeliveryController(Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	private NodeDeliveryController(Integer siteNodeId, Integer languageId, Integer contentId)
 	{
 		this.siteNodeId = siteNodeId;
 		this.languageId = languageId;
@@ -92,7 +92,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * Factory method
 	 */
 
-	public static NodeDeliveryController getNodeDeliveryController(Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	public static NodeDeliveryController getNodeDeliveryController(Integer siteNodeId, Integer languageId, Integer contentId)
 	{
 		return new NodeDeliveryController(siteNodeId, languageId, contentId);
 	}
@@ -101,7 +101,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * Factory method
 	 */
 
-	public static NodeDeliveryController getNodeDeliveryController(DeliveryContext deliveryContext) throws SystemException, Exception
+	public static NodeDeliveryController getNodeDeliveryController(DeliveryContext deliveryContext)
 	{
 		return new NodeDeliveryController(deliveryContext.getSiteNodeId(), deliveryContext.getLanguageId(), deliveryContext.getContentId());
 	}
