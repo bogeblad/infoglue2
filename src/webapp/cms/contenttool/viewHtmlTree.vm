@@ -30,21 +30,118 @@
 		document.write("<link type=\"text/css\" rel=\"StyleSheet\" href=\"" + cssFile + "\" />" );
 
 		// OTHER STUFF
+		function syncWithTree(path)
+		{
+			#if($treeMode == "classic")
+			var pathArr = path.split(',');
+			// var exp = "$exp";
+			var exp = "";
+			for(i=0;i<pathArr.length;i++)
+			{
+				exp = exp + "/" + pathArr[i] + "/";
+			}
+			document.location.href="ViewContentHtmlTree.action?exp=" + exp + "&repositoryId=${repositoryId}&select=" + pathArr[pathArr.length-1];
+			#else
+			var pathArr = path.split(',');
+			syncWithTreeRec(pathArr, 0);
+			#end
+		}
+		function syncWithTreeRec(pathArr, level)
+		{
+			if(pathArr.length <= 2)
+			{
+				var node = tree.getNodeWithMyId(pathArr[0]);
+				var id = pathArr[pathArr.length -1];
+				selectWhenLoaded(node, id);
+				return;
+			}
+		
+			if(level >= pathArr.length -1) 
+			{
+				var node = tree.getNodeWithMyId(pathArr[pathArr.length -2]);
+				var id = pathArr[pathArr.length-1];
+				selectWhenLoaded(node, id);
+				return;
+			}
+			
+			var node = tree.getNodeWithMyId(pathArr[level]);
+
+			if(!node.loading) node.expand();
+			if(node.loading) 
+			{
+				window.setTimeout(function () {
+					syncWithTreeRec(pathArr, level);
+				}, 10);
+			}
+			else
+			{
+				syncWithTreeRec(pathArr, level+1);
+			}
+		}
+		
+		
 		function refreshTreeNode(contentId, changeTypeId, addedContentId)
 		{
 			if (changeTypeId == 4)
-				document.location.reload();
-			else
 			{
 				#if($treeMode == "classic")
-				document.location.href="ViewContentHtmlTree.action?exp=${exp}&repositoryId=${repositoryId}" + "&akey=/" + contentId + "/&select=" + addedContentId;
+				document.location.reload();
 				#else
-				var item = tree.getSelected();
-				alert(item);
-				item.expand();
-				item.reload();
-				item.select();
+				if(contentId == tree.myId) 
+				{
+					document.location.reload();
+					return;
+				}
+				var node = tree.getNodeWithMyId(contentId);
+				node.reload();
+				selectWhenLoaded(node, contentId);
 				#end
+				return;
+			}
+
+			#if("$treeMode" != "classic")
+			if (changeTypeId == 3)
+			{
+				var node = tree.getNodeWithMyId(addedContentId);
+				node.parentNode.reload();				
+			}			
+			#end 
+			
+			#if($treeMode == "classic")
+			document.location.href="ViewContentHtmlTree.action?exp=${exp}&repositoryId=${repositoryId}" + "&akey=/" + contentId + "/&select=" + addedContentId;
+			#else
+			
+			var parentNode = tree.getNodeWithMyId(contentId);
+			if (changeTypeId == 1) 
+			{
+				parentNode = parentNode.parentNode;
+				addedContentId = contentId;
+			}
+
+			if(parentNode.myId == tree.myId) 
+			{
+				document.location.reload();
+				return;
+			}
+			parentNode.expand();
+			parentNode.reload();
+			selectWhenLoaded(parentNode, addedContentId);
+			#end
+		}
+		
+		function selectWhenLoaded(parentNode, contentId)
+		{
+			if(parentNode.loading) 
+			{
+				window.setTimeout(function () {
+					selectWhenLoaded(parentNode, contentId);
+				}, 10);
+			}
+			else
+			{
+				parentNode.expand();
+				var addedNode = tree.getNodeWithMyId(contentId);
+				addedNode.select();
 			}
 		}
 		
@@ -128,14 +225,30 @@
 	#end 
 	
 	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleContentXml.action?showLeafs=${showLeafs}&action=SimpleContentXml.action&createAction=true&repositoryId=$!{repositoryId}$par", "JavaScript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)');");
+	tree.myId = "$rootNode.Id";
 	document.write(tree);
 	var oldSelected = null;
 	function onTreeItemClick(elem, itemId, repoId, path)
 	{
-		if(oldSelected!=null) oldSelected.className="";
-		elem.className="myselected";
-		oldSelected=elem;
+		//if(oldSelected!=null) oldSelected.className="";
+		//elem.className="selected";
+		//oldSelected=elem;
 		parent.htmlTreeItemClick(itemId, repoId, path);
+	}
+	function onTreeItemSelect(elem)
+	{
+		var aid = elem + "-anchor";
+		if (oldSelected != null)
+			oldSelected.className = "";
+		
+		var srcIdLink =	document.getElementById(aid);
+		// alert(srcIdLink.className);
+		oldSelected = srcIdLink;
+		if (srcIdLink != null)
+			srcIdLink.className = "selected";
+
+		// alert(srcIdLink.className);
+		
 	}
 	</script>	
 	<!-- END -->	

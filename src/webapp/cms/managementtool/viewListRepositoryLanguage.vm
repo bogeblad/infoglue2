@@ -4,7 +4,7 @@
 
 #beginManagementTool("Available languages on $repository.getName()" "Add / Remove Repository Language" "")
 
-#lvHead(["Language name","Code","Status", "Action"] "" "" "" "")
+#lvHead(["Language name","Code","Status", "Action", "Order"] "" "" "" "")
 
 <form action="RepositoryLanguage!update.action">
 <input type="hidden" name="repositoryId" value="$repository.repositoryId"
@@ -21,15 +21,28 @@
 		#set ($state = "Published")
 		#set ($act = "<a href='RepositoryLanguage!unpublish.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'>Unpublish</a>")
 	#end
+
+	#if($velocityCount == 1)
+   		#set($moveUp = "<img src='images/trans.gif' width='10' border='0'>")
+   	#else
+	 	#set ($moveUp = "<a href='RepositoryLanguage!moveUp.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'><img src='images/upArrow.gif' border='0'></a>")
+	#end
+	
+	#if($velocityCount == $availableLanguages.size())
+   		#set($moveDown = "<img src='images/trans.gif' width='10' border='0'>")
+   	#else
+		#set ($moveDown = "<a href='RepositoryLanguage!moveDown.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'><img src='images/downArrow.gif' border='0'></a>")
+	#end
+	
 	#set ($cb = "<input type='checkbox' name='languageId' value='$languageVO.getLanguageId()' checked ></input>")
-	#set( $row = ["$cb $languageVO.getName()","$languageVO.getLanguageCode()","$state","$act"] )
+	#set( $row = ["$cb $languageVO.getName()","$languageVO.getLanguageCode()","$state","$act", "$moveDown $moveUp"] )
 	#set($cnt = $cnt + 1)
 	#lvAddRow($row $cnt $languageVO.getLanguageId())
 #end
 
 #foreach ($languageVO in $allRemainingLanguages)
 	#set ($cb = "<input type='checkbox' name='languageId' value='$languageVO.getLanguageId()'>")
-	#set( $row = ["$cb $languageVO.getName()","$languageVO.getLanguageCode()","",""] )
+	#set( $row = ["$cb $languageVO.getName()","$languageVO.getLanguageCode()","","",""] )
 	#set($cnt = $cnt + 1)
 	#lvAddRow($row $cnt $languageVO.getLanguageId())
 #end

@@ -78,7 +78,7 @@
 		  	opt.innerHTML = "Other";
 		  	target_select.appendChild(opt);
 		  	target_select.onchange = onTargetChanged;
-		  	document.getElementById("f_href").focus();
+		  	//document.getElementById("f_href").focus();
 		  	document.getElementById("f_href").select();
 		}
 

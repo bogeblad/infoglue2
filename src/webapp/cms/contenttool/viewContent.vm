@@ -3,10 +3,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 #beginContentTool($ui.getString("tool.contenttool.contentDetailsHeader") "Content details" "contentId=$contentId&repositoryId=$!repositoryId&isBranch=$isBranch" "$unrefreshedContentId" "$changeTypeId" "$contentId")
+#set($syncAuto = "false")
+
 
 <script language="JavaScript">
 <!--
+	#if($syncAuto == "true")
+	syncWithTree();
+	#end
 	
+	function syncWithTree()
+	{
+		#set($path="")
+		#foreach($cVO in $this.getContentPath())
+			#set($path = "$path${cVO.getContentId()},")
+		#end
+		#set($path = "$path${this.getContentVO().getContentId()}")
+		var path = "$path";
+		parent.frames[1].syncWithTree(path);
+	}
 	
 	var dirty = false;
 	//-----------------------------------------------
@@ -36,7 +51,6 @@
 <form method="POST" name="editForm" action="UpdateContent.action">
 <table border="0" cellpadding="0" cellspacing="0">
 
-
 	#set($contentEvent = $this.getContentEvent($contentId) )					
 	#if($contentEvent.typeId == 2)
 		<tr>
@@ -53,20 +67,20 @@
 			<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 		</tr>
 	#end
-
+	
 	<tr>
 		<td colspan="7">
 			#editTextField("Content.name" "name" $formatter.escapeHTML($!name) "30" "normaltextfield" "")
 		</td>
 	</tr>
-	#if(!$isBranch)
+	##if(!$isBranch)
 	<tr> 
 		<td colspan="7">#editDateField("Content.publishDateTime" "publishDateTime" $!publishDateTime "30" "date" "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "readonly")</td>
 	</tr>
 	<tr> 
 		<td colspan="7">#editDateField("Content.expireDateTime" "expireDateTime" $!expireDateTime "30" "date" "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "readonly")</td>
 	</tr>		
-	#end
+	##end
 	<tr>
 		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
@@ -91,7 +105,24 @@
 		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	
-	#if(!$isBranch)
+	##if(!$isBranch)
+	#if(!$contentVO.contentTypeDefinitionId)
+	<tr>
+		<td colspan="3">
+			$ui.getString("tool.contenttool.newContent.contentType")<br/>
+			<select class="contenttypes" name="contentTypeDefinitionId">
+			#if($isBranch)<option value="">Not defined yet</option>#end
+			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitions)
+				#if($contentTypeDefinitionId == $contentTypeDefinitionVO.contentTypeDefinitionId)
+					<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()" selected="1">$contentTypeDefinitionVO.getName()</option>
+				#else
+					<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()">$contentTypeDefinitionVO.getName()</option>
+				#end
+			#end
+			</select>
+		</td>
+	</tr>
+	#else
 	<tr>
 		<td colspan="7">
 			$ui.getString("tool.contenttool.contentTypeLabel") $contentTypeDefinition.getName()
@@ -184,8 +215,10 @@
 		</tr>	
 	#end
 
+	#end
+
 	
-	#end		
+	##end		
 
 	<tr>
 		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>

@@ -41,6 +41,12 @@ function getMenuDiv()
 	return document.getElementById("ie5menu");
 }
 
+function setEditUrl(anEditUrl) 
+{
+	//alert("Setting editUrl:" + anEditUrl);
+	editUrl = anEditUrl;
+}
+
 function showmenuie5(anEditUrl, event) 
 {
 	document.body.onclick = hidemenuie5;

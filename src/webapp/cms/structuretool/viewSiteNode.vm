@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<script language="javascript">
+function editContent(contentId)
+{
+	var url = "ViewContent!standalone.action?contentId=" + contentId;
+    openPopup(url, "Editcontent", "width=480,height=400,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
+}
+</script>
+
 
 #beginStructureTool("SiteNode details" "SiteNode details" "siteNodeId=$siteNodeId&siteNodeVersionId=$siteNodeVersionId&repositoryId=$!repositoryId&isBranch=$isBranch" "$unrefreshedSiteNodeId" "$changeTypeId" "$siteNodeId")
 
@@ -186,6 +194,7 @@
 				<tr $class>
 					<td>
 						#set($qualifyer = "Undefined")
+						#set($qualifyerDescription = "$qualifyer")
 						#set($qualifyerFullPath = "")
 						#set($serviceBindingId = 0)
 						#foreach ($serviceBindningVO in $serviceBindings)
@@ -199,6 +208,15 @@
 									#set($qualifyer = "$serviceBindningVO.path")
 								#end
 								#set($serviceBindingId = $serviceBindningVO.getServiceBindingId())
+	
+								#set($qualifyerDescription = "")							
+								#foreach($q in $this.getListPreparedQualifyers($serviceBindningVO.getServiceBindingId()))
+									#set($tmp = "<a href='javascript:editContent($q.getValue())'>$q.getPath()</a>")
+									#if($qualifyerDescription != "")
+										#set($qualifyerDescription = "${qualifyerDescription}, ")
+									#end
+									#set($qualifyerDescription = "$qualifyerDescription$tmp")
+								#end
 							#end 
 						#end
 						
@@ -215,7 +233,11 @@
 						#end
 					</td>
 					<td></td>
-					<td nowrap><a title="$qualifyerFullPath">$qualifyer</a></td>
+					
+					<td>
+						$qualifyerDescription
+					</td>
+					
 					<td align="center">
 						#if($serviceBindingId > 0 && $readonly == "") 
 							<a href="javascript:confirmAction('Do you really want to remove the binding to the content $formatter.escapeForJavascripts($qualifyer)?', 'DeleteServiceBinding.action?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersion.getSiteNodeVersionId()&serviceBindingId=$serviceBindingId');"><img src="images/delete.gif" border="0"></a>

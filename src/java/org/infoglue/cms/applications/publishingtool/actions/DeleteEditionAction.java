@@ -84,10 +84,9 @@ public class DeleteEditionAction extends ViewPublicationsAction
 		// Editions to delete (support many, for now template allows only one)
         if(publicationId != null)
 		{
-			String[] notOverwritablePublicationDetails = getRequest().getParameterValues("notOverwritablePublicationDetailId");
-			
-			this.publicationVO = PublicationController.unPublish(publicationId, this.getInfoGluePrincipal(), notOverwritablePublicationDetails);
+			this.publicationVO = PublicationController.unPublish(publicationId, this.getInfoGluePrincipal());
 		}
+        
         return "success";
     }
         

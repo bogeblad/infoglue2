@@ -27,7 +27,7 @@
 		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			var url = "ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$specifyBaseTemplate&filterRepositoryId=" + repositoryId;
+			var url = "ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&parentComponentId=$!parentComponentId&slotId=$slotId&specifyBaseTemplate=$specifyBaseTemplate&filterRepositoryId=" + repositoryId;
 			//alert("url:" + url);
 			document.location.href = url;
 		}

@@ -5,15 +5,15 @@
 * ===============================================================================
 *
 *  Copyright (C)
-*
+* 
 * This program is free software; you can redistribute it and/or modify it under
 * the terms of the GNU General Public License version 2, as published by the
 * Free Software Foundation. See the file LICENSE.html for more information.
-*
+* 
 * This program is distributed in the hope that it will be useful, but WITHOUT
 * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
 * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-*
+* 
 * You should have received a copy of the GNU General Public License along with
 * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -25,8 +25,10 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.applications.filters.FilterConstants;
+import org.infoglue.deliver.controllers.kernel.URLComposer;
+
+import java.net.URLEncoder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,37 +47,41 @@ public class BasicURLComposer extends URLComposer
 
     public String composeDigitalAssetUrl(String dnsName, String filename)
     {
-    	String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
+        String assetUrl = "";
+        
+        String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
-
+        
         if(enableNiceURI.equalsIgnoreCase("true"))
         {
 	        StringBuffer sb = new StringBuffer(256);
-
+	        
 	        String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
 	        String digitalAssetPath = CmsPropertyHandler.getProperty("digitalAssetBaseUrl");
 	        if (!digitalAssetPath.startsWith("/"))
 	        	digitalAssetPath = "/" + digitalAssetPath;
-
+	        
 	        //CmsLogger.logInfo("servletContext:" + servletContext);
 	        //CmsLogger.logInfo("digitalAssetPath:" + digitalAssetPath);
-
+	
 	        if(digitalAssetPath.indexOf(servletContext) == -1)
 	        	sb.append(servletContext);
-
+	        
 	        sb.append(digitalAssetPath);
-
+	     
 	        sb.append("/").append(filename);
-
+	        
 	        //CmsLogger.logInfo("sb:" + sb);
-
-	        return sb.toString();
+	        
+	        assetUrl = sb.toString();
         }
         else
         {
-        	return dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + filename;
+            assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + filename;
         }
+        
+        return assetUrl;
     }
 
     public String composePageUrl(InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId)
@@ -83,22 +89,22 @@ public class BasicURLComposer extends URLComposer
     	String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
-
+        
         if(enableNiceURI.equalsIgnoreCase("true"))
         {
 	        StringBuffer sb = new StringBuffer(26);
-
+	        
 	        sb.append(CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT));
-	        try
+	        try 
 			{
 	            sb.append(NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getPageNavigationPath(infoGluePrincipal, siteNodeId, languageId, contentId));
 	            if (contentId != null && contentId.intValue() != -1)
 	                sb.append("?contentId=").append(String.valueOf(contentId));
-
+	     
 	            //CmsLogger.logInfo("sb:" + sb);
 	            return sb.toString();
-	        }
-	        catch (Exception e)
+	        } 
+	        catch (Exception e) 
 			{
 	            e.printStackTrace();
 	        }
@@ -129,19 +135,19 @@ public class BasicURLComposer extends URLComposer
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
-
+        
         if(enableNiceURI.equalsIgnoreCase("true"))
         {
-	        if (pageUrl.indexOf("?") == -1)
+	        if (pageUrl.indexOf("?") == -1) 
 	        {
 	            pageUrl += "?languageId=" + String.valueOf(languageId);
-	        }
-	        else
+	        } 
+	        else 
 	        {
 	            pageUrl += "&languageId=" + String.valueOf(languageId);
 	        }
         }
-
+        
         return pageUrl;
     }
 
@@ -153,4 +159,4 @@ public class BasicURLComposer extends URLComposer
     }
 
 
-}
+} 

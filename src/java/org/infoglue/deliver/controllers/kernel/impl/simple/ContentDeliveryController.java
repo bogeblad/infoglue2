@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -23,12 +23,17 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
-import org.infoglue.cms.entities.content.*;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
+import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
@@ -40,7 +45,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
-
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 
@@ -48,37 +52,43 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Iterator;
+import java.util.Date;
+import java.util.Vector;
 import java.io.*;
 
 
 public class ContentDeliveryController extends BaseDeliveryController
 {
-	private URLComposer urlComposer = null;
-
+	private URLComposer urlComposer = null; 
+	
 	/**
 	 * Private constructor to enforce factory-use
 	 */
-
+	
 	private ContentDeliveryController()
 	{
-		urlComposer = URLComposer.getURLComposer();
+		urlComposer = URLComposer.getURLComposer(); 
 	}
-
+	
 	/**
 	 * Factory method
 	 */
-
+	
 	public static ContentDeliveryController getContentDeliveryController()
 	{
 		return new ContentDeliveryController();
 	}
-
+	
 	/**
 	 * This method returns which mode the delivery-engine is running in.
 	 * The mode is important to be able to show working, preview and published data separate.
 	 */
-
+	
 	private Integer getOperatingMode()
 	{
 		Integer operatingMode = new Integer(0); //Default is working
@@ -93,16 +103,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		return operatingMode;
 	}
-
-
+	
+	
 	/**
 	 * This method return a contentVO
 	 */
-
+	
 	public ContentVO getContentVO(Integer contentId) throws SystemException, Exception
 	{
 		ContentVO contentVO = null;
-
+		
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -112,7 +122,7 @@ public class ContentDeliveryController extends BaseDeliveryController
         {
         	//Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
 			contentVO = (ContentVO)getVOWithId(SmallContentImpl.class, contentId, db);
-
+				
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -121,20 +131,20 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+		
 		return contentVO;
 	}
-
-
+	
+	
 	/**
-	 * This method returns that contentVersionVO which matches the parameters sent in and which
+	 * This method returns that contentVersionVO which matches the parameters sent in and which 
 	 * also has the correct state for this delivery-instance.
 	 */
-
+	
 	public ContentVersionVO getContentVersionVO(Integer siteNodeId, Integer contentId, Integer languageId, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		ContentVersionVO contentVersionVO = null;
-
+		
 		SiteNodeVO siteNodeVO = (SiteNodeVO)SiteNodeController.getVOWithId(SiteNodeImpl.class, siteNodeId);
 		String contentVersionKey = "" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		CmsLogger.logInfo("contentVersionKey:" + contentVersionKey);
@@ -147,16 +157,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 	    	Database db = CastorDatabaseService.getDatabase();
 	        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
+	
 			beginTransaction(db);
-
+	
 	        try
 	        {
 	        	ContentVersion contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-
+		
 				if(contentVersion != null)
 					contentVersionVO = contentVersion.getValueObject();
-
+	            
 				commitTransaction(db);
 	        }
 	        catch(Exception e)
@@ -165,28 +175,28 @@ public class ContentDeliveryController extends BaseDeliveryController
 				rollbackTransaction(db);
 	            throw new SystemException(e.getMessage());
 	        }
-
+	        
 			CacheController.cacheObject("contentVersionCache", contentVersionKey, contentVersionVO);
 		}
-
+		
 		return contentVersionVO;
 	}
-
-
+	
+	
 	/**
-	 * This method returns that contentVersion which matches the parameters sent in and which
+	 * This method returns that contentVersion which matches the parameters sent in and which 
 	 * also has the correct state for this delivery-instance.
 	 */
-
+	
 	private ContentVersion getContentVersion(Integer siteNodeId, Integer contentId, Integer languageId, Database db, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		ContentVersion contentVersion = null;
-
+		
 		MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
 		contentVersion = getContentVersion(content, languageId, getOperatingMode());
-
+		
 		/*
-		if(contentVersion == null && getOperatingMode().intValue() == ContentVersionVO.PUBLISH_STATE.intValue())
+		if(contentVersion == null && getOperatingMode().intValue() == ContentVersionVO.PUBLISH_STATE.intValue()) 
 		{
 			contentVersion = getContentVersion(content, languageId, ContentVersionVO.PUBLISHED_STATE);
 		}
@@ -195,15 +205,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentVersion == null && useLanguageFallback)
 		{
 			CmsLogger.logInfo("Did not find it in requested languge... lets check the masterlanguage....");
-
+			
 			Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(siteNodeId).getLanguageId();
 			if(!languageId.equals(masterLanguageId))
 			{
 				contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode());
-
+	
 				/*
 				// TODO: This is a quick fix of deliverStaging bug (clean it up) / SS
-				if(contentVersion == null && getOperatingMode().intValue() == ContentVersionVO.PUBLISH_STATE.intValue())
+				if(contentVersion == null && getOperatingMode().intValue() == ContentVersionVO.PUBLISH_STATE.intValue()) 
 				{
 					contentVersion = getContentVersion(content, masterLanguageId, ContentVersionVO.PUBLISHED_STATE);
 				}
@@ -211,7 +221,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				*/
 			}
 		}
-
+		
 		return contentVersion;
 	}
 
@@ -219,21 +229,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * This method gets a contentVersion with a state and a language which is active.
 	 */
-
+	
 	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode) throws Exception
 	{
 		CmsLogger.logInfo("content:" + content.getId());
 		CmsLogger.logInfo("operatingMode:" + operatingMode);
 		CmsLogger.logInfo("languageId:" + languageId);
-
+			
 		ContentVersion contentVersion = null;
-
+		
 		Collection contentVersions = content.getContentVersions();
-
+		
 		Iterator versionIterator = contentVersions.iterator();
 		while(versionIterator.hasNext())
 		{
-			ContentVersion contentVersionCandidate = (ContentVersion)versionIterator.next();
+			ContentVersion contentVersionCandidate = (ContentVersion)versionIterator.next();	
 			CmsLogger.logInfo("contentVersionCandidate:" + contentVersionCandidate.getId() + ":" + contentVersionCandidate.getIsActive() + ":" + contentVersionCandidate.getLanguage() + ":" + contentVersionCandidate.getStateId());
 			if(contentVersionCandidate.getIsActive().booleanValue() && contentVersionCandidate.getLanguage().getId().intValue() ==  languageId.intValue() && contentVersionCandidate.getStateId().intValue() >= operatingMode.intValue())
 			{
@@ -243,13 +253,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}
 			}
 		}
-
+		
 		return contentVersion;
 	}
-
+	
 
 	/**
-	 * This is the most common way of getting attributes from a content.
+	 * This is the most common way of getting attributes from a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
 	 */
 
@@ -266,31 +276,31 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			Database db = CastorDatabaseService.getDatabase();
 	        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
+	
 			beginTransaction(db);
-
+	
 	        try
 	        {
 	        	ContentVersionVO contentVersionVO = getContentVersionVO(siteNodeId, contentId, languageId, useLanguageFallback);
-				if (contentVersionVO != null)
+				if (contentVersionVO != null) 
 				{
 				    CmsLogger.logInfo("found one:" + contentVersionVO);
-					attribute = getAttributeValue(contentVersionVO, attributeName);
+					attribute = getAttributeValue(contentVersionVO, attributeName);		
 				}
 				else
 					attribute = "";
-
+	
 				/*
 				ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-				if (contentVersion != null)
+				if (contentVersion != null) 
 	            {
 	            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
-	            	attribute = getAttributeValue(contentVersion.getValueObject(), attributeName);
+	            	attribute = getAttributeValue(contentVersion.getValueObject(), attributeName);		
 	            }
 	            */
-
+	            
 				commitTransaction(db);
-
+	            
 				//CmsLogger.logInfo("attribute:" + attribute);
 				CacheController.cacheObject("contentAttributeCache", attributeKey, attribute);
 	        }
@@ -300,22 +310,22 @@ public class ContentDeliveryController extends BaseDeliveryController
 				rollbackTransaction(db);
 	            throw new SystemException(e.getMessage());
 	        }
-
+		
 		}
-
+		
 		return (attribute == null) ? "" : attribute;
 	}
 
 
 	/**
-	 * This is the most common way of getting attributes from a content.
+	 * This is the most common way of getting attributes from a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
 	 */
 
 	public String getContentAttribute(ContentVersionVO contentVersionVO, String attributeName) throws SystemException, Exception
 	{
 		String attribute = null;
-
+		
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -323,8 +333,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 
         try
         {
-           	attribute = getAttributeValue(contentVersionVO, attributeName);
-
+           	attribute = getAttributeValue(contentVersionVO, attributeName);		
+            
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -333,7 +343,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+		
 		return attribute;
 	}
 
@@ -465,7 +475,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public Collection getAssetKeys(Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		Collection assetKeys = new ArrayList();
-
+		
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -474,7 +484,7 @@ public class ContentDeliveryController extends BaseDeliveryController
         try
         {
 			ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-			if (contentVersion != null)
+			if (contentVersion != null) 
             {
             	Collection assets = contentVersion.getDigitalAssets();
             	Iterator keysIterator = assets.iterator();
@@ -482,10 +492,10 @@ public class ContentDeliveryController extends BaseDeliveryController
             	{
             		DigitalAsset asset = (DigitalAsset)keysIterator.next();
             		String assetKey = asset.getAssetKey();
-	            	assetKeys.add(assetKey);
+	            	assetKeys.add(assetKey); 		
             	}
             }
-
+            
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -494,7 +504,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+		
 		return assetKeys;
 	}
 
@@ -502,17 +512,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * This method is used by the getAssetUrl methods, to locate a digital asset in another
 	 * languageversion. It is called in the case where no asset where found in the supplied language.
-	 *
-	 * This way an image is only required to exist in one of the language versions, reducing the need for
+	 * 
+	 * This way an image is only required to exist in one of the language versions, reducing the need for 
 	 * many duplicates.
-	 *
+	 *  
 	 */
 	private DigitalAsset getLanguageIndependentAsset(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey) throws SystemException, Exception
 	{
 		DigitalAsset asset = null;
 		// TODO: This method should only return a asset url depending on settings on the actual content in the future
 		// or possibly a systemwide setting.
-
+		
 		// TODO: experimental
 		// addition ss - 030422
 		// Search digital asset among language versions.
@@ -524,48 +534,52 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if (langVO.getLanguageId().compareTo(languageId)!=0)
 			{
 				ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, langVO.getLanguageId(), db, false);
-				if (contentVersion != null)
+				if (contentVersion != null) 
 				{
-					DigitalAsset digitalAsset =
-						(assetKey == null) ? getLatestDigitalAsset(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey);
-
+					DigitalAsset digitalAsset = 
+						(assetKey == null) ? getLatestDigitalAsset(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey); 
+					
 					if(digitalAsset != null)
 					{
 						asset = digitalAsset;
 						break;
 					}
-				}
+				}									
 			}
 		}
-		return asset;
+		return asset;			
 	}
 
 	private String getLanguageIndependentAssetUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey) throws SystemException, Exception
 	{
 		String assetUrl = "";
+		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
+		
 		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey);
 		if(digitalAsset != null)
 		{
 			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
-
+	
 			DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-
+			
 			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(siteNodeId);
 			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
-
+				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName);
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
 		}
-		return assetUrl;
+		return assetUrl;	
 	}
 
 
 	private String getLanguageIndependentAssetThumbnailUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, int width, int height) throws SystemException, Exception
 	{
 		String assetUrl = "";
+		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
+		
 		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey);
 		if(digitalAsset != null)
 		{
@@ -574,21 +588,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 			String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
 
 			DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
-
+			
 			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(siteNodeId);
 			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
-
+				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName);
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName); 
 		}
-		return assetUrl;
+		return assetUrl;	
 	}
 
 
 	/**
-	 * This is the basic way of getting an asset-url for a content.
+	 * This is the basic way of getting an asset-url for a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated.
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
@@ -596,7 +610,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getAssetUrl(Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		String assetUrl = "";
-
+		
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -605,31 +619,31 @@ public class ContentDeliveryController extends BaseDeliveryController
         try
         {
 			ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-			if (contentVersion != null)
+			if (contentVersion != null) 
             {
             	DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
-
+				
 				if(digitalAsset != null)
 				{
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
-
+					
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-
+					
 					SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(siteNodeId);
 					String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 					if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 						dnsName = siteNode.getRepository().getDnsName();
 
 					//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName);
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
 				}
 				else
 				{
 					assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, null);
 				}
             }
-
+            
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -638,14 +652,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+		
 		return assetUrl;
 	}
 
 
 
 	/**
-	 * This is the basic way of getting an asset-url for a content.
+	 * This is the basic way of getting an asset-url for a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated with the key.
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
@@ -653,7 +667,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getAssetUrl(Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		String assetUrl = "";
-
+		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
+		
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -663,54 +678,54 @@ public class ContentDeliveryController extends BaseDeliveryController
         {
 			ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
 			ContentVO contentVO = this.getContentVO(contentId);
-			LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);
-			if (contentVersion != null)
+			LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);	
+			if (contentVersion != null) 
             {
             	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
-
+				
 				if(digitalAsset != null)
 				{
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
-
+					
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-
+					
 					SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(siteNodeId);
 					String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 					if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 						dnsName = siteNode.getRepository().getDnsName();
-
+						
 					//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName);
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
 				}
 				else if(useLanguageFallback)
 				{
 					assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, assetKey);
 				}
-			}
+			}				
 			else if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 			{
 			    contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
-
+		    	
 		    	CmsLogger.logInfo("contentVersion:" + contentVersion);
 				if(contentVersion != null)
 				{
 	            	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
-
+					
 					if(digitalAsset != null)
 					{
 						String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 						String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
-
+						
 						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-
+						
 						SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(siteNodeId);
 						String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 						if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 							dnsName = siteNode.getRepository().getDnsName();
-
+							
 						//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName);
+						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
 					}
 					else if(useLanguageFallback)
 					{
@@ -718,7 +733,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					}
 				}
 			}
-
+			
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -728,12 +743,13 @@ public class ContentDeliveryController extends BaseDeliveryController
             throw new SystemException(e.getMessage());
         }
 
-		return assetUrl;
+        return assetUrl;
 	}
-
-
+	
+		
+	
 	/**
-	 * This is the basic way of getting an asset-url for a content.
+	 * This is the basic way of getting an asset-url for a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated.
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
@@ -741,7 +757,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getAssetThumbnailUrl(Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws SystemException, Exception
 	{
 		String assetUrl = "";
-
+		
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -750,10 +766,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		try
 		{
 			ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-			if (contentVersion != null)
+			if (contentVersion != null) 
 			{
 				DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
-
+				
 				if(digitalAsset != null)
 				{
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
@@ -762,21 +778,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
-
+					
 					SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(siteNodeId);
 					String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 					if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 						dnsName = siteNode.getRepository().getDnsName();
 
 					//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
-					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName);
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName); 
 				}
 				else
 				{
 					assetUrl = getLanguageIndependentAssetThumbnailUrl(contentId, languageId, siteNodeId, db, null, width, height);
 				}
 			}
-
+            
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -785,14 +801,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
+		
 		return assetUrl;
 	}
 
 
 
 	/**
-	 * This is the basic way of getting an asset-url for a content.
+	 * This is the basic way of getting an asset-url for a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated with the key.
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
@@ -800,7 +816,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getAssetThumbnailUrl(Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws SystemException, Exception
 	{
 		String assetUrl = "";
-
+		
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -809,10 +825,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		try
 		{
 			ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-			if (contentVersion != null)
+			if (contentVersion != null) 
 			{
 				DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
-
+				
 				if(digitalAsset != null)
 				{
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
@@ -821,22 +837,22 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
-
+					
 					SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(siteNodeId);
 					String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 					if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 						dnsName = siteNode.getRepository().getDnsName();
-
+					
 					//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
-					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName);
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName); 
 				}
 				else
 				{
 					assetUrl = getLanguageIndependentAssetThumbnailUrl(contentId, languageId, siteNodeId, db, assetKey, width, height);
 				}
-
-			}
-
+				
+			}				
+            
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -845,45 +861,45 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
+		
 		return assetUrl;
 	}
-
+	
 
 
 	/*
-	 * getAssetFileSize. Prelimenary, we should rather supply a assetvo to the template.
+	 * getAssetFileSize. Prelimenary, we should rather supply a assetvo to the template. 
 	 */
-
+	 
 	public Integer getAssetFileSize(Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
-	{
-		return getAssetFileSize(contentId, languageId, null, siteNodeId, useLanguageFallback);
+	{ 
+		return getAssetFileSize(contentId, languageId, null, siteNodeId, useLanguageFallback); 
 	}
-
+	
 	public Integer getAssetFileSize(Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		Integer fileSize = null;
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
+		
 		beginTransaction(db);
 		try
 		{
 			ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-			if (contentVersion != null)
+			if (contentVersion != null) 
 			{
 				DigitalAsset digitalAsset =
-					(assetKey == null) ? getLatestDigitalAsset(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey);
-
+					(assetKey == null) ? getLatestDigitalAsset(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey); 
+				
 				if(digitalAsset == null)
 					digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey);
-
+					
 				if(digitalAsset != null)
 				{
 					fileSize = digitalAsset.getAssetFileSize();
-				}
-			}
-
+				}								
+			}				
+            
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -894,17 +910,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		return fileSize;
 	}
-
+	
 
 	/**
-	 * This method deliveres a String with the URL to the base path of the directory resulting from
+	 * This method deliveres a String with the URL to the base path of the directory resulting from 
 	 * an unpacking of a uploaded zip-digitalAsset.
 	 */
 
 	public String getArchiveBaseUrl(Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		String archiveBaseUrl = null;
-
+		
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -913,29 +929,29 @@ public class ContentDeliveryController extends BaseDeliveryController
         try
         {
 			ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-			if (contentVersion != null)
+			if (contentVersion != null) 
             {
             	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
-
+				
 				if(digitalAsset != null)
 				{
 					String fileName = digitalAsset.getAssetFileName();
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 					File unzipDirectory = new File(filePath + File.separator + fileName.substring(0, fileName.lastIndexOf(".")));
 					unzipDirectory.mkdirs();
-
+					
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(digitalAsset, fileName, filePath, unzipDirectory);
-
+					
 					SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(siteNodeId);
 					String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 					if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 						dnsName = siteNode.getRepository().getDnsName();
-
+						
 					//archiveBaseUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName.substring(0, fileName.lastIndexOf("."));
-					archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName.substring(0, fileName.lastIndexOf(".")));
+					archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName.substring(0, fileName.lastIndexOf("."))); 
 				}
-            }
-
+            }				
+            
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -944,14 +960,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+		
 		return archiveBaseUrl;
 	}
 
 	public Vector getArchiveEntries(Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		Vector entries = null;
-
+		
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -960,10 +976,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		try
 		{
 			ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-			if (contentVersion != null)
+			if (contentVersion != null) 
 			{
 				DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
-
+				
 				if(digitalAsset != null)
 				{
 					String fileName = digitalAsset.getAssetFileName();
@@ -972,8 +988,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 					unzipDirectory.mkdirs();
 					entries = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndGetZipEntries(digitalAsset, fileName, filePath, unzipDirectory);
 				}
-			}
-
+			}				
+            
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -982,25 +998,25 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
+		
 		return entries;
 	}
 
 
-
+	
 	/**
 	 * Returns the digital asset for a contentversion that has a certain key.
 	 */
-
+	
 	private DigitalAsset getDigitalAssetWithKey(ContentVersion contentVersion, String assetKey)
 	{
 		Collection digitalAssets = contentVersion.getDigitalAssets();
 		Iterator iterator = digitalAssets.iterator();
-
+		
 		while(iterator.hasNext())
-		{
-			DigitalAsset currentDigitalAsset = (DigitalAsset)iterator.next();
-
+		{  
+			DigitalAsset currentDigitalAsset = (DigitalAsset)iterator.next();	
+				
 			if(currentDigitalAsset != null && currentDigitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 			{
 				return currentDigitalAsset;
@@ -1013,30 +1029,30 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * Returns the latest digital asset for a contentversion.
 	 */
-
+	
 	private DigitalAsset getLatestDigitalAsset(ContentVersion contentVersion)
 	{
 		Collection digitalAssets = contentVersion.getDigitalAssets();
 		Iterator iterator = digitalAssets.iterator();
-
+		
 		DigitalAsset digitalAsset = null;
 		while(iterator.hasNext())
 		{
-			DigitalAsset currentDigitalAsset = (DigitalAsset)iterator.next();
+			DigitalAsset currentDigitalAsset = (DigitalAsset)iterator.next();	
 			if(digitalAsset == null || currentDigitalAsset.getDigitalAssetId().intValue() > digitalAsset.getDigitalAssetId().intValue())
 				digitalAsset = currentDigitalAsset;
 		}
 		return digitalAsset;
 	}
-
-
+	
+	
 
 
 	/**
-	 * This method fetches a value from the xml that is the contentVersions Value. If the
+	 * This method fetches a value from the xml that is the contentVersions Value. If the 
 	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
 	 */
-
+	 
 	public String getAttributeValue(ContentVersionVO contentVersionVO, String key)
 	{
 		String value = "";
@@ -1045,23 +1061,23 @@ public class ContentDeliveryController extends BaseDeliveryController
 			try
 	        {
 	        	String xml = contentVersionVO.getVersionValue();
-
+	        	
 	        	int startTagIndex = xml.indexOf("<" + key + ">");
 	        	int endTagIndex   = xml.indexOf("]]></" + key + ">");
-
+	        	
 	        	if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
 		        	value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
-
+	
 	        	/*
 		        InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
-
-				DOMParser parser = new DOMParser();
+				
+				DOMParser parser = new DOMParser(); 
 				parser.parse(inputSource);
 				Document document = parser.getDocument();
-
+				
 				NodeList nl = document.getDocumentElement().getChildNodes();
 				Node n = nl.item(0);
-
+				
 				nl = n.getChildNodes();
 				for(int i=0; i<nl.getLength(); i++)
 				{
@@ -1073,9 +1089,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 						break;
 					}
-				}
+				}		        	
 	        	*/
-	        }
+	        } 
 	        catch(Exception e)
 	        {
 	        	CmsLogger.logSevere("An error occurred so we should not return the attribute value:" + e, e);
@@ -1084,7 +1100,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		return value;
 	}
-
+	
 
 	/**
 	 * This method returns a sorted list of childContents to a content ordered by the given attribute in the direction given.
@@ -1093,7 +1109,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public List getChildContents(InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean useLanguageFallback, boolean includeFolders) throws SystemException, Exception
 	{
 		List childContents = new ArrayList();
-
+	
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -1102,7 +1118,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		try
 		{
 			getChildContents(infoGluePrincipal, childContents, contentId, languageId, useLanguageFallback, 0, false, includeFolders, 1, db);
-
+        	       	        
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -1111,15 +1127,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
+	
 		return childContents;
 	}
-
+		
 
 	/**
 	 * This method returns a sorted list of childContents to a content ordered by the given attribute in the direction given.
 	 */
-
+	
 	public List getSortedChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, Integer contentId, Integer siteNodeId, Database db, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		/*
@@ -1133,9 +1149,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			return cachedSortedContentVOList;
 		}
 		*/
-
+		
 		List sortedContentVOList = new ArrayList();
-
+		
 		List unsortedChildren = getChildContents(infoGluePrincipal, languageId, useLanguageFallback, contentId, siteNodeId, searchRecursive, maximumNumberOfLevels, db);
 
 		List sortedContents   = sortContents(unsortedChildren, languageId, siteNodeId, sortAttribute, sortOrder, useLanguageFallback);
@@ -1146,22 +1162,22 @@ public class ContentDeliveryController extends BaseDeliveryController
 			Content content = (Content)boundContentsIterator.next();
 			sortedContentVOList.add(content.getValueObject());
 		}
-
+		
 		//CacheController.cacheObject(cacheName, sortedChildContentsKey, sortedContentVOList);
-
+			
 		return sortedContentVOList;
 	}
-
+	
 
 
 	/**
 	 * This method returns the contentTypeDefinitionVO of the content sent in.
 	 */
-
+	
 	public ContentTypeDefinitionVO getContentTypeDefinitionVO(Integer contentId) throws SystemException, Exception
 	{
 		ContentTypeDefinitionVO contentTypeDefinitionVO = null;
-
+		
 	   	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -1169,9 +1185,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
         try
         {
-			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
-			contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();
-
+			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
+			contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();       
+			
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -1181,31 +1197,31 @@ public class ContentDeliveryController extends BaseDeliveryController
             throw new SystemException(e.getMessage());
         }
 
-
+		
 		return contentTypeDefinitionVO;
 	}
 
 
 
 	/**
-	 * This method returns a list of children to the content given. It is mostly used to get all
+	 * This method returns a list of children to the content given. It is mostly used to get all 
 	 * children a folder has.
 	 */
-
+	
 	private List getChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, boolean useLanguageFallback, Integer contentId, Integer siteNodeId, boolean searchRecursive, Integer maximumNumberOfLevels, Database db) throws SystemException, Exception
 	{
 		List contents = new ArrayList();
-
-		getChildContents(infoGluePrincipal, contents, contentId, languageId, useLanguageFallback, 0, searchRecursive, maximumNumberOfLevels.intValue(), db);
-
+		
+		getChildContents(infoGluePrincipal, contents, contentId, languageId, useLanguageFallback, 0, searchRecursive, maximumNumberOfLevels.intValue(), db);		
+		
 		return contents;
 	}
-
+	
 
 	/**
 	 * This method recurses into the dept of the content-children and fills the list of contents.
 	 */
-
+	
 	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, int maximumNumberOfLevels, Database db) throws SystemException, Exception
 	{
 		/*
@@ -1213,17 +1229,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 		oql.bind(getOperatingMode());
 		oql.bind(new Boolean(true));
     	oql.bind(contentId);
-
+    	
 		QueryResults results = oql.execute(Database.ReadOnly);
-
-		while (results.hasMore())
+		
+		while (results.hasMore()) 
 		{
 			ContentVersion contentVersion = (ContentVersion)results.next();
     		Content content = contentVersion.getOwningContent();
-
+    		
 			if(searchRecursive && currentLevel < maximumNumberOfLevels)
 				getChildContents(contents, content.getContentId(), currentLevel + 1, searchRecursive, maximumNumberOfLevels, db);
-
+    
 			if(isValidContent(content, db))
 			{
 				if(!contents.contains(content))
@@ -1231,19 +1247,19 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 		*/
-
+		
 		OQLQuery oql = db.getOQLQuery("SELECT content FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl content WHERE content.parentContent.contentId = $1 ORDER BY content.contentId");
     	oql.bind(contentId);
-
+    	
     	QueryResults results = oql.execute(Database.ReadOnly);
-
-		while (results.hasMore())
+		
+		while (results.hasMore()) 
         {
         	Content content = (Content)results.next();
-
+    
         	if(searchRecursive && currentLevel < maximumNumberOfLevels)
 	        	getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db);
-
+    
     		if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db))
     			contents.add(content);
         }
@@ -1252,56 +1268,56 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * This method recurses into the dept of the content-children and fills the list of contents.
 	 */
-
+	
 	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, boolean includeFolders, int maximumNumberOfLevels, Database db) throws SystemException, Exception
 	{
 		OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl content WHERE content.parentContent.contentId = $1 ORDER BY content.contentId");
 		oql.bind(contentId);
-
+    	
 		QueryResults results = oql.execute(Database.ReadOnly);
-
-		while (results.hasMore())
+		
+		while (results.hasMore()) 
 		{
 			Content content = (Content)results.next();
-
+    
 			if(searchRecursive && currentLevel < maximumNumberOfLevels)
 				getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, includeFolders, maximumNumberOfLevels, db);
-
+    
     		if(content.getIsBranch().booleanValue() && includeFolders && isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db))
 				contents.add(content);
     		else if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db))
 				contents.add(content);
 		}
 	}
-
+	
 	/**
 	 * This method validates that right now is between publishdate and expiredate.
 	 */
-
+	
 	private boolean isValidOnDates(Date publishDate, Date expireDate)
 	{
 		boolean isValid = true;
 		Date now = new Date();
-
+		
 		if(publishDate.after(now) || expireDate.before(now))
 			isValid = false;
-
+		
 		return isValid;
-	}
+	}		
 
 	/**
 	 * Returns if a content is between dates and has a content version suitable for this delivery mode.
 	 * @throws Exception
 	 */
-/*
+/*	
 	public boolean isValidContent(Integer contentId, InfoGluePrincipal infoGluePrincipal, Database db) throws Exception
 	{
 		boolean isValidContent = false;
-
-		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
+		
+		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
 		isValidContent = isValidContent(content, db);
-
-		return isValidContent;
+    	
+		return isValidContent;					
 	}
 */
 	/**
@@ -1312,7 +1328,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public boolean isValidContent(Integer contentId, Integer languageId, boolean useLanguageFallback, InfoGluePrincipal infoGluePrincipal) throws Exception
 	{
 	    boolean isValidContent = false;
-
+		
 		Database db =  CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -1320,9 +1336,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		try
 		{
-			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
+			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
 			isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db);
-
+			
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -1331,10 +1347,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
-		return isValidContent;
+		
+		return isValidContent;					
 	}
-
+	
 	/**
 	 * Returns if a content is between dates and has a content version suitable for this delivery mode.
 	 * @throws Exception
@@ -1343,23 +1359,23 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, Database db) throws Exception
 	{
 	    boolean isValidContent = false;
-
+		
 		if(infoGluePrincipal == null)
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
-
+		
 		CmsLogger.logInfo("content:" + content.getName());
-
+		
 		Integer protectedContentId = getProtectedContentId(content);
 		CmsLogger.logInfo("IsProtected:" + protectedContentId);
-
+		
 		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 		{
 		    return false;
 		}
 		if(content.getIsBranch().booleanValue())
 		{
-			isValidContent = true;
-		}
+			isValidContent = true; 
+		} 
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
 			ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode());
@@ -1369,10 +1385,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 				if(!masterLanguage.getId().equals(languageId))
 					contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode());
 			}
-
+			
 			if(contentVersion != null)
 				isValidContent = true;
-
+				
 			/*
 			Collection versions = content.getContentVersions();
 			Iterator versionsIterator = versions.iterator();
@@ -1385,57 +1401,56 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			*/
 		}
-
-		return isValidContent;
+    			
+		return isValidContent;					
 	}
 
-
-	/**
-	 * This method returns true if the if the content in question  is protected by the extranet functionality.
-	 */
-	/*
-	public boolean getIsContentProtected(Content content)
-	{
-		boolean isContentProtected = false;
-
-		try
-		{
-			if(content.getIsProtected() != null)
-			{
-				if(content.getIsProtected().intValue() == ContentVO.NO.intValue())
-				    isContentProtected = false;
-				else if(content.getIsProtected().intValue() == ContentVO.YES.intValue())
-				    isContentProtected = true;
-				else if(content.getIsProtected().intValue() == ContentVO.INHERITED.intValue())
-				{
-				    Content parentContent = content.getParentContent();
-					if(parentContent != null)
-					    isContentProtected = getIsContentProtected(parentContent);
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
-		}
-
-		return isContentProtected;
-	}
-	*/
-
+	
+	
 	/**
 	 * This method returns the id of the content that is protected if any. Looks recursive upwards.
 	 */
+	
+	public Integer getProtectedContentId(Integer contentId) throws SystemException, Exception
+	{
+	    Integer protectedContentId = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
+		beginTransaction(db);
+
+        try
+        {
+        	Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
+    	    protectedContentId = getProtectedContentId(content);
+        	
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+				
+		return protectedContentId;
+	}
+
+	
+	/**
+	 * This method returns the id of the content that is protected if any. Looks recursive upwards.
+	 */
+	
 	public Integer getProtectedContentId(Content content)
 	{
 		Integer protectedContentId = null;
-
+		
 		try
 		{
 			CmsLogger.logInfo("content:" + content.getId() + ":" + content.getIsProtected());
 			if(content != null && content.getIsProtected() != null)
-			{
+			{	
 				if(content.getIsProtected().intValue() == ContentVO.NO.intValue())
 					protectedContentId = null;
 				else if(content.getIsProtected().intValue() == ContentVO.YES.intValue())
@@ -1444,7 +1459,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				{
 					Content parentContent = content.getParentContent();
 					if(parentContent != null)
-						protectedContentId = getProtectedContentId(parentContent);
+						protectedContentId = getProtectedContentId(parentContent); 
 				}
 			}
 
@@ -1453,21 +1468,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
-
+				
 		return protectedContentId;
 	}
 
-
+	
 	/**
 	 * This method just sorts the list of qualifyers on sortOrder.
 	 */
-
+	
 	private List sortContents(Collection contents, Integer languageId, Integer siteNodeId, String sortAttributeName, String sortOrder, boolean useLanguageFallback)
 	{
 		List sortedContents = new ArrayList();
 
 		try
-		{
+		{		
 			Iterator iterator = contents.iterator();
 			while(iterator.hasNext())
 			{
@@ -1479,8 +1494,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 					while(sortedListIterator.hasNext())
 					{
 						Content sortedContent = (Content)sortedListIterator.next();
-
-						//Here we sort on date if the dates on a container is wanted
+						
+						//Here we sort on date if the dates on a container is wanted 
 						if(sortAttributeName.equalsIgnoreCase("publishDateTime"))
 						{
 							Date date       = content.getPublishDateTime();
@@ -1493,7 +1508,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					    	{
 					    		break;
 					    	}
-
+					    	
 						}
 						else if(sortAttributeName.equalsIgnoreCase("expireDateTime"))
 						{
@@ -1507,7 +1522,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					    	{
 					    		break;
 					    	}
-
+					    	
 						}
 						else
 						{
@@ -1521,20 +1536,20 @@ public class ContentDeliveryController extends BaseDeliveryController
 					    	{
 					    		break;
 					    	}
-						}
+						}				    	
 				    	index++;
 					}
 					sortedContents.add(index, content);
-				}
+				}			    					
 			}
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logWarning("The sorting of contents failed:" + e.getMessage(), e);
 		}
-
+			
 		return sortedContents;
 	}
-
+	
 
 }

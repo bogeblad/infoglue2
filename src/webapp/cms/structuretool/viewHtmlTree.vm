@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?> 
+##set($treeMode = "classic")
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head> 
@@ -28,6 +30,71 @@
 				srcIdLink.className = "selected";
 		}
 		
+		function refreshTreeNode(nodeId, changeTypeId, addedNodeId)
+		{
+			if (changeTypeId == 4)
+			{
+				#if("$treeMode" == "classic")
+				document.location.reload();
+				#else
+				if(nodeId == tree.myId) 
+				{
+					document.location.reload();
+					return;
+				}
+				var node = tree.getNodeWithMyId(nodeId);
+				node.reload();
+				selectWhenLoaded(node, nodeId);
+				#end
+				
+				return;
+			}
+			#if("$treeMode" != "classic")
+			if (changeTypeId == 3)
+			{
+				var node = tree.getNodeWithMyId(addedNodeId);
+				node.parentNode.reload();				
+			}			
+			#end 
+			
+			#if("$treeMode" == "classic")
+			document.location.href="ViewStructureHtmlTree.action?exp=${exp}&repositoryId=${repositoryId}" + "&akey=/" + nodeId + "/&select=" + addedNodeId;
+			#else
+			
+			var parentNode = tree.getNodeWithMyId(nodeId);
+			if (changeTypeId == 1) 
+			{
+				parentNode = parentNode.parentNode;
+				addedNodeId = nodeId;
+			}
+
+			if(parentNode.myId == tree.myId) 
+			{
+				document.location.reload();
+				return;
+			}
+			parentNode.expand();
+			parentNode.reload();
+			selectWhenLoaded(parentNode, addedNodeId);
+			#end
+		}
+		
+		function selectWhenLoaded(parentNode, contentId)
+		{
+			if(parentNode.loading) 
+			{
+				window.setTimeout(function () {
+					selectWhenLoaded(parentNode, contentId);
+				}, 10);
+			}
+			else
+			{
+				parentNode.expand();
+				var addedNode = tree.getNodeWithMyId(contentId);
+				addedNode.select();
+			}
+		}
+		
 		function loaded()
 		{
 				setSelected("${select}");
@@ -54,8 +121,8 @@
 	<!-- NEW DYNAMIC VERSION -->
 	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
 	<script type="text/javascript">
-	webFXTreeConfig.rootIcon		= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/folder.png";
-	webFXTreeConfig.openRootIcon	= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/openfolder.png";
+	webFXTreeConfig.rootIcon		= "images/tree/structureRoot.gif"; // "script/xloadtree/images/xp/folder.png";
+	webFXTreeConfig.openRootIcon	= "images/tree/structureRoot.gif"; // "script/xloadtree/images/xp/openfolder.png";
 	webFXTreeConfig.folderIcon		= "script/xloadtree/images/xp/folder.png";
 	webFXTreeConfig.openFolderIcon	= "script/xloadtree/images/xp/openfolder.png";
 	webFXTreeConfig.fileIcon		= "script/xloadtree/images/xp/file.png";
@@ -77,14 +144,30 @@
 	#end 
 	
 	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleStructureXml.action?action=SimpleStructureXml.action&createAction=true&repositoryId=$!{repositoryId}$par", "JavaScript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)');");
+	tree.myId = "$rootNode.Id";	
 	document.write(tree);
 	var oldSelected = null;
 	function onTreeItemClick(elem, itemId, repoId, path)
 	{
-		if(oldSelected!=null) oldSelected.className="";
-		elem.className="myselected";
-		oldSelected=elem;
+		// if(oldSelected!=null) oldSelected.className="";
+		// elem.className="selected";
+		// oldSelected=elem;
 		parent.htmlTreeItemClick(itemId, repoId, path);
+	}
+	function onTreeItemSelect(elem)
+	{
+		var aid = elem + "-anchor";
+		if (oldSelected != null)
+			oldSelected.className = "";
+		
+		var srcIdLink =	document.getElementById(aid);
+		// alert(srcIdLink.className);
+		oldSelected = srcIdLink;
+		if (srcIdLink != null)
+			srcIdLink.className = "selected";
+
+		// alert(srcIdLink.className);
+		
 	}
 	</script>	
 	<!-- END -->	

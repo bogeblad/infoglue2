@@ -12,6 +12,32 @@
 
 #beginStructureTool("Create new siteNode" "New siteNode" "" "0" "0" "0")
 
+<script language="JavaScript">
+<!--
+		
+	var selectedAssetElement;
+	var contentId;
+		
+	function markPageTemplate(object, aContentId)
+	{
+		if(selectedAssetElement)
+			selectedAssetElement.style.background = "";
+			
+		contentId = aContentId;	
+		
+		//alert("object:" + object);
+		//alert("contentId" + contentId);
+		//alert("assetKey" + assetKey);
+		selectedAssetElement = document.getElementById("digitalAsset" + contentId);
+		//alert("selectedAssetElement" + selectedAssetElement);
+		if(selectedAssetElement)
+			selectedAssetElement.style.background = "#C2D0E2";
+		
+		document.editForm.pageTemplateContentId.value = contentId;	
+	}
+		
+-->
+</script>		
 
 <div class="fullymarginalized">
 <form name="editForm" method="POST" action="CreateSiteNode.action">
@@ -39,6 +65,48 @@
 	##end	
 	<tr>
 		<td colspan="3">&nbsp;</td>
+	</tr>	
+	<tr>
+		<td colspan="4" width=>
+			<table border="0" width="100%" cellspacing="0">
+			<tr>
+				$ui.getString("tool.structuretool.pageTemplates.header")<br>
+				#set($counter = 0)
+				#set($sortedPageTemplates = $this.getSortedPageTemplates($sortProperty))
+				#foreach ($content in $sortedPageTemplates)
+					##if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
+						#if($isOdd)
+							#set($class = "class='lightyellow'")
+							#set($isOdd = false)
+						#else
+							#set($class = "class='white'")
+							#set($isOdd = true)
+						#end
+						
+						##set($imageUrl = "images/componentIcon.gif")
+						#set($imageUrl = $this.getDigitalAssetUrl($content.id, "thumbnail"))
+						#if(!$imageUrl || $imageUrl == "")
+							#set($imageUrl = "images/undefinedPageTemplate.jpg")
+						#end
+						<td id="digitalAsset$content.id" valign="bottom" align="center" class="bordered">
+							<a href="javascript:markPageTemplate(this, $content.id);"><img src="$imageUrl" border="0"></a>&nbsp;<br>
+							<a href="javascript:markPageTemplate(this, $content.id);">$content.getName()</a>
+						</td>
+						#set($counter = $counter + 1)
+						#if ($counter == 5)
+						</tr>
+						<tr>
+							#set($counter = 0)	
+						#end
+					##end
+					#set($imageUrl = "")
+				#end
+			</tr>
+			</table>		
+		</td>
+	</tr>		
+	<tr>
+		<td colspan="3">&nbsp;</td>
 	</tr>		
 	<tr>
 		<input type="hidden" name="isBranch" value="$!isBranch">
@@ -46,6 +114,7 @@
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<input type="hidden" name="unrefreshedSiteNodeId" value="$!parentSiteNodeId">
 		<input type="hidden" name="changeTypeId" value="2">
+		<input type="hidden" name="pageTemplateContentId" value="">
 		<td>
 			<input type="image" img src="$ui.getString("images.structuretool.buttons.save")" width="50" height="25" border="0">
 			<a href="ViewSiteNode.action?siteNodeId=$!parentSiteNodeId"><img border="0" src="$ui.getString("images.structuretool.buttons.cancel")" width="50" height="25"></a>
@@ -53,6 +122,7 @@
 	</tr>
 
 </table>
+</form>
 </div>
 
 <script language="JavaScript">

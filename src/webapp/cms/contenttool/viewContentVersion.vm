@@ -1,69 +1,84 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+#set($syncAuto = "false")
 ##beginContentTool($ui.getString("tool.contenttool.contentVersionHeader") "Content version" "contentId=$contentId&languageId=$languageId&contentVersionId=$contentVersionId" "0" "0" "0")
 
 <html>
 <head>
 	<title>$ui.getString("tool.contenttool.contentVersionHeader")</title>
-
+	
 	<script type="text/javascript">
-
+		#if($syncAuto == "true")
+		syncWithTree();
+		#end
+	
 		function cut_copy_paste(e, cmd, obj) {
 			e.execCommand(cmd);
 		};
-
+	
 		_applicationContext = "${root}/";
 	   	_editor_url = "${root}/applications/HTMLArea/";
 	   	_editor_lang = "en";
-
-	   	var personalConfig = "";
+	   
+	   	var personalConfig = ""; 
 	   	var buttonConfig = "";
 	   	var allowedCSS = "";
+	   	
+		function syncWithTree()
+		{
+			#set($path="")
+			#foreach($cVO in $this.getContentPath())
+				#set($path = "$path${cVO.getContentId()},")
+			#end
+			#set($path = "$path${this.getContentVO().getContentId()}")
+			var path = "$path";
+			parent.frames[1].syncWithTree(path);
+		}
 
 		#set($buttonConfig = "")
-
+		
 		#set($map = $this.getWYSIWYGProperties())
 	   	##set($map = $this.getPrincipalPropertyHashValues("WYSIWYGConfig", false))
 	   	#set($lineIndex = 0)
 	   	#set($positionIndex = 0)
 	   	#set($quote = "'")
-
+	   
 	   	#foreach($lineIndex in [0..3])
 	   		#foreach($positionIndex in [0..30])
 	   			#set($key = "toolbar_line${lineIndex}_position${positionIndex}")
 	   			#set($value = $map.get($key))
 	   			#if($value != "")
 					#if($lineIndex == 0 && $positionIndex == 0)
-						personalConfig = personalConfig + "[";
+						personalConfig = personalConfig + "["; 
 					#elseif($positionIndex == 0)
-						personalConfig = personalConfig + "], [";
+						personalConfig = personalConfig + "], ["; 
 					#end
 					#if($positionIndex == 0)
-	   					personalConfig = personalConfig + "\"$value\"";
+	   					personalConfig = personalConfig + "\"$value\""; 
 	   				#else
-	   					personalConfig = personalConfig + ", \"$value\"";
+	   					personalConfig = personalConfig + ", \"$value\""; 
 	   				#end
-
+	   			
 	   				##alert("value: $value");
-	   				#if($value == "bold") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}bold: [ ${quote}Bold${quote}, ${quote}ed_format_bold.gif${quote}, false, function(e) {e.execCommand(${quote}bold${quote});} ]") #end
-	   				#if($value == "italic") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}italic: [ ${quote}Italic${quote}, ${quote}ed_format_italic.gif${quote}, false, function(e) {e.execCommand(${quote}italic${quote});} ]") #end
-	   				#if($value == "underline") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}underline: [ ${quote}Underline${quote}, ${quote}ed_format_underline.gif${quote}, false, function(e) {e.execCommand(${quote}underline${quote});} ]") #end
-	   				#if($value == "strikethrough") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}strikethrough: [ ${quote}Strikethrough${quote}, ${quote}ed_format_strike.gif${quote}, false, function(e) {e.execCommand(${quote}strikethrough${quote});} ]") #end
-	   				#if($value == "subscript") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}subscript: [ ${quote}Subscript${quote}, ${quote}ed_format_sub.gif${quote}, false, function(e) {e.execCommand(${quote}subscript${quote});} ]") #end
-	   				#if($value == "superscript") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}superscript: [ ${quote}Superscript${quote}, ${quote}ed_format_sup.gif${quote}, false, function(e) {e.execCommand(${quote}superscript${quote});} ]") #end
-	   				#if($value == "justifyleft") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyleft: [ ${quote}Justify Left${quote}, ${quote}ed_align_left.gif${quote}, false, function(e) {e.execCommand(${quote}justifyleft${quote});} ]") #end
-	   				#if($value == "justifycenter") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifycenter: [ ${quote}Justify Center${quote}, ${quote}ed_align_center.gif${quote}, false, function(e) {e.execCommand(${quote}justifycenter${quote});} ]") #end
-	   				#if($value == "justifyright") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyright: [ ${quote}Justify Right${quote}, ${quote}ed_align_right.gif${quote}, false, function(e) {e.execCommand(${quote}justifyright${quote});} ]") #end
-	   				#if($value == "justifyfull") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyfull: [ ${quote}Justify Full${quote}, ${quote}ed_align_justify.gif${quote}, false, function(e) {e.execCommand(${quote}justifyfull${quote});} ]") #end
-	   				#if($value == "orderedlist") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}orderedlist: [ ${quote}Ordered List${quote}, ${quote}ed_list_num.gif${quote}, false, function(e) {e.execCommand(${quote}insertorderedlist${quote});} ]") #end
-	   				#if($value == "unorderedlist") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}unorderedlist: [ ${quote}Bulleted List${quote}, ${quote}ed_list_bullet.gif${quote}, false, function(e) {e.execCommand(${quote}insertunorderedlist${quote});} ]") #end
-	   				#if($value == "outdent") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}outdent: [ ${quote}Decrease Indent${quote}, ${quote}ed_indent_less.gif${quote}, false, function(e) {e.execCommand(${quote}outdent${quote});} ]") #end
-	   				#if($value == "indent") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}indent: [ ${quote}Increase Indent${quote}, ${quote}ed_indent_more.gif${quote}, false, function(e) {e.execCommand(${quote}indent${quote});} ]") #end
-	   				#if($value == "forecolor") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}forecolor: [ ${quote}Font Color${quote}, ${quote}ed_color_fg.gif${quote}, false, function(e) {e.execCommand(${quote}forecolor${quote});} ]") #end
-	   				#if($value == "hilitecolor") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}hilitecolor: [ ${quote}Background Color${quote}, ${quote}ed_color_bg.gif${quote}, false, function(e) {e.execCommand(${quote}hilitecolor${quote});} ]") #end
-	   				#if($value == "inserthorizontalrule") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}inserthorizontalrule: [ ${quote}Horizontal Rule${quote}, ${quote}ed_hr.gif${quote}, false, function(e) {e.execCommand(${quote}inserthorizontalrule${quote});} ]") #end
+	   				#if($value == "bold") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}bold: [ ${quote}Bold${quote}, ${quote}ed_format_bold.gif${quote}, false, function(e) {e.execCommand(${quote}bold${quote});} ]") #end							
+	   				#if($value == "italic") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}italic: [ ${quote}Italic${quote}, ${quote}ed_format_italic.gif${quote}, false, function(e) {e.execCommand(${quote}italic${quote});} ]") #end							
+	   				#if($value == "underline") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}underline: [ ${quote}Underline${quote}, ${quote}ed_format_underline.gif${quote}, false, function(e) {e.execCommand(${quote}underline${quote});} ]") #end							
+	   				#if($value == "strikethrough") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}strikethrough: [ ${quote}Strikethrough${quote}, ${quote}ed_format_strike.gif${quote}, false, function(e) {e.execCommand(${quote}strikethrough${quote});} ]") #end							
+	   				#if($value == "subscript") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}subscript: [ ${quote}Subscript${quote}, ${quote}ed_format_sub.gif${quote}, false, function(e) {e.execCommand(${quote}subscript${quote});} ]") #end							
+	   				#if($value == "superscript") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}superscript: [ ${quote}Superscript${quote}, ${quote}ed_format_sup.gif${quote}, false, function(e) {e.execCommand(${quote}superscript${quote});} ]") #end							
+	   				#if($value == "justifyleft") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyleft: [ ${quote}Justify Left${quote}, ${quote}ed_align_left.gif${quote}, false, function(e) {e.execCommand(${quote}justifyleft${quote});} ]") #end							
+	   				#if($value == "justifycenter") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifycenter: [ ${quote}Justify Center${quote}, ${quote}ed_align_center.gif${quote}, false, function(e) {e.execCommand(${quote}justifycenter${quote});} ]") #end							
+	   				#if($value == "justifyright") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyright: [ ${quote}Justify Right${quote}, ${quote}ed_align_right.gif${quote}, false, function(e) {e.execCommand(${quote}justifyright${quote});} ]") #end							
+	   				#if($value == "justifyfull") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyfull: [ ${quote}Justify Full${quote}, ${quote}ed_align_justify.gif${quote}, false, function(e) {e.execCommand(${quote}justifyfull${quote});} ]") #end							
+	   				#if($value == "orderedlist") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}orderedlist: [ ${quote}Ordered List${quote}, ${quote}ed_list_num.gif${quote}, false, function(e) {e.execCommand(${quote}insertorderedlist${quote});} ]") #end							
+	   				#if($value == "unorderedlist") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}unorderedlist: [ ${quote}Bulleted List${quote}, ${quote}ed_list_bullet.gif${quote}, false, function(e) {e.execCommand(${quote}insertunorderedlist${quote});} ]") #end							
+	   				#if($value == "outdent") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}outdent: [ ${quote}Decrease Indent${quote}, ${quote}ed_indent_less.gif${quote}, false, function(e) {e.execCommand(${quote}outdent${quote});} ]") #end							
+	   				#if($value == "indent") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}indent: [ ${quote}Increase Indent${quote}, ${quote}ed_indent_more.gif${quote}, false, function(e) {e.execCommand(${quote}indent${quote});} ]") #end							
+	   				#if($value == "forecolor") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}forecolor: [ ${quote}Font Color${quote}, ${quote}ed_color_fg.gif${quote}, false, function(e) {e.execCommand(${quote}forecolor${quote});} ]") #end							
+	   				#if($value == "hilitecolor") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}hilitecolor: [ ${quote}Background Color${quote}, ${quote}ed_color_bg.gif${quote}, false, function(e) {e.execCommand(${quote}hilitecolor${quote});} ]") #end							
+	   				#if($value == "inserthorizontalrule") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}inserthorizontalrule: [ ${quote}Horizontal Rule${quote}, ${quote}ed_hr.gif${quote}, false, function(e) {e.execCommand(${quote}inserthorizontalrule${quote});} ]") #end							
 	   				#if($value == "createlink") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}createlink: [ ${quote}Insert Web Link${quote}, ${quote}ed_link.gif${quote}, false, function(e) {e.execCommand(${quote}createlink${quote}, true);} ]") #end
 	   				#if($value == "inlinelink") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}inlinelink: [${quote}Lets the user create a link to a page in infoglue${quote}, ${quote}ed_inlinelink.gif${quote}, false, function(e) {e.execCommand(${quote}createinlinelink${quote});} ]") #end
 	   				#if($value == "inlineimage") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}inlineimage: [${quote}Lets the user select a inline image${quote}, ${quote}ed_inlineimage.gif${quote}, false, function(e) {e.execCommand(${quote}insertinlineimage${quote});} ]") #end
@@ -80,23 +95,23 @@
 	   				#if($value == "paste") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}paste: [ ${quote}Paste from clipboard${quote}, ${quote}ed_paste.gif${quote}, false, cut_copy_paste ]") #end
 	   				#if($value == "lefttoright") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}lefttoright: [ ${quote}Direction left to right${quote}, ${quote}ed_left_to_right.gif${quote}, false, function(e) {e.execCommand(${quote}lefttoright${quote});} ]") #end
 	   				#if($value == "righttoleft") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}righttoleft: [ ${quote}Direction right to left${quote}, ${quote}ed_right_to_left.gif${quote}, false, function(e) {e.execCommand(${quote}righttoleft${quote});} ]") #end
-
+	   				
 	   				#if($foundItem)
-						//alert("value: $value");
+						//alert("value: $value");	
 						#set($buttonConfig = "$buttonConfig, ")
 	   				#end
-
+	   				
 	   				#set($foundItem = false)
 	   			#end
-
+	   		
 	   			#set($value = "")
 	   		#end
 	   	#end
-
+		
 		//alert("personalConfig:" + personalConfig);
 		if(personalConfig && personalConfig != "")
 	   	{
-		   	personalConfig = "[" + personalConfig + "]]";
+		   	personalConfig = "[" + personalConfig + "]]"; 
 		   	#*
 		   	#set($length = $buttonConfig.length() - 2)
 		   	#set($buttonConfig = "$buttonConfig.substring(0, $length)")
@@ -109,16 +124,16 @@
 		   	#set($buttonConfig = "$buttonConfig.substring(0, $length)")
 		   	buttonConfig = { ${buttonConfig} };
 		#end
-
+		
 		//alert("enableCSSPlugin:" + $this.enableCSSPlugin);
 		var enableCSSPlugin = $this.enableCSSPlugin;
 		#if($this.enableCSSPlugin)
 			#set($allowedClasses = $this.getAllowedClasses())
 			//Allowed classes $allowedClasses.size()
-			var cssPluginArgs =
+			var cssPluginArgs = 
 		    {
-		      combos :
-		      [{
+		      combos : 
+		      [{ 
 		        	label: "Style",
 		        	options: { "None"       	: ""
 							#foreach($allowedClass in $allowedClasses)
@@ -127,12 +142,12 @@
 		                    },
 		                    context: "p"
 		          			//context: "pre"
-
+		          	
 		       }
-		       /*,
-		       {
+		       /*, 
+		       { 
 		          	label: "Info",
-		          	options: {
+		          	options: { 
 		          			 "None"           : "",
 		                     "title"          : "title",
 		                     "Highlight"      : "highlight",
@@ -144,13 +159,13 @@
 		#else
 			var cssPluginArgs;
 		#end
-
+		
 		//alert("personalConfig:" + personalConfig);
 		//alert("buttonConfig:" + buttonConfig);
 		//alert("cssPluginArgs:" + cssPluginArgs);
 	</script>
-
-	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/calendar1.js"></script>
 	<script type="text/javascript" src="script/editor.js"></script>
@@ -159,16 +174,16 @@
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
+	
 </head>
 
 #if($stateId == 1 || $stateId == 2 || $stateId == 3)
-	#set($readonly = "disabled")
+	#set($readonly = "disabled") 
 #else
 	#set($readonly = "")
 #end
 
-<body class="contenttooledit" onload="javascript:refreshContentToolBar('Content version', 'Content version', 'contentId=$contentId&languageId=$languageId&contentVersionId=$!contentVersionId', '0', '0', '0'); generateWYSIWYGS();">
+<body class="contenttooledit" onload="javascript:refreshContentToolBar('Content version', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '0', '0', '0'); generateWYSIWYGS();">
 #set( $lvColor = "green")
 
 <script language="javascript" src="script/jsrsClient.js"></script>
@@ -176,23 +191,21 @@
 <script type="text/javascript">
 <!--
 	HTMLArea.loadPlugin("CSS");
+	HTMLArea.loadPlugin("EnterParagraphs");
 
 	var currentEditorIdHash = new Array();
 	var attributesStatus = new Array();
 	var plainEditors = new Array();
 	var htmlEditors = new Array();
-
-	// We should do this, but I cannot catch onChange events from the WYSIWYG
-	//var dirty = false;
-
+	
 	//*******************************************
 	// This function changes language version
 	//*******************************************
-
+	
 	function changeLanguage(contentId)
 	{
 		languageId = document.editForm.languageId.value;
-
+		
 		if (confirm('$ui.getString("tool.contenttool.languageVersionChangeWarning")'))
 		{
 			window.location.href="ViewContentVersion.action?contentId=" + contentId + "&languageId=" + languageId;
@@ -206,7 +219,7 @@
 	//*******************************************
 	// This function opens up the form editor
 	//*******************************************
-
+	
 	function openFormEditor(url)
 	{
 		openPopup(url, "FormEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
@@ -215,7 +228,7 @@
 	//*******************************************
 	// This function opens up the form editor
 	//*******************************************
-
+	
 	function openRelationEditor(url)
 	{
 		openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
@@ -224,43 +237,43 @@
 	//*******************************************
 	// This method changes state on a content
 	//*******************************************
-
+	 
 	function changeContentState(contentVersionId)
 	{
 		stateId = document.editForm.stateId.value;
 		languageId = document.editForm.languageId.value;
 		contentId = document.editForm.contentId.value;
-
+		
 		if (confirm('$ui.getString("tool.contenttool.stateChangeQuestion")'))
 		{
 			window.location.href="ChangeContentState.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId;
 		}
 	}
-
+	
 	var navigationTitleHash = new Array();
-
+	
 	function fetchPageNavigationTitle(baseUrl, params){
 		//alert("fetchPageNavigationTitle:" + baseUrl);
 	    jsrsPOST = false;
 	  	jsrsExecute(baseUrl, myCallback, "test", params);
 	}
-
+	
 	function myCallback( siteNodeId, navigationTitle ){
 	  //alert("Inside myCallback with " + siteNodeId + ":" + navigationTitle);
 	  navigationTitleHash[siteNodeId] = navigationTitle;
 	  //alert("Stored title: " + navigationTitleHash[siteNodeId]);
 	  //alert("navigationTitleHash:" + navigationTitleHash.length);
-	}
+	} 
 
 	/**
 	 * This method precaches all needed navigationtitles.
 	 */
-
+	 
 	function preCacheNavigationTitles(plainAttribute, document)
 	{
 		//alert("Inside preCacheNavigationTitles");
 		//alert("plainAttribute1:" + plainAttribute);
-
+		
 		siteNodeIdStartIndex = plainAttribute.indexOf("getPageNavTitle(");
 		//alert(siteNodeIdStartIndex);
 		while(siteNodeIdStartIndex > -1)
@@ -272,18 +285,18 @@
 			{
 				siteNodeId = plainAttribute.substring(siteNodeIdStartIndex + 16, siteNodeIdEndIndex);
 				//alert("siteNodeId:" + siteNodeId);
-
+				
 				if(siteNodeId > 0 && !navigationTitleHash[siteNodeId])
 				{
 					dataBaseUrl = "$deliveryBaseUrl/ViewApplicationSettings!getPageNavigationTitle.action";
 					fetchPageNavigationTitle(dataBaseUrl, "siteNodeId=" + siteNodeId + "&languageId=1&contentId=-1");
 				}
 			}
-
-			siteNodeIdStartIndex = plainAttribute.indexOf("getPageNavTitle(", siteNodeIdEndIndex);
-			//alert("siteNodeIdStartIndex" + siteNodeIdStartIndex);
+						
+			siteNodeIdStartIndex = plainAttribute.indexOf("getPageNavTitle(", siteNodeIdEndIndex);	
+			//alert("siteNodeIdStartIndex" + siteNodeIdStartIndex);		
 		}
-
+		
 		return false;
 	}
 
@@ -293,15 +306,15 @@
 	//*******************************************
 	var beenWarned = false;
 	var inaktiveTime = 0;
-	var timeout = 1000000;
+	var timeout = ($sessionTimeout / 60) * 60 * 1000;
     function warnForTimeout()
     {
-       	alert("Please save your work often to avoid loosing it due to the security timeout. If you suspect you might not have saved for 10-20 minutes or so we recommend you copy all of your text before you press save so you don't risk loosing it.");
+       	alert("Please save your work often to avoid loosing it due to the security timeout. If you suspect you might not have saved for " + ($sessionTimeout / 60) + " minutes or so we recommend you copy all of your text before you press save so you don't risk loosing it.");
 		beenWarned = true;
 		inaktiveTime = inaktiveTime + timeout;
 		setTimeout("warnForTimeout()", timeout);
 	}
-
+	
 	//*******************************************
 	// This is the method that generates the wysiwygs when the page is loaded
 	//*******************************************
@@ -309,62 +322,65 @@
 	function generateWYSIWYGS()
 	{
 		#if($readonly == "")
-			for (var i in plainEditors)
+			for (var i in plainEditors) 
 			{
 				var plainTextAreaName = plainEditors[i];
 				//alert("Creating a textarea for " + plainTextAreaName.name + " = " + i);
-
+	
 				//alert("Generation in progress..");
-
+	
 				var plainTextArea = document.getElementById(plainTextAreaName);
 				var plainAttribute = plainTextArea.value;
 				//alert(plainAttribute);
 				plainAttribute = transformAttribute(plainAttribute, document);
 				plainTextArea.value = plainAttribute;
-
+				
 				var config = new HTMLArea.Config();
 				configInfoGlue(config);
-
+										
 				//alert("Generation in progress..");
-
+											
 				//alert("Height:" + document.getElementById(plainTextAreaName).offsetHeight);
 				tempWYSIWYGEditor = new HTMLArea(plainTextAreaName, config);
+				
+				tempWYSIWYGEditor.registerPlugin(EnterParagraphs);
+					
 				//alert("css_plugin_args:" + config.css_plugin_args);
 				#if($this.enableCSSPlugin)
 					tempWYSIWYGEditor.registerPlugin(CSS, config.css_plugin_args);
-
+					
 					#set($cssList = $this.getCSSList())
 					#foreach($css in $cssList)
 						tempWYSIWYGEditor.config.pageStyle = "@import url($css);";
 					#end
 				#end
-
+										
 				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = tempWYSIWYGEditor;
 			}
-
-			for (var i in htmlEditors)
+		
+			for (var i in htmlEditors) 
 			{
 				var htmlEditor = htmlEditors[i];
 				htmlEditor.generate();
-
+							
 				//alert("Changing status to plain...");
 				setTimeout(changeToPlainAttribute, 500);
 			}
 		#end
-
+		
 		#if($readonly == "disabled")
 			alert("The view is in read only mode as the content version is not in working state. If you want to edit the version you must first change state to working.");
 		#end
-	}
-
+	}	
+	
 
 	function changeToPlainAttribute()
 	{
-		for (var i in plainEditors)
+		for (var i in plainEditors) 
 		{
 			var plainTextAreaName = plainEditors[i];
 			var plainTextArea = document.getElementById(plainTextAreaName);
-
+			
 			//alert("UseExdendedEditor:" + attributesStatus[plainTextAreaName + "ActivateExtendedEditorOnLoad"])
 			if(attributesStatus[plainTextAreaName + "ActivateExtendedEditorOnLoad"] == false)
 			{
@@ -373,7 +389,7 @@
 			}
 		}
 	}
-
+	
 	function addCategory(attributeName, selectName)
 	{
 		var categoryId = document.getElementById(selectName).value;
@@ -401,7 +417,7 @@
 	var repositoryId 		= "$repositoryId";
 	var contentId 			= "$contentId";
 	var languageId 			= "$languageId";
-
+	
 	var count = 0;
 	var minute = 60000;
 	function doTimer()
@@ -409,10 +425,10 @@
 		count += 1;
 		setTimeout("doTimer();", minute);
 	}
-
+	
 	doTimer();
 	setTimeout("warnForTimeout()", timeout);
-
+		
 -->
 </script>
 
@@ -421,7 +437,7 @@
 <form method="POST" name="editForm" action="UpdateContentVersion.action">
 <table border="0" width="500">
 
-	#set($event = $this.getEvent($contentVersionId) )
+	#set($event = $this.getEvent($contentVersionId) )					
 	#if($event.id > 0)
 	<tr>
 		<td colspan="3">
@@ -432,12 +448,12 @@
 				#elseif($event.typeId == 4)
 					$ui.getString("tool.contenttool.unblishRejectedText") $close
 				#end
-			</span>
+			</span> 
 		</td>
 	</tr>
 	#end
 
-	<tr>
+	<tr> 
 		<td>
 			$ui.getString("tool.contenttool.languageVersionsLabel")<br/>
 			<select class="mediumdrop" name="languageId" onChange="javascript:changeLanguage($!contentId);">
@@ -446,7 +462,7 @@
 					<option value="$languageVO.getLanguageId()" selected>$languageVO.getName()</option>
 					<script type="text/javascript">
 					<!--
-						var originalIndex = $velocityCount;
+						var originalIndex = $velocityCount;	
 					-->
 					</script>
 				#else
@@ -463,14 +479,14 @@
 					<option value="0" selected>$ui.getString("tool.contenttool.state.working")</option>
 				#else
 					<option value="0">$ui.getString("tool.contenttool.state.working")</option>
-				#end
+				#end	 	
 				<!--
 				#if($stateId == 1)
 					<option value="1" selected>$ui.getString("tool.contenttool.state.final")</option>
 				#else
 					<option value="1">$ui.getString("tool.contenttool.state.final")</option>
 				#end
-				-->
+				-->				
 				#if($stateId == 2)
 					<option value="2" selected>$ui.getString("tool.contenttool.state.publish")</option>
 				#else
@@ -490,10 +506,10 @@
 				#if($stateId == 5)
 					<option value="5" selected>$ui.getString("tool.contenttool.state.unpublished")</option>
 				#end
-
+				
 			</select>
 		</td>
-	</tr>
+	</tr>	
 	#if($contentVersionVO)
 	<tr>
 		<td colspan="3">&nbsp;</td>
@@ -502,17 +518,17 @@
 		<td colspan="3">This version was last modified by $contentVersionVO.versionModifier</td>
 	</tr>
 	#end
-</table>
-
-<table border="0" width="500">
+</table>	
+ 
+<table border="0" width="500">	
 	<!-- here goes the field generation -->
-
+		
 	## Need to figure out how to tell if the HTMLArea contents have changed
 	##set($onchange = "onChange='javascript:setDirty()'")
 	#set($onchange = "")
 
 	#foreach($attribute in $contentTypeAttributes)
-
+		
 		## ANNOTATION ELEMENTS
 		#set($attributeTitle = "")
 		#set($attributeTitle = $!attribute.getContentTypeAttribute("title").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
@@ -525,7 +541,7 @@
 		#if($attributeDescription != "")
 			#set($attributeDescription = "- $attributeDescription")
 		#end
-
+	
 		#set($class = "")
 		#set($class = $!attribute.getContentTypeAttribute("class").getContentTypeAttributeParameterValue().getValue("label"))
 		#if($class == "")
@@ -570,7 +586,7 @@
 				#set($enableContentRelationEditor = "false")
 			#end
 		#end
-
+		
 		#set($enableStructureRelationEditor = "")
 		#set($enableStructureRelationEditor = $!attribute.getContentTypeAttribute("enableStructureRelationEditor").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
 		#if($enableStructureRelationEditor == "")
@@ -587,29 +603,29 @@
 			attributesStatus["${attribute.name}ActivateExtendedEditorOnLoad"] = $activateExtendedEditorOnLoad;
 		-->
 		</script>
-
+	
 		#set($currentEditorId = 0)
-
+		
 		<tr>
 			<td colspan="3"><img src="images/trans.gif" width="1" height="5"/></td>
 		</tr>
 		<tr>
 			<td colspan="3">
-
+			
 				#if($attribute.inputType == "textfield")
 					$attributeTitle ("$attribute.name") $attributeDescription<br/>
 					<input $readonly type="text" length="50" class="$class" maxlength="" id="$attribute.name" name="$attribute.name" value="$this.getAttributeValue($attribute.name)" $onchange/>
 				#elseif($attribute.inputType == "textarea")
-
+					
 					<table cellpadding="0" cellspacing="0" border="0" width="100%">
 					    <tr>
 					    	<td align="left">$attributeTitle ("$attribute.name") $attributeDescription </td>
 					    	<td align="right">
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false")
-					    			<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a>
+					    			<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a> 
 								#end
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableWYSIWYG == "true")
-					    		| <a href="javascript:changeEditor(1, '${attribute.name}');">$ui.getString("tool.contenttool.editorHTMLWYSIWYG")</a>
+					    		| <a href="javascript:changeEditor(1, '${attribute.name}');">$ui.getString("tool.contenttool.editorHTMLWYSIWYG")</a> 
 					    		#end
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
 					    		| <a href="javascript:changeEditor(2, '${attribute.name}');">$ui.getString("tool.contenttool.editorInfoGlueTemplateEditor")</a>
@@ -617,7 +633,7 @@
 							</td>
 					    </tr>
 					</table>
-
+					
 					#set($width = 0)
 					#set($width = $!attribute.getContentTypeAttribute("width").getContentTypeAttributeParameterValue().getLocalizedValueAsInt("label", $session.locale))
 					#if($width == 0)
@@ -629,27 +645,27 @@
 					#if($height == 0)
 						#set($height = 150)
 					#end
-
+					
 					#set($wysiwygHeight = $height - 40)
 					#if($width >= 700)
 						#set($wysiwygHeight = $height - 20)
 					#end
-
+			
 					<textarea $readonly rows="$rows" cols="$cols" style="visibility: visible; width:${width}px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="$attribute.name" name="$attribute.name" $readonly $onchange>$this.getAttributeValue($attribute.name)</textarea>
-
+					
 					#if($enableWYSIWYG == "true")
 						<!-- Here comes the WYSIWYG-editor layer -->
-
+						
 						<script type="text/javascript">
 							// Replace an existing textarea with an HTMLArea object having the above config.
 							plainEditors["${attribute.name}"] = "${attribute.name}";
-
+							
 							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 1;
 							#set($currentEditorId = 1)
 						</script>
 
 					#end
-
+					
 					#if($enableTemplateEditor == "true" && $readonly == "")
 						<!-- Here comes the Template Code editor layer -->
 						<input type="hidden" id="${attribute.name}EditorType2IsActive" name="${attribute.name}EditorType2IsActive" value="false">
@@ -660,32 +676,32 @@
 						    <table cellpadding="0" cellspacing="0" border="0">
 						    <tr>
 						    	<td colspan="2" align="right" bgcolor="white">
-						    		#showTemplateEditor("${width}" "${height}" "${attribute.name}" "${deliveryBaseUrl}")
+						    		#showTemplateEditor("${width}" "${height}" "${attribute.name}" "${deliveryBaseUrl}")						    		
 								</td>
 						    </tr>
 						    </table>
 						</div>
-
+						
 						<script type="text/javascript">
 							if(!noJava)
 							{
 								document.getElementById('${attribute.name}').style.display = "none";
-								document.getElementById('${attribute.name}EditorType2').style.display = "block";
-
+								document.getElementById('${attribute.name}EditorType2').style.display = "block";	
+								
 								currentEditorIdHash["${attribute.name}CurrentEditorId"] = 2;
-								#set($currentEditorId = 2)
+								#set($currentEditorId = 2)						
 							}
 							else
 							{
 								document.getElementById('${attribute.name}').style.display = "block";
-								document.getElementById('${attribute.name}EditorType2').style.display = "none";
-
+								document.getElementById('${attribute.name}EditorType2').style.display = "none";	
+								
 								currentEditorIdHash["${attribute.name}CurrentEditorId"] = 0;
 							}
 						</script>
-
+						
 					#end
-
+					
 					#if($enableFormEditor == "true" && $readonly == "")
 						<!-- Here comes the Form editor layer -->
 						<input type="hidden" id="${attribute.name}EditorType3IsActive" name="${attribute.name}EditorType3IsActive" value="false">
@@ -696,7 +712,7 @@
 									#if($contentVersionId > -1)
 									As the form editor is somewhat complex you have to open it in a new window.
 									Click <a href="javascript:openFormEditor('ViewFormEditor.action?contentVersionId=$!contentVersionId&contentVersionAttributeName=$!attribute.name');changeEditor(3, '${attribute.name}');"><strong>here</strong></a> for it.
-									Edit the form there and close the window when you are done.
+									Edit the form there and close the window when you are done. 
 									#else
 									You cannot use the editor until you have saved the first version of this content. Fill
 									in the rest of the form values and save without entering anything in this field. After that you
@@ -706,12 +722,12 @@
 						    </tr>
 						    </table>
 						</div>
-
+						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
-							document.getElementById('${attribute.name}EditorType3').style.display = "block";
+							document.getElementById('${attribute.name}EditorType3').style.display = "block";							
 						</script>
-
+						
 					#end
 
 					#if($enableContentRelationEditor == "true" && $readonly == "")
@@ -730,10 +746,10 @@
 									#foreach($qualifyer in $qualifyers)
 										<tr>
 											<td valign="middle">
-											<img src="images/tree/xp/item.png">
+											<img src="images/tree/xp/item.png"> 
 											</td>
 											<td valign="middle">
-											$qualifyer.getPath()
+											$qualifyer.getPath() 
 											</td>
 											<td></td>
 											<td valign="middle">
@@ -752,10 +768,10 @@
 						    </tr>
 						    </table>
 						</div>
-
+						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
-							document.getElementById('${attribute.name}EditorType4').style.display = "block";
+							document.getElementById('${attribute.name}EditorType4').style.display = "block";							
 						</script>
 					#end
 
@@ -775,10 +791,10 @@
 									#foreach($qualifyer in $qualifyers)
 										<tr>
 											<td valign="middle">
-											<img src="images/tree/xp/item.png">
+											<img src="images/tree/xp/item.png"> 
 											</td>
 											<td valign="middle">
-											$qualifyer.getPath()
+											$qualifyer.getPath() 
 											</td>
 										</tr>
 									#end
@@ -793,13 +809,13 @@
 						    </tr>
 						    </table>
 						</div>
-
+						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
-							document.getElementById('${attribute.name}EditorType5').style.display = "block";
+							document.getElementById('${attribute.name}EditorType5').style.display = "block";							
 						</script>
 					#end
-
+					
 		    		#if($enableFormEditor == "true" && $readonly == "" && $contentVersionId > -1)
 		    		<script type="text/javascript">
 		    			document.getElementById('${attribute.name}').style.display = "none";
@@ -821,22 +837,22 @@
 						showdiv.style.visibility = "visible";
 		    		</script>
 		    		#end
-
-
+		
+					
 					<script type="text/javascript">
 						//alert("CurrentEditorId:" + currentEditorIdHash["${attribute.name}CurrentEditorId"])
 						if(!currentEditorIdHash["${attribute.name}CurrentEditorId"])
 							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 0;
-
+						
 						var plainAttribute = document.getElementById("${attribute.name}").value;
 		    			//alert("plainAttribute:" + plainAttribute);
 		    			preCacheNavigationTitles(plainAttribute, document);
-
+					    
 					    #if($currentEditorId == 2 && $activateExtendedEditorOnLoad == "false")
 							changeEditor(0, '${attribute.name}');
 						#end
-
-					    #*
+						
+					    #*		
 						#if($currentEditorId == 1)
 							changeEditor(${attribute.name}WYSIWYGEditor, 1, "${attribute.name}");
 						#elseif($currentEditorId == 2)
@@ -849,9 +865,9 @@
 							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 0;
 						#end
 						*#
-
+						
 					</script>
-
+					
 				#elseif($attribute.inputType == "select")
 				<!-- Handles the input type select = dropbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
@@ -876,7 +892,7 @@
 	    			#end
 
 				#end
-
+				
 			</td>
 		</tr>
 	#end
@@ -953,7 +969,7 @@
 							<a href="javascript:openPopup('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
 							<br/>$digitalAsset.assetKey</a><br/>
 							#if($readonly == "")
-								<a href="javascript:openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.editAttachment")</a> /
+								<a href="javascript:openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.editAttachment")</a> / 
 								<a href="ViewContentVersion!deleteDigitalAsset.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId">$ui.getString("tool.contenttool.deleteAttachment")</a>
 							#end
 						</td>
@@ -961,48 +977,48 @@
 						#if ($counter == 5)
 						</tr>
 						<tr>
-							#set($counter = 0)
+							#set($counter = 0)	
 						#end
 					#end
-
+					
 					#if($counter == 0)
 						<td>$ui.getString("tool.contenttool.noAttachmentsRightNow")
 						#if (!$contentVersionId)
 							<br />$ui.getString("tool.contenttool.saveToAddAttachment")
 						#end
 						</td>
-					#end
+					#end	
 				</tr>
 				</table>
 			</td>
 		</tr>
-
+				
 	<script type="text/javascript">
 		function validateAndSubmitContentForm()
 		{
-			pastedTime = count;
-
+			pastedTime = count; 
+			
 			if(beenWarned)
 			{
 				answer = confirm("You have not saved for " + pastedTime + " minutes. We strongly recommends you copy the text so you don't risk loosing it if you have been inactive for to long. Do you want to save anyway?");
 			}
-
+			
 			if (!beenWarned || answer)
 			{
 				isValid = true;
-
+				
 				#foreach($attribute in $contentTypeAttributes)
 	   				currentEditorId = currentEditorIdHash["${attribute.name}CurrentEditorId"];
-
+	   				
 	   				if(currentEditorId)
 	   					document.getElementById("currentEditorId").value = currentEditorId;
-
+	   				
 	   				//alert("currentEditorId:" + currentEditorId);
 					if(currentEditorId == 1)
 					{
 						var wysiwygEditor = htmlEditors["${attribute.name}WYSIWYGEditor"];
 						//alert("WYSIWYG:" + wysiwygEditor.getHTML());
-
+						
 						var text = wysiwygEditor.getHTML();
 						//alert("text1:" + text);
 						untransformedAttribute = untransformAttribute(text);
@@ -1013,36 +1029,36 @@
 					{
 						document.getElementById("$attribute.name").value = document.applets("${attribute.name}InfoGlueCodeEditor").getText();
 					}
-
+	
 	   				#if($attribute.inputType != "digitalAsset")
 						//isCurrentValid = validate${attribute.name}();
 						//if(isCurrentValid == false)
 						//	isValid = false;
 					#end
 				#end
-
+				
 				if(isValid)
 				{
-					buildVersionValue();
+					buildVersionValue(); 
 					document.editForm.submit();
 				}
 			}
 		}
-
+	
 		function validateAndSubmitContentFormThenExit()
 		{
 			//alert("Action:" + document.editForm.action);
 			document.editForm.action = "UpdateContentVersion!saveAndExit.action";
-			validateAndSubmitContentForm();
+			validateAndSubmitContentForm();		
 		}
-
-
+	
+		
 		function buildVersionValue()
 		{
 			var versionValue = "<?xml version='1.0' encoding='UTF-8'?>";
 			versionValue += "<article xmlns='x-schema:ArticleSchema.xml'>";
 			versionValue += "<attributes>";
-
+			
 			#foreach($attribute in $contentTypeAttributes)
    				#if($attribute.inputType != "digitalAsset")
 					versionValue += "<$attribute.name>";
@@ -1051,19 +1067,19 @@
 					versionValue += "</$attribute.name>";
 				#end
 			#end
-
+			
 			versionValue += "</attributes>";
 			versionValue += "</article>";
-
-			//alert("versionValue:" + versionValue);
+			
+			//alert("versionValue:" + versionValue);				
 			document.editForm.versionValue.value = versionValue;
 		}
-
+				
 		function getValue(elementId)
 		{
 			var value = "";
 			//alert(elementId);
-
+			
 			var allElem = document.editForm.elements;
 			//alert("allElem:" + allElem.length);
 		  	for(i=0;i<allElem.length;i++)
@@ -1071,7 +1087,7 @@
 			    var element = allElem[i];
 			    //alert("element.name:" + element.name);
 			    //alert("element.type:" + element.type);
-
+			    
 			    if(element.name == elementId)
 			    {
 			    	if(element.type=='checkbox' || element.type=='radio')
@@ -1082,7 +1098,7 @@
 			          		if(value == "")
 				          		value += element.value;
 							else
-								value += ',' + element.value;
+								value += ',' + element.value;				
 			          	}
 			        }
 					else
@@ -1093,21 +1109,21 @@
 						//alert(fieldName);
 						//alert(eval(fieldName).value);
 						value = eval(fieldName).value;
-						//value = document.getElementById(elementId).value;
+						//value = document.getElementById(elementId).value;		
 					}
-			    }
-			}
-
+			    }      
+			}	
+										
 			//alert("value:" + value);
 			return value;
 		}
-
+		
 		</script>
 		<input type="hidden" id="versionValue" name="versionValue" value=""/>
 		<input type="hidden" id="currentEditorId" name="currentEditorId" value=""/>
 		</td>
 	</tr>
-
+	
 	<!-- end fields -->
 
 	<tr>
@@ -1116,7 +1132,9 @@
 	<tr>
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<input type="hidden" name="contentId" value="$!contentId">
+		#if($contentVersionId > -1)
 		<input type="hidden" name="contentVersionId" value="$!contentVersionId">
+		#end
 		<td colspan="3">
 		    #if($readonly == "")
 			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>

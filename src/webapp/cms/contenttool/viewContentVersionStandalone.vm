@@ -310,14 +310,15 @@
 	//*******************************************
 	var beenWarned = false;
 	var inaktiveTime = 0;
-	var timeout = 1000000;
+	var timeout = ($sessionTimeout / 60) * 60 * 1000;
     function warnForTimeout()
     {
-       	alert("Please save your work often to avoid loosing it due to the security timeout. If you suspect you might not have saved for 10-20 minutes or so we recommend you copy all of your text before you press save so you don't risk loosing it.");
+       	alert("Please save your work often to avoid loosing it due to the security timeout. If you suspect you might not have saved for " + ($sessionTimeout / 60) + " minutes or so we recommend you copy all of your text before you press save so you don't risk loosing it.");
 		beenWarned = true;
 		inaktiveTime = inaktiveTime + timeout;
 		setTimeout("warnForTimeout()", timeout);
 	}
+	
 	
 	//*******************************************
 	// This is the method that generates the wysiwygs when the page is loaded

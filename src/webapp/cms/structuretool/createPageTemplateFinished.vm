@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>Create Page Template Wizard</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	<script type="text/javascript" src="script/vector.js"></script>
+	<script type="text/javascript" src="script/qualifyer.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+	
+	<script language="JavaScript"> 
+		//window.resizeTo(410,600);
+	</script> 
+	
+</head>
+
+<body class="contenttooledit">
+
+<table class="contenttooledit" cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td valign="top">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+		<tr class="darkgreen">
+			<td class="smalllabel">Create Page Template Completed</td>
+		</tr>
+		<tr>
+			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
+		</tr>		
+		<tr>
+			<td>
+				The page template should now be available when you create new pages
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="javascript:window.close();"><img src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" border="0"></a>
+			</td>
+		</tr>		
+		</table>
+	</td>	
+</tr>
+</table>
+
+</body>
+</html>

@@ -13,6 +13,15 @@
 		var exp;
 		var treeIsLoaded = false;
 		
+		function syncWithTree(path)
+		{
+			#if($tree == "applet")
+				alert('Not implemented in this tree');
+			#else
+				frames['itreeFrame'].syncWithTree(path);
+			#end
+		}
+		
 		function treeView()
 		{
 			try 

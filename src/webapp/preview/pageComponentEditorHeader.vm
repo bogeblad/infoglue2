@@ -6,8 +6,8 @@
 position:absolute;
 z-index:250;
 text-align:left;
-width:300px;
-border:2px solid black;
+width:350px;
+border:2px solid red;
 background-color:menu;
 font-family:Verdana;
 line-height:20px;
@@ -22,7 +22,7 @@ z-index:250;
 text-align:left;
 font-family: Arial, Helvetica, sans-serif;
 font-size: 10pt;
-width:120px;
+width:140px;
 background-color:menu;
 border:1px solid buttonface;
 visibility:hidden;
@@ -451,23 +451,32 @@ function getEventPositionY(e)
 
 function getActiveMenuDiv() 
 {
+	//alert("activeMenuId:" + activeMenuId);
 	return document.getElementById(activeMenuId);
 }
 
 var busy = false;
 var componentId;
 var slotId;
+var editUrl   = "";
 var insertUrl = "";
 var deleteUrl = "";
 
+function setEditUrl(anEditUrl) 
+{
+	//alert("Setting editUrl:" + anEditUrl);
+	editUrl = anEditUrl;
+}
+
 function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl) 
 {
-	activeMenuId = "componentMenu";
+	activeMenuId = "component" + compId + "Menu";
 
 	componentId = compId;
 	insertUrl = anInsertUrl;
 	deleteUrl = anDeleteUrl;
 	//alert("componentId" + componentId);
+	//alert("editUrl" + editUrl);
     
     document.body.onclick = hidemenuie5;
 	getActiveMenuDiv().className = menuskin;
@@ -588,6 +597,9 @@ function hidemenuie5()
 	layer = getActiveMenuDiv();
 	if(layer)
 		layer.style.visibility = "hidden";
+	
+	//Settings actions to null again
+	editUrl = "";
 }
 
 function highlightie5(event) 
@@ -728,10 +740,38 @@ function assignComponent(siteNodeId, languageId, contentId, parentComponentId, s
 	}
 }
 
+
+function saveComponentStructure(url) 
+{
+	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
+	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+	window.open(url, "Save", details);
+}
 	
 //--------------------------------------------
 // Here comes the menu items actions
 //--------------------------------------------
+
+function edit() 
+{
+	if(!editUrl || editUrl == "")
+	{
+		alert("You must right click on a text to be able to use this feature.");
+	}
+	else
+	{
+		//alert("editUrl in edit:" + editUrl.substring(0, 50) + '\n' + editUrl.substring(50));
+		details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+		window.open(editUrl, "Edit", details);
+	}
+}
+
+function executeTask(url) 
+{
+	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
+	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+	window.open(url, "Edit", details);
+}
 
 function insertComponent() 
 {

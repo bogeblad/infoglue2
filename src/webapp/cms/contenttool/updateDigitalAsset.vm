@@ -93,6 +93,8 @@
 </div>
 
 <form enctype="multipart/form-data" name="editForm" method="POST" action="UpdateDigitalAsset.action">
+<input type="hidden" name="entity" value="$!entity">
+<input type="hidden" name="entityId" value="$!entityId">
 <input type="hidden" name="contentVersionId" value="$!contentVersionId">
 <input type="hidden" name="digitalAssetId" value="$!digitalAssetId">
 <table width="300">
@@ -118,7 +120,7 @@
 			      <img border="0" src="images/combodown.gif" width="15" height="20"></td>
 			    </tr>
 			  </table>
-			  <select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 163; height: 100; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
+			  <select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 163px; height: 100; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
 						#foreach($key in $definedAssetKeys)
 							<option value="${key}">${key}</option>
 						#end

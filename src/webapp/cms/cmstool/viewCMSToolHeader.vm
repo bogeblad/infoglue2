@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?> 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -6,15 +6,15 @@
 <head>
 	<title>Header</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
+	
 	<script type="text/javascript" language="Javascript">
 	<!--
-
+	
 		function changeTool(toolId)
 		{
 			top.frames[0].location.href = 'ViewCMSToolHeader.action?toolId=' + toolId;
 		}
-
+	
 		function changeToolArea(toolId)
 		{
 			//alert("top:" + top.frames["toolarea"].name);
@@ -29,19 +29,19 @@
 			    top.frames["toolarea"].location.href = "ViewPublishingTool.action";
 			else if (toolId == 4)
 			    top.frames["toolarea"].location.href = "ViewMyDesktopTool.action";
-
+			
 		}
 
 		function logout()
 		{
 			top.location.href = "Login!logout.action";
 		}
-
+		
 	-->
 	</script>
-
+	
 	<script language="JavaScript" src="script/listview.js"></script>
-	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>
 
 <body onLoad="javascript:changeToolArea($toolId);" class="cmstool">
@@ -56,49 +56,49 @@
 <tr>
 	#set($toolcount = 0)
 	<td colspan="2"><image src="images/trans.gif" width="14" height="22"></td>
-	#if($webworkAction.hasAccessTo("ContentTool.Read"))
+	#if($this.hasAccessTo("ContentTool.Read"))
 		<td><a href="javascript:changeTool(0);"><image src="images/$ui.getString("images.header.contentToolTab")" width="120" height="22" border="0"></a></td>
 		<td><image src="images/trans.gif" width="2" height="22"></td>
 		#if($toolId == 0)
 			#set($activeToolPos = $toolcount)
-			#set($activeColor = "#C7D1B3")
+			#set($activeColor = "#C7D1B3")	
 		#end
-		#set($toolcount = $toolcount + 1)
+		#set($toolcount = $toolcount + 1) 
 	#end
-	#if($webworkAction.hasAccessTo("StructureTool.Read"))
+	#if($this.hasAccessTo("StructureTool.Read"))
 		<td><a href="javascript:changeTool(1);"><image src="images/$ui.getString("images.header.structureToolTab")" width="120" height="22" border="0"></a></td>
 		<td><image src="images/trans.gif" width="2" height="22"></td>
 		#if($toolId == 1)
-			#set($activeToolPos = $toolcount)
+			#set($activeToolPos = $toolcount)	
 			#set($activeColor = "#F0E1B4")
 		#end
 		#set($toolcount = $toolcount + 1)
 	#end
-	#if($webworkAction.hasAccessTo("ManagementTool.Read"))
+	#if($this.hasAccessTo("ManagementTool.Read"))
 		<td><a href="javascript:changeTool(2);"><image src="images/$ui.getString("images.header.managementToolTab")" width="120" height="22" border="0"></a></td>
 		<td><image src="images/trans.gif" width="2" height="22"></td>
 		#if($toolId == 2)
-			#set($activeToolPos = $toolcount)
+			#set($activeToolPos = $toolcount)	
 			#set($activeColor = "#C2D0E2")
 		#end
 		#set($toolcount = $toolcount + 1)
 	#end
-	#if($webworkAction.hasAccessTo("PublishingTool.Read"))
+	#if($this.hasAccessTo("PublishingTool.Read"))
 		<td><a href="javascript:changeTool(3);"><image src="images/$ui.getString("images.header.publishingToolTab")" width="120" height="22" border="0"></a></td>
-		<td><image src="images/trans.gif" width="1" height="22"></td>
+		<td><image src="images/trans.gif" width="1" height="22"></td>	
 		#if($toolId == 3)
 			#set($activeToolPos = $toolcount)
-			#set($activeColor = "#D2CBBC")
+			#set($activeColor = "#D2CBBC")	
 		#end
 		#set($toolcount = $toolcount + 1)
 	#end
 
-	#if($webworkAction.hasAccessTo("MyDesktopTool.Read"))
+	#if($this.hasAccessTo("MyDesktopTool.Read"))
 		<td><a href="javascript:changeTool(4);"><image src="images/$ui.getString("images.header.myDesktopToolTab")" width="120" height="22" border="0"></a></td>
-		<td><image src="images/trans.gif" width="1" height="22"></td>
+		<td><image src="images/trans.gif" width="1" height="22"></td>	
 		#if($toolId == 4)
 			#set($activeToolPos = $toolcount)
-			#set($activeColor = "#DFDA5E")
+			#set($activeColor = "#DFDA5E")	
 		#end
 		#set($toolcount = $toolcount + 1)
 	#end
@@ -114,25 +114,25 @@
 	#else
 		<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="118" height="1"></td>
 	#end
-
+	
 	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="2" height="1"></td>
-
+	
 	#if($activeToolPos == 1)
 		<td bgcolor="$activeColor"><image src="images/trans.gif" width="118" height="1"></td>
 	#else
 		<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="118" height="1"></td>
 	#end
-
+	
 	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="2" height="1"></td>
-
+	
 	#if($activeToolPos == 2)
 		<td bgcolor="$activeColor"><image src="images/trans.gif" width="118" height="1"></td>
 	#else
 		<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="118" height="1"></td>
 	#end
-
+	
 	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="2" height="1"></td>
-
+	
 	#if($activeToolPos == 3)
 		<td bgcolor="$activeColor"><image src="images/trans.gif" width="118" height="1"></td>
 	#else
@@ -140,7 +140,7 @@
 	#end
 
 	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="2" height="1"></td>
-
+	
 	#if($activeToolPos == 4)
 		<td bgcolor="$activeColor"><image src="images/trans.gif" width="118" height="1"></td>
 	#else

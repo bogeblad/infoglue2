@@ -44,10 +44,13 @@
 			#if($tree == "applet")			
 				treeView().refreshTreeNode(nodeId, changeTypeId, addedNodeId);
 			#else
-				if (changeTypeId == 4)
+				
+				frames['itreeFrame'].refreshTreeNode(parseInt(nodeId), parseInt(changeTypeId), parseInt(addedNodeId));
+			
+				/*if (changeTypeId == 4)
 					frames['itreeFrame'].location.reload();
 				else
-					frames['itreeFrame'].location.href="ViewStructureHtmlTree.action?exp=" + exp + "&repositoryId=${repositoryId}" + "&akey=/" + nodeId + "/&select=" + addedNodeId;
+					frames['itreeFrame'].location.href="ViewStructureHtmlTree.action?exp=" + exp + "&repositoryId=${repositoryId}" + "&akey=/" + nodeId + "/&select=" + addedNodeId;*/
 			#end
 			
 		}

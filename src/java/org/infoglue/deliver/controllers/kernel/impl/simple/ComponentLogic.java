@@ -5,22 +5,22 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
  */
-
+ 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.content.*;
@@ -35,36 +35,42 @@ import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
-public class ComponentLogic
+public class ComponentLogic 
 {
 	private TemplateController templateController = null;
 	private InfoGlueComponent infoGlueComponent = null;
-
+	
  	public ComponentLogic(TemplateController templateController, InfoGlueComponent infoGlueComponent)
  	{
  		this.templateController = templateController;
  		this.infoGlueComponent = infoGlueComponent;
  	}
-
+ 	
 	/**
-	 * The method returns a list of ContentVO-objects that is children to the bound content of named binding on the siteNode sent in.
+	 * The method returns a list of ContentVO-objects that is children to the bound content of named binding on the siteNode sent in. 
 	 * The method is great for collection-pages on any site where you want to bind to a folder containing all contents to list.
 	 * You can also state if the method should recurse into subfolders and how the contents should be sorted.
-	 * The recursion only deals with three levels at the moment for performance-reasons.
+	 * The recursion only deals with three levels at the moment for performance-reasons. 
 	 */
-
+	
 	public List getBoundFolderContents(String propertyName, boolean searchRecursive, String sortAttribute, String sortOrder) throws Exception
 	{
 		List childContents = new ArrayList();
-
+		
 		//Map property = this.getComponentProperty(propertyName);
 		//if(property != null)
 		//{
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -72,7 +78,7 @@ public class ComponentLogic
 				childContents = this.templateController.getChildContents(contentId, searchRecursive, sortAttribute, sortOrder);
 			}
 		}
-
+		
 		return childContents;
 	}
 
@@ -106,13 +112,13 @@ public class ComponentLogic
 	public String getAssetUrl(String propertyName) throws Exception
 	{
 		String assetUrl = "";
-
+		 		
 		//Map property = this.getComponentProperty(propertyName);
 		//if(property != null)
 		//{
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			CmsLogger.logInfo("bindings:" + bindings.size());
 			if(bindings.size() > 0)
@@ -128,13 +134,13 @@ public class ComponentLogic
 	public String getAssetUrl(String propertyName, String assetKey) throws Exception
 	{
 		String assetUrl = "";
-
+		 		
 		//Map property = this.getComponentProperty(propertyName);
 		//if(property != null)
 		//{
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -148,13 +154,13 @@ public class ComponentLogic
 	public String getAssetThumbnailUrl(String propertyName, int width, int height) throws Exception
 	{
 		String assetUrl = "";
-
+		 		
 		//Map property = this.getComponentProperty(propertyName);
 		//if(property != null)
 		//{
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -176,7 +182,7 @@ public class ComponentLogic
 			//{
 			Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 			if(property != null)
-			{
+			{	
 				List bindings = (List)property.get("bindings");
 				if(bindings.size() > 0)
 				{
@@ -189,7 +195,7 @@ public class ComponentLogic
 		{
 			e.printStackTrace();
 		}
-
+		
 		return assetUrl;
  	}
 
@@ -205,14 +211,14 @@ public class ComponentLogic
 		return assetUrl;
 	}
 
-
+ 	
 	public String getAssetUrl(Integer contentId, String assetKey)
 	{
 		String assetUrl = templateController.getAssetUrl(contentId, assetKey);
 
 		return assetUrl;
 	}
-
+	
 
 	public String getContentAttribute(String propertyName, String attributeName)
 	{
@@ -231,15 +237,15 @@ public class ComponentLogic
 
 		return attributeValue;
 	}
-
-
+	
+	
 	public String getContentAttribute(String propertyName, String attributeName, boolean disableEditOnSight)
 	{
 		String attributeValue = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -250,14 +256,14 @@ public class ComponentLogic
 
 		return attributeValue;
 	}
-
+	
 	public String getParsedContentAttribute(String propertyName, String attributeName)
 	{
 		String attributeValue = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -276,7 +282,7 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -288,7 +294,7 @@ public class ComponentLogic
 
 		return formAttributes;
 	}
-
+	
 	public String getPropertyValue(String propertyName)
 	{
 		return getPropertyValue(propertyName, true);
@@ -302,7 +308,7 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			if(property != null)
 			{
 				propertyValue = (String)property.get("path");
@@ -326,7 +332,7 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -343,7 +349,7 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			Iterator bindingsIterator = bindings.iterator();
 			while(bindingsIterator.hasNext())
@@ -355,7 +361,7 @@ public class ComponentLogic
 
 		return contents;
 	}
-
+	
 	/**
 	 * This method returns a list of pages bound to the component.
 	 */
@@ -366,13 +372,13 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			Iterator bindingsIterator = bindings.iterator();
 			while(bindingsIterator.hasNext())
 			{
 				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				WebPage webPage = new WebPage();
+				WebPage webPage = new WebPage();						
 				webPage.setSiteNodeId(siteNodeId);
 				webPage.setLanguageId(templateController.getLanguageId());
 				webPage.setContentId(null);
@@ -400,7 +406,7 @@ public class ComponentLogic
 			WebPage webPage = (WebPage)pagesIterator.next();
 			webPage.setUrl(getPageUrl(siteNodeId));
 		}
-
+	
 		return pages;
 	}
 
@@ -411,7 +417,7 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -419,10 +425,10 @@ public class ComponentLogic
 				pageUrl = this.getPageUrl(siteNodeId, templateController.getLanguageId(), templateController.getContentId());
 			}
 		}
-
-		return pageUrl;
+		
+		return pageUrl;		
 	}
-
+	
 	public String getPageUrl(Integer siteNodeId)
 	{
 		String pageUrl = "";
@@ -438,7 +444,7 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -456,7 +462,7 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
 		if(property != null)
-		{
+		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
@@ -464,10 +470,10 @@ public class ComponentLogic
 				pageUrl = templateController.getPageNavTitle(siteNodeId);
 			}
 		}
-
+		
 		return pageUrl;
 	}
-
+	
 	/**
 	 * This method gets a property from the component and if not found there checks in parent components.
 	 */
@@ -479,7 +485,7 @@ public class ComponentLogic
 			Map property1 = getComponentProperty(propertyName);
 			if(property1 != null)
 				return property1;
-
+				
 			/*
 			CmsLogger.logInfo("");
 			CmsLogger.logInfo("propertyName: " + propertyName);
@@ -492,7 +498,7 @@ public class ComponentLogic
 				CmsLogger.logInfo("Value: " + component.getProperties().get(key));
 			}
 			*/
-
+			
 			Map property = (Map)component.getProperties().get(propertyName);
 			InfoGlueComponent parentComponent = component.getParentComponent();
 			//CmsLogger.logInfo("parentComponent: " + parentComponent);
@@ -511,17 +517,17 @@ public class ComponentLogic
 				property = (Map)parentComponent.getProperties().get(propertyName);
 				parentComponent = parentComponent.getParentComponent();
 			}
-
+			
 			return property;
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-
+		
 		return null;
 	}
-
+	
 	/**
 	 * This method returns a url to the given page. The url is composed of siteNode, language and content
 	 * TODO - temporary dev solution
@@ -530,25 +536,25 @@ public class ComponentLogic
 	public String getPageUrl(Integer siteNodeId, Integer languageId, Integer contentId)
 	{
 		String pageUrl = this.templateController.getPageUrl(siteNodeId, languageId, contentId);
-
+		
 		return pageUrl;
 	}
 
-
+		
 	public String getPageNavTitle(Integer siteNodeId)
 	{
 		String navTitle = "";
 
 		navTitle = templateController.getPageNavTitle(siteNodeId);
-
+	
 		return navTitle;
 	}
-
-
+	
+	
 	/**
 	 * This method fetches the component named component property. If not available on the current page metainfo we go up recursive.
 	 */
-
+	
 	private Map getComponentProperty(String propertyName) throws Exception
 	{
 		Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
@@ -556,12 +562,12 @@ public class ComponentLogic
 		try
 		{
 			NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
-
+		
 			SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(this.templateController.getSiteNodeId()).getValueObject();
 			while(property == null && parentSiteNodeVO != null)
 			{
 			    //CmsLogger.logInfo("parentSiteNodeVO: " + parentSiteNodeVO.getName());
-
+				
 			    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
 				parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(parentSiteNodeVO.getId());
 			}
@@ -570,24 +576,24 @@ public class ComponentLogic
 		{
 			e.printStackTrace();
 		}
-
+		
 		return property;
 	}
-
-
+	
+	
 	/**
 	 * This method gets a component property from the parent to the current recursively until found.
 	 */
-
+	 
 	private Map getInheritedComponentProperty(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, String propertyName) throws Exception
 	{
 	    //CmsLogger.logInfo("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
 		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
 		//CmsLogger.logInfo("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
 		//CmsLogger.logInfo("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
-
+		
 		HashMap property = null;
-
+		
 		if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
 		{
 			Document document = XMLHelper.readDocumentFromByteArray(inheritedPageComponentsXML.getBytes("UTF-8"));
@@ -596,7 +602,7 @@ public class ComponentLogic
 			//CmsLogger.logInfo("propertyXPath:" + propertyXPath);
 			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
 			//CmsLogger.logInfo("*********************************************************anl:" + anl.getLength());
-
+			
 			//If not found on the same component id - let's check them all and use the first we find.
 			if(anl == null || anl.getLength() == 0)
 			{
@@ -606,31 +612,31 @@ public class ComponentLogic
 				anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), globalPropertyXPath);
 				//CmsLogger.logInfo("anl:" + anl.getLength());
 				//CmsLogger.logInfo("*********************************************************anl:" + anl.getLength());
-			}
-
+			}			
+			
 			for(int i=0; i < anl.getLength(); i++)
 			{
 				Element propertyElement = (Element)anl.item(i);
 				//CmsLogger.logInfo(XMLHelper.serializeDom(propertyElement, new StringBuffer()));
-				//CmsLogger.logInfo("YES - we read the property...");
-
+				//CmsLogger.logInfo("YES - we read the property...");		
+				
 				String name		= propertyElement.getAttribute("name");
 				String type		= propertyElement.getAttribute("type");
 				String entity 	= propertyElement.getAttribute("entity");
 				boolean isMultipleBinding = new Boolean(propertyElement.getAttribute("multiple")).booleanValue();
-
+				
 				//CmsLogger.logInfo("name:" + name);
 				//CmsLogger.logInfo("type:" + type);
 				//CmsLogger.logInfo("entity:" + entity);
 				//CmsLogger.logInfo("isMultipleBinding:" + isMultipleBinding);
-
+				
 				CmsLogger.logInfo("name:" + name);
 				//CmsLogger.logInfo("type:" + type);
 				//CmsLogger.logInfo("entity:" + entity);
 				//CmsLogger.logInfo("isMultipleBinding:" + isMultipleBinding);
-
+				
 				String value = null;
-
+				
 				if(type.equalsIgnoreCase("textfield"))
 				{
 				    value = propertyElement.getAttribute("path");
@@ -644,13 +650,13 @@ public class ComponentLogic
 				{
 				    value = getComponentPropertyValue(inheritedPageComponentsXML, componentId, languageId, name);
 				}
-
+				
 				property = new HashMap();
 				property.put("name", name);
 				//property.put("path", "Inherited");
 				property.put("path", value);
 				property.put("type", type);
-
+				
 				List bindings = new ArrayList();
 				NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
 				//CmsLogger.logInfo("bindingNodeList:" + bindingNodeList.getLength());
@@ -668,14 +674,14 @@ public class ComponentLogic
 					else
 					{
 						//CmsLogger.logInfo("SiteNode added:" + entityName + ":" + entityId);
-						bindings.add(entityId);
-					}
+						bindings.add(entityId); 
+					} 
 				}
 
 				property.put("bindings", bindings);
 			}
 		}
-
+					
 		return property;
 	}
 
@@ -683,17 +689,17 @@ public class ComponentLogic
 	/**
 	 * This method fetches the template-string.
 	 */
-
+    
 	private String getComponentPropertiesString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
 		String template = null;
-
+    	
 		try
 		{
 			template = templateController.getContentAttribute(contentId, "ComponentProperties", true);
 
 			if(template == null)
-				throw new SystemException("There was no component properties bound to this page which makes it impossible to render.");
+				throw new SystemException("There was no component properties bound to this page which makes it impossible to render.");	
 		}
 		catch(Exception e)
 		{
@@ -703,17 +709,17 @@ public class ComponentLogic
 
 		return template;
 	}
-
-
+	
+	
 	/**
 	 * This method returns a value for a property if it's set. The value is collected in the
 	 * properties for the page.
 	 */
-
+	
 	private String getComponentPropertyValue(String componentXML, Integer componentId, Integer languageId, String name) throws Exception
 	{
 		String value = "Undefined";
-
+		
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(languageId);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -723,27 +729,27 @@ public class ComponentLogic
 		for(int i=0; i < anl.getLength(); i++)
 		{
 			Element property = (Element)anl.item(i);
-
+			
 			String id 			= property.getAttribute("type");
 			String path 		= property.getAttribute("path");
-
+			
 			if(property.hasAttribute("path_" + locale.getLanguage()))
 				path = property.getAttribute("path_" + locale.getLanguage());
-
+			
 			value 				= path;
 		}
 
-
+		
 		return value;
 	}
-
-
+	
+	
 	/**
 	 * This method fetches the pageComponent structure from the metainfo content.
 	 */
-
+	    
 	protected String getPageComponentsString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
-	{
+	{ 
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
 		String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
@@ -751,24 +757,24 @@ public class ComponentLogic
 		{
 			return cachedPageComponentsString;
 		}
-
+		
 		String pageComponentsString = null;
-
-		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information");
-
+    	
+		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information");		
+		
 		if(contentVO == null)
-			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");
-
+			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
+		
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(siteNodeId).getId();
 		pageComponentsString = templateController.getContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);
-
+		
 		if(pageComponentsString == null)
-			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");
-
+			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
+				    
 		CmsLogger.logInfo("pageComponentsString: " + pageComponentsString);
-
+	
 		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
-
+		
 		return pageComponentsString;
 	}
 
@@ -780,18 +786,18 @@ public class ComponentLogic
 	private String getPageComponentsString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
 		String template = null;
-
+    	
 		try
 		{
-			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information");
+			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information");		
 
 			if(contentVO == null)
-				throw new SystemException("There was no metainformation bound to this page which makes it impossible to render.");
-
+				throw new SystemException("There was no metainformation bound to this page which makes it impossible to render.");	
+			
 			template = templateController.getContentAttribute(contentVO.getContentId(), "ComponentStructure", true);
 			//CmsLogger.logInfo(template);
 			if(template == null)
-				throw new SystemException("There was no metainformation bound to this page which makes it impossible to render.");
+				throw new SystemException("There was no metainformation bound to this page which makes it impossible to render.");	
 		}
 		catch(Exception e)
 		{
@@ -806,7 +812,7 @@ public class ComponentLogic
 	/**
 	 * @return Returns the infoGlueComponent.
 	 */
-
+	
 	public InfoGlueComponent getInfoGlueComponent()
 	{
 		return infoGlueComponent;
