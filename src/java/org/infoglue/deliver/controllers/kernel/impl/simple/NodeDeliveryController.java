@@ -517,7 +517,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				   
 			try
 	        {
-				SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+				SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 	            SiteNode parentSiteNode = siteNode.getParentSiteNode();
 	            if(parentSiteNode != null)		
 					parentSiteNodeVO = parentSiteNode.getValueObject();

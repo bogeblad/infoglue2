@@ -340,27 +340,25 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	
 	public LanguageVO getMasterLanguageForSiteNode(Integer siteNodeId) throws SystemException, Exception
 	{ 
-		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	    String languageKey = "siteNodeId_" + siteNodeId;
+		CmsLogger.logInfo("languageKey in getMasterLanguageForSiteNode:" + languageKey);
+		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
+		if(languageVO != null)
+		{
+		    CmsLogger.logInfo("There was an cached master language:" + languageVO.getName());
+		}
+		else
+		{
+		    Database db = CastorDatabaseService.getDatabase();
+		    ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
-		LanguageVO languageVO = null;
+		    beginTransaction(db);
 
-        beginTransaction(db);
-
-        try
-        {
-			SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-			Integer repositoryId = siteNode.getRepository().getRepositoryId();
-         	
-			String languageKey = "" + repositoryId;
-			CmsLogger.logInfo("languageKey in getMasterLanguageForSiteNode:" + languageKey);
-			languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
-			if(languageVO != null)
-			{
-				CmsLogger.logInfo("There was an cached master language:" + languageVO.getName());
-			}
-			else
-			{
+	        try
+	        {
+				SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+				Integer repositoryId = siteNode.getRepository().getRepositoryId();
+	         	
 				OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.repositoryId = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
 				oql.bind(repositoryId);
 				
@@ -373,20 +371,20 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	            }
 				
 				CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
-			}
-			
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
-            
-            closeTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-
+				
+	            //If any of the validations or setMethods reported an error, we throw them up now before create. 
+	            ceb.throwIfNotEmpty();
+	            
+	            closeTransaction(db);
+	        }
+	        catch(Exception e)
+	        {
+	            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+				rollbackTransaction(db);
+	            throw new SystemException(e.getMessage());
+	        }
+		}
+		
         return languageVO;	
 	}
 	
