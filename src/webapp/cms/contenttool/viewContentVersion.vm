@@ -96,6 +96,7 @@
 	   				#if($value == "removeformat") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}removeformat: [ ${quote}Remove formatting${quote}, ${quote}ed_rmformat.gif${quote}, false, function(e) {e.execCommand(${quote}removeformat${quote});} ]") #end
 	   				#if($value == "print") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}print: [ ${quote}Print document${quote}, ${quote}ed_print.gif${quote}, false, function(e) {e._iframe.contentWindow.print();} ]") #end
 	   				#if($value == "killword") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}killword: [ ${quote}Clear MS Office tags${quote}, ${quote}ed_killword.gif${quote}, false, function(e) {e.execCommand(${quote}killword${quote});} ]") #end
+	   				#if($value == "unlink") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}unlink: [ ${quote}Remove link${quote}, ${quote}ed_unlink.gif${quote}, false, function(e) {e.execCommand(${quote}unlink${quote});} ]") #end
 	
 					#if($foundItem)
 						//alert("value: $value");	
