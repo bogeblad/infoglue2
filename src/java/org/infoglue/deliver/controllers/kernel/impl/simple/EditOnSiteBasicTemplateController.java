@@ -29,6 +29,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.io.*;
 import org.infoglue.cms.exception.*;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.WebPage;
 
 import java.util.List;
@@ -44,9 +45,9 @@ import javax.servlet.http.HttpServletRequest;
 
 public class EditOnSiteBasicTemplateController extends BasicTemplateController
 {
-    public EditOnSiteBasicTemplateController(Database db, InfoGluePrincipal infoGluePrincipal)
+    public EditOnSiteBasicTemplateController(DatabaseWrapper databaseWrapper, InfoGluePrincipal infoGluePrincipal)
     {
-        super(db, infoGluePrincipal);
+        super(databaseWrapper, infoGluePrincipal);
     }
     
 	/**
@@ -437,7 +438,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	public TemplateController getTemplateController(Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
 		TemplateController templateController = null;
-		templateController = new EditOnSiteBasicTemplateController(this.getDatabase(), infoGluePrincipal);
+		templateController = new EditOnSiteBasicTemplateController(this.databaseWrapper, infoGluePrincipal);
 		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
 		templateController.setHttpRequest(request);	
 		templateController.setBrowserBean(this.browserBean);

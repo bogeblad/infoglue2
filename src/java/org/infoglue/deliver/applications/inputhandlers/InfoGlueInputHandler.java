@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 
 
 /**
@@ -44,7 +45,7 @@ public interface InfoGlueInputHandler
 	 * This is the method that is invoked.
 	 */
 	
-	public void processInput(Database db, Integer siteNodeId, Integer languageId, Integer contentId, Integer formContentId, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception;
+	public void processInput(DatabaseWrapper databaseWrapper, Integer siteNodeId, Integer languageId, Integer contentId, Integer formContentId, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception;
 	
 	
 }

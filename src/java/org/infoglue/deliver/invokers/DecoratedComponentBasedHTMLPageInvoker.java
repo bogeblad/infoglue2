@@ -93,8 +93,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		timer.printElapsedTime("Initialized controllers");
 		
-		Integer repositoryId = nodeDeliveryController.getSiteNode(this.db, this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
-		String componentXML = getPageComponentsString(this.db, this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
+		Integer repositoryId = nodeDeliveryController.getSiteNode(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
+		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		
 		timer.printElapsedTime("After getPageComponentsString");
 		
@@ -119,7 +119,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    
 			decoratorTimer.printElapsedTime("After reading document");
 			
-			List pageComponents = getPageComponents(db, document.getRootElement(), "base", this.getTemplateController(), null);
+			List pageComponents = getPageComponents(getDatabase(), document.getRootElement(), "base", this.getTemplateController(), null);
 
 			InfoGlueComponent baseComponent = null;
 			if(pageComponents.size() > 0)
@@ -135,7 +135,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			}
 			else
 			{
-				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(this.db, this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information");
+				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information");
 				
 				decoratorTimer.printElapsedTime("After metaInfoContentVO");
 				
@@ -359,7 +359,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				else
 				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" style=\"border: dotted 1px #0070FF; width: 100%;\" onmouseup=\"javascript:assignComponent('" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "');\">";
 				    
-				List subComponents = getInheritedComponents(this.db, templateController, component, templateController.getSiteNodeId(), id);
+				List subComponents = getInheritedComponents(getDatabase(), templateController, component, templateController.getSiteNodeId(), id);
 
 				timer.printElapsedTime("4");
 	
@@ -494,7 +494,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		timer.printElapsedTime("getComponentPropertiesDiv: 1");
 		
-		List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(this.db, siteNodeId);
+		List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(getDatabase(), siteNodeId);
 		timer.printElapsedTime("getComponentPropertiesDiv: 2");
 
 		Iterator languageIterator = languages.iterator();
@@ -1069,7 +1069,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		argumentList.add(argument);
 		arguments.put("arguments", argumentList);
 		
-		return ContentController.getContentController().getContentVOList(arguments, this.db);
+		return ContentController.getContentController().getContentVOList(arguments, getDatabase());
 	}
 	
 	/**
@@ -1122,7 +1122,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
    	
 		try
 		{
-		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.db, siteNodeId).getId();
+		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 		    //CmsLogger.logInfo("masterLanguageId:" + masterLanguageId);
 		    componentPropertiesString = templateController.getContentAttribute(contentId, masterLanguageId, "ComponentProperties", true);
 
@@ -1190,7 +1190,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
    	
 		try
 		{
-		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.db, siteNodeId).getId();
+		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 		    componentTasksString = templateController.getContentAttribute(contentId, masterLanguageId, "ComponentTasks", true);
 
 			if(componentTasksString == null)
@@ -1359,9 +1359,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		if(this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
 		    languageId = new Integer(this.getRequest().getParameter("languageId"));
 		else
-		    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getId();
+		    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 		        
-		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, languageId);
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), languageId);
 		
 		timer.printElapsedTime("AAA1");
 		
@@ -1380,7 +1380,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		*/
-		org.w3c.dom.Document document = getPageComponentsDocument(this.db, this.getTemplateController(), siteNodeId, languageId, contentId);
+		org.w3c.dom.Document document = getPageComponentsDocument(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);
 		
 		timer.printElapsedTime("AAA3");
 
@@ -1426,7 +1426,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 
-		String componentXML = getPageComponentsString(this.db, this.getTemplateController(), siteNodeId, languageId, contentId);			
+		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);			
 		////CmsLogger.logInfo("componentXML:" + componentXML);
 
 		org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -1448,7 +1448,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			if(entityClass.equalsIgnoreCase("Content"))
 			{
-				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(new Integer(entityId), db);
+				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(new Integer(entityId), getDatabase());
 				ComponentBinding componentBinding = new ComponentBinding();
 				componentBinding.setId(new Integer(id));
 				componentBinding.setComponentId(componentId);

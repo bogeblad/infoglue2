@@ -91,7 +91,7 @@ public class CmsJDOCallback implements CallbackInterceptor
     	    
 			String userName = "SYSTEM";
 	    	NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
-	    	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 	    
 			if(object.getClass().getName().equals(RepositoryImpl.class.getName()))
 			{

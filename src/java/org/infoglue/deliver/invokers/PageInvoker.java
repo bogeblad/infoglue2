@@ -31,10 +31,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
@@ -51,7 +53,7 @@ import org.infoglue.deliver.util.CacheController;
 
 public abstract class PageInvoker
 {	
-    protected Database db							= null;
+    private DatabaseWrapper dbWrapper				= null;
 	private HttpServletRequest request				= null;
 	private HttpServletResponse response 			= null;
 	private TemplateController templateController	= null;
@@ -97,15 +99,48 @@ public abstract class PageInvoker
 	 * @param deliveryContext
 	 */
 
-	public void setParameters(Database db, HttpServletRequest request, HttpServletResponse response, TemplateController templateController, DeliveryContext deliveryContext)
+	public void setParameters(DatabaseWrapper dbWrapper, HttpServletRequest request, HttpServletResponse response, TemplateController templateController, DeliveryContext deliveryContext)
 	{
-	    this.db = db;
+	    this.dbWrapper = dbWrapper;
 		this.request = request;
 		this.response = response;
 		this.templateController = templateController;
 		this.deliveryContext = deliveryContext;
 		this.templateController.setDeliveryContext(this.deliveryContext);
 	}
+	
+    public Database getDatabase() throws SystemException
+    {
+        /*
+        if(this.db == null || this.db.isClosed() || !this.db.isActive())
+        {
+            beginTransaction();
+        }
+        */
+        return dbWrapper.getDatabase();
+    }
+
+    /**
+     * Starts a new transaction so a different call can be made.
+     */
+    /*
+    public void beginTransaction() throws SystemException
+	{
+	    this.db = CastorDatabaseService.getDatabase();
+
+	    try
+		{
+			db.begin();
+			System.out.println("Started new transaction...");
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
+		}
+	}
+	*/
+    
 	/**
 	 * This is the method that will deliver the page to the user. It can have special
 	 * handling of all sorts to enable all sorts of handlers. An example of uses might be to
@@ -125,7 +160,7 @@ public abstract class PageInvoker
 	{
 		CmsLogger.logInfo("C PageKey:" + this.getDeliveryContext().getPageKey());
 		
-		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(this.db, this.getTemplateController().getLanguageId());
+		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.getTemplateController().getLanguageId());
 		CmsLogger.logInfo("languageVO:" + languageVO);
 		String contentType = this.getTemplateController().getPageContentType();
 		//CmsLogger.logWarning("contentType:" + contentType);
@@ -276,5 +311,5 @@ public abstract class PageInvoker
 		
 		return context;
 	}
-
+    
 }

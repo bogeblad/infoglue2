@@ -30,6 +30,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.inputhandlers.InfoGlueInputHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
@@ -73,9 +74,10 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
     
     protected void invokeHandler() throws Exception
     {
-		Database db = CastorDatabaseService.getDatabase();
+        DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
+    	//Database db = CastorDatabaseService.getDatabase();
 		
-		beginTransaction(db);
+		beginTransaction(dbWrapper.getDatabase());
 
 		try
 		{
@@ -88,7 +90,7 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
 				    arguments.put("j_username", "anonymous");
 				    arguments.put("j_password", "anonymous");
 				    
-				    principal = ExtranetController.getController().getAuthenticatedPrincipal(db, arguments);
+				    principal = ExtranetController.getController().getAuthenticatedPrincipal(dbWrapper.getDatabase(), arguments);
 				}
 				catch(Exception e) 
 				{
@@ -96,20 +98,20 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
 				}
 			}
 			
-			String inputHandlerClassName = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, formContentId, languageId, "InputHandlerClassName", siteNodeId, true);
+			String inputHandlerClassName = ContentDeliveryController.getContentDeliveryController().getContentAttribute(dbWrapper.getDatabase(), formContentId, languageId, "InputHandlerClassName", siteNodeId, true);
 
     		CmsLogger.logInfo("Trying to invoke " + inputHandlerClassName);
 	    	Object object =	Class.forName(inputHandlerClassName).newInstance();
     		InfoGlueInputHandler infoGlueInputHandler = (InfoGlueInputHandler)object;
     		HashMap parameters = requestToHashtable(this.getRequest()); 
-    		infoGlueInputHandler.processInput(db, this.siteNodeId, this.languageId, this.contentId, this.formContentId, parameters, this.getRequest(), (InfoGluePrincipal)principal);
+    		infoGlueInputHandler.processInput(dbWrapper, this.siteNodeId, this.languageId, this.contentId, this.formContentId, parameters, this.getRequest(), (InfoGluePrincipal)principal);
     	
-    		closeTransaction(db);
+    		closeTransaction(dbWrapper.getDatabase());
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
+			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}
     	

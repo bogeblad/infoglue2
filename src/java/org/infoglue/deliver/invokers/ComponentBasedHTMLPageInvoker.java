@@ -87,15 +87,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext());
 		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(this.getDeliveryContext());
 		
-		Integer repositoryId = nodeDeliveryController.getSiteNode(db, this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
+		Integer repositoryId = nodeDeliveryController.getSiteNode(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
 
-		String componentXML = getPageComponentsString(db, this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
+		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		
 		if(componentXML != null && componentXML.length() != 0)
 		{
 			Document document = new DOMBuilder().getDocument(componentXML);
 
-			List pageComponents = getPageComponents(db, document.getRootElement(), "base", this.getTemplateController(), null);
+			List pageComponents = getPageComponents(getDatabase(), document.getRootElement(), "base", this.getTemplateController(), null);
 
 			InfoGlueComponent baseComponent = null;
 			if(pageComponents.size() > 0)
@@ -105,8 +105,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			
 			if(baseComponent != null)
 			{
-				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(db, this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information");
-				pageContent = renderComponent(db, baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId());
+				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information");
+				pageContent = renderComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId());
 			}
 		}
 
@@ -146,7 +146,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
 		
 		//CmsLogger.logInfo("contentVO in getPageComponentsString: " + contentVO.getContentId());
-		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.db, siteNodeId).getId();
+		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 	    pageComponentsString = templateController.getContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);
 		
 		if(pageComponentsString == null)
@@ -239,7 +239,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 					if(path == null)
 					{
-						LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.db, templateController.getSiteNodeId());
+						LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
 						if(propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode()) != null)
 							path = propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode());
 					}
@@ -372,7 +372,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 					if(path == null)
 					{
-						LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.db, templateController.getSiteNodeId());
+						LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
 						if(propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode()) != null)
 							path = propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode());
 					}
@@ -440,7 +440,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 * This method renders the base component and all it's children.
 	 */
 
-	private String renderComponent(Database db, InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId) throws Exception
+	private String renderComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId) throws Exception
 	{
 		String decoratedComponent = "";
 
@@ -478,7 +478,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				//System.out.println("slot:" + slot);
 				//System.out.println("id:" + id);
 				
-				List subComponents = getInheritedComponents(db, templateController, component, templateController.getSiteNodeId(), id);
+				List subComponents = getInheritedComponents(templateController.getDatabase(), templateController, component, templateController.getSiteNodeId(), id);
 				Iterator subComponentsIterator = subComponents.iterator();
 				while(subComponentsIterator.hasNext())
 				{
@@ -486,7 +486,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					String subComponentString = "";
 					if(subComponent != null)
 					{
-						subComponentString = renderComponent(db, subComponent, templateController, repositoryId, siteNodeId, languageId, contentId, metainfoContentId);
+						subComponentString = renderComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId, metainfoContentId);
 					}
 					decoratedComponent += subComponentString.trim();	
 					//CmsLogger.logInfo("subComponentString:" + subComponentString);
@@ -820,7 +820,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 						if(path == null)
 						{
-							LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.db, templateController.getSiteNodeId());
+							LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
 							if(propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode()) != null)
 								path = propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode());
 						}

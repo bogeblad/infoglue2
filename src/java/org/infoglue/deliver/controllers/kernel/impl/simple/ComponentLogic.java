@@ -322,17 +322,17 @@ public class ComponentLogic
 		return formAttributes;
 	}
 	
-	public String getPropertyValue(String propertyName)
+	public String getPropertyValue(String propertyName) throws SystemException
 	{
 		return getPropertyValue(propertyName, true);
 	}
 
-	public String getPropertyValue(String propertyName, boolean useLangaugeFallback)
+	public String getPropertyValue(String propertyName, boolean useLangaugeFallback) throws SystemException
 	{
 		return getPropertyValue(propertyName, useLangaugeFallback, this.useInheritance);
 	}
 
-	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance)
+	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance) throws SystemException
 	{
 		String propertyValue = "";
 

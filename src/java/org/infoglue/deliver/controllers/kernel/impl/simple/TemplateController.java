@@ -62,7 +62,7 @@ public interface TemplateController
     /**
      * Sets the transaction the controller should work within. This is to limit the number of connections we use. 
      */
-    public abstract Database getDatabase();
+    public abstract Database getDatabase() throws SystemException;
     
     /** 
      * Add objects to be used in subsequent parsing
@@ -149,7 +149,7 @@ public interface TemplateController
     /**
      * This method gets the NumberFormat instance with the proper locale.
      */
-    public abstract NumberFormat getNumberFormatHelper();
+    public abstract NumberFormat getNumberFormatHelper() throws SystemException;
 
     /**
      * This method gets the object converter utility.
@@ -1009,12 +1009,12 @@ public interface TemplateController
     /**
      * This method supplies a method to get the locale of the language sent in.
      */
-    public abstract Locale getLanguageCode(Integer languageId);
+    public abstract Locale getLanguageCode(Integer languageId) throws SystemException;
 
     /**
      * This method supplies a method to get the locale of the language currently in use.
      */
-    public abstract Locale getLocale();
+    public abstract Locale getLocale() throws SystemException;
 
     
     public DeliveryContext getDeliveryContext(); 

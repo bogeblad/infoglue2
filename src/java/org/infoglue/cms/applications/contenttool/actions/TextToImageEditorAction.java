@@ -51,6 +51,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
@@ -145,9 +146,10 @@ public class TextToImageEditorAction extends InfoGlueAbstractAction
     
     protected String doExecute() throws Exception
     {
-        Database db = CastorDatabaseService.getDatabase();
+        DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
+    	//Database db = CastorDatabaseService.getDatabase();
 		
-		beginTransaction(db);
+		beginTransaction(dbWrapper.getDatabase());
 
 		try
 		{
@@ -199,26 +201,26 @@ public class TextToImageEditorAction extends InfoGlueAbstractAction
 	        t.append(")");
 	
 	        
-	        BasicTemplateController templateController = getTemplateController(db, siteNodeId, languageId, contentId);
+	        BasicTemplateController templateController = getTemplateController(dbWrapper, siteNodeId, languageId, contentId);
 	        generatedImage = templateController.renderString(t.toString());
 	        generatedCommand = t.toString();
 	        
 	    	
-	        closeTransaction(db);
+	        closeTransaction(dbWrapper.getDatabase());
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
+			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}
 
         return "success";
     }
 
-    public BasicTemplateController getTemplateController(Database db, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+    public BasicTemplateController getTemplateController(DatabaseWrapper databaseWrapper, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
-        BasicTemplateController templateController = new BasicTemplateController(db, this.getInfoGluePrincipal());
+        BasicTemplateController templateController = new BasicTemplateController(databaseWrapper, this.getInfoGluePrincipal());
 		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
 		templateController.setHttpRequest(getRequest());	
 		templateController.setBrowserBean(new BrowserBean());

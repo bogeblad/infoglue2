@@ -382,7 +382,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNode getSiteNode(Database db, Integer siteNodeId) throws SystemException
 	{
 		SiteNode siteNode = null;
-		 
+		
 		siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 
 		return siteNode;

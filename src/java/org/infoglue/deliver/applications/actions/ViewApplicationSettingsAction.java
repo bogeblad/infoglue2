@@ -28,6 +28,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
@@ -133,9 +134,10 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 	
 	public String doGetPageNavigationTitle() throws Exception
 	{
-    	Database db = CastorDatabaseService.getDatabase();
+	    DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
+    	//Database db = CastorDatabaseService.getDatabase();
 		
-		beginTransaction(db);
+		beginTransaction(dbWrapper.getDatabase());
 
 		try
 		{
@@ -158,15 +160,15 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 			
 			this.nodeDeliveryController		   		= NodeDeliveryController.getNodeDeliveryController(getSiteNodeId(), getLanguageId(), getContentId());
 			this.integrationDeliveryController 		= IntegrationDeliveryController.getIntegrationDeliveryController(getSiteNodeId(), getLanguageId(), getContentId());
-			TemplateController templateController 	= getTemplateController(db, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)principal);
+			TemplateController templateController 	= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)principal);
 			this.navigationTitle = templateController.getPageNavTitle(this.getSiteNodeId());
 
-	        closeTransaction(db);
+			closeTransaction(dbWrapper.getDatabase());
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
+			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}
 
