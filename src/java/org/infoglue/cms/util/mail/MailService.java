@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -28,9 +28,9 @@ import org.infoglue.cms.exception.SystemException;
 
 import javax.mail.*;
 import javax.activation.*;
-import javax.mail.internet.*;
+import javax.mail.internet.*; 
 
-public class MailService
+public class MailService 
 {
 
     // The mail session.
@@ -41,7 +41,7 @@ public class MailService
      * Creates a MailServices object and initializes it with the specified mail session.
      */
 
-    public MailService(Session session)
+    public MailService(Session session) 
     {
         this.session = session;
     }
@@ -55,15 +55,15 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void send(String from, String to, String subject, String content) throws SystemException
+	public void send(String from, String to, String subject, String content) throws SystemException 
 	{
 	    final Message message = createMessage(from, to, subject, content);
-
-	    try
+	 
+	    try 
 	    {
 			Transport.send(message);
-	    }
-	    catch(MessagingException e)
+	    } 
+	    catch(MessagingException e) 
 	    {
 	      	throw new SystemException("Unable to send message.", e);
 	    }
@@ -80,37 +80,37 @@ public class MailService
 	public void send(String from, String to, String subject, String content, String contentType, String encoding) throws SystemException 
 	{
 		final Message message = createMessage(from, to, subject, content, contentType, encoding);
-
-		try
+	 
+		try 
 		{
 			Transport.send(message);
-		}
-		catch(MessagingException e)
+		} 
+		catch(MessagingException e) 
 		{
 			throw new SystemException("Unable to send message.", e);
 		}
 	}
-
-
+	
+		
 	/**
 	 *
 	 */
-	private Message createMessage(String from, String to, String subject, String content)
+	private Message createMessage(String from, String to, String subject, String content) 
 	{
-		try
+		try 
 		{
 	    	final Message message = new MimeMessage(this.session);
-
+			
 			message.setContent(content, "text/html");
 			message.setFrom(createInternetAddress(from));
 	    	message.setRecipient(Message.RecipientType.TO, createInternetAddress(to));
 	        message.setSubject(subject);
 	        message.setText(content);
-	        message.setDataHandler(new DataHandler(new StringDataSource(content, "text/html")));
-
+	        message.setDataHandler(new DataHandler(new StringDataSource(content, "text/html"))); 
+	
 	        return message;
-	    }
-	    catch(MessagingException e)
+	    } 
+	    catch(MessagingException e) 
 	    {
 	        throw new Bug("Unable to create the message.", e);
 	    }
@@ -119,40 +119,40 @@ public class MailService
 	/**
 	 *
 	 */
-	private Message createMessage(String from, String to, String subject, String content, String contentType, String encoding)
+	private Message createMessage(String from, String to, String subject, String content, String contentType, String encoding) 
 	{
-		try
+		try 
 		{
 			final Message message = new MimeMessage(this.session);
-
+			
 			message.setContent(content, contentType);
 			message.setFrom(createInternetAddress(from));
 			message.setRecipient(Message.RecipientType.TO, createInternetAddress(to));
 			message.setSubject(subject);
 			message.setText(content);
-			message.setDataHandler(new DataHandler(new StringDataSource(content, contentType, encoding)));
-
+			message.setDataHandler(new DataHandler(new StringDataSource(content, contentType, encoding))); 
+	
 			return message;
-		}
-		catch(MessagingException e)
+		} 
+		catch(MessagingException e) 
 		{
 			throw new Bug("Unable to create the message.", e);
 		}
 	}
-
+	
 	/**
 	 *
 	 */
-	private Address createInternetAddress(String address)
+	private Address createInternetAddress(String address) 
 	{
-		try
+		try 
 		{
 	        return new InternetAddress(address);
-	    }
-	    catch(AddressException e)
+	    } 
+	    catch(AddressException e) 
 	    {
 	        throw new Bug("Badly formatted email address [" + address + "].", e);
 	    }
 	}
-
+	
 }

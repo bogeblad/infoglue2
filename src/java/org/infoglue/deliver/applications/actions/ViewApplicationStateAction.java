@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -40,28 +40,28 @@ import java.io.File;
  * @author Mattias Bogeblad
  */
 
-public class ViewApplicationStateAction extends WebworkAbstractAction
+public class ViewApplicationStateAction extends WebworkAbstractAction 
 {
 	private boolean databaseConnectionOk 	= false;
 	private boolean applicationSettingsOk 	= false;
 	private boolean testQueriesOk			= false;
 	private boolean diskPermissionOk 		= false;
-
+	
 	/**
 	 * The constructor for this action - contains nothing right now.
 	 */
-
-    public ViewApplicationStateAction()
+    
+    public ViewApplicationStateAction() 
     {
-
+	
     }
-
-
+    
+    
     /**
      * This method is the application entry-point. The method does a lot of checks to see if infoglue
      * is installed correctly and if all resources needed are available.
      */
-
+         
     public String doExecute() throws Exception
     {
 		try
@@ -80,16 +80,16 @@ public class ViewApplicationStateAction extends WebworkAbstractAction
 		{
 			t.printStackTrace();
 		}
-
+		
 		this.applicationSettingsOk 	= true;
 		this.testQueriesOk 			= true;
-
+		
 		try
 		{
 			File testAsset = new File(CmsPropertyHandler.getProperty("digitalAssetPath") + File.separator + "test.txt");
 			FileHelper.writeToFile(testAsset, "ViewApplicationState checking file permissions in asset directory", false);
 			testAsset.delete();
-
+			
 			File testLog = new File(new File(CmsPropertyHandler.getProperty("logPath")).getParent() + File.separator + "test.txt");
 			FileHelper.writeToFile(testLog, "ViewApplicationState checking file permissions in logs directory", false);
 			testLog.delete();
@@ -98,14 +98,14 @@ public class ViewApplicationStateAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			CmsLogger.logSevere(e.getMessage(), e);            
 		}
-
+		
         return "success";
     }
+    
 
-
-
+    
 	public boolean getIsApplicationSettingsOk()
 	{
 		return applicationSettingsOk;

@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -24,27 +24,30 @@
 package org.infoglue.cms.security;
 
 import java.io.*;
+import java.security.Principal;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.CacheController;
 
 /**
- * This filter protects actions withing InfoGlue from access without authentication.
+ * This filter protects actions withing InfoGlue from access without authentication. 
  * It is very generic and can use any authentication module. The filter is responsible for reading the
  * settings and invoking the right authentication module.
  */
 
-public class InfoGlueAuthenticationFilter implements Filter
+public class InfoGlueAuthenticationFilter implements Filter 
 {
 	public final static String INFOGLUE_FILTER_USER = "org.infoglue.cms.security.user";
-
+	
  	public static String loginUrl 				= null;
 	public static String invalidLoginUrl 		= null;
 	public static String authenticatorClass 	= null;
@@ -56,8 +59,8 @@ public class InfoGlueAuthenticationFilter implements Filter
 	public static String casValidateUrl			= null;
 	public static String casServiceUrl			= null;
 	public static String casRenew				= null;
-
-	public void init(FilterConfig config) throws ServletException
+ 	
+	public void init(FilterConfig config) throws ServletException 
 	{
 		loginUrl 			= config.getInitParameter("org.infoglue.cms.security.loginUrl");
 		invalidLoginUrl 	= config.getInitParameter("org.infoglue.cms.security.invalidLoginUrl");
@@ -69,14 +72,14 @@ public class InfoGlueAuthenticationFilter implements Filter
 		casValidateUrl		= config.getInitParameter("org.infoglue.cms.security.casValidateUrl");
 		casServiceUrl		= config.getInitParameter("org.infoglue.cms.security.casServiceUrl");
 		//casRenew			= config.getInitParameter("org.infoglue.cms.security.casRenew");
-
+			    
 		if(extraParametersFile != null)
 		{
 			try
 			{
 				extraProperties = new Properties();
-				extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraParametersFile));
-			}
+				extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraParametersFile));	
+			}	
 			catch(Exception e)
 			{
 				CmsLogger.logSevere("Error loading properties from file " + "/" + extraParametersFile + ". Reason:" + e.getMessage());
@@ -86,56 +89,62 @@ public class InfoGlueAuthenticationFilter implements Filter
 	}
 
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException
-    {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException 
+    {		
 		HttpServletRequest httpServletRequest = (HttpServletRequest)request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse)response;
-
+		
 		String URI = httpServletRequest.getRequestURI();
     	if(URI.indexOf(loginUrl) > 0 || URI.indexOf("UpdateCache") > 0  || URI.indexOf("InvokeWorkflow") > 0)
 		{
-			fc.doFilter(request, response);
+			fc.doFilter(request, response); 
 			return;
    	 	}
-
+						
 		// make sure we've got an HTTP request
 		if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse))
 		  throw new ServletException("InfoGlue Filter protects only HTTP resources");
-
+	
 		HttpSession session = ((HttpServletRequest)request).getSession();
+		
+		String sessionTimeout = CmsPropertyHandler.getProperty("session.timeout");
+		if(sessionTimeout == null)
+		    sessionTimeout = "1800";
+		
+		session.setMaxInactiveInterval(new Integer(sessionTimeout).intValue());
 
 		// if our attribute's already present, don't do anything
 		//CmsLogger.logInfo("User:" + session.getAttribute(INFOGLUE_FILTER_USER));
-		if (session != null && session.getAttribute(INFOGLUE_FILTER_USER) != null)
+		if (session != null && session.getAttribute(INFOGLUE_FILTER_USER) != null) 
 		{
 			//CmsLogger.logInfo("Found user in session:" + session.getAttribute(INFOGLUE_FILTER_USER));
 		  	fc.doFilter(request, response);
 		  	return;
 		}
-
+		
 		// otherwise, we need to authenticate somehow
 		try
 		{
 			String authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
-
+			
 			if(authenticatedUserName != null)
-			{
+			{	
 				InfoGluePrincipal user = getAuthenticatedUser(authenticatedUserName);
 				if(user == null || (!user.getIsAdministrator() && !hasAuthorizedRole(user)))
-				{
+				{	
 					//throw new Exception("This user is not authorized to log in...");
 					httpServletResponse.sendRedirect("unauthorizedLogin.jsp");
 					//fc.doFilter(request, response);
 					return;
 				}
-
+				
 				//TODO - we must fix so these caches are individual to the person - now a login will slow down for all
 				CacheController.clearCache("authorizationCache");
 
 				// Store the authenticated user in the session
 				if(session != null)
 					session.setAttribute(INFOGLUE_FILTER_USER, user);
-
+				
 				fc.doFilter(request, response);
 				return;
 			}
@@ -158,7 +167,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 
   	    if(authConstraint == null || authConstraint.equalsIgnoreCase(""))
   	        return true;
-
+  	    
   	    Iterator rolesIterator = user.getRoles().iterator();
   	    while(rolesIterator.hasNext())
   	    {
@@ -170,14 +179,14 @@ public class InfoGlueAuthenticationFilter implements Filter
   	            break;
   	        }
   	    }
-
+  	    
   	    return isAuthorized;
   	}
 
-  	private String authenticateUser(HttpServletRequest request, HttpServletResponse response, FilterChain fc) throws ServletException, Exception
+  	private String authenticateUser(HttpServletRequest request, HttpServletResponse response, FilterChain fc) throws ServletException, Exception 
   	{
   		String authenticatedUserName = null;
-
+  		
   		AuthenticationModule authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
 		authenticationModule.setAuthenticatorClass(authenticatorClass);
 		authenticationModule.setAuthorizerClass(authorizerClass);
@@ -188,34 +197,34 @@ public class InfoGlueAuthenticationFilter implements Filter
 		authenticationModule.setCasRenew(casRenew);
 		authenticationModule.setCasServiceUrl(casServiceUrl);
 		authenticationModule.setCasValidateUrl(casValidateUrl);
-
+		
 		authenticatedUserName = authenticationModule.authenticateUser(request, response, fc);
-
+		
 		return authenticatedUserName;
   	}
-
-
+  	
+  	
   	/**
   	 * This method fetches the roles and other stuff for the user by invoking the autorizer-module.
   	 */
-
-	private InfoGluePrincipal getAuthenticatedUser(String userName) throws ServletException, Exception
+  	
+	private InfoGluePrincipal getAuthenticatedUser(String userName) throws ServletException, Exception 
 	{
 		AuthorizationModule authorizationModule = (AuthorizationModule)Class.forName(authorizerClass).newInstance();
 		authorizationModule.setExtraProperties(extraProperties);
 		CmsLogger.logInfo("authorizerClass:" + authorizerClass + ":" + authorizationModule.getClass().getName());
-
+		
 		InfoGluePrincipal infoGluePrincipal = authorizationModule.getAuthorizedInfoGluePrincipal(userName);
 		CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal);
 		CmsLogger.logInfo("roles:" + infoGluePrincipal.getRoles());
-
-		return infoGluePrincipal;
+		
+		return infoGluePrincipal;		
   	}
 
-
+	
 	//TODO - These getters are an ugly way of getting security properties unless initialized by the filter.
 	//We should handle this different later on.
-
+	
 	public static void initializeProperties() throws SystemException
 	{
 		try
@@ -228,23 +237,23 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    casRenew 			= CmsPropertyHandler.getProperty("casRenew");
 		    casServiceUrl 		= CmsPropertyHandler.getProperty("casServiceUrl");
 		    casValidateUrl 		= CmsPropertyHandler.getProperty("casValidateUrl");
-
+		    
 		    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraPropertiesFile");
-
+		    
 		    if(extraPropertiesFile != null)
 			{
 				try
 				{
 					extraProperties = new Properties();
-					extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraPropertiesFile));
-				}
+					extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraPropertiesFile));	
+				}	
 				catch(Exception e)
 				{
 					CmsLogger.logSevere("Error loading properties from file " + "/" + extraPropertiesFile + ". Reason:" + e.getMessage());
 					e.printStackTrace();
 				}
 			}
-
+			    
 		    CmsLogger.logInfo("authenticatorClass:" + authenticatorClass);
 		    CmsLogger.logInfo("authorizerClass:" + authorizerClass);
 		    CmsLogger.logInfo("invalidLoginUrl:" + invalidLoginUrl);
@@ -262,3 +271,4 @@ public class InfoGlueAuthenticationFilter implements Filter
 	}
 
 }
+ 

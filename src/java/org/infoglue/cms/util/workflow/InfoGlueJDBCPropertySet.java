@@ -5,15 +5,15 @@
 * ===============================================================================
 *
 *  Copyright (C)
-*
+* 
 * This program is free software; you can redistribute it and/or modify it under
 * the terms of the GNU General Public License version 2, as published by the
 * Free Software Foundation. See the file LICENSE.html for more information.
-*
+* 
 * This program is distributed in the hope that it will be useful, but WITHOUT
 * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
 * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-*
+* 
 * You should have received a copy of the GNU General Public License along with
 * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -27,6 +27,7 @@ import com.opensymphony.module.propertyset.*;
 import com.opensymphony.module.propertyset.database.JDBCPropertySet;
 
 import com.opensymphony.util.Data;
+import com.opensymphony.util.EJBUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +38,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
+import javax.sql.DataSource;
 
 
 /**
@@ -79,11 +81,11 @@ import java.util.Date;
  *  <li><b>col.number</b> - column name for the number value</li>
  * </ul>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author <a href="mailto:epesh@hotmail.com">Joseph B. Ottinger</a>
  * @author <a href="mailto:plightbo@hotmail.com">Pat Lightbody</a>
  */
-public class InfoGlueJDBCPropertySet extends JDBCPropertySet
+public class InfoGlueJDBCPropertySet extends JDBCPropertySet 
 {
     //~ Static fields/initializers /////////////////////////////////////////////
 
@@ -101,7 +103,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     String colItemType;
     String colNumber;
     String colString;
-
+    
     private String userName;
     private String password;
     private String driverClassName;
@@ -192,7 +194,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     public void init(Map config, Map args) {
         // args
         globalKey = (String) args.get("globalKey");
-
+        
         //super.init(Map config, Map args);
         /*
         // config
@@ -218,7 +220,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         this.driverClassName = (String) config.get("driverClassName");
         this.url = (String) config.get("url");
     }
-
+    
     public void remove(String key) throws PropertyException {
         Connection conn = null;
 
@@ -429,25 +431,25 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         }
     }
 
-    protected Connection getConnection() throws SQLException
+    protected Connection getConnection() throws SQLException 
     {
         Connection conn = null;
-
+		
         CmsLogger.logInfo("Establishing connection to database '" + this.url + "'");
 
-		try
+		try 
 		{
 	        Class.forName(this.driverClassName).newInstance();
 			conn = DriverManager.getConnection(url, this.userName, this.password);
-		}
-		catch (Exception ex)
+		} 
+		catch (Exception ex) 
 		{
 			ex.printStackTrace();
 		}
-
+		
         return conn;
     }
-
+    
     private void closeConnection(Connection conn) {
         try {
             if ((conn != null) && !conn.isClosed()) {
@@ -457,4 +459,4 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
             log.error("Could not close connection");
         }
     }
-}
+} 

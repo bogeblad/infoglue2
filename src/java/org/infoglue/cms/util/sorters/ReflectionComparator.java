@@ -32,7 +32,7 @@ public class ReflectionComparator implements Comparator
 		{
 			Object propertyObject = PropertyUtils.getProperty(o, sortProperty);
 			if(propertyObject instanceof String)
-				return propertyObject.toString().toLowerCase();
+				return (Comparable)propertyObject.toString().toLowerCase();
 			else
 				return (Comparable)propertyObject;
 		}
@@ -42,8 +42,8 @@ public class ReflectionComparator implements Comparator
 			return new Comparable()
 			{
 				public int compareTo(Object o)
-				{
-					return 0;
+				{ 
+					return 0; 
 				}
 			};
 		}

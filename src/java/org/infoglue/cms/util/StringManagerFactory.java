@@ -33,24 +33,15 @@ import java.util.Map;
  *
  * @author <a href="mailto:meat_for_the_butcher@yahoo.com">Patrik Nyborg</a>
  */
-public class StringManagerFactory {
-  // --- [Constants] -----------------------------------------------------------
+public class StringManagerFactory 
+{
 
-  //
-  private static final String SYSTEM       = ".SystemStrings";
-  private static final String PRESENTATION = ".PresentationStrings";
+    private static final String SYSTEM       = ".SystemStrings";
+    private static final String PRESENTATION = ".PresentationStrings";
 
+    // All created StringManager instances.
+	private static Map managers = new HashMap();
 
-
-  // --- [Attributes] ----------------------------------------------------------
-  // --- [Static] --------------------------------------------------------------
-
-  // All created StringManager instances.
-  private static Map managers = new HashMap();
-
-
-
-  // --- [Constructors] --------------------------------------------------------
 
   /**
    * Static class; don't allow instantiation.

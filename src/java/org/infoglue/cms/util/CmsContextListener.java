@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -29,22 +29,23 @@ import java.io.File;
 import org.infoglue.deliver.util.CacheController;
 
 
+
 /**
  * This class functions as the entry-point for all initialization of the Cms-tool.
  * The class responds to the startup or reload of a whole context.
  */
 
-public final class CmsContextListener implements ServletContextListener
+public final class CmsContextListener implements ServletContextListener 
 {
 	private static CacheController cacheController = new CacheController();
-
+	
 	/**
-	 * This method is called when the servlet context is
-	 * initialized(when the Web Application is deployed).
+	 * This method is called when the servlet context is 
+	 * initialized(when the Web Application is deployed). 
 	 * You can initialize servlet context related data here.
      */
-
-    public void contextInitialized(ServletContextEvent event)
+	 
+    public void contextInitialized(ServletContextEvent event) 
     {
 		System.out.println("contextInitialized for cms");
 		try
@@ -57,30 +58,30 @@ public final class CmsContextListener implements ServletContextListener
 			}
 
 			String contextRootPath = event.getServletContext().getRealPath("/");
-			if(!contextRootPath.endsWith("/") && !contextRootPath.endsWith("\\"))
+			if(!contextRootPath.endsWith("/") && !contextRootPath.endsWith("\\")) 
 				contextRootPath = contextRootPath + "/";
-
+			
 			CmsPropertyHandler.setApplicationName("cms");
 			// String up2datePath = event.getServletContext().getRealPath("/") + "ut2date" + File.separator;
 			// CmsPropertyHandler.setProperty("up2datePath", up2datePath);
-
+			
 			System.out.println("contextRootPath:" + contextRootPath);
-			CmsPropertyHandler.setProperty("contextRootPath", contextRootPath);
-
+			CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
+			
 			String logPath = CmsPropertyHandler.getProperty("logPath");
 			if(logPath == null || logPath.equals(""))
 			{
 				logPath = contextRootPath + "logs" + File.separator + "infogluecms.log";
 				CmsPropertyHandler.setProperty("logPath", logPath);
-			}
-
+			}			
+			
 			String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
 			if(URIEncoding == null || URIEncoding.equals(""))
 			{
 				URIEncoding = "ISO-8859-1";
 				CmsPropertyHandler.setProperty("URIEncoding", URIEncoding);
-			}
-
+			}			
+			
 			String assetPath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			if(assetPath == null || assetPath.equals(""))
 			{
@@ -95,7 +96,7 @@ public final class CmsContextListener implements ServletContextListener
 			String intervalString = CmsPropertyHandler.getProperty("cacheExpireInterval");
 			if(intervalString != null)
 				cacheController.setCacheExpireInterval(Integer.parseInt(intervalString));
-
+		
 			//Starting the cache-expire-thread
 			if(cacheController.getExpireCacheAutomatically())
 				cacheController.start();
@@ -108,12 +109,12 @@ public final class CmsContextListener implements ServletContextListener
     }
 
     /**
-     * This method is invoked when the Servlet Context
-     * (the Web Application) is undeployed or
+     * This method is invoked when the Servlet Context 
+     * (the Web Application) is undeployed or 
      * WebLogic Server shuts down.
-     */
+     */			    
 
-    public void contextDestroyed(ServletContextEvent event)
+    public void contextDestroyed(ServletContextEvent event) 
     {
 		System.out.println("contextDestroyed....");
 

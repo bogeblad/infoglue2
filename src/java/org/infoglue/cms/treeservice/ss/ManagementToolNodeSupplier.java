@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -32,17 +32,17 @@ import com.frovi.ss.Tree.BaseNodeSupplier;
 
 /**
  * ContentNodeSupplier.java
- * Created on 2002-sep-30
- * @author Stefan Sik, ss@frovi.com
- *
+ * Created on 2002-sep-30 
+ * @author Stefan Sik, ss@frovi.com 
+ * 
  * Provides tree menu for the management tool
- *
+ * 
  */
 public class ManagementToolNodeSupplier extends BaseNodeSupplier
 {
 
 	private boolean showLeafs = true;
-
+	
 	public ManagementToolNodeSupplier(Integer repositoryId) throws SystemException
 	{
 		if (repositoryId.intValue() == 0)
@@ -50,7 +50,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 		else
 			setRootNode(new ManagementNodeImpl(repositoryId,"root", "ViewRepository.action?repositoryId=" + repositoryId));
 	}
-
+	
 	/**
 	 * @see com.frovi.ss.Tree.BaseNodeSupplier#hasChildren()
 	 */
@@ -70,9 +70,9 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 		int cnt = 1;
 		ArrayList r = new ArrayList();
 		ManagementNodeImpl node;
-
-		if (parentNode.intValue() == 0)
-		{
+				
+		if (parentNode.intValue() == 0)	
+		{	
 			r.add(new ManagementNodeImpl(cnt++, "Repositories", "ViewListRepository.action?title=Repositories"));
 			r.add(new ManagementNodeImpl(cnt++, "SystemUsers", "ViewListSystemUser.action?title=SystemUsers"));
 			r.add(new ManagementNodeImpl(cnt++, "Roles", "ViewListRole.action?title=Roles"));
@@ -82,7 +82,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			//extranetRolesNode.setContainer(true);
 			//extranetRolesNode.setId(new Integer(100 + cnt));
 			//r.add(extranetRolesNode);
-
+			
 			r.add(new ManagementNodeImpl(cnt++, "Languages", "ViewListLanguage.action?title=Languages"));
 			//r.add(new ManagementNodeImpl(cnt++, "Functions", "ViewListFunction.action?title=Functions"));
 			r.add(new ManagementNodeImpl(cnt++, "InterceptionPoints", "ViewListInterceptionPoint.action?title=InterceptionPoints"));
@@ -108,9 +108,9 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 		{
 			//r.add(new ManagementNodeImpl(cnt++, "Permissions", "ViewPermission.action?repositoryId=" + parentNode +"&title=Permissions"));
 			r.add(new ManagementNodeImpl(cnt++, "Permissions", "ViewAccessRights.action?interceptionPointCategory=Repository&extraParameters=" + parentNode +"&colorScheme=ManagementTool&returnAddress=ViewRepositoryOverview.action?repositoryId=" + parentNode));
-			r.add(new ManagementNodeImpl(cnt++, "Languages", "ViewListRepositoryLanguage.action?repositoryId=" + parentNode + "&title=Languages"));
+			r.add(new ManagementNodeImpl(cnt++, "Languages", "ViewListRepositoryLanguage.action?repositoryId=" + parentNode + "&title=Languages"));			
 		}
-
+		
 		return r;
 	}
 
@@ -131,7 +131,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 	private List getExtranetRoleChildren(Integer parentExtranetRoleId)
 	{
 		List children = new ArrayList();
-
+		
 		List childrenList = null;
 		try
 		{
@@ -141,7 +141,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 		{
 			e.printStackTrace();
 		}
-
+	
 		if(childrenList != null)
 		{
 			Iterator i = childrenList.iterator();
@@ -153,11 +153,11 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 					BaseNode node =  new ManagementNodeImpl(vo.getId(), vo.getName(), "ViewListExtranetRole.action?title=ExtranetRoles&parentExtranetRoleId=" + vo.getId());
 					node.setId(new Integer(-vo.getId().intValue()));
 					node.setContainer(true);
-
-					node.setChildren((vo.getChildCount().intValue() > 0)); //
-
+				
+					node.setChildren((vo.getChildCount().intValue() > 0)); // 
+				
 					node.setTitle(vo.getName());
-
+				
 					children.add(node);
 				//}
 				//else
@@ -168,14 +168,14 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 				//		node.setId(vo.getId());
 				//		node.setContainer(false);
 				//		node.setTitle(vo.getName());
-				//
-				//		cacheLeafs.add(node);
+				//	
+				//		cacheLeafs.add(node);				
 				//	}
 				//}
-
+			
 			}
 		}
-
+		
 		return children;
 	}
 	*/
