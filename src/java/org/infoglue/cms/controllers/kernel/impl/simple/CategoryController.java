@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.2 2005/03/31 09:06:57 mattias Exp $
+ * $Id: CategoryController.java,v 1.3 2005/03/31 13:52:23 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -178,7 +178,6 @@ public class CategoryController extends BaseController
 			if(!getIsAccessApproved(child.getCategoryId(), infogluePrincipal))
 			{
 			    iter.remove();
-			    System.out.println("Removed " + child.getName());
 			}
 			
 			List subChildren = findAllActiveChildren(child.getId());
@@ -189,7 +188,6 @@ public class CategoryController extends BaseController
 			    if(getIsAccessApproved(subChild.getCategoryId(), infogluePrincipal))
 				{
 				    child.getChildren().add(subChild);
-				    System.out.println("Added " + subChild.getName());
 				}
 			}
 		}
