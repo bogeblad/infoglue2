@@ -87,14 +87,14 @@
 		<table width="100%" border="0">
 		  <tr>
 		    <td>State a name or choose from list:<br>
-		        <input type="text" id="searchField" name="searchField" style="width:200px;"/ onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();">
+		        <input type="text" id="searchField" name="searchField" style="font-size: 10px; width:200px;"/ onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();">
 		      </td>
 		    <td>&nbsp;</td>
 		    <td valign="bottom">Current Members</td>
 		  </tr>
 		  <tr>
 		    <td>
-		    	<SELECT $readonly id="unassignedUserNameList" NAME="unassignedUserNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="width:200px;">
+		    	<SELECT $readonly id="unassignedUserNameList" NAME="unassignedUserNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="font-size: 10px; width:200px;">
 		          	#foreach ($infoGluePrincipal in $allInfoGluePrincipals)
 						#set($checked = "")
 						#foreach ($assignedInfoGluePrincipal in $assignedInfoGluePrincipals)
@@ -116,7 +116,7 @@
 				<INPUT TYPE="button" NAME="left" VALUE="All &lt;&lt;" ONCLICK="opt.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
 		    </td>
 		    <td>
-		      	<SELECT $readonly id="userName" name="userName" multiple size="10" onDblClick="opt.transferLeft()" style="width:200px;">
+		      	<SELECT $readonly id="userName" name="userName" multiple size="10" onDblClick="opt.transferLeft()" style="font-size: 10px; width:200px;">
 		        	#foreach ($assignedInfoGluePrincipal in $assignedInfoGluePrincipals)
 						<option value="$assignedInfoGluePrincipal.name">$assignedInfoGluePrincipal.name</option>
 					#end
@@ -129,6 +129,7 @@
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
+<!--
 	<tr>
 		<td class="biglabel">Base group properties on content type definition</td>
 	</tr>
@@ -148,6 +149,7 @@
 			</select>
 		</td>
 	</tr>
+-->
 	#if($supportsUpdate)
 	<tr>
 		<td>&nbsp;</td>

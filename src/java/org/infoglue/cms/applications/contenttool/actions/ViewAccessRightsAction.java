@@ -26,6 +26,8 @@ package org.infoglue.cms.applications.contenttool.actions;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
@@ -34,6 +36,7 @@ import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -53,9 +56,6 @@ public class ViewAccessRightsAction extends WebworkAbstractAction
 	private List interceptionPointVOList = new ArrayList();
 	private List roleList = null;
 	private List groupList = null;
-	//private List accessRightVOList = null;
-	//private List extranetRoleVOList = null;
-	//private List extranetAccessVOList = null;	 
     
     public String doExecute() throws Exception
     {
@@ -105,10 +105,33 @@ public class ViewAccessRightsAction extends WebworkAbstractAction
 	
 	public boolean getHasAccessRight(Integer interceptionPointId, String extraParameters, String roleName) throws SystemException, Bug
 	{
-		List accessRights = AccessRightController.getController().getAccessRightVOList(interceptionPointId, extraParameters, roleName);
-		boolean hasAccessRight = (accessRights.size() > 0) ? true : false;
-		CmsLogger.logInfo("hasAccessRight:" + hasAccessRight);
-		return hasAccessRight;
+	    try
+	    {
+			List accessRights = AccessRightController.getController().getAccessRightVOList(interceptionPointId, extraParameters, roleName);
+			boolean hasAccessRight = (accessRights.size() > 0) ? true : false;
+			CmsLogger.logInfo("hasAccessRight:" + hasAccessRight);
+			return hasAccessRight;
+	    }
+	    catch(Exception e)
+	    {
+	        e.printStackTrace();
+	        throw new SystemException(e);
+	    }
+	}
+	
+	public Integer getAccessRightId(Integer interceptionPointId, String extraParameters) throws SystemException, Bug
+	{
+		List accessRights = AccessRightController.getController().getAccessRightVOListOnly(interceptionPointId, extraParameters);
+		System.out.println("accessRights:" + accessRights.size());
+		return accessRights.size() > 0 ? ((AccessRightVO)accessRights.get(0)).getAccessRightId() : null;
+	}
+	
+	public Collection getAccessRightGroups(Integer accessRightId) throws SystemException, Bug
+	{
+	    System.out.println("********accessRightId:" + accessRightId);
+		Collection accessRightGroups = AccessRightController.getController().getAccessRightGroupVOList(accessRightId);
+		System.out.println("accessRightGroups:" + accessRightGroups.size());
+		return accessRightGroups;
 	}
 	
 	/*        

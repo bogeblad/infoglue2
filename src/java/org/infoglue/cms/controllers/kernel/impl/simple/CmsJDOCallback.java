@@ -29,7 +29,10 @@ import org.exolab.castor.persist.spi.CallbackInterceptor;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
 
+import org.infoglue.cms.entities.management.AccessRightGroup;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
@@ -104,7 +107,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
 			}
-			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()))
+			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
@@ -195,7 +198,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
 			}
-			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()))
+			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
@@ -256,7 +259,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
 			}
-			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()))
+			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");

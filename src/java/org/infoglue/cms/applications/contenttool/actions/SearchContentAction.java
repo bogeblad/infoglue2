@@ -113,7 +113,16 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		catch(Exception e)
 		{
 		}
-		
+		/*
+		System.out.println("this.repositoryId:" + this.repositoryId);
+		System.out.println("this.getSearchString():" + this.getSearchString());
+		System.out.println("maxRows:" + maxRows);
+		System.out.println("name:" + name);
+		System.out.println("languageId:" + languageId);
+		System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
+		System.out.println("caseSensitive:" + caseSensitive);
+		System.out.println("stateId:" + stateId);
+		*/
 		contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
 	    
 	    this.principals = UserControllerProxy.getController().getAllUsers();

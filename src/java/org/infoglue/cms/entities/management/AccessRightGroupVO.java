@@ -26,61 +26,36 @@ package org.infoglue.cms.entities.management;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
-public class AccessRightVO implements BaseEntityVO, Cloneable
+public class AccessRightGroupVO implements BaseEntityVO, Cloneable
 {
-	private java.lang.Integer accessRightId;
-	private java.lang.String name;
-	private java.lang.Integer interceptionPointId;
-	private java.lang.String interceptionPointName;
-	private java.lang.String parameters = "";
-	//private java.lang.String roleName;
+	private java.lang.Integer accessRightGroupId;
+	private java.lang.String groupName;
   	
 	public Integer getId() 
 	{
-		return getAccessRightId();
+		return getAccessRightGroupId();
 	}
 
-    public java.lang.Integer getAccessRightId()
+    public java.lang.Integer getAccessRightGroupId()
     {
-        return this.accessRightId;
+        return this.accessRightGroupId;
     }
                 
-    public void setAccessRightId(java.lang.Integer accessRightId)
+    public void setAccessRightGroupId(java.lang.Integer accessRightGroupId)
     {
-        this.accessRightId = accessRightId;
+        this.accessRightGroupId = accessRightGroupId;
     }
     
-	public java.lang.String getName()
-	{
-		return this.name;
-	}
+    public java.lang.String getGroupName()
+    {
+        return groupName;
+    }
 
-	public void setName(java.lang.String name)
-	{
-		this.name = name;
-	}
-
-	public java.lang.String getParameters()
-	{
-		return this.parameters;
-	}
-
-	public void setParameters(java.lang.String parameters)
-	{
-		this.parameters = parameters;
-	}
-/*
-	public java.lang.String getRoleName()
-	{
-		return this.roleName;
-	}
-
-	public void setRoleName(java.lang.String roleName)
-	{
-		this.roleName = roleName;
-	}
-*/
-
+    public void setGroupName(java.lang.String groupName)
+    {
+        this.groupName = groupName;
+    }
+    
 	public ConstraintExceptionBuffer validate() 
 	{
     	
@@ -90,29 +65,9 @@ public class AccessRightVO implements BaseEntityVO, Cloneable
 		return ceb;
 	}
 
-	public AccessRightVO createCopy() throws Exception
+	public AccessRightGroupVO createCopy() throws Exception
 	{
-		return (AccessRightVO)this.clone();
+		return (AccessRightGroupVO)this.clone();
 	}
-	
-    public Integer getInterceptionPointId()
-    {
-        return interceptionPointId;
-    }
-    
-    public void setInterceptionPointId(Integer interceptionPointId)
-    {
-        this.interceptionPointId = interceptionPointId;
-    }
-    
-    public String getInterceptionPointName()
-    {
-        return interceptionPointName;
-    }
-    
-    public void setInterceptionPointName(String interceptionPointName)
-    {
-        this.interceptionPointName = interceptionPointName;
-    }
 }
         

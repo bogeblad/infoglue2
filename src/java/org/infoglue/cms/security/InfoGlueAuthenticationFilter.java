@@ -217,6 +217,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		InfoGluePrincipal infoGluePrincipal = authorizationModule.getAuthorizedInfoGluePrincipal(userName);
 		CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal);
 		CmsLogger.logInfo("roles:" + infoGluePrincipal.getRoles());
+		CmsLogger.logInfo("groups:" + infoGluePrincipal.getGroups());
 		
 		return infoGluePrincipal;		
   	}

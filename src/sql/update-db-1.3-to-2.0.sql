@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.8 2005/03/16 16:29:16 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.9 2005/03/18 15:54:55 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -152,3 +152,18 @@ CREATE TABLE cmSystemUserGroup (
   groupName varchar(200) NOT NULL default '',
   PRIMARY KEY  (userName,groupName)
 ) TYPE=MyISAM;
+
+CREATE TABLE cmAccessRightRole (
+  accessRightRoleId int(11) NOT NULL auto_increment,
+  accessRightId int(11) NOT NULL default '0',
+  roleName varchar(150) NOT NULL default '',
+  PRIMARY KEY  (accessRightRoleId),
+) TYPE=MyISAM;
+
+CREATE TABLE cmAccessRightGroup (
+  accessRightGroupId int(11) NOT NULL auto_increment,
+  accessRightId int(11) NOT NULL default '0',
+  groupName varchar(150) NOT NULL default '',
+  PRIMARY KEY  (accessRightGroupId),
+) TYPE=MyISAM;
+

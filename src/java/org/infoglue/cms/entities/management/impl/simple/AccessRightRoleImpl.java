@@ -23,24 +23,23 @@
 
 package org.infoglue.cms.entities.management.impl.simple;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightRole;
+import org.infoglue.cms.entities.management.AccessRightRoleVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 
-public class AccessRightImpl implements AccessRight
+public class AccessRightRoleImpl implements AccessRightRole
 {
-	private AccessRightVO valueObject = new AccessRightVO();
-	private InterceptionPoint interceptionPoint = null;
-	private Collection roles = new ArrayList();
-	private Collection groups = new ArrayList();
+	private AccessRightRoleVO valueObject = new AccessRightRoleVO();
+	private AccessRight accessRight = null;
 	
-    public java.lang.Integer getAccessRightId()
+    public java.lang.Integer getAccessRightRoleId()
     {
-        return this.valueObject.getAccessRightId();
+        return this.valueObject.getAccessRightRoleId();
     }
       
 	public Object getIdAsObject()
@@ -48,31 +47,11 @@ public class AccessRightImpl implements AccessRight
 		return getId();
 	}
         
-    public void setAccessRightId(java.lang.Integer accessRightId)
+    public void setAccessRightRoleId(java.lang.Integer accessRightRoleId)
     {
-        this.valueObject.setAccessRightId(accessRightId);
+        this.valueObject.setAccessRightRoleId(accessRightRoleId);
     }
       
-    public java.lang.String getName()
-    {
-        return this.valueObject.getName(); 
-    }
-            
-    public void setName(java.lang.String name)
-    {
-        this.valueObject.setName(name);
-    }
-
-	public String getParameters()
-	{
-        return this.valueObject.getParameters();
-	}
-
-	public void setParameters(String parameters)
-	{
-        this.valueObject.setParameters(parameters);
-	}
-/*      
 	public java.lang.String getRoleName()
 	{
 		return this.valueObject.getRoleName(); 
@@ -82,30 +61,28 @@ public class AccessRightImpl implements AccessRight
 	{
 		this.valueObject.setRoleName(roleName);
 	}
-*/	       
-	public InterceptionPoint getInterceptionPoint()
+
+    public AccessRight getAccessRight()
 	{
-		return this.interceptionPoint;
+		return this.accessRight;
 	}
 	
-	public void setInterceptionPoint(InterceptionPoint interceptionPoint)
+	public void setAccessRight(AccessRight accessRight)
 	{
-	    this.valueObject.setInterceptionPointId(interceptionPoint.getId());
-	    this.valueObject.setInterceptionPointName(interceptionPoint.getName());
-		this.interceptionPoint =  interceptionPoint;
+	    this.accessRight = accessRight;
 	}
 	
 	public Integer getId()
 	{
-		return this.getAccessRightId();
+		return this.getAccessRightRoleId();
 	}
 
-	public AccessRightVO getValueObject()
+	public AccessRightRoleVO getValueObject()
 	{
 		return this.valueObject;
 	}
         
-	public void setValueObject(AccessRightVO valueObject)
+	public void setValueObject(AccessRightRoleVO valueObject)
 	{
 		this.valueObject = valueObject;
 	}   
@@ -117,26 +94,7 @@ public class AccessRightImpl implements AccessRight
 
 	public void setVO(BaseEntityVO valueObject) 
 	{
-		setValueObject((AccessRightVO) valueObject);
+		setValueObject((AccessRightRoleVO) valueObject);
 	}
 	
-    public Collection getGroups()
-    {
-        return groups;
-    }
-    
-    public void setGroups(Collection groups)
-    {
-        this.groups = groups;
-    }
-    
-    public Collection getRoles()
-    {
-        return roles;
-    }
-    
-    public void setRoles(Collection roles)
-    {
-        this.roles = roles;
-    }
 }        

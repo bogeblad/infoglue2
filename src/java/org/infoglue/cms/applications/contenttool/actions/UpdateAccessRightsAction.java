@@ -44,6 +44,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 public class UpdateAccessRightsAction extends WebworkAbstractAction
 {
 	private Integer interceptionPointId;
+	private Integer accessRightId;
 	private String parameters = "";
 	private String roleName;
 	private String returnAddress;
@@ -83,8 +84,45 @@ public class UpdateAccessRightsAction extends WebworkAbstractAction
 		ceb.throwIfNotEmpty();
 		
 		AccessRightController.getController().update(this.parameters, this.getRequest());
-		//ExtranetAccessController.getController().update(this.name, this.value, this.getRequest());
-
+	
+		this.url = getResponse().encodeRedirectURL(this.returnAddress);
+		//getResponse().sendRedirect(url);
+		
+		return "success";
+	}
+	
+	public String doAddGroups() throws Exception
+    {   
+		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+		
+		if(interceptionPointCategory.equalsIgnoreCase("Content"))
+		{	
+			Integer contentId = new Integer(parameters);
+			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+			{
+				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
+					ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+			}
+		}
+		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
+		{	
+			Integer siteNodeVersionId = new Integer(parameters);
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+			{
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
+					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+			}
+		}
+		
+		ceb.throwIfNotEmpty();
+		
+		String[] groupNames = this.getRequest().getParameterValues("groupName");
+		AccessRightController.getController().updateGroups(this.accessRightId, this.parameters, groupNames);
+		
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
 		//getResponse().sendRedirect(url);
 		
@@ -119,7 +157,17 @@ public class UpdateAccessRightsAction extends WebworkAbstractAction
 		this.interceptionPointId = interceptionPointId;
 	}
 
-	public String getParameters()
+    public Integer getAccessRightId()
+    {
+        return accessRightId;
+    }
+    
+    public void setAccessRightId(Integer accessRightId)
+    {
+        this.accessRightId = accessRightId;
+    }
+
+    public String getParameters()
 	{
 		return this.parameters;
 	}

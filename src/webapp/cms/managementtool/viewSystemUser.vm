@@ -8,20 +8,30 @@
 
 <SCRIPT LANGUAGE="JavaScript">
 
-	var opt = new OptionTransfer("unassignedRoleNameList","roleName");
-	opt.setAutoSort(true);
-	opt.setDelimiter(",");
-	opt.saveRemovedLeftOptions("removedLeft");
-	opt.saveRemovedRightOptions("removedRight");
-	opt.saveAddedLeftOptions("addedLeft");
-	opt.saveAddedRightOptions("addedRight");
-	opt.saveNewLeftOptions("newLeft");
-	opt.saveNewRightOptions("newRight");
+	var opt1 = new OptionTransfer("unassignedRoleNameList","roleName");
+	opt1.setAutoSort(true);
+	opt1.setDelimiter(",");
+	opt1.saveRemovedLeftOptions("removedLeft");
+	opt1.saveRemovedRightOptions("removedRight");
+	opt1.saveAddedLeftOptions("addedLeft");
+	opt1.saveAddedRightOptions("addedRight");
+	opt1.saveNewLeftOptions("newLeft");
+	opt1.saveNewRightOptions("newRight");
 	
-	function markRoleNearestOption()
+	var opt2 = new OptionTransfer("unassignedGroupNameList","groupName");
+	opt2.setAutoSort(true);
+	opt2.setDelimiter(",");
+	opt2.saveRemovedLeftOptions("removedLeft");
+	opt2.saveRemovedRightOptions("removedRight");
+	opt2.saveAddedLeftOptions("addedLeft");
+	opt2.saveAddedRightOptions("addedRight");
+	opt2.saveNewLeftOptions("newLeft");
+	opt2.saveNewRightOptions("newRight");
+
+	function markNearestOption(searchFieldName, optionBoxName)
 	{
-		var searchField = document.getElementById("searchField");
-		var list        = document.getElementById("unassignedRoleNameList");
+		var searchField = document.getElementById(searchFieldName);
+		var list        = document.getElementById(optionBoxName);
 		//alert("list:" + list);
 		
 	  	sNode = list.options;
@@ -39,33 +49,6 @@
 	  	}
 	}
 	
-	var opt = new OptionTransfer("unassignedGroupNameList","groupName");
-	opt.setAutoSort(true);
-	opt.setDelimiter(",");
-	opt.saveRemovedLeftOptions("removedLeft");
-	opt.saveRemovedRightOptions("removedRight");
-	opt.saveAddedLeftOptions("addedLeft");
-	opt.saveAddedRightOptions("addedRight");
-	opt.saveNewLeftOptions("newLeft");
-	opt.saveNewRightOptions("newRight");
-	
-	function markGroupNearestOption()
-	{
-		var searchField = document.getElementById("groupSearchField");
-		var list        = document.getElementById("unassignedGroupNameList");
-		//alert("list:" + list);
-		
-	  	sNode = list.options;
-	  	for(i=0;i<sNode.length;i++)
-		{
-			currentNode = sNode[i];
-			if(currentNode.text.toLowerCase().indexOf(searchField.value.toLowerCase()) > -1)
-			{
-				list.selectedIndex = i;
-			  	break;		
-			}
-	  	}
-	}
 	
 	function save(form)
 	{
@@ -131,14 +114,14 @@
 		<table width="50%" border="0">
 		  <tr>
 		    <td>State a name or choose from list:<br>
-		        <input type="text" id="searchField" name="searchField" style="width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markRolesNearestOption();" onchange="javascript:markRolesNearestOption();">
+		        <input type="text" id="roleSearchField" name="roleSearchField" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption('roleSearchField', 'unassignedRoleNameList');" onchange="javascript:markNearestOption('roleSearchField', 'unassignedRoleNameList');">
 		      </td>
 		    <td>&nbsp;</td>
 		    <td valign="bottom">Current Roles</td>
 		  </tr>
 		  <tr>
 		    <td>
-		    	<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="width:200px; border: solid 1px #C2D0E2;">
+		    	<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
 		          	#foreach ($roleVO in $allRoles)
 						#set($checked = "")
 						#foreach ($assignedRoleVO in $assignedRoles)
@@ -154,13 +137,13 @@
 		        </select>
 		    </td>
 		    <td align="center">
-		        <INPUT TYPE="button" NAME="roleRight" VALUE="&gt;&gt;" ONCLICK="opt.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="roleRight" VALUE="All &gt;&gt;" ONCLICK="opt.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="roleLeft" VALUE="&lt;&lt;" ONCLICK="opt.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="roleLeft" VALUE="All &lt;&lt;" ONCLICK="opt.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
+		        <INPUT TYPE="button" NAME="roleRight" VALUE="&gt;&gt;" ONCLICK="opt1.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleRight" VALUE="All &gt;&gt;" ONCLICK="opt1.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleLeft" VALUE="&lt;&lt;" ONCLICK="opt1.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleLeft" VALUE="All &lt;&lt;" ONCLICK="opt1.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
 		    </td>
 		    <td>
-		      	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt.transferLeft()" style="width:200px; border: solid 1px #C2D0E2;">
+		      	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
 		        	#foreach ($assignedRoleVO in $assignedRoles)
 						<option value="$assignedRoleVO.name">$assignedRoleVO.name</option>
 					#end
@@ -182,14 +165,14 @@
 		<table width="50%" border="0">
 		  <tr>
 		    <td>State a name or choose from list:<br>
-		        <input type="text" id="searchField" name="searchField" style="width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markGroupsNearestOption();" onchange="javascript:markGroupsNearestOption();">
+		        <input type="text" id="groupSearchField" name="groupSearchField" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption('groupSearchField', 'unassignedGroupNameList');" onchange="javascript:markNearestOption('groupSearchField', 'unassignedGroupNameList');">
 		      </td>
 		    <td>&nbsp;</td>
 		    <td valign="bottom">Current Groups</td>
 		  </tr>
 		  <tr>
 		    <td>
-		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="width:200px; border: solid 1px #C2D0E2;">
+		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt2.transferRight()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
 		          	#foreach ($groupVO in $allGroups)
 						#set($checked = "")
 						#foreach ($assignedGroupVO in $assignedGroups)
@@ -205,13 +188,13 @@
 		        </select>
 		    </td>
 		    <td align="center">
-		        <INPUT TYPE="button" NAME="groupRight" VALUE="&gt;&gt;" ONCLICK="opt.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="groupRight" VALUE="All &gt;&gt;" ONCLICK="opt.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="groupLeft" VALUE="&lt;&lt;" ONCLICK="opt.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="groupLeft" VALUE="All &lt;&lt;" ONCLICK="opt.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
+		        <INPUT TYPE="button" NAME="groupRight" VALUE="&gt;&gt;" ONCLICK="opt2.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupRight" VALUE="All &gt;&gt;" ONCLICK="opt2.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupLeft" VALUE="&lt;&lt;" ONCLICK="opt2.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupLeft" VALUE="All &lt;&lt;" ONCLICK="opt2.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
 		    </td>
 		    <td>
-		      	<SELECT $readonly id="groupName" name="groupName" multiple size="10" onDblClick="opt.transferLeft()" style="width:200px; border: solid 1px #C2D0E2;">
+		      	<SELECT $readonly id="groupName" name="groupName" multiple size="10" onDblClick="opt2.transferLeft()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
 		        	#foreach ($assignedGroupVO in $assignedGroups)
 						<option value="$assignedGroupVO.name">$assignedGroupVO.name</option>
 					#end
@@ -265,7 +248,8 @@
 #if($supportsUpdate)
 <script type="text/javascript">
 	//alert("Initializing form..");
-	opt.init(document.editForm);
+	opt1.init(document.editForm);
+	opt2.init(document.editForm);
 </script>
 #end
 

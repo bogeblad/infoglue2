@@ -25,13 +25,20 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightGroup;
+import org.infoglue.cms.entities.management.AccessRightGroupVO;
+import org.infoglue.cms.entities.management.AccessRightRole;
+import org.infoglue.cms.entities.management.AccessRightRoleVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
-import org.infoglue.cms.entities.management.AccessVO;
+import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
-import org.infoglue.cms.entities.management.impl.simple.AccessImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.exception.*;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsLogger;
@@ -86,6 +93,35 @@ public class AccessRightController extends BaseController
 		return this.getAllVOObjects(AccessRightImpl.class, "accessRightId", db);
 	}
 
+	public List getAccessRightGroupVOList(Integer accessRightId) throws SystemException, Bug
+	{
+		List accessRightGroupVOList = new ArrayList();
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+			
+			AccessRight accessRight = this.getAccessRightWithId(accessRightId, db);
+			if(accessRight != null)
+			    accessRightGroupVOList = toVOList(accessRight.getGroups());
+			
+	        CmsLogger.logInfo("accessRightGroupVOList:" + accessRightGroupVOList.size());
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+		    e.printStackTrace();
+			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return accessRightGroupVOList;	
+	}
+	
 	public List getAccessRightVOList(Integer interceptionPointId, String parameters, String roleName) throws SystemException, Bug
 	{
 		List accessRightVOList = null;
@@ -104,6 +140,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
+		    e.printStackTrace();
 			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
@@ -112,6 +149,7 @@ public class AccessRightController extends BaseController
 		return accessRightVOList;	
 	}
 
+	
 	public List getAccessRightVOList(Database db, Integer interceptionPointId, String parameters, String roleName) throws SystemException, Bug
 	{
 		List accessRightVOList = null;
@@ -127,6 +165,47 @@ public class AccessRightController extends BaseController
 		return accessRightVOList;	
 	}
 
+	public List getAccessRightVOListOnly(Integer interceptionPointId, String parameters) throws SystemException, Bug
+	{
+		List accessRightVOList = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+			
+			accessRightVOList = getAccessRightVOListOnly(db, interceptionPointId, parameters);
+
+			CmsLogger.logInfo("accessRightVOList:" + accessRightVOList.size());
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+		    e.printStackTrace();
+			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return accessRightVOList;	
+	}
+
+	public List getAccessRightVOListOnly(Database db, Integer interceptionPointId, String parameters) throws SystemException, Bug
+	{
+		List accessRightVOList = null;
+		
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(interceptionPointId);
+		if(interceptionPointVO.getUsesExtraDataForAccessControl().booleanValue())
+			accessRightVOList = toVOList(getAccessRightListOnly(interceptionPointId, parameters, db));
+		else
+			accessRightVOList = toVOList(getAccessRightList(interceptionPointId, db));
+
+		CmsLogger.logInfo("accessRightVOList:" + accessRightVOList.size());
+		
+		return accessRightVOList;	
+	}
 
 	public List getAccessRightList(String interceptionPointName, String parameters, String roleName, Database db) throws SystemException, Bug
 	{
@@ -136,6 +215,93 @@ public class AccessRightController extends BaseController
 	}
 
 	public List getAccessRightList(Integer interceptionPointId, String parameters, String roleName, Database db) throws SystemException, Bug
+	{
+		List accessRightList = new ArrayList();
+		
+		try
+		{
+		    System.out.println("getAccessRightList(Integer interceptionPointId, String parameters, String roleName, Database db)");
+		    System.out.println("interceptionPointId:" + interceptionPointId);
+		    System.out.println("parameters:" + parameters);
+		    System.out.println("roleName:" + roleName);
+			OQLQuery oql = null;
+			
+			if(parameters == null || parameters.length() == 0)
+			{
+				oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND (is_undefined(f.parameters) OR f.parameters = $2) AND f.roles.roleName = $3");
+				oql.bind(interceptionPointId);
+				oql.bind(parameters);
+				oql.bind(roleName);
+			}
+			else
+			{
+		    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.parameters = $2 AND f.roles.roleName = $3");
+				oql.bind(interceptionPointId);
+				oql.bind(parameters);
+				oql.bind(roleName);
+			}
+			
+			QueryResults results = oql.execute();
+			
+			while (results.hasMore()) 
+			{
+				AccessRight accessRight = (AccessRight)results.next();
+				System.out.println("accessRight:" + accessRight.getAccessRightId());
+				accessRightList.add(accessRight);
+			}
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightList;		
+	}
+
+	public List getAccessRightListOnly(Integer interceptionPointId, String parameters, Database db) throws SystemException, Bug
+	{
+		List accessRightList = new ArrayList();
+		
+		try
+		{
+		    System.out.println("getAccessRightList(Integer interceptionPointId, String parameters, String roleName, Database db)");
+		    System.out.println("interceptionPointId:" + interceptionPointId);
+		    System.out.println("parameters:" + parameters);
+			OQLQuery oql = null;
+			
+			if(parameters == null || parameters.length() == 0)
+			{
+				oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND (is_undefined(f.parameters) OR f.parameters = $2)");
+				oql.bind(interceptionPointId);
+				oql.bind(parameters);
+			}
+			else
+			{
+		    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.parameters = $2");
+				oql.bind(interceptionPointId);
+				oql.bind(parameters);
+			}
+			
+			QueryResults results = oql.execute();
+			
+			while (results.hasMore()) 
+			{
+				AccessRight accessRight = (AccessRight)results.next();
+				System.out.println("accessRight:" + accessRight.getAccessRightId());
+				accessRightList.add(accessRight);
+			}
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightList;		
+	}
+	/*
+	 	public List getAccessRightList(Integer interceptionPointId, String parameters, String roleName, Database db) throws SystemException, Bug
 	{
 		List accessRightList = new ArrayList();
 		
@@ -178,7 +344,8 @@ public class AccessRightController extends BaseController
 		
 		return accessRightList;		
 	}
-	
+
+	 */
 	public List getAccessRightListForEntity(Integer interceptionPointId, String parameters, Database db)  throws SystemException, Bug
 	{
 		List accessRightList = new ArrayList();
@@ -258,7 +425,7 @@ public class AccessRightController extends BaseController
 			CmsLogger.logInfo("getAccessRightList(String roleName, Database db)");
 			CmsLogger.logInfo("roleName: " + roleName);
 			
-			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.roleName = $1");
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.roles.roleName = $1");
 			oql.bind(roleName);
 			
 			QueryResults results = oql.execute();
@@ -288,7 +455,7 @@ public class AccessRightController extends BaseController
 			CmsLogger.logInfo("interceptionPointId: " + interceptionPointId);
 			CmsLogger.logInfo("roleName: " + roleName);
 			
-			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.roleName = $2");
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.roles.roleName = $2");
 			oql.bind(interceptionPointId);
 			oql.bind(roleName);
 			
@@ -318,7 +485,7 @@ public class AccessRightController extends BaseController
 	 * @throws Exception
 	 */
 	
-	public AccessRightVO create(AccessRightVO accessRightVO, InterceptionPoint interceptionPoint, Database db) throws SystemException, Exception
+	public AccessRight create(AccessRightVO accessRightVO, InterceptionPoint interceptionPoint, Database db) throws SystemException, Exception
 	{
 		AccessRight accessRight = new AccessRightImpl();
 		accessRight.setValueObject(accessRightVO);
@@ -327,21 +494,193 @@ public class AccessRightController extends BaseController
 		
 		db.create(accessRight);
 					
-		return accessRight.getValueObject();
+		return accessRight;
 	}     
 
 	
-	public AccessVO update(AccessVO AccessVO) throws ConstraintException, SystemException
+	public AccessRightVO update(AccessRightVO AccessRightVO) throws ConstraintException, SystemException
 	{
-		return (AccessVO) updateEntity(AccessImpl.class, AccessVO);
+		return (AccessRightVO) updateEntity(AccessRightImpl.class, AccessRightVO);
 	}        
 
 	
-	public void update(/*String category, *//*Integer interceptionPointId,*/ String parameters, HttpServletRequest request) throws ConstraintException, SystemException
+	public void update(String parameters, HttpServletRequest request) throws ConstraintException, SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		//CmsLogger.logInfo("category:" + category);
+		CmsLogger.logInfo("parameters:" + parameters);
+		
+		try 
+		{
+			beginTransaction(db);
+
+			int interceptionPointIndex = 0;
+			String interceptionPointIdString = request.getParameter(interceptionPointIndex + "_InterceptionPointId");
+			while(interceptionPointIdString != null)
+			{
+				System.out.println("interceptionPointIdString:" + interceptionPointIdString);
+
+				delete(new Integer(interceptionPointIdString), parameters, db);
+
+				AccessRightVO accessRightVO = new AccessRightVO();
+				accessRightVO.setParameters(parameters);
+
+				AccessRight accessRight = null;
+				
+				int roleIndex = 0;
+				String roleName = request.getParameter(interceptionPointIdString + "_" + roleIndex + "_roleName");
+				System.out.println("roleName:" + roleName);
+				while(roleName != null)
+				{
+				    String hasAccess = request.getParameter(interceptionPointIdString + "_" + roleName + "_hasAccess");
+					System.out.println("roleName:" + roleName);
+					
+					if(hasAccess != null)
+					{
+					    if(accessRight == null)
+					    {
+						    InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithId(new Integer(interceptionPointIdString), db);
+							System.out.println("Creating access for:" + interceptionPoint.getName() + "_" + parameters);
+							accessRight = create(accessRightVO, interceptionPoint, db);
+					    }
+					    
+					    AccessRightRoleVO accessRightRoleVO = new AccessRightRoleVO();
+					    accessRightRoleVO.setRoleName(roleName);
+					    AccessRightRole accessRightRole = createAccessRightRole(db, accessRightRoleVO, accessRight);
+					    accessRight.getRoles().add(accessRightRole);
+					}
+					
+					roleIndex++;
+					roleName = request.getParameter(interceptionPointIdString + "_" + roleIndex + "_roleName");
+					System.out.println("roleName:" + roleName);
+				}
+
+				int groupIndex = 0;
+				String groupName = request.getParameter(interceptionPointIdString + "_" + groupIndex + "_groupName");
+				System.out.println("groupName:" + groupName);  
+				while(groupName != null)
+				{
+					System.out.println("groupName:" + groupName);
+						
+					if(accessRight == null)
+				    {
+					    InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithId(new Integer(interceptionPointIdString), db);
+						System.out.println("Creating access for:" + interceptionPoint.getName() + "_" + parameters);
+						accessRight = create(accessRightVO, interceptionPoint, db);
+				    }
+					
+				    AccessRightGroupVO accessRightGroupVO = new AccessRightGroupVO();
+				    accessRightGroupVO.setGroupName(groupName);
+				    AccessRightGroup accessRightGroup = createAccessRightGroup(db, accessRightGroupVO, accessRight);
+				    accessRight.getGroups().add(accessRightGroup);
+					
+				    groupIndex++;
+				    groupName = request.getParameter(interceptionPointIdString + "_" + groupIndex + "_groupName");
+					System.out.println("groupName:" + groupName);
+				}
+
+				interceptionPointIndex++;
+				interceptionPointIdString = request.getParameter(interceptionPointIndex + "_InterceptionPointId");
+			}
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+		    e.printStackTrace();
+			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}			
+	
+	
+	public void updateGroups(Integer accessRightId, String parameters, String[] groupNames) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		CmsLogger.logInfo("parameters:" + parameters);
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			AccessRight accessRight = this.getAccessRightWithId(accessRightId, db);
+
+			Iterator groupsIterator = accessRight.getGroups().iterator();
+			while(groupsIterator.hasNext())
+			{
+			    AccessRightGroup accessRightGroup = (AccessRightGroup)groupsIterator.next();
+			    groupsIterator.remove();
+			    db.remove(accessRightGroup);
+			}
+			
+			if(groupNames != null)
+			{
+				for(int i=0; i < groupNames.length; i++)
+				{
+				    String groupName = groupNames[i];
+				    AccessRightGroupVO accessRightGroupVO = new AccessRightGroupVO();
+				    accessRightGroupVO.setGroupName(groupName);
+				    AccessRightGroup accessRightGroup = createAccessRightGroup(db, accessRightGroupVO, accessRight);
+				    accessRight.getGroups().add(accessRightGroup);
+				}
+			}
+			
+		    commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+		    e.printStackTrace();
+			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * This method creates a AccessRightRole-object in the database.
+	 * @param db
+	 * @param accessRightRoleVO
+	 * @return
+	 * @throws SystemException
+	 */
+	
+	private AccessRightRole createAccessRightRole(Database db, AccessRightRoleVO accessRightRoleVO, AccessRight accessRight) throws SystemException, Exception
+	{
+	    AccessRightRole accessRightRole = new AccessRightRoleImpl();
+	    accessRightRole.setValueObject(accessRightRoleVO);
+	    accessRightRole.setAccessRight(accessRight);
+	    
+	    db.create(accessRightRole);
+        
+	    return accessRightRole;
+	}
+
+	/**
+	 * This method creates a AccessRightGroup-object in the database.
+	 * @param db
+	 * @param accessRightRoleVO
+	 * @return
+	 * @throws SystemException
+	 */
+	
+	private AccessRightGroup createAccessRightGroup(Database db, AccessRightGroupVO accessRightGroupVO, AccessRight accessRight) throws SystemException, Exception
+	{
+	    AccessRightGroup accessRightGroup = new AccessRightGroupImpl();
+	    accessRightGroup.setValueObject(accessRightGroupVO);
+	    accessRightGroup.setAccessRight(accessRight);
+	    
+	    db.create(accessRightGroup);
+	    
+        return accessRightGroup;
+	}
+
+	
+	/*
+	 	public void update(String parameters, HttpServletRequest request) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
 		CmsLogger.logInfo("parameters:" + parameters);
 		
 		try 
@@ -392,7 +731,7 @@ public class AccessRightController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 	}			
-	
+	 */
 	
 	/**
 	 * This method deletes all occurrencies of AccessRight which has the interceptionPointId.
@@ -438,13 +777,30 @@ public class AccessRightController extends BaseController
 	 * @throws SystemException
 	 */
 
-	public void delete(Integer interceptionPointId, String parameters, String roleName, Database db) throws SystemException, Exception
+	public void delete(Integer interceptionPointId, String parameters, Database db) throws SystemException, Exception
 	{
-		List accessRightList = getAccessRightList(interceptionPointId, parameters, roleName, db);
+		List accessRightList = getAccessRightListOnly(interceptionPointId, parameters, db);
 		Iterator i = accessRightList.iterator();
 		while(i.hasNext())
 		{
 			AccessRight accessRight = (AccessRight)i.next();
+			
+			Iterator rolesIterator = accessRight.getRoles().iterator();
+			while(rolesIterator.hasNext())
+			{
+			    AccessRightRole accessRightRole = (AccessRightRole)rolesIterator.next();
+			    rolesIterator.remove();
+			    db.remove(accessRightRole);
+			}
+			
+			Iterator groupsIterator = accessRight.getGroups().iterator();
+			while(groupsIterator.hasNext())
+			{
+			    AccessRightGroup accessRightGroup = (AccessRightGroup)groupsIterator.next();
+			    groupsIterator.remove();
+			    db.remove(accessRightGroup);
+			}
+			
 			db.remove(accessRight);
 		}
 		
@@ -491,6 +847,85 @@ public class AccessRightController extends BaseController
 	 */
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters) throws SystemException
 	{		
+	    System.out.println("getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters)");
+	    System.out.println("infoGluePrincipal: " + infoGluePrincipal.getName());
+	    System.out.println("interceptionPointName: " + interceptionPointName);
+	    System.out.println("extraParameters: " + extraParameters);
+		
+		if(infoGluePrincipal != null && infoGluePrincipal.getIsAdministrator())
+			return true;
+		
+		boolean isPrincipalAuthorized = false;
+		boolean limitOnGroups = false;
+		boolean principalHasRole = false;
+		boolean principalHasGroup = false;
+		   
+		Collection roles = infoGluePrincipal.getRoles();
+		Collection groups = infoGluePrincipal.getGroups();
+		System.out.println("roles:" + roles.size());
+		System.out.println("groups:" + groups.size());
+		
+		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
+		List accessRightList = this.getAccessRightListOnly(interceptionPoint.getId(), extraParameters, db);
+
+		Iterator accessRightListIterator = accessRightList.iterator();
+		while(accessRightListIterator.hasNext())
+		{
+		    AccessRight accessRight = (AccessRight)accessRightListIterator.next();
+		    Collection approvedRoles = accessRight.getRoles();
+		    Collection approvedGroups = accessRight.getGroups();
+		    
+		    
+		    Iterator rolesIterator = roles.iterator();
+			outer:while(rolesIterator.hasNext())
+			{
+				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+				System.out.println("role:" + role.getName());
+				
+				Iterator approvedRolesIterator = approvedRoles.iterator();
+				while(approvedRolesIterator.hasNext())
+				{
+				    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
+				    if(accessRightRole.getRoleName().equals(role.getName()))
+				    {
+				        principalHasRole = true;
+				        break outer;
+				    }
+				}
+			}
+ 
+			Iterator approvedGroupsIterator = approvedGroups.iterator();
+			outer:while(approvedGroupsIterator.hasNext())
+			{
+			    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
+			    System.out.println("accessRightGroup:" + accessRightGroup.getGroupName());
+
+			    limitOnGroups = true;
+
+			    Iterator groupsIterator = groups.iterator();
+				while(groupsIterator.hasNext())
+				{
+				    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+				    if(accessRightGroup.getGroupName().equals(group.getName()))
+				    {
+				        principalHasGroup = true;
+				        break outer;
+				    }
+				}
+			}
+
+		}
+		
+	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
+		    isPrincipalAuthorized = true;
+				
+	    System.out.println("isPrincipalAuthorized:" + isPrincipalAuthorized);
+
+		return isPrincipalAuthorized;
+	}
+	/*
+		public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters) throws SystemException
+	{		
 	    CmsLogger.logInfo("getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters)");
 		CmsLogger.logInfo("infoGluePrincipal: " + infoGluePrincipal.getName());
 		CmsLogger.logInfo("interceptionPointName: " + interceptionPointName);
@@ -535,7 +970,8 @@ public class AccessRightController extends BaseController
 		
 		return isPrincipalAuthorized;
 	}
-		
+	*/
+	
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
 	 */
@@ -583,6 +1019,91 @@ public class AccessRightController extends BaseController
 	
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
 	{		
+	    System.out.println("getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName)");
+	    System.out.println("infoGluePrincipal:" + infoGluePrincipal);
+	    System.out.println("interceptionPointName:" + interceptionPointName);
+		
+		if(infoGluePrincipal.getIsAdministrator())
+			return true;
+
+		/*
+		String key = "cachedAccessRightsVOList";
+		CmsLogger.logInfo("key:" + key);
+		List cachedAccessRightsVOList = (List)CacheController.getCachedObject("authorizationCache", key);
+		if(cachedAccessRightsVOList == null)
+		{
+		    cachedAccessRightsVOList = this.getAccessRightVOList();
+		    CacheController.cacheObject("authorizationCache", key, cachedAccessRightsVOList);
+		}
+		*/
+		boolean isPrincipalAuthorized = false;
+		boolean limitOnGroups = false;
+		boolean principalHasRole = false;
+		boolean principalHasGroup = false;
+		   
+		Collection roles = infoGluePrincipal.getRoles();
+		Collection groups = infoGluePrincipal.getGroups();
+		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
+		List accessRightList = this.getAccessRightList(interceptionPoint.getId(), db);
+
+		Iterator accessRightListIterator = accessRightList.iterator();
+		while(accessRightListIterator.hasNext())
+		{
+		    AccessRight accessRight = (AccessRight)accessRightListIterator.next();
+		    Collection approvedRoles = accessRight.getRoles();
+		    Collection approvedGroups = accessRight.getGroups();
+		    
+		    
+		    Iterator rolesIterator = roles.iterator();
+			outer:while(rolesIterator.hasNext())
+			{
+				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+				System.out.println("role:" + role.getName());
+				
+				Iterator approvedRolesIterator = approvedRoles.iterator();
+				while(approvedRolesIterator.hasNext())
+				{
+				    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
+				    if(accessRightRole.getRoleName().equals(role.getName()))
+				    {
+				        principalHasRole = true;
+				        break outer;
+				    }
+				}
+			}
+ 
+		    Iterator approvedGroupsIterator = approvedGroups.iterator();
+			outer:while(approvedGroupsIterator.hasNext())
+			{
+			    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
+			    System.out.println("accessRightGroup:" + accessRightGroup.getGroupName());
+
+			    limitOnGroups = true;
+
+			    Iterator groupsIterator = groups.iterator();
+				while(groupsIterator.hasNext())
+				{
+				    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+				    if(accessRightGroup.getGroupName().equals(group.getName()))
+				    {
+				        principalHasGroup = true;
+				        break outer;
+				    }
+				}
+			}
+
+		}
+		
+	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
+		    isPrincipalAuthorized = true;
+		
+	    System.out.println("isPrincipalAuthorized:" + isPrincipalAuthorized);
+	    
+		return isPrincipalAuthorized;
+	}
+	/*
+	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
+	{		
 	    CmsLogger.logInfo("getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName)");
 	    CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal);
 		CmsLogger.logInfo("interceptionPointName:" + interceptionPointName);
@@ -619,24 +1140,11 @@ public class AccessRightController extends BaseController
 				    break outer;
 				}
 			}
-
-			/*
-			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint.name = $1 AND f.roleName = $2");
-			oql.bind(interceptionPointName);
-			oql.bind(role.getName());
-
-			QueryResults results = oql.execute();
-			CmsLogger.logInfo("Anything:" + results.hasMore());
-			if (results.hasMore()) 
-			{
-				isPrincipalAuthorized = true;
-				break;
-			}
-			*/
 		}
 				
 		return isPrincipalAuthorized;
 	}
+	*/
 	
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
@@ -645,7 +1153,7 @@ public class AccessRightController extends BaseController
 
 	public BaseEntityVO getNewVO()
 	{
-		return new AccessVO();
+		return new AccessRightVO();
 	}
 
 }

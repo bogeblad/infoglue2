@@ -178,6 +178,58 @@
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" identity="accessRightId" key-generator="IDENTITY">
     <description>AccessRight</description>
     <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmAccessRightNew"/>
+    <field name="accessRightId" type="java.lang.Integer">
+      <sql name="accessRightId" type="integer" dirty="check" />
+    </field>
+    <field name="parameters" type="java.lang.String">
+      <sql name="parameters" type="varchar" dirty="check" />
+    </field>
+    <field name="interceptionPoint" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl">
+      <sql name="interceptionPointId"/>
+    </field>
+    <field name="roles" type="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" lazy="false" collection="collection">
+      <sql many-key="accessRightId"/>
+    </field>
+    <field name="groups" type="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" lazy="false" collection="collection">
+      <sql many-key="accessRightId"/>
+    </field>
+  </class>
+  
+  <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" identity="accessRightRoleId" key-generator="IDENTITY">
+    <description>AccessRightRole</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmAccessRightRole"/>
+    <field name="accessRightRoleId" type="java.lang.Integer">
+      <sql name="accessRightRoleId" type="integer" dirty="check" />
+    </field>
+    <field name="roleName" type="java.lang.String">
+      <sql name="roleName" type="varchar" dirty="check" />
+    </field>
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+      <sql name="accessRightId"/>
+    </field>
+  </class>
+  
+  <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" identity="accessRightGroupId" key-generator="IDENTITY">
+    <description>AccessRightGroup</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmAccessRightGroup"/>
+    <field name="accessRightGroupId" type="java.lang.Integer">
+      <sql name="accessRightGroupId" type="integer" dirty="check" />
+    </field>
+    <field name="groupName" type="java.lang.String">
+      <sql name="groupName" type="varchar" dirty="check" />
+    </field>
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+      <sql name="accessRightId"/>
+    </field>
+  </class>
+
+<!--  
+  <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" identity="accessRightId" key-generator="IDENTITY">
+    <description>AccessRight</description>
+    <cache-type type="unlimited" capacity="10000"/>
     <map-to table="cmAccessRight"/>
     <field name="accessRightId" type="java.lang.Integer">
       <sql name="accessRightId" type="integer" dirty="check" />
@@ -192,6 +244,7 @@
       <sql name="interceptionPointId"/>
     </field>
   </class>
+-->
 
 <!--  Mapping for SiteNodeVersion  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl" identity="siteNodeVersionId" key-generator="IDENTITY">

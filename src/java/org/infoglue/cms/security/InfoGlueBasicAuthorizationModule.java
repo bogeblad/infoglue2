@@ -124,6 +124,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						roles.add(infoGlueRole);
 					}
 	
+					System.out.println("************************:" + systemUser.getGroups().size());
 					Iterator groupListIterator = systemUser.getGroups().iterator();
 					while(groupListIterator.hasNext())
 					{
@@ -152,6 +153,14 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					Role role = (Role)roleListIterator.next();
 					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
 					roles.add(infoGlueRole);
+				}
+
+				Iterator groupListIterator = systemUser.getGroups().iterator();
+				while(groupListIterator.hasNext())
+				{
+				    Group group = (Group)groupListIterator.next();
+					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
+					groups.add(infoGlueGroup);
 				}
 
 				infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator);
@@ -443,7 +452,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 
 	public void deleteInfoGlueGroup(String groupName) throws Exception
 	{
-		RoleController.getController().delete(groupName);
+		GroupController.getController().delete(groupName);
 	}
 
 	public Properties getExtraProperties()

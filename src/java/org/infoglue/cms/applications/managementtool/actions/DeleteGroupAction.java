@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 /**
@@ -31,18 +32,18 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 public class DeleteGroupAction extends WebworkAbstractAction
 {
-	private String roleName;
+	private String groupName;
 	
 	protected String doExecute() throws Exception 
 	{
-		RoleControllerProxy.getController().deleteRole(roleName);
+	    GroupControllerProxy.getController().deleteGroup(groupName);
 
 		return "success";
 	}
 	
-	public void setRoleName(String string)
+	public void setGroupName(String string)
 	{
-		roleName = string;
+	    groupName = string;
 	}
 
 }

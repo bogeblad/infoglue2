@@ -437,12 +437,12 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		
-		String yesDestination 	= URLEncoder.encode("DeleteGroup.action?roleName=" + URLEncoder.encode(this.groupName, URIEncoding), URIEncoding);
+		String yesDestination 	= URLEncoder.encode("DeleteGroup.action?groupName=" + URLEncoder.encode(this.groupName, URIEncoding), URIEncoding);
 		String noDestination  	= URLEncoder.encode("ViewListGroup.action?title=Groups", URIEncoding);
 		String message 		 	= URLEncoder.encode("Do you really want to delete the group " + URLEncoder.encode(this.groupName, URIEncoding), URIEncoding);
 		
 		if(UserControllerProxy.getController().getSupportDelete())
-			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + URLEncoder.encode(this.groupName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteGroup"), "tool.managementtool.deleteGroup.header"));
+			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteGroup.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + URLEncoder.encode(this.groupName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteGroup"), "tool.managementtool.deleteGroup.header"));
 		
 		//List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(this.groupName);
 		//if(contentTypeDefinitionVOList.size() > 0)
