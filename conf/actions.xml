@@ -1,12 +1,18 @@
-<!-- $Id: actions.xml,v 1.26 2005/04/01 16:19:37 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.27 2005/04/03 08:55:10 mattias Exp $ -->
 <actions>
+
+	<!-- InstallationValidator -->
+	<action name="org.infoglue.cms.applications.managementtool.InstallationValidatorAction" alias="InstallationValidator">
+		<view name="input">/cms/managementtool/viewValidationForm.vm</view>
+		<view name="success">/cms/managementtool/viewValidationResults.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
 
 	<!-- Test -->
 	<action name="org.infoglue.cms.applications.common.actions.PerformanceTestAction" alias="PerformanceTest">
 		<view name="error">/cms/managementtool/performanceResult.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
-
 
 	<!-- Redirect -->
 	<action name="org.infoglue.cms.applications.common.actions.ExtendedRedirect" alias="ExtendedRedirect">
@@ -249,6 +255,11 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteRepositoryAction" alias="DeleteRepository">
 		<view name="success">ViewListRepository.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
+		<!--
+		<view name="error">/cms/contenttool/error.vm</view>
+		-->
+		<view name="input">/cms/contenttool/showConstraintException.vm</view>
+		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.CreateRepositoryAction" alias="CreateRepository">
 		<view name="input">/cms/managementtool/createRepository.vm</view>
