@@ -23,7 +23,6 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
@@ -35,32 +34,26 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.deliver.util.graphics.ImageRenderer;
 import org.infoglue.cms.util.*;
-import org.infoglue.deliver.util.graphics.ColorHelper;
-import org.infoglue.deliver.util.graphics.FOPHelper;
-import org.infoglue.deliver.util.graphics.FontHelper;
-import org.infoglue.deliver.util.webservices.WebServiceHelper;
 import org.infoglue.cms.exception.*;
-import org.infoglue.deliver.util.charts.ChartHelper;
-import org.infoglue.deliver.util.*;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.WebPage;
+import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.util.graphics.ColorHelper;
+import org.infoglue.deliver.util.graphics.FOPHelper;
+import org.infoglue.deliver.util.graphics.FontHelper;
+import org.infoglue.deliver.util.graphics.ImageRenderer;
+import org.infoglue.deliver.util.webservices.WebServiceHelper;
+import org.infoglue.deliver.util.charts.ChartHelper;
+import org.infoglue.deliver.util.*;
+
 import java.security.Principal;
 import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.*;
 import java.io.*;
 import java.awt.Color;
 import java.awt.Font;
@@ -737,6 +730,22 @@ public class BasicTemplateController implements TemplateController
 		return attributeValue;
 	}
 
+	/**
+	 * Finds an attribute on the provided ContentVersion.
+	 */
+	public String getContentAttribute(ContentVersionVO version, String attributeName)
+	{
+		try
+		{
+		    return ContentDeliveryController.getContentDeliveryController().getAttributeValue(version, attributeName);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on content version" + version.getId() + ":" + e.getMessage(), e);
+		}
+
+		return "";
+	}
 
 	/**
 	 * This method deliveres a String with the content-attribute asked for in the language asked for.
@@ -2249,6 +2258,23 @@ public class BasicTemplateController implements TemplateController
 		return contentId;
 	}
 
+	/**
+	 * This method gets the content related to a category
+	 */
+	public List getContentVersionsByCategory(Integer categoryId, String attributeName)
+	{
+		try
+		{
+			return ContentDeliveryController.getContentDeliveryController().findContentVersionVOsForCategory(categoryId, attributeName, getPrincipal(), siteNodeId, languageId, USE_LANGUAGE_FALLBACK);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred trying to get Content for categoryId " + categoryId + ":" + e.getMessage(), e);
+		}
+
+		return Collections.EMPTY_LIST;
+	}
+
 
 	/**
 	 * This method deliveres a String with the URL to the page asked for.
@@ -3698,7 +3724,6 @@ public class BasicTemplateController implements TemplateController
 	/**
 	 * This method supplies a method to get the locale of the language sent in.
 	 */
-
 	public Locale getLanguageCode(Integer languageId)
 	{
 		return LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(languageId);
