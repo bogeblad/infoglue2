@@ -42,7 +42,7 @@ import com.opensymphony.module.propertyset.PropertySet;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.8 $ $Date: 2005/01/13 23:35:06 $
+ * @version $Revision: 1.9 $ $Date: 2005/01/14 15:49:36 $
  */
 public class WorkflowFacade
 {
@@ -401,8 +401,7 @@ public class WorkflowFacade
 		CmsLogger.logInfo("Action:" + actionDescriptor.getId() + ":" + actionDescriptor.getName()
 								+ ":" + actionDescriptor.getParent().getClass());
 
-		WorkflowActionVO actionVO = new WorkflowActionVO();
-		actionVO.setId(new Integer(actionDescriptor.getId()));
+		WorkflowActionVO actionVO = new WorkflowActionVO(new Integer(actionDescriptor.getId()));
 		actionVO.setWorkflowId(new Long(workflowId));
 		actionVO.setName(actionDescriptor.getName());
 		actionVO.setView(actionDescriptor.getView());
