@@ -20,14 +20,12 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.3 2004/12/29 17:30:23 jed Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.4 2004/12/29 17:30:51 jed Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool;
 
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolStartPageAction;
-import junit.framework.*;
-import junit.swingui.TestRunner;
 import webwork.action.ActionContext;
 import webwork.action.factory.SessionMap;
 
