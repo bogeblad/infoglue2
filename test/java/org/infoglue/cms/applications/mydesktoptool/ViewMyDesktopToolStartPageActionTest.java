@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.2 2004/12/02 00:02:10 frank Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool;
 
@@ -29,6 +29,7 @@ import org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolStar
 import junit.framework.*;
 import junit.swingui.TestRunner;
 import webwork.action.ActionContext;
+import webwork.action.factory.SessionMap;
 
 public class ViewMyDesktopToolStartPageActionTest extends WorkflowTestCase
 {
@@ -42,10 +43,11 @@ public class ViewMyDesktopToolStartPageActionTest extends WorkflowTestCase
 
 		request.setSession(getSession());
 		ActionContext.setRequest(request);
+		ActionContext.setSession(new SessionMap(getSession()));
 		action.setServletRequest(request);
 		action.setServletResponse(new FakeHttpServletResponse());
 
-		setWorkflow(startWorkflow());		
+		setWorkflow(startWorkflow());
 	}
 
 	public void testExecute() throws Exception
