@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.2 2004/12/02 12:58:41 frank Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.3 2005/01/10 08:44:12 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -65,3 +65,38 @@ CREATE TABLE cmContentCategory
 	categoryId			INTEGER(11),
 	PRIMARY KEY (contentCategoryId)
 );
+
+
+----------------------------------------------------------------------------------
+-- Add table for UserPropertiesDigitalAsset
+----------------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS cmUserPropertiesDigitalAsset;
+
+CREATE TABLE cmUserPropertiesDigitalAsset (
+  userPropertiesDigitalAssetId integer(11) unsigned NOT NULL auto_increment,
+  userPropertiesId integer(11) unsigned NOT NULL default '0',
+  digitalAssetId integer(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (userPropertiesDigitalAssetId)
+) TYPE=MyISAM;
+
+----------------------------------------------------------------------------------
+-- Add table for RolePropertiesDigitalAsset
+----------------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS cmRolePropertiesDigitalAsset;
+
+CREATE TABLE cmRolePropertiesDigitalAsset (
+  rolePropertiesDigitalAssetId integer(11) unsigned NOT NULL auto_increment,
+  rolePropertiesId integer(11) unsigned NOT NULL default '0',
+  digitalAssetId integer(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (rolePropertiesDigitalAssetId)
+) TYPE=MyISAM;
+
+----------------------------------------------------------------------------------
+-- Added sort possibility to repository languages
+----------------------------------------------------------------------------------
+
+ALTER TABLE cmRepositoryLanguage ADD COLUMN sortOrder integer default 0 NOT NULL;
+
+CREATE INDEX contentTypeDefinitionId ON cmContent(contentTypeDefinitionId);
