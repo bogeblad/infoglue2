@@ -180,7 +180,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	private String redirectToView() throws SystemException
 	{
-		for (Iterator i = workflow.getAvailableActions().iterator(); i.hasNext();)
+	    for (Iterator i = workflow.getAvailableActions().iterator(); i.hasNext();)
 		{
 			String url = getViewUrl((WorkflowActionVO)i.next());
 			if (url.length() > 0)
@@ -234,7 +234,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 			buffer.append('?');
 
 		return buffer.append("workflowId=").append(getWorkflowId()).append("&actionId=").append(action.getId())
-				.append("&returnAddress=").append(getReturnAddress()).toString();
+				.append("&returnAddress=").append(getReturnAddress()).append("&" + this.getRequest().getQueryString()).toString();
 	}
 
 	private static boolean containsQuestionMark(String s)
