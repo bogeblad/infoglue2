@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: InfoGlueTestCase.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: InfoGlueTestCase.java,v 1.2 2004/12/07 23:15:27 frank Exp $
  */
 package org.infoglue.cms.util;
 
@@ -51,11 +51,11 @@ import org.infoglue.cms.entities.management.RepositoryVO;
  */
 public abstract class InfoGlueTestCase extends TestCase
 {
-	private static final InfoGluePrincipal adminPrincipal = new InfoGluePrincipal("test-admin", "first", "last",
+	public static final InfoGluePrincipal adminPrincipal = new InfoGluePrincipal("test-admin", "first", "last",
 																				  "email", createRole("administrators"), true);
-	private static final InfoGluePrincipal cmsUserPrincipal = new InfoGluePrincipal("test-user", "first", "last",
+	public static final InfoGluePrincipal cmsUserPrincipal = new InfoGluePrincipal("test-user", "first", "last",
 																					"email", createRole("cmsUser"), false);
-	private static final InfoGluePrincipal anonPrincipal = new InfoGluePrincipal("anonymous", "first", "last",
+	public static final InfoGluePrincipal anonPrincipal = new InfoGluePrincipal("anonymous", "first", "last",
 																				 "email", createRole("anonymous"), false);
 
 	private static boolean initialized = false;
