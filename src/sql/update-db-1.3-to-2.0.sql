@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.6 2005/02/28 18:47:30 frank Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.7 2005/03/14 09:23:41 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -34,8 +34,10 @@ where invokerClassName = 'org.infoglue.cms.invokers.ComponentBasedHTMLPageInvoke
 
 update cmSiteNodeTypeDefinition
 set invokerClassName = 'org.infoglue.deliver.invokers.HTMLPageInvoker'
-where invokerClassName = 'org.infoglue.cms.invokers.HTMLPageInvoker';
-
+where invokerClassName = 'org.infoglue.cms.invokers.HTMLPageInvoker' OR 
+invokerClassName = 'StandardHTMLInvoker' OR
+invokerClassName = 'se.sprawl.services.invokers.HtmlInvoker' OR
+invokerClassName = 'HTMLInvoker';
 
 ----------------------------------------------------------------------------------
 -- Add table for Category
