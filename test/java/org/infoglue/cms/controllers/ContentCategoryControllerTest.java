@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryControllerTest.java,v 1.1 2004/12/01 23:35:09 frank Exp $
+ * $Id: ContentCategoryControllerTest.java,v 1.2 2005/03/14 21:43:40 jed Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -47,6 +47,8 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 	private ContentCategoryController testController = ContentCategoryController.getController();
 	private CategoryController testCategoryController = CategoryController.getController();
 
+	private boolean deleted;
+
 	protected void setUp() throws Exception
 	{
 		super.setUp();
@@ -64,7 +66,7 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 
 	protected void tearDown() throws Exception
 	{
-		if(testContentCategory != null)
+		if (!deleted)
 		{
 			testController.delete(testContentCategory.getId());
 			assertRemoved();
@@ -182,40 +184,39 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 
 	public void testDeleteByContentVersion() throws Exception
 	{
-		ContentCategoryVO differentAttribute = new ContentCategoryVO();
-		differentAttribute.setAttributeName("randomAttribute");
-		differentAttribute.setContentVersionId(VERSION_ID);
-		differentAttribute.setCategory(testCategory);
-		differentAttribute = testController.save(differentAttribute);
-		// dont add to extraCategories since we willb e removing it.
-
+		createWithRandomAttribute();
 		testController.deleteByContentVersion(VERSION_ID);
 		List found = testController.findByContentVersion(VERSION_ID);
 		assertEquals("Wrong number of ContentCategories returned", 0, found.size());
-
-		// Should already be deleted, so don't try to again
-		testContentCategory = null;
+		deleted = true;
 	}
 
 	public void testDeleteByCategory() throws Exception
 	{
-		ContentCategoryVO differentAttribute = new ContentCategoryVO();
-		differentAttribute.setAttributeName("randomAttribute");
-		differentAttribute.setContentVersionId(VERSION_ID);
-		differentAttribute.setCategory(testCategory);
-		differentAttribute = testController.save(differentAttribute);
-		// dont add to extraCategories since we will be removing it.
-
+		createWithRandomAttribute();
 		testController.deleteByCategory(testCategory.getId());
 		List found = testController.findByCategory(testCategory.getId());
 		assertEquals("Wrong number of ContentCategories returned", 0, found.size());
-
-		// Should already be deleted, so don't try to again
-		testContentCategory = null;
+		deleted = true;
 	}
 
+	public void testDeleteByContentVersionAttribute() throws Exception
+	{
+		ContentCategoryVO random = createWithRandomAttribute();
+		testController.deleteByContentVersionAttribute(random.getAttributeName(), random.getContentVersionId());
+		List found = testController.findByContentVersionAttribute(random.getAttributeName(), random.getContentVersionId());
+		assertEquals("Wrong number of ContentCategories returned", 0, found.size());
+		deleted = true;
+	}
 
-	// Make sure it was removed from the DB
+	private ContentCategoryVO createWithRandomAttribute() throws Exception
+	{
+		return testController.save(new ContentCategoryVO("randomAttribute", VERSION_ID, testCategory));
+	}
+
+	/**
+	 * Verifies that the test content category was removed from the database
+	 */
 	private void assertRemoved()
 	{
 		try
@@ -223,7 +224,7 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 			testController.findById(testContentCategory.getId());
 			fail("The ContentCategory was not deleted");
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{ /* expected */ }
 	}
 }
