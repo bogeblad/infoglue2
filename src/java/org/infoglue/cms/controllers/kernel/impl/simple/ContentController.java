@@ -336,7 +336,7 @@ public class ContentController extends BaseController
 		return isDeletable;
 	}
 
-	public ContentVO update(ContentVO contentVO) throws ConstraintException, SystemException
+	public ContentVO update(ContentVO contentVO) throws SystemException
 	{
 		return (ContentVO)updateEntity(ContentImpl.class, contentVO);
 	}
