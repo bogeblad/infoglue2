@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
@@ -50,7 +51,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 
-public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
+public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 {
 	public static final String CATEGORY_TREE = "showCategoryTree";
 	public static final String CATEGORY_TREE_MULTIPLE = "showCategoryTreeForMultipleBinding";
@@ -1222,11 +1223,6 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		return imageHref;
 	}
 	
-	public ViewSiteNodePageComponentsAction getThis()
-	{
-		return this;
-	}
-	
 	public Integer getContentId()
 	{
 		return contentId;
@@ -1340,16 +1336,6 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	public LanguageVO getMasterLanguageVO()
 	{
 		return masterLanguageVO;
-	}
-
-	public String getComponentRendererUrl()
-	{
-		return CmsPropertyHandler.getProperty("componentRendererUrl");
-	}
-
-	public String getComponentRendererAction()
-	{
-		return CmsPropertyHandler.getProperty("componentRendererAction");
 	}
 	
     public String getUrl()

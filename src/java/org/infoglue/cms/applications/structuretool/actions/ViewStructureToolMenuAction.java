@@ -23,7 +23,11 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * This class implements the action class for the menu in the siteNode tool.
@@ -31,9 +35,8 @@ import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
  * @author Mattias Bogeblad  
  */
 
-public class ViewStructureToolMenuAction extends WebworkAbstractAction
+public class ViewStructureToolMenuAction extends InfoGlueAbstractAction
 {
-    
     private Integer repositoryId;
     private String tree;
     
@@ -75,4 +78,13 @@ public class ViewStructureToolMenuAction extends WebworkAbstractAction
 		this.tree = tree;
 	}
 
+	public String getShowComponentsFirst()
+	{
+	    return CmsPropertyHandler.getProperty("showComponentsFirst");
+	}
+	
+	public LanguageVO getMasterLanguageVO() throws Exception
+	{
+	    return LanguageController.getController().getMasterLanguage(repositoryId);
+	}
 }

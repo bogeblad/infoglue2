@@ -67,7 +67,7 @@
 
 	  <frameset rows="57,*" onload="setInitialPosition();">
 		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="ViewStructureToolToolBar.action">
-		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="ViewStructureToolStartPage.action">
+		<frame name="main" marginwidth="0" marginheight="0" scrolling="yes" target="none" src="ViewStructureToolStartPage.action">
 	  </frameset>
 
   </frameset>

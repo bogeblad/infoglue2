@@ -6,9 +6,11 @@
 	border:1px solid #333;
 	z-index:1000001;
 	height:80px; 
-	width:99%; 
+	width:100%; 
 	left:0px; 
 	top:0px;
+	margin: 0px 0px 0px 0px; 
+	padding: 0px 0px 0px 0px;
 	}
 
 #paletteHandle {
@@ -46,7 +48,7 @@
 	position:absolute; 
 	border: 0px solid blue; 
 	margin: 0px 0px 0px 0px; 
-	padding: 0px 10px 0px 0px;
+	padding: 0px 0px 0px 0px;
 	}
 
 .tabPanel {
@@ -349,12 +351,11 @@ A.white:active {
 	border-right: solid thin none;
 	border-left: solid thin white;
 	cursor:pointer;
-	visibility:visible;
+	visibility:inherited;
 	z-index:1;
 	overflow: auto;
 	space: nowrap;
 	padding:0px 4px 0px 4px;
-	amargin:4px;
 	}
 .tab
  {
@@ -369,7 +370,7 @@ A.white:active {
 	border-left: solid 1px black;
 	border-bottom: solid 1px white;
 	cursor:pointer;
-	visibility:visible;
+	visibility:inherited;
 	z-index:20
 	overflow: auto;
 	space: nowrap;
@@ -387,7 +388,7 @@ A.white:active {
 	left:0px; 
 	height:30px; 
 	clip:rect(0px 10px 10px 0px); 
-	visibility:visible;
+	visibility:inherited;
 }	
 .components {
 	text-align: center;
@@ -395,13 +396,13 @@ A.white:active {
 	border-left: solid 1px white;
 	border-right: solid 1px white;
 	border-bottom: solid 1px black;
-	aposition:absolute;
 	left:0px;
 	atop:20px;
 	width:100%;
 	height:30px;
 	cursor:pointer;
 	space: nowrap;
+	visibility:inherited;
 }
 .component {
 	text-align:center;
@@ -409,6 +410,7 @@ A.white:active {
 	cursor:pointer;
 	space: nowrap;
 	padding:0px 4px 0px 4px;
+	visibility:inherited;
 }
 .componentsStatus {
 	font-family:verdana,arial,helvetica;

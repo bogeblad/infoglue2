@@ -861,10 +861,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					newPosition++;
 				}	
 			}
-			
-					
 		}
-
 	}
 
 
@@ -943,11 +940,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 			if(index == 0)
 			{
-				sb.append("<div id=\"" + groupName + "ComponentsBg\" style=\"border-bottom: 1px solid gray; border-left: 1px solid white; border-right: 0px solid red; background:#CCCCCC; zIndex:3; width:100%; height:24px; position:absolute; top:50px; left:10px;\">");
+				sb.append("<div id=\"" + groupName + "ComponentsBg\" style=\"border-bottom: 1px solid gray; border-left: 1px solid white; border-right: 0px solid red; background:#CCCCCC; zIndex:3; width:100%; height:24px; position:absolute; top:50px; left:10px; visibility: inherited;\">");
 				openGroupName = groupName;
 			}
 			else
-				sb.append("<div id=\"" + groupName + "ComponentsBg\" style=\"border-bottom: 1px solid gray; border-left: 1px solid white; border-right: 0px solid red; background:#CCCCCC; zIndex:2; width:100%; height:24px; position:absolute; top:50px; left:10px;\">");	
+			    sb.append("<div id=\"" + groupName + "ComponentsBg\" style=\"border-bottom: 1px solid gray; border-left: 1px solid white; border-right: 0px solid red; background:#CCCCCC; zIndex:2; width:100%; height:24px; position:absolute; top:50px; left:10px; visibility: inherited;\">");	
 			
 			sb.append("<div id=\"" + groupName + "Components\" style=\"visibility:inherit; position:absolute; top:1px; left:5px; height:50px; border-left: 1px solid white;\">");
 			sb.append("	<table style=\"width:100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
@@ -966,7 +963,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				//if(imageUrlTemp != null && imageUrlTemp.length() > 0)
 				//	imageUrl = imageUrlTemp;
 				sb.append("	<td>");
-				sb.append("		<div id=\"" + componentIndex + "\" style=\"display: block;\"><nobr><img src=\"" + imageUrl + "\" width=\"16\" height=\"16\" border=\"0\">");
+				sb.append("		<div id=\"" + componentIndex + "\" style=\"display: block; visibility: inherited;\"><nobr><img src=\"" + imageUrl + "\" width=\"16\" height=\"16\" border=\"0\">");
 				sb.append("		<span onMouseDown=\"grabIt(event);\" onmouseover=\"showDetails('" + componentContentVO.getName() + "');\" id=\""+ componentContentVO.getId() + "\" class=\"draggableItem\" nowrap=\"1\">" + ((componentContentVO.getName().length() > 22) ? componentContentVO.getName().substring(0, 17) : componentContentVO.getName()) + "...</span>");
 				sb.append("     </nobr></div>"); 
 				sb.append("	</td>");

@@ -6,7 +6,8 @@
 <head>
 	<title>Menus</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
+	<script language="JavaScript" src="script/listview.js"></script>
+	
 	<script type="text/javascript" language="JavaScript">
 	<!-- 
 		var exp;
@@ -21,8 +22,13 @@
 
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
-			// alert("treeclick");
-			parent.frames['main'].location.href="ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
+			#if($showComponentsFirst == "true")
+				parent.frames['main'].location.href="${componentRendererUrl}${componentRendererAction}?siteNodeId=" + itemId + "&languageId=" + $masterLanguageVO.getId() + "&contentId=-1";
+			#else
+				parent.frames['main'].location.href="ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
+			#end
+			
+			refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
 		}
 	
 		function reloadMain()

@@ -14,6 +14,12 @@
 		{
 			//alert('url:' + url);
 			parent.frames["main"].location.href = '' + url;
+			if(url.indexOf("ViewPage") > -1)
+			{
+				this.location.href = "ViewStructureToolToolBar.action?title=tool.structuretool.siteNodeComponentsHeader&toolbarKey=tool.structuretool.siteNodeComponentsHeader&siteNodeId=$siteNodeId&repositoryId=$repositoryId&isBranch=true";
+				//document.getElementById("Site Node Components").style.display = "none";
+				//document.getElementById("SiteNode Cover").style.display = "block";
+			}
 		}
 
 		function reload(url, title)
@@ -137,7 +143,17 @@
 			#if($button.isSelfContained)
 				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0"></a><img src="images/splitter.gif">						 
 			#else
-				<a href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0"></a><img src="images/splitter.gif">		
+				#set($skip = false)
+				#if($button.title == "Site Node Components" && $title == "tool.structuretool.siteNodeComponentsHeader")
+					#set($skip = true)
+				#end
+				#if($button.title == "SiteNode Cover" && $title == "tool.structuretool.siteNodeDetailsHeader")
+					#set($skip = true)
+				#end
+
+				#if($skip == false)
+				<a id="$button.getTitle()" $style href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0"></a><img src="images/splitter.gif">		
+				#end
 			#end
 		#end
 	</td>

@@ -1234,7 +1234,7 @@ function viewSource()
 	var sScrollPxOriginal = sScrollPx;
 	function tabInit(id)
 	{
-	    div = document.getElementById(id);
+		div = document.getElementById(id);
 		
 		//Width of the menu, Currently set to the width of the document.
 		//If you want the menu to be 500px wide for instance, just 
@@ -1258,7 +1258,8 @@ function viewSource()
 		if (bw.ns6) oMenu.css.position = "relative";
 		//oBg.css.width = pageWidth+px;
 		//oBg.clipTo(0,pageWidth,sMenuheight,0)
-		oBg.css.visibility = "visible";
+		//oBg.css.visibility = "visible";
+		
 	}
 	
 	/**
