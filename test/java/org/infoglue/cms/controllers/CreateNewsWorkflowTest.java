@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsWorkflowTest.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: CreateNewsWorkflowTest.java,v 1.2 2004/12/21 17:50:00 jed Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -129,6 +129,15 @@ public class CreateNewsWorkflowTest extends WorkflowTestCase
 	protected String getWorkflowName()
 	{
 		return "Create News";
+	}
+
+	/**
+	 * Returns the number of global actions
+	 * @return the number of global actions
+	 */
+	protected int getNumberOfGlobalActions()
+	{
+		return 2;
 	}
 
 	/**

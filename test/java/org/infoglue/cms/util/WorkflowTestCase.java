@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.3 2004/12/09 01:11:10 jed Exp $
+ * $Id: WorkflowTestCase.java,v 1.4 2004/12/21 17:50:00 jed Exp $
  */
 package org.infoglue.cms.util;
 
@@ -69,6 +69,16 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 * @return the name of the workflow under test
 	 */
 	protected abstract String getWorkflowName();
+
+	/**
+	 * Returns the number of global actions.  Subclasses should override if the workflow under test has global
+	 * actions; this default implementation returns zero.
+	 * @return the number of global actions
+	 */
+	protected int getNumberOfGlobalActions()
+	{
+		return 0;
+	}
 
 	protected WorkflowVO getWorkflow()
 	{
@@ -150,9 +160,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 		assertEquals("Wrong number of history steps:", historySteps, workflow.getHistorySteps().size());
 		assertEquals("Wrong number of steps:", currentSteps + historySteps, workflow.getSteps().size());
 		checkActions(availableActions, workflow.getAvailableActions());
-
-		// The number of global actions is constant based on how many are declared in the workflow descriptor
-		checkActions(2, workflow.getGlobalActions());
+		checkActions(getNumberOfGlobalActions(), workflow.getGlobalActions());
 	}
 
 	/**
