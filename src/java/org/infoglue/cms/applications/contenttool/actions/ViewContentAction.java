@@ -37,6 +37,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 import webwork.action.Action;
 
@@ -44,6 +45,7 @@ import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -285,8 +287,17 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	
 	public List getContentTypeDefinitions() throws Exception
 	{
-	    return ContentTypeDefinitionController.getController().getAuthorizedContentTypeDefinitionVOList(this.getInfoGluePrincipal());
-		//return ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+	    List contentTypeVOList = null;
+	    
+	    String protectContentTypes = CmsPropertyHandler.getProperty("protectContentTypes");
+	    if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
+	        contentTypeVOList = ContentTypeDefinitionController.getController().getAuthorizedContentTypeDefinitionVOList(this.getInfoGluePrincipal());
+		else
+		    contentTypeVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+	    
+	    Collections.sort(contentTypeVOList, new ReflectionComparator("name"));
+	    
+	    return contentTypeVOList;
 	}      
 
 	
