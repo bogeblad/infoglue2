@@ -48,9 +48,10 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	private List availableWorkflowVOList;
 	private List workflowVOList;
 
+	private WorkflowVO workflow;
+	private String workflowName;
 	private long workflowId;
 	private int actionId;
-	private String url = "ViewMyDesktopToolStartPage.action";
 
 	public List getWorkflowVOList()
 	{
@@ -72,29 +73,40 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		return getAvailableActions(filter);
 	}
 
-	public int getActionId()
+	/**
+	 * Provides access to the underlying workflow
+	 * @return a reference to the underlying workflow
+	 */
+	WorkflowVO getWorkflow()
 	{
-		return actionId;
+		return workflow;
 	}
 
+	/**
+	 * Allows the workflow name to be set via the request parameter "workflowName".
+	 * @param name the name of the desired workflow
+	 */
+	public void setWorkflowName(String name)
+	{
+		workflowName = name;
+	}
+
+	/**
+	 * Allows the action ID to be set via the request parameter "actionId"
+	 * @param actionId the ID of the action to execute
+	 */
 	public void setActionId(int actionId)
 	{
 		this.actionId = actionId;
 	}
 
-	public long getWorkflowId()
-	{
-		return workflowId;
-	}
-
+	/**
+	 * Allows the workflowID to be set via the request parameter "workflowId"
+	 * @param workflowId the ID of the desired workflow
+	 */
 	public void setWorkflowId(long workflowId)
 	{
 		this.workflowId = workflowId;
-	}
-
-	public String getUrl()
-	{
-		return url;
 	}
 
 	/**
@@ -109,8 +121,25 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	}
 
 	/**
+	 * Starts the workflow specified in the request parameter "workflowName" with the initial action identified by
+	 * the request parameter "actionId" and redirects to the view page for the desired initial action.  If no actionId
+	 * is passed in the request, we assume that the ID of the initial action is zero.
+	 * @return Action.NONE if the desired initial action has a view, otherwise the effect is the same as calling
+	 * doExecute()
+	 * @throws SystemException
+	 * @see #doExecute
+	 */
+	public String doStartWorkflow() throws SystemException
+	{
+		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), workflowName, actionId);
+		String url = getViewUrl(workflow.getInitialAction(new Integer(actionId)));
+		return (url.length() > 0) ? redirect(url) : doExecute();
+	}
+
+	/**
 	 * Invokes an action in a workflow based on the values of the actionId and workflowId request parameters and
-	 * redirects to the action's view if one has been defined.
+	 * redirects to the action's view if one has been defined.  If there is no action view, the user will be taken to
+	 * ViewMyDesktopToolStartPage.action, i.e., the effect is the same as calling doExecute().
 	 * <b>NOTE:</b> Assumes there will be one current action with a view; we iterate over the available actions until we
 	 * find one with a view, then redirect to that view.  If there are other actions with different views, they will be
 	 * ignored.
@@ -126,27 +155,27 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		CmsLogger.logInfo("actionId:" + actionId);
 		CmsLogger.logInfo("****************************************");
 
-		return redirectToView(controller.invokeAction(getInfoGluePrincipal(),
-																	 ActionContext.getRequest(), workflowId, actionId));
+		workflow = controller.invokeAction(getInfoGluePrincipal(), ActionContext.getRequest(), workflowId, actionId);
+		return redirectToView();
 	}
 
 	/**
 	 * Redirects to view defined for the current action(s) in the given workflow.
 	 * <b>NOTE:</b> Assumes there will be one current action with a view; we iterate over the available actions until we
 	 * find one with a view, then redirect to that view.  If there are other actions with different views, they will be
-	 * ignored.
-	 * @param workflow a WorkflowVO representing a workflow instance
+	 * ignored.  If we go through the entire list without finding a view, the user will be sent to
+	 * ViewMyDesktopToolStartPage.action, i.e., the effect will be the same as calling doExecute();
 	 * @return NONE if there is an available action with a view and we redirect to the action's view page, otherwise
 	 * performs the same operations as doExecute().
 	 * @throws SystemException if an error occurs invoking the action or URL-encoding the action view
 	 * @see #doExecute
 	 * <b>TODO:</b> find a better heuristic for determining which view to go to.
 	 */
-	private String redirectToView(WorkflowVO workflow) throws SystemException
+	private String redirectToView() throws SystemException
 	{
 		for (Iterator i = workflow.getAvailableActions().iterator(); i.hasNext();)
 		{
-			url = getViewUrl((WorkflowActionVO)i.next());
+			String url = getViewUrl((WorkflowActionVO)i.next());
 			if (url.length() > 0)
 				return redirect(url);
 		}
@@ -174,8 +203,8 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	private List getAvailableActions(StepFilter filter)
 	{
 		List actions = new ArrayList();
-		for (Iterator i = workflowVOList.iterator(); i.hasNext();)
-			actions.addAll(((WorkflowVO)i.next()).getAvailableActions(filter));
+		for (Iterator workflows = workflowVOList.iterator(); workflows.hasNext();)
+			actions.addAll(((WorkflowVO)workflows.next()).getAvailableActions(filter));
 
 		return actions;
 	}
@@ -185,7 +214,6 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 * @param action a workflow action
 	 * @return the view URL
 	 * @throws SystemException if an error occurs while encoding the URL
-	 * <b>TODO:</b> Simplify this URL; this could be much, much simpler.
 	 */
 	private String getViewUrl(WorkflowActionVO action) throws SystemException
 	{
@@ -211,7 +239,6 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 * Returns the return address
 	 * @return the return address
 	 * @throws SystemException if an error occurs while encoding the URL
-	 * <b>TODO:</b> there are much simpler and more explicit ways to do this; let's use them
 	 */
 	private String getReturnAddress() throws SystemException
 	{
