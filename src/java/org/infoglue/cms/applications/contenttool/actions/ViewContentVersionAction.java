@@ -94,6 +94,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	
 	private Map WYSIWYGProperties = null;
 	
+	private String closeOnLoad;
+	
 
 	public String getQualifyerPath(String entity, String entityId)
 	{	
@@ -983,4 +985,14 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		return contentVO;
 	}
+	
+    public String getCloseOnLoad()
+    {
+        return closeOnLoad;
+    }
+    
+    public void setCloseOnLoad(String closeOnLoad)
+    {
+        this.closeOnLoad = closeOnLoad;
+    }
 }

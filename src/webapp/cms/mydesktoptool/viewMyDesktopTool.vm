@@ -8,7 +8,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
-<frameset rows="40,*" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
+<frameset rows="1,*" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
   <frame name="header" marginwidth="0" marginheight="0" scrolling="no" noresize target="menu" src="ViewMyDesktopToolHeader.action">
 	  <frameset rows="57,*">
 		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="ViewMyDesktopToolToolBar.action">

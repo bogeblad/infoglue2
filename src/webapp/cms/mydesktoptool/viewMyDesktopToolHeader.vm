@@ -38,40 +38,13 @@
 <form name="selectbox" method="POST" action="">
 <tr>
 	<td colspan="9"><image src="images/trans.gif" width="1" height="10"></td>
-	<!--
-	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
-	<td class="toolheader" width="95%" colspan="7"><image src="images/trans.gif" width="1" height="10"></td>
-	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
-	-->
 </tr>
 <tr>
 	<td class="toolheader" colspan="9" bgcolor="#DFDA5E"><image src="images/trans.gif" width="1" height="19"></a>
 </tr>
-<!--
-<tr>
-	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></a>
-	<td class="toolheader"><image src="images/$ui.getString("images.publishingtool.repositoryLabel")" width="70" height="19"></td> 
-	<td>
-  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:reloadMenu(this);">
-		    <option value="beg" selected>$ui.getString("tool.publishingtool.chooseRepositoryLabel")</option>
-		    #foreach ($repositoryVO in $repositories)
-		    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
-		    #end
-		</select>
-	</td>
-	<td class="toolheader"><image src="images/trans.gif" width="10" height="19"></td>
-	<td class="toolheader"><image src="images/trans.gif" width="48" height="19"></td>
-	<td class="toolheader" width="80%"><image src="images/trans.gif" width="1" height="1"></td>
-	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></a>
-</tr>
--->
+
 <tr>
 	<td colspan="9"><image src="images/trans.gif" width="1" height="10"></td>
-	<!--
-	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
-	<td colspan="7"><image src="images/trans.gif" width="1" height="10"></td>
-	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
-	-->
 </tr>
 </form>
 </table>

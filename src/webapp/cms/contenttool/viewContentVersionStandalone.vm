@@ -172,7 +172,7 @@
 	#set($readonly = "")
 #end
 
-<body class="contenttooledit" onload="javascript:generateWYSIWYGS();">
+<body class="contenttooledit" onload="javascript:#if($closeOnLoad == "true")refreshCaller(); #else generateWYSIWYGS(); #end">
 
 <script language="javascript" src="script/jsrsClient.js"></script>
 
@@ -392,6 +392,19 @@
 		}
 	}
 	
+	//*******************************************
+	//This method refreshes the caller
+	//*******************************************
+
+	function refreshCaller()
+	{
+		if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
+			window.opener.parent.frames['main'].location.reload();
+		else
+			window.opener.location.reload();	
+
+		window.close();
+	}
 	
 	//*******************************************
 	// This is a timer that keeps track of the number of minutes the user has been on the page without saving.
@@ -982,6 +995,14 @@
 			document.editForm.action = "UpdateContentVersion!saveAndExitStandalone.action";
 			validateAndSubmitContentForm();		
 		}
+		
+		function validateAndSubmitContentFormThenClose()
+		{
+			//alert("Action:" + document.editForm.action);
+			document.editForm.closeOnLoad.value = "true";
+			//document.editForm.action = "UpdateContentVersion!saveAndExitStandalone.action";
+			validateAndSubmitContentForm();		
+		}
 	
 		
 		function buildVersionValue()
@@ -1053,6 +1074,7 @@
 		<input type="hidden" id="versionValue" name="versionValue" value=""/>
 		<input type="hidden" id="currentEditorId" name="currentEditorId" value=""/>
 		<input type="hidden" id="attributeName" name="attributeName" value="$attributeName"/>
+		<input type="hidden" name="closeOnLoad" value="false">
 		</td>
 	</tr>
 	
@@ -1067,7 +1089,8 @@
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<td colspan="3">
 			#if($readonly == "")
-			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+			<a href="javascript:validateAndSubmitContentFormThenClose();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<!--<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>-->
 			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
 			#end
 			<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a></td>

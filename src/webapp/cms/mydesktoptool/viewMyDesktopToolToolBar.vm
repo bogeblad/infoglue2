@@ -282,8 +282,6 @@
 	</td>
 	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"> 
 	</td>
-	
-	
 </tr>
 <tr>
 	<td colspan="3" bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
@@ -292,12 +290,13 @@
 </div>
 
 <!-- This is the headline --->
-<div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:1px; visibility:visble; z-index:0">
+<div style="border: 1px solid white; LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:0px; visibility:visble; z-index:0">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr class="darkyellow">
-	<td class="actionheader"><div class="leftmarginalized">$title</div></td>
+	<td class="actionheader"><div aclass="leftmarginalized">$title</div></td>
 </tr>
 </table>
+</div>
 
 </body>
 </html>

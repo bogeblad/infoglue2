@@ -169,8 +169,8 @@
 	</table>
 </div>
 
-<div id="tasks" style="position:absolute; left:300px; top:20px; width:700px; height:200px; z-index:2">
-	<table tableborder="0" border="0" bgcolor="#666666" width="70%" cellpadding="1" cellspacing="0">
+<div id="tasks" style="position:absolute; left:300px; top:20px; right: 20px; awidth:700px; height:200px; z-index:2">
+	<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
 	<tr>
 		<td>
 			#set($lvConstraint = 0)
