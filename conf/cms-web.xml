@@ -41,9 +41,7 @@
 	    <init-param>
       		<param-name>org.infoglue.cms.security.authorizerClass</param-name>
      		<param-value>org.infoglue.cms.security.JNDIBasicAuthorizationModule</param-value>
-     		
      		<param-value>org.infoglue.cms.security.OpenLDAPJNDIBasicAuthorizationModule</param-value>
-	    	
 	    </init-param>
 	    <init-param>
       		<param-name>org.infoglue.cms.security.extraParametersFile</param-name>
@@ -51,9 +49,7 @@
 	    </init-param>
 	    <init-param>
 	    	<param-name>org.infoglue.cms.security.authConstraint</param-name>
-	    	
-     		<param-value>CN=InfoGlue Tool Users,OU=InfoGlueRoles,DC=SprawlAD</param-value>
-	    	
+	    	<param-value>CN=InfoGlue Tool Users,OU=InfoGlueRoles,DC=SprawlAD</param-value>
 	    	<param-value>CN=InfoGlue Tool Users,OU=roles,OU=staff,DC=gu,DC=se</param-value>
 	    </init-param>
 	    -->
@@ -135,7 +131,7 @@
 	</servlet>¨
 	 
     <!-- ****************************************** -->
-	<!-- This part is for the quarz scheduler -->
+	<!-- This part is for the quarz scheduler       -->
 	<!-- ****************************************** -->
 	<servlet>
 		<servlet-name>quartz</servlet-name>
@@ -144,6 +140,15 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
+	<!-- ****************************************** -->
+	<!-- This part is for Apache Axis			    -->
+	<!-- ****************************************** -->
+	<servlet>
+		<servlet-name>AxisServlet</servlet-name>
+	    <display-name>Apache-Axis Servlet</display-name>
+	    <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
+    </servlet>
+	  
 	<!-- ************************************* -->
 	<!-- This part is for the tree services    -->
 	<!-- ************************************* -->
@@ -179,6 +184,22 @@
 		<url-pattern>*.xslt</url-pattern>
 	</servlet-mapping>
 	
+	<!-- ****************************************** -->
+	<!-- This part is for Apache Axis			    -->
+	<!-- ****************************************** -->
+	<servlet-mapping>
+	    <servlet-name>AxisServlet</servlet-name>
+    	<url-pattern>/servlet/AxisServlet</url-pattern>
+  	</servlet-mapping>
+	<servlet-mapping>
+    	<servlet-name>AxisServlet</servlet-name>
+    	<url-pattern>*.jws</url-pattern>
+  	</servlet-mapping>
+	<servlet-mapping>
+    	<servlet-name>AxisServlet</servlet-name>
+    	<url-pattern>/services/*</url-pattern>
+  	</servlet-mapping>
+  
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>

@@ -23,10 +23,13 @@
 
 package org.infoglue.cms.webservices;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 
 /**
  * This class is responsible for letting an external application call InfoGlue
@@ -38,47 +41,58 @@ import org.infoglue.cms.entities.content.ContentVO;
 public class RemoteContentServiceImpl 
 {
     private static ContentController contentController = ContentController.getContentController();
+    private static ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
     
     /**
      * Inserts a new Content including versions etc.
      */
     
-    public String createContent(Map parameters) 
+    public int createContent(ContentVO contentVO, int parentContentId, int contentTypeDefinitionId, int repositoryId) 
     {
+        int newContentId = 0;
+        
         System.out.println("***************************************");
         System.out.println("Creating content through webservice....");
         System.out.println("***************************************");
+        
         try
         {
-            String name 							= (String)parameters.get("name");
-            String userName 						= (String)parameters.get("userName");
-            String parentContentIdString			= (String)parameters.get("parentContentId");
-            String contentTypeDefinitionIdString 	= (String)parameters.get("contentTypeDefinitionId");
-            String repositoryIdString 				= (String)parameters.get("repositoryId");
-            
-            Integer parentContentId = new Integer(parentContentIdString);
-            Integer contentTypeDefinitionId = new Integer(contentTypeDefinitionIdString);
-            Integer repositoryId = new Integer(repositoryIdString);
-            
-            System.out.println("name:" + name);
-            System.out.println("userName:" + userName);
-            System.out.println("parentContentId:" + parentContentId);
-            System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
-            System.out.println("repositoryId:" + repositoryId);
-            
-	        ContentVO contentVO = new ContentVO();
-	        contentVO.setName(name);
-	        contentVO.setCreatorName(userName);
-	        
-	        contentController.create(parentContentId, contentTypeDefinitionId, repositoryId, contentVO);
+	        ContentVO newContentVO = contentController.create(new Integer(parentContentId), new Integer(contentTypeDefinitionId), new Integer(repositoryId), contentVO);
+	        newContentId = newContentVO.getId().intValue();
         }
         catch(Exception e)
         {
             e.printStackTrace();
-            return "ERROR";
         }
         
-        return "SUCCESS";
+        return newContentId;
     }
+    
+    /**
+     * Inserts a new ContentVersion.
+     */
+    
+    public int createContentVersion(ContentVersionVO contentVersionVO, int contentId, int languageId) 
+    {
+        int newContentVersionId = 0;
+        
+        System.out.println("***************************************");
+        System.out.println("Creating content through webservice....");
+        System.out.println("***************************************");
+        
+        try
+        {
+	        ContentVersionVO newContentVersionVO = contentVersionController.create(new Integer(contentId), new Integer(languageId), contentVersionVO, null);
+	        newContentVersionId = newContentVersionVO.getId().intValue();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        
+        return newContentVersionId;
+    }
+    
+ 
 
 }

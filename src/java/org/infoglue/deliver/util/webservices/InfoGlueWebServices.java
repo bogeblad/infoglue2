@@ -25,13 +25,18 @@ package org.infoglue.deliver.util.webservices;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.encoding.XMLType;
+import org.apache.axis.encoding.ser.BeanDeserializerFactory;
+import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.SystemException;
 
 import javax.xml.namespace.QName;
@@ -42,7 +47,7 @@ import javax.xml.rpc.ParameterMode;
  * @author Mattias Bogeblad
  */
 
-public class WebServiceHelper
+public class InfoGlueWebServices
 {
 	private String serviceUrl = "";
 	
@@ -53,7 +58,7 @@ public class WebServiceHelper
 	 * The constructor for this class.
 	 */
 	
-	public WebServiceHelper()
+	public InfoGlueWebServices()
 	{	
 	}
 	
@@ -76,111 +81,12 @@ public class WebServiceHelper
 	}
 
 	/**
-	 * This is the method that lets you call the endpoint and get a single string-value back.
+	 * This is the method that lets you create a content and versions.
 	 */
 
-	public String getString(String method)
+	public Integer createContent(ContentVO contentVO, Integer parentContentId, Integer contentTypeDefinitionId, Integer repositoryId)
 	{
-		String response = "";
-		
-		try
-		{
-			Service service = new Service();
-			Call call = (Call)service.createCall();
-
-			String endpoint = this.serviceUrl;
-
-			call.setTargetEndpointAddress(endpoint); //Set the target service host and service location,
-			call.setOperationName(new QName("http://soapinterop.org/", method)); //This is the target services method to invoke.
-			call.setEncodingStyle( "http://schemas.xmlsoap.org/soap/encoding/" );
-
-			QName qnameAttachment = new QName("urn:EchoAttachmentsService", "DataHandler");
-
-			call.setReturnType(qnameAttachment);
-
-			response = (String)call.invoke(new Object[0]); //Add the attachment.
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return response;
-	}
-		
-	/**
-	 * This is the method that lets you call the endpoint and get a list of values back.
-	 */
-
-	public Collection getCollection(String method)
-	{
-		Collection response = null;
-		
-		try
-		{
-			Service service = new Service();
-			Call call = (Call)service.createCall();
-
-			String endpoint = this.serviceUrl;
-
-			call.setTargetEndpointAddress(endpoint); //Set the target service host and service location,
-			call.setOperationName(new QName("http://soapinterop.org/", method)); //This is the target services method to invoke.
-			call.setEncodingStyle( "http://schemas.xmlsoap.org/soap/encoding/" );
-
-			QName qnameAttachment = new QName("urn:EchoAttachmentsService", "DataHandler");
-
-			call.setReturnType(qnameAttachment);
-
-			response = (Collection)call.invoke(new Object[0]); //Add the attachment.
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return response;
-	}
-
-	/**
-	 * This is the method that lets you call the endpoint and get a map of values back.
-	 */
-
-	public Map getMap(String method)
-	{
-		Map response = null;
-		
-		try
-		{
-			Service service = new Service();
-			Call call = (Call)service.createCall();
-
-			String endpoint = this.serviceUrl;
-
-			call.setTargetEndpointAddress(endpoint); //Set the target service host and service location,
-			call.setOperationName(new QName("http://soapinterop.org/", method)); //This is the target services method to invoke.
-			call.setEncodingStyle( "http://schemas.xmlsoap.org/soap/encoding/" );
-
-			QName qnameAttachment = new QName("urn:EchoAttachmentsService", "DataHandler");
-
-			call.setReturnType(qnameAttachment);
-
-			response = (Map)call.invoke(new Object[0]); //Add the attachment.
-		}
-		catch (Exception e)
-		{
-			response.put("errorStatus", new Integer(1));
-			response.put("errorMessage", e.getMessage());
-			e.printStackTrace();
-		}
-		return response;
-	}
-	
-	
-	/**
-	 * This is the method that lets you call the endpoint and get a map of values back.
-	 */
-
-	public Map getMap(String method, Map argument) throws SystemException
-	{
-		Map response = new HashMap();
+		Integer newContentId = null;
 		
 		try
 		{
@@ -190,36 +96,77 @@ public class WebServiceHelper
 			String endpoint = this.serviceUrl;
 
 			call.setTargetEndpointAddress(endpoint); //Set the target service host and service location,
-			call.setOperationName(new QName("http://soapinterop.org/", method)); //This is the target services method to invoke.
+			call.setOperationName(new QName("http://soapinterop.org/", "createContent")); //This is the target services method to invoke.
 			call.setEncodingStyle( "http://schemas.xmlsoap.org/soap/encoding/" );
 
+			//register the ContentVO class
+	        QName poqn = new QName("http://www.soapinterop.org/ContentVO", "ContentVO");
+	        Class cls = ContentVO.class;
+	        call.registerTypeMapping(cls, poqn, BeanSerializerFactory.class, BeanDeserializerFactory.class);
+	        
 			QName qnameAttachment = new QName("urn:EchoAttachmentsService", "DataHandler");
 
-			call.addParameter("data", XMLType.XSD_STRING, ParameterMode.IN);
+			call.addParameter("contentVO", poqn, ParameterMode.IN); 
+			call.addParameter("parentContentId", XMLType.XSD_INT, ParameterMode.IN);
+			call.addParameter("contentTypeDefinitionId", XMLType.XSD_INT, ParameterMode.IN);
+			call.addParameter("repositoryId", XMLType.XSD_INT, ParameterMode.IN);
 
-			call.setReturnType(qnameAttachment);
-			Object[] args = {argument};
-			response = (Map)call.invoke(args); //Add the attachment.
+			call.setReturnType(XMLType.XSD_INT);
+
+			Object[] args = {contentVO, parentContentId, contentTypeDefinitionId, repositoryId};
+			newContentId = (Integer)call.invoke(args); //Add the attachment.			
 		}
 		catch (Exception e)
 		{
-			response.put("errorStatus", new Integer(1));
-			response.put("errorMessage", e.getMessage());
 			e.printStackTrace();
 		}
 		
-		return response;
+		return newContentId;
 	}
-	
 	
 	/**
-	 * A helper method that lets the template get hold of a Map-object to populate.
+	 * This is the method that lets you create a contentversion.
 	 */
-	
-	public Map getMap()
+
+	public Integer createContentVersion(ContentVersionVO contentVersionVO, Integer contentId, Integer languageId)
 	{
-		return new HashMap();
+		Integer newContentVersionId = null;
+		
+		try
+		{
+		    Service service = new Service();
+			Call call = (Call)service.createCall();
+
+			String endpoint = this.serviceUrl;
+
+			call.setTargetEndpointAddress(endpoint); //Set the target service host and service location,
+			call.setOperationName(new QName("http://soapinterop.org/", "createContentVersion")); //This is the target services method to invoke.
+			call.setEncodingStyle( "http://schemas.xmlsoap.org/soap/encoding/" );
+
+			//register the ContentVO class
+	        QName poqn = new QName("http://www.soapinterop.org/ContentVersionVO", "ContentVersionVO");
+	        Class cls = ContentVersionVO.class;
+	        call.registerTypeMapping(cls, poqn, BeanSerializerFactory.class, BeanDeserializerFactory.class);
+	        
+			QName qnameAttachment = new QName("urn:EchoAttachmentsService", "DataHandler");
+
+			call.addParameter("contentVersionVO", poqn, ParameterMode.IN); 
+			call.addParameter("contentId", XMLType.XSD_INT, ParameterMode.IN);
+			call.addParameter("languageId", XMLType.XSD_INT, ParameterMode.IN);
+
+			call.setReturnType(XMLType.XSD_INT);
+
+			Object[] args = {contentVersionVO, contentId, languageId};
+			newContentVersionId = (Integer)call.invoke(args); //Add the attachment.			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return newContentVersionId;
 	}
+		
 	
 	
 	/**
