@@ -1,5 +1,5 @@
 /**
- * $Id: WorkflowVOTest.java,v 1.2 2005/01/04 01:39:44 jed Exp $
+ * $Id: WorkflowVOTest.java,v 1.3 2005/01/14 15:48:39 jed Exp $
  * Created by jed on Dec 29, 2004
  */
 package org.infoglue.cms.entities.mydesktop;
@@ -12,7 +12,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
  * @author jed
- * @version $Revision: 1.2 $ $Date: 2005/01/04 01:39:44 $
+ * @version $Revision: 1.3 $ $Date: 2005/01/14 15:48:39 $
  */
 public class WorkflowVOTest extends InfoGlueTestCase
 {
@@ -29,6 +29,9 @@ public class WorkflowVOTest extends InfoGlueTestCase
 
 		for (Iterator steps = workflow.getCurrentSteps().iterator(); steps.hasNext();)
 			((WorkflowStepVO)steps.next()).addAction(new WorkflowActionVO());
+
+		for (int i = 0; i < 2; ++i)
+			workflow.getInitialActions().add(new WorkflowActionVO(new Integer(i)));
 	}
 
 	public void testGetAvailableActions() throws Exception
@@ -46,6 +49,41 @@ public class WorkflowVOTest extends InfoGlueTestCase
 	{
 		assertEquals("Wrong number of admin steps:", 3, workflow.getCurrentSteps(adminFilter).size());
 		assertEquals("Wrong number of user steps:", 2, workflow.getCurrentSteps(userFilter).size());
+	}
+
+	public void testGetInitialAction() throws Exception
+	{
+		for (int i = 0; i < workflow.getInitialActions().size(); ++i)
+		{
+			WorkflowActionVO action= (WorkflowActionVO)workflow.getInitialActions().get(i);
+			assertEquals("Wrong action at " + i + ": ", action, workflow.getInitialAction(action.getId()));
+		}
+	}
+
+	public void testGetInitialActionNonexistent() throws Exception
+	{
+		try
+		{
+			workflow.getInitialAction(new Integer(-1));
+			fail("IllegalArgumentException should have been thrown");
+		}
+		catch (IllegalArgumentException e)
+		{
+			// Expected
+		}
+	}
+
+	public void testGetInitialActionNull() throws Exception
+	{
+		try
+		{
+			workflow.getInitialAction(null);
+			fail("NullPointerException should have been thrown");
+		}
+		catch (NullPointerException e)
+		{
+			// Expected
+		}
 	}
 
 	private static WorkflowStepVO createStep(InfoGluePrincipal owner)
