@@ -142,6 +142,9 @@
 		
 		function showReplaceDialog()
 		{
+			var advancedDiv = document.getElementById("advancedOptions");
+			advancedDiv.style.display = "none";
+
 			var searchDiv = document.getElementById("searchLayer");
 			searchDiv.style.display = "none";
 

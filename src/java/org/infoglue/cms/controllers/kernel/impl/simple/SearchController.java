@@ -222,7 +222,7 @@ public class SearchController extends BaseController
 			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(contentVersionIds[i]), db);
 			    if(contentVersion.getStateId().intValue() != ContentVersionVO.WORKING_STATE.intValue())
 			    {
-			        contentVersion = ContentStateController.changeState(contentVersion.getId(), ContentVersionVO.WORKING_STATE, "Automatic by the replace function", infoGluePrincipal, null);
+			        contentVersion = ContentStateController.changeState(contentVersion.getId(), ContentVersionVO.WORKING_STATE, "Automatic by the replace function", infoGluePrincipal, null, db);
 			        System.out.println("Setting the version to working before replacing string...");
 			    }
 			    
