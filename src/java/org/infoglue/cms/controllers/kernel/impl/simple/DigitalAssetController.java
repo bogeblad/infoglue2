@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.io.*;
+import java.net.URLEncoder;
 
 /**
  * @author Mattias Bogeblad

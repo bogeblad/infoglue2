@@ -42,6 +42,7 @@ import org.infoglue.cms.util.graphics.ThumbnailGenerator;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.zip.*;
 
