@@ -52,6 +52,7 @@ public class ViewAccessRightsAction extends WebworkAbstractAction
 
 	private List interceptionPointVOList = new ArrayList();
 	private List roleList = null;
+	private List groupList = null;
 	//private List accessRightVOList = null;
 	//private List extranetRoleVOList = null;
 	//private List extranetAccessVOList = null;	 
@@ -88,6 +89,7 @@ public class ViewAccessRightsAction extends WebworkAbstractAction
 		this.interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList(interceptionPointCategory);
 		//this.roleVOList = RoleController.getController().getRoleVOList();
 		this.roleList = RoleControllerProxy.getController().getAllRoles();
+		this.groupList = GroupControllerProxy.getController().getAllGroups();
 		//this.accessRightVOList = AccessRightController.getController().getAccessRightVOList(this.interceptionPointId, extraParameters);
 				
 		//this.extranetRoleVOList = ExtranetRoleController.getController().getExtranetRoleVOList();
@@ -139,6 +141,11 @@ public class ViewAccessRightsAction extends WebworkAbstractAction
 	public List getRoleList()
 	{
 		return this.roleList;
+	}
+	
+	public List getGroupList()
+	{
+		return this.groupList;
 	}
 
 	public String getReturnAddress()
