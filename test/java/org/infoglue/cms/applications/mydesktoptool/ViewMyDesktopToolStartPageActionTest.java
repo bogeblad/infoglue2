@@ -20,14 +20,13 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.6 2005/01/07 18:23:10 jed Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.7 2005/01/13 23:39:40 jed Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool;
 
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolStartPageAction;
 import webwork.action.ActionContext;
-import webwork.action.factory.SessionMap;
 
 /**
  * Tests ViewMyDesktopToolStartPageAction using the Create News workflow.
@@ -43,13 +42,11 @@ public class ViewMyDesktopToolStartPageActionTest extends WorkflowTestCase
 		super.setUp();
 		setUserPrincipal(getAdminPrincipal());
 
-		request.setSession(getSession());
 		ActionContext.setRequest(request);
-		ActionContext.setSession(new SessionMap(getSession()));
 		action.setServletRequest(request);
 		action.setServletResponse(new FakeHttpServletResponse());
 
-		setWorkflow(startWorkflow());
+		startWorkflow(0);
 	}
 
 	public void testExecute() throws Exception
