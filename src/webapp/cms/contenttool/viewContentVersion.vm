@@ -198,6 +198,7 @@
 	HTMLArea.loadPlugin("CSS");
 	HTMLArea.loadPlugin("EnterParagraphs");
 
+	var allowSave = true;  //Sets to false if one does not close like one should
 	var currentEditorIdHash = new Array();
 	var attributesStatus = new Array();
 	var plainEditors = new Array();
@@ -227,6 +228,7 @@
 	
 	function openFormEditor(url)
 	{
+		allowSave = false;
 		openPopup(url, "FormEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 	}
 
@@ -236,6 +238,7 @@
 	
 	function openRelationEditor(url)
 	{
+		allowSave = false;
 		openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 	}
 
@@ -716,7 +719,7 @@
 						    	<td colspan="2" bgcolor="white" valign="top">
 									#if($contentVersionId > -1)
 									As the form editor is somewhat complex you have to open it in a new window.
-									Click <a href="javascript:openFormEditor('ViewFormEditor.action?contentVersionId=$!contentVersionId&contentVersionAttributeName=$!attribute.name');changeEditor(3, '${attribute.name}');"><strong>here</strong></a> for it.
+									Click <a href="javascript:openFormEditor('ViewFormEditor.action?contentVersionId=$!contentVersionId&contentVersionAttributeName=$!attribute.name');"><strong>here</strong></a> for it.
 									Edit the form there and close the window when you are done. 
 									#else
 									You cannot use the editor until you have saved the first version of this content. Fill
@@ -1001,6 +1004,12 @@
 	<script type="text/javascript">
 		function validateAndSubmitContentForm()
 		{
+			if(allowSave == false)
+			{
+				alert("$ui.getString("tool.contenttool.cannotSaveBecauseInvalidClose")");
+				return;
+			}
+			
 			pastedTime = count; 
 			
 			if(beenWarned)
