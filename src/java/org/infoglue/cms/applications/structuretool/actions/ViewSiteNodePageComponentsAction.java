@@ -1372,12 +1372,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
     
     public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
     {
-        System.out.println("allowedContentTypeNames in ViewSiteNodePageComponents:" + allowedContentTypeNames);
-        for(int i=0; i<allowedContentTypeNames.length; i++)
-        {
-            System.out.println("" + allowedContentTypeNames[i]);
-        }
-        
         this.allowedContentTypeNames = allowedContentTypeNames;
     }
     
