@@ -42,8 +42,8 @@ import org.infoglue.cms.exception.SystemException;
  */
 public class ViewPublicationsAction extends WebworkAbstractAction
 {
-	private java.lang.Integer repositoryId;
-	
+	private Integer repositoryId;
+
 	private RepositoryVO repositoryVO;
 	private List publicationEvents;
 	private List editions;
@@ -61,11 +61,10 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 
 	protected String doExecute() throws Exception
 	{
-		this.repositoryVO      = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
-		this.publicationEvents = PublicationController.getPublicationEvents(this.repositoryId);
-		this.editions          = PublicationController.getEditions(this.repositoryId);
-
-		return "success";
+		repositoryVO      = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+		publicationEvents = PublicationController.getPublicationEvents(repositoryId);
+		editions          = PublicationController.getEditions(repositoryId);
+		return SUCCESS;
 	}
 
 	/**
@@ -74,7 +73,7 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 
 	public List getPublicationEvents()
 	{
-		return this.publicationEvents;
+		return publicationEvents;
 	}
 
 	public static List getPublicationDetails(Integer publicationId) throws SystemException
@@ -94,9 +93,9 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 
 	/**
 	 * Returns the repositoryId.
-	 * @return java.lang.Integer
+	 * @return Integer
 	 */
-	public java.lang.Integer getRepositoryId()
+	public Integer getRepositoryId()
 	{
 		return repositoryId;
 	}
@@ -105,7 +104,7 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 	 * Sets the repositoryId.
 	 * @param repositoryId The repositoryId to set
 	 */
-	public void setRepositoryId(java.lang.Integer repositoryId)
+	public void setRepositoryId(Integer repositoryId)
 	{
 		this.repositoryId = repositoryId;
 	}
