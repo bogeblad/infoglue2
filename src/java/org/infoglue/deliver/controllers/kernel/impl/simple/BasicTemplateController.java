@@ -430,6 +430,46 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * Getter for the most recent contentVersion on a content
+	 */
+	
+	public ContentVersionVO getContentVersion(Integer contentId)
+	{
+		ContentVersionVO contentVersionVO = null;
+
+		try
+		{
+		    contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(this.siteNodeId, contentId, this.languageId, true);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get the contentVersion with contentId " + contentId + ":" + e.getMessage(), e);
+		}
+
+		return contentVersionVO;
+	}
+
+	/**
+	 * Getter for the most recent contentVersion on a content
+	 */
+	
+	public ContentVersionVO getContentVersion(Integer contentId, Integer languageId, boolean useLanguageFallback)
+	{
+		ContentVersionVO contentVersionVO = null;
+
+		try
+		{
+		    contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(this.siteNodeId, contentId, languageId, useLanguageFallback);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get the contentVersion with contentId " + contentId + ":" + e.getMessage(), e);
+		}
+
+		return contentVersionVO;
+	}
+	
+	/**
 	 * Returns the logged in user - that is the one currently looking at the page
 	 */
 	public InfoGluePrincipal getPrincipal()
