@@ -1,7 +1,7 @@
-<!-- $Id: actions.xml,v 1.22 2005/02/23 15:20:56 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.23 2005/02/24 15:48:48 mattias Exp $ -->
 <actions>
 
-	<!-- Redirect -->
+	<!-- Test -->
 	<action name="org.infoglue.cms.applications.common.actions.PerformanceTestAction" alias="PerformanceTest">
 		<view name="error">/cms/managementtool/performanceResult.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -278,6 +278,11 @@
 		<view name="success">/cms/managementtool/viewRepositoryProperties.vm</view>
 		<view name="save">ViewRepositoryProperties.action</view>
 		<view name="saveAndExit">ViewListRepository.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.RebuildRegistryAction" alias="RebuildRegistry">
+		<view name="input">/cms/managementtool/viewRebuildRegistryInput.vm</view>
+		<view name="success">/cms/managementtool/viewRebuildRegistryFinished.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
