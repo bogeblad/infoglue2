@@ -53,6 +53,10 @@
     <field name="roles" type="org.infoglue.cms.entities.management.impl.simple.RoleImpl" lazy="true" collection="collection">
       <sql many-key="userName" many-table="cmSystemUserRole"/>
     </field>
+    <field name="groups" type="org.infoglue.cms.entities.management.impl.simple.GroupImpl" lazy="true" collection="collection">
+      <sql many-key="userName" many-table="cmSystemUserGroup"/>
+    </field>
+    
   </class>
   
 <!--  Mapping for UserProperties  -->
@@ -110,6 +114,22 @@
     </field>
     <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="false" collection="collection">
       <sql many-key="roleName" many-table="cmSystemUserRole"/>
+    </field>
+  </class>
+
+  <!--  Mapping for Group  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.GroupImpl" identity="groupName">
+    <description>Group</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmGroup"/>
+    <field name="groupName" type="java.lang.String">
+      <sql name="groupName" type="varchar" dirty="check" />
+    </field>
+    <field name="description" type="java.lang.String">
+      <sql name="description" type="varchar" dirty="check" />
+    </field>
+    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="false" collection="collection">
+      <sql many-key="groupName" many-table="cmSystemUserGroup"/>
     </field>
   </class>
 
@@ -842,7 +862,8 @@
 <!--  Mapping for DigitalAsset  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" identity="digitalAssetId" key-generator="IDENTITY">
     <description>DigitalAsset</description>
-    <cache-type type="unlimited" capacity="3000"/>
+    <!--<cache-type type="unlimited"/>-->
+    <cache-type type="none"/>
     <map-to table="cmDigitalAsset"/>
     <field name="digitalAssetId" type="java.lang.Integer">
       <sql name="digitalAssetId" type="integer" dirty="check" />
