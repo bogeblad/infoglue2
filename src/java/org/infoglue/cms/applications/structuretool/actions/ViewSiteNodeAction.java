@@ -114,7 +114,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		{	
             this.initialize(getSiteNodeId());
 
-            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVersionVO.getStateId().intValue() == SiteNodeVersionVO.WORKING_STATE.intValue() && getShowComponentsFirst().equalsIgnoreCase("true"))
+            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVO.getSiteNodeTypeDefinitionId() != null && this.siteNodeVersionVO.getStateId().intValue() == SiteNodeVersionVO.WORKING_STATE.intValue() && getShowComponentsFirst().equalsIgnoreCase("true"))
 	        {
                 boolean isMetaInfoInWorkingState = false;
     			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
