@@ -319,7 +319,7 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 	{
 		RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
 		
-		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + repositoryVO.getName() + "' , 'SiteNode', 'width=800,height=600,resizable=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
+		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
 		
 		return imageButton;
 	}
