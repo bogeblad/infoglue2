@@ -38,7 +38,7 @@ public class WorkflowStepVO implements BaseEntityVO
 {
 	private Long workflowId;
 	private Integer id;
-	private Long stepId;
+	private Integer stepId;
 	private String name;
 	private String status;
 	private String owner;
@@ -67,12 +67,12 @@ public class WorkflowStepVO implements BaseEntityVO
 		this.workflowId = workflowId;
 	}
 
-	public Long getStepId()
+	public Integer getStepId()
 	{
 		return this.stepId;
 	}
 
-	public void setStepId(Long stepId)
+	public void setStepId(Integer stepId)
 	{
 		this.stepId = stepId;
 	}
