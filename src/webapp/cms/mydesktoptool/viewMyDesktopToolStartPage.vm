@@ -181,7 +181,7 @@
 			#lvHead(["Incoming task"] "" "" "" "")
 			#set($cnt = 0)
 			#set($quote = '"')
-			#foreach ($workflowActionVO in $workflowActionVOList)
+			#foreach ($workflowActionVO in $this.getWorkflowActionVOList($webwork.bean('org.infoglue.cms.util.workflow.OwnerStepFilter')))
 				#if(!$workflowActionVO.isGlobalAction)
 					#set($view = $workflowActionVO.getView())
 	  			    #if($view == "")
