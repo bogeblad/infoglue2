@@ -20,33 +20,36 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsTest.java,v 1.3 2005/01/18 21:48:52 jed Exp $
+ * $Id: CreateNewsTest.java,v 1.4 2005/01/18 22:13:14 jed Exp $
  */
 package org.infoglue.cms.workflow;
 
-import junit.framework.*;
-import junit.swingui.TestRunner;
+import java.util.*;
+
+import com.opensymphony.module.propertyset.PropertySet;
 
 /**
- * Tests the WorkflowController using the Create News sample workflow
- * @see org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController
+ * Tests the Create News sample workflow
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
  */
 public class CreateNewsTest extends NewsWorkflowTestCase
 {
 	public void testWorkflow() throws Exception
 	{
+		checkCreateNews();
+	}
+
+	private void checkCreateNews() throws Exception
+	{
 		invokeCreateNews();
 		checkWorkflow(1, 1, 1);
-	}
 
-	public static Test suite()
-	{
-		return new TestSuite(CreateNewsTest.class);
-	}
-
-	public static void main(String[] args)
-	{
-		TestRunner.run(CreateNewsTest.class);
+		PropertySet propertySet = getPropertySet();
+		Map params = getCreateNewsParams();
+		for (Iterator names = params.keySet().iterator(); names.hasNext();)
+		{
+			String name = (String)names.next();
+			assertEquals("Wrong " + name + ":", params.get(name), propertySet.getString(name));
+		}
 	}
 }
