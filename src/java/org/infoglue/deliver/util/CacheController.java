@@ -171,7 +171,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-				
+				if(cacheName.equalsIgnoreCase("sortedChildContentsCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0))
+				{
+					clear = true;
+				}
 				
 				if(clear)
 				{	

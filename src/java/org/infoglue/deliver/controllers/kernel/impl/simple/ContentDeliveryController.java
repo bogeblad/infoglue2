@@ -1186,7 +1186,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	public List getSortedChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, Integer contentId, Integer siteNodeId, Database db, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException, Exception
 	{
-		/*
+		
 		String sortedChildContentsKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + searchRecursive + "_" + maximumNumberOfLevels + "_" + sortAttribute + "_" + sortOrder + "_" + useLanguageFallback;
 		CmsLogger.logInfo("sortedChildContentsKey:" + sortedChildContentsKey);
 		String cacheName = "sortedChildContentsCache";
@@ -1196,7 +1196,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			CmsLogger.logInfo("There was an cached content cachedSortedContentVOList:" + cachedSortedContentVOList.size());
 			return cachedSortedContentVOList;
 		}
-		*/
 		
 		List sortedContentVOList = new ArrayList();
 		
@@ -1211,7 +1210,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			sortedContentVOList.add(content.getValueObject());
 		}
 		
-		//CacheController.cacheObject(cacheName, sortedChildContentsKey, sortedContentVOList);
+		CacheController.cacheObject(cacheName, sortedChildContentsKey, sortedContentVOList);
 			
 		return sortedContentVOList;
 	}
