@@ -20,15 +20,17 @@
  *
  * ===============================================================================
  *
- * $Id: NewsWorkflowTestCase.java,v 1.1 2005/01/18 21:47:00 jed Exp $
+ * $Id: NewsWorkflowTestCase.java,v 1.2 2005/01/18 22:12:44 jed Exp $
  */
 package org.infoglue.cms.workflow;
+
+import java.util.*;
 
 import org.infoglue.cms.util.*;
 
 /**
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
- * @version $Revision: 1.1 $ $Date: 2005/01/18 21:47:00 $
+ * @version $Revision: 1.2 $ $Date: 2005/01/18 22:12:44 $
  */
 public class NewsWorkflowTestCase extends WorkflowTestCase
 {
@@ -60,13 +62,18 @@ public class NewsWorkflowTestCase extends WorkflowTestCase
 	 */
 	protected void invokeCreateNews() throws Exception
 	{
-		FakeHttpServletRequest request = new FakeHttpServletRequest();
-		request.setParameter("name", getName());
-		request.setParameter("title", getName());
-		request.setParameter("navigationTitle", getName());
-		request.setParameter("leadIn", getName());
-		request.setParameter("fullText", getName());
+		invokeAction(new FakeHttpServletRequest(getCreateNewsParams()), 4);
+	}
 
-		invokeAction(request, 4);
+	protected Map getCreateNewsParams()
+	{
+		Map params = new HashMap();
+		params.put("name", getName());
+		params.put("title", getName());
+		params.put("navigationTitle", getName());
+		params.put("leadIn", getName());
+		params.put("fullText", getName());
+
+		return params;
 	}
 }
