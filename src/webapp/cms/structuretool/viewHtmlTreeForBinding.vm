@@ -19,13 +19,13 @@
 		function setSelected(itemId, repoId, path)
 		{
 			// Graphical stuff
-			if (oldSelected != null)
-				oldSelected.className = "";
+			//if (oldSelected != null)
+			//	oldSelected.className = "";
 			
-			srcIdLink =	document.getElementById("link" + itemId);
-			oldSelected = srcIdLink;
-			if (srcIdLink != null)
-				srcIdLink.className = "selected";
+			//srcIdLink =	document.getElementById("link" + itemId);
+			//oldSelected = srcIdLink;
+			//if (srcIdLink != null)
+			//	srcIdLink.className = "selected";
 				
 			parent.document.inputForm.entityId.value     = itemId;
 			parent.document.inputForm.repositoryId.value = repoId;

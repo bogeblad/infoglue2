@@ -31,12 +31,12 @@
 
 
 		// OTHER STUFF
-		var oldSelected;
+		
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
 			//alert("itemId:" + itemId);
 			//alert("repoId" + repoId);
-			alert("path" + path);
+			//alert("path" + path);
 			
 			// Call parent
 			//parent.htmlTreeItemClick(itemId, repoId);
@@ -44,38 +44,39 @@
 			//setSelected(itemId);			
 		}
 		
-		/*
-		function setSelected(itemId)
-		{
-			// Graphical stuff
-			if (oldSelected != null)
-				oldSelected.className = "";
-			
-			var srcIdLink =	document.getElementById("link" + itemId);
-			oldSelected = srcIdLink;
-			if (srcIdLink != null)
-				srcIdLink.className = "selected";
-		}
-		*/
-		
 		var oldSelected;
 		
 		function setSelected(itemId, repoId, path)
 		{
 			// Graphical stuff
-			if (oldSelected != null)
-				oldSelected.className = "";
+			//if (oldSelected != null)
+			//	oldSelected.className = "";
 			
-			var srcIdLink =	document.getElementById("link" + itemId);
-			oldSelected = srcIdLink;
-			if (srcIdLink != null)
-				srcIdLink.className = "selected";
+			//var srcIdLink =	document.getElementById("link" + itemId);
+			//oldSelected = srcIdLink;
+			//if (srcIdLink != null)
+			//	srcIdLink.className = "selected";
 				
 			parent.document.inputForm.entityId.value     = itemId;
 			parent.document.inputForm.repositoryId.value = repoId;
 		 	parent.document.inputForm.path.value         = path;
 		}
 		
+		function selectWhenLoaded(parentNode, contentId)
+		{
+			if(parentNode.loading) 
+			{
+				window.setTimeout(function () {
+					selectWhenLoaded(parentNode, contentId);
+				}, 10);
+			}
+			else
+			{
+				parentNode.expand();
+				var addedNode = tree.getNodeWithMyId(contentId);
+				addedNode.select();
+			}
+		}
 		
 		function loaded()
 		{
@@ -145,6 +146,7 @@
 		//oldSelected=elem;
 		htmlTreeItemClick(itemId, repoId, path);
 	}
+	
 	function onTreeItemSelect(elem)
 	{
 		//alert("elem:" + elem);
@@ -159,8 +161,8 @@
 			srcIdLink.className = "selected";
 
 		// alert(srcIdLink.className);
-		
 	}
+	
 	</script>	
 	<!-- END -->	
 #end
