@@ -15,16 +15,28 @@
 	<!--
 	Copy over all templates for development
 	-->
-	<target name="copy-templates">
+	<target name="copy-templates" depends="copy-cms,copy-working,copy-preview,copy-live">
+	</target>
+
+	<target name="copy-cms">
 		<copy todir="${deploy.dir.cms}" >
 			<fileset dir="${webapp}"/>
 		</copy>
+	</target>
+
+	<target name="copy-working">
 		<copy todir="${deploy.dir.working}" >
 			<fileset dir="${webapp}"/>
 		</copy>
+	</target>
+
+	<target name="copy-preview">
 		<copy todir="${deploy.dir.preview}" >
 			<fileset dir="${webapp}"/>
 		</copy>
+	</target>
+
+	<target name="copy-live">
 		<copy todir="${deploy.dir.live}" >
 			<fileset dir="${webapp}"/>
 		</copy>
