@@ -65,7 +65,8 @@ public class MailSender implements InfoGlueInputHandler
 		String subject 		= ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, formContentId, languageId, "MailSender_subject", siteNodeId, true);
 		String body         = renderMailBody(db, siteNodeId, languageId, contentId, template, parameters, request, infogluePrincipal);
 		
-		MailServiceFactory.getService().send(fromAddress, toAddress, subject, body);
+		//MailServiceFactory.getService().send(fromAddress, toAddress, subject, body);
+		MailServiceFactory.getService().send(fromAddress, toAddress, subject, body, "text/html", "UTF-8");
 	}
 	
 	

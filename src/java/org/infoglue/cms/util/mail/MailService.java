@@ -100,8 +100,8 @@ public class MailService
 		try 
 		{
 	    	final Message message = new MimeMessage(this.session);
-			
-			message.setContent(content, "text/html");
+
+	    	message.setContent(content, "text/html");
 			message.setFrom(createInternetAddress(from));
 	    	message.setRecipient(Message.RecipientType.TO, createInternetAddress(to));
 	        message.setSubject(subject);
@@ -124,14 +124,19 @@ public class MailService
 		try 
 		{
 			final Message message = new MimeMessage(this.session);
-			
-			message.setContent(content, contentType);
+	    	String	contentTypeWithEncoding = contentType+";charset="+encoding;
+
+			//message.setContent(content, contentType);
 			message.setFrom(createInternetAddress(from));
 			message.setRecipient(Message.RecipientType.TO, createInternetAddress(to));
-			message.setSubject(subject);
-			message.setText(content);
-			message.setDataHandler(new DataHandler(new StringDataSource(content, contentType, encoding))); 
+			//message.setSubject(subject);
 	
+	        ((MimeMessage)message).setSubject(subject, encoding);
+	        //message.setText(content);
+	        message.setDataHandler(new DataHandler(new StringDataSource(content, contentTypeWithEncoding, encoding)));
+	        //message.setText(content);
+	        //message.setDataHandler(new DataHandler(new StringDataSource(content, "text/html"))); 
+
 			return message;
 		} 
 		catch(MessagingException e) 
