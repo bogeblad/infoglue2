@@ -78,11 +78,70 @@
 			}
 		}
 		
+		var ig_expanded_nodes_cookie = "igContentTreeForBindingExpansionForRepository${repositoryId}";
+		
 		function loaded()
 		{
-				setSelected("${select}");
+			setSelected("${select}");
+			
+			path = "" + webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
+			//alert("path:" + path);
+			if(path && path != "")
+			{
+				path = path.substring(0, path.length - 1);
+				//selected = "198";
+				var pathArr = path.split(',');
+				
+				expandTreeRec(pathArr, 0);
+				
+				/*			
+				setTimeout(function () {
+					var addedNode = tree.getNodeWithMyId(selected);
+					addedNode.select();
+					}, 3000);
+				*/
+			}		
 		}
 
+		function expandTreeRec(pathArr, level)
+		{			
+			var node = tree.getNodeWithMyId(pathArr[level]);
+						
+			if(!node.loading && node.parentNode != null)
+			{
+				//alert("Loading child to " + node.text + ":" + node.id + ":" + node.myId + !node.loaded + ":" + !node.loading);
+				if (!node.loaded && !node.loading && node.src) {
+					_startLoadXmlTree(node.src, node);
+				}
+				
+				if (webFXTreeHandler.behavior == 'classic') { document.getElementById(node.id + '-icon').src = node.openIcon; }
+				if (node.childNodes.length) {  document.getElementById(node.id + '-cont').style.display = 'block'; }
+				node.open = true;
+				document.getElementById(node.id + '-plus').src = node.minusIcon;
+				node.deSelect();
+				document.getElementById(node.id + '-anchor').blur();
+			 	//node.expand();
+			}
+						
+			if(node.loading && !node.loaded) 
+			{
+				//alert("loading with level:" + level + " and " + pathArr.length);
+				if(level < pathArr.length)
+				{
+					window.setTimeout(function () {
+						expandTreeRec(pathArr, level);
+					}, 10);
+				}
+			}
+			else
+			{
+				//alert("not loading");
+				if(level < pathArr.length)
+				{
+					expandTreeRec(pathArr, level+1);
+				}
+			}
+		}
 		// -->
 	</script>
 	<script type="text/javascript" src="script/menu/poslib.js"></script>

@@ -174,84 +174,54 @@
 				srcIdLink.className = "selected";
 		}
 		
+		var ig_expanded_nodes_cookie = "igContentTreeExpansionForRepository${repositoryId}";
+		
 		function loaded()
 		{
 			setSelected("${select}");
 			
-			//path = "152,193,194,195,190,177,178";
-			//path = "1055,1096,1080,1081";
-			path = "" + webFXTreeHandler.cookies.getCookie("ig_expanded_nodes_cookie");
+			path = "" + webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
 			//alert("path:" + path);
 			if(path && path != "")
 			{
 				path = path.substring(0, path.length - 1);
-				//alert("path:" + path);
-				selected = "198";
-				//path = "152,190";
+				//selected = "198";
 				var pathArr = path.split(',');
 				
 				expandTreeRec(pathArr, 0);
 				
-				/*			
+				/*
 				setTimeout(function () {
-					var addedNode = tree.getNodeWithMyId(selected);
-					addedNode.select();
-					}, 3000);
+					var rootNode = tree.getNodeWithMyId(pathArr[0]);
+					rootNode.select();
+					rootNode.blur();
+					rootNode.deSelect();
+					}, 100);
 				*/
 			}			
 		}
 		
 		
 		function expandTreeRec(pathArr, level)
-		{
-			/*
-			if(pathArr.length <= 2)
-			{
-				var node = tree.getNodeWithMyId(pathArr[0]);
-				var id = pathArr[pathArr.length -1];
-				selectWhenLoaded(node, id);
-				return;
-			}
-		
-			if(level >= pathArr.length -1) 
-			{
-				var node = tree.getNodeWithMyId(pathArr[pathArr.length -2]);
-				var id = pathArr[pathArr.length-1];
-				selectWhenLoaded(node, id);
-				return;
-			}
-			*/
-			
+		{			
 			var node = tree.getNodeWithMyId(pathArr[level]);
 						
 			if(!node.loading && node.parentNode != null)
 			{
 				//alert("Loading child to " + node.text + ":" + node.id + ":" + node.myId + !node.loaded + ":" + !node.loading);
-				if (!node.loaded && !node.loading) {
+				if (!node.loaded && !node.loading && node.src) {
 					_startLoadXmlTree(node.src, node);
 				}
-				//alert("1");
+				
 				if (webFXTreeHandler.behavior == 'classic') { document.getElementById(node.id + '-icon').src = node.openIcon; }
-				//alert("2");
 				if (node.childNodes.length) {  document.getElementById(node.id + '-cont').style.display = 'block'; }
-				//alert("3");
 				node.open = true;
-				//alert("4:" + node.id);
-				//alert("Node:" + document.getElementById(node.id + '-plus'));
 				document.getElementById(node.id + '-plus').src = node.minusIcon;
-				//alert("5");
-			 	
-			 	//node.expand();
+				node.deSelect();
+				document.getElementById(node.id + '-anchor').blur();
+				//node.expand();
 			}
-			
-			//alert("Ok - lets check the children...");
-			
-			//if(node.loading)
-			//	alert("node.loading:" + node.loading + " node.loaded:" + !node.loaded);
-			
-			//if(!node.loaded)
-			//	alert("node.loaded:" + node.loaded);
-			
+						
 			if(node.loading && !node.loaded) 
 			{
 				//alert("loading with level:" + level + " and " + pathArr.length);
