@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
-<web-app>	
+<web-app>
 	<filter>
 		<filter-name>Set Character Encoding</filter-name>
 		<filter-class>org.infoglue.cms.util.SetCharacterEncodingFilter</filter-class>
@@ -37,13 +37,13 @@
 	    <init-param>
 	      <param-name>org.infoglue.cms.security.serverName</param-name>
     	  <param-value>localhost:8080</param-value>
-    	</init-param> 
+    	</init-param>
 	    <init-param>
       		<param-name>org.infoglue.cms.security.authorizerClass</param-name>
      		<param-value>org.infoglue.cms.security.JNDIBasicAuthorizationModule</param-value>
-     		
+
      		<param-value>org.infoglue.cms.security.OpenLDAPJNDIBasicAuthorizationModule</param-value>
-	    	
+
 	    </init-param>
 	    <init-param>
       		<param-name>org.infoglue.cms.security.extraParametersFile</param-name>
@@ -51,9 +51,9 @@
 	    </init-param>
 	    <init-param>
 	    	<param-name>org.infoglue.cms.security.authConstraint</param-name>
-	    	
+
      		<param-value>CN=InfoGlue Tool Users,OU=InfoGlueRoles,DC=SprawlAD</param-value>
-	    	
+
 	    	<param-value>CN=InfoGlue Tool Users,OU=roles,OU=staff,DC=gu,DC=se</param-value>
 	    </init-param>
 	    -->
@@ -95,7 +95,7 @@
 			<param-value>InfoGlueAuthorizationParameters.properties</param-value>
 		</init-param>
 	</filter>
-	
+
 	<!-- Define filter mappings for the defined filters -->
 	<filter-mapping>
 		<filter-name>Set Character Encoding</filter-name>
@@ -167,21 +167,21 @@
 		<servlet-name>xslt</servlet-name>
 		<url-pattern>*.xslt</url-pattern>
 	</servlet-mapping>
-	
+
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
 
 	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
+		<welcome-file>index-cms.html</welcome-file>
 	</welcome-file-list>
 	<error-page>
 		<error-code>400</error-code>
-		<location>/index.html</location>
+		<location>/index-cms.html</location>
 	</error-page>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/index.html</location>
+		<location>/index-cms.html</location>
 	</error-page>
 	<taglib>
 		<taglib-uri>webwork</taglib-uri>
@@ -193,7 +193,7 @@
 		<web-resource-collection>
 			<web-resource-name>CMS Application</web-resource-name>
 			<url-pattern>*.action</url-pattern>
-		</web-resource-collection> 
+		</web-resource-collection>
 		<auth-constraint>
 			<role-name>cmsUser</role-name>
 			<role-name>administrators</role-name>
@@ -214,6 +214,6 @@
     <security-role>
       <role-name>administrators</role-name>
     </security-role>
-    
+
     -->
 </web-app>
