@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -32,6 +32,7 @@ import java.util.Iterator;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.exolab.castor.jdo.QueryException;
 
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.exception.Bug;
@@ -46,18 +47,18 @@ import org.infoglue.cms.util.validators.StringValidator;
 
 /**
  * BaseController.java
- * Created on 2002-aug-28 
- * @author Stefan Sik, ss@frovi.com 
+ * Created on 2002-aug-28
+ * @author Stefan Sik, ss@frovi.com
  * @author Mattias Bogeblad, mattias.bogeblad@sprawlsolutions.se
- * 
+ *
  * Baseclass for ControllerClasses.
  * Various methods to load, create and delete entities
- * 
+ *
  * TODO:
  * Now that all entities implements BaseEntity clear all reflection and simplify
  * arguments...
- * 
- * -matbog 2002-09-15: Added and modified new read-only methods for fetching a VO-object. 
+ *
+ * -matbog 2002-09-15: Added and modified new read-only methods for fetching a VO-object.
  * 					   These method must be called instead of the old ones when just fetching a entity
  * 					   or all entities from a table.
  */
@@ -68,8 +69,8 @@ public abstract class BaseController
 	private static Integer getEntityId(Object entity) throws Bug
 	{
 		Integer entityId = new Integer(-1);
-		
-		try 
+
+		try
 		{
 			entityId = ((IBaseEntity) entity).getId();
 		}
@@ -78,7 +79,7 @@ public abstract class BaseController
 			e.printStackTrace();
 			throw new Bug("Unable to retrieve object id");
 		}
-		
+
 		/*
 		try {
 			entityId = (Integer) entity.getClass().getDeclaredMethod("getId", new Class[0]).invoke(entity, new Object[0]);
@@ -87,11 +88,11 @@ public abstract class BaseController
 		} catch (NoSuchMethodException e) {
 		}
 
-		*/		
+		*/
 		return entityId;
 	}
 
-	/*************************************************** 
+	/***************************************************
 	 * Create, Delete & Update operations
 	 ***************************************************/
 
@@ -108,7 +109,7 @@ public abstract class BaseController
             commitTransaction(db);
             //CmsSystem.log(entity,"Created object", CmsSystem.DBG_NORMAL);
 			//CmsSystem.transactionLogEntry(entity.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(entity), entity.toString());
-            
+
         }
         catch(Exception e)
         {
@@ -118,7 +119,7 @@ public abstract class BaseController
             throw new SystemException(e.getMessage());
         }
         return entity;
-    }     
+    }
 
 
 	// Create entity inside an existing transaction
@@ -129,7 +130,7 @@ public abstract class BaseController
             db.create(entity);
             commitTransaction(db);
             //CmsSystem.log(entity,"Created object", CmsSystem.DBG_NORMAL);
-			//CmsSystem.transactionLogEntry(entity.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(entity), entity.toString());   
+			//CmsSystem.transactionLogEntry(entity.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(entity), entity.toString());
         }
         catch(Exception e)
         {
@@ -139,7 +140,7 @@ public abstract class BaseController
             throw new SystemException(e.getMessage());
         }
         return entity;
-    }     
+    }
 
 
 	// Delete entity
@@ -153,12 +154,12 @@ public abstract class BaseController
         try
         {
             entity = getObjectWithId(entClass, id, db);
-            
+
             // Delete the entity
             db.remove(entity);
             commitTransaction(db);
-            //CmsSystem.log(entity,"Deleted object", CmsSystem.DBG_NORMAL);           
-			//CmsSystem.transactionLogEntry(entClass.getName(), CmsSystem.TRANS_DELETE, id, entity.toString());            
+            //CmsSystem.log(entity,"Deleted object", CmsSystem.DBG_NORMAL);
+			//CmsSystem.transactionLogEntry(entClass.getName(), CmsSystem.TRANS_DELETE, id, entity.toString());
         }
         catch(Exception e)
         {
@@ -166,7 +167,7 @@ public abstract class BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-    }        
+    }
 
 
 	// Delete entity
@@ -180,12 +181,12 @@ public abstract class BaseController
 		try
 		{
 			entity = getObjectWithId(entClass, id, db);
-            
+
 			// Delete the entity
 			db.remove(entity);
 			commitTransaction(db);
-			//CmsSystem.log(entity,"Deleted object", CmsSystem.DBG_NORMAL);           
-			//CmsSystem.transactionLogEntry(entClass.getName(), CmsSystem.TRANS_DELETE, id, entity.toString());            
+			//CmsSystem.log(entity,"Deleted object", CmsSystem.DBG_NORMAL);
+			//CmsSystem.transactionLogEntry(entClass.getName(), CmsSystem.TRANS_DELETE, id, entity.toString());
 		}
 		catch(Exception e)
 		{
@@ -193,7 +194,7 @@ public abstract class BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-	}    
+	}
 
 	// Delete entity
     public static void deleteEntity(Class entClass, Integer id, Database db) throws Bug, SystemException
@@ -211,7 +212,7 @@ public abstract class BaseController
             CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
             throw new SystemException(e.getMessage());
         }
-    }        
+    }
 
 
     public static BaseEntityVO updateEntity(Class arg, BaseEntityVO vo) throws Bug, SystemException
@@ -237,9 +238,9 @@ public abstract class BaseController
         }
 
         return entity.getVO();
-    }        
+    }
 
-    
+
 	public static BaseEntityVO updateEntity(Class arg, BaseEntityVO vo, Database db) throws Bug, SystemException
 	{
 		IBaseEntity entity = null;
@@ -248,12 +249,12 @@ public abstract class BaseController
 		entity.setVO(vo);
 
 		return entity.getVO();
-	}        
+	}
 
-	
+
 	/* Update entity and a collection with other entities
 	 * Experimental, use with caution
-	 * 
+	 *
 	 */
     public static BaseEntityVO updateEntity(Class entClass, BaseEntityVO vo, String collectionMethod, Class manyClass, String[] manyIds) throws ConstraintException, SystemException
     {
@@ -277,21 +278,21 @@ public abstract class BaseController
 	            	manyList.add(manyEntity);
 	            }
 			}
-			
-		
+
+
             entity = (IBaseEntity) getObjectWithId(entClass, vo.getId(), db);
             entity.setVO(vo);
-            
+
             // Now reflect to set the collection
             Object[] arg = {manyList};
             Class[] parm = {Collection.class};
             entity.getClass().getDeclaredMethod(collectionMethod, parm).invoke(entity, arg);
-						
+
 			// DONE
-			
+
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
-            
+
             commitTransaction(db);
             //CmsSystem.transactionLogEntry(entity.getClass().getName(), CmsSystem.TRANS_UPDATE, vo.getId(), entity.toString());
 
@@ -310,13 +311,13 @@ public abstract class BaseController
         }
 
         return entity.getVO();
-    }        
-	
+    }
+
 
 	/*
 	protected static Object getObjectWithId(Class arg, Integer id) throws SystemException, Bug
 	{
-		Database db = CastorDatabaseService.getDatabase();		
+		Database db = CastorDatabaseService.getDatabase();
 		Object ret = null;
 		try
 		{
@@ -327,7 +328,7 @@ public abstract class BaseController
 		catch (Exception e)
 		{
 			rollbackTransaction(db);
-            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);
 		}
 		return ret;
 	}
@@ -336,7 +337,7 @@ public abstract class BaseController
 	/**
 	 * This method fetches one object / entity within a transaction.
 	 **/
-	
+
     protected static Object getObjectWithId(Class arg, Integer id, Database db) throws SystemException, Bug
     {
         Object object = null;
@@ -347,9 +348,9 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);
         }
-    
+
         if(object == null)
         {
             throw new Bug("The object with id [" + id + "] was not found. This should never happen.");
@@ -361,20 +362,20 @@ public abstract class BaseController
 	/**
 	 * This method fetches one object / entity within a transaction.
 	 **/
-	
+
     protected static Object getObjectWithIdAsReadOnly(Class arg, Integer id, Database db) throws SystemException, Bug
     {
         Object object = null;
         try
         {
-            object = db.load(arg, id, Database.ReadOnly);    			
+            object = db.load(arg, id, Database.ReadOnly);
         	//CmsSystem.log(object, "BaseController:getObjectWithId", CmsSystem.DBG_HIGH);
         }
         catch(Exception e)
         {
-            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);
         }
-    
+
         if(object == null)
         {
             throw new Bug("The object with id [" + id + "] was not found. This should never happen.");
@@ -385,7 +386,7 @@ public abstract class BaseController
 	/**
 	 * This method fetches one object / entity within a transaction.
 	 **/
-	
+
 	protected static Object getObjectWithId(Class arg, String id, Database db) throws SystemException, Bug
 	{
 		Object object = null;
@@ -395,9 +396,9 @@ public abstract class BaseController
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);
 		}
-    
+
 		if(object == null)
 		{
 			throw new Bug("The object with id [" + id + "] was not found. This should never happen.");
@@ -405,25 +406,25 @@ public abstract class BaseController
 		return object;
 	}
 
-	    
+
   	/**
 	 * This method converts a List of entities to a list of value-objects.
 	 */
-	
+
 	public static List toVOList(Collection baseEntities) throws SystemException, Bug
     {
 		List resultVOList = new ArrayList();
-		
+
         if(baseEntities != null)
     	{
 			Object o = null;
 		    try
 			{
 				Iterator iterator = baseEntities.iterator();
-				while (iterator.hasNext()) 
+				while (iterator.hasNext())
 		        {
 					o = (Object)iterator.next();
-					// Om metoden getValueObject saknas, kastas ett undantag.            	
+					// Om metoden getValueObject saknas, kastas ett undantag.
 	                resultVOList.add(o.getClass().getDeclaredMethod("getValueObject", new Class[0]).invoke(o, new Object[0]));
 		        }
 	    	}
@@ -433,31 +434,31 @@ public abstract class BaseController
 	        }
 	        catch(Exception e)
 	        {
-	            throw new SystemException("An error occurred when we tried to convert the collection to a valueList. Reason:" + e.getMessage(), e);    
-	        }    
+	            throw new SystemException("An error occurred when we tried to convert the collection to a valueList. Reason:" + e.getMessage(), e);
+	        }
 		}
-		    
+
         return resultVOList;
     }
 
   	/**
 	 * This method converts a List of entities to a list of value-objects.
 	 */
-	
+
 	public static List toModifiableVOList(Collection baseEntities) throws SystemException, Bug
     {
 		List resultVOList = new ArrayList();
-		
+
         if(baseEntities != null)
     	{
 			Object o = null;
 		    try
 			{
 				Iterator iterator = baseEntities.iterator();
-				while (iterator.hasNext()) 
+				while (iterator.hasNext())
 		        {
 					o = (Object)iterator.next();
-					// Om metoden getValueObject saknas, kastas ett undantag.            	
+					// Om metoden getValueObject saknas, kastas ett undantag.
 	                resultVOList.add(o.getClass().getDeclaredMethod("getValueObject", new Class[0]).invoke(o, new Object[0]));
 		        }
 	    	}
@@ -467,14 +468,14 @@ public abstract class BaseController
 	        }
 	        catch(Exception e)
 	        {
-	            throw new SystemException("An error occurred when we tried to convert the collection to a valueList. Reason:" + e.getMessage(), e);    
-	        }    
+	            throw new SystemException("An error occurred when we tried to convert the collection to a valueList. Reason:" + e.getMessage(), e);
+	        }
 		}
-		    
+
         return resultVOList;
     }
 
-	/*************************************************** 
+	/***************************************************
 	 * Read only operations
 	 ***************************************************/
 
@@ -484,7 +485,7 @@ public abstract class BaseController
 
 	public static Object getVOWithId(Class arg, Integer id) throws SystemException, Bug
 	{
-		Database db = CastorDatabaseService.getDatabase();		
+		Database db = CastorDatabaseService.getDatabase();
 		Object ret = null;
 		try
 		{
@@ -495,7 +496,7 @@ public abstract class BaseController
 		catch (Exception e)
 		{
 			rollbackTransaction(db);
-            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);
 		}
 		return ret;
 	}
@@ -503,7 +504,7 @@ public abstract class BaseController
 	/**
 	 * This method fetches one object in read only mode and returns it's value object.
 	 */
-	
+
     private static BaseEntityVO getVOWithId(Class arg, Integer id, Database db) throws SystemException, Bug
     {
         IBaseEntity vo = null;
@@ -513,25 +514,25 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);
         }
-    
+
         if(vo == null)
         {
             throw new Bug("The object with id [" + id + "] was not found. This should never happen.");
         }
-        
+
     	return vo.getVO();
     }
-    
-    
+
+
 	/**
 	 * This method is used to fetch a ValueObject from the database.
 	 */
 
 	public static Object getVOWithId(Class arg, String id) throws SystemException, Bug
 	{
-		Database db = CastorDatabaseService.getDatabase();		
+		Database db = CastorDatabaseService.getDatabase();
 		Object ret = null;
 		try
 		{
@@ -542,15 +543,15 @@ public abstract class BaseController
 		catch (Exception e)
 		{
 			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * This method fetches one object in read only mode and returns it's value object.
 	 */
-	
+
 	private static BaseEntityVO getVOWithId(Class arg, String id, Database db) throws SystemException, Bug
 	{
 		IBaseEntity vo = null;
@@ -560,14 +561,14 @@ public abstract class BaseController
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);
 		}
-    
+
 		if(vo == null)
 		{
 			throw new Bug("The object with id [" + id + "] was not found. This should never happen.");
 		}
-        
+
 		return vo.getVO();
 	}
 
@@ -589,16 +590,16 @@ public abstract class BaseController
         catch(Exception e)
         {
 			rollbackTransaction(db);
-            throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);    
-        }    
+            throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);
+        }
         return ret;
     }
     */
-    
+
 	/**
 	 * This method fetches all object in read only mode and returns a list of value objects.
 	 */
-    
+
 	public static List getAllVOObjects(Class arg, String orderByAttribute, String direction) throws SystemException, Bug
 	{
 		Database db = CastorDatabaseService.getDatabase();
@@ -612,13 +613,12 @@ public abstract class BaseController
 		catch(Exception e)
 		{
 			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);    
-		}    
+			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);
+		}
 		return ret;
 	}
 
 
-    
 	/**
 	 * This method fetches all object in read only mode and returns a list of value objects.
 	 */
@@ -629,16 +629,16 @@ public abstract class BaseController
 		OQLQuery	oql;
 		try
 		{
-        	
+
 			CmsLogger.logInfo("BaseHelper::GetAllObjects for " + arg.getName());
 			oql = db.getOQLQuery( "SELECT u FROM " + arg.getName() + " u ORDER BY u." + orderByField + " " + direction);
 			QueryResults results = oql.execute(Database.ReadOnly);
-			
-			while (results.hasMore()) 
+
+			while (results.hasMore())
 			{
 				Object o = results.next();
 
-				// Om metoden getValueObject saknas, kastas ett undantag.            	
+				// Om metoden getValueObject saknas, kastas ett undantag.
 				resultList.add(o.getClass().getDeclaredMethod("getValueObject", new Class[0]).invoke(o, new Object[0]));
 			}
 		}
@@ -648,16 +648,16 @@ public abstract class BaseController
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);    
-		}    
+			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);
+		}
 
 		return resultList;
 	}
-    
+
 	/**
 	 * This method fetches all object in read only mode and returns a list of value objects sorted on primary Key.
 	 */
-	 
+
 	public List getAllVOObjects(Class arg, String primaryKey) throws SystemException, Bug
 	{
 		Database db = CastorDatabaseService.getDatabase();
@@ -671,8 +671,8 @@ public abstract class BaseController
 		catch(Exception e)
 		{
 			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);    
-		}    
+			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);
+		}
 		return ret;
 	}
 
@@ -689,8 +689,8 @@ public abstract class BaseController
 		{
 			oql = db.getOQLQuery( "SELECT u FROM " + arg.getName() + " u ORDER BY u." + primaryKey);
 			QueryResults results = oql.execute(Database.ReadOnly);
-			
-			while (results.hasMore()) 
+
+			while (results.hasMore())
 			{
 				IBaseEntity baseEntity = (IBaseEntity)results.next();
 				resultList.add(baseEntity.getVO());
@@ -702,12 +702,74 @@ public abstract class BaseController
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);    
-		}    
+			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);
+		}
 
 		return resultList;
 	}
-	
+
+	//---------------------------------------------------------------------
+	// Dynamic Query specific operations
+	//---------------------------------------------------------------------
+	/**
+	 * Executes a Query with no parameters
+	 *
+ 	 * @param query An OQL Query
+	 * @return A VO list of the query results
+	 * @throws SystemException If an error occurs
+	 */
+	protected static List executeQuery(String query) throws SystemException
+	{
+		return executeQuery(query, Collections.EMPTY_LIST);
+	}
+
+	/**
+	 * Executes a Query, also binds the provided parameters
+	 *
+ 	 * @param query An OQL Query
+	 * @param params A List of paramters
+	 * @return A VO list of the query results
+	 * @throws SystemException If an error occurs
+	 */
+	protected static List executeQuery(String query, List params) throws SystemException
+	{
+		Database db = beginTransaction();
+
+		try
+		{
+			List results = new ArrayList();
+			results = Collections.list(createQuery(db, query, params).execute(Database.ReadOnly));
+			commitTransaction(db);
+			return toVOList(results);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("Error executing " + query, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Creates an OQLQuery for the provided Database and binds the parameters to it.
+	 *
+	 * @param db The Database to create the OQLQuery on
+	 * @param query The String OQL query
+	 * @param params A List of Objects to bind to the query sequentially
+	 * @return An OQLQuery instance that can be executer
+	 * @throws QueryException
+	 */
+	protected static OQLQuery createQuery(Database db, String query, List params) throws QueryException
+	{
+		OQLQuery oql = db.getOQLQuery(query);
+		if (params != null)
+			for (Iterator i = params.iterator(); i.hasNext();)
+				oql.bind(i.next());
+
+		return oql;
+	}
+
+
 	/***************************************************
 	 * Validation and integrity check of entities - cre 2002-09-18 / SS
 	 * *************************************************/
@@ -719,22 +781,22 @@ public abstract class BaseController
     	// The old validators are used to do the actual validation
     	// but I have changed them to use less constructor
     	// parameter passing in favour for setters.
-    	    	
+
     	//CmsSystem.log("ValidationController::validate()", CmsSystem.DBG_HIGH);
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-		
+
 		// Prepare the object for validation
 		vo.PrepareValidation();
-		
+
 		// Loop through rules and create validators
     	Iterator iterator = vo.getConstraintRules().iterator();
-    	while (iterator.hasNext()) 
+    	while (iterator.hasNext())
     	{
     		ConstraintRule cr = (ConstraintRule) iterator.next();
     		Integer intId = vo.getId();
     		CmsLogger.logInfo("Validating object id: " + intId);
 
-			// an ugly switch for now.    		
+			// an ugly switch for now.
     		switch (cr.getConstraintType())
     		{
     			case Constants.EMAIL:
@@ -743,7 +805,7 @@ public abstract class BaseController
 					{
 						// Create validator
 	    				EmailValidator v = new EmailValidator(cr.getFieldName());
-	    				
+
 	    				// Set properties
 	    				v.setObjectClass(vo.getConstraintRuleList().getEntityClass());
 	    				v.setRange(cr.getValidRange());
@@ -753,19 +815,19 @@ public abstract class BaseController
 
 						// Do the limbo
 	    				v.validate((String) cr.getValue(), ceb);
-	    				
+
 	    				// <todo>
 	    				// Note: the actual value validated should be extracted
 	    				// from the vo using the fieldname with reflection.
 	    				// </todo>
-	    				
-					}		 	    	 
+
+					}
     				break;
     			}
 				case Constants.STRING:
     			{
 					if (cr.getValue() != null)
-					{    				
+					{
 	    				StringValidator v = new StringValidator(cr.getFieldName());
 	    				v.setObjectClass(vo.getConstraintRuleList().getEntityClass());
 	    				v.setRange(cr.getValidRange());
@@ -774,7 +836,7 @@ public abstract class BaseController
 	    				v.setExcludeId(intId);
 
 	    				v.validate((String) cr.getValue(), ceb);
-					}		 	    	 
+					}
     				break;
     			}
     			case Constants.FLOAT:
@@ -789,24 +851,32 @@ public abstract class BaseController
     			{
     				break;
     			}
-    			
+
     		} // switch
-    		    		
+
     	} // while
-				
+
 		return ceb;
     }
 
-
-
-	/*************************************************** 
+	/***************************************************
 	 * Transaction specifik operations
 	 ***************************************************/
+	/**
+	 * Creates a new database and starts a transaction
+	 * @return A reference to a castor database with a new transaction
+	 * @throws SystemException if a database error occurs.
+	 */
+	protected static Database beginTransaction() throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		beginTransaction(db);
+		return db;
+	}
 
     /**
      * Begins a transaction on the named database
      */
-         
     protected static void beginTransaction(Database db) throws SystemException
     {
         try
@@ -816,14 +886,14 @@ public abstract class BaseController
         catch(Exception e)
         {
 			e.printStackTrace();
-        	throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
+        	throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);
         }
     }
-       
+
     /**
      * Ends a transaction on the named database
      */
-     
+
     protected static void commitTransaction(Database db) throws SystemException
     {
         try
@@ -834,15 +904,15 @@ public abstract class BaseController
         catch(Exception e)
         {
 			e.printStackTrace();
-            throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+            throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);
         }
     }
- 
- 
+
+
     /**
      * Rollbacks a transaction on the named database
      */
-     
+
     protected static void rollbackTransaction(Database db) throws SystemException
     {
         try
@@ -857,7 +927,7 @@ public abstract class BaseController
         {
 			//e.printStackTrace();
             CmsLogger.logInfo("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
-            //throw new SystemException("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage(), e);    
+            //throw new SystemException("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage(), e);
         }
     }
 
