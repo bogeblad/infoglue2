@@ -301,12 +301,12 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 			if(this.contentVersionId != null)
 			{
 				if(!isReadOnly())
-					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'tool.contenttool.uploadDigitalAsset.title', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
+					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'FileUpload', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
 			
-				buttons.add(new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'tool.contenttool.previewContent.title', 'width=600,height=600,resizable=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header"));	
+				buttons.add(new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'ContentPreview', 'width=600,height=600,resizable=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header"));	
 				
 				if(this.siteNodeId != null)
-					buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'tool.contenttool.previewSite.title', 'width=800,height=600,resizable=yes,scrollbars=yes,statusbar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header"));			
+					buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SitePreview', 'width=800,height=600,resizable=yes,scrollbars=yes,statusbar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header"));			
 				
 				if(hasPublishedVersion())
 					buttons.add(getUnpublishButton());
@@ -354,7 +354,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 
 	private ImageButton getMoveButton()
 	{
-		return new ImageButton(true, "javascript:openPopup('ViewContentTree.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'tool.contenttool.moveContent.title', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveContent"), "tool.contenttool.moveContent.header");	
+		return new ImageButton(true, "javascript:openPopup('ViewContentTree.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'MoveContent', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveContent"), "tool.contenttool.moveContent.header");	
 	}
 
 	private ImageButton getSyncTreeButton()
@@ -369,7 +369,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 
 	private ImageButton getExecuteTaskButton()
 	{
-		return new ImageButton(true, "javascript:openPopup('ViewExecuteTask.action?contentId=" + this.contentId + "', 'tool.contenttool.executeTask.title', 'width=400,height=600,resizable=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.global.buttons.executeTask"), "tool.common.executeTask.header");	
+		return new ImageButton(true, "javascript:openPopup('ViewExecuteTask.action?contentId=" + this.contentId + "', 'ExecuteTask', 'width=400,height=600,resizable=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.global.buttons.executeTask"), "tool.common.executeTask.header");	
 	}
 	
 	private ImageButton getAccessRightsButton() throws Exception
