@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.19 2005/02/17 16:13:43 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.20 2005/02/18 16:41:10 mattias Exp $ -->
 <actions>
 
 	<!-- Redirect -->
@@ -748,8 +748,8 @@
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 
-	<action name="org.infoglue.cms.applications.contenttool.actions.ViewLinkQuestionAction" alias="ViewLinkQuestion">
-		<view name="success">/cms/contenttool/viewLinkQuestion.vm</view>
+	<action name="org.infoglue.cms.applications.contenttool.actions.ViewLinkDialogAction" alias="ViewLinkDialog">
+		<view name="success">/cms/contenttool/viewLinkDialog.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 

@@ -203,7 +203,8 @@ function configInfoGlue(config)
 	
 	//register custom buttons 
 	//config.registerButton("my-popup", "test popup", "ed_custom.gif", false, demopopup); 
-	HTMLArea.prototype._createInlineLink = function(link) {
+	HTMLArea.prototype._createInlineLink = function(link) 
+	{
 		var editor = this;
 		var outparam = null;
 		/*
@@ -230,6 +231,7 @@ function configInfoGlue(config)
 		var text = editor.getSelectedHTML();
 		//alert("text:" + text);
 		//alert("link:" + link);
+		alert("editor:" + editor);
 		
 		if (link) 
 		{
@@ -266,21 +268,17 @@ function configInfoGlue(config)
 	  		contentId = self.opener.contentId;
 	  	if(!languageId)
 	  		languageId = self.opener.languageId;
-	  	
-	  	//alert("urlPrefix:" + urlPrefix);
-	  	//urlPrefix = _applicationContext;
-	  	if((link && text.indexOf("getInlineAssetUrl") > -1) || (text.indexOf("getPageUrl") == -1 && confirm("Do you want to link to an internal asset instead of to a page? Click on OK to link to an asset or click on cancel to link to a page.")))
-	  	{
-		  	/**
+	
+		if(text.indexOf("getInlineAssetUrl") > -1)  
+		{
+	  	  	/**
 	  		 * ASSET INLINE LINK
 	  		 */
 	  	
 	  		if (link)
 	  		{
 	  			transformedTag = text;
-		  		//alert("transformedTag:" + transformedTag);
 		  		transformedTag = untransformAttribute(transformedTag);
-		  		//alert("transformedTag:" + transformedTag);
 		  		parenthesisIndex = transformedTag.indexOf("(");
 				stopIndex 		 = transformedTag.indexOf(",");
 				parenthesisStopIndex = transformedTag.indexOf(")");
@@ -288,209 +286,269 @@ function configInfoGlue(config)
 				assetKey = transformedTag.substring(stopIndex, parenthesisStopIndex);
 				assetKey = assetKey.substring(assetKey.indexOf("\"") + 1);
 				assetKey = assetKey.substring(0, assetKey.indexOf("\""));
-				//alert("oldContentId:" + oldContentId);
-				//alert("assetKey:" + assetKey);
-				
 				textStartIndex = transformedTag.indexOf(">");
 				textStopIndex = transformedTag.indexOf("<", textStartIndex);
-				//alert("textStartIndex:" + textStartIndex);
-				//alert("textStopIndex:" + textStopIndex);
 				outparam.f_text = transformedTag.substring(textStartIndex + 1, textStopIndex);
-				
-				extraParameters = "&oldContentId=" + oldContentId + "&assetKey=" + assetKey;
+				extraParameters = "&method=inlineAsset&oldContentId=" + oldContentId + "&assetKey=" + assetKey;
 			}
 			else
 			{
-				extraParameters = "&oldContentId=&assetKey=";
+				extraParameters = "&method=inlineAsset&oldContentId=&assetKey=";
 				
 				if(inlineImageDefaultRepositoryId != null)
 			  	{
 			  		repositoryId = inlineImageDefaultRepositoryId;
 			  		contentId = -1;
 			  	}	
-				
 			}
-			  		
-	  	  	url = _applicationContext + "ViewContentVersion!viewAssetsDialog.action?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&treatAsLink=true&textAreaId=" + editor.id + extraParameters;
-	  	
-	  		//alert("outparam.f_text:" + outparam.f_text);
-	  	
-	  		this._relativePopupDialog(url, function(param) 
-			{
-				//alert("relativePopupDialog");
-		
-				if (!param)
-					return false;
-				
-				//alert("param:" + param);
-				//alert("param:" + param["image"]);
-				//alert("param:" + param["f_text"]);
-				//alert("param:" + param["f_url"]);
-				//alert("param:" + param["f_href"]);
-				//alert("param:" + param["f_title"]);
-				//alert("param:" + param["f_target"]);
-				var a = link;
-				if (!a)
-				{ 
-					//alert("no a found:" + a);
-					try 
-					{
-						editor._doc.execCommand("createlink", false, param.f_href);
-						a = editor.getParentElement();
-						var sel = editor._getSelection();
-						var range = editor._createRange(sel);
-						if (!HTMLArea.is_ie) {
-							a = range.startContainer;
-							if (!/^a$/i.test(a.tagName)) {
-								a = a.nextSibling;
-								if (a == null)
-									a = range.startContainer.parentNode;
-							}
-						}
-					} 
-					catch(e) {alert("error:" + e);}
-				}
-				else 
-				{
-					var href = param.f_href.trim();
-					editor.selectNodeContents(a);
-					if (href == "") 
-					{
-						editor._doc.execCommand("unlink", false, null);
-						editor.updateToolbar();
-						return false;
-					}
-					else 
-					{
-						a.href = href;
-					}
-				}
-				
-				if (!(a && /^a$/i.test(a.tagName)))
-				{
-					//alert("returning false a:" + a.tagName);	
-					//alert("returning false i:" + i);	
-					return false;
-				}
-					
-				//alert("a:" + a);	
-				a.target = param.f_target.trim();
-				a.title = param.f_title.trim();
-				//alert("param.originaltag:" + param.originaltag);
-				//alert("param.originaltag:" + untransformAttribute(param.originaltag));	
-				a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
-				
-				//alert("a2:" + a);	
-				editor.selectNodeContents(a);
-				editor.updateToolbar();
-			}, outparam);
-			
-	  	}
-	  	else
-	  	{	
-	  		/**
+		}
+		else
+		{
+			/**
 	  		 * NORMAL INLINE LINK
 	  		 */
 	  		
 	  		if (link)
 	  		{
 	  			transformedTag = text;
-		  		//alert("transformedTag:" + transformedTag);
 		  		transformedTag = untransformAttribute(transformedTag);
-		  		//alert("transformedTag:" + transformedTag);
-		  		
 		  		parenthesisIndex = transformedTag.indexOf("(");
 				stopIndex 		 = transformedTag.indexOf(",");
-				//parenthesisStopIndex = transformedTag.indexOf(")");
 				oldSiteNodeId = transformedTag.substring(parenthesisIndex + 1, stopIndex);
-				//alert("oldSiteNodeId:" + oldSiteNodeId);
-				
 				textStartIndex = transformedTag.indexOf(">");
 				textStopIndex = transformedTag.indexOf("<", textStartIndex);
-				//alert("textStartIndex:" + textStartIndex);
-				//alert("textStopIndex:" + textStopIndex);
 				outparam.f_text = transformedTag.substring(textStartIndex + 1, textStopIndex);
-				
-				extraParameters = "&oldSiteNodeId=" + oldSiteNodeId;
+				extraParameters = "&method=inlineLink&oldSiteNodeId=" + oldSiteNodeId;
 			}
 			else
 			{
-				extraParameters = "&oldSiteNodeId=";
-			}
-			 
-	  		url = _applicationContext + "ViewStructureTreeForInlineLink.action?contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
-	  		
-	  		//alert("outparam.f_text:" + outparam.f_text);
-	  	
-	  		this._relativePopupDialog(url, function(param) 
-			{
-				//alert("relativePopupDialog");
+				extraParameters = "&method=inlineLink&oldSiteNodeId=";
+			}  		
+		}
+
+  	  	url = _applicationContext + "ViewLinkDialog.action?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
+		alert("url:" + url);
 		
-				if (!param)
-					return false;
-				
-				//alert("param:" + param);
-				//alert("param:" + param["f_href"]);
-				//alert("param:" + param["f_title"]);
-				//alert("param:" + param["f_target"]);
-				//alert("param:" + param["f_text"]);
-				
-				var a = link;
-				if (!a)
-				{ 
-					//alert("no a found:" + a);
-					try 
-					{
-						editor._doc.execCommand("createlink", false, param.f_href);
-						a = editor.getParentElement();
-						var sel = editor._getSelection();
-						var range = editor._createRange(sel);
-						if (!HTMLArea.is_ie) {
-							a = range.startContainer;
-							if (!/^a$/i.test(a.tagName)) {
-								a = a.nextSibling;
-								if (a == null)
-									a = range.startContainer.parentNode;
-							}
+		this._relativePopupDialog(url, function(param) 
+		{
+			//alert("relativePopupDialog");
+	
+			if (!param)
+				return false;
+			
+			//alert("param:" + param);
+			//alert("param:" + param["image"]);
+			//alert("param:" + param["f_text"]);
+			//alert("param:" + param["f_url"]);
+			//alert("param:" + param["f_href"]);
+			//alert("param:" + param["f_title"]);
+			//alert("param:" + param["f_target"]);
+			var a = link;
+			if (!a)
+			{ 
+				//alert("no a found:" + a);
+				try 
+				{
+					editor._doc.execCommand("createlink", false, param.f_href);
+					a = editor.getParentElement();
+					var sel = editor._getSelection();
+					var range = editor._createRange(sel);
+					if (!HTMLArea.is_ie) {
+						a = range.startContainer;
+						if (!/^a$/i.test(a.tagName)) {
+							a = a.nextSibling;
+							if (a == null)
+								a = range.startContainer.parentNode;
 						}
-					} 
-					catch(e) {alert("error:" + e);}
+					}
+				} 
+				catch(e) {alert("error:" + e);}
+			}
+			else 
+			{
+				var href = param.f_href.trim();
+				editor.selectNodeContents(a);
+				if (href == "") 
+				{
+					editor._doc.execCommand("unlink", false, null);
+					editor.updateToolbar();
+					return false;
 				}
 				else 
 				{
-					var href = param.f_href.trim();
-					editor.selectNodeContents(a);
-					if (href == "") 
-					{
-						editor._doc.execCommand("unlink", false, null);
-						editor.updateToolbar();
-						return false;
-					}
-					else 
-					{
-						a.href = href;
-					}
+					a.href = href;
 				}
+			}
+			
+			if (!(a && /^a$/i.test(a.tagName)))
+			{
+				//alert("returning false a:" + a.tagName);	
+				//alert("returning false i:" + i);	
+				return false;
+			}
 				
-				if (!(a && /^a$/i.test(a.tagName)))
+			//alert("a:" + a);	
+			a.target = param.f_target.trim();
+			a.title = param.f_title.trim();
+			//alert("param.originaltag:" + param.originaltag);
+			//alert("param.originaltag:" + untransformAttribute(param.originaltag));	
+			a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
+			
+			//alert("a2:" + a);	
+			editor.selectNodeContents(a);
+			editor.updateToolbar();
+		}, outparam);
+		
+		/*
+		
+  	  	//url = _applicationContext + "ViewContentVersion!viewAssetsDialog.action?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&treatAsLink=true&textAreaId=" + editor.id + extraParameters;
+  		//alert("outparam.f_text:" + outparam.f_text);
+  	
+  		this._relativePopupDialog(url, function(param) 
+		{
+			//alert("relativePopupDialog");
+	
+			if (!param)
+				return false;
+			
+			//alert("param:" + param);
+			//alert("param:" + param["image"]);
+			//alert("param:" + param["f_text"]);
+			//alert("param:" + param["f_url"]);
+			//alert("param:" + param["f_href"]);
+			//alert("param:" + param["f_title"]);
+			//alert("param:" + param["f_target"]);
+			var a = link;
+			if (!a)
+			{ 
+				//alert("no a found:" + a);
+				try 
 				{
-					//alert("returning false a:" + a.tagName);	
-					//alert("returning false i:" + i);	
+					editor._doc.execCommand("createlink", false, param.f_href);
+					a = editor.getParentElement();
+					var sel = editor._getSelection();
+					var range = editor._createRange(sel);
+					if (!HTMLArea.is_ie) {
+						a = range.startContainer;
+						if (!/^a$/i.test(a.tagName)) {
+							a = a.nextSibling;
+							if (a == null)
+								a = range.startContainer.parentNode;
+						}
+					}
+				} 
+				catch(e) {alert("error:" + e);}
+			}
+			else 
+			{
+				var href = param.f_href.trim();
+				editor.selectNodeContents(a);
+				if (href == "") 
+				{
+					editor._doc.execCommand("unlink", false, null);
+					editor.updateToolbar();
 					return false;
 				}
-					
-				//alert("a:" + a);	
-				a.target = param.f_target.trim();
-				a.title = param.f_title.trim();
-				//alert("param.originaltag:" + param.originaltag);
-				//alert("param.originaltag:" + untransformAttribute(param.originaltag));	
-				a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
+				else 
+				{
+					a.href = href;
+				}
+			}
+			
+			if (!(a && /^a$/i.test(a.tagName)))
+			{
+				//alert("returning false a:" + a.tagName);	
+				//alert("returning false i:" + i);	
+				return false;
+			}
 				
-				//alert("a2:" + a);	
+			//alert("a:" + a);	
+			a.target = param.f_target.trim();
+			a.title = param.f_title.trim();
+			//alert("param.originaltag:" + param.originaltag);
+			//alert("param.originaltag:" + untransformAttribute(param.originaltag));	
+			a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
+			
+			//alert("a2:" + a);	
+			editor.selectNodeContents(a);
+			editor.updateToolbar();
+		}, outparam);
+			
+
+			 
+  		url = _applicationContext + "ViewStructureTreeForInlineLink.action?contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
+  		
+  		//alert("outparam.f_text:" + outparam.f_text);
+  	
+  		this._relativePopupDialog(url, function(param) 
+		{
+			//alert("relativePopupDialog");
+	
+			if (!param)
+				return false;
+			
+			//alert("param:" + param);
+			//alert("param:" + param["f_href"]);
+			//alert("param:" + param["f_title"]);
+			//alert("param:" + param["f_target"]);
+			//alert("param:" + param["f_text"]);
+			
+			var a = link;
+			if (!a)
+			{ 
+				//alert("no a found:" + a);
+				try 
+				{
+					editor._doc.execCommand("createlink", false, param.f_href);
+					a = editor.getParentElement();
+					var sel = editor._getSelection();
+					var range = editor._createRange(sel);
+					if (!HTMLArea.is_ie) {
+						a = range.startContainer;
+						if (!/^a$/i.test(a.tagName)) {
+							a = a.nextSibling;
+							if (a == null)
+								a = range.startContainer.parentNode;
+						}
+					}
+				} 
+				catch(e) {alert("error:" + e);}
+			}
+			else 
+			{
+				var href = param.f_href.trim();
 				editor.selectNodeContents(a);
-				editor.updateToolbar();
-			}, outparam);
-	  	}
+				if (href == "") 
+				{
+					editor._doc.execCommand("unlink", false, null);
+					editor.updateToolbar();
+					return false;
+				}
+				else 
+				{
+					a.href = href;
+				}
+			}
+			
+			if (!(a && /^a$/i.test(a.tagName)))
+			{
+				//alert("returning false a:" + a.tagName);	
+				//alert("returning false i:" + i);	
+				return false;
+			}
+				
+			//alert("a:" + a);	
+			a.target = param.f_target.trim();
+			a.title = param.f_title.trim();
+			//alert("param.originaltag:" + param.originaltag);
+			//alert("param.originaltag:" + untransformAttribute(param.originaltag));	
+			a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
+			
+			//alert("a2:" + a);	
+			editor.selectNodeContents(a);
+			editor.updateToolbar();
+		}, outparam);
+	*/
 		
 	};
 
