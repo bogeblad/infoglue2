@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -47,8 +48,6 @@ public class ViewListContentVersionAction extends WebworkAbstractAction
 
 	private List contentVersionVOList = new ArrayList();
 	private Integer contentId;
-	
-	
 
 	protected String doExecute() throws Exception 
 	{
@@ -62,7 +61,7 @@ public class ViewListContentVersionAction extends WebworkAbstractAction
 			
 			ceb.throwIfNotEmpty();
 
-			contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursive(contentId, ContentVersionVO.WORKING_STATE);
+			contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursive(contentId, ContentVersionVO.WORKING_STATE);		
 		}
 
 	    return "success";
@@ -77,14 +76,16 @@ public class ViewListContentVersionAction extends WebworkAbstractAction
 	/**
 	 * @return
 	 */
-	public Integer getContentId() {
+	public Integer getContentId() 
+	{
 		return contentId;
 	}
 
 	/**
 	 * @param integer
 	 */
-	public void setContentId(Integer integer) {
+	public void setContentId(Integer integer) 
+	{
 		contentId = integer;
 	}
 

@@ -37,6 +37,8 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
+import webwork.action.Action;
+
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 
@@ -77,7 +79,7 @@ public class ViewContentAction extends WebworkAbstractAction
         if(this.repositoryId == null)
             this.repositoryId = this.contentVO.getRepositoryId();
         
-		if(this.getIsBranch().booleanValue())
+        if(this.getIsBranch().booleanValue())
 		{
 			Map args = new HashMap();
 		    args.put("globalKey", "infoglue");
@@ -89,17 +91,26 @@ public class ViewContentAction extends WebworkAbstractAction
 
     public String doExecute() throws Exception
     {
-        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
-        if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && contentVO.getIsBranch().booleanValue() == false && getShowContentVersionFirst().equalsIgnoreCase("true"))
+        try
         {
-            this.languageId = getMasterLanguageVO().getId();
-            return "viewVersion";
+	        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+	        if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && contentVO.getIsBranch().booleanValue() == false && getShowContentVersionFirst().equalsIgnoreCase("true"))
+	        {
+	            if(this.repositoryId == null)
+	                this.repositoryId = contentVO.getRepositoryId();
+	            
+		        this.languageId = getMasterLanguageVO().getId();
+	            return "viewVersion";
+	        }
+	        else
+	        {
+	            this.initialize(getContentId());
+	            return "success";
+	        }
         }
-        else
-        {
-            this.initialize(getContentId());
-            return "success";
-        }
+        catch(Exception e) {e.printStackTrace();}
+        
+        return Action.NONE;
     }
 
 	public String doStandalone() throws Exception

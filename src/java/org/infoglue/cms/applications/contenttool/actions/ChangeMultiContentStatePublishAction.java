@@ -39,6 +39,8 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 	private Integer stateId;
 	private Integer languageId;
 	private String versionComment;
+	private Integer repositoryId;
+
 	
 	//private ContentVO contentVO = new ContentVO();	
 	//private ContentVersionVO contentVersionVO = new ContentVersionVO();	
@@ -58,7 +60,7 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 		{
 			ContentStateController.changeState((Integer) it.next(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null);
 		}
-
+		
        	return "success";
     }
         
@@ -105,19 +107,26 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 	/**
 	 * @return
 	 */
-	public List getContentVersionId() {
+	public List getContentVersionId() 
+	{
 		return contentVersionId;
 	}
 
 	/**
 	 * @param list
 	 */
-	private void setContentVersionId(String[] list) {
+	private void setContentVersionId(String[] list) 
+	{
 		contentVersionId = new ArrayList();
 		for(int i=0; i < list.length; i++)
 		{
 			contentVersionId.add(new Integer(list[i]));
 		}		
 	}
+
+    public Integer getRepositoryId()
+    {
+        return repositoryId;
+    }
 
 }
