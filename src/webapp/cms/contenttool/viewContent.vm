@@ -132,11 +132,11 @@
 		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	<tr class="darkgreen">
-		<td class="smalllabel">$ui.getString("tool.contenttool.languageVersionsLabel")</td>
+		<td class="smalllabel" nowrap="1">$ui.getString("tool.contenttool.languageVersionsLabel")</td>
 		<td class="smalllabel"><img src="images/trans.gif" width="10" height="1"></td>
-		<td class="smalllabel">$ui.getString("tool.contenttool.stateLabel")</td>
+		<td class="smalllabel" nowrap="1">$ui.getString("tool.contenttool.stateLabel")</td>
 		<td class="smalllabel"><img src="images/trans.gif" width="10" height="1"></td>
-		<td class="smalllabel">$ui.getString("tool.contenttool.lastUpdatedLabel")</td>
+		<td class="smalllabel" nowrap="1">$ui.getString("tool.contenttool.lastUpdatedLabel")</td>
 		<td class="smalllabel"><img src="images/trans.gif" width="10" height="1"></td>
 		<td></td>
 	</tr>
@@ -167,9 +167,9 @@
 		#set($contentVersionVO = $this.getLatestContentVersionVO($!contentId, $!languageVO.languageId))
 	
 		<tr $class>
-			<td><a href="javascript:changeLanguageByLink($!contentId, $!languageVO.getLanguageId());">$languageVO.getName()</a> $master</td>
+			<td nowrap="1"><a href="javascript:changeLanguageByLink($!contentId, $!languageVO.getLanguageId());">$languageVO.getName()</a> $master</td>
 			<td>&nbsp;</td>
-			<td>
+			<td nowrap="1">
 				#if($contentVersionVO.id > 0)
 					#set($event = false)
 					#set($event = $this.getContentVersionEvent($!contentVersionVO.id) )					
@@ -201,7 +201,7 @@
 				$stateDescription
 			</td>
 			<td>&nbsp;</td>
-			<td>
+			<td width="100%" nowrap="1">
 				#if($contentVersionVO.id > 0)
 					<a name="tooltip" title="$contentVersionVO.versionComment">$contentVersionVO.versionModifier ($formatter.formatDate($contentVersionVO.modifiedDateTime, "yyyy-MM-dd"))</a>
 				#end
@@ -216,12 +216,86 @@
 	#end
 
 	#end
-
-	
 	##end		
 
 	<tr>
-		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
+		<td colspan="7"><img src="images/trans.gif" height="30" width="1"></td>
+	</tr>
+	</table>
+				
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr class="darkgreen">
+		<td class="smalllabel" colspan="3">$ui.getString("tool.contenttool.contentVersionReferences.header")</td>
+	</tr>
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#C7D1B3" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	#set($hasContentReferences = false)
+	#set($isOdd = true)
+	#foreach ($referenceBean in $referenceBeanList)
+		#if($referenceBean.referencingObject.class.name.indexOf("Content") > -1)
+			#set($hasContentReferences = true)
+			#if($isOdd)
+				#set($class = "class='lightgreen'")
+				#set($isOdd = false)
+			#else
+				#set($class = "class='white'")
+				#set($isOdd = true)
+			#end
+			<tr $class>
+				<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
+				<td width="100%"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingObject.contentId&languageId=$referenceBean.referencingObject.languageId" target="_blank">$referenceBean.name</a> #if($referenceBean.registryVOList.size() > 1)- $referenceBean.registryVOList.size() $ui.getString("tool.contenttool.referencesFound")#end</td>
+				<td width="16"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingObject.contentId&languageId=$referenceBean.referencingObject.languageId" target="_blank"><img src="images/edit.gif" border="0" width="16" height="16"></a></td>
+			</tr>	
+		#end
+	#end
+	#if(!$hasContentReferences)
+		<tr $class>
+			<td colspan="3">$ui.getString("tool.contenttool.noContentReferencesFound")</td>		
+		</tr>	
+	#end
+	<tr>
+		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr class="darkgreen">
+		<td class="smalllabel" colspan="3">$ui.getString("tool.contenttool.siteNodeReferences.header")</td>
+	</tr>
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#C7D1B3" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	#set($hasPageReferences = false)
+	#set($isOdd = true)
+	#foreach ($referenceBean in $referenceBeanList)
+		#if($referenceBean.referencingObject.class.name.indexOf("SiteNode") > -1)
+			#set($hasPageReferences = true)
+			#if($isOdd)
+				#set($class = "class='lightgreen'")
+				#set($isOdd = false)
+			#else
+				#set($class = "class='white'")
+				#set($isOdd = true)
+			#end
+			<tr $class>
+				<td width="16"><img src="images/tree/structureRoot.gif"></td>
+				<td width="100%"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a> #if($referenceBean.registryVOList.size() > 1)- $referenceBean.registryVOList.size() $ui.getString("tool.structuretool.referencesFound")#end</td>
+				<td width="16"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+			</tr>	
+		#end
+	#end
+	#if(!$hasPageReferences)
+		<tr $class>
+			<td colspan="3">$ui.getString("tool.contenttool.noPageReferencesFound")</td>		
+		</tr>	
+	#end
+	
+	<tr>
+		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	<tr>
 		<input type="hidden" name="contentId" value="$!contentId">
@@ -229,7 +303,7 @@
 		<input type="hidden" name="unrefreshedContentId" value="$!contentId">
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<input type="hidden" name="changeTypeId" value="1">
-		<td colspan="7">
+		<td colspan="3">
 			<input type="image" img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
 		</td>
 	</tr>

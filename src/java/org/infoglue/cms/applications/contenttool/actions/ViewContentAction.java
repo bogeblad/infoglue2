@@ -27,6 +27,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.*;
@@ -47,7 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ViewContentAction extends WebworkAbstractAction
+public class ViewContentAction extends InfoGlueAbstractAction
 {
 	private Integer unrefreshedContentId 	= new Integer(0);
 	private Integer changeTypeId         	= new Integer(0);
@@ -57,8 +58,10 @@ public class ViewContentAction extends WebworkAbstractAction
    	private String defaultFolderContentTypeName;
    	private Integer languageId 				= null;
    	private String stay 					= null;
+	private List referenceBeanList 			= new ArrayList();
 
     private ContentVO contentVO;
+
 
     public ViewContentAction()
     {
@@ -86,7 +89,8 @@ public class ViewContentAction extends WebworkAbstractAction
 		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 		    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
 		}
-
+        
+		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(contentId);
     } 
 
     public String doExecute() throws Exception
@@ -119,11 +123,6 @@ public class ViewContentAction extends WebworkAbstractAction
 		return "standalone";
 	}
         
-    public ViewContentAction getThis()
-	{
-		return this;
-	}
-	
     public java.lang.Integer getContentId()
     {
         return this.contentVO.getContentId();
@@ -346,5 +345,10 @@ public class ViewContentAction extends WebworkAbstractAction
     public void setStay(String stay)
     {
         this.stay = stay;
+    }
+    
+    public List getReferenceBeanList()
+    {
+        return referenceBeanList;
     }
 }
