@@ -35,6 +35,8 @@ import com.opensymphony.workflow.query.*;
 import com.opensymphony.workflow.basic.BasicWorkflow;
 import com.opensymphony.workflow.loader.*;
 import com.opensymphony.module.propertyset.PropertySet;
+import net.sf.hibernate.*;
+import net.sf.hibernate.cfg.Configuration;
 
 /**
  * A facade to OSWorkflow that gives us a place to cache workflow data as we need it while interacting with it.
@@ -42,11 +44,26 @@ import com.opensymphony.module.propertyset.PropertySet;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.10 $ $Date: 2005/01/18 16:22:25 $
+ * @version $Revision: 1.11 $ $Date: 2005/02/23 22:07:26 $
  */
 public class WorkflowFacade
 {
-	private final Workflow workflow;
+	private static SessionFactory hibernateSessionFactory;
+
+	static
+	{
+		try
+		{
+			hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
+		}
+		catch (HibernateException e)
+		{
+			e.printStackTrace();
+			throw new ExceptionInInitializerError(e);
+		}
+	}
+
+	private final AbstractWorkflow workflow;
 	private long workflowId;
 
 	private WorkflowDescriptor workflowDescriptor;
@@ -58,6 +75,7 @@ public class WorkflowFacade
 	public WorkflowFacade(InfoGluePrincipal userPrincipal)
 	{
 		workflow = new BasicWorkflow(userPrincipal.getName());
+		workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
 	}
 
 	/**
