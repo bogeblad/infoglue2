@@ -139,6 +139,14 @@
 		<copy todir="${build.classes}">
 			<fileset dir="${webapp}" includes="preview/*.vm"/>
 		</copy>
+
+		<!-- Copy all supporting test files-->
+		<copy filtering="no" todir="${test.classes}">
+			<fileset dir="${test.java}">
+				<exclude name="**/*.java"/>
+				<exclude name="**/package.html"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<!--
