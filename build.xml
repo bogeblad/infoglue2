@@ -108,6 +108,12 @@
 		<copy todir="${build.classes}">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
+		<copy todir="${build.classes}">
+			<fileset dir="${src.java}">
+				<include name="**/*.properties"/>
+				<include name="**/*.xml"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<!--
