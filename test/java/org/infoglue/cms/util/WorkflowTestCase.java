@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.4 2004/12/21 17:50:00 jed Exp $
+ * $Id: WorkflowTestCase.java,v 1.5 2005/01/13 17:09:22 jed Exp $
  */
 package org.infoglue.cms.util;
 
@@ -69,6 +69,16 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 * @return the name of the workflow under test
 	 */
 	protected abstract String getWorkflowName();
+
+	/**
+	 * Returns the number of initial actions.  Since there must be at least one intial action, this implementation
+	 * returns 1.  Subclasses should override if the workflow under test has multiple initial actions.
+	 * @return the number of initial actions
+	 */
+	protected int getNumberOfInitialActions()
+	{
+		return 1;
+	}
 
 	/**
 	 * Returns the number of global actions.  Subclasses should override if the workflow under test has global
@@ -160,6 +170,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 		assertEquals("Wrong number of history steps:", historySteps, workflow.getHistorySteps().size());
 		assertEquals("Wrong number of steps:", currentSteps + historySteps, workflow.getSteps().size());
 		checkActions(availableActions, workflow.getAvailableActions());
+		checkActions(getNumberOfInitialActions(), workflow.getInitialActions());
 		checkActions(getNumberOfGlobalActions(), workflow.getGlobalActions());
 	}
 
