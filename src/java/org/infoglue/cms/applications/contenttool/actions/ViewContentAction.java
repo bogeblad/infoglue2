@@ -94,7 +94,7 @@ public class ViewContentAction extends WebworkAbstractAction
         try
         {
 	        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
-	        if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && contentVO.getIsBranch().booleanValue() == false && getShowContentVersionFirst().equalsIgnoreCase("true"))
+	        if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && contentVO.getIsBranch().booleanValue() == false && contentVO.getContentTypeDefinitionId() != null && getShowContentVersionFirst().equalsIgnoreCase("true"))
 	        {
 	            if(this.repositoryId == null)
 	                this.repositoryId = contentVO.getRepositoryId();

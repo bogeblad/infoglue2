@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginContentTool("tool.contenttool.contentDetailsHeader" "Content details" "contentId=$contentId&repositoryId=$!repositoryId&isBranch=$isBranch" "$unrefreshedContentId" "$changeTypeId" "$contentId")
+
+<script language="JavaScript">
+<!--
+	
+	
+-->
+</script>
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="DeleteContent.action">
+<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td colspan="7" class="label">
+			$ui.getString("tool.contenttool.fixReferencesBeforeDelete.header")
+		</td>
+	</tr>
+	<tr>
+		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr class="darkgreen">
+		<td class="smalllabel" colspan="7">$ui.getString("tool.contenttool.siteNodeReferences.header")</td>
+	</tr>
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	#set($isOdd = true)
+	#foreach ($referencingSiteNodeVO in $referencingSiteNodes)
+		#if($isOdd)
+			#set($class = "class='lightgreen'")
+			#set($isOdd = false)
+		#else
+			#set($class = "class='white'")
+			#set($isOdd = true)
+		#end
+		<tr $class>
+			<td colspan="4"><a href="#" target="_blank">$referencingSiteNodeVO.name</a></td>
+			<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
+			<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+			<td><a href="#"><img src="images/approve.gif" border="0"></a></td>
+		</tr>	
+	#end
+
+	<tr>
+		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr class="darkgreen">
+		<td class="smalllabel" colspan="7">$ui.getString("tool.contenttool.contentVersionReferences.header")</td>
+	</tr>
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	#set($isOdd = true)
+	#foreach ($referencingContentVersionVO in $referencingContentVersions)
+		#if($isOdd)
+			#set($class = "class='lightgreen'")
+			#set($isOdd = false)
+		#else
+			#set($class = "class='white'")
+			#set($isOdd = true)
+		#end
+		<tr $class>
+			<td colspan="4"><a href="#" target="_blank">$referencingContentVersionVO.id</a></td>
+			<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
+			<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+			<td><a href="#"><img src="images/approve.gif" border="0"></a></td>		
+		</tr>	
+	#end
+
+	<tr>
+		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr>
+		<input type="hidden" name="contentId" value="$!contentId">
+		<td colspan="7">
+			<input type="image" img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
+		</td>
+	</tr>
+	
+</table>
+</div>
+
+#endContentTool()

@@ -23,11 +23,16 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
 
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 /**
  * This action removes a content from the system.
@@ -43,6 +48,8 @@ public class DeleteContentAction extends WebworkAbstractAction
 	private Integer changeTypeId;
 	private Integer repositoryId;
     
+	private List referencingSiteNodes = new ArrayList();
+	private List referencingContentVersions = new ArrayList();
 	
 	public DeleteContentAction()
 	{
@@ -66,9 +73,25 @@ public class DeleteContentAction extends WebworkAbstractAction
 		}
 		
 		ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);
-		//ContentController.delete(this.contentVO);
 		
 		return "success";
+		/*
+		SiteNodeVO siteNodeVO = new SiteNodeVO();
+		siteNodeVO.setName("Apa");
+		referencingSiteNodes.add(siteNodeVO);
+		SiteNodeVO siteNodeVO2 = new SiteNodeVO();
+		siteNodeVO2.setName("Bepa");
+		referencingSiteNodes.add(siteNodeVO2);
+		
+		ContentVersionVO contentVersionVO = new ContentVersionVO();
+		contentVersionVO.setContentVersionId(new Integer(1));
+		referencingContentVersions.add(contentVersionVO);
+		ContentVersionVO contentVersionVO2 = new ContentVersionVO();
+		contentVersionVO2.setContentVersionId(new Integer(2));
+		referencingContentVersions.add(contentVersionVO2);
+		
+		return "showRelations";
+		*/
 	}
 	
 	public void setContentId(Integer contentId)
@@ -112,4 +135,13 @@ public class DeleteContentAction extends WebworkAbstractAction
 	}
 
 	
+    public List getReferencingContentVersions()
+    {
+        return referencingContentVersions;
+    }
+    
+    public List getReferencingSiteNodes()
+    {
+        return referencingSiteNodes;
+    }
 }

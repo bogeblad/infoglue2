@@ -66,6 +66,7 @@ import org.xml.sax.InputSource;
 public class ContentVersionController extends BaseController 
 {
 	private static final ContentCategoryController contentCategoryController = ContentCategoryController.getController();
+	private final RegistryController registryController = RegistryController.getController();
 
 	/**
 	 * Factory method to get object
@@ -550,6 +551,8 @@ public class ContentVersionController extends BaseController
     		CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
     		realContentVersionVO = create(contentId, languageId, contentVersionVO, null);
     	}
+    	
+    	//registryController.updateContentVersion(contentVersionVO);
     	
     	return (ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
     }        
