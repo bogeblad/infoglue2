@@ -49,7 +49,7 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	private Integer changeTypeId;
 	private Integer repositoryId;
     
-	private List referencingObjects = new ArrayList();
+	private List referenceBeanList = new ArrayList();
 	
 	public DeleteContentAction()
 	{
@@ -72,14 +72,16 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 			CmsLogger.logInfo("The content must have been a root-content because we could not find a parent.");
 		}
 		
-		
-		ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);
-		
-		return "success";
-		
-
-		//this.referencingObjects = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
-		//return "showRelations";
+		//this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
+		//if(this.referencingObjects != null && this.referencingObjects.size() > 0)
+		//{
+		//    return "showRelations";
+		    //}
+		    //else
+		    //{
+		    ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);
+		    return "success";
+		    //}
 	}
 	
 	public void setContentId(Integer contentId)
@@ -122,8 +124,8 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 		return "ViewContent.action?contentId=" + this.contentVO.getId() + "&repositoryId=" + this.contentVO.getRepositoryId();
 	}
 
-    public List getReferencingObjects()
+    public List getReferenceBeanList()
     {
-        return referencingObjects;
+        return referenceBeanList;
     }
 }

@@ -2,7 +2,7 @@
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginContentTool("tool.contenttool.contentDetailsHeader" "Content details" "contentId=$contentId&repositoryId=$!repositoryId&isBranch=$isBranch" "$unrefreshedContentId" "$changeTypeId" "$contentId")
+#beginContentTool("tool.contenttool.contentDetailsHeader" "Content details" "contentId=$contentId&repositoryId=$!repositoryId&isBranch=$isBranch" "" "" "")
 
 <script language="JavaScript">
 <!--
@@ -32,8 +32,8 @@
 		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($isOdd = true)
-	#foreach ($referencingObject in $referencingObjects)
-		#if($referencingObject.class.name.indexOf("SiteNode") > -1)
+	#foreach ($referenceBean in $referenceBeanList)
+		#if($referenceBean.referencingObject.class.name.indexOf("SiteNode") > -1)
 			#if($isOdd)
 				#set($class = "class='lightgreen'")
 				#set($isOdd = false)
@@ -42,9 +42,9 @@
 				#set($isOdd = true)
 			#end
 			<tr $class>
-				<td colspan="4"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referencingObject.siteNodeId" target="_blank">AA $referencingObject.id</a></td>
-				<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
-				<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				<td colspan="4"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a></td>
+				<td><a href="DeleteReference.action?xxxx"><img src="images/delete.gif" border="0"></a></td>
+				<td><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
 				<td><a href="#"><img src="images/approve.gif" border="0"></a></td>
 			</tr>	
 		#end
@@ -63,8 +63,8 @@
 		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($isOdd = true)
-	#foreach ($referencingObject in $referencingObjects)
-		#if($referencingObject.class.name.indexOf("Content") > -1)
+	#foreach ($referenceBean in $referenceBeanList)
+		#if($referenceBean.referencingObject.class.name.indexOf("Content") > -1)
 			#if($isOdd)
 				#set($class = "class='lightgreen'")
 				#set($isOdd = false)
@@ -73,7 +73,7 @@
 				#set($isOdd = true)	
 			#end
 			<tr $class>
-				<td colspan="4"><a href="ViewContentVersion!standalone.action?contentId=$referencingObject.contentId&languageId=$referencingObject.languageId" target="_blank">$referencingObject.id</a></td>
+				<td colspan="4"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingObject.contentId&languageId=$referenceBean.referencingObject.languageId" target="_blank">$referenceBean.name</a></td>
 				<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
 				<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
 				<td><a href="#"><img src="images/approve.gif" border="0"></a></td>		

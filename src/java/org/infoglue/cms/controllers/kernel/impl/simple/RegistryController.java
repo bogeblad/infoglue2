@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.2 2005/02/22 15:22:55 mattias Exp $
+ * $Id: RegistryController.java,v 1.3 2005/02/22 19:57:35 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -119,17 +120,25 @@ public class RegistryController extends BaseController
 		    ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
 		    Content oldContent = oldContentVersion.getOwningContent();
 		    
-		    clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString(), db);
-		    getInlineSiteNodes(oldContentVersion, versionValue, db);
-		    getInlineContents(oldContentVersion, versionValue, db);
-		    
 		    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 		    {
 		        System.out.println("It was a meta info so lets check it for other stuff as well");
 			    SiteNodeVersion siteNodeVersion = getSiteNodeVersion(oldContentVersion, db); 
 			    
+			    clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
+			    
+			    getInlineSiteNodes(oldContentVersion, versionValue, db);
+			    getInlineContents(oldContentVersion, versionValue, db);
+			    
 			    getComponents(siteNodeVersion, versionValue, db);
 			    getComponentBindings(siteNodeVersion, versionValue, db);
+		    }
+		    else
+		    {
+		        clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString(), db);
+			    getInlineSiteNodes(oldContentVersion, versionValue, db);
+			    getInlineContents(oldContentVersion, versionValue, db);
+			    
 		    }
 		    
 			commitTransaction(db);
@@ -312,29 +321,52 @@ public class RegistryController extends BaseController
 	
     public List getReferencingObjectsForContent(Integer contentId) throws SystemException
     {
-        List referencingContentVersions = new ArrayList();
+        List referenceBeanList = new ArrayList();
         
-        List registryEntires = getMatchingRegistryVOList(Content.class.getName(), contentId.toString());
-        Iterator registryEntiresIterator = registryEntires.iterator();
-        while(registryEntiresIterator.hasNext())
-        {
-            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
-            System.out.println("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
-            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
-            {
-	            ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(registryVO.getReferencingEntityId()));
-	    		System.out.println("contentVersionVO:" + contentVersionVO.getContentVersionId());
-	            referencingContentVersions.add(contentVersionVO);
-            }
-            else
-            {
-                SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(registryVO.getReferencingEntityId()));
-	    		System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getSiteNodeVersionId());
-	            referencingContentVersions.add(siteNodeVersionVO);
-            }
-        }
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+	        List registryEntires = getMatchingRegistryVOList(Content.class.getName(), contentId.toString(), db);
+	        Iterator registryEntiresIterator = registryEntires.iterator();
+	        while(registryEntiresIterator.hasNext())
+	        {
+	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
+	            System.out.println("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
+	            
+	            ReferenceBean referenceBean = new ReferenceBean();
+	            List registryVOList = new ArrayList();
+	            registryVOList.add(registryVO);
+	            referenceBean.setRegistryVOList(registryVOList);
+	            
+	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
+	            {
+		            ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+		    		System.out.println("contentVersion:" + contentVersion.getContentVersionId());
+		    		referenceBean.setName(contentVersion.getOwningContent().getName());
+		    		referenceBean.setReferencingObject(contentVersion.getValueObject());
+	            }
+	            else
+	            {
+	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+		    		System.out.println("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+		    		referenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
+		    		referenceBean.setReferencingObject(siteNodeVersion.getValueObject());
+	            }
+	            
+	    		referenceBeanList.add(referenceBean);
+	        }
 
-        return referencingContentVersions;
+	        commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
+		}
+
+        return referenceBeanList;
     }
     
     
@@ -345,19 +377,33 @@ public class RegistryController extends BaseController
      * @return
      */
 	
-    public List getReferencingObjectsForSiteNode(Integer siteNodeId) throws SystemException
+    public List getReferencingObjectsForSiteNode(Integer siteNodeId) throws SystemException, Exception
     {
         List referencingSiteNodeVersions = new ArrayList();
         
-        List registryEntires = getMatchingRegistryVOList(SiteNode.class.getName(), siteNodeId.toString());
-        Iterator registryEntiresIterator = registryEntires.iterator();
-        while(registryEntiresIterator.hasNext())
-        {
-            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
-            SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(registryVO.getReferencingEntityId()));
-            referencingSiteNodeVersions.add(siteNodeVersionVO);
-        }
-
+        Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+			/*
+	        List registryEntires = getMatchingRegistryVOList(SiteNode.class.getName(), siteNodeId.toString(), db);
+	        Iterator registryEntiresIterator = registryEntires.iterator();
+	        while(registryEntiresIterator.hasNext())
+	        {
+	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
+	            SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(registryVO.getReferencingEntityId()));
+	            referencingSiteNodeVersions.add(siteNodeVersionVO);
+	        }
+	        	*/
+	        commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
+		}
+		
         return referencingSiteNodeVersions;
     }
     
@@ -365,36 +411,23 @@ public class RegistryController extends BaseController
 	 * Gets matching references
 	 */
 	
-	public List getMatchingRegistryVOList(String entityName, String entityId) throws SystemException, Bug
+	public List getMatchingRegistryVOList(String entityName, String entityId, Database db) throws SystemException, Exception
 	{
 	    List matchingRegistryVOList = new ArrayList();
 	    
-		Database db = CastorDatabaseService.getDatabase();
+		OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.entityName = $1 AND r.entityId = $2 ORDER BY r.registryId");
+		oql.bind(entityName);
+		oql.bind(entityId);
 		
-		try 
-		{
-			beginTransaction(db);
+		QueryResults results = oql.execute(Database.ReadOnly);
 		
-			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.entityName = $1 AND r.entityId = $2 ORDER BY r.registryId");
-			oql.bind(entityName);
-			oql.bind(entityId);
-			
-			QueryResults results = oql.execute(Database.ReadOnly);
-			
-			while (results.hasMore()) 
-            {
-                Registry registry = (Registry)results.next();
-                RegistryVO registryVO = registry.getValueObject();
-                
-                matchingRegistryVOList.add(registryVO);
-            }
+		while (results.hasMore()) 
+        {
+            Registry registry = (Registry)results.next();
+            RegistryVO registryVO = registry.getValueObject();
             
-			commitTransaction(db);
-		}
-		catch ( Exception e)		
-		{
-			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
-		}
+            matchingRegistryVOList.add(registryVO);
+        }            
 		
 		return matchingRegistryVOList;		
 	}

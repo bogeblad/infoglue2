@@ -1354,14 +1354,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		timer.setActive(false);
 				
 		Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
-		Integer languageId = new Integer(this.getRequest().getParameter("languageId"));
-		Integer contentId  = new Integer(-1);
-		
+		Integer languageId = null;
+		if(this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
+		    languageId = new Integer(this.getRequest().getParameter("languageId"));
+		else
+		    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getId();
+		        
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, languageId);
 		
 		timer.printElapsedTime("AAA1");
 		
-		if(this.getRequest().getParameter("contentId") == null)
+		Integer contentId  = new Integer(-1);
+		if(this.getRequest().getParameter("contentId") != null && this.getRequest().getParameter("contentId").length() > 0)
 			contentId  = new Integer(this.getRequest().getParameter("contentId"));
 
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
