@@ -5,8 +5,8 @@
       <param name="user" value="@database.user@"/>
       <param name="password" value="@database.password@"/>
       <param name="autoReconnect" value="true"/>
-      <param name="useUnicode" value="true"/>
-      <param name="characterEncoding" value="UTF-8"/>
+      <param name="useUnicode" value="@database.use.unicode@"/>
+      <param name="characterEncoding" value="@database.encoding@"/>
     </driver>
     <mapping href="classes/mapping.xml"/>
 </database>
