@@ -54,12 +54,11 @@
 	-->
 	</script>
 	
-	<script language="JavaScript" src="script/hotkeys.js"></script>
 	<script language="JavaScript" src="script/listview.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>
 
-<body onLoad="javascript:changeToolArea($toolId);" onkeypress="hotKeys(event);" class="cmstool">
+<body onLoad="javascript:changeToolArea($toolId);" class="cmstool">
 
 <div style="LEFT:23px; position:absolute; TOP:5px; visibility:visble; z-index:0">
 	<image src="images/logotypeInfoGlue.gif" width="300" height="14">
