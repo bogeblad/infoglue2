@@ -177,7 +177,7 @@
 	</script>
 	
 #set($advanced = false)
-#if(($name && $name != "") || $languageId || $contentTypeDefinitionId || $caseSensitive == 1 || $stateId != 0)
+#if(($name && $name != "") || $languageId || $contentTypeDefinitionId || $caseSensitive == 1 || $stateId)
 	#set($advanced = true)
 #end
 
@@ -208,6 +208,8 @@
 		<p>
 		$ui.getString("tool.contenttool.stateSearch.label")<br>
 		<select class="dropbox" name="stateId">
+			<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>
+			<option value="">---------------</option>
 			<option value="0" #checkSelected("0" "$stateId")>$ui.getString("tool.contenttool.state.working")</option>
 			<!--
 			<option value="1" #checkSelected("1" "$stateId")>$ui.getString("tool.contenttool.state.final")</option>

@@ -133,12 +133,6 @@ public class SearchController extends BaseController
 			int index = 4;
 			List arguments = new ArrayList();
 			
-		    System.out.println("name:" + name);
-		    System.out.println("languageId:" + languageId);
-		    System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
-		    System.out.println("caseSensitive:" + caseSensitive);
-		    System.out.println("stateId:" + stateId);
-			
 			if(name != null && !name.equalsIgnoreCase(""))
 			{
 			    extraArguments += " AND cv.versionModifier = $" + index;
