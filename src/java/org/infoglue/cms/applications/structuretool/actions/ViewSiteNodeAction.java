@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.workflow.EventVO;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
@@ -411,6 +412,27 @@ public class ViewSiteNodeAction extends WebworkAbstractAction
 		}
 		
 		return qualifyerDescription;
+	}
+	
+	public List getListPreparedQualifyers(Integer serviceBindingId) throws Exception
+	{
+		List qualifyers = ServiceBindingController.getQualifyerVOList(serviceBindingId);
+		Iterator i = qualifyers.iterator();
+		while(i.hasNext())
+		{
+			QualifyerVO qualifyerVO = (QualifyerVO)i.next();
+			if(qualifyerVO.getName().equalsIgnoreCase("contentid"))
+			{
+			    try {
+			        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), new Integer(qualifyerVO.getValue()));
+			        qualifyerVO.setPath(contentVO.getName());
+			    }
+			    catch(Exception e)
+			    {
+			    }
+			}
+		}
+		return qualifyers;
 	}
 	
 	/**

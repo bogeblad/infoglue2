@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -32,6 +33,7 @@ import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
@@ -41,14 +43,20 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,7 +64,7 @@ import java.util.List;
  * This action represents the CreateSiteNode Usecase.
  */
 
-public class CreateSiteNodeAction extends WebworkAbstractAction
+public class CreateSiteNodeAction extends InfoGlueAbstractAction
 {
 
     private Integer siteNodeId;
@@ -64,10 +72,12 @@ public class CreateSiteNodeAction extends WebworkAbstractAction
     private Boolean isBranch;
     private Integer parentSiteNodeId;
     private Integer siteNodeTypeDefinitionId;
+    private Integer pageTemplateContentId;
     private Integer repositoryId;
    	private ConstraintExceptionBuffer ceb;
    	private SiteNodeVO siteNodeVO;
    	private SiteNodeVO newSiteNodeVO;
+   	private String sortProperty = "name";
   
   	public CreateSiteNodeAction()
 	{
@@ -157,6 +167,74 @@ public class CreateSiteNodeAction extends WebworkAbstractAction
 		return newSiteNodeVO.getSiteNodeId();
 	}
     
+	public String getSortProperty()
+    {
+        return sortProperty;
+    }
+	
+	/**
+	 * This method returns the contents that are of contentTypeDefinition "PageTemplate" sorted on the property given.
+	 */
+	
+	public List getSortedPageTemplates(String sortProperty) throws Exception
+	{
+		List components = getPageTemplates();
+		Collections.sort(components, new ReflectionComparator(sortProperty));
+		
+		return components;
+	}
+	
+	/**
+	 * This method returns the contents that are of contentTypeDefinition "PageTemplate"
+	 */
+	
+	public List getPageTemplates() throws Exception
+	{
+		HashMap arguments = new HashMap();
+		arguments.put("method", "selectListOnContentTypeName");
+		
+		List argumentList = new ArrayList();
+		HashMap argument = new HashMap();
+		argument.put("contentTypeDefinitionName", "PageTemplate");
+		argumentList.add(argument);
+		arguments.put("arguments", argumentList);
+		
+		return ContentController.getContentController().getContentVOList(arguments);
+	}
+	
+	
+	/**
+	 * This method fetches an url to the asset for the component.
+	 */
+	
+	public String getDigitalAssetUrl(Integer contentId, String key) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(ContentController.getContentController().getContentVOWithId(contentId).getRepositoryId());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguage.getId());
+			List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
+			Iterator i = digitalAssets.iterator();
+			while(i.hasNext())
+			{
+				DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
+				if(digitalAssetVO.getAssetKey().equals(key))
+				{
+					imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetVO.getId()); 
+					break;
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+	
 	/**
 	 * This method fetches the list of SiteNodeTypeDefinitions
 	 */
@@ -250,8 +328,18 @@ public class CreateSiteNodeAction extends WebworkAbstractAction
 			contentVO.setRepositoryId(this.repositoryId);
 
 			contentVO = ContentControllerProxy.getController().create(parentFolderContentVO.getId(), metaInfoContentTypeDefinitionId, this.repositoryId, contentVO);
+			
+			String componentStructure = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><components></components>";
+			if(this.pageTemplateContentId != null)
+			{
+			    Integer languageId = LanguageController.getController().getMasterLanguage(this.repositoryId).getId();
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.pageTemplateContentId, languageId);
+				
+			    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO.getId(), "ComponentStructure", false);
+			}
+			
 			//Create initial content version also... in masterlanguage
-			String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[" + this.siteNodeVO.getName() + "]]></Title><NavigationTitle><![CDATA[" + this.siteNodeVO.getName() + "]]></NavigationTitle><Description><![CDATA[" + this.siteNodeVO.getName() + "]]></Description><MetaInfo><![CDATA[" + this.siteNodeVO.getName() + "]]></MetaInfo><ComponentStructure><![CDATA[<?xml version=\"1.0\" encoding=\"UTF-8\"?><components></components>]]></ComponentStructure></attributes></article>";
+			String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[" + this.siteNodeVO.getName() + "]]></Title><NavigationTitle><![CDATA[" + this.siteNodeVO.getName() + "]]></NavigationTitle><Description><![CDATA[" + this.siteNodeVO.getName() + "]]></Description><MetaInfo><![CDATA[" + this.siteNodeVO.getName() + "]]></MetaInfo><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
 		
 			ContentVersionVO contentVersionVO = new ContentVersionVO();
 			contentVersionVO.setVersionComment("Autogenerated version");
@@ -285,4 +373,13 @@ public class CreateSiteNodeAction extends WebworkAbstractAction
         return "input";
     }
         
+    public Integer getPageTemplateContentId()
+    {
+        return pageTemplateContentId;
+    }
+    
+    public void setPageTemplateContentId(Integer pageTemplateContentId)
+    {
+        this.pageTemplateContentId = pageTemplateContentId;
+    }
 }

@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -35,15 +35,15 @@ import org.infoglue.cms.exception.SystemException;
 
 /**
  * ViewPublicationsAction.java
- * Created on 2002-okt-01
- * @author Stefan Sik, ss@frovi.com
+ * Created on 2002-okt-01 
+ * @author Stefan Sik, ss@frovi.com 
  * ss
- *
+ * 
  */
-public class ViewPublicationsAction extends WebworkAbstractAction
+public class ViewPublicationsAction extends WebworkAbstractAction 
 {
 	private Integer repositoryId;
-
+	
 	private RepositoryVO repositoryVO;
 	private List publicationEvents;
 	private List editions;
@@ -55,10 +55,10 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 
 
 	/**
-	 * This default method fetched all old publications and also
+	 * This default method fetched all old publications and also 
 	 * all events lined up which has to do with publishing.
 	 */
-
+	
 	protected String doExecute() throws Exception
 	{
 		repositoryVO      = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
@@ -67,15 +67,15 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 		return SUCCESS;
 	}
 
-	/**
+	/** 
 	 * Returns the list of events that are up for review.
 	 */
-
+	
 	public List getPublicationEvents()
 	{
 		return publicationEvents;
 	}
-
+	
 	public static List getPublicationDetails(Integer publicationId) throws SystemException
 	{
 		return PublicationController.getPublicationDetailVOList(publicationId);
@@ -93,9 +93,9 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 
 	/**
 	 * Returns the repositoryId.
-	 * @return Integer
+	 * @return java.lang.Integer
 	 */
-	public Integer getRepositoryId()
+	public java.lang.Integer getRepositoryId()
 	{
 		return repositoryId;
 	}
@@ -104,7 +104,7 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 	 * Sets the repositoryId.
 	 * @param repositoryId The repositoryId to set
 	 */
-	public void setRepositoryId(Integer repositoryId)
+	public void setRepositoryId(java.lang.Integer repositoryId)
 	{
 		this.repositoryId = repositoryId;
 	}
@@ -139,7 +139,7 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 	/**
 	 * Escapes the string
 	 */
-
+	
 	public String escape(String string)
 	{
 		return string.replace('\'', '´');

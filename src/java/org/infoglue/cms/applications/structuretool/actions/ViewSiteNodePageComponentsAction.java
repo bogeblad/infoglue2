@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -35,8 +35,12 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
-
-import org.infoglue.deliver.controllers.kernel.impl.simple.*;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.EditOnSiteBasicTemplateController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
@@ -48,9 +52,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 {
-	public static final String CATEGORY_TREE = "showCategoryTree";
-	public static final String CATEGORY_TREE_MULTIPLE = "showCategoryTreeForMultipleBinding";
-
 	private Integer repositoryId = null;
 	private Integer siteNodeId = null;
 	private Integer languageId = null;
@@ -62,14 +63,14 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	private String slotId		= null;
 	private String specifyBaseTemplate = null;
 	private String url			= null;
-
+	
 	LanguageVO masterLanguageVO = null;
-
+	
 	private List repositories 			= null;
 	private String currentAction 		= null;
-	private Integer filterRepositoryId 	= null;
+	private Integer filterRepositoryId 	= null; 
 	private String sortProperty 		= "name";
-
+	
 	public ViewSiteNodePageComponentsAction()
 	{
 	}
@@ -77,7 +78,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	private void initialize() throws Exception
 	{
 		Integer currentRepositoryId = SiteNodeController.getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
-		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);
+		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);		
 		if(filterRepositoryId == null)
 		    filterRepositoryId = currentRepositoryId;
 	}
@@ -85,23 +86,23 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	/**
 	 * This method initializes the tree
 	 */
-
+	
 	private void initializeTreeView(String currentAction) throws Exception
 	{
 		this.currentAction = currentAction;
-
+		
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
-
+		
 		if(this.repositoryId == null)
 			this.repositoryId = RepositoryController.getController().getFirstRepositoryVO().getRepositoryId();
 	}
 
-
+	    
 	/**
-	 * This method which is the default one only serves to show a list
-	 * of tasks to the user so he/she can select one to run.
+	 * This method which is the default one only serves to show a list 
+	 * of tasks to the user so he/she can select one to run. 
 	 */
-
+    
 	public String doExecute() throws Exception
 	{
 		initialize();
@@ -110,9 +111,9 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 
 
 	/**
-	 * This method shows the user a list of Components(HTML Templates).
+	 * This method shows the user a list of Components(HTML Templates). 
 	 */
-
+    
 	public String doListComponents() throws Exception
 	{
 		CmsLogger.logInfo("queryString:" + this.getRequest().getQueryString());
@@ -124,19 +125,19 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	}
 
 	/**
-	 * This method shows the user a list of Components(HTML Templates).
+	 * This method shows the user a list of Components(HTML Templates). 
 	 */
-
+    
 	public String doListComponentsForPalette() throws Exception
 	{
 		initialize();
 		return "listComponentsForPalette";
 	}
-
+	
 	/**
-	 * This method shows the user a list of Contents.
+	 * This method shows the user a list of Contents. 
 	 */
-
+    
 	public String doShowContentTree() throws Exception
 	{
 		initialize();
@@ -145,9 +146,9 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	}
 
 	/**
-	 * This method shows the user a interface to choose multiple contents.
+	 * This method shows the user a interface to choose multiple contents. 
 	 */
-
+    
 	public String doShowContentTreeForMultipleBinding() throws Exception
 	{
 		initialize();
@@ -156,27 +157,27 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	}
 
 	/**
-	 * This method shows the user a list of SiteNodes.
+	 * This method shows the user a list of SiteNodes. 
 	 */
-
+    
 	public String doShowStructureTree() throws Exception
 	{
 		initialize();
 		initializeTreeView("ViewSiteNodePageComponents!showStructureTree.action");
 		return "showStructureTree";
 	}
-
+	
 	/**
-	 * This method shows the user a interface to choose multiple sitenodes.
+	 * This method shows the user a interface to choose multiple sitenodes. 
 	 */
-
+    
 	public String doShowStructureTreeForMultipleBinding() throws Exception
 	{
 		initialize();
 		initializeTreeView("ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action");
 		return "showStructureTreeForMultipleBinding";
 	}
-
+	
 	/**
 	 * This method shows the user a list of Categories.
 	 */
@@ -208,11 +209,11 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		return this.currentAction;
 	}
 
-
+	
 	/**
-	 * This method shows the user a list of Components(HTML Templates).
+	 * This method shows the user a list of Components(HTML Templates). 
 	 */
-
+    
 	public String doAddComponent() throws Exception
 	{
 		CmsLogger.logInfo("************************************************************");
@@ -228,32 +229,32 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		CmsLogger.logInfo("specifyBaseTemplate:" + this.specifyBaseTemplate);
 
 		initialize();
-
+			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
-
+	
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-
+		
 		Integer newComponentId = new Integer(0);
-
+		
 		if(this.specifyBaseTemplate.equalsIgnoreCase("true"))
 		{
 			String componentXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><components><component contentId=\"" + componentId + "\" id=\"" + newComponentId + "\" name=\"base\"><properties></properties><bindings></bindings><components></components></component></components>";
 			ContentVO templateContentVO = nodeDeliveryController.getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information");
-			//ContentVO templateContentVO = nodeDeliveryController.getBoundContent(siteNodeId, "Meta information");
-
+			//ContentVO templateContentVO = nodeDeliveryController.getBoundContent(siteNodeId, "Meta information");		
+			
 			//CmsLogger.logInfo("templateContentVO:" + templateContentVO);
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(templateContentVO.getId(), languageId);
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", componentXML, new InfoGluePrincipal("ComponentEditor", "none", "none", "none", new ArrayList(), true));
 		}
 		else
 		{
-			//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId);
-			String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
+			//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
+			String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
 			//CmsLogger.logInfo("componentXML:" + componentXML);
-
+	
 			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 			String componentXPath = "//component[@id=" + this.parentComponentId + "]/components";
 			//CmsLogger.logInfo("componentXPath:" + componentXPath);
@@ -262,8 +263,8 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			{
 				Element component = (Element)anl.item(0);
 				//CmsLogger.logInfo(XMLHelper.serializeDom(component, new StringBuffer()));
-				//CmsLogger.logInfo("YES - now only add the new component...");
-
+				//CmsLogger.logInfo("YES - now only add the new component...");		
+				
 				String componentsXPath = "//component";
 				NodeList nodes = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentsXPath);
 				for(int i=0; i < nodes.getLength(); i++)
@@ -273,45 +274,45 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 						newComponentId = new Integer(element.getAttribute("id"));
 				}
 				newComponentId = new Integer(newComponentId.intValue() + 1);
-
+				
 				Element newComponent = addComponentElement(component, new Integer(newComponentId.intValue()), this.slotId, this.componentId);
 				//CmsLogger.logInfo("Added: " + XMLHelper.serializeDom(component, new StringBuffer()));
-				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 				//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
-
+				
 				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 				LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
-
+				
 				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, masterLanguage.getId(), true, "Meta information");
-				//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");
+				//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId());
 				//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 				ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 			}
 		}
-
+		
 		CmsLogger.logInfo("newComponentId:" + newComponentId);
-
+		
 		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + newComponentId;
-		//this.getResponse().sendRedirect(url);
-
+		//this.getResponse().sendRedirect(url);		
+		
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
-	    return NONE;
+	    return NONE; 
 	}
 
 
 	/**
-	 * This method updates the given properties with new values.
+	 * This method updates the given properties with new values. 
 	 */
-
+    
 	public String doUpdateComponentProperties() throws Exception
 	{
 		initialize();
 
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-
+		
 		CmsLogger.logInfo("************************************************************");
 		CmsLogger.logInfo("* doUpdateComponentProperties                              *");
 		CmsLogger.logInfo("************************************************************");
@@ -321,7 +322,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		CmsLogger.logInfo("componentId:" + this.componentId);
 		CmsLogger.logInfo("slotId:" + this.slotId);
 		CmsLogger.logInfo("specifyBaseTemplate:" + this.specifyBaseTemplate);
-
+		
 		Iterator parameterNames = this.getRequest().getParameterMap().keySet().iterator();
 		while(parameterNames.hasNext())
 		{
@@ -332,20 +333,20 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 
 		Integer siteNodeId 	= new Integer(this.getRequest().getParameter("siteNodeId"));
 		Integer languageId 	= new Integer(this.getRequest().getParameter("languageId"));
-
+		
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(languageId);
-
+		
 		String entity  		= this.getRequest().getParameter("entity");
-
+		
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
 
-		String componentXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
+		String componentXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
 		//CmsLogger.logInfo("componentXML:" + componentXML);
-
+		
 		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information");
-		//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");
+		//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.languageId);
 		if(contentVersionVO == null)
 		{
@@ -354,35 +355,35 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		}
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
-		String test = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+		String test = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 		//FileHelper.writeToFile(new File("c:\\temp\\enc102.txt"), test, false);
-
+		
 		String characterEncoding= this.getRequest().getCharacterEncoding();
 		characterEncoding= this.getResponse().getCharacterEncoding();
-
-		int propertyIndex = 0;
+		
+		int propertyIndex = 0;	
 		String propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
 		while(propertyName != null && !propertyName.equals(""))
 		{
 			//String propertyName	= "alignment"; this.getRequest().getParameter("propertyName");
 			String propertyValue= this.getRequest().getParameter(propertyName);
-
+			
 			/*
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			if(!characterEncoding.equalsIgnoreCase("utf-8"))
 			{
 				CmsLogger.logInfo("Encoding resulting html to " + characterEncoding);
-
+			
 				propertyValue = new String(propertyValue.getBytes("UTF-8"), characterEncoding);
-			}
+			}	
 			*/
-
+			
 			CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 			CmsLogger.logInfo("languageId:" + languageId);
 			CmsLogger.logInfo("entity:" + entity);
 			CmsLogger.logInfo("propertyName:" + propertyName);
 			CmsLogger.logInfo("propertyValue:" + propertyValue);
-
+			
 			String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";
 			//CmsLogger.logInfo("componentPropertyXPath:" + componentPropertyXPath);
 			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
@@ -398,7 +399,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 					anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
 				}
 			}
-
+			
 			//CmsLogger.logInfo("anl:" + anl);
 			if(anl.getLength() > 0)
 			{
@@ -407,31 +408,31 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			}
 
 			propertyIndex++;
-
+			
 			propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
 		}
 
-		String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+		String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 		//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
 		//FileHelper.writeToFile(new File("c:\\temp\\xml1.txt"), modifiedXML.getBytes());
 		//FileHelper.writeToFile(new File("c:\\temp\\xml2.txt"), modifiedXML, false);
-
+			
 		//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 		ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
-
+		
 		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;
-		//this.getResponse().sendRedirect(url);
-
+		//this.getResponse().sendRedirect(url);		
+		
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
-	    return NONE;
+	    return NONE; 
 	}
 
 
 	/**
-	 * This method shows the user a list of Components(HTML Templates).
+	 * This method shows the user a list of Components(HTML Templates). 
 	 */
-
+    
 	public String doDeleteComponent() throws Exception
 	{
 		initialize();
@@ -444,18 +445,18 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		//CmsLogger.logInfo("componentId:" + this.componentId);
 		//CmsLogger.logInfo("slotId:" + this.slotId);
 		//CmsLogger.logInfo("specifyBaseTemplate:" + this.specifyBaseTemplate);
-
+				
 		CmsLogger.logInfo("doDeleteComponent:" + this.getRequest().getQueryString());
-
+		
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
-
+	
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-
-		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId);
-		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
+		
+		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
+		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
 		//CmsLogger.logInfo("componentXML:" + componentXML);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -468,32 +469,32 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			Element component = (Element)anl.item(0);
 			component.getParentNode().removeChild(component);
 			//CmsLogger.logInfo(XMLHelper.serializeDom(component, new StringBuffer()));
-			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 			//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
-
+			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 
 			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information");
-			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");
+			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId());
 			//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
-
+		
 		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId;
-		//this.getResponse().sendRedirect(url);
-
+		//this.getResponse().sendRedirect(url);		
+		
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
-	    return NONE;
+	    return NONE; 
 	}
-
-
+	
+	    
 	/**
-	 * This method shows the user a list of Components(HTML Templates).
+	 * This method shows the user a list of Components(HTML Templates). 
 	 */
-
+    
 	public String doAddComponentPropertyBinding() throws Exception
 	{
 		initialize();
@@ -509,28 +510,28 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 
 		Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
 		Integer languageId = new Integer(this.getRequest().getParameter("languageId"));
-
+		
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(languageId);
-
+		
 		String entity  = this.getRequest().getParameter("entity");
 		Integer entityId  = new Integer(this.getRequest().getParameter("entityId"));
 		String propertyName = this.getRequest().getParameter("propertyName");
-
+		
 	//CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 	//CmsLogger.logInfo("languageId:" + languageId);
 	//CmsLogger.logInfo("entity:" + entity);
 	//CmsLogger.logInfo("entityId:" + entityId);
 	//CmsLogger.logInfo("propertyName:" + propertyName);
-
+			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
-
+	
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-
-		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId);
-		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
+		
+		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
+		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
 	//CmsLogger.logInfo("componentXML:" + componentXML);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -549,50 +550,50 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 				anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
 			}
 		}
-
+		
 	//CmsLogger.logInfo("anl:" + anl);
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
 			component.setAttribute("path_" + locale.getLanguage(), path);
-
+			
 			NodeList children = component.getChildNodes();
 			for(int i=0; i < children.getLength(); i++)
 			{
 				Node node = children.item(i);
 				component.removeChild(node);
 			}
-
+			
 		//CmsLogger.logInfo(XMLHelper.serializeDom(component, new StringBuffer()));
-		//CmsLogger.logInfo("YES - now only add the new propertyValue...");
-
+		//CmsLogger.logInfo("YES - now only add the new propertyValue...");		
+									
 			Element newComponent = addBindingElement(component, entity, entityId);
-			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 		//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
-
+			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 
 			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information");
-			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");
+			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId());
 		//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
-
+					
 		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;;
-		//this.getResponse().sendRedirect(url);
-
+		//this.getResponse().sendRedirect(url);		
+		
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
-	    return NONE;
+	    return NONE; 
 	}
 
 
 	/**
-	 * This method shows the user a list of Components(HTML Templates).
+	 * This method shows the user a list of Components(HTML Templates). 
 	 */
-
+    
 	public String doAddComponentPropertyBindingWithQualifyer() throws Exception
 	{
 		initialize();
@@ -605,30 +606,30 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	//CmsLogger.logInfo("componentId:" + this.componentId);
 	//CmsLogger.logInfo("slotId:" + this.slotId);
 	//CmsLogger.logInfo("specifyBaseTemplate:" + this.specifyBaseTemplate);
-
+		
 		Integer siteNodeId 	= new Integer(this.getRequest().getParameter("siteNodeId"));
 		Integer languageId 	= new Integer(this.getRequest().getParameter("languageId"));
 		Integer contentId 	= new Integer(this.getRequest().getParameter("contentId"));
-
+		
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(languageId);
 
 		String qualifyerXML = this.getRequest().getParameter("qualifyerXML");
 		String propertyName = this.getRequest().getParameter("propertyName");
-
+		
 	//CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 	//CmsLogger.logInfo("languageId:" + languageId);
 	//CmsLogger.logInfo("contentId:" + contentId);
 	//CmsLogger.logInfo("qualifyerXML:" + qualifyerXML);
 	//CmsLogger.logInfo("propertyName:" + propertyName);
-
+			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
-
+	
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-
-		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
+		
+		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
 	//CmsLogger.logInfo("componentXML:" + componentXML);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -657,13 +658,13 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
 		}
 		//}
-
+		
 	//CmsLogger.logInfo("anl:" + anl);
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
 			component.setAttribute("path_" + locale.getLanguage(), path);
-
+			
 			/*NodeList children = component.getElementsByTagName("binding");
 			for(int i=0; i < children.getLength(); i++)
 			{
@@ -671,37 +672,37 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 				component.removeChild(node);
 			//CmsLogger.logInfo("Removing childNode:" + node.toString());
 			}
-
+			
 		//CmsLogger.logInfo("Property:" + XMLHelper.serializeDom(component, new StringBuffer()));
-		//CmsLogger.logInfo("YES - now only add the new propertyValue...");
+		//CmsLogger.logInfo("YES - now only add the new propertyValue...");		
 			*/
-
+									
 			addBindingElement(component, qualifyerXML);
-			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 		//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
-
+			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 
 			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information");
-			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");
+			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId());
 		//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
-
+					
 		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;;
-		//this.getResponse().sendRedirect(url);
-
+		//this.getResponse().sendRedirect(url);		
+		
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
-	    return NONE;
+	    return NONE; 
 	}
-
+	
 	/**
-	 * This method shows the user a list of Components(HTML Templates).
+	 * This method shows the user a list of Components(HTML Templates). 
 	 */
-
+    
 	public String doDeleteComponentBinding() throws Exception
 	{
 		initialize();
@@ -719,20 +720,20 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		Integer languageId 	= new Integer(this.getRequest().getParameter("languageId"));
 		Integer contentId  	= new Integer(this.getRequest().getParameter("contentId"));
 		Integer bindingId  	= new Integer(this.getRequest().getParameter("bindingId"));
-
+		
 		//CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 		//CmsLogger.logInfo("languageId:" + languageId);
 		//CmsLogger.logInfo("contentId:" + contentId);
-
+			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
-
+	
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-
-		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId);
-		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
+		
+		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
+		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
 		//CmsLogger.logInfo("componentXML:" + componentXML);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -745,60 +746,60 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			Element component = (Element)anl.item(0);
 			component.getParentNode().removeChild(component);
 			//CmsLogger.logInfo(XMLHelper.serializeDom(component, new StringBuffer()));
-			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 			//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
-
+			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 
 			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information");
-			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");
+			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId());
 			//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
-
+			
 		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;;
-		//this.getResponse().sendRedirect(url);
-
+		//this.getResponse().sendRedirect(url);		
+		
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
-	    return NONE;
+	    return NONE; 
 	}
-
-
+		    
+		    
 	/**
-	 * This method shows the user a list of Components(HTML Templates).
+	 * This method shows the user a list of Components(HTML Templates). 
 	 */
-
+    
 	public List getComponentBindings() throws Exception
 	{
 		List bindings = new ArrayList();
-
+			
 		try
 		{
 			Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
 			Integer languageId = new Integer(this.getRequest().getParameter("languageId"));
 			Integer contentId  = new Integer(this.getRequest().getParameter("contentId"));
 			String propertyName = this.getRequest().getParameter("propertyName");
-
+	
 		//CmsLogger.logInfo("**********************************************************************************");
 		//CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 		//CmsLogger.logInfo("languageId:" + languageId);
 		//CmsLogger.logInfo("contentId:" + contentId);
 		//CmsLogger.logInfo("**********************************************************************************");
-
+				
 			NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 			IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 			TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
-
+		
 			boolean USE_LANGUAGE_FALLBACK        			= true;
 			boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-
-			//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId);
-			String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
+			
+			//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
+			String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
 		//CmsLogger.logInfo("componentXML:" + componentXML);
-
+	
 			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 			String componentXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']/binding";
 		//CmsLogger.logInfo("componentXPath:" + componentXPath);
@@ -809,7 +810,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 				Element component = (Element)anl.item(i);
 				String entityName = component.getAttribute("entity");
 				String entityId = component.getAttribute("entityId");
-
+				
 			//CmsLogger.logInfo("entityName:" + entityName);
 				String path = "Undefined";
 				if(entityName.equalsIgnoreCase("SiteNode"))
@@ -817,12 +818,12 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 					SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(new Integer(entityId));
 					path = siteNodeVO.getName();
 				}
-				else if(entityName.equalsIgnoreCase("Content"))
+				else if(entityName.equalsIgnoreCase("Content")) 
 				{
 					ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
 					path = contentVO.getName();
 				}
-
+				
 				Map binding = new HashMap();
 				binding.put("entityName", entityName);
 				binding.put("entityId", entityId);
@@ -834,38 +835,38 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		{
 			e.printStackTrace();
 		}
-
+		
 		return bindings;
 	}
-
+			    
 	//Nice code
-
+	
 	/**
 	 * This method deletes a component property value. This is to enable users to quickly remove a property value no matter what type.
 	 */
-
+    
 	public String doDeleteComponentPropertyValue() throws Exception
 	{
 		initialize();
-
+	
 		Integer siteNodeId 	= new Integer(this.getRequest().getParameter("siteNodeId"));
 		Integer languageId 	= new Integer(this.getRequest().getParameter("languageId"));
 		Integer contentId  	= new Integer(this.getRequest().getParameter("contentId"));
 		String propertyName	= this.getRequest().getParameter("propertyName");
-
+		
 	//CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 	//CmsLogger.logInfo("languageId:" + languageId);
 	//CmsLogger.logInfo("contentId:" + contentId);
 	//CmsLogger.logInfo("propertyName:" + propertyName);
-
+			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
-
+	
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-
-		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
+		
+		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
 	//CmsLogger.logInfo("componentXML:" + componentXML);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -878,33 +879,33 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			propertyNode.getParentNode().removeChild(propertyNode);
 		}
 
-		String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+		String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 	//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
-
+		
 		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 		LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 
 		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information");
-		//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");
+		//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId());
 	//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 		ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 
 		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;;
-		//this.getResponse().sendRedirect(url);
-
+		//this.getResponse().sendRedirect(url);		
+		
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
-	    return NONE;
+	    return NONE; 
 	}
-
-
-
+		    
+			    
+			    
 	/**
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.
 	 */
-
+	
 	private Element addPropertyElement(Element parent, String name, String path, String type, Locale locale)
 	{
 		Element element = parent.getOwnerDocument().createElement("property");
@@ -914,12 +915,12 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		parent.appendChild(element);
 		return element;
 	}
-
+	
 	/**
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.
 	 */
-
+	
 	private Element addComponentElement(Element parent, Integer id, String name, Integer contentId)
 	{
 		Element element = parent.getOwnerDocument().createElement("component");
@@ -933,12 +934,12 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		parent.appendChild(element);
 		return element;
 	}
-
+	   
 	/**
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.
 	 */
-
+	
 	private Element addBindingElement(Element parent, String entity, Integer entityId)
 	{
 		Element element = parent.getOwnerDocument().createElement("binding");
@@ -952,7 +953,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.
 	 */
-
+	
 	private void addBindingElement(Element parent, String qualifyerXML) throws Exception
 	{
 	//CmsLogger.logInfo("qualifyerXML:" + qualifyerXML);
@@ -966,68 +967,68 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			String entityId = qualifyerElement.getFirstChild().getNodeValue();
 		//CmsLogger.logInfo("entityName:" + entityName);
 		//CmsLogger.logInfo("entityId:" + entityId);
-
+			
 			Element element = parent.getOwnerDocument().createElement("binding");
 			element.setAttribute("entityId", entityId);
 			element.setAttribute("entity", entityName);
 			parent.appendChild(element);
 		}
 	}
+	
 
-
-
+	    
 	/**
 	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
 	 */
-
+	
 	public List getComponents() throws Exception
 	{
 		HashMap arguments = new HashMap();
 		arguments.put("method", "selectListOnContentTypeName");
-
+		
 		List argumentList = new ArrayList();
 		HashMap argument = new HashMap();
 		argument.put("contentTypeDefinitionName", "HTMLTemplate");
 		argumentList.add(argument);
 		arguments.put("arguments", argumentList);
-
+		
 		return ContentController.getContentController().getContentVOList(arguments);
 	}
-
+	
 	/**
 	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate" sorted on the property given.
 	 */
-
+	
 	public List getSortedComponents(String sortProperty) throws Exception
 	{
 		List components = getComponents();
-
+		
 		Collections.sort(components, new ReflectionComparator(sortProperty));
-
+		
 		return components;
 	}
-
+	     	     
 	/**
 	 * This method fetches the template-string.
 	 */
-
+    
 	private String getPageComponentsString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
 		String template = null;
-
+    	
 		try
 		{
 		//CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 		//CmsLogger.logInfo("languageId:" + languageId);
 		//CmsLogger.logInfo("contentId:" + contentId);
 			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information");
-			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");
+			//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
 
 			if(contentVO == null)
-				throw new SystemException("There was no template bound to this page which makes it impossible to render.");
-
+				throw new SystemException("There was no template bound to this page which makes it impossible to render.");	
+			
 		//CmsLogger.logInfo("contentVO:" + contentVO.getName());
-
+			
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
 			if(contentVersionVO == null)
 			{
@@ -1035,15 +1036,15 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 				LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 				contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getLanguageId());
 			}
-
+	
 		//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getId() + ":" + contentVersionVO.getLanguageId());
 			template = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO.getId(), "ComponentStructure", false);
-
-
+			
+			
 			//template = templateController.getContentAttribute(contentVO.getId(), "ComponentStructure", false);
-
+			
 			if(template == null)
-				throw new SystemException("There was no template bound to this page which makes it impossible to render.");
+				throw new SystemException("There was no template bound to this page which makes it impossible to render.");	
 		}
 		catch(Exception e)
 		{
@@ -1053,18 +1054,18 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 
 		return template;
 	}
-
+	
 	/**
-	 * This method should be much more sophisticated later and include a check to see if there is a
+	 * This method should be much more sophisticated later and include a check to see if there is a 
 	 * digital asset uploaded which is more specialized and can be used to act as serverside logic to the template.
-	 * The method also consideres wheter or not to invoke the preview-version with administrative functioality or the
+	 * The method also consideres wheter or not to invoke the preview-version with administrative functioality or the 
 	 * normal site-delivery version.
 	 */
-
+	
 	public TemplateController getTemplateController(NodeDeliveryController nodeDeliveryController, IntegrationDeliveryController integrationDeliveryController, Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request) throws SystemException, Exception
 	{
 		TemplateController templateController = null;
-
+		
 		String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
 		String editOnSite = CmsPropertyHandler.getProperty("editOnSite");
 		if(operatingMode != null && (operatingMode.equals("0") || operatingMode.equals("1") || operatingMode.equals("2")) && editOnSite != null && editOnSite.equalsIgnoreCase("true"))
@@ -1076,18 +1077,18 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			templateController = new BasicTemplateController(this.getInfoGluePrincipal());
 		}
 
-		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);
-		templateController.setHttpRequest(request);
+		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
+		templateController.setHttpRequest(request);	
 		//templateController.setBrowserBean(browserBean);
-		templateController.setDeliveryControllers(nodeDeliveryController, null, integrationDeliveryController);
-		return templateController;
+		templateController.setDeliveryControllers(nodeDeliveryController, null, integrationDeliveryController);	
+		return templateController;		
 	}
 
-
+	
 	/**
 	 * This method fetches an url to the asset for the component.
 	 */
-
+	
 	public String getDigitalAssetUrl(Integer contentId, String key) throws Exception
 	{
 		String imageHref = null;
@@ -1102,7 +1103,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 				DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
 				if(digitalAssetVO.getAssetKey().equals(key))
 				{
-					imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetVO.getId());
+					imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetVO.getId()); 
 					break;
 				}
 			}
@@ -1112,15 +1113,15 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
-
+		
 		return imageHref;
 	}
-
+	
 	public ViewSiteNodePageComponentsAction getThis()
 	{
 		return this;
 	}
-
+	
 	public Integer getContentId()
 	{
 		return contentId;
@@ -1140,13 +1141,13 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	{
 		this.componentId = componentId;
 	}
-
-	public Integer getParentComponentId()
+	
+	public Integer getParentComponentId() 
 	{
 		return parentComponentId;
 	}
-
-    public void setParentComponentId(Integer parentComponentId)
+	
+    public void setParentComponentId(Integer parentComponentId) 
     {
 		this.parentComponentId = parentComponentId;
 	}
@@ -1195,7 +1196,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
     {
         return filterRepositoryId;
     }
-
+    
     public void setFilterRepositoryId(Integer filterRepositoryId)
     {
         this.filterRepositoryId = filterRepositoryId;
@@ -1230,7 +1231,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	{
 		this.path = path;
 	}
-
+	
 	public LanguageVO getMasterLanguageVO()
 	{
 		return masterLanguageVO;
@@ -1245,17 +1246,17 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	{
 		return CmsPropertyHandler.getProperty("componentRendererAction");
 	}
-
+	
     public String getUrl()
     {
         return url;
     }
-
+	
     public String getSortProperty()
     {
         return sortProperty;
     }
-
+    
     public void setSortProperty(String sortProperty)
     {
         this.sortProperty = sortProperty;
