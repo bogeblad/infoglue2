@@ -118,16 +118,12 @@
 				#set($action = "")
 				#foreach ($workflowActionVO in $workflowVO.globalActions)
 					#set($iconUrl = $workflowActionVO.metaAttributes.get("icon"))
-					#if($workflowActionVO.isGlobalAction)
-						#set($viewGlobalAction = $workflowActionVO.getView())
-		  			    #if($viewGlobalAction == "")
-		  			    	#set($viewGlobalAction = "ViewMyDesktopToolStartPage!invoke.action")
-						#end
-
-						#set($viewGlobalAction = "$quote$viewGlobalAction$quote")
-
-						#set($action = "$!action <a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $viewGlobalAction);'><img src='$iconUrl' border='0' width='15' height='15' alt='$workflowActionVO.getName()'/></a>")
+					#set($viewGlobalAction = $workflowActionVO.getView())
+					 #if($viewGlobalAction == "")
+						#set($viewGlobalAction = "ViewMyDesktopToolStartPage!invoke.action")
 					#end
+					#set($viewGlobalAction = "$quote$viewGlobalAction$quote")
+					#set($action = "$!action <a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $viewGlobalAction);'><img src='$iconUrl' border='0' width='15' height='15' alt='$workflowActionVO.getName()'/></a>")
 				#end
 
 				#set($view = "$quote$workflowVO.getView()$quote")
@@ -182,17 +178,15 @@
 			#set($cnt = 0)
 			#set($quote = '"')
 			#foreach ($workflowActionVO in $this.getWorkflowActionVOList($webwork.bean('org.infoglue.cms.util.workflow.OwnerStepFilter')))
-				#if(!$workflowActionVO.isGlobalAction)
-					#set($view = $workflowActionVO.getView())
-	  			    #if($view == "")
-	  			    	#set($view = "ViewMyDesktopToolStartPage!invoke.action")
-					#end
-					#set($view = "$quote$view$quote")
-					##set($row = ["<a STYLE='cursor:hand;' onclick='invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
-					#set($row = ["<a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
-					#set($cnt = $cnt + 1)
-					#lvAddRow($row $cnt "$workflowActionVO.getId()")
+				#set($view = $workflowActionVO.getView())
+				 #if($view == "")
+					#set($view = "ViewMyDesktopToolStartPage!invoke.action")
 				#end
+				#set($view = "$quote$view$quote")
+				##set($row = ["<a STYLE='cursor:hand;' onclick='invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
+				#set($row = ["<a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
+				#set($cnt = $cnt + 1)
+				#lvAddRow($row $cnt "$workflowActionVO.getId()")
 			#end
 
 			#if($cnt == 0)

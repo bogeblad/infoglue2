@@ -1,5 +1,5 @@
 /**
- * $Id: WorkflowFacade.java,v 1.3 2004/12/28 18:49:38 jed Exp $
+ * $Id: WorkflowFacade.java,v 1.4 2004/12/31 01:54:11 jed Exp $
  * Created by jed on Dec 28, 2004
  */
 package org.infoglue.cms.util.workflow;
@@ -23,7 +23,7 @@ import com.opensymphony.module.propertyset.PropertySet;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.3 $ $Date: 2004/12/28 18:49:38 $
+ * @version $Revision: 1.4 $ $Date: 2004/12/31 01:54:11 $
  */
 public class WorkflowFacade
 {
@@ -274,7 +274,7 @@ public class WorkflowFacade
 	 * @param stepDescriptor the desired stepDescriptor
 	 * @return a list of all actions in stepDescriptor.
 	 */
-	private List getAllActions(StepDescriptor stepDescriptor)
+	private List getActions(StepDescriptor stepDescriptor)
 	{
 		return createActionVOs(stepDescriptor.getActions());
 	}
@@ -366,7 +366,7 @@ public class WorkflowFacade
 		step.setStepId(new Integer(stepDescriptor.getId()));
 		step.setName(stepDescriptor.getName());
 		step.setStatus("Not started");
-		step.setActions(getAllActions(stepDescriptor));
+		step.setActions(getActions(stepDescriptor));
 		return step;
 	}
 
@@ -387,9 +387,6 @@ public class WorkflowFacade
 		actionVO.setView(actionDescriptor.getView());
 		actionVO.setAutoExecute(actionDescriptor.getAutoExecute());
 		actionVO.setMetaAttributes(actionDescriptor.getMetaAttributes());
-		if (actionDescriptor.getParent().getClass().equals(WorkflowDescriptor.class))
-			actionVO.setIsGlobalAction(true);
-
 		return actionVO;
 	}
 }
