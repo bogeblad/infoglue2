@@ -23,22 +23,16 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
-import org.infoglue.cms.entities.content.DigitalAsset;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 
-import org.infoglue.deliver.controllers.kernel.URLComposer;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -47,16 +41,14 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 
+import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.util.CacheController;
+
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Date;
-import java.util.Vector;
+import java.util.*;
 import java.io.*;
 
 
@@ -343,6 +335,126 @@ public class ContentDeliveryController extends BaseDeliveryController
         }
 
 		return attribute;
+	}
+
+	/**
+	 * Find all ContentVersionVOs that are related to the provided Category.
+	 *
+	 * TODO: Right now this method depends on the ContentVersion having an owningContent
+	 * TODO: This is potentially bad from a performance standpoint app-wide, so a workaround may
+	 * TODO: be to look up each Content for the ContentVersions after we have done everything we
+	 * TODO: can to wed down the list alot, so the overhead will not be too much.
+	 *
+	 * @param categoryId The Category to search on
+	 * @param attributeName The attribute of the Category relationship
+	 * @param infoGluePrincipal The user making the request
+	 * @param siteNodeId The SiteNode that the request is coming from
+	 * @param languageId The Language of the request
+	 * @param useLanguageFallback True is the search is to use the fallback (default) language for the Repository
+	 * @return A List of ContentVersionVOs matching the Category search, that are considered valid
+	 * @throws SystemException
+	 */
+	public List findContentVersionVOsForCategory(Integer categoryId, String attributeName, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback) throws SystemException
+	{
+		Database db = beginTransaction();
+		try
+		{
+			List results = findContentCategories(categoryId, attributeName);
+			List versions = findContentVersionsForCategories(results, db);
+
+			// Weed out irrelevant versions
+			for (Iterator iter = versions.iterator(); iter.hasNext();)
+			{
+				ContentVersion version = (ContentVersion) iter.next();
+				if(!isValidContentVersion(version, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, db))
+					iter.remove();
+			}
+
+			commitTransaction(db);
+			return toVOList(versions);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("Error finding Content by Category:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Find all ContentCategories for the given Category id and attributeName.
+	 * @param categoryId The Category to find ContentCategories
+	 * @param attributeName The ContentTYpeDefintion attribute name of a ContentCategory relationship.
+	 * @return A List of ContentCategoryVOs for the supplied Category id.
+	 * @throws SystemException If an error happens
+	 */
+	private List findContentCategories(Integer categoryId, String attributeName) throws SystemException
+	{
+		StringBuffer oql = new StringBuffer();
+		oql.append("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl c ");
+		oql.append("WHERE c.category.categoryId = $1 AND c.attributeName = $2");
+
+		ArrayList params = new ArrayList();
+		params.add(categoryId);
+		params.add(attributeName);
+		return toVOList(executeQuery(oql.toString(), params));
+	}
+
+	/**
+	 * Find content versions that are in the provided list of version ids. However over time this
+	 * could get to be a large list, so lets weed it out initially at the database restricted
+	 * on the time parameters. That should keep the lists manageable
+	 *
+	 * @param contentCategories A ContentCategoryVO list used to find related ContentVersions
+	 * @param db A Database to execute the query against
+	 * @return A List of ContentVersions that were related to the provided ContentCategories and
+	 * 			fell withing the publishing time frame
+	 * @throws Exception if an error happens
+	 */
+	private List findContentVersionsForCategories(List contentCategories, Database db) throws Exception
+	{
+		if(contentCategories.isEmpty())
+			return Collections.EMPTY_LIST;
+
+		StringBuffer oql = new StringBuffer();
+		oql.append("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl c ")
+				.append("WHERE c.owningContent.publishDateTime <= $1 AND c.owningContent.expireDateTime >= $2 ")
+				.append("AND c.contentVersionId IN LIST ").append(toVersionIdList(contentCategories));
+
+		ArrayList params = new ArrayList();
+		params.add(new Date());
+		params.add(new Date());
+		return  executeQuery(db, oql.toString(), params);
+	}
+
+	/**
+	 * Is this a valid Content item based on defined rules for publican/expiration etc.,
+	 * and is it the most recent ContentVersion for this deployment. If not then we retrieved
+	 * based on categories attached to an old version.
+	 */
+	private boolean isValidContentVersion(ContentVersion version, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, Database db)
+			throws Exception
+	{
+		Content content = version.getOwningContent();
+
+		ContentVersionVO mostRecentVersion = getContentVersionVO(siteNodeId, content.getContentId(), languageId, useLanguageFallback);
+		boolean isProperVersion = (mostRecentVersion != null) && (mostRecentVersion.getId().equals(version.getId()));
+
+		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db);
+
+		return isProperVersion && isValidContent;
+	}
+
+	/**
+	 * Builds and IN list for the query to find all potentially relevant content versions.
+	 */
+	private String toVersionIdList(List results)
+	{
+		StringBuffer ids = new StringBuffer("(");
+		for(Iterator iter = results.iterator(); iter.hasNext();)
+			ids.append(((ContentCategoryVO) iter.next()).getContentVersionId() + (iter.hasNext()? ", " : ""));
+		ids.append(")");
+		return ids.toString();
 	}
 
 
