@@ -34,7 +34,7 @@
 	#set($canDrag = ' ondragstart="startDrag();" ondragend="endDrag();"')
 	#set($imgPath="images/tree/xp/")	
 	#if($repositoryId == 0)
-		#set($rootTitle="All Repositories")
+		#set($rootTitle=$ui.getString("tool.managementtool.menu.rootName"))
 	#else
 		#set($rootTitle="${name}")
 	#end

@@ -53,6 +53,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.TransactionHistoryVO;
@@ -314,8 +315,12 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 		        }
 		        
 		        if(!useTemplate)
-		        	elm.addAttribute("contentTypeId","" + contentController.getContentTypeDefinition(theNode.getId()).getContentTypeDefinitionId());
-			}
+		        {
+		            ContentTypeDefinitionVO contentTypeDefinitionVO = contentController.getContentTypeDefinition(theNode.getId());
+		        	if(contentTypeDefinitionVO != null)
+		        	    elm.addAttribute("contentTypeId","" + contentTypeDefinitionVO.getContentTypeDefinitionId());
+		        }
+		    }
 			
     	    out(getFormattedDocument(doc));
     		return null;

@@ -543,11 +543,11 @@
 		<td>
 			<select name="$fieldName" class="yesNoDropBox">
 				#if($value)
-					<option value="true" selected>Yes</option>
-					<option value="false">No</option>
+					<option value="true" selected>$ui.getString("tool.common.yes")</option>
+					<option value="false">$ui.getString("tool.common.no")</option>
 				#else
-					<option value="true">Yes</option>
-					<option value="false" selected>No</option>
+					<option value="true">$ui.getString("tool.common.yes")</option>
+					<option value="false" selected>$ui.getString("tool.common.no")</option>
 				#end
 			</select>
 		</td>

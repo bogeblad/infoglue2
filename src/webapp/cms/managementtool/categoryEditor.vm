@@ -32,8 +32,8 @@
 			$ui.getString("entity.Category.active.label")
 			<br/>
 			<select name="model/active">
-				<option value="true" #if($model.active) selected="true" #end>Yes</option>
-				<option value="false" #if(!$model.active) selected="true" #end>No</option>
+				<option value="true" #if($model.active) selected="true" #end>$ui.getString("tool.common.yes")</option>
+				<option value="false" #if(!$model.active) selected="true" #end>$ui.getString("tool.common.no")</option>
 			</select>
 		</td>
 	</tr>

@@ -107,9 +107,9 @@ function editContent(contentId)
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		<td>
 			$ui.getString("entity.SiteNode.isProtected.label")<br>
-			<input type="radio" name="isProtected" value="0" #if($!isProtected == 0) checked="1" #end $readonly> No 
-			<input type="radio" name="isProtected" value="1" #if($!isProtected == 1) checked="1" #end $readonly> Yes
-			<input type="radio" name="isProtected" value="2" #if($!isProtected == 2) checked="1" #end $readonly> Inherit
+			<input type="radio" name="isProtected" value="0" #if($!isProtected == 0) checked="1" #end $readonly> $ui.getString("tool.common.no") 
+			<input type="radio" name="isProtected" value="1" #if($!isProtected == 1) checked="1" #end $readonly> $ui.getString("tool.common.yes")
+			<input type="radio" name="isProtected" value="2" #if($!isProtected == 2) checked="1" #end $readonly> $ui.getString("tool.common.inherit")
 		</td>
 		<td></td>
 	</tr>		
@@ -118,9 +118,9 @@ function editContent(contentId)
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		<td>
 			$ui.getString("entity.SiteNode.disablePageCache.label")<br>
-			<input type="radio" name="disablePageCache" value="0" #if($!disablePageCache == 0) checked="1" #end $readonly> No
-			<input type="radio" name="disablePageCache" value="1" #if($!disablePageCache == 1) checked="1" #end $readonly> Yes
-			<input type="radio" name="disablePageCache" value="2" #if($!disablePageCache == 2) checked="1" #end $readonly> Inherit
+			<input type="radio" name="disablePageCache" value="0" #if($!disablePageCache == 0) checked="1" #end $readonly> $ui.getString("tool.common.no")
+			<input type="radio" name="disablePageCache" value="1" #if($!disablePageCache == 1) checked="1" #end $readonly> $ui.getString("tool.common.yes")
+			<input type="radio" name="disablePageCache" value="2" #if($!disablePageCache == 2) checked="1" #end $readonly> $ui.getString("tool.common.inherit")
 		</td>
 		<td></td>
 	</tr>		
@@ -129,9 +129,9 @@ function editContent(contentId)
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		<td>
 			$ui.getString("entity.SiteNode.disableEditOnSight.label")<br>
-			<input type="radio" name="disableEditOnSight" value="0" #if($!disableEditOnSight == 0) checked="1" #end $readonly> No
-			<input type="radio" name="disableEditOnSight" value="1" #if($!disableEditOnSight == 1) checked="1" #end $readonly> Yes
-			<input type="radio" name="disableEditOnSight" value="2" #if($!disableEditOnSight == 2) checked="1" #end $readonly> Inherit
+			<input type="radio" name="disableEditOnSight" value="0" #if($!disableEditOnSight == 0) checked="1" #end $readonly> $ui.getString("tool.common.no")
+			<input type="radio" name="disableEditOnSight" value="1" #if($!disableEditOnSight == 1) checked="1" #end $readonly> $ui.getString("tool.common.yes")
+			<input type="radio" name="disableEditOnSight" value="2" #if($!disableEditOnSight == 2) checked="1" #end $readonly> $ui.getString("tool.common.inherit")
 		</td>
 		<td></td>
 	</tr>		

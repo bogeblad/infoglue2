@@ -520,7 +520,7 @@
 		<td colspan="3">&nbsp;</td>
 	</tr>
 	<tr>
-		<td colspan="3">This version was last modified by $contentVersionVO.versionModifier</td>
+		<td colspan="3">$ui.getString("tool.contenttool.versionLastUpdatedByLabel") $contentVersionVO.versionModifier</td>
 	</tr>
 	#end
 </table>	

@@ -501,13 +501,13 @@ public class AccessRightController extends BaseController
 		outer:while(i.hasNext())
 		{
 			InfoGlueRole role = (InfoGlueRole)i.next();
-			CmsLogger.logInfo("role:" + role.getName());
+			//CmsLogger.logInfo("role:" + role.getName());
 			
 			Iterator cachedAccessRightsVOListIterator = cachedAccessRightsVOList.iterator();
 			while(cachedAccessRightsVOListIterator.hasNext()) 
 			{
 			    AccessRightVO candidateAccessRightVO = (AccessRightVO)cachedAccessRightsVOListIterator.next();
-				CmsLogger.logInfo("candidateAccessRight:" + candidateAccessRightVO.getRoleName() + ":" + candidateAccessRightVO.getInterceptionPointName() + ":" + candidateAccessRightVO.getParameters());
+				//CmsLogger.logInfo("candidateAccessRight:" + candidateAccessRightVO.getRoleName() + ":" + candidateAccessRightVO.getInterceptionPointName() + ":" + candidateAccessRightVO.getParameters());
 				if(candidateAccessRightVO.getRoleName().equalsIgnoreCase(role.getName()) && candidateAccessRightVO.getInterceptionPointName().equalsIgnoreCase(interceptionPointName) && candidateAccessRightVO.getParameters().equalsIgnoreCase(extraParameters))
 				{
 				    isPrincipalAuthorized = true;
