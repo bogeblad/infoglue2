@@ -40,7 +40,7 @@
 		
 		function openSearchForm()
 		{
-			repositoryId = document.selectbox.repositoryId.value;
+			repositoryId = document.searchForm.repositoryId.value;
 			if(!repositoryId)
 				repositoryId = "$repositoryId";
 				
