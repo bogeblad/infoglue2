@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginStructureTool("Structuretool startpage" $ui.getString("tool.structuretool.welcomeHeader") "" "0" "0" "0")
+#beginStructureTool("tool.structuretool.welcomeHeader" $ui.getString("tool.structuretool.welcomeHeader") "" "0" "0" "0")
 
 <div class="fullymarginalized">
 

@@ -42,11 +42,11 @@
 ## This is the header for all contenttool pages    *
 ##**************************************************
 
-#macro(beginContentTool $title $toolbarKey $arguments $unrefreshedContentId $changeTypeId $addedContentId)
+#macro(beginContentTool $titleKey $toolbarKey $arguments $unrefreshedContentId $changeTypeId $addedContentId)
 
 <html>
 <head>
-	<title>$title</title>
+	<title>$ui.getString($titleKey)</title>
 
 	<script type="text/javascript">
 	   _editor_url = "applications/HTMLArea/";
@@ -65,20 +65,19 @@
 
 </head>
 
-<body class="contenttooledit" onload="javascript:refreshContentToolBar('$title', '$toolbarKey', '$arguments', $unrefreshedContentId, $changeTypeId, $addedContentId);">
+<body class="contenttooledit" onload="javascript:refreshContentToolBar('$titleKey', '$toolbarKey', '$arguments', $unrefreshedContentId, $changeTypeId, $addedContentId);">
 #set( $lvColor = "green")
-
 #end
 
 ##**************************************************
 ## This is the header for all structuretool pages    *
 ##**************************************************
 
-#macro(beginStructureTool $title $toolbarKey $arguments $unrefreshedNodeId $changeTypeId $addedNodeId)
+#macro(beginStructureTool $titleKey $toolbarKey $arguments $unrefreshedNodeId $changeTypeId $addedNodeId)
 
 <html>
 <head>
-	<title>$title</title>
+	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
@@ -86,7 +85,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
-<body class="structuretooledit" onload="javascript:refreshStructureToolBar('$toolbarKey', '$arguments', '$unrefreshedNodeId', '$changeTypeId', '$addedNodeId');">
+<body class="structuretooledit" onload="javascript:refreshStructureToolBar('$titleKey', '$toolbarKey', '$arguments', '$unrefreshedNodeId', '$changeTypeId', '$addedNodeId');">
 
 #end
 

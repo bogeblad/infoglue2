@@ -10,7 +10,7 @@ function editContent(contentId)
 </script>
 
 
-#beginStructureTool("SiteNode details" "SiteNode details" "siteNodeId=$siteNodeId&siteNodeVersionId=$siteNodeVersionId&repositoryId=$!repositoryId&isBranch=$isBranch" "$unrefreshedSiteNodeId" "$changeTypeId" "$siteNodeId")
+#beginStructureTool("tool.structuretool.siteNodeDetailsHeader" "tool.structuretool.siteNodeDetailsHeader" "siteNodeId=$siteNodeId&siteNodeVersionId=$siteNodeVersionId&repositoryId=$!repositoryId&isBranch=$isBranch" "$unrefreshedSiteNodeId" "$changeTypeId" "$siteNodeId")
 
 #if($stateId == 1 || $stateId == 2 || $stateId == 3)
 	#set($readonly = "disabled") 

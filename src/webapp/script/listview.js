@@ -207,7 +207,7 @@ function refreshContentToolBar(title, toolbarKey, arguments, unrefreshedContentI
 // can be shown and a suitable headline be written.
 //-----------------------------------------------
 
-function refreshStructureToolBar(toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
+function refreshStructureToolBar(title, toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
 {
 	//alert('toolbarKey:' + toolbarKey);
 	//toolbarKey 	= escape(toolbarKey);	
@@ -215,7 +215,7 @@ function refreshStructureToolBar(toolbarKey, arguments, unrefreshedNodeId, chang
 	if(parent.frames["toolbar"].document.getElementById("lockLayer"))
 		parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
 	
-	parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + toolbarKey + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 	//alert("unrefreshedNodeId:" + unrefreshedNodeId);
 	if(unrefreshedNodeId > 0)
 	{

@@ -9,7 +9,7 @@
 #elseif($colorScheme == "PublishingTool")
 	#beginPublishingTool("Access Rights - $interceptionPointCategory" "Access Rights" "null" "null" "null" "null")
 #else
-	#beginContentTool("Access Rights - $interceptionPointCategory" "Access Rights" "null" "null" "null" "null")
+	#beginContentTool("tool.contenttool.accessRights.header" "Access Rights" "null" "null" "null" "null")
 #end
 
 <div class="fullymarginalized">

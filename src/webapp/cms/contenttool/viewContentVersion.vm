@@ -3,7 +3,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 #set($syncAuto = "false")
-##beginContentTool($ui.getString("tool.contenttool.contentVersionHeader") "Content version" "contentId=$contentId&languageId=$languageId&contentVersionId=$contentVersionId" "0" "0" "0")
 
 <html>
 <head>
@@ -183,7 +182,7 @@
 	#set($readonly = "")
 #end
 
-<body class="contenttooledit" onload="javascript:refreshContentToolBar('Content version', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '0', '0', '0'); generateWYSIWYGS();">
+<body class="contenttooledit" onload="javascript:refreshContentToolBar('tool.contenttool.contentVersionHeader', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '0', '0', '0'); generateWYSIWYGS();">
 #set( $lvColor = "green")
 
 <script language="javascript" src="script/jsrsClient.js"></script>

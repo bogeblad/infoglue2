@@ -3,9 +3,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 #if($isBranch)
-	#beginContentTool("Create new folder" "New folder" "" "0" "0" "0")
+	#beginContentTool("tool.contenttool.createFolderHeader" "New folder" "" "0" "0" "0")
 #else
-	#beginContentTool("Create new content" "New content" "" "0" "0" "0")
+	#beginContentTool("tool.contenttool.createContentHeader" "New content" "" "0" "0" "0")
 #end
 
 <div class="fullymarginalized">

@@ -3,13 +3,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 #if($colorScheme == "ManagementTool")
-	#beginManagementTool("Access Denied" "Access Denied" "null")
+	#beginManagementTool("tool.contenttool.accessDenied" "Access Denied" "null")
 #elseif($colorScheme == "StructureTool")
-	#beginStructureTool("Access Denied" "Access Denied" "null" "null" "null" "null")
+	#beginStructureTool("tool.contenttool.accessDenied" "Access Denied" "null" "null" "null" "null")
 #elseif($colorScheme == "PublishingTool")
-	#beginPublishingTool("Access Denied" "Access Denied" "null" "null" "null" "null")
+	#beginPublishingTool("tool.contenttool.accessDenied" "Access Denied" "null" "null" "null" "null")
 #else
-	#beginContentTool("Access Denied" "Access Denied" "null" "null" "null" "null")
+	#beginContentTool("tool.contenttool.accessDenied" "Access Denied" "null" "null" "null" "null")
 #end
 
     <table>

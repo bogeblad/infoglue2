@@ -2,7 +2,7 @@
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginContentTool($ui.getString("tool.contenttool.contentDetailsHeader") "Submit for publish" "" "0" "0" "0")
+#beginContentTool("tool.contenttool.contentDetailsHeader" "Submit for publish" "" "0" "0" "0")
 
 <script language="JavaScript">
 <!--

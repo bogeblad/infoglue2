@@ -146,7 +146,7 @@
 	<td colspan="3" bgcolor="FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td class="actionheader"><image src="images/trans.gif" width="15" height="1">$title</td>
+	<td class="actionheader"><image src="images/trans.gif" width="15" height="1">$ui.getString($title)</td>
 </tr>
 <tr class="lightgreen">
 	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>

@@ -16,7 +16,7 @@
 			<TD>
 				<TABLE style="BORDER-RIGHT: 2px outset; BORDER-TOP: 2px outset; BORDER-LEFT: 2px outset; BORDER-BOTTOM: 2px outset" cellSpacing="0" cellPadding="0" border="0">
 				<TR height="25" bgColor="blue">
-					<td width=2>&nbsp;</td><TD noWrap colSpan="1" rowSpan="1" width=100%><FONT face="Tahoma" color="#ffffff" size="2"> $header </FONT></TD>
+					<td width=2>&nbsp;</td><TD noWrap colSpan="1" rowSpan="1" width=100%><FONT face="Tahoma" color="#ffffff" size="2"> $ui.getString($header) </FONT></TD>
 				</TR>
 				<tr height="3">
 					<td colspan="2"><img src="images/trans.gif" width="1" height="1"></td>
@@ -27,7 +27,7 @@
 						<tr>
 							<td width=1>&nbsp;</td>
 							<td valign="top" align=left width=1><img src="images/confirmIcon.gif"/></td>
-							<td valign="top" width=100%><br><font face="verdana, tahoma, arial" color="#000000" size=-1>$message <br/></font></td>
+							<td valign="top" width=100%><br><font face="verdana, tahoma, arial" color="#000000" size=-1>$ui.getString($message) <br/></font></td>
 							<td width=3><img src="images/trans.gif" width="1" height="1"></td>
 						</tr>
 						<tr height=100%>

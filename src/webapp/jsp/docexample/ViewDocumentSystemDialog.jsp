@@ -24,7 +24,7 @@
 			function submitBindning()
 			{
 			    //alert("Here we commit the binding and close the window...");
-				entityId = "1085";
+				entityId = "1213";
 				path = "Styrelsemöte 2004-10-11";
 			    var repositoryId = "<%= request.getParameter("repositoryId") %>";
 				bindingTypeId = 0; //0 = Content, 1 = SiteNode
