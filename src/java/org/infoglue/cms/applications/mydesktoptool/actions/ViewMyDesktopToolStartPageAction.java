@@ -135,8 +135,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		}
 
 		CmsLogger.logInfo("No new action...");
-		populateLists();
-		return "successInvoke";
+		return doExecute();
 	}
 
 	/**
