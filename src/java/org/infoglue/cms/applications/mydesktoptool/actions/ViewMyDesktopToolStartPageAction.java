@@ -30,6 +30,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.mydesktop.*;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.workflow.StepFilter;
 import org.infoglue.cms.exception.SystemException;
 
 import webwork.action.ActionContext;
@@ -45,7 +46,6 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 {
 	private List availableWorkflowVOList;
 	private List workflowVOList;
-	private List workflowActionVOList;
 
 	private long workflowId;
 	private int actionId;
@@ -63,7 +63,12 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 
 	public List getWorkflowActionVOList()
 	{
-		return workflowActionVOList;
+		return getAvailableActions(null);
+	}
+
+	public List getWorkflowActionVOList(StepFilter filter)
+	{
+		return getAvailableActions(filter);
 	}
 
 	public int getActionId()
@@ -106,13 +111,10 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 * Invokes an action in a workflow based on the values of the actionId and workflowId request parameters.  Assumes
 	 * there will be one current action with a view URL; we iterate over the available actions until we find one with
 	 * a view, then redirect to that view.  If there are other actions with different views, hard luck.
-	 * @return NONE if there are available actions, we redirect to the action's view page, otherwise returns
-	 * "successInvoke"
+	 * @return NONE if there is an available action with a view and we redirect to the action's view page, otherwise
+	 * returns "successInvoke"
 	 * @throws Exception
 	 * <b>TODO:</b> find a better heuristic for determining which view to go to.
-	 * <b>TODO:</b> This should return Action.SUCCESS rather than a custom result
-	 * <b>TODO:</b> Rework this class so WebWork is responsible for as much routing to pages as possible; we should not
-	 * be building URLs in code.  We want this stuff in actions.xml as much as possible.
 	 */
 	public String doInvoke() throws Exception
 	{
@@ -124,9 +126,8 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		WorkflowVO workflow = WorkflowController.getController().invokeAction(getInfoGluePrincipal(),
 																									 ActionContext.getRequest(),
 																									 workflowId, actionId);
-		workflowActionVOList = workflow.getAvailableActions();
 
-		for (Iterator i = workflowActionVOList.iterator(); i.hasNext();)
+		for (Iterator i = workflow.getAvailableActions().iterator(); i.hasNext();)
 		{
 			url = getViewUrl((WorkflowActionVO)i.next());
 			if (url.length() > 0)
@@ -146,19 +147,19 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	{
 		availableWorkflowVOList = WorkflowController.getController().getAvailableWorkflowVOList(getInfoGluePrincipal());
 		workflowVOList = WorkflowController.getController().getCurrentWorkflowVOList(getInfoGluePrincipal());
-		workflowActionVOList = getAllAvailableActions();
 	}
 
 	/**
-	 * Builds a list of all available actions for all workflows.  Assumes workflowVOList has been populated.
+	 * Builds a list of all available actions for all workflows using the given step filter.  Assumes workflowVOList has
+	 * been populated.
 	 * @return a list of all available actions
 	 * @throws NullPointerException if workflowVOList has not been populated
 	 */
-	private List getAllAvailableActions()
+	private List getAvailableActions(StepFilter filter)
 	{
 		List actions = new ArrayList();
 		for (Iterator i = workflowVOList.iterator(); i.hasNext();)
-			actions.addAll(((WorkflowVO)i.next()).getAvailableActions());
+			actions.addAll(((WorkflowVO)i.next()).getAvailableActions(filter));
 
 		return actions;
 	}
@@ -168,12 +169,11 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 * @param action a workflow action
 	 * @return the view URL
 	 * @throws SystemException if an error occurs while encoding the URL
-	 * <b>TODO:</b> Simplify this URL; this could be much, much simpler.  We should allow WebWork to handle all routing
-	 * and avoid building URLs in code.
+	 * <b>TODO:</b> Simplify this URL; this could be much, much simpler.
 	 */
 	private String getViewUrl(WorkflowActionVO action) throws Exception
 	{
-		if (!hasView(action))
+		if (!action.hasView())
 			return "";
 
 		StringBuffer buffer = new StringBuffer(action.getView());
@@ -189,11 +189,6 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	private static boolean containsQuestionMark(String s)
 	{
 		return s.indexOf("?") >= 0;
-	}
-
-	private static boolean hasView(WorkflowActionVO action)
-	{
-		return action.getView() != null && action.getView().length() > 0;
 	}
 
 	/**
