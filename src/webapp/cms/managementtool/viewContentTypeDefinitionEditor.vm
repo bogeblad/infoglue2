@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -11,39 +11,39 @@
 		if(document.editForm.inputTypeId.selectedIndex > 0)
 		{
 			document.editForm.action = "ViewContentTypeDefinition!insertAttribute.action";
-			document.editForm.submit();		
+			document.editForm.submit();
 		}
 		else
 		{
 			alert("You must select a input type first.");
 		}
 	}
-	
+
 	function showDiv(id)
 	{
 		document.getElementById(id).style.visibility = 'visible';
 	}
-	
+
 	function hideDiv(id)
 	{
 		document.getElementById(id).style.visibility = 'hidden';
 	}
-	
+
 	function changeViewLanguage()
 	{
-		
+
 		window.location.href = "ViewContentTypeDefinition.action?contentTypeDefinitionId=$contentTypeDefinitionId&currentContentTypeEditorViewLanguageCode=" + document.editForm.languageCode.value;
 	}
 -->
 </script>
 
 
-#foreach($attribute in $contentTypeAttributes)		
+#foreach($attribute in $contentTypeAttributes)
 	#foreach($parameter in $attribute.getContentTypeAttributeParameters())
 		#set($values = $parameter.value.getContentTypeAttributeParameterValues())
 		#foreach($value in $values)
-			#if($parameter.value.type == 1)		
-			
+			#if($parameter.value.type == 1)
+
 			<div id="${attribute.name}${parameter.key}${value.id}PropertyLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 				<form name="${attribute.name}${parameter.key}${value.id}PropertiesForm" action="ViewContentTypeDefinition!updateAttributeParameterValue.action" method="POST">
 				<table border="0" cellpadding="4" cellspacing="0">
@@ -83,7 +83,7 @@
 				<input type="hidden" name="attributeToExpand" value="${attribute.name}">
 				</form>
 			</div>
-			
+
 			#end
 		#end
 	#end
@@ -126,14 +126,14 @@
 	<tr>
 		<td colspan="2"><b>Extra parameters</b></td>
 	</tr>
-	
+
 	#foreach($parameter in $attribute.getContentTypeAttributeParameters())
 	<tr>
 		<td valign="top">$parameter.key:</td>
 		<td>
 			<input type="hidden" name="parameterNames" value="$parameter.key">
 			#set($values = $parameter.value.getContentTypeAttributeParameterValues())
-			#if($parameter.value.type == 0)		
+			#if($parameter.value.type == 0)
 				<input type="textfield" name="$parameter.key" value="$parameter.value.getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode")" class="normaltextfield">
 			#else
 				<table border="0" cellpadding="2" cellspacing="0">
@@ -149,7 +149,7 @@
 					<td>
 						<nobr>
 						<a href="javascript:showDiv('${attribute.name}${parameter.key}${value.id}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
-						<a href="ViewContentTypeDefinition!deleteAttributeParameterValue.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name&attributeParameterId=$parameter.key&attributeParameterValueId=$value.id&attributeToExpand=$attribute.name"><img src="images/delete.gif" border="0"></a>				
+						<a href="ViewContentTypeDefinition!deleteAttributeParameterValue.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name&attributeParameterId=$parameter.key&attributeParameterValueId=$value.id&attributeToExpand=$attribute.name"><img src="images/delete.gif" border="0"></a>
 						</nobr>
 					</td>
 				</tr>
@@ -179,6 +179,57 @@
 	<input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
 	<input type="hidden" name="attributeName" value="$attribute.name">
 	<input type="hidden" name="attributeToExpand" value="${attribute.name}">
+	</form>
+</div>
+#end
+
+#set($categoryKeys = $definedCategoryKeys)
+#set($categoryList = $allCategories)
+
+#foreach($category in $categoryKeys)
+#set($categoryKey = $category.value)
+<div id="${categoryKey}PropertyLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+	<form name="${categoryKey}PropertiesForm" action="ViewContentTypeDefinition!updateCategoryKey.action" method="POST">
+	<table border="0" cellpadding="4" cellspacing="0">
+	<tr>
+		<td colspan="2" class="propertiesheader">Edit Category Attributes</td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="images/trans.gif" height="5" width="1"></td>
+	</tr>
+	<tr>
+		<td><b>Category Key</b></td>
+		<td><input type="textfield" name="newCategoryKey" value="$categoryKey" class="normaltextfield"></td>
+	</tr>
+	<tr>
+		<td><b>Title</b></td>
+		<td><input type="textfield" name="title" value="$!category.title" class="normaltextfield"></td>
+	</tr>
+	<tr>
+		<td><b>Description</b></td>
+		<td><input type="textfield" name="description" value="$!category.description" class="normaltextfield"></td>
+	</tr>
+	<tr>
+		<td><b>Base Category</b></td>
+		<td>
+			#addCategorySelect("categoryId" $categoryList $category.categoryId)
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<img src="images/trans.gif" width="80" height="25" border="0">
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>
+			<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="javascript:hideDiv('${categoryKey}PropertyLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+		</td>
+	</tr>
+	</table>
+	<input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
+	<input type="hidden" name="categoryKey" value="$categoryKey">
 	</form>
 </div>
 #end
@@ -224,7 +275,6 @@
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%">
 <input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
 <input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
-<input type="hidden" name="title" value="$title">
 <input type="hidden" name="schemaValue" value="$formatter.escapeHTML($!schemaValue)">
 	<tr>
 		<td>
@@ -272,7 +322,7 @@
 				#foreach($attribute in $contentTypeAttributes)
 					#set($title = $!attribute.getContentTypeAttribute("title").getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode"))
 					#set($title = $!attribute.getContentTypeAttribute("title").getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode"))
-							
+
 					<tr>
 						<td><nobr><a href="ViewContentTypeDefinition!moveAttributeUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAttributeDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/moveDown.gif" border="0"></a></nobr></td>
 						<td><img src="images/${attribute.inputType}Icon.gif"></td>
@@ -280,7 +330,7 @@
 						<td>
 							<nobr>
 							<a href="javascript:showDiv('${attribute.name}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
-							<a href="ViewContentTypeDefinition!deleteAttribute.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/delete.gif" border="0"></a>				
+							<a href="ViewContentTypeDefinition!deleteAttribute.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/delete.gif" border="0"></a>
 							</nobr>
 						</td>
 					</tr>
@@ -294,22 +344,64 @@
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%">
 <tr>
 	<td>
-		Defined assetKeys<br>
+		<table width="500" cellpadding="0" cellspacing="2" border="0">
+			<tr>
+				<td align="left"><b>Defined Categories</b></td>
+				<td align="right">
+					<a href="ViewContentTypeDefinition!insertCategoryKey.action?contentTypeDefinitionId=$contentTypeDefinitionId">Add Category</a>
+				</td>
+			</tr>
+		</table>
 		<table width="500" cellpadding="0" cellspacing="2" border="0" class="bordered">
-		#foreach($assetKey in $definedAssetKeys)		
+			<tr>
+				<td width="45%"><b>Attribute (Key)</b></td>
+				<td width="45%"><b>Base Category</b></td>
+				<td/>
+			</tr>
+		#foreach($category in $categoryKeys)
+			#set($categoryKey = $category.value)
+			<tr>
+				<td width="45%">$category.title ($categoryKey)</td>
+				<td width="45%">$category.categoryName</td>
+				<td>
+					<nobr>
+					<a href="javascript:showDiv('${categoryKey}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
+					<a href="ViewContentTypeDefinition!deleteCategoryKey.action?contentTypeDefinitionId=$contentTypeDefinitionId&categoryKey=$categoryKey"><img src="images/delete.gif" border="0"></a>
+					</nobr>
+				</td>
+			</tr>
+		#end
+		</table>
+	</td>
+</tr>
+<tr>
+	<td>&nbsp;</th>
+</tr>
+</table>
+
+<table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%">
+<tr>
+	<td>
+		<table width="500" cellpadding="0" cellspacing="2" border="0">
+			<tr>
+				<td align="left"><b>Defined Asset Keys</b></td>
+				<td align="right">
+					<a href="ViewContentTypeDefinition!insertAssetKey.action?contentTypeDefinitionId=$contentTypeDefinitionId">Add Asset Key</a>
+				</td>
+			</tr>
+		</table>
+		<table width="500" cellpadding="0" cellspacing="2" border="0" class="bordered">
+		#foreach($assetKey in $definedAssetKeys)
 			<tr>
 				<td width="90%">$assetKey</td>
 				<td>
 					<nobr>
 					<a href="javascript:showDiv('${assetKey}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
-					<a href="ViewContentTypeDefinition!deleteAssetKey.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKey"><img src="images/delete.gif" border="0"></a>				
+					<a href="ViewContentTypeDefinition!deleteAssetKey.action?contentTypeDefinitionId=$contentTypeDefinitionId&assetKey=$assetKey"><img src="images/delete.gif" border="0"></a>
 					</nobr>
 				</td>
 			</tr>
 		#end
-		<tr>
-			<td colspan="3"><a href="ViewContentTypeDefinition!insertAssetKey.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title">Add assetKey</a></td>
-		</tr>
 		</table>
 	</td>
 </tr>
@@ -318,7 +410,7 @@
 </tr>
 <tr>
 	<td>
-		<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25"> 
+		<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
 		<a href="javascript:saveAndExit(document.editForm, 'UpdateContentTypeDefinition!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
 		<a href="ViewListContentTypeDefinition.action"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
 	</td>
