@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.9 2005/01/04 14:15:47 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.10 2005/01/07 15:51:27 jed Exp $ -->
 <actions>
 
 	<!-- Redirect -->
@@ -73,7 +73,6 @@
 	</action>
 	<action name="org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolStartPageAction" alias="ViewMyDesktopToolStartPage">
 		<view name="success">/cms/mydesktoptool/viewMyDesktopToolStartPage.vm</view>
-		<view name="successInvoke">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ViewMyDesktopToolStartPage.action</view>
 		<view name="error">/cms/mydesktoptool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.mydesktoptool.actions.CreateWorkflowInstanceAction" alias="CreateWorkflowInstance">
