@@ -39,7 +39,6 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
 
 import java.util.Date;
@@ -66,7 +65,6 @@ public class ContentVersionController extends BaseController
 {
 	private static final ContentCategoryController contentCategoryController = ContentCategoryController.getController();
 
-
 	/**
 	 * Factory method to get object
 	 */
@@ -76,31 +74,31 @@ public class ContentVersionController extends BaseController
 		return new ContentVersionController();
 	}
 
-    public ContentVersionVO getContentVersionVOWithId(Integer contentVersionId) throws SystemException, Bug
-    {
-		return (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId);
-    }
+	public ContentVersionVO getContentVersionVOWithId(Integer contentVersionId) throws SystemException, Bug
+	{
+		return (ContentVersionVO)getVOWithId(ContentVersionImpl.class, contentVersionId);
+	}
 
-    public ContentVersion getContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
-    {
-		return (ContentVersion) getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
-    }
+	public ContentVersion getContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+	{
+		return (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
+	}
 
-    public ContentVersion getReadOnlyContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
-    {
-		return (ContentVersion) getObjectWithIdAsReadOnly(ContentVersionImpl.class, contentVersionId, db);
-    }
+	public ContentVersion getReadOnlyContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+	{
+		return (ContentVersion)getObjectWithIdAsReadOnly(ContentVersionImpl.class, contentVersionId, db);
+	}
 
-    public List getContentVersionVOList() throws SystemException, Bug
-    {
-        return getAllVOObjects(ContentVersionImpl.class, "contentVersionId");
-    }
+	public List getContentVersionVOList() throws SystemException, Bug
+	{
+		return getAllVOObjects(ContentVersionImpl.class, "contentVersionId");
+	}
 
 	/* Recursive methods to get all contentVersions of a given state
 	 * under the specified parent content.
 	 */
 
-    public List getContentVersionVOWithParentRecursive(Integer contentId, Integer stateId) throws ConstraintException, SystemException
+	public List getContentVersionVOWithParentRecursive(Integer contentId, Integer stateId) throws ConstraintException, SystemException
 	{
 		return getContentVersionVOWithParentRecursive(contentId, stateId, new ArrayList());
 	}
@@ -115,7 +113,7 @@ public class ContentVersionController extends BaseController
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{
-			ContentVO contentVO = (ContentVO) cit.next();
+			ContentVO contentVO = (ContentVO)cit.next();
 			getContentVersionVOWithParentRecursive(contentVO.getId(), stateId, resultList);
 		}
 
@@ -123,42 +121,40 @@ public class ContentVersionController extends BaseController
 	}
 
 	public List getContentVersionVOWithParent(Integer contentId) throws SystemException, Bug
-    {
-        ArrayList resultList = new ArrayList();
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	{
+		ArrayList resultList = new ArrayList();
+		Database db = CastorDatabaseService.getDatabase();
+		ContentVersionVO contentVersionVO = null;
 
-    	ContentVersionVO contentVersionVO = null;
+		beginTransaction(db);
 
-        beginTransaction(db);
+		try
+		{
 
-        try
-        {
+			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 ORDER BY cv.contentVersionId desc");
+			oql.bind(contentId);
 
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-
-        	QueryResults results = oql.execute(Database.ReadOnly);
+			QueryResults results = oql.execute(Database.ReadOnly);
 
 			while (results.hasMore())
-            {
-            	ContentVersion contentVersion = (ContentVersion)results.next();
-            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
-            	contentVersionVO = contentVersion.getValueObject();
-            	resultList.add(contentVersionVO);
-            }
+			{
+				ContentVersion contentVersion = (ContentVersion)results.next();
+				CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
+				contentVersionVO = contentVersion.getValueObject();
+				resultList.add(contentVersionVO);
+			}
 
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
 		return resultList;
-    }
+	}
 
 	/**
 	 * This method returns a list of active contentversions, and only one / language in the specified state
@@ -176,8 +172,6 @@ public class ContentVersionController extends BaseController
 		ArrayList langCheck = new ArrayList();
 
 		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
 		ContentVersionVO contentVersionVO = null;
 
 		beginTransaction(db);
@@ -185,7 +179,7 @@ public class ContentVersionController extends BaseController
 		try
 		{
 
-			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 ORDER BY cv.contentVersionId desc");
+			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 ORDER BY cv.contentVersionId desc");
 			oql.bind(contentId);
 			// oql.bind(stateId);
 
@@ -211,18 +205,17 @@ public class ContentVersionController extends BaseController
 				contentVersionVO = contentVersion.getValueObject();
 				if (contentVersionVO.getIsActive().booleanValue())
 				{
-					if ( (contentVersionVO.getStateId().compareTo(stateId)==0) &&
-					(!langCheck.contains(contentVersionVO.getLanguageId())))
+					if ((contentVersionVO.getStateId().compareTo(stateId) == 0) &&
+							(!langCheck.contains(contentVersionVO.getLanguageId())))
 						resultList.add(contentVersionVO);
 
 					langCheck.add(contentVersionVO.getLanguageId());
 				}
 			}
 
-
 			commitTransaction(db);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
@@ -232,57 +225,53 @@ public class ContentVersionController extends BaseController
 		return resultList;
 	}
 
+	/**
+	 * This method returns the latest active content version.
+	 */
 
-    /**
-     * This method returns the latest active content version.
-     */
+	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Bug
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ContentVersionVO contentVersionVO = null;
 
-   	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Bug
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		beginTransaction(db);
 
-    	ContentVersionVO contentVersionVO = null;
-
-        beginTransaction(db);
-
-        try
-        {
-        	ContentVersion contentVersion = null;
+		try
+		{
+			ContentVersion contentVersion = null;
 
 			contentVersion = getLatestActiveContentVersion(contentId, languageId, db);
-            /*
-            Collection contentVersions = content.getContentVersions();
+			/*
+			Collection contentVersions = content.getContentVersions();
 
-            Iterator i = contentVersions.iterator();
+			Iterator i = contentVersions.iterator();
 
-            while(i.hasNext())
-            {
-            	ContentVersion currentContentVersion = (ContentVersion)i.next();
-            	CmsLogger.logInfo("found one candidate:" + currentContentVersion.getValueObject());
-				if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
-				{
-					if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
-						contentVersion = currentContentVersion;
-				}
-            }
-            */
+			while(i.hasNext())
+			{
+				ContentVersion currentContentVersion = (ContentVersion)i.next();
+				CmsLogger.logInfo("found one candidate:" + currentContentVersion.getValueObject());
+			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
+			{
+				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
+					contentVersion = currentContentVersion;
+			}
+			}
+			*/
 
-            if(contentVersion != null)
-	            contentVersionVO = contentVersion.getValueObject();
+			if (contentVersion != null)
+				contentVersionVO = contentVersion.getValueObject();
 
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
 		return contentVersionVO;
-    }
-
+	}
 
 	/**
 	 * This method returns the latest active content version.
@@ -292,23 +281,23 @@ public class ContentVersionController extends BaseController
 	{
 		ContentVersion contentVersion = null;
 
-    	Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	CmsLogger.logInfo("contentId:" + contentId);
-    	CmsLogger.logInfo("languageId:" + languageId);
-    	CmsLogger.logInfo("content:" + content.getName());
+		Content content = ContentController.getContentController().getContentWithId(contentId, db);
+		CmsLogger.logInfo("contentId:" + contentId);
+		CmsLogger.logInfo("languageId:" + languageId);
+		CmsLogger.logInfo("content:" + content.getName());
 		Collection contentVersions = content.getContentVersions();
 		CmsLogger.logInfo("contentVersions:" + contentVersions.size());
 
 		Iterator i = contentVersions.iterator();
-        while(i.hasNext())
+		while (i.hasNext())
 		{
 			ContentVersion currentContentVersion = (ContentVersion)i.next();
 			CmsLogger.logInfo("found one candidate:" + currentContentVersion.getValueObject());
-			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
+			if (contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
 			{
 				CmsLogger.logInfo("currentContentVersion:" + currentContentVersion.getIsActive());
 				CmsLogger.logInfo("currentContentVersion:" + currentContentVersion.getLanguage().getId());
-				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
+				if (currentContentVersion.getIsActive().booleanValue() && currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
 					contentVersion = currentContentVersion;
 			}
 		}
@@ -316,194 +305,182 @@ public class ContentVersionController extends BaseController
 		return contentVersion;
 	}
 
-
 	public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Bug
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ContentVersionVO contentVersionVO = null;
 
-    	ContentVersionVO contentVersionVO = null;
+		beginTransaction(db);
 
-        beginTransaction(db);
+		try
+		{
 
-        try
-        {
+			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 ORDER BY cv.contentVersionId desc");
+			oql.bind(contentId);
+			oql.bind(languageId);
 
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	oql.bind(languageId);
-
-        	QueryResults results = oql.execute(Database.ReadOnly);
+			QueryResults results = oql.execute(Database.ReadOnly);
 
 			if (results.hasMore())
-            {
-            	ContentVersion contentVersion = (ContentVersion)results.next();
-            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
-            	contentVersionVO = contentVersion.getValueObject();
-            }
+			{
+				ContentVersion contentVersion = (ContentVersion)results.next();
+				CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
+				contentVersionVO = contentVersion.getValueObject();
+			}
 
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
 		return contentVersionVO;
-    }
-
+	}
 
 	public ContentVersion getContentVersionWithId(Integer contentVersionId) throws SystemException, Bug
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ContentVersion contentVersion = null;
 
-    	ContentVersion contentVersion = null;
+		beginTransaction(db);
 
-        beginTransaction(db);
+		try
+		{
+			contentVersion = getContentVersionWithId(contentVersionId, db);
 
-        try
-        {
-           	contentVersion = getContentVersionWithId(contentVersionId, db);
-
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
 		return contentVersion;
-    }
-
+	}
 
 	public ContentVersion getLatestContentVersion(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
-    {
-        ContentVersion contentVersion = null;
+	{
+		ContentVersion contentVersion = null;
 
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 ORDER BY cv.contentVersionId desc");
-    	oql.bind(contentId);
-    	oql.bind(languageId);
+		OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 ORDER BY cv.contentVersionId desc");
+		oql.bind(contentId);
+		oql.bind(languageId);
 
-    	QueryResults results = oql.execute(Database.ReadOnly);
+		QueryResults results = oql.execute(Database.ReadOnly);
 
 		if (results.hasMore())
-        {
-        	contentVersion = (ContentVersion)results.next();
-        }
+		{
+			contentVersion = (ContentVersion)results.next();
+		}
 
 		return contentVersion;
-    }
-
+	}
 
 	/**
 	 * This method created a new contentVersion in the database.
 	 */
 
-    public ContentVersionVO create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId) throws ConstraintException, SystemException
-    {
+	public ContentVersionVO create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId) throws ConstraintException, SystemException
+	{
 		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		ContentVersion contentVersion = null;
 
-        ContentVersion contentVersion = null;
-
-        beginTransaction(db);
+		beginTransaction(db);
 		try
-        {
+		{
 			contentVersion = create(contentId, languageId, contentVersionVO, oldContentVersionId, db);
 			commitTransaction(db);
 		}
-        catch(Exception e)
-        {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
-        return contentVersion.getValueObject();
-    }
-
-	/**
-	 * This method created a new contentVersion in the database. It also updates the owning content
-	 * so it recognises the change.
-	 */
-
-    public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, Database db) throws ConstraintException, SystemException, Exception
-    {
-		Content content   = ContentController.getContentController().getContentWithId(contentId, db);
-    	Language language = LanguageController.getController().getLanguageWithId(languageId, db);
-        return create(content, language,  contentVersionVO, oldContentVersionId, db);
-    }
+		return contentVersion.getValueObject();
+	}
 
 	/**
 	 * This method created a new contentVersion in the database. It also updates the owning content
 	 * so it recognises the change.
 	 */
 
-    public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, Database db) throws ConstraintException, SystemException, Exception
-    {
+	public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, Database db) throws ConstraintException, SystemException, Exception
+	{
+		Content content = ContentController.getContentController().getContentWithId(contentId, db);
+		Language language = LanguageController.getController().getLanguageWithId(languageId, db);
+		return create(content, language, contentVersionVO, oldContentVersionId, db);
+	}
+
+	/**
+	 * This method created a new contentVersion in the database. It also updates the owning content
+	 * so it recognises the change.
+	 */
+
+	public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, Database db) throws ConstraintException, SystemException, Exception
+	{
 		ContentVersion contentVersion = new ContentVersionImpl();
 		contentVersion.setLanguage((LanguageImpl)language);
 		CmsLogger.logInfo("Content:" + content.getContentId() + ":" + db.isPersistent(content));
 		contentVersion.setOwningContent((ContentImpl)content);
 
-		if(oldContentVersionId != null)
+		if (oldContentVersionId != null)
 			contentVersion.setDigitalAssets(getContentVersionWithId(oldContentVersionId, db).getDigitalAssets());
 
 		contentVersion.setValueObject(contentVersionVO);
-        db.create(contentVersion);
+		db.create(contentVersion);
 		content.getContentVersions().add(contentVersion);
-        return contentVersion;
-    }
+		return contentVersion;
+	}
 
 	/**
 	 * This method deletes an contentversion and notifies the owning content.
 	 */
 
-    public void delete(ContentVersionVO contentVersionVO) throws ConstraintException, SystemException
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-        beginTransaction(db);
+	public void delete(ContentVersionVO contentVersionVO) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		beginTransaction(db);
 		try
-        {
+		{
 			delete(contentVersionVO, db);
 			commitTransaction(db);
 		}
-        catch(Exception e)
-        {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-    }
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}
 
 	/**
 	 * This method deletes an contentversion and notifies the owning content.
 	 */
 
-    public void delete(ContentVersionVO contentVersionVO, Database db) throws ConstraintException, SystemException, Exception
-    {
+	public void delete(ContentVersionVO contentVersionVO, Database db) throws ConstraintException, SystemException, Exception
+	{
 		ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
 		delete(contentVersion, db);
-    }
+	}
 
 	/**
 	 * This method deletes an contentversion and notifies the owning content.
 	 */
 
-    public void delete(ContentVersion contentVersion, Database db) throws ConstraintException, SystemException, Exception
-    {
-    	// Check if deleteable
-    	// Initial thought was to only allow working copies to be deleted, but after checking
-    	// rules for deleting content, the same rules is applied on this method for deleting
-    	// a single contentVersion. TODO: Consider only deleting content that has working copies.
-		if(contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
+	public void delete(ContentVersion contentVersion, Database db) throws ConstraintException, SystemException, Exception
+	{
+		// Check if deleteable
+		// Initial thought was to only allow working copies to be deleted, but after checking
+		// rules for deleting content, the same rules is applied on this method for deleting
+		// a single contentVersion. TODO: Consider only deleting content that has working copies.
+		if (contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
 			throw new ConstraintException("ContentVersion.stateId", "3300");
 
 		Content content = contentVersion.getOwningContent();
@@ -511,10 +488,7 @@ public class ContentVersionController extends BaseController
 		content.getContentVersions().remove(contentVersion);
 		db.remove(contentVersion);
 		contentCategoryController.deleteByContentVersion(contentVersion.getId(), db);
-    }
-
-
-
+	}
 
 	/**
 	 * This method deletes all contentVersions for the content sent in.
@@ -523,220 +497,203 @@ public class ContentVersionController extends BaseController
 	 */
 
 	public void deleteVersionsForContent(Content content, Database db) throws ConstraintException, SystemException, Bug, Exception
-    {
-        Collection contentVersions = Collections.synchronizedCollection(content.getContentVersions());
-       	Iterator contentVersionIterator = contentVersions.iterator();
+	{
+		Collection contentVersions = Collections.synchronizedCollection(content.getContentVersions());
+		Iterator contentVersionIterator = contentVersions.iterator();
 
 		while (contentVersionIterator.hasNext())
-        {
-        	ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
+		{
+			ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
 
-        	Collection digitalAssetList = contentVersion.getDigitalAssets();
+			Collection digitalAssetList = contentVersion.getDigitalAssets();
 			Iterator assets = digitalAssetList.iterator();
 			while (assets.hasNext())
-            {
-            	DigitalAsset digitalAsset = (DigitalAsset)assets.next();
+			{
+				DigitalAsset digitalAsset = (DigitalAsset)assets.next();
 				assets.remove();
 				db.remove(digitalAsset);
 			}
 
-        	CmsLogger.logInfo("Deleting contentVersion:" + contentVersion.getContentVersionId());
-        	contentVersionIterator.remove();
-        	delete(contentVersion, db);
-        }
-        content.setContentVersions(new ArrayList());
-    }
+			CmsLogger.logInfo("Deleting contentVersion:" + contentVersion.getContentVersionId());
+			contentVersionIterator.remove();
+			delete(contentVersion, db);
+		}
+		content.setContentVersions(new ArrayList());
+	}
 
+	/**
+	 * This method updates the contentversion.
+	 */
 
-    /**
-     * This method updates the contentversion.
-     */
-
-    public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO) throws ConstraintException, SystemException
-    {
-    	ContentVersionVO realContentVersionVO = contentVersionVO;
+	public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO) throws ConstraintException, SystemException
+	{
+		ContentVersionVO realContentVersionVO = contentVersionVO;
 		contentVersionVO.setModifiedDateTime(new Date());
 
-    	if(contentVersionVO.getId() == null)
-    	{
-    		CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
-    		realContentVersionVO = create(contentId, languageId, contentVersionVO, null);
-    	}
+		if (contentVersionVO.getId() == null)
+		{
+			CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
+			realContentVersionVO = create(contentId, languageId, contentVersionVO, null);
+		}
 
-    	return (ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
-    }
-
-
+		return (ContentVersionVO)updateEntity(ContentVersionImpl.class, realContentVersionVO);
+	}
 
 	public ContentVersion getLatestPublishedContentVersion(Integer contentId, Integer languageId) throws SystemException, Bug, Exception
-    {
-        ContentVersion contentVersion = null;
+	{
+		ContentVersion contentVersion = null;
 
-        Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		Database db = CastorDatabaseService.getDatabase();
+		beginTransaction(db);
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId = $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
+			oql.bind(contentId);
+			oql.bind(languageId);
+			oql.bind(ContentVersionVO.PUBLISHED_STATE);
+			oql.bind(true);
 
-        beginTransaction(db);
-        try
-        {
-	        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId = $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
-	    	oql.bind(contentId);
-	    	oql.bind(languageId);
-	    	oql.bind(ContentVersionVO.PUBLISHED_STATE);
-	    	oql.bind(true);
-
-	    	QueryResults results = oql.execute(Database.ReadOnly);
+			QueryResults results = oql.execute(Database.ReadOnly);
 
 			if (results.hasMore())
-	        {
-	        	contentVersion = (ContentVersion)results.next();
-	        }
+			{
+				contentVersion = (ContentVersion)results.next();
+			}
 
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
 		return contentVersion;
-    }
-
-
+	}
 
 	public ContentVersion getLatestPublishedContentVersion(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
-    {
-        ContentVersion contentVersion = null;
+	{
+		ContentVersion contentVersion = null;
 
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId = $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
-    	oql.bind(contentId);
-    	oql.bind(languageId);
-    	oql.bind(ContentVersionVO.PUBLISHED_STATE);
-    	oql.bind(true);
+		OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId = $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
+		oql.bind(contentId);
+		oql.bind(languageId);
+		oql.bind(ContentVersionVO.PUBLISHED_STATE);
+		oql.bind(true);
 
-    	QueryResults results = oql.execute();
+		QueryResults results = oql.execute();
 
 		if (results.hasMore())
-        {
-        	contentVersion = (ContentVersion)results.next();
-        }
+		{
+			contentVersion = (ContentVersion)results.next();
+		}
 
 		return contentVersion;
-    }
-
+	}
 
 	/**
 	 * This method returns the version previous to the one sent in.
 	 */
 
 	public ContentVersionVO getPreviousContentVersionVO(Integer contentId, Integer languageId, Integer contentVersionId) throws SystemException, Bug
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ContentVersionVO contentVersionVO = null;
 
-    	ContentVersionVO contentVersionVO = null;
+		beginTransaction(db);
 
-        beginTransaction(db);
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.contentVersionId < $3 ORDER BY cv.contentVersionId desc");
+			oql.bind(contentId);
+			oql.bind(languageId);
+			oql.bind(contentVersionId);
 
-        try
-        {
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.contentVersionId < $3 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	oql.bind(languageId);
-        	oql.bind(contentVersionId);
-
-        	QueryResults results = oql.execute(Database.ReadOnly);
+			QueryResults results = oql.execute(Database.ReadOnly);
 
 			if (results.hasMore())
-            {
-            	ContentVersion contentVersion = (ContentVersion)results.next();
-            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
-            	contentVersionVO = contentVersion.getValueObject();
-            }
+			{
+				ContentVersion contentVersion = (ContentVersion)results.next();
+				CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
+				contentVersionVO = contentVersion.getValueObject();
+			}
 
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
 		return contentVersionVO;
-    }
-
+	}
 
 	/**
 	 * This method returns the version previous to the one sent in.
 	 */
 
 	public ContentVersionVO getPreviousActiveContentVersionVO(Integer contentId, Integer languageId, Integer contentVersionId) throws SystemException, Bug
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ContentVersionVO contentVersionVO = null;
 
-    	ContentVersionVO contentVersionVO = null;
+		beginTransaction(db);
 
-        beginTransaction(db);
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.isActive = $3 AND cv.contentVersionId < $4 ORDER BY cv.contentVersionId desc");
+			oql.bind(contentId);
+			oql.bind(languageId);
+			oql.bind(new Boolean(true));
+			oql.bind(contentVersionId);
 
-        try
-        {
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.isActive = $3 AND cv.contentVersionId < $4 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	oql.bind(languageId);
-        	oql.bind(new Boolean(true));
-        	oql.bind(contentVersionId);
-
-        	QueryResults results = oql.execute(Database.ReadOnly);
+			QueryResults results = oql.execute(Database.ReadOnly);
 
 			if (results.hasMore())
-            {
-            	ContentVersion contentVersion = (ContentVersion)results.next();
-            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
-            	contentVersionVO = contentVersion.getValueObject();
-            }
+			{
+				ContentVersion contentVersion = (ContentVersion)results.next();
+				CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
+				contentVersionVO = contentVersion.getValueObject();
+			}
 
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
 		return contentVersionVO;
-    }
-
+	}
 
 	/**
 	 * This method deletes the relation to a digital asset - not the asset itself.
 	 */
 	public void deleteDigitalAssetRelation(Integer contentVersionId, Integer digitalAssetId) throws SystemException, Bug
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		beginTransaction(db);
 
-        beginTransaction(db);
-
-        try
-        {
-        	ContentVersion contentVersion = getContentVersionWithId(contentVersionId, db);
+		try
+		{
+			ContentVersion contentVersion = getContentVersionWithId(contentVersionId, db);
 			DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetId, db);
 			contentVersion.getDigitalAssets().remove(digitalAsset);
-            digitalAsset.getContentVersions().remove(contentVersion);
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-    }
-
+			digitalAsset.getContentVersions().remove(contentVersion);
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}
 
 	/**
 	 * This method fetches a value from the xml that is the contentVersions Value. If the
@@ -748,21 +705,21 @@ public class ContentVersionController extends BaseController
 		String value = "";
 		ContentVersionVO contentVersionVO = getContentVersionVOWithId(contentVersionId);
 
-		if(contentVersionVO != null)
+		if (contentVersionVO != null)
 		{
 			try
 			{
 				CmsLogger.logInfo("attributeName:" + attributeName);
-				CmsLogger.logInfo("VersionValue:"  + contentVersionVO.getVersionValue());
+				CmsLogger.logInfo("VersionValue:" + contentVersionVO.getVersionValue());
 				String xml = contentVersionVO.getVersionValue();
 
 				int startTagIndex = xml.indexOf("<" + attributeName + ">");
-				int endTagIndex   = xml.indexOf("]]></" + attributeName + ">");
+				int endTagIndex = xml.indexOf("]]></" + attributeName + ">");
 
-				if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+				if (startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex < xml.length())
 				{
 					value = xml.substring(startTagIndex + attributeName.length() + 11, endTagIndex);
-					if(escapeHTML)
+					if (escapeHTML)
 						value = new VisualFormatter().escapeHTML(value);
 				}
 
@@ -794,7 +751,7 @@ public class ContentVersionController extends BaseController
 				}
 				*/
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				e.printStackTrace();
 			}
@@ -802,7 +759,6 @@ public class ContentVersionController extends BaseController
 		//CmsLogger.logInfo("value:" + value);
 		return value;
 	}
-
 
 	/**
 	 * This method fetches a value from the xml that is the contentVersions Value. If the
@@ -813,12 +769,12 @@ public class ContentVersionController extends BaseController
 	{
 		ContentVersionVO contentVersionVO = getContentVersionVOWithId(contentVersionId);
 
-		if(contentVersionVO != null)
+		if (contentVersionVO != null)
 		{
 			try
 			{
-				CmsLogger.logInfo("attributeName:"  + attributeName);
-				CmsLogger.logInfo("versionValue:"   + contentVersionVO.getVersionValue());
+				CmsLogger.logInfo("attributeName:" + attributeName);
+				CmsLogger.logInfo("versionValue:" + contentVersionVO.getVersionValue());
 				CmsLogger.logInfo("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
 
@@ -831,12 +787,12 @@ public class ContentVersionController extends BaseController
 
 				boolean existed = false;
 				nl = attributesNode.getChildNodes();
-				for(int i=0; i<nl.getLength(); i++)
+				for (int i = 0; i < nl.getLength(); i++)
 				{
 					Node n = nl.item(i);
-					if(n.getNodeName().equalsIgnoreCase(attributeName))
+					if (n.getNodeName().equalsIgnoreCase(attributeName))
 					{
-						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
+						if (n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
 						{
 							n.getFirstChild().setNodeValue(attributeValue);
 							existed = true;
@@ -852,7 +808,7 @@ public class ContentVersionController extends BaseController
 					}
 				}
 
-				if(existed == false)
+				if (existed == false)
 				{
 					org.w3c.dom.Element attributeElement = document.createElement(attributeName);
 					attributesNode.appendChild(attributeElement);
@@ -867,7 +823,7 @@ public class ContentVersionController extends BaseController
 				contentVersionVO.setVersionModifier(infogluePrincipal.getName());
 				update(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), contentVersionVO);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				e.printStackTrace();
 			}
