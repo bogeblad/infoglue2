@@ -57,18 +57,6 @@
 		<step id="2" name="Preview news and approve">
 			<actions>
 				<action id="5" name="Preview news and approve" view="workflows/ig_create_news/previewNewsAndApprove.jsp">
-					<restrict-to>
-						<conditions>
-							<condition name="bsh.condition" type="beanshell">
-								<arg name="script">
-									<![CDATA[
-										System.out.println("Caller:" + apa);
-										true;
-									]]>
-								</arg>
-							</condition>
-						</conditions>
-					</restrict-to>
 					<pre-functions>
 						<function name="set.caller" type="class">
 							<arg name="class.name">com.opensymphony.workflow.util.Caller</arg>
