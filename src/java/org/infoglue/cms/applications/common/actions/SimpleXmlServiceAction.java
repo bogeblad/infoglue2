@@ -98,8 +98,9 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 	{
 		String action = "javascript:onTreeItemClick(this,";
 		//action+="'" + node.getId() + "','" + repositoryId + "','" + URLEncoder.encode(node.getTitle(),ENCODING) + "');";
-		action+="'" + node.getId() + "','" + repositoryId + "','" + node.getTitle() + "');";
-        return action;
+		action+="'" + node.getId() + "','" + repositoryId + "','" + new VisualFormatter().escapeForAdvancedJavascripts(node.getTitle()) + "');";
+        //System.out.println("action:" + action);
+		return action;
 	}
 	
 	protected String getFormattedDocument(Document doc)
@@ -284,10 +285,9 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 		        	.addAttribute("type", TYPE_FOLDER)
 		        	.addAttribute("hasChildren", "" + theNode.hasChildren());
 		        
-		        
 		        if(createAction) elm.addAttribute("action", makeAction(theNode));
 			}
-			
+			 
 			it = childNodes.iterator();
 			while (it.hasNext())
 			{
