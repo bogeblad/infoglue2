@@ -125,7 +125,17 @@ public class ServiceBindingImpl implements ServiceBinding
     {
         this.bindingQualifyers = bindingQualifyers;
     }
-      
+
+    public Integer getAvailableServiceBindingId()
+    {
+    	return this.valueObject.getAvailableServiceBindingId();
+    }
+    
+    public void setAvailableServiceBindingId(Integer availableServiceBindingId)
+    {
+		this.valueObject.setAvailableServiceBindingId(availableServiceBindingId);
+    }
+
     public org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl getServiceDefinition()
     {
         return this.serviceDefinition;
