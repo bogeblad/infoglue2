@@ -265,9 +265,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			if(indexOfBodyStartTag > -1)
 			{
+			    //String pageComponentStructureDiv = "";
 				String pageComponentStructureDiv = getPageComponentStructureDiv(templateController, deliveryContext.getSiteNodeId(), deliveryContext.getLanguageId(), component);
 				timer.printElapsedTime("pageComponentStructureDiv");
 				String componentPaletteDiv = getComponentPaletteDiv(deliveryContext.getSiteNodeId(), deliveryContext.getLanguageId(), templateController);
+				//String componentPaletteDiv = "";
 				timer.printElapsedTime("componentPaletteDiv");
 				modifiedTemplate = modifiedTemplate.insert(modifiedTemplate.indexOf(">", indexOfBodyStartTag) + 1, extraBody + pageComponentStructureDiv + componentPaletteDiv);
 			}
@@ -326,7 +328,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(component.getParentComponent() == null && bodyIndex > -1)
 			{
 				//CmsLogger.logInfo("onContextMenu.contentId:" + contentId);
-				String onContextMenu = " style=\"border: 1px solid blue; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;\" onload=\"javascript:setToolbarInitialPosition();\"";
+				String onContextMenu = " class=\"siteBody\" onload=\"javascript:setToolbarInitialPosition();\"";
 				StringBuffer sb = new StringBuffer(componentString);
 				sb.insert(bodyIndex + 5, onContextMenu);
 				componentString = sb.toString();
@@ -866,87 +868,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	}
 
 
-
-	/**
-	 * This method creates a div for the components properties.
-	 */
-	
-	private String getOldComponentPaletteDiv(Integer siteNodeId, Integer languageId) throws Exception
-	{		
-		StringBuffer sb = new StringBuffer();
-		
-		String componentEditorUrl 		= CmsPropertyHandler.getProperty("componentEditorUrl");
-		String componentRendererUrl 	= CmsPropertyHandler.getProperty("componentRendererUrl");
-		String componentRendererAction 	= CmsPropertyHandler.getProperty("componentRendererAction");
-
-		sb.append("<div id=\"buffer\" style=\"top: 0px; left: 0px; z-index:1000;\"><img src=\"images/componentDraggedIcon.gif\"></div>");
-		
-		sb.append("<div id=\"palette\" style=\"right:5px; top:200px;\">");
-		sb.append("		<div id=\"paletteHandle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Component palette</td><td align=\"right\"><a href=\"javascript:hideDiv('palette');\" class=\"white\">close</a></td></tr></table></div>");
-		sb.append("		<div id=\"paletteHeader\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\">");
-		sb.append("		<tr class=\"darkyellow\">");
-		sb.append("			<td colspan=\"2\" class=\"smalllabel\">Drag components to the slots available</td>");
-		sb.append("		</tr>");
-		sb.append("		<tr>");
-		sb.append("			<td colspan=\"2\" height=\"1\"><img src=\"images/trans.gif\" width=\"1\" height=\"5\"></td>");
-		sb.append("		</tr>");
-		sb.append("		<tr>");
-		sb.append("			<td height=\"1\" width=\"20\"><span class=\"boldsmalllabel\">Icon</span></td>");
-		sb.append("			<td height=\"1\"><span class=\"boldsmalllabel\">Component Name</span></td>");
-		sb.append("		</tr></table>");
-		sb.append("		</div>");
-		
-		sb.append("		<div id=\"paletteBody\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\">");
-		
-		boolean isOdd = true;
-		String cssClass = "";
-		String imageUrl = "images/componentIcon.gif";
-		List components = getComponentContents();
-		Iterator componentIterator = components.iterator();
-		while(componentIterator.hasNext())
-		{
-			if(isOdd)
-			{
-				cssClass = "class=\"lightyellow\"";
-				isOdd = false;
-			}
-			else
-			{
-				cssClass = "class=\"white\"";
-				isOdd = true;
-			}
-			ContentVO componentContentVO = (ContentVO)componentIterator.next();
-			
-			//String imageUrlTemp = getDigitalAssetUrl(componentContentVO.getId(), "thumbnail");
-			//if(imageUrlTemp != null && imageUrlTemp.length() > 0)
-			//	imageUrl = imageUrlTemp;
-	
-			sb.append("	<tr " + cssClass + ">");
-			sb.append("		<td align=\"center\" width=\"20\"><img src=\"" + imageUrl + "\" width=\"16\" height=\"16\" border=\"0\">&nbsp;</td>");
-			sb.append("		<td valign=\"middle\"><span onMouseDown=\"grabIt(event);\" id=\""+ componentContentVO.getId() + "\" class=\"draggableItem\">"+ componentContentVO.getName() + "</span></td>");
-			sb.append("	</tr>");
-			
-			imageUrl = "images/componentIcon.gif";
-		}
-		
-		sb.append("		</table></div>");
-		
-		sb.append("	</div>");
-		
-		
-		sb.append("	<script type=\"text/javascript\">");
-		sb.append("		var theHandle = document.getElementById(\"paletteHandle\");");
-		sb.append("		var theRoot   = document.getElementById(\"palette\");");
-		//sb.append("		Drag.init(theHandle, theRoot);");
-		sb.append("		Drag.init(theHandle, theRoot, 0, 0, 0, 1000);");
-		sb.append("     theRoot.style.left = 450;");
-		sb.append("     theRoot.style.top = 150;");
-		sb.append("	</script>");
-		
-		return sb.toString();
-	}
-
-
 	/**
 	 * This method creates the tabpanel for the component-palette.
 	 */
@@ -954,7 +875,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	private String getComponentPaletteDiv(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
 	{		
-		if(componentPaletteDiv != null && (templateController.getRequestParameter("refresh") == null || !templateController.getRequestParameter("refresh").equalsIgnoreCase("true")))
+	    if(componentPaletteDiv != null && (templateController.getRequestParameter("refresh") == null || !templateController.getRequestParameter("refresh").equalsIgnoreCase("true")))
 		{
 			return componentPaletteDiv;
 		}
@@ -971,14 +892,15 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		Map componentGroups = getComponentGroups(getComponentContents(), templateController);
 
-		sb.append("<div id=\"paletteDiv\" style=\"z-Index:1000; border: solid 1px blue; position:absolute; background:#999999; height:80px; width:100%; left:0px; top:0px;\">");
+		sb.append("<div id=\"paletteDiv\">");
 		 
-		sb.append("<div id=\"paletteHandle\" style=\"width:100%; height:10px; background:navy;\" cellpadding=\"0\" cellspacing=\"0\">");
+		sb.append("<div id=\"paletteHandle\">");
 		sb.append("	<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Component palette</td><td align=\"right\"><a href=\"javascript:hideDiv('paletteDiv');\" class=\"white\">close</a></td></tr></table>");
 		sb.append("</div>");
 				
-		sb.append("<div id=\"componentPalette\" style=\"background:#999999; height:20px; width:100%; left:0px; top:0px;\">");
-		sb.append("<table style=\"width:100%\" cellpadding=\"0\" cellspacing=\"0\">");
+		//sb.append("<div id=\"componentPalette\" style=\"background:#999999; height:20px; width:100%; left:0px; top:0px;\">");
+		sb.append("<div id=\"paletteBody\">");
+		sb.append("<table class=\"tabPanel\" cellpadding=\"0\" cellspacing=\"0\">");
 		sb.append(" <tr>");
 		
 		Iterator groupIterator = componentGroups.keySet().iterator();
@@ -1066,7 +988,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			index++;
 		}
 		
-		sb.append("<div id=\"statusListBg\" style=\"position:absolute; top:65px; left:0px; border-bottom: 1px solid gray; border-left: 1px solid white; border-right: 1px solid gray; background:#CCCCCC; width:100%; height:15px;\">");
+		sb.append("<div id=\"statusListBg\">");
 		sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
 		sb.append("<tr>");
 		sb.append("	<td align=\"left\" width=\"15px\">&nbsp;<a href=\"#\" onclick=\"moveLeft(currentGroup)\" return false\" onfocus=\"if(this.blur)this.blur()\"><img src=\"images/arrowleft.gif\" alt=\"previous\" border=\"0\"></a></td>");
@@ -1096,121 +1018,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		return sb.toString();
 	}
-/*	
-	private String getComponentPaletteDiv(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
-	{		
-		StringBuffer sb = new StringBuffer();
-	
-		String componentEditorUrl 		= CmsPropertyHandler.getProperty("componentEditorUrl");
-		String componentRendererUrl 	= CmsPropertyHandler.getProperty("componentRendererUrl");
-		String componentRendererAction 	= CmsPropertyHandler.getProperty("componentRendererAction");
-		
-		sb.append("<div id=\"buffer\" style=\"top: 0px; left: 0px; z-index:200;\"><img src=\"images/componentDraggedIcon.gif\"></div>");
-		
-		Map componentGroups = getComponentGroups(getComponentContents(), templateController);
-
-		sb.append("<div style=\"position:absolute; background:#999999; height:20px; width:100%; left:0px; top:0px;\">");
-		sb.append("<table style=\"width:100%\" cellpadding=\"0\" cellspacing=\"0\">");
-		sb.append(" <tr>");
-		
-		Iterator groupIterator = componentGroups.keySet().iterator();
-		int index = 0;
-		String groupName = "";
-		String initialGroupName = "";
-		while(groupIterator.hasNext())
-		{
-			groupName = (String)groupIterator.next();
-
-			if(index == 0)
-			{	
-				sb.append("  <td id=\"" + groupName + "Tab\" valign=\"top\" class=\"thistab\" onclick=\"javascript:changeTab('" + groupName + "');\" height=\"20\"><nobr>" + groupName + "</nobr></td>");
-				initialGroupName = groupName;
-			}
-			else if(!groupIterator.hasNext())
-				sb.append("  <td id=\"" + groupName + "Tab\" valign=\"top\" class=\"tab\" style=\"border-right: solid thin black\" onclick=\"javascript:changeTab('" + groupName + "');\"><nobr>" + groupName + "</nobr></td>");
-			else
-				sb.append("  <td id=\"" + groupName + "Tab\" valign=\"top\" class=\"tab\" onclick=\"javascript:changeTab('" + groupName + "');\"><nobr>" + groupName + "</nobr></td>");
-
-			index++;
-		}
-		sb.append("  <td width=\"90%\" style=\"border-right: solid thin white; border-bottom: solid thin white\" align=\"right\">&nbsp;<a href=\"javascript:toggleDiv('pageComponents');\" class=\"white\"><img src=\"images/pageStructure.gif\" alt=\"Toggle page structure\" border=\"0\"></a>&nbsp;<a href=\"javascript:window.open(document.location.href, 'PageComponents', '');\"><img src=\"images/fullscreen.gif\" alt=\"Pop up in a large window\" border=\"0\"></a>&nbsp;</td>");
-		sb.append(" </tr>");
-		sb.append("</table>");
-		sb.append("</div>");
-		
-		sb.append("<script type=\"text/javascript\">");
-		sb.append("var currentGroup = \"" + initialGroupName + "\";");
-		sb.append("</script>");
-		
-		sb.append("<div id=\"statusListBg\" class=\"componentsStatus\">");
-		sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
-		sb.append("<tr>");
-		sb.append("	<td align=\"left\" width=\"15px\">&nbsp;<a href=\"#\" onmouseover=\"noScroll=false; mLeft()\" onmouseout=\"noMove('" + groupName + "')\" onclick=\"sScrollPx-=sScrollExtra; return false\" onfocus=\"if(this.blur)this.blur()\" onmousedown=\"sScrollPx+=sScrollExtra\"><img src=\"images/arrowleft.gif\" alt=\"previous\" border=\"0\"></a></td>");
-		sb.append("	<td align=\"left\" width=\"95%\"><span class=\"componentsStatusText\">Details: </span><span id=\"statusText\" class=\"componentsStatusText\">&nbsp;</span></td>");
-		sb.append("	<td align=\"right\"><a href=\"#\" onmouseover=\"noScroll=false; mRight()\" onmouseout=\"noMove('" + groupName + "')\" onclick=\"sScrollPx-=sScrollExtra; return false\" onfocus=\"if(this.blur)this.blur()\" onmousedown=\"sScrollPx+=sScrollExtra\"><img src=\"images/arrowright.gif\" alt=\"next\" border=\"0\"></a>&nbsp;</td>");
-		sb.append("</tr>");
-		sb.append("</table>");
-		sb.append("</div>");
-		
-		String openGroupName = "";
-
-		
-		groupIterator = componentGroups.keySet().iterator();
-		index = 0;
-		while(groupIterator.hasNext())
-		{
-			groupName = (String)groupIterator.next();
-
-			if(index == 0)
-			{
-				sb.append("<div id=\"" + groupName + "ComponentsBg\" class=\"componentsBackground\" style=\"zIndex:3;\">");
-				openGroupName = groupName;
-			}
-			else
-				sb.append("<div id=\"" + groupName + "ComponentsBg\" class=\"componentsBackground\" style=\"zIndex:2;\">");	
-			
-			
-			sb.append("<div class=\"components\" id=\"" + groupName + "Components\" style=\"border: 0px solid green; position:absolute; left:0px; top:0px; visibility:inherit;\">");
-			sb.append("	<table style=\"width:100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
-			sb.append("	<tr>");
-			
-			String imageUrl = "images/componentIcon.gif";
-			List components = (List)componentGroups.get(groupName); //getComponentContents();
-			Iterator componentIterator = components.iterator();
-			while(componentIterator.hasNext())
-			{
-				ContentVO componentContentVO = (ContentVO)componentIterator.next();
-	
-				//String imageUrlTemp = getDigitalAssetUrl(componentContentVO.getId(), "thumbnail");
-				//if(imageUrlTemp != null && imageUrlTemp.length() > 0)
-				//	imageUrl = imageUrlTemp;
-
-				sb.append("		<td class=\"component\" width=\"16\"><img src=\"" + imageUrl + "\" width=\"16\" height=\"16\" border=\"0\"></td>");
-				sb.append("		<td class=\"component\" width=\"50\"><nobr><span onMouseDown=\"grabIt(event);\" onmouseover=\"showDetails('" + componentContentVO.getName() + "');\" id=\""+ componentContentVO.getId() + "\" class=\"draggableItem\" nowrap=\"1\">" + ((componentContentVO.getName().length() > 22) ? componentContentVO.getName().substring(0, 17) : componentContentVO.getName()) + "...</span></nobr></td>");
-				sb.append("     <td class=\"component\" width=\"2\"><img src=\"images/divider.gif\"></td>"); 
-				
-				imageUrl = "images/componentIcon.gif";
-			}
-			sb.append("  <td width=\"90%\">&nbsp;</td>");
-			
-			sb.append("	</tr>");
-			sb.append("	</table>");
-			sb.append("</div>");
-			sb.append("</div>");
-			
-			sb.append("<script type=\"text/javascript\"> if (bw.bw) tabInit('" + groupName + "Components');</script>");
-
-			
-			index++;
-		}
-		
-		sb.append("	<script type=\"text/javascript\">");
-		sb.append("	  javascript:changeTab('" + openGroupName + "');");
-		sb.append("	</script>");
-
-		return sb.toString();
-	}
-*/
 
 	/**
 	 * This method gets all component groups from the available components.
