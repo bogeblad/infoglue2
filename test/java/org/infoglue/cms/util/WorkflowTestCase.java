@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.2 2004/12/08 17:45:02 jed Exp $
+ * $Id: WorkflowTestCase.java,v 1.3 2004/12/09 01:11:10 jed Exp $
  */
 package org.infoglue.cms.util;
 
@@ -31,6 +31,7 @@ import javax.servlet.http.*;
 import org.infoglue.cms.security.*;
 import org.infoglue.cms.entities.mydesktop.*;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import com.opensymphony.module.propertyset.PropertySet;
 
 /**
  * Base class for workflow tests.  Uses the "Create News" sample workflow.  We don't do the "Preview news and approve"
@@ -82,6 +83,11 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	protected long getWorkflowId()
 	{
 		return getWorkflow().getId().longValue();
+	}
+
+	protected PropertySet getPropertySet()
+	{
+		return WorkflowController.getController().getPropertySet(getUserPrincipal(), getWorkflowId());
 	}
 
 	protected HttpSession getSession()

@@ -150,22 +150,31 @@ public class WorkflowController extends BaseController
 	}
 
 	/**
+	 * Returns the workflow property set for a particular user and workflow
+	 * @return the workflow property set for the workflow with workflowId and the user represented by userPrincipal
+	 */
+	public PropertySet getPropertySet(InfoGluePrincipal userPrincipal, long workflowId)
+	{
+		return new WorkflowFacade(userPrincipal, workflowId).getPropertySet();
+	}
+
+	/**
 	 * Returns the contents of the PropertySet for a particular workflow
 	 * @param userPrincipal a user principal
 	 * @param workflowId the ID of the desired workflow
-	 * @return the properties of the workflow
+	 * @return a map containing the contents of the workflow property set
 	 */
 	public Map getProperties(InfoGluePrincipal userPrincipal, long workflowId)
 	{
 		CmsLogger.logInfo("userPrincipal:" + userPrincipal);
 		CmsLogger.logInfo("workflowId:" + workflowId);
 
-		PropertySet propertySet = new WorkflowFacade(userPrincipal, workflowId).getPropertySet();
+		PropertySet propertySet = getPropertySet(userPrincipal, workflowId);
 		Map parameters = new HashMap();
-		for (Iterator keys = propertySet.getKeys().iterator(); keys.hasNext();)
+		for (Iterator keys = getPropertySet(userPrincipal, workflowId).getKeys().iterator(); keys.hasNext();)
 		{
-			Object key = keys.next();
-			parameters.put(key, propertySet.getString(key.toString()));
+			String key = (String)keys.next();
+			parameters.put(key, propertySet.getString(key));
 		}
 
 		return parameters;
