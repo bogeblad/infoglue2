@@ -242,15 +242,15 @@
 <tr id="linkProperties" style="position: relative; diplay:block;">
 	<td>
 	<form name="inputForm" action="CreateServiceBinding.action">
-		<table cellpadding="0" cellspacing="0" border="0" width="350">
-		<tr class="darkapricot">
+		<table cellpadding="0" cellspacing="0" border="0" width="300">
+		<tr class="darkgreen">
 			<td class="smalllabel" colspan="2">$ui.getString("tool.structuretool.linkProperties")</td>
 		</tr>
 		<tr>
-			<td bgcolor="#FEF8D0" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#EEF7DC" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
-			<td bgcolor="#F0E1B4" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#C7D1B3" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
 			<td height="1" colspan="2"><img src="images/trans.gif" width="1" height="5"></td>

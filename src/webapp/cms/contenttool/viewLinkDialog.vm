@@ -32,7 +32,7 @@
 		function init()
 		{
 			//alert("intializing....");
-			window.resizeTo(800,600);
+			window.resizeTo(800,700);
 	
 			__dlg_init();
 		  	var param = window.dialogArguments;
@@ -82,24 +82,34 @@
 					changeTab("internalLink");
 				else if("$method" == "inlineAsset")
 					changeTab("internalAsset");
-
+				else
+					changeTab("externalLink");
+					
 				//alert("method: $method");
 						
 			}
 		}
 		
-		var previousTabId = "externalLink";
+		var previousTabId; // = "externalLink";
 		
 		function changeTab(id)
 		{
 			if(previousTabId)
 			{
-				document.getElementById(previousTabId).style.display = "none";
+				//document.getElementById(previousTabId).style.display = "none";
+				document.getElementById(previousTabId).className = "inactiveTab";
 				document.getElementById(previousTabId + "TD").className = "inactiveTabControl";
 			}
 			
-			document.getElementById(id).style.display = "block";
+			//document.getElementById(id).style.display = "block";
+			document.getElementById(id).className = "activeTab";
 			document.getElementById(id + "TD").className = "activeTabControl";
+			
+			//alert("src" + document.getElementById("internalAssetFrame").src);
+			if(id == "internalLink" && document.getElementById("internalLinkFrame").src.indexOf("ViewStructureTreeForInlineLink.action") == -1)
+				document.getElementById("internalLinkFrame").src = "ViewStructureTreeForInlineLink.action?contentId=$contentId&languageId=$languageId&textAreaId=$!textAreaId&oldSiteNodeId=$!oldSiteNodeId";
+			else if(id == "internalAsset" && document.getElementById("internalAssetFrame").src.indexOf("ViewContentVersion!viewAssetsDialog.action") == -1)
+				document.getElementById("internalAssetFrame").src = "ViewContentVersion!viewAssetsDialog.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId&treatAsLink=true&textAreaId=$!textAreaId&oldContentId=$!oldContentId&assetKey=$!assetKey";
 			
 			previousTabId = id;
 		}
@@ -188,7 +198,7 @@
 		{
 			position: relative;
 			width: 100%; 
-			height: 500px;
+			height: 600px;
 			border:1px solid black; 
 			display: block;
 			padding: 2px 2px 2px 2px;
@@ -197,7 +207,7 @@
 		{
 			position: relative;
 			width: 100%; 
-			height: 500px;
+			height: 600px;
 			border:1px solid black;
 			display: none;
 			padding: 2px 2px 2px 2px;
@@ -221,16 +231,16 @@
 </tr>
 </table>
 
-<div id="externalLink" class="activeTab">
+<div id="externalLink" style="background-color: #FFFFFF;" class="inactiveTab">
 	<IFRAME frameborder="0" id="externalLinkFrame" src="applications/HTMLArea/popups/infoglueLink.html" width="100%" height="100%" align="baseline"></IFRAME>
 </div>
-<div id="internalLink" class="inactiveTab">
-	<IFRAME frameborder="0" id="internalLinkFrame" src="ViewStructureTreeForInlineLink.action?contentId=$contentId&languageId=$languageId&textAreaId=$!textAreaId&oldSiteNodeId=$!oldSiteNodeId" width="100%" height="100%" align="baseline"></IFRAME>
+<div id="internalLink" style="background-color: #FEF8D0;" class="inactiveTab">
+	<IFRAME frameborder="0" id="internalLinkFrame" src="" width="100%" height="100%" align="baseline"></IFRAME>
 </div>
 <div id="internalAsset" class="inactiveTab">
-	<IFRAME frameborder="0" id="internalAssetFrame" src="ViewContentVersion!viewAssetsDialog.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId&treatAsLink=true&textAreaId=$!textAreaId&oldContentId=$!oldContentId&assetKey=$!assetKey" width="100%" height="100%" align="baseline"></IFRAME>
+	<IFRAME frameborder="0" id="internalAssetFrame" src="" width="100%" height="100%" align="baseline"></IFRAME>
 </div>
-	
+
 </div>
 
 </body>

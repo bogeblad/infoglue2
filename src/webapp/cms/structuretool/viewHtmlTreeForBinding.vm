@@ -32,10 +32,17 @@
 		 	parent.document.inputForm.path.value         = path;
 		}
 		
+		function markSelected(itemId)
+		{
+			var node = tree.getNodeWithMyId(itemId);
+			if(node)
+				node.select();
+		}
+		
 		var ig_expanded_nodes_cookie = "igStructureTreeForBindingExpansionForRepository${repositoryId}";
 		
 		function loaded()
-		{
+		{			
 			setSelected("${select}");
 			
 			path = webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
@@ -43,18 +50,12 @@
 			if(path && path != "")
 			{
 				path = path.substring(0, path.length - 1);
-				//selected = "198";
 				var pathArr = path.split(',');
 				
 				expandTreeRec(pathArr, 0);
-				
-				/*			
-				setTimeout(function () {
-					var addedNode = tree.getNodeWithMyId(selected);
-					addedNode.select();
-					}, 3000);
-				*/
 			}	
+			
+			setTimeout("markSelected('${select}')", 500);
 		}
 		
 		function expandTreeRec(pathArr, level)

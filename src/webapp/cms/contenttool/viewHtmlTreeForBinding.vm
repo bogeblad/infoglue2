@@ -78,6 +78,13 @@
 			}
 		}
 		
+		function markSelected(itemId)
+		{
+			var node = tree.getNodeWithMyId(itemId);
+			if(node)
+				node.select();
+		}
+		
 		var ig_expanded_nodes_cookie = "igContentTreeForBindingExpansionForRepository${repositoryId}";
 		
 		function loaded()
@@ -101,6 +108,8 @@
 					}, 3000);
 				*/
 			}		
+			
+			setTimeout("markSelected('${select}')", 500);
 		}
 
 		function expandTreeRec(pathArr, level)

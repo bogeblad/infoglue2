@@ -225,7 +225,7 @@
 				#if($tree == "applet")
 					#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
 				#else
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree.action?repositoryId=$repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId" width="350" height="400" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree.action?repositoryId=$repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId" width="350" height="510" align="baseline"></IFRAME>
 				#end
 			</td>
 		</tr>	
@@ -271,9 +271,9 @@
 		<tr>
 			<td>
 				#if($oldContentId > 0)
-					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="ViewContentVersion!viewAssets.action?contentId=$contentId&languageId=$languageId&oldContentId=$oldContentId&assetKey=$assetKey&treatAsLink=$treatAsLink" width="350" height="450" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="ViewContentVersion!viewAssets.action?contentId=$contentId&languageId=$languageId&oldContentId=$oldContentId&assetKey=$assetKey&treatAsLink=$treatAsLink" width="370" height="540" align="baseline"></IFRAME>
 				#else
-					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="ViewContentVersion!viewAssets.action?contentId=$contentId&languageId=$languageId&treatAsLink=$treatAsLink" width="350" height="450" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="ViewContentVersion!viewAssets.action?contentId=$contentId&languageId=$languageId&treatAsLink=$treatAsLink" width="370" height="540" align="baseline"></IFRAME>
 				#end
 			</td>
 		</tr>

@@ -102,11 +102,10 @@
 			setSelected("${select}");
 			
 			path = webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
-			//alert("path:" + path);
+			alert("path:" + path);
 			if(path && path != "")
 			{
 				path = path.substring(0, path.length - 1);
-				//selected = "198";
 				var pathArr = path.split(',');
 				
 				expandTreeRec(pathArr, 0);
