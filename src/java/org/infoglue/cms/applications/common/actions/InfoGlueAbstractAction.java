@@ -32,6 +32,7 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 
 import webwork.action.ActionContext;
@@ -190,5 +191,14 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
         return this.getResponse().encodeUrl(value);
     }
 
+    public String getComponentRendererUrl()
+    {
+        return CmsPropertyHandler.getProperty("componentRendererUrl");
+    }
+    
+    public String getComponentRendererAction()
+    {
+        return CmsPropertyHandler.getProperty("componentRendererAction");
+    }
 }
 
