@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: InfoGlueTestCase.java,v 1.2 2004/12/07 23:15:27 frank Exp $
+ * $Id: InfoGlueTestCase.java,v 1.3 2004/12/27 21:53:34 jed Exp $
  */
 package org.infoglue.cms.util;
 
@@ -51,11 +51,11 @@ import org.infoglue.cms.entities.management.RepositoryVO;
  */
 public abstract class InfoGlueTestCase extends TestCase
 {
-	public static final InfoGluePrincipal adminPrincipal = new InfoGluePrincipal("test-admin", "first", "last",
+	private static final InfoGluePrincipal adminPrincipal = new InfoGluePrincipal("test-admin", "first", "last",
 																				  "email", createRole("administrators"), true);
-	public static final InfoGluePrincipal cmsUserPrincipal = new InfoGluePrincipal("test-user", "first", "last",
+	private static final InfoGluePrincipal cmsUserPrincipal = new InfoGluePrincipal("test-user", "first", "last",
 																					"email", createRole("cmsUser"), false);
-	public static final InfoGluePrincipal anonPrincipal = new InfoGluePrincipal("anonymous", "first", "last",
+	private static final InfoGluePrincipal anonPrincipal = new InfoGluePrincipal("anonymous", "first", "last",
 																				 "email", createRole("anonymous"), false);
 
 	private static boolean initialized = false;
@@ -113,7 +113,7 @@ public abstract class InfoGlueTestCase extends TestCase
 	 * @param name the name of the role
 	 * @return a list containing only the desired role.
 	 */
-	private static List createRole(String name)
+	protected static List createRole(String name)
 	{
 		return Collections.singletonList(new InfoGlueRole(name, "test description"));
 	}
