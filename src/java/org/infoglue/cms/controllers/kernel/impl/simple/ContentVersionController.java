@@ -699,8 +699,7 @@ public class ContentVersionController extends BaseController
 	 * This method fetches a value from the xml that is the contentVersions Value. If the
 	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
 	 */
-
-	public String getAttributeValue(Integer contentVersionId, String attributeName, boolean escapeHTML) throws SystemException, Bug
+	public String getAttributeValue(Integer contentVersionId, String attributeName, boolean escapeHTML) throws SystemException
 	{
 		String value = "";
 		ContentVersionVO contentVersionVO = getContentVersionVOWithId(contentVersionId);
@@ -710,46 +709,8 @@ public class ContentVersionController extends BaseController
 			try
 			{
 				CmsLogger.logInfo("attributeName:" + attributeName);
-				CmsLogger.logInfo("VersionValue:" + contentVersionVO.getVersionValue());
-				String xml = contentVersionVO.getVersionValue();
-
-				int startTagIndex = xml.indexOf("<" + attributeName + ">");
-				int endTagIndex = xml.indexOf("]]></" + attributeName + ">");
-
-				if (startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex < xml.length())
-				{
-					value = xml.substring(startTagIndex + attributeName.length() + 11, endTagIndex);
-					if (escapeHTML)
-						value = new VisualFormatter().escapeHTML(value);
-				}
-
-				/*
-				InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
-
-				DOMParser parser = new DOMParser();
-				parser.parse(inputSource);
-				Document document = parser.getDocument();
-
-				NodeList nl = document.getDocumentElement().getChildNodes();
-				Node n = nl.item(0);
-
-				nl = n.getChildNodes();
-				for(int i=0; i<nl.getLength(); i++)
-				{
-					n = nl.item(i);
-					if(n.getNodeName().equalsIgnoreCase(attributeName))
-					{
-						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
-						{
-							value = n.getFirstChild().getNodeValue();
-							CmsLogger.logInfo("Getting value: " + value);
-							if(value != null && escapeHTML)
-								value = new VisualFormatter().escapeHTML(value);
-							break;
-						}
-					}
-				}
-				*/
+				CmsLogger.logInfo("VersionValue:"  + contentVersionVO.getVersionValue());
+				value = getAttributeValue(contentVersionVO, attributeName, escapeHTML);
 			}
 			catch (Exception e)
 			{
@@ -757,6 +718,32 @@ public class ContentVersionController extends BaseController
 			}
 		}
 		//CmsLogger.logInfo("value:" + value);
+		return value;
+	}
+
+	/**
+	 * Returns an attribute value from the ContentVersionVO
+	 *
+	 * @param contentVersionVO The version on which to find the value
+	 * @param attributeName THe name of the attribute whose value is wanted
+	 * @param escapeHTML A boolean indicating if the result should be escaped
+	 * @return The String vlaue of the attribute, or blank if it doe snot exist.
+	 */
+	public String getAttributeValue(ContentVersionVO contentVersionVO, String attributeName, boolean escapeHTML)
+	{
+		String value = "";
+		String xml = contentVersionVO.getVersionValue();
+
+		int startTagIndex = xml.indexOf("<" + attributeName + ">");
+		int endTagIndex   = xml.indexOf("]]></" + attributeName + ">");
+
+		if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+		{
+			value = xml.substring(startTagIndex + attributeName.length() + 11, endTagIndex);
+			if(escapeHTML)
+				value = new VisualFormatter().escapeHTML(value);
+		}
+
 		return value;
 	}
 
