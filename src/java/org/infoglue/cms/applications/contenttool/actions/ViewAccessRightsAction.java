@@ -122,44 +122,14 @@ public class ViewAccessRightsAction extends WebworkAbstractAction
 	public Integer getAccessRightId(Integer interceptionPointId, String extraParameters) throws SystemException, Bug
 	{
 		List accessRights = AccessRightController.getController().getAccessRightVOListOnly(interceptionPointId, extraParameters);
-		System.out.println("accessRights:" + accessRights.size());
 		return accessRights.size() > 0 ? ((AccessRightVO)accessRights.get(0)).getAccessRightId() : null;
 	}
 	
 	public Collection getAccessRightGroups(Integer accessRightId) throws SystemException, Bug
 	{
-	    System.out.println("********accessRightId:" + accessRightId);
-		Collection accessRightGroups = AccessRightController.getController().getAccessRightGroupVOList(accessRightId);
-		System.out.println("accessRightGroups:" + accessRightGroups.size());
+	    Collection accessRightGroups = AccessRightController.getController().getAccessRightGroupVOList(accessRightId);
 		return accessRightGroups;
 	}
-	
-	/*        
-	public List getExtranetRoleVOList()
-	{
-		return this.extranetRoleVOList;
-	}
-
-	public void setExtranetRoleVOList(List extranetRoleVOList)
-	{
-		this.extranetRoleVOList = extranetRoleVOList;
-	}
-
-	public List getExtranetAccessVOList()
-	{
-		return this.extranetAccessVOList;
-	}
-
-	public void setExtranetAccessVOList(List extranetAccessVOList)
-	{
-		this.extranetAccessVOList = extranetAccessVOList;
-	}
-	
-	public List getAccessRightVOList()
-	{
-		return accessRightVOList;
-	}
-	*/
 	
 	public List getRoleList()
 	{

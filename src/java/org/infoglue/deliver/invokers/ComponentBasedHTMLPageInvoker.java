@@ -326,7 +326,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	protected Map getComponent(Database db, Element element, String componentName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
 	{
-		System.out.println("Getting component with name:" + componentName);
+		//System.out.println("Getting component with name:" + componentName);
 		InfoGlueComponent component = null;
 
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
@@ -335,7 +335,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		String componentXPath = getComponentXPath(parentComponent) + "/components/component[@name='" + componentName + "']";
 		
-		System.out.println("componentXPath:" + componentXPath);
+		//System.out.println("componentXPath:" + componentXPath);
 		List componentNodeList = element.selectNodes(componentXPath);
 		Iterator componentNodeListIterator = componentNodeList.iterator();
 		while(componentNodeListIterator.hasNext())
@@ -475,8 +475,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				
 				String slot = componentString.substring(slotStartIndex, slotStopIndex + 10);
 				String id = slot.substring(slot.indexOf("id") + 4, slot.indexOf("\"", slot.indexOf("id") + 4));
-				System.out.println("slot:" + slot);
-				System.out.println("id:" + id);
+				//System.out.println("slot:" + slot);
+				//System.out.println("id:" + id);
 				
 				List subComponents = getInheritedComponents(db, templateController, component, templateController.getSiteNodeId(), id);
 				Iterator subComponentsIterator = subComponents.iterator();
