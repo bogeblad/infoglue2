@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.2 2005/01/18 16:31:14 jed Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.3 2005/01/18 19:18:50 jed Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool.actions;
 
@@ -72,8 +72,7 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 
 			List availableActions = action.getWorkflowActionVOList();
 			assertTrue("There should be at least 2 current actions", availableActions.size() >= 2);
-			assertContains(availableActions,
-								new WorkflowActionVO(new Integer(4), workflow1.getWorkflowId(), "Create news content"));
+			assertContains(availableActions, createCreateNewsAction(workflow1.getWorkflowId()));
 			assertContains(availableActions,
 								new WorkflowActionVO(new Integer(4), workflow2.getWorkflowId(), "Register Name 1"));
 		}
@@ -94,8 +93,7 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 			assertFalse("There should be at least 1 current workflow", action.getWorkflowVOList().isEmpty());
 			List workflowActions = action.getWorkflowActionVOList();
 			assertFalse("There should be at least 1 current action", workflowActions.isEmpty());
-			assertContains(workflowActions,
-								new WorkflowActionVO(new Integer(4), action.getWorkflow().getWorkflowId(), "Create news content"));
+			assertContains(workflowActions, createCreateNewsAction(action.getWorkflow().getWorkflowId()));
 		}
 		finally
 		{
@@ -156,5 +154,10 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 				&& one.getWorkflowId().equals(another.getWorkflowId())
 				&& one.getWorkflowId().equals(another.getWorkflowId())
 				&& one.getName().equals(another.getName());
+	}
+
+	private static WorkflowActionVO createCreateNewsAction(Long workflowId)
+	{
+		return new WorkflowActionVO(new Integer(4), workflowId, "Create news content");
 	}
 }
