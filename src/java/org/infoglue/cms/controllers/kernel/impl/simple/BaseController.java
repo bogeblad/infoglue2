@@ -766,7 +766,7 @@ public abstract class BaseController
 		OQLQuery oql = db.getOQLQuery(query);
 		if (params != null)
 			for (Iterator i = params.iterator(); i.hasNext();)
-				oql.bind(i.next());
+			    oql.bind(i.next());
 
 		return oql;
 	}
