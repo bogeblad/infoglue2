@@ -39,6 +39,8 @@ import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
@@ -274,6 +276,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("childContentCache");
 				clearCache(SmallContentImpl.class);
 				clearCache(MediumContentImpl.class);
+
+				RegistryController.getController().clearRegistryForReferencedEntity(ContentImpl.class.getName(), getObjectIdentity(object).toString());
 			}
 			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
 			{
@@ -284,6 +288,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				//CmsLogger.logInfo("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
+			}
+			else if(object.getClass().getName().equals(SiteNodeImpl.class.getName()))
+			{
+			    RegistryController.getController().clearRegistryForReferencedEntity(SiteNodeImpl.class.getName(), getObjectIdentity(object).toString());
 			}
 
        	}

@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.5 2005/02/24 15:50:31 mattias Exp $
+ * $Id: RegistryController.java,v 1.6 2005/03/21 17:58:48 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -51,6 +51,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsLogger;
 
 /**
  * The RegistryController manages the registry-parts of InfoGlue. 
@@ -500,7 +501,8 @@ public class RegistryController extends BaseController
 		}
 		catch ( Exception e)		
 		{
-			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
+		    CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
 		}
 
         return referenceBeanList;
@@ -570,9 +572,11 @@ public class RegistryController extends BaseController
 	        
 	        commitTransaction(db);
 		}
-		catch ( Exception e)		
+		catch (Exception e)		
 		{
-			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
+		    CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
+			//throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
 		}
 		
         return referenceBeanList;
@@ -628,6 +632,32 @@ public class RegistryController extends BaseController
 	}
 	
 	
+	/**
+	 * Clears all references to a entity
+	 */
+	
+	public void clearRegistryForReferencedEntity(String entityName, String entityId) throws SystemException, Exception
+	{
+	    Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			OQLQuery oql = db.getOQLQuery("DELETE FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.entityName = $1 AND r.entityId = $2");
+			oql.bind(entityName);
+			oql.bind(entityId);
+			
+			QueryResults results = oql.execute();		
+		    
+	        commitTransaction(db);
+		}
+		catch (Exception e)		
+		{
+		    CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
+		}
+	}
 	
 	/**
 	 * Gets siteNodeVersion which uses the metainfo
