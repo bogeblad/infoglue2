@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.27 2005/04/03 08:55:10 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.28 2005/04/04 14:43:17 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -13,6 +13,7 @@
 		<view name="error">/cms/managementtool/performanceResult.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
+
 
 	<!-- Redirect -->
 	<action name="org.infoglue.cms.applications.common.actions.ExtendedRedirect" alias="ExtendedRedirect">
@@ -661,7 +662,7 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentAction" alias="ViewContent">
 		<view name="success">/cms/contenttool/viewContent.vm</view>
 		<view name="standalone">/cms/contenttool/viewContentStandalone.vm</view>
-		<view name="viewVersion">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+		<view name="viewVersion">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}&amp;unrefreshedContentId=${unrefreshedContentId}&amp;changeTypeId=${changeTypeId}&amp;newContentId=${newContentId}</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
