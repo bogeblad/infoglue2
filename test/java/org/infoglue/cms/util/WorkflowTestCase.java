@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.5 2005/01/13 17:09:22 jed Exp $
+ * $Id: WorkflowTestCase.java,v 1.6 2005/01/13 23:37:39 jed Exp $
  */
 package org.infoglue.cms.util;
 
@@ -31,6 +31,7 @@ import javax.servlet.http.*;
 import org.infoglue.cms.security.*;
 import org.infoglue.cms.entities.mydesktop.*;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import org.infoglue.cms.applications.common.Session;
 import com.opensymphony.module.propertyset.PropertySet;
 
 /**
@@ -49,8 +50,9 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 */
 	protected static final int FINISH_WORKFLOW = 201;
 
+	private static final WorkflowController controller = WorkflowController.getController();
+
 	private WorkflowVO workflow;
-	private HttpSession session = new FakeHttpSession();
 
 	/**
 	 * Finishes, but does not delete.  Clearing the tables is tricky due to FK constraints in the OSWorkflow tables,
@@ -107,32 +109,27 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 
 	protected PropertySet getPropertySet()
 	{
-		return WorkflowController.getController().getPropertySet(getUserPrincipal(), getWorkflowId());
-	}
-
-	protected HttpSession getSession()
-	{
-		return session;
+		return controller.getPropertySet(getUserPrincipal(), getWorkflowId());
 	}
 
 	protected InfoGluePrincipal getUserPrincipal()
 	{
-		return (InfoGluePrincipal)getSession().getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
+		return new Session().getInfoGluePrincipal();
 	}
 
 	protected void setUserPrincipal(InfoGluePrincipal userPrincipal)
 	{
-		getSession().setAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER, userPrincipal);
+		new Session().setInfoGluePrincipal(userPrincipal);
 	}
 
 	/**
-	 * Starts the workflow by creating a new workflow instance
-	 * @return the Id of the newly-created workflow
+	 * Starts the workflow by creating a new workflow instance and assigning it to workflow
 	 * @throws Exception
+	 * @see #setWorkflow
 	 */
-	protected WorkflowVO startWorkflow() throws Exception
+	protected void startWorkflow(int initialAction) throws Exception
 	{
-		return WorkflowController.getController().createWorkflowInstance(getUserPrincipal(), getWorkflowName());
+		setWorkflow(controller.initializeWorkflow(getUserPrincipal(), getWorkflowName(), initialAction));
 	}
 
 	/**
@@ -141,7 +138,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 */
 	protected void finishWorkflow() throws Exception
 	{
-		invokeAction(new FakeHttpServletRequest(getSession()), FINISH_WORKFLOW);
+		invokeAction(new FakeHttpServletRequest(), FINISH_WORKFLOW);
 		assertWorkflowFinished();
 	}
 
@@ -153,7 +150,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 */
 	protected void invokeAction(HttpServletRequest request, int actionId) throws Exception
 	{
-		workflow = WorkflowController.getController().invokeAction(getUserPrincipal(), request, getWorkflowId(), actionId);
+		workflow = controller.invokeAction(getUserPrincipal(), request, getWorkflowId(), actionId);
 	}
 
 	/**
@@ -208,7 +205,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 */
 	protected WorkflowVO findCurrentWorkflow() throws Exception
 	{
-		return findWorkflow(WorkflowController.getController().getCurrentWorkflowVOList(getUserPrincipal()));
+		return findWorkflow(controller.getCurrentWorkflowVOList(getUserPrincipal()));
 	}
 
 	/**
