@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.8 2004/12/06 15:47:10 frank Exp $ -->
+<!-- $Id: actions.xml,v 1.9 2005/01/04 14:15:47 mattias Exp $ -->
 <actions>
 
 	<!-- Redirect -->
@@ -154,7 +154,10 @@
 		<view name="bindingView">/cms/contenttool/viewHtmlTreeForBinding.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
-
+	<action name="org.infoglue.cms.applications.contenttool.actions.ContentTreeXMLAction" alias="ViewXContentTree">
+        <view name="success">WEB-INF/classes/resources/templates/contenttool/viewNodesXML.vm</view>    	
+        <view name="error">WEB-INF/classes/resources/templates/contenttool/error.vm</view>    	
+    </action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.SimpleContentXmlAction" alias="SimpleContentXml">
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
@@ -811,6 +814,11 @@
 		<view name="success">/cms/contenttool/updateDigitalAsset.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
+	<action name="org.infoglue.cms.applications.contenttool.actions.DeleteDigitalAssetAction" alias="DeleteDigitalAsset">
+ 			<view name="success">$returnAddress</view>
+            <view name="error">/cms/contenttool/error.vm</view>
+    </action>
+	
 
 	<!-- SiteNode -->
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewSiteNodeAction" alias="ViewSiteNode">
@@ -845,7 +853,13 @@
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
-	<action name="org.infoglue.cms.applications.structuretool.actions.ViewListSiteNodeVersionAction" alias="ViewListSiteNodeVersion">
+	<action name="org.infoglue.cms.applications.structuretool.actions.CreatePageTemplateAction" alias="CreatePageTemplate">
+            <view name="input">/cms/structuretool/createPageTemplate.vm</view>
+ 			<view name="success">/cms/structuretool/createPageTemplateFinished.vm</view>
+            <view name="error">/cms/structuretool/error.vm</view>
+   			<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>         
+    </action> 
+   <action name="org.infoglue.cms.applications.structuretool.actions.ViewListSiteNodeVersionAction" alias="ViewListSiteNodeVersion">
 		<view name="success">/cms/structuretool/viewListSiteNodeVersion.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
