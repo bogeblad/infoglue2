@@ -152,7 +152,7 @@
 			#set($quote = '"')
 			#foreach ($availableWorkflowVO in $availableWorkflows)
 				#set($view = "$quote$availableWorkflowVO.getView()$quote")
-				#set($row = ["<a href='javascript:showDiv(${quote}availableWorkflow${availableWorkflowVO.name}DetailsProperties${quote});'>$availableWorkflowVO.getName()</a>", "<a href='CreateWorkflowInstance.action?name=$formatter.encode($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
+				#set($row = ["<a href='javascript:showDiv(${quote}availableWorkflow${availableWorkflowVO.name}DetailsProperties${quote});'>$availableWorkflowVO.getName()</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encode($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
 				#set($cnt = $cnt + 1)
 				#lvAddRow($row $cnt "$availableWorkflowVO.getWorkflowId()")
 			#end
@@ -179,7 +179,7 @@
 			#set($quote = '"')
 			#foreach ($workflowActionVO in $this.getWorkflowActionVOList($webwork.bean('org.infoglue.cms.util.workflow.OwnerStepFilter')))
 				#set($view = $workflowActionVO.getView())
-				 #if($view == "")
+				#if($view == "")
 					#set($view = "ViewMyDesktopToolStartPage!invoke.action")
 				#end
 				#set($view = "$quote$view$quote")
