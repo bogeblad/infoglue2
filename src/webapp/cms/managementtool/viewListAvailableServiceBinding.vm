@@ -5,7 +5,7 @@
 #beginManagementTool("tool.managementtool.viewAvailableServiceBindingList.header" "tool.managementtool.viewAvailableServiceBindingList.header" "")
 
 #set($lvConstraint = 1) 
-#lvHead(["Name","Description","Is mandatory","isUserEditable","isInheritable"] "Delete available service binding" "DeleteAvailableServiceBinding.action" "ViewListAvailableServiceBinding.action?title=AvailableServiceBindings" "Do you really want to delete the available service binding:<br/><br/>")
+#lvHead(["Name","Description","Is mandatory","isUserEditable","isInheritable"] "tool.managementtool.deleteAvailableServiceBindings.header" "DeleteAvailableServiceBinding.action" "ViewListAvailableServiceBinding.action?title=AvailableServiceBindings" "tool.managementtool.deleteAvailableServiceBindings.text")
 
 #set($cnt = 0)
 #foreach ($availableServiceBindingVO in $availableServiceBindings)

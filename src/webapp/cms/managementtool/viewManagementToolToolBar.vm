@@ -31,11 +31,8 @@
 		function submitListForm(entityName)
 		{
 			var listForm = parent.frames["main"].document.listForm;
-			//alert("listForm:" + listForm.name)
 			var selectedObjects = getSelectedObjects(listForm, entityName);
-			//alert("selectedObjects:" + selectedObjects)
 			var selectedTexts = getSelectedTexts(listForm);
-			//alert("selectedTexts:" + selectedTexts)
 			if (selectedObjects == "")
 			{
 				alert('Select one or more objects to delete');
@@ -43,7 +40,8 @@
 			}
 			else
 			{
-				listForm.message.value = listForm.message.value + selectedTexts;
+				listForm.message.value = listForm.message.value;
+				listForm.extraParameters.value = selectedTexts;
 				listForm.yesDestination.value = listForm.yesDestination.value + '?' + selectedObjects;
 				listForm.submit();
 			}
@@ -59,11 +57,8 @@
 		function submitListFormWithPrimaryKey(entityName, primaryKey)
 		{
 			var listForm = parent.frames["main"].document.listForm;
-			//alert("listForm:" + listForm.name)
 			var selectedObjects = getSelectedObjectsWithPrimaryKey(listForm, entityName, primaryKey);
-			//alert("selectedObjects2:" + selectedObjects)
 			var selectedTexts = getSelectedTexts(listForm);
-			//alert("selectedTexts:" + selectedTexts)
 			if (selectedObjects == "")
 			{
 				alert('Select one or more objects to delete');
@@ -71,10 +66,9 @@
 			}
 			else
 			{
-				listForm.message.value = listForm.message.value + selectedTexts;
+				listForm.message.value = listForm.message.value;
+				listForm.extraParameters.value = selectedTexts;
 				listForm.yesDestination.value = listForm.yesDestination.value + '?' + selectedObjects;
-				//alert("message:" + listForm.message.value);
-				//alert("yes" + listForm.yesDestination.value);
 				listForm.submit();
 			}
 

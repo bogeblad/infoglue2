@@ -42,7 +42,8 @@
 			}
 			else
 			{
-				listForm.message.value = listForm.message.value + selectedTexts;
+				listForm.message.value = listForm.message.value;
+				//listForm.extraParameters.value = selectedTexts;
 				listForm.yesDestination.value = listForm.yesDestination.value + '?' + selectedObjects;
 				listForm.submit();
 			}

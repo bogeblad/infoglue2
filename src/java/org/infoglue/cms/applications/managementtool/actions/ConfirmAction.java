@@ -41,6 +41,7 @@ public class ConfirmAction extends WebworkAbstractAction
 	private String dest;
 	private String header;
 	private String message;
+	private String extraParameters;
 	private String action;
 
 	public ConfirmAction()
@@ -78,6 +79,16 @@ public class ConfirmAction extends WebworkAbstractAction
 		return this.message;	
 	}
 	
+    public String getExtraParameters()
+    {
+        return extraParameters;
+    }
+
+    public void setExtraParameters(String extraParameters)
+    {
+        this.extraParameters = extraParameters;
+    }
+
 	public void setHeader(String header)
 	{
 		this.header = header;	
@@ -130,7 +141,5 @@ public class ConfirmAction extends WebworkAbstractAction
 		
 		return SUCCESS;
 	}
-
-
 
 }

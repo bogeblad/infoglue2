@@ -8,7 +8,7 @@
 <form method="POST" name="editForm" action="UpdateSiteNodeTypeDefinition.action">
 <table>
 	<tr>
-		<td>Name <a href="DeleteSiteNodeTypeDefinition.action?siteNodeTypeDefinitionId=$!siteNodeTypeDefinitionId">Delete</a></td>
+		<td>Name</td>
 	</tr>
 	<tr>
 		<td>#editField("SiteNodeTypeDefinition.name" "name" $!name "51")</td>
@@ -25,9 +25,6 @@
 	
 	<tr>
 		<td colspan="2">Right now this siteNodeTypeDefinition has the following AvailableServiceBindings</td>
-	</tr>
-	<tr>
-		<th colspan="2" align="left"><b>AvailableServiceBinding Name</b></th>
 	</tr>
 	
 	#foreach ($availableServiceBindingVO in $allAvailableServiceBindings)

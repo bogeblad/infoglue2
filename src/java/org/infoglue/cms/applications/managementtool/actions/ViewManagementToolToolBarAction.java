@@ -25,8 +25,14 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.applications.common.ImageButton;
+import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
@@ -258,53 +264,54 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		CmsLogger.logInfo("Title:" + this.title);
 		CmsLogger.logInfo("toolbarKey:" + this.toolbarKey);
-		
+
 		try
 		{
-			if(this.toolbarKey.equalsIgnoreCase("repositories"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.repositoryList.header"))
 				return getRepositoriesButtons();
-			if(this.toolbarKey.equalsIgnoreCase("repository details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewRepository.header"))
 				return getRepositoryDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("system users"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUserList.header"))
 				return getSystemUsersButtons();
-			if(this.toolbarKey.equalsIgnoreCase("available updates"))
-				return getAvailablePackagesButtons();
-			if(this.toolbarKey.equalsIgnoreCase("user details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUser.header"))
 				return getSystemUserDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("roles"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleList.header"))
 				return getRolesButtons();
-			if(this.toolbarKey.equalsIgnoreCase("role details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewRole.header"))
 				return getRoleDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("languages"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguageList.header"))
 				return getLanguagesButtons();
-			if(this.toolbarKey.equalsIgnoreCase("language details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguage.header"))
 				return getLanguageDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("InterceptionPoints"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptionPointList.header"))
 				return getInterceptionPointsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("InterceptionPoint details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptionPoint.header"))
 				return getInterceptionPointButtons();
-			if(this.toolbarKey.equalsIgnoreCase("Interceptors"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptorList.header"))
 				return getInterceptorsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("Interceptor details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptor.header"))
 				return getInterceptorButtons();
-			if(this.toolbarKey.equalsIgnoreCase("service definitions"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewServiceDefinitionList.header"))
 				return getServiceDefinitionsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("service definition details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewServiceDefinition.header"))
 				return getServiceDefinitionDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("available service bindings"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewAvailableServiceBindingList.header"))
 				return getAvailableServiceBindingsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("available service binding details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewAvailableServiceBinding.header"))
 				return getAvailableServiceBindingDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("site node type definitions"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewSiteNodeTypeDefinitionList.header"))
 				return getSiteNodeTypeDefinitionsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("site node type definition details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewSiteNodeTypeDefinition.header"))
 				return getSiteNodeTypeDefinitionDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("content type definitions"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinitionList.header"))
 				return getContentTypeDefinitionsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("content type definition details"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinition.header"))
 				return getContentTypeDefinitionDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("categories") || this.toolbarKey.equalsIgnoreCase("edit category"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewCategoryList.header") || this.toolbarKey.equalsIgnoreCase("tool.managementtool.editCategoryList.header"))
 				return getCategoryButtons();
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewUp2DateList.header"))
+				return getAvailablePackagesButtons();
+
 		}
 		catch(Exception e) {}			
 					
@@ -315,8 +322,8 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	private List getRepositoriesButtons()
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("CreateRepository!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newRepository"), "New Repository"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('repository');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRepository"), "Delete Repositories"));
+		buttons.add(new ImageButton("CreateRepository!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newRepository"), "tool.managementtool.createRepository.header"));	
+		buttons.add(new ImageButton(true, "javascript:submitListForm('repository');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRepository"), "tool.managementtool.deleteRepositories.header"));
 		buttons.add(new ImageButton(true, "javascript:openPopup('ImportRepository!input.action', 'Import', 'width=400,height=250,resizable=no');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.importRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.importRepository.header")));	
 		return buttons;
 	}
@@ -324,7 +331,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	private List getRepositoryDetailsButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("Confirm.action?header=Delete%20repository&yesDestination=" + URLEncoder.encode("DeleteRepository.action?repositoryId=" + this.repositoryId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListRepository.action?title=Repositories", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the repository " + this.name + "? This action will delete all information and structure contained in that repository so do not do it unless you are absolutely sure.", "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRepository"), "Delete Repository"));
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRepository.header&yesDestination=" + URLEncoder.encode("DeleteRepository.action?repositoryId=" + this.repositoryId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListRepository.action?title=Repositories", "UTF-8") + "&message=tool.managementtool.deleteRepository.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRepository"), "tool.managementtool.deleteRepository.header"));
 		buttons.add(new ImageButton(true, "javascript:openPopup('ExportRepository!input.action?repositoryId=" + this.repositoryId + "', 'Export', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.exportRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.exportRepository.header")));	
 		buttons.add(new ImageButton("ViewRepositoryProperties.action?repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
 		return buttons;				
@@ -344,7 +351,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		if(UserControllerProxy.getController().getSupportCreate())
 			buttons.add(new ImageButton("CreateSystemUser!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newSystemUser"), "New System User"));	
 		if(UserControllerProxy.getController().getSupportDelete())
-			buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('systemUser', 'userName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "Delete system users"));
+			buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('systemUser', 'userName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUsers.header"));
 		buttons.add(new ImageButton(true, "javascript:toggleSearchForm();", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.searchButton"), "Search Form"));
 		return buttons;
 	}
@@ -353,7 +360,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		if(UserControllerProxy.getController().getSupportDelete())
-			buttons.add(new ImageButton("Confirm.action?header=Delete%20system user&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(this.userName, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=" + URLEncoder.encode("Do you really want to delete the system user " + URLEncoder.encode(this.userName, URIEncoding), URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "Delete System User"));
+			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(this.userName, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(this.userName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
 		
 		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(this.userName);
 		if(contentTypeDefinitionVOList.size() > 0)
@@ -367,7 +374,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		if(UserControllerProxy.getController().getSupportCreate())
 			buttons.add(new ImageButton("CreateRole!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newRole"), "New Role"));	
 		if(UserControllerProxy.getController().getSupportDelete())
-			buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('role', 'roleName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "Delete roles"));
+			buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('role', 'roleName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "tool.managementtool.deleteRoles.header"));
 		
 		return buttons;
 	}
@@ -384,7 +391,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		//System.out.println("message:" + message);
 		
 		if(UserControllerProxy.getController().getSupportDelete())
-			buttons.add(new ImageButton("Confirm.action?header=Delete%20role&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=" + message, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "Delete Role"));
+			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteRole.text&extraParameters=" + URLEncoder.encode(this.roleName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "tool.managementtool.deleteRole.header"));
 		
 		List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(this.roleName);
 		if(contentTypeDefinitionVOList.size() > 0)
@@ -397,14 +404,15 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateLanguage!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newLanguage"), "New Language"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('language');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteLanguage"), "Delete languages"));
+		buttons.add(new ImageButton(true, "javascript:submitListForm('language');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteLanguage"), "tool.managementtool.deleteLanguages.header"));
 		return buttons;
 	}
 	
 	private List getLanguageDetailsButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("Confirm.action?header=Delete%20language&yesDestination=" + URLEncoder.encode("DeleteLanguage.action?languageId=" + this.languageId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListLanguage.action?title=Languages", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the language " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteLanguage"), "Delete Language"));
+		this.name = LanguageController.getController().getLanguageVOWithId(this.languageId).getName();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteLanguage.header&yesDestination=" + URLEncoder.encode("DeleteLanguage.action?languageId=" + this.languageId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListLanguage.action?title=Languages", "UTF-8") + "&message=tool.managementtool.deleteLanguage.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteLanguage"), "tool.managementtool.deleteLanguage.header"));
 		return buttons;				
 	}
 
@@ -412,14 +420,15 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateInterceptionPoint!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newInterceptionPoint"), "New InterceptionPoint"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('interceptionPoint');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteInterceptionPoint"), "Delete InterceptionPoints"));
+		buttons.add(new ImageButton(true, "javascript:submitListForm('interceptionPoint');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteInterceptionPoint"), "tool.managementtool.deleteInterceptionPoints.header"));
 		return buttons;
 	}
 	
 	private List getInterceptionPointButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("Confirm.action?header=Delete%20InterceptionPoint&yesDestination=" + URLEncoder.encode("DeleteInterceptionPoint.action?interceptionPointId=" + this.interceptionPointId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListInterceptionPoint.action?title=InterceptionPoints", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the interceptionPoint " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteInterceptionPoint"), "Delete InterceptionPoint"));
+		this.name = InterceptionPointController.getController().getInterceptionPointVOWithId(this.interceptionPointId).getName();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteInterceptionPoint.header&yesDestination=" + URLEncoder.encode("DeleteInterceptionPoint.action?interceptionPointId=" + this.interceptionPointId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListInterceptionPoint.action?title=InterceptionPoints", "UTF-8") + "&message=tool.managementtool.deleteInterceptionPoint.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteInterceptionPoint"), "tool.managementtool.deleteInterceptionPoint.header"));
 		if(this.interceptionPointVO.getUsesExtraDataForAccessControl().booleanValue() == false)
 			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=" + this.interceptionPointVO.getCategory() + "&interceptionPointId=" + this.interceptionPointId + "&returnAddress=ViewInterceptionPoint.action?interceptionPointId=" + this.interceptionPointId + "&colorScheme=ManagementTool", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "InterceptionPoint Access Rights"));
 		
@@ -430,14 +439,15 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateInterceptor!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newInterceptor"), "New Interceptor"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('interceptor');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteInterceptor"), "Delete Interceptor"));
+		buttons.add(new ImageButton(true, "javascript:submitListForm('interceptor');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteInterceptor"), "tool.managementtool.deleteInterceptors.header"));
 		return buttons;
 	}
 	
 	private List getInterceptorButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("Confirm.action?header=Delete%20Interceptor&yesDestination=" + URLEncoder.encode("DeleteInterceptor.action?interceptorId=" + this.interceptorId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListInterceptor.action?title=Interceptors", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the interceptor " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteInterceptor"), "Delete Interceptor"));
+		this.name = InterceptorController.getController().getInterceptorVOWithId(this.interceptorId).getName();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteInterceptor.header&yesDestination=" + URLEncoder.encode("DeleteInterceptor.action?interceptorId=" + this.interceptorId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListInterceptor.action?title=Interceptors", "UTF-8") + "&message=tool.managementtool.deleteInterceptor.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteInterceptor"), "tool.managementtool.deleteInterceptor.header"));
 		return buttons;				
 	}
 
@@ -445,14 +455,15 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateServiceDefinition!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newServiceDefinition"), "New ServiceDefinition"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('serviceDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteServiceDefinition"), "Delete serviceDefinitions"));
+		buttons.add(new ImageButton(true, "javascript:submitListForm('serviceDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteServiceDefinition"), "tool.managementtool.deleteServiceDefinitions.header"));
 		return buttons;
 	}
 	
 	private List getServiceDefinitionDetailsButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("Confirm.action?header=Delete%20serviceDefinition&yesDestination=" + URLEncoder.encode("DeleteServiceDefinition.action?serviceDefinitionId=" + this.serviceDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListServiceDefinition.action?title=ServiceDefinitions", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the serviceDefinition " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteServiceDefinition"), "Delete ServiceDefinition"));
+		this.name = ServiceDefinitionController.getController().getServiceDefinitionVOWithId(this.serviceDefinitionId).getName();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteServiceDefinition.header&yesDestination=" + URLEncoder.encode("DeleteServiceDefinition.action?serviceDefinitionId=" + this.serviceDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListServiceDefinition.action?title=ServiceDefinitions", "UTF-8") + "&message=tool.managementtool.deleteServiceDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteServiceDefinition"), "tool.managementtool.deleteServiceDefinition.header"));
 		return buttons;				
 	}
 
@@ -460,14 +471,15 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateAvailableServiceBinding!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newAvailableServiceBinding"), "New AvailableServiceBinding"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('availableServiceBinding');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteAvailableServiceBinding"), "Delete availableServiceBindings"));
+		buttons.add(new ImageButton(true, "javascript:submitListForm('availableServiceBinding');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteAvailableServiceBinding"), "tool.managementtool.deleteAvailableServiceBindings.header"));
 		return buttons;
 	}
 	
 	private List getAvailableServiceBindingDetailsButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("Confirm.action?header=Delete%20availableServiceBinding&yesDestination=" + URLEncoder.encode("DeleteAvailableServiceBinding.action?availableServiceBindingId=" + this.availableServiceBindingId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListAvailableServiceBinding.action?title=AvailableServiceBindings", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the availableServiceBinding " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteAvailableServiceBinding"), "Delete AvailableServiceBinding"));
+		this.name = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithId(this.availableServiceBindingId).getName();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteAvailableServiceBinding.header&yesDestination=" + URLEncoder.encode("DeleteAvailableServiceBinding.action?availableServiceBindingId=" + this.availableServiceBindingId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListAvailableServiceBinding.action?title=AvailableServiceBindings", "UTF-8") + "&message=tool.managementtool.deleteAvailableServiceBinding.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteAvailableServiceBinding"), "tool.managementtool.deleteAvailableServiceBinding.header"));
 		return buttons;				
 	}
 
@@ -475,14 +487,15 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateSiteNodeTypeDefinition!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newSiteNodeTypeDefinition"), "New SiteNodeTypeDefinition"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('siteNodeTypeDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSiteNodeTypeDefinition"), "Delete siteNodeTypeDefinitions"));
+		buttons.add(new ImageButton(true, "javascript:submitListForm('siteNodeTypeDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSiteNodeTypeDefinition"), "tool.managementtool.deleteSiteNodeTypeDefinitions.header"));
 		return buttons;
 	}
 	
 	private List getSiteNodeTypeDefinitionDetailsButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("Confirm.action?header=Delete%20siteNodeTypeDefinition&yesDestination=" + URLEncoder.encode("DeleteSiteNodeTypeDefinition.action?siteNodeTypeDefinitionId=" + this.siteNodeTypeDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListSiteNodeTypeDefinition.action?title=SiteNodeTypeDefinitions", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the siteNodeTypeDefinition " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSiteNodeTypeDefinition"), "Delete SiteNodeTypeDefinition"));
+		this.name = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(this.siteNodeTypeDefinitionId).getName();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteSiteNodeTypeDefinition.header&yesDestination=" + URLEncoder.encode("DeleteSiteNodeTypeDefinition.action?siteNodeTypeDefinitionId=" + this.siteNodeTypeDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListSiteNodeTypeDefinition.action?title=SiteNodeTypeDefinitions", "UTF-8") + "&message=tool.managementtool.deleteSiteNodeTypeDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSiteNodeTypeDefinition"), "tool.managementtool.deleteSiteNodeTypeDefinition.header"));
 		return buttons;				
 	}
 
@@ -491,14 +504,15 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateContentTypeDefinition!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newContentTypeDefinition"), "New ContentTypeDefinition"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('contentTypeDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteContentTypeDefinition"), "Delete contentTypeDefinitions"));
+		buttons.add(new ImageButton(true, "javascript:submitListForm('contentTypeDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteContentTypeDefinition"), "tool.managementtool.deleteContentTypeDefinitions.header"));
 		return buttons;
 	}
 	
 	private List getContentTypeDefinitionDetailsButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("Confirm.action?header=Delete%20contentTypeDefinition&yesDestination=" + URLEncoder.encode("DeleteContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListContentTypeDefinition.action?title=ContentTypeDefinitions", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the contentTypeDefinition " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteContentTypeDefinition"), "Delete ContentTypeDefinition"));
+		this.name = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentTypeDefinitionId).getName();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteContentTypeDefinition.header&yesDestination=" + URLEncoder.encode("DeleteContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListContentTypeDefinition.action?title=ContentTypeDefinitions", "UTF-8") + "&message=tool.managementtool.deleteContentTypeDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteContentTypeDefinition"), "tool.managementtool.deleteContentTypeDefinition.header"));
 		buttons.add(getAccessRightsButton());
 		return buttons;				
 	}

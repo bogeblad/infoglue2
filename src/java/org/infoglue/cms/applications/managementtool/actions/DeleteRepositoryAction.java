@@ -45,13 +45,15 @@ public class DeleteRepositoryAction extends WebworkAbstractAction
 		this(new RepositoryVO());
 	}
 
-	public DeleteRepositoryAction(RepositoryVO repositoryVO) {
+	public DeleteRepositoryAction(RepositoryVO repositoryVO) 
+	{
 		this.repositoryVO = repositoryVO;
 	}
 	
 	protected String doExecute() throws Exception 
 	{
-		this.repositoryVO.setRepositoryId(this.getRepositoryId());
+	    System.out.println("AAAAAAAAAAAAAAAAA");
+	    this.repositoryVO.setRepositoryId(this.getRepositoryId());
 		RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName());
 		return "success";
 	}

@@ -269,6 +269,7 @@
 			<input type="hidden" name="yesDestination" value="$yesDestination"/>
 			<input type="hidden" name="noDestination" value="$noDestination"/>
 			<input type="hidden" name="message" value="$message"/>
+			<input type="hidden" name="extraParameters" value="$extraParameters"/>
 	#end
 
 		<tr>

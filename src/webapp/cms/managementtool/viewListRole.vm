@@ -5,7 +5,7 @@
 #beginManagementTool("tool.managementtool.viewRoleList.header" "tool.managementtool.viewRoleList.header" "")
 
 #set($lvConstraint = 1) 
-#lvHead(["Name","Description"] "Delete roles" "DeleteRole.action" "ViewListRole.action?title=Roles" "Do you really want to delete the role:<br/><br/>")
+#lvHead(["Name","Description"] "tool.managementtool.deleteRoles.header" "DeleteRole.action" "ViewListRole.action?title=Roles" "tool.managementtool.deleteRoles.text")
 
 #set($cnt = 0)
 #foreach ($roleVO in $roles)

@@ -5,7 +5,7 @@
 #beginManagementTool("tool.managementtool.viewContentTypeDefinitionList.header" "tool.managementtool.viewContentTypeDefinitionList.header" "")
 
 #set($lvConstraint = 1) 
-#lvHead(["Name"] "Delete repositories" "DeleteContentTypeDefinition.action" "ViewListContentTypeDefinition.action?title=ContentTypeDefinitions" "Do you really want to delete the contentTypeDefinitions:<br/><br/>")
+#lvHead(["Name"] "tool.managementtool.deleteContentTypeDefinitions.header" "DeleteContentTypeDefinition.action" "ViewListContentTypeDefinition.action?title=ContentTypeDefinitions" "tool.managementtool.deleteContentTypeDefinitions.text")
 
 #set($cnt = 0)
 #foreach ($contentTypeDefinitionVO in $contentTypeDefinitions)

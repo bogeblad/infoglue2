@@ -5,7 +5,7 @@
 #beginManagementTool("tool.managementtool.viewInterceptorList.header" "tool.managementtool.viewInterceptorList.header" "")
 
 #set($lvConstraint = 1) 
-#lvHead(["Name","Description", "ClassName"] "Delete interceptors" "DeleteInterceptor.action" "ViewListInterceptor.action?title=Interceptors" "Do you really want to delete the interceptor:<br/><br/>")
+#lvHead(["Name","Description", "ClassName"] "tool.managementtool.deleteInterceptors.header" "DeleteInterceptor.action" "ViewListInterceptor.action?title=Interceptors" "tool.managementtool.deleteInterceptors.text")
 
 #set($cnt = 0)
 #foreach ($interceptorVO in $interceptorVOList)

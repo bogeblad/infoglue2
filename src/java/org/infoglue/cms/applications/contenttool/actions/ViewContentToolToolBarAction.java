@@ -302,10 +302,10 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		
 		try
 		{
-			if(this.contentVersionId != null)
+		    buttons.add(getCoverButton());
+		    
+		    if(this.contentVersionId != null)
 			{
-				buttons.add(getCoverButton());
-
 				if(!isReadOnly())
 					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'FileUpload', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
 			
@@ -361,6 +361,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		{
 			//return new ImageButton("Confirm.action?header=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.header"), "UTF-8") + "&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContent.action?title=Content&contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.text"), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.header"));
 			String url = "Confirm.action?header=tool.contenttool.deleteContent.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContent.action?title=Content&contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.deleteContent.text";
+			
 		    return new ImageButton(url, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), "tool.contenttool.deleteContent.header");
 		}
 		catch(Exception e){e.printStackTrace();}

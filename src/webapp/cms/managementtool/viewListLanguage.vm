@@ -5,7 +5,7 @@
 #beginManagementTool("tool.managementtool.viewLanguageList.header" "tool.managementtool.viewLanguageList.header" "")
 
 #set($lvConstraint = 1) 
-#lvHead(["Name","Language code","Charset"] "Delete language" "DeleteLanguage.action" "ViewListLanguage.action?title=Languages" "Do you really want to delete the language:<br/><br/>")
+#lvHead(["Name","Language code","Charset"] "tool.managementtool.deleteLanguages.header" "DeleteLanguage.action" "ViewListLanguage.action?title=Languages" "tool.managementtool.deleteLanguages.text")
 
 #set($cnt = 0)
 #foreach ($languageVO in $languages)

@@ -5,7 +5,7 @@
 #beginManagementTool("tool.managementtool.viewInterceptionPointList.header" "tool.managementtool.viewInterceptionPointList.header" "")
 
 #set($lvConstraint = 1) 
-#lvHead(["Name", "Category", "Description", "usesExtraDataForAccessControl"] "Delete interceptionPoint" "DeleteInterceptionPoint.action" "ViewListInterceptionPoint.action?title=InterceptionPoints" "Do you really want to delete the interceptionPoint:<br/><br/>")
+#lvHead(["Name", "Category", "Description", "usesExtraDataForAccessControl"] "tool.managementtool.deleteInterceptionPoints.header" "DeleteInterceptionPoint.action" "ViewListInterceptionPoint.action?title=InterceptionPoints" "tool.managementtool.deleteInterceptionPoints.text")
 
 #set($cnt = 0)
 #foreach ($interceptionPointVO in $interceptionPointVOList)

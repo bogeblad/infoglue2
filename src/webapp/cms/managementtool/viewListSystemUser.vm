@@ -64,7 +64,7 @@
 
 
 #set($lvConstraint = 1) 
-#lvHead(["Username", "Full Name","Defined Roles"] "Delete system users" "DeleteSystemUser.action" "ViewListSystemUser.action?title=SystemUsers" "Do you really want to delete the system user:<br/><br/>")
+#lvHead(["Username", "Full Name","Defined Roles"] "tool.managementtool.deleteSystemUsers.header" "DeleteSystemUser.action" "ViewListSystemUser.action?title=SystemUsers" "tool.managementtool.deleteSystemUsers.text")
 
 #set($cnt = 0)
 #foreach($infogluePrincipal in $infogluePrincipals)

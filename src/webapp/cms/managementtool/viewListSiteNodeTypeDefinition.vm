@@ -5,7 +5,7 @@
 #beginManagementTool("tool.managementtool.viewSiteNodeTypeDefinitionList.header" "tool.managementtool.viewSiteNodeTypeDefinitionList.header" "")
 
 #set($lvConstraint = 1) 
-#lvHead(["Name","Description","Invoker class name"] "Delete roles" "DeleteSiteNodeTypeDefinition.action" "ViewListSiteNodeTypeDefinition.action?title=SiteNodeTypeDefinitions" "Do you really want to delete the SiteNodeTypeDefinition:<br/><br/>")
+#lvHead(["Name","Description","Invoker class name"] "tool.managementtool.deleteSiteNodeTypeDefinitions.header" "DeleteSiteNodeTypeDefinition.action" "ViewListSiteNodeTypeDefinition.action?title=SiteNodeTypeDefinitions" "tool.managementtool.deleteSiteNodeTypeDefinitions.text")
 
 #set($cnt = 0)
 #foreach ($siteNodeTypeDefinitionVO in $siteNodeTypeDefinitions)
