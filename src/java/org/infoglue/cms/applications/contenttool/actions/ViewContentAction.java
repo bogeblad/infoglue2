@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.*;
@@ -34,6 +35,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -45,12 +47,14 @@ import java.util.Map;
 
 public class ViewContentAction extends WebworkAbstractAction
 {
-	private Integer unrefreshedContentId = new Integer(0);
-	private Integer changeTypeId         = new Integer(0);
-	private Integer repositoryId         = null;
-	private List availableLanguages      = null;
+	private Integer unrefreshedContentId 	= new Integer(0);
+	private Integer changeTypeId         	= new Integer(0);
+	private Integer repositoryId         	= null;
+	private List availableLanguages      	= null;
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
    	private String defaultFolderContentTypeName;
+   	private Integer languageId 				= null;
+   	private String stay 					= null;
 
     private ContentVO contentVO;
 
@@ -85,8 +89,17 @@ public class ViewContentAction extends WebworkAbstractAction
 
     public String doExecute() throws Exception
     {
-        this.initialize(getContentId());
-        return "success";
+        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+        if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && contentVO.getIsBranch().booleanValue() == false && getShowContentVersionFirst().equalsIgnoreCase("true"))
+        {
+            this.languageId = getMasterLanguageVO().getId();
+            return "viewVersion";
+        }
+        else
+        {
+            this.initialize(getContentId());
+            return "success";
+        }
     }
 
 	public String doStandalone() throws Exception
@@ -297,5 +310,30 @@ public class ViewContentAction extends WebworkAbstractAction
     public String getDefaultFolderContentTypeName()
     {
         return defaultFolderContentTypeName;
+    }
+    
+	public String getShowContentVersionFirst()
+	{
+	    return CmsPropertyHandler.getProperty("showContentVersionFirst");
+	}
+	
+	public LanguageVO getMasterLanguageVO() throws Exception
+	{
+	    return LanguageController.getController().getMasterLanguage(repositoryId);
+	}
+	
+    public Integer getLanguageId()
+    {
+        return languageId;
+    }
+    
+    public String getStay()
+    {
+        return stay;
+    }
+    
+    public void setStay(String stay)
+    {
+        this.stay = stay;
     }
 }

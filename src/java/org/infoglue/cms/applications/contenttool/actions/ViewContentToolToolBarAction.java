@@ -30,9 +30,11 @@ import org.infoglue.cms.util.CmsLogger;
 
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.workflow.*;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 
 import java.util.List;
@@ -302,6 +304,8 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		{
 			if(this.contentVersionId != null)
 			{
+				buttons.add(getCoverButton());
+
 				if(!isReadOnly())
 					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'FileUpload', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
 			
@@ -328,8 +332,18 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 
 		return buttons;				
 	}
+	
+	private ImageButton getCoverButton()
+	{
+		try
+		{
+			return new ImageButton("ViewContent.action?contentId=" + this.contentId + "&stay=true", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentCover"), "tool.contenttool.contentDetailsHeader");
+		}
+		catch(Exception e){}
 
-
+		return null;
+	}
+	
 	private ImageButton getUnpublishButton()
 	{
 		try

@@ -90,4 +90,5 @@ public class ViewContentToolMenuAction extends WebworkAbstractAction
 	{
 		this.showVersions = showVersions;
 	}
+	
 }

@@ -42,7 +42,14 @@
 		
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
-			parent.frames['main'].location.href="ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
+			##parent.frames['main'].location.href="ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
+			##if($showComponentsFirst == "true")
+			##	parent.frames['main'].location.href="ViewContentVersion.action?contentId=" + itemId + "&languageId=" + $masterLanguageVO.getId();
+			###else
+				parent.frames['main'].location.href="ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
+			###end
+		
+			//refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
 		}
 		   
 		function reloadMain()
