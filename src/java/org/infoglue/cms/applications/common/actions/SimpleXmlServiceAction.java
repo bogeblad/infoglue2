@@ -29,6 +29,7 @@
 package org.infoglue.cms.applications.common.actions;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -43,6 +44,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -64,6 +66,8 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 {
+	// protected static String ENCODING = "ISO-8859-1";
+	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
     protected static String TYPE_REPOSITORY = "Repository";
@@ -74,6 +78,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     protected String action = "";
     protected boolean createAction = false;
     protected boolean useTemplate = false;
+    protected VisualFormatter formatter = new VisualFormatter();
 
 	public abstract INodeSupplier getNodeSupplier() throws SystemException;
 	
@@ -84,10 +89,15 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 		return ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 	}      
 	
+	private String encode(String text)
+	{
+		return text;
+	}
+	
 	protected String makeAction(BaseNode node) throws UnsupportedEncodingException
 	{
 		String action = "javascript:onTreeItemClick(this,";
-		action+="'" + node.getId() + "','" + repositoryId + "','" + URLEncoder.encode(node.getTitle(),"UTF-8") + "');";
+		action+="'" + node.getId() + "','" + repositoryId + "','" + URLEncoder.encode(node.getTitle(),ENCODING) + "');";
         return action;
 	}
 	
@@ -99,8 +109,8 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 	protected String getFormattedDocument(Document doc, boolean compact)
 	{
 	    OutputFormat format = compact ? OutputFormat.createCompactFormat() : OutputFormat.createPrettyPrint(); 
-		// format.setEncoding("iso-8859-1");
-		format.setEncoding("UTF-8");
+		format.setEncoding(ENCODING);
+		
 		format.setExpandEmptyElements(false);
 		StringWriter stringWriter = new StringWriter();
 		XMLWriter writer = new XMLWriter(stringWriter, format);
@@ -114,6 +124,20 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
         }
 		return stringWriter.toString();
 	}
+	
+    protected String out(String string) throws IOException
+    {
+		getResponse().setContentType("text/xml; charset=" + ENCODING);
+		// getResponse().setContentLength(string.length());
+		/*OutputStream outs = getResponse().getOutputStream();
+		outs.write(string.getBytes());
+		outs.flush();
+		outs.close();*/
+		PrintWriter out = getResponse().getWriter();
+		out.println(string);
+		// out.write(new String(string.getBytes(), ENCODING));
+		return null;
+    }
 	
     /*
      * Returns all Languages for a given repository (repositoryId)
@@ -192,8 +216,9 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     	        element
 	        	.addAttribute("id", "" + r.getId())
     	        	.addAttribute("repositoryId", "" + r.getId())
-    	        	.addAttribute("text", text)
+    	        	.addAttribute("text", encode(text))
     	        	.addAttribute("src", src)
+    	        	.addAttribute("hasChildren", "true")
     	        	.addAttribute("type", TYPE_REPOSITORY);
     	    }
     	    out(getFormattedDocument(doc));
@@ -216,8 +241,9 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 	        elm
 	        	.addAttribute("id", "" + node.getId())
 	        	.addAttribute("repositoryId", "" + repositoryId)
-	        	.addAttribute("text", text)
+	        	.addAttribute("text", encode(text))
 	        	.addAttribute("src", src)
+   	        	.addAttribute("hasChildren", "true")
 	        	.addAttribute("type", type);
 			
     	    out(getFormattedDocument(doc));
@@ -241,7 +267,8 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 					theNode.setChildren(sup.hasChildren(theNode.getId()));
 				}
 				
-				String src = theNode.hasChildren() ? action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + theNode.getId(): "";
+				// String src = theNode.hasChildren() ? action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + theNode.getId(): "";
+				String src = action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + theNode.getId();
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(createAction && src.length() >0) src += urlArgSeparator + "showLeafs=" + showLeafs;
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
@@ -251,9 +278,10 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 		        	.addAttribute("id", "" + theNode.getId())
 		        	.addAttribute("parent", "" + parent)
 		        	.addAttribute("repositoryId", "" + repositoryId)
-		        	.addAttribute("text", theNode.getTitle())
+		        	.addAttribute("text", encode(theNode.getTitle()))
 		        	.addAttribute("src", src)
-		        	.addAttribute("type", TYPE_FOLDER);
+		        	.addAttribute("type", TYPE_FOLDER)
+		        	.addAttribute("hasChildren", "" + theNode.hasChildren());
 		        
 		        
 		        if(createAction) elm.addAttribute("action", makeAction(theNode));
@@ -271,7 +299,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 		        	.addAttribute("id", "" + theNode.getId())
 		        	.addAttribute("parent", "" + parent)
 		        	.addAttribute("repositoryId", "" + repositoryId)
-		        	.addAttribute("text", text)
+		        	.addAttribute("text", encode(text))
 		        	.addAttribute("type", type)
 				;
 		        if(createAction) 
@@ -294,14 +322,6 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     	return null;
     }
 
-    protected String out(String string) throws IOException
-    {
-		getResponse().setContentType("text/xml");
-		getResponse().setContentLength(string.length());
-		PrintWriter out = getResponse().getWriter();
-		out.println(string);
-		return null;
-    }
 
 	public Integer getParent() {
 		return parent;

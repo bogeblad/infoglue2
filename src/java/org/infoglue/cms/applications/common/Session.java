@@ -132,7 +132,6 @@ public class Session
 		sessionDelegate.put(IG_PRINCIPAL, p);
 	}
 
-
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer("<Session>\n");
