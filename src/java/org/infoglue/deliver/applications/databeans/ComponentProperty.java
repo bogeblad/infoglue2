@@ -146,4 +146,23 @@ public class ComponentProperty
 		this.createAction = createAction;
 	}
 
+	public String toString()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("id=").append(id)
+			.append(" name=").append(name)
+			.append(" type=").append(type)
+			.append(" componentId=").append(componentId)
+			.append(" entityClass=").append(entityClass)
+			.append(" entityId=").append(entityId)
+			.append(" value=").append(value)
+			.append(" isMultipleBinding=").append(isMultipleBinding)
+			.append(" visualizingAction=").append(visualizingAction)
+			.append(" createAction=").append(createAction)
+			.append(" contentBindings.size=").append(contentBindings.size())
+			.append(" siteNodeBindings.size=").append(siteNodeBindings.size())
+			.append(" categoryBindings.size=").append("not implemented");
+		return sb.toString();
+	}
+
 }
