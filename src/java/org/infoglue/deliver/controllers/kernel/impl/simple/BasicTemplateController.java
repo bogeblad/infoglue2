@@ -486,6 +486,10 @@ public class BasicTemplateController implements TemplateController
     
     public InfoGluePrincipal getPrincipal(String userName)
     {
+        System.out.println("userName:" + userName);
+        if(userName == null || userName.equals(""))
+            return null;
+        
         InfoGluePrincipal infoGluePrincipal = null;
         
         try
