@@ -29,6 +29,7 @@ import org.infoglue.cms.util.*;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.util.CacheController;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -60,19 +61,22 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
 	 * This method returns the available service binding with a specific name. 
 	 */
 	
-	public AvailableServiceBindingVO getAvailableServiceBinding(String availableServiceBindingName) throws SystemException, Exception
+	public AvailableServiceBindingVO getAvailableServiceBindingVO(String availableServiceBindingName, Database db) throws SystemException, Exception
 	{ 
-		CmsLogger.logInfo("Going to look for availableServiceBindingName " + availableServiceBindingName);
-		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-        AvailableServiceBindingVO availableServiceBindingVO = null;
-
-		beginTransaction(db);
-
-        try
-        {
-    		OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl asb WHERE asb.name = $1");
+	    String key = "" + availableServiceBindingName;
+		CmsLogger.logInfo("key:" + key);
+		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
+		if(availableServiceBindingVO != null)
+		{
+		    CmsLogger.logInfo("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
+		}
+		else
+		{
+			CmsLogger.logInfo("Going to look for availableServiceBindingName " + availableServiceBindingName);
+			
+			//OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl asb WHERE asb.name = $1");
+    		OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl asb WHERE asb.name = $1");
+    		//OQLQuery oql = db.getOQLQuery( "CALL SQL SELECT availableServiceBindingId, name, description, visualizationAction, isMandatory, isUserEditable, isInheritable FROM cmAvailableServiceBinding WHERE (name = $1) AS org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl");
         	oql.bind(availableServiceBindingName);
 			
 			QueryResults results = oql.execute(Database.ReadOnly);
@@ -82,19 +86,36 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
 				availableServiceBindingVO = availableServiceBinding.getValueObject();
 				CmsLogger.logInfo("Found availableServiceBinding:" + availableServiceBindingVO.getName());
         	}
-            
-			rollbackTransaction(db);
-			//commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-
-        return availableServiceBindingVO;	
+            else
+            {
+                System.out.println("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
+            }
+			
+			CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);
+		}
+		
+	    return availableServiceBindingVO;	
 	}
 	
-    
+	/**
+	 * This method returns the available service binding with a specific name. 
+	 */
+	
+	public AvailableServiceBinding getAvailableServiceBinding(String availableServiceBindingName, Database db) throws SystemException, Exception
+	{ 
+	    AvailableServiceBinding availableServiceBinding = null;
+	    
+		OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl asb WHERE asb.name = $1");
+    	oql.bind(availableServiceBindingName);
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		if (results.hasMore()) 
+    	{
+    		availableServiceBinding = (AvailableServiceBinding)results.next();
+			CmsLogger.logInfo("Found availableServiceBinding:" + availableServiceBinding.getName());
+    	}
+            
+        return availableServiceBinding;	
+	}
+	
 }
