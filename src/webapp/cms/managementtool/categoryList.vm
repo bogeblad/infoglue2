@@ -1,0 +1,23 @@
+#set($lvConstraint = 1)
+#set($yesURL = "CategoryManagement!delete.action")
+#set($noURL = "CategoryManagement!list.action")
+#if($model.categoryId)
+	#set($noURL = "CategoryManagement!edit.action?categoryId=$categoryId&title=Category%20Details")
+#end
+
+#lvHead(["Name", "Status"] "Delete Category" $yesURL $noURL "Do you really want to delete the Categories:<br/><br/>")
+#set($cnt = 0)
+#foreach($category in $categories)
+	#set($categoryId = $category.getId() )
+	#set($categoryStatus = "Inactive" )
+	#if($category.active)
+		#set($categoryStatus = "Active" )
+	#end
+
+	#set($rowUrl = "CategoryManagement!edit.action?categoryId=$categoryId&title=Category%20Details")
+	#set($row = ["<input type='hidden' name='rowtitle' value='$category.getName()'/> <a href=$rowUrl>$category.getName()</a>", "$categoryStatus"])
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $categoryId)
+#end
+#lvEnd()
