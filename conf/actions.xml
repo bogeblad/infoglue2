@@ -908,6 +908,8 @@
 		<view name="showContentTreeForMultipleBinding">/cms/structuretool/viewContentTreeForMultipleComponentBinding.vm</view>
 		<view name="showStructureTree">/cms/structuretool/viewStructureTreeForComponentBinding.vm</view>
 		<view name="showStructureTreeForMultipleBinding">/cms/structuretool/viewStructureTreeForMultipleComponentBinding.vm</view>
+		<view name="showCategoryTree">/cms/structuretool/viewCategoryTreeForComponentBinding.vm</view>
+		<view name="showCategoryTreeForMultipleBinding">/cms/structuretool/viewCategoryTreeForMultipleComponentBinding.vm</view>
 		<view name="componentAdded">${url}</view>
 		<view name="componentDeleted">${url}</view>
 		<view name="error">/cms/structuretool/error.vm</view>
@@ -1015,5 +1017,58 @@
 		<view name="granted">/deliver/extranetLoginCheckAccepted.vm</view>
 		<view name="denied">/deliver/extranetLoginCheckNoAccess.vm</view>
 	</action>
+
+	<!-- Management Tool Category Commands -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.CategoryAction" alias="CategoryManagement">
+		<view name="error">/cms/managementtool/error.vm</view>
+
+		<command name="list" alias="CategoryManagement!list">
+			<view name="success">/cms/managementtool/viewListCategories.vm</view>
+		</command>
+		<command name="new" alias="CategoryManagement!new">
+			<view name="success">/cms/managementtool/categoryEditor.vm</view>
+		</command>
+		<command name="edit" alias="CategoryManagement!edit">
+			<view name="success">/cms/managementtool/categoryEditor.vm</view>
+		</command>
+		<command name="displayTreeForMove" alias="CategoryManagement!displayTreeForMove">
+			<view name="success">/cms/managementtool/moveCategory.vm</view>
+		</command>
+		<command name="move" alias="CategoryManagement!move">
+			<view name="success">/cms/managementtool/categoryEditor.vm</view>
+		</command>
+		<command name="save" alias="CategoryManagement!save">
+			<view name="success">CategoryManagement!edit.action?categoryId=${model/parentId}</view>
+			<view name="main">CategoryManagement!list.action</view>
+			<view name="error">/cms/managementtool/categoryEditor.vm</view>
+			<view name="input">/cms/managementtool/categoryEditor.vm</view>
+		</command>
+		<command name="delete" alias="CategoryManagement!delete">
+			<view name="main">CategoryManagement!list.action</view>
+			<view name="success">CategoryManagement!edit.action?categoryId=${model/parentId}</view>
+		</command>
+	</action>
+
+	<!-- Category Tree Commands -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewCategoryTreeAction" alias="ViewCategoryHtmlTree">
+		<view name="error">/cms/managementtool/error.vm</view>
+
+		<command name="bindingView" alias="ViewCategoryHtmlTree!bindingView">
+			<view name="bindingView">/cms/managementtool/viewCategoryHtmlTreeForBinding.vm</view>
+		</command>
+	</action>
+
+	<!-- Content Category Commands -->
+	<action name="org.infoglue.cms.applications.contenttool.actions.ContentCategoryAction" alias="ContentCategory">
+		<view name="error">/cms/contenttool/error.vm</view>
+
+		<command name="add" alias="ContentCategory!add">
+			<view name="success">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+		</command>
+		<command name="delete" alias="ContentCategory!delete">
+			<view name="success">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+		</command>
+	</action>
+
 
 </actions>
