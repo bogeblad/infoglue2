@@ -871,6 +871,15 @@ public interface TemplateController
     public abstract List getChildContents(Integer contentId,
             boolean searchRecursive, String sortAttribute, String sortOrder);
 
+	/**
+	 * The method returns a list of ContentVO-objects that is children to the bound content sent in. 
+	 * The method is great for collection-pages on any site where you want to bind to a folder containing all contents to list.
+	 * You can also state if the method should recurse into subfolders and how the contents should be sorted.
+	 * The recursion only deals with three levels at the moment for performance-reasons. 
+	 */
+	
+	public List getChildContents(Integer contentId, boolean searchRecursive, String sortAttribute, String sortOrder, boolean includeFolders);
+
     /**
 	 * Finds a list of ContentVersionVOs that are related to the provided category under the given attribute name.
 	 * @param categoryId The id of the Category
@@ -1026,4 +1035,8 @@ public interface TemplateController
 
     public abstract String decoratePage(String page);
 
+    
+    public boolean getThreatFoldersAsContents();
+    
+    public void setThreatFoldersAsContents(boolean threatFoldersAsContents);
 }
