@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -45,7 +45,7 @@ import java.util.ArrayList;
 
 /**
  * This class handles all interaction with Languages and persistence of them.
- * 
+ *
  * @author mattias
  */
 
@@ -63,53 +63,53 @@ public class LanguageController extends BaseController
 	/**
 	 * This method returns a specific LanguageVO object
 	 */
-	
+
 	public LanguageVO getLanguageVOWithId(Integer languageId) throws SystemException, Bug
 	{
 		return (LanguageVO)getVOWithId(LanguageImpl.class, languageId);
-	} 
+	}
 
 
 	/**
 	 * Returns the LanguageVO with the given name.
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 * @throws SystemException
 	 * @throws Bug
 	 */
-	
+
 	public LanguageVO getLanguageVOWithName(String name) throws SystemException, Bug
 	{
 		LanguageVO languageVO = null;
-		
+
 		Database db = CastorDatabaseService.getDatabase();
 
-		try 
+		try
 		{
 			beginTransaction(db);
 
 			Language language = getLanguageWithName(name, db);
 			if(language != null)
 				languageVO = language.getValueObject();
-			
+
 			commitTransaction(db);
-		} 
-		catch (Exception e) 
+		}
+		catch (Exception e)
 		{
 			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-		
-		return languageVO;	
+
+		return languageVO;
 	}
-	
+
 	/**
 	 * Returns the Language with the given name fetched within a given transaction.
-	 * 
+	 *
 	 * @param name
-	 * @param database
+	 * @param db
 	 * @return
 	 * @throws SystemException
 	 * @throws Bug
@@ -118,66 +118,66 @@ public class LanguageController extends BaseController
 	public Language getLanguageWithName(String name, Database db) throws SystemException, Bug
 	{
 		Language language = null;
-		
+
 		try
 		{
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl f WHERE f.name = $1");
 			oql.bind(name);
-			
+
 			QueryResults results = oql.execute();
-			if (results.hasMore()) 
+			if (results.hasMore())
 			{
 				language = (Language)results.next();
 			}
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch a named language. Reason:" + e.getMessage(), e);    
+			throw new SystemException("An error occurred when we tried to fetch a named language. Reason:" + e.getMessage(), e);
 		}
-		
-		return language;		
+
+		return language;
 	}
 
 	/**
 	 * Returns the LanguageVO with the given languageCode.
-	 * 
-	 * @param name
+	 *
+	 * @param code
 	 * @return
 	 * @throws SystemException
 	 * @throws Bug
 	 */
-	
+
 	public LanguageVO getLanguageVOWithCode(String code) throws SystemException, Bug
 	{
 		LanguageVO languageVO = null;
-		
+
 		Database db = CastorDatabaseService.getDatabase();
 
-		try 
+		try
 		{
 			beginTransaction(db);
 
 			Language language = getLanguageWithCode(code, db);
 			if(language != null)
 				languageVO = language.getValueObject();
-			
+
 			commitTransaction(db);
-		} 
-		catch (Exception e) 
+		}
+		catch (Exception e)
 		{
 			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-		
-		return languageVO;	
+
+		return languageVO;
 	}
-	
+
 	/**
 	 * Returns the Language with the given languageCode fetched within a given transaction.
-	 * 
-	 * @param name
-	 * @param database
+	 *
+	 * @param code
+	 * @param db
 	 * @return
 	 * @throws SystemException
 	 * @throws Bug
@@ -186,38 +186,38 @@ public class LanguageController extends BaseController
 	public Language getLanguageWithCode(String code, Database db) throws SystemException, Bug
 	{
 		Language language = null;
-		
+
 		try
 		{
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl f WHERE f.languageCode = $1");
 			oql.bind(code);
-			
+
 			QueryResults results = oql.execute();
-			if (results.hasMore()) 
+			if (results.hasMore())
 			{
 				language = (Language)results.next();
 			}
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch a named language. Reason:" + e.getMessage(), e);    
+			throw new SystemException("An error occurred when we tried to fetch a named language. Reason:" + e.getMessage(), e);
 		}
-		
-		return language;		
+
+		return language;
 	}
-	
+
     public LanguageVO create(LanguageVO languageVO) throws ConstraintException, SystemException
     {
         Language ent = new LanguageImpl();
         ent.setValueObject(languageVO);
         ent = (Language) createEntity(ent);
         return ent.getValueObject();
-    }     
+    }
 
 	/**
 	 * This method removes a Language from the system and also cleans out all depending repositoryLanguages.
 	 */
-	
+
     public void delete(LanguageVO languageVO) throws ConstraintException, SystemException
     {
 		Database db = CastorDatabaseService.getDatabase();
@@ -231,12 +231,12 @@ public class LanguageController extends BaseController
 
 			//If any of the validations or setMethods reported an error, we throw them up now before create.
 			ceb.throwIfNotEmpty();
-    		
+
 			language = getLanguageWithId(languageVO.getId(), db);
-			RepositoryLanguageController.getController().deleteAllRepositoryLanguageWithLanguage(language, db);    		
-			
+			RepositoryLanguageController.getController().deleteAllRepositoryLanguageWithLanguage(language, db);
+
 			deleteEntity(LanguageImpl.class, languageVO.getLanguageId(), db);
-			
+
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -245,7 +245,7 @@ public class LanguageController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-    }        
+    }
 
 
     public Language getLanguageWithId(Integer languageId, Database db) throws SystemException, Bug
@@ -266,10 +266,10 @@ public class LanguageController extends BaseController
 			beginTransaction(db);
 
 		    language = getLanguageWithId(languageId, db);
-        
+
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
-            
+
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -278,7 +278,7 @@ public class LanguageController extends BaseController
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-        
+
 		return language;
     }
 
@@ -295,10 +295,10 @@ public class LanguageController extends BaseController
 			beginTransaction(db);
 
 			languageVO = getLanguageWithRepositoryLanguageId(repositoryLanguageId, db).getValueObject();
-			
+
 			//If any of the validations or setMethods reported an error, we throw them up now before create.
 			ceb.throwIfNotEmpty();
-            
+
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -307,7 +307,7 @@ public class LanguageController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-        
+
 		return languageVO;
 	}
 
@@ -315,11 +315,11 @@ public class LanguageController extends BaseController
     {
 		RepositoryLanguage repositoryLanguage = (RepositoryLanguage) getObjectWithId(RepositoryLanguageImpl.class, repositoryLanguageId, db);
 		Language language = repositoryLanguage.getLanguage();
-        
+
 		return language;
     }
 
-    
+
     public List getLanguageVOList(Integer repositoryId) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
@@ -339,10 +339,10 @@ public class LanguageController extends BaseController
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguageIterator.next();
 				languageVOList.add(repositoryLanguage.getLanguage().getValueObject());
 			}
-        	
+
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
-            
+
             commitTransaction(db);
         }
         catch(ConstraintException ce)
@@ -382,14 +382,14 @@ public class LanguageController extends BaseController
     {
         return getAllVOObjects(LanguageImpl.class, "languageId");
     }
-    
+
 	/**
-	 * This method returns the master language. 
+	 * This method returns the master language.
 	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
 	 */
-	
+
 	public LanguageVO getMasterLanguage(Integer repositoryId) throws SystemException, Exception
-	{ 
+	{
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -400,10 +400,10 @@ public class LanguageController extends BaseController
 		try
 		{
 			language = getMasterLanguage(db, repositoryId);
-            
-			//If any of the validations or setMethods reported an error, we throw them up now before create. 
+
+			//If any of the validations or setMethods reported an error, we throw them up now before create.
 			ceb.throwIfNotEmpty();
-            
+
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -413,35 +413,35 @@ public class LanguageController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 
-		return (language == null) ? null : language.getValueObject();	
+		return (language == null) ? null : language.getValueObject();
 	}
 
-	
+
 	/**
-	 * This method returns the master language within an transaction. 
+	 * This method returns the master language within an transaction.
 	 */
-	
+
 	public Language getMasterLanguage(Database db, Integer repositoryId) throws SystemException, Exception
-	{ 
+	{
 		Language language = null;
 
 		OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.repositoryId = $1 ORDER BY l.languageId");
 		oql.bind(repositoryId);
-		
+
 		QueryResults results = oql.execute(Database.ReadOnly);
-		
-		if (results.hasMore()) 
+
+		if (results.hasMore())
 		{
 			language = (Language)results.next();
 		}
-        
-		return language;	
+
+		return language;
 	}
 
 	/**
 	 * This method deletes the Repository sent in from the system.
 	 */
-	
+
 	public void deleteLanguage(Integer languageId, Database db) throws SystemException, Bug
 	{
 		try
@@ -451,8 +451,8 @@ public class LanguageController extends BaseController
 		catch(Exception e)
 		{
 			throw new SystemException("An error occurred when we tried to delete Language in the database. Reason: " + e.getMessage(), e);
-		}	
-	} 
+		}
+	}
 
     public LanguageVO update(LanguageVO languageVO) throws ConstraintException, SystemException
     {
@@ -471,7 +471,7 @@ public class LanguageController extends BaseController
 
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
-            
+
             commitTransaction(db);
         }
         catch(ConstraintException ce)
@@ -489,8 +489,8 @@ public class LanguageController extends BaseController
 
 
         return language.getValueObject();
-    }        
-	
+    }
+
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.
@@ -500,6 +500,6 @@ public class LanguageController extends BaseController
 	{
 		return new LanguageVO();
 	}
-	
+
 }
- 
+
