@@ -53,13 +53,14 @@ import java.util.ArrayList;
 
 public class ViewSiteNodeAction extends InfoGlueAbstractAction
 {
-	private Integer unrefreshedSiteNodeId = new Integer(0);
-	private Integer changeTypeId = new Integer(0);
-	private Integer repositoryId = null;
+	private Integer unrefreshedSiteNodeId 	= new Integer(0);
+	private Integer changeTypeId 			= new Integer(0);
+	private Integer repositoryId 			= null;
 	private SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO;
-	private List availableServiceBindings = null;
-	private List serviceBindings = null;
-	
+	private List availableServiceBindings 	= null;
+	private List serviceBindings 			= null;
+	private List referenceBeanList 			= new ArrayList();
+
 	private SiteNodeVO siteNodeVO;
 	private SiteNodeVersionVO siteNodeVersionVO;
 	
@@ -91,6 +92,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 			this.availableServiceBindings = SiteNodeTypeDefinitionController.getController().getAvailableServiceBindingVOList(siteNodeVO.getSiteNodeTypeDefinitionId());
 			this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId());
 		}
+        
+		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId);
 	} 
 
 /*    
@@ -557,5 +560,10 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     public String getDest()
     {
         return dest;
+    }
+    
+    public List getReferenceBeanList()
+    {
+        return referenceBeanList;
     }
 }
