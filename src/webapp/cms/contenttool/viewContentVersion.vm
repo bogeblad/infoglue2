@@ -39,7 +39,6 @@
 		#set($buttonConfig = "")
 		
 		#set($map = $this.getWYSIWYGProperties())
-	   	##set($map = $this.getPrincipalPropertyHashValues("WYSIWYGConfig", false))
 	   	#set($lineIndex = 0)
 	   	#set($positionIndex = 0)
 	   	#set($quote = "'")
@@ -94,8 +93,11 @@
 	   				#if($value == "paste") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}paste: [ ${quote}Paste from clipboard${quote}, ${quote}ed_paste.gif${quote}, false, cut_copy_paste ]") #end
 	   				#if($value == "lefttoright") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}lefttoright: [ ${quote}Direction left to right${quote}, ${quote}ed_left_to_right.gif${quote}, false, function(e) {e.execCommand(${quote}lefttoright${quote});} ]") #end
 	   				#if($value == "righttoleft") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}righttoleft: [ ${quote}Direction right to left${quote}, ${quote}ed_right_to_left.gif${quote}, false, function(e) {e.execCommand(${quote}righttoleft${quote});} ]") #end
-	   				
-	   				#if($foundItem)
+	   				#if($value == "removeformat") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}removeformat: [ ${quote}Remove formatting${quote}, ${quote}ed_rmformat.gif${quote}, false, function(e) {e.execCommand(${quote}removeformat${quote});} ]") #end
+	   				#if($value == "print") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}print: [ ${quote}Print document${quote}, ${quote}ed_print.gif${quote}, false, function(e) {e._iframe.contentWindow.print();} ]") #end
+	   				#if($value == "killword") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}killword: [ ${quote}Clear MS Office tags${quote}, ${quote}ed_killword.gif${quote}, false, function(e) {e.execCommand(${quote}killword${quote});} ]") #end
+	
+					#if($foundItem)
 						//alert("value: $value");	
 						#set($buttonConfig = "$buttonConfig, ")
 	   				#end
@@ -197,7 +199,7 @@
 <!--
 	HTMLArea.loadPlugin("CSS");
 	HTMLArea.loadPlugin("EnterParagraphs");
-
+	
 	var allowSave = true;  //Sets to false if one does not close like one should
 	var currentEditorIdHash = new Array();
 	var attributesStatus = new Array();
@@ -370,7 +372,7 @@
 			{
 				var htmlEditor = htmlEditors[i];
 				htmlEditor.generate();
-							
+				
 				//alert("Changing status to plain...");
 				setTimeout(changeToPlainAttribute, 500);
 			}

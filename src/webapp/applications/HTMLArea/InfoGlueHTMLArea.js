@@ -100,8 +100,7 @@ function configInfoGlue(config)
 	       }
 	    ]};
 	}
-
-    
+	
     
     //END CSS STUFF
         
@@ -153,7 +152,10 @@ function configInfoGlue(config)
 		    insertimage: [ "Insert/Modify Image", "ed_image.gif", false, function(e) {e.execCommand("insertimage");} ],
 			inserttable: [ "Insert Table", "insert_table.gif", false, function(e) {e.execCommand("inserttable");} ],
 			htmlmode: [ "Toggle HTML Source", "ed_html.gif", true, function(e) {e.execCommand("htmlmode");} ],
-			popupeditor: [ "Enlarge Editor", "fullscreen_maximize.gif", true, function(e) {e.execCommand("popupeditor");} ]
+			popupeditor: [ "Enlarge Editor", "fullscreen_maximize.gif", true, function(e) {e.execCommand("popupeditor");} ],
+			removeformat: [ "Remove formatting", "ed_rmformat.gif", false, function(e) {e.execCommand("removeformat");} ],
+			print: [ "Print document", "ed_print.gif", false, function(e) {e._iframe.contentWindow.print();} ],
+			killword: [ "Clear MSOffice tags", "ed_killword.gif", false, function(e) {e.execCommand("killword");} ]
 		};
 	}
 	
@@ -185,7 +187,6 @@ function configInfoGlue(config)
 	 //config.registerButton("my-hilite", "Hilite text", "my-hilite.gif", false, function(editor) {...});
 	
 	// initialize tooltips from the I18N module and generate correct image path
-	
 	for (var i in config.btnList) {
 		var btn = config.btnList[i];
 		//alert("In Infoglue initializer btn[1]: " + btn[1]);
@@ -199,7 +200,6 @@ function configInfoGlue(config)
 		}
 	}
 	
-
 	
 	//register custom buttons 
 	//config.registerButton("my-popup", "test popup", "ed_custom.gif", false, demopopup); 
