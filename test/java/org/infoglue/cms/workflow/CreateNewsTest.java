@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsTest.java,v 1.1 2005/01/13 17:10:38 jed Exp $
+ * $Id: CreateNewsTest.java,v 1.2 2005/01/13 23:38:32 jed Exp $
  */
 package org.infoglue.cms.workflow;
 
@@ -43,7 +43,7 @@ public class CreateNewsTest extends WorkflowTestCase
 	{
 		super.setUp();
 		setUserPrincipal(getAdminPrincipal());
-		setWorkflow(startWorkflow());
+		startWorkflow(0);
 		checkWorkflow(1, 0, 1);
 	}
 
@@ -129,7 +129,7 @@ public class CreateNewsTest extends WorkflowTestCase
 	 */
 	private void invokeCreateNews() throws Exception
 	{
-		FakeHttpServletRequest request = new FakeHttpServletRequest(getSession());
+		FakeHttpServletRequest request = new FakeHttpServletRequest();
 		request.setParameter("name", getName());
 		request.setParameter("title", getName());
 		request.setParameter("navigationTitle", getName());
