@@ -626,6 +626,18 @@ public class DigitalAssetController extends BaseController
 					{
 						assetUrl = "images/pdf.gif"; 
 					}
+					else if(contentType.equalsIgnoreCase("application/msword"))
+					{
+						assetUrl = "images/msword.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("application/vnd.ms-excel"))
+					{
+						assetUrl = "images/msexcel.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("application/vnd.ms-powerpoint"))
+					{
+						assetUrl = "images/mspowerpoint.gif"; 
+					}
 					else
 					{
 						assetUrl = "images/digitalAsset.gif"; 
@@ -887,16 +899,26 @@ public class DigitalAssetController extends BaseController
 					}
 					else
 					{
-					
 						if(contentType.equalsIgnoreCase("application/pdf"))
 						{
 							assetUrl = "images/pdf.gif"; 
+						}
+						else if(contentType.equalsIgnoreCase("application/msword"))
+						{
+							assetUrl = "images/msword.gif"; 
+						}
+						else if(contentType.equalsIgnoreCase("application/vnd.ms-excel"))
+						{
+							assetUrl = "images/msexcel.gif"; 
+						}
+						else if(contentType.equalsIgnoreCase("application/vnd.ms-powerpoint"))
+						{
+							assetUrl = "images/mspowerpoint.gif"; 
 						}
 						else
 						{
 							assetUrl = "images/digitalAsset.gif"; 
 						}		
-					
 					}	
 				}	
 				else
@@ -1000,7 +1022,6 @@ public class DigitalAssetController extends BaseController
 	{
 		return new DigitalAssetVO();
 	}
-
 
 }
 

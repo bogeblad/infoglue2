@@ -48,6 +48,10 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 	private Integer digitalAssetId   = null;
 	private String digitalAssetKey   = null;
 	private boolean isUpdated       = false;
+	private String reasonKey;
+	private DigitalAssetVO digitalAssetVO = null;
+	private DigitalAssetVO updatedDigitalAssetVO = null;
+	private String closeOnLoad;
 	
 	private ConstraintExceptionBuffer ceb;
 	
@@ -69,12 +73,18 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
     	InputStream is = null;
 		File file = null;
 		
-    	try 
-    	{
+		try
+        {
+            MultiPartRequestWrapper mpr = ActionContext.getMultiPartRequest();
+            if(mpr == null)
+            {
+                this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+                return "uploadFailed";
+            }
+            
            	DigitalAssetVO digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
 			digitalAssetVO.setAssetKey(this.digitalAssetKey);
 
-    		MultiPartRequestWrapper mpr = ActionContext.getContext().getMultiPartRequest();
     		if(mpr != null)
     		{ 
 	    		Enumeration names = mpr.getFileNames();
@@ -112,7 +122,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
     			CmsLogger.logSevere("File upload failed for some reason.");
     		}
     		
-       		DigitalAssetController.update(digitalAssetVO, is);
+    		updatedDigitalAssetVO = DigitalAssetController.update(digitalAssetVO, is);
 			isUpdated = true;
 
       	} 
@@ -133,6 +143,41 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
         return "success";
     }    
 
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetUrl() throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetUrl(updatedDigitalAssetVO.getDigitalAssetId());
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+		}
+		
+		return imageHref;
+	}
+	
+    public String getAssetThumbnailUrl()
+    {
+        String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(updatedDigitalAssetVO.getDigitalAssetId());
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not get the url of the thumbnail: " + e.getMessage(), e);
+		}
+		
+		return imageHref;
+    }
+    
 	public Integer getDigitalAssetId()
 	{
 		return digitalAssetId;
@@ -163,4 +208,18 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 		this.contentVersionId = contentVersionId;
 	}
 
+    public String getReasonKey()
+    {
+        return reasonKey;
+    }
+    
+    public String getCloseOnLoad()
+    {
+        return closeOnLoad;
+    }
+    
+    public void setCloseOnLoad(String closeOnLoad)
+    {
+        this.closeOnLoad = closeOnLoad;
+    }
 }

@@ -24,26 +24,49 @@
 		{
 			if(document.getElementById("tt").value != "")
 			{
-				moveDiv("savingLayer", "20px", "20px");
-				resizeDiv("savingLayer", "350px", "150px");
-				showDiv("savingLayer");
-				document.editForm.submit();
+				if(document.getElementById("file1").value != "")
+				{
+					moveDiv("savingLayer", "20px", "20px");
+					resizeDiv("savingLayer", "350px", "150px");
+					showDiv("savingLayer");
+					document.editForm.submit();
+				}
+				else
+				{
+					alert("$ui.getString("tool.contenttool.fileUpload.assetMissing")");
+				}
 			}
 			else
 			{
 				alert("$ui.getString("tool.contenttool.fileUpload.assetKeyMissing")");
 			}
 		}
-		
+
 		/**
-		 * This method closes the dialog and reloads the content version
+		 * This method submits the form and shows a uploading-dialog.
 		 */
 		 
-		function reloadAndClose()
+		function submitAndCloseForm()
 		{
-			window.opener.parent.frames["main"].location.reload();
-			//document.editForm.submit();
-			window.close();
+			if(document.getElementById("tt").value != "")
+			{
+				if(document.getElementById("file1").value != "")
+				{
+					moveDiv("savingLayer", "20px", "20px");
+					resizeDiv("savingLayer", "350px", "150px");
+					showDiv("savingLayer");
+					document.editForm.closeOnLoad.value = "true";
+					document.editForm.submit();
+				}
+				else
+				{
+					alert("$ui.getString("tool.contenttool.fileUpload.assetMissing")");
+				}
+			}
+			else
+			{
+				alert("$ui.getString("tool.contenttool.fileUpload.assetKeyMissing")");
+			}
 		}
 		
 		//*******************************************
@@ -97,7 +120,7 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 </head>
 
-<body class="contenttooledit">
+<body class="contenttooledit" #if($closeOnLoad == "true")onload="refreshCaller();"#end>
 
 <div class="fullymarginalized">
 
@@ -114,27 +137,35 @@
 <input type="hidden" name="entityId" value="$!entityId">
 <input type="hidden" name="contentVersionId" value="$!contentVersionId">
 <input type="hidden" name="uploadedFilesCounter" value="$!uploadedFilesCounter">
-<table width="300">
+<input type="hidden" name="closeOnLoad" value="false">
+<table width="350" border="0">
 	<tr>
-		<td class="biglabel">
+		<td class="biglabel" width="250">
 			#if($uploadedFilesCounter == 0)
 				$ui.getString("tool.contenttool.fileUpload.fileUploadHeader")
 			#else
 				$ui.getString("tool.contenttool.fileUpload.fileUploadedSoFarLabel"): $uploadedFilesCounter
 			#end
 		</td>
+		<td rowspan="2" width="100" style="border: 1px solid black; background-color: white;" align="center" valign="middle">
+			#if($uploadedFilesCounter != 0)
+				#set($digitalAssetUrl = "$digitalAssetUrl")
+				<a href="javascript:openPopup('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$assetThumbnailUrl"><br>
+				$digitalAssetKey</a>
+			#end
+			&nbsp;
+		</td>
 	</tr>		
 	<tr>
 		<td>
 			$ui.getString("tool.contenttool.fileUpload.fileUploadKeyLabel")
 			<br/>
-			<!-- input size="30" type="text" name="digitalAssetKey" -->
-		    <div id="comboBox">
-			  <table border="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#808080" id="cboBoxTable">
+			<div id="comboBox">
+			  <table border="0" cellspacing="0" id="cboBoxTable">
 			    <tr>
-			      <td width="10" style="border-left-style: solid; border-left-width: 1; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: solid; border-bottom-width: 1">
+			      <td width="10" style="border: 1px solid black;">
 			  		<input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" style="border: 1px solid #FFFFFF" #if($definedAssetKeys.size() > 0)value="$definedAssetKeys.get(0)" #end></td>
-			      <td onClick="ddClick();" style="border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: solid; border-bottom-width: 1">
+			      	<td onClick="ddClick();" style="border: 1px solid black;">
 			      	<img border="0" src="images/combodown.gif" width="15" height="20">
 			      </td>
 			    </tr>
@@ -148,14 +179,15 @@
 		</td>
 	</tr>		
 	<tr>
-		<td>
+		<td colspan="2">
 			$ui.getString("tool.contenttool.fileUpload.fileUploadFileLabel")<br/>
-			<input size=30 type="FILE" name="file1"><p>
+			<input size=30 type="FILE" name="file1" id="file1">
 		</td>
 	</tr>		
 	<tr>
-		<td>
+		<td colspan="2">
 			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+			<a href="javascript:submitAndCloseForm();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
 			<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
 		</td>
 	</tr>
