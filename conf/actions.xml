@@ -23,9 +23,7 @@
 		<view name="error">cms/managementtool/error.vm</view>
 	</action>
 
-
 	<!-- CMS LOGIN -->
-
 	<action name="org.infoglue.cms.applications.common.actions.LoginAction" alias="Login">
 		<view name="logout">ViewCMSTool.action</view>
 		<view name="success">cms/managementtool/login.vm</view>
@@ -42,15 +40,7 @@
 		<view name="error">cms/managementtool/error.vm</view>
 	</action>
 
-	<!-- InvokeWorkflow action -->
-	<action name="org.infoglue.cms.applications.cmstool.actions.InvokeWorkflowAction" alias="InvokeWorkflow">
-		<view name="workflowDone">cms/cmstool/workflowDone.vm</view>
-		<view name="error">cms/managementtool/error.vm</view>
-	</action>
-
-
 	<!-- CMS TOOL FRAMES -->
-
 	<action name="org.infoglue.cms.applications.cmstool.actions.ViewCMSToolAction" alias="ViewCMSTool">
 		<view name="success">cms/cmstool/viewCMSTool.vm</view>
 	</action>
@@ -62,7 +52,6 @@
 	</action>
 
 	<!-- CMS MY DESKTOP TOOL FRAMES -->
-
 	<action name="org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolAction" alias="ViewMyDesktopTool">
 		<view name="success">cms/mydesktoptool/viewMyDesktopTool.vm</view>
 		<view name="error">cms/mydesktoptool/error.vm</view>
@@ -97,7 +86,6 @@
 
 
 	<!-- CMS MANAGEMENT TOOL FRAMES -->
-
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewManagementToolAction" alias="ViewManagementTool">
 		<view name="success">cms/managementtool/viewManagementTool.vm</view>
 		<view name="error">cms/managementtool/error.vm</view>
@@ -121,7 +109,6 @@
 
 
 	<!-- CMS PUBLISHING TOOL FRAMES -->
-
 	<action name="org.infoglue.cms.applications.publishingtool.actions.ViewPublishingToolAction" alias="ViewPublishingTool">
 		<view name="success">cms/publishingtool/viewPublishingTool.vm</view>
 		<view name="error">cms/publishingtool/error.vm</view>
@@ -145,7 +132,6 @@
 
 
 	<!-- CMS CONTENT TOOL FRAMES -->
-
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentToolAction" alias="ViewContentTool">
 		<view name="success">cms/contenttool/viewContentTool.vm</view>
 		<view name="error">cms/contenttool/error.vm</view>
@@ -193,7 +179,6 @@
 
 
 	<!-- CMS STRUCTURE TOOL FRAMES -->
-
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolAction" alias="ViewStructureTool">
 		<view name="success">cms/structuretool/viewStructureTool.vm</view>
 		<view name="error">cms/structuretool/error.vm</view>
@@ -286,7 +271,6 @@
 		<view name="error">cms/managementtool/error.vm</view>
 	</action>
 
-
 	<!-- Language -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListLanguageAction" alias="ViewListLanguage">
 		<view name="success">cms/managementtool/viewListLanguage.vm</view>
@@ -361,8 +345,6 @@
 		<view name="success">ViewInterceptor.action</view>
 		<view name="error">cms/managementtool/error.vm</view>
 	</action>
-
-
 
 	<!-- ServiceDefinition -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListServiceDefinitionAction" alias="ViewListServiceDefinition">
@@ -451,7 +433,6 @@
 		<view name="error">cms/managementtool/error.vm</view>
 	</action>
 
-
 	<!-- SystemUser -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListSystemUserAction" alias="ViewListSystemUser">
 		<view name="success">cms/managementtool/viewListSystemUser.vm</view>
@@ -507,7 +488,6 @@
 		<view name="error">cms/managementtool/error.vm</view>
 	</action>
 
-
 	<!-- Role -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListRoleAction" alias="ViewListRole">
 		<view name="success">cms/managementtool/viewListRole.vm</view>
@@ -560,7 +540,6 @@
 	</action>
 
 	<!-- Workflow -->
-
 	<action name="org.infoglue.cms.applications.workflowtool.actions.ViewListWorkflowAction" alias="ViewListWorkflow">
 		<view name="success">cms/workflowtool/viewListWorkflow.vm</view>
 		<view name="error">cms/workflowtool/error.vm</view>
@@ -602,7 +581,6 @@
 		<!-- view name="success">ViewListUp2Date.action</view-->
 		<view name="error">cms/managementtool/error.vm</view>
 	</action>
-
 
 	<!-- Content -->
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewCalendarAction" alias="ViewCalendar">
@@ -688,7 +666,6 @@
 		<view name="error">cms/contenttool/error.vm</view>
 		<view name="accessDenied">cms/contenttool/viewConstraintException.vm</view>
 	</action>
-
 
 	<!-- ContentVersion -->
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentVersionAction" alias="ViewContentVersion">
@@ -792,10 +769,6 @@
 		<view name="accessDenied">cms/contenttool/viewConstraintException.vm</view>
 	</action>
 
-
-
-
-
 	<!-- ContentTypeDefinition -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListContentTypeDefinitionAction" alias="ViewListContentTypeDefinition">
 		<view name="success">cms/managementtool/viewListContentTypeDefinition.vm</view>
@@ -837,8 +810,6 @@
 		<view name="success">cms/contenttool/updateDigitalAsset.vm</view>
 		<view name="error">cms/contenttool/error.vm</view>
 	</action>
-
-
 
 	<!-- SiteNode -->
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewSiteNodeAction" alias="ViewSiteNode">
@@ -954,8 +925,6 @@
 		<view name="error">cms/structuretool/error.vm</view>
 	</action>
 
-
-
 	<!-- Publishing -->
 	<action name="org.infoglue.cms.applications.publishingtool.actions.PreviewContentVersionAction" alias="PreviewContentVersion">
 		<view name="success">cms/publishingtool/previewContentVersion.vm</view>
@@ -992,7 +961,6 @@
 		<view name="error">cms/publishingtool/error.vm</view>
 	</action>
 
-
 	<!-- Task Tool -->
 	<action name="org.infoglue.cms.applications.tasktool.actions.ViewExecuteTaskAction" alias="ViewExecuteTask">
 		<view name="success">cms/tasktool/viewListTasks.vm</view>
@@ -1004,6 +972,52 @@
 		<view name="error">cms/contenttool/error.vm</view>
 	</action>
 
+	<!-- Redirect -->
+	<action name="org.infoglue.cms.applications.common.actions.ExtendedRedirect" alias="ExtendedRedirect">
+		<view name="error">deliver/error.vm</view>
+	</action>
+
+	<!-- Update Cache -->
+	<action name="org.infoglue.cms.applications.deliver.actions.UpdateCacheAction" alias="UpdateCache">
+		<view name="error">deliver/error.vm</view>
+	</action>
+
+	<!-- Site Delivery -->
+	<action name="org.infoglue.cms.applications.deliver.actions.ViewPageAction" alias="ViewPage">
+		<view name="error">deliver/error.vm</view>
+	</action>
+
+	<!-- Application state action - used to monitor the delivery engine -->
+	<action name="org.infoglue.cms.applications.deliver.actions.ViewApplicationStateAction" alias="ViewApplicationState">
+		<view name="success">deliver/viewApplicationState.vm</view>
+		<view name="error">deliver/error.vm</view>
+	</action>
+
+	<!-- Application query action - used to ask questions about the delivery engine -->
+	<action name="org.infoglue.cms.applications.deliver.actions.ViewApplicationSettingsAction" alias="ViewApplicationSettings">
+		<view name="templateMethods">deliver/viewTemplateMethods.vm</view>
+		<view name="navigationTitle">deliver/viewNavigationTitle.vm</view>
+		<view name="error">deliver/error.vm</view>
+	</action>
+
+	<!-- Delivery engine indata entry point - used to handle form input -->
+	<action name="org.infoglue.cms.applications.deliver.actions.InfoGlueDefaultInputHandlerAction" alias="InfoGlueDefaultInputHandler">
+		<view name="error">deliver/error.vm</view>
+	</action>
+
+	<!-- Extranet Login action -->
+	<action name="org.infoglue.cms.applications.deliver.actions.ExtranetLoginAction" alias="ExtranetLogin">
+		<view name="loginForm">deliver/extranetLoginForm.vm</view>
+		<view name="userAccepted">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ViewPage.action#requestParameters</view>
+		<view name="invalidLogin">deliver/extranetLoginError.vm</view>
+		<view name="noAccess">deliver/extranetNoAccess.vm</view>
+		<!--
+			  <view name="userAccepted">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ViewCMSTool.action</view>
+				 <view name="error">WEB-INF/classes/resources/templates/managementtool/error.vm</view>
+		-->
+		<!-- responses to checkUser -->
+		<view name="granted">deliver/extranetLoginCheckAccepted.vm</view>
+		<view name="denied">deliver/extranetLoginCheckNoAccess.vm</view>
+	</action>
+
 </actions>
-
-
