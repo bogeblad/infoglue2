@@ -55,10 +55,11 @@ that you provide each with id and name attributes, with the same value. e.g.
 
 var keyActions = new Array ();
 
+/*                  
 keyActions [0] = {character:  "c", 
                   actionType: "code", 
                   param:      "top.frames[\"header\"].changeTool(0);"};
-                  
+
 keyActions [1] = {character:  "s", 
                   actionType: "code", 
                   param:      "top.frames[\"header\"].changeTool(1);"};
@@ -74,6 +75,11 @@ keyActions [3] = {character:  "p",
 keyActions [4] = {character:  "d", 
                   actionType: "code", 
                   param:      "top.frames[\"header\"].changeTool(4);"};
+*/
+
+keyActions [0] = {character:  "s", 
+                  actionType: "code", 
+                  param:      "hotkeyS();"};
                   
 // End of user defined array
 
@@ -126,7 +132,8 @@ function hotKeys (event) {
           action ();
          
           // Hotkey actioned - exit from the for loop.
-          break;
+          //break;
+          return false;
         }
       }
     }
