@@ -49,6 +49,22 @@ import org.infoglue.cms.util.CmsLogger;
 public class HttpHelper 
 {
 	
+	public String postToUrl(String urlAddress, HttpServletRequest request, boolean includeRequest) throws Exception
+	{
+		if(includeRequest)
+			return postToUrl(urlAddress, requestToHashtable(request), "UTF-8");
+		else
+			return postToUrl(urlAddress, new Hashtable(), "UTF-8");
+	}
+
+	public String postToUrl(String urlAddress, HttpServletRequest request, boolean includeRequest, String encoding) throws Exception
+	{
+		if(includeRequest)
+			return postToUrl(urlAddress, requestToHashtable(request), encoding);
+		else
+			return postToUrl(urlAddress, new Hashtable(), encoding);
+	}
+
     /**
      * This method post information to an URL and returns a string.It throws
      * an exception if anything goes wrong.
@@ -60,7 +76,7 @@ public class HttpHelper
      * @exception java.lang.Exception
      */
     
-    public String postToUrl(String urlAddress, Hashtable inHash) throws Exception
+    public String postToUrl(String urlAddress, Hashtable inHash, String encoding) throws Exception
     {      
     	URL url = new URL(urlAddress);
         URLConnection urlConn = url.openConnection();
@@ -73,7 +89,7 @@ public class HttpHelper
         String argString = "";
         if(inHash != null)
         {
-            argString = toEncodedString(inHash);
+            argString = toEncodedString(inHash, encoding);
         }
         printout.print(argString);
         printout.flush();
@@ -122,7 +138,7 @@ public class HttpHelper
         if(inHash != null)
         {
             if (shouldEncode)
-                argString = toEncodedString(inHash);
+                argString = toEncodedString(inHash, "UTF-8");
             else
                 argString = toString(inHash);
         }
@@ -167,9 +183,9 @@ public class HttpHelper
 	    if(inHash != null)
 	    {
 	        if(urlAddress.indexOf("?") > -1)
-		        argString = "&" + toEncodedString(inHash);
+		        argString = "&" + toEncodedString(inHash, "UTF-8");
 			else
-				argString = "?" + toEncodedString(inHash);
+				argString = "?" + toEncodedString(inHash, "UTF-8");
 	    }
 
 		CmsLogger.logInfo("Getting content from url: " + urlAddress + argString);
@@ -201,9 +217,9 @@ public class HttpHelper
 		if(inHash != null)
 		{
 			if(urlAddress.indexOf("?") > -1)
-				argString = "&" + toEncodedString(inHash);
+				argString = "&" + toEncodedString(inHash, encoding);
 			else
-				argString = "?" + toEncodedString(inHash);
+				argString = "?" + toEncodedString(inHash, encoding);
 		}
 
 		CmsLogger.logInfo("Getting content from url: " + urlAddress + argString);
@@ -311,7 +327,7 @@ public class HttpHelper
 	    if(inHash != null)
 	    {
 	        if (shouldEncode)
-	            argString = "?" + toEncodedString(inHash);
+	            argString = "?" + toEncodedString(inHash, "UTF-8");
 	        else
 	            argString = "?" + toString(inHash);
 	    }
@@ -380,7 +396,7 @@ public class HttpHelper
 	    String argString = "";
 	    if(inHash != null)
 	    {
-	        argString = "?" + toEncodedString(inHash);
+	        argString = "?" + toEncodedString(inHash, "UTF-8");
 	    }
 	    URL url = new URL(urlAddress + argString);
 	    URLConnection connection = url.openConnection();
@@ -406,6 +422,9 @@ public class HttpHelper
 		    {		        
 		        String name  = (String)e.nextElement();
 		        String value = (String)request.getParameter(name);
+		        System.out.println(name + "=" + value);
+		        if(value.equals("frövi"))
+		            System.out.println("YES!!!");
 	            parameters.put(name, value);
 		    }        
 		}
@@ -422,7 +441,7 @@ public class HttpHelper
 	 * @return A URL encoded string.
 	 */
 		
-	private String toEncodedString(Hashtable inHash) throws Exception
+	private String toEncodedString(Hashtable inHash, String encoding) throws Exception
 	{
 	    StringBuffer buffer = new StringBuffer();
 	    Enumeration names = inHash.keys();
@@ -430,7 +449,7 @@ public class HttpHelper
 	    {
 	        String name = names.nextElement().toString();
 	        String value = inHash.get(name).toString();
-	        buffer.append(URLEncoder.encode(name, "UTF-8") + "=" + URLEncoder.encode(value, "UTF-8"));
+	        buffer.append(URLEncoder.encode(name, encoding) + "=" + URLEncoder.encode(value, encoding));
 	        if(names.hasMoreElements())
 	        {
 	            buffer.append("&");
