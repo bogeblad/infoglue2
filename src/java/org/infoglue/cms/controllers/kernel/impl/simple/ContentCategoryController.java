@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.2 2005/03/14 20:51:58 jed Exp $
+ * $Id: ContentCategoryController.java,v 1.3 2005/03/14 21:08:12 jed Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -184,19 +184,7 @@ public class ContentCategoryController extends BaseController
 	 */
 	public void deleteByContentVersion(Integer versionId) throws SystemException
 	{
-
-		Database db = beginTransaction();
-		try
-		{
-			deleteByContentVersion(versionId, db);
-			commitTransaction(db);
-		}
-		catch(Exception e)
-		{
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-
+		delete(findByContentVersion(versionId));
 	}
 
 	/**
@@ -217,18 +205,7 @@ public class ContentCategoryController extends BaseController
 	 */
 	public void deleteByCategory(Integer categoryId) throws SystemException
 	{
-		Database db = beginTransaction();
-
-		try
-		{
-			deleteByCategory(categoryId, db);
-			commitTransaction(db);
-		}
-		catch(Exception e)
-		{
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
+		delete(findByCategory(categoryId));
 	}
 
 	/**
@@ -240,6 +217,22 @@ public class ContentCategoryController extends BaseController
 	public void deleteByCategory(Integer categoryId, Database db) throws SystemException
 	{
 		delete(findByCategory(categoryId), db);
+	}
+
+	private static void delete(Collection contentCategories) throws SystemException
+	{
+		Database db = beginTransaction();
+
+		try
+		{
+			delete(contentCategories, db);
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			rollbackTransaction(db);
+			throw new SystemException(e);
+		}
 	}
 
 	/**
