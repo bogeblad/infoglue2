@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -39,12 +39,12 @@ import java.util.Iterator;
 
 
 public class CacheController extends Thread
-{
+{ 
 	private static Map cache = new HashMap();
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
 	private boolean continueRunning = true;
-
+	
 	public CacheController()
 	{
 		super();
@@ -54,16 +54,16 @@ public class CacheController extends Thread
 	{
 		this.cacheExpireInterval = cacheExpireInterval;
 	}
-
+	
 	public static void cacheObject(String cacheName, Object key, Object value)
 	{
 		if(!cache.containsKey(cacheName))
 			cache.put(cacheName, new HashMap());
-
+			
 		Map cacheInstance = (Map)cache.get(cacheName);
 		cacheInstance.put(key, value);
-	}
-
+	}	
+	
 	public static Object getCachedObject(String cacheName, Object key)
 	{
 		Map cacheInstance = (Map)cache.get(cacheName);
@@ -81,14 +81,14 @@ public class CacheController extends Thread
 			//cache.remove(cacheName);
 		}
 	}
-
+		
 	public static void clearCaches(String entity)
 	{
 		if(entity == null)
-		{
+		{	
 			CmsLogger.logInfo("Clearing the caches");
 			CmsLogger.logInfo("cache.entrySet().size:" + cache.entrySet().size());
-			for (Iterator i = cache.entrySet().iterator(); i.hasNext(); )
+			for (Iterator i = cache.entrySet().iterator(); i.hasNext(); ) 
 			{
 				Map.Entry e = (Map.Entry) i.next();
 				CmsLogger.logInfo("e:" + e.getKey());
@@ -100,47 +100,47 @@ public class CacheController extends Thread
 		{
 			CmsLogger.logInfo("Clearing some caches");
 			CmsLogger.logInfo("entity:" + entity);
-			for (Iterator i = cache.entrySet().iterator(); i.hasNext(); )
+			for (Iterator i = cache.entrySet().iterator(); i.hasNext(); ) 
 			{
 				Map.Entry e = (Map.Entry) i.next();
 				CmsLogger.logInfo("e:" + e.getKey());
 				boolean clear = false;
 				String cacheName = e.getKey().toString();
-
+				
 				if(cacheName.equalsIgnoreCase("languageCache") && entity.indexOf("Language") > 0)
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("latestSiteNodeVersionCache") && entity.indexOf("SiteNode") > 0)
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("parentSiteNodeCache") && entity.indexOf("SiteNode") > 0)
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("NavigationCache") && (entity.indexOf("SiteNode") > 0 || entity.indexOf("Content") > 0))
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("pagePathCache") && (entity.indexOf("SiteNode") > 0 || entity.indexOf("Content") > 0))
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("componentEditorCache") && (entity.indexOf("SiteNode") > 0 || entity.indexOf("Content") > 0))
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("masterLanguageCache") && (entity.indexOf("Repository") > 0 || entity.indexOf("Language") > 0))
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("contentAttributeCache") && entity.indexOf("ContentVersion") > -1)
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("contentVersionCache") && entity.indexOf("Content") > -1)
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("boundSiteNodeCache") && (entity.indexOf("ServiceBinding") > 0 || entity.indexOf("Qualifyer") > 0 || entity.indexOf("SiteNodeVersion") > 0 || entity.indexOf("SiteNodeVersion") > 0 || entity.indexOf("SiteNode") > 0 || entity.indexOf("AccessRight") > 0))
@@ -152,11 +152,11 @@ public class CacheController extends Thread
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("pageCache"))
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("includeCache"))
-				{
+				{	
 					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("authorizationCache") && entity.indexOf("AccessRight") > 0)
@@ -167,10 +167,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-
-
+				
+				
 				if(clear)
-				{
+				{	
 					CmsLogger.logWarning("clearing:" + e.getKey());
 					Map cacheInstance = (Map)e.getValue();
 					cacheInstance.clear();
@@ -182,11 +182,11 @@ public class CacheController extends Thread
 			}
 		}
 	}
-
+	
 	public static void clearCastorCaches()
 	{
 		CmsLogger.logInfo("Emptying the Castor Caches");
-
+		
 		try
 		{
 			clearCache(SmallContentImpl.class);
@@ -219,11 +219,11 @@ public class CacheController extends Thread
 			clearCache(WorkflowImpl.class);
 			clearCache(CategoryImpl.class);
 			clearCache(ContentCategoryImpl.class);
-
+			
 			clearCache(InterceptionPointImpl.class);
 			clearCache(InterceptorImpl.class);
 			clearCache(AccessRightImpl.class);
-
+	
 			clearCache(RolePropertiesImpl.class);
 			clearCache(UserPropertiesImpl.class);
 			clearCache(UserContentTypeDefinitionImpl.class);
@@ -234,8 +234,8 @@ public class CacheController extends Thread
 			e.printStackTrace();
 		}
 	}
-
-
+	
+	
 	public static synchronized void clearCache(Class[] types, Object[] ids) throws Exception
 	{
 		Database db = CastorDatabaseService.getDatabase();
@@ -250,10 +250,10 @@ public class CacheController extends Thread
 		}
 		finally
 		{
-			BaseDeliveryController.closeDatabase(db);
+			BaseDeliveryController.closeDatabase(db);			
 		}
 	}
-
+	
 	private static synchronized void clearCache(Class c) throws Exception
 	{
 		Database db = CastorDatabaseService.getDatabase();
@@ -270,12 +270,12 @@ public class CacheController extends Thread
 		}
 		finally
 		{
-			BaseDeliveryController.closeDatabase(db);
+			BaseDeliveryController.closeDatabase(db);			
 		}
 	}
-
-
-	public void run()
+	
+	
+	public void run() 
 	{
 		while(this.continueRunning && expireCacheAutomatically)
 		{
@@ -284,11 +284,11 @@ public class CacheController extends Thread
 			CmsLogger.logInfo("Castor cache cleared");
 			clearCaches(null);
 			CmsLogger.logInfo("All other caches cleared");
-
+			
 			try
 			{
 				sleep(cacheExpireInterval);
-			}
+			} 
 			catch (InterruptedException e){}
 		}
 	}
@@ -298,12 +298,12 @@ public class CacheController extends Thread
 		this.continueRunning = false;
 	}
 
-	public boolean getExpireCacheAutomatically()
+	public boolean getExpireCacheAutomatically() 
 	{
 		return expireCacheAutomatically;
 	}
 
-	public void setExpireCacheAutomatically(boolean expireCacheAutomatically)
+	public void setExpireCacheAutomatically(boolean expireCacheAutomatically) 
 	{
 		this.expireCacheAutomatically = expireCacheAutomatically;
 	}

@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * The CommonLogger class implements the abstract Logger class.
- * The resulting log will conform to the
+ * The resulting log will conform to the 
  * <a href="http://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format">common log format</a>).
  */
 
@@ -44,24 +44,24 @@ public class CommonLogger extends Logger
 
 	private static String hostAddress = null;
 	private static String hostName = null;
-
+	
 	/**
 	 * Construct a new Logger instance.
 	 */
 
-	public CommonLogger()
+	public CommonLogger() 
 	{
 	}
-
+	
     /**
      * Log the given HTTP transaction.
      * Not implemented yet!!!
      */
 
-    public void logRequest(HttpServletRequest request, HttpServletResponse response, String pagePath, long duration)
+    public void logRequest(HttpServletRequest request, HttpServletResponse response, String pagePath, long duration) 
     {
 		StringBuffer sb = new StringBuffer();
-
+		
 		sb.append(defaultValueIfNull(request.getRemoteAddr())); 				//c-ip
 		sb.append(" ");
 		sb.append("-");											 				//???
@@ -73,7 +73,7 @@ public class CommonLogger extends Logger
 		sb.append("\"" + request.getMethod() + " " + pagePath + " " + request.getProtocol() + "\"");  	//date + time
 		sb.append(" ");
 		sb.append("304");															//sc-status
-		sb.append(" ");
+		sb.append(" ");		
 		sb.append("-");			//sc-bytes
 		sb.append(" ");
 		sb.append("\"" + defaultValueIfNull(request.getHeader("Referer")) + "\"");			//cs(Referer)
@@ -84,27 +84,28 @@ public class CommonLogger extends Logger
     }
 
 
-
+		
     /**
      * Initialize this logger for the given server.
      * This method gets the server properties describe above to
      * initialize its various log files.
+     * @param server The server to which thiss logger should initialize.
      */
 
-    public void initialize()
+    public void initialize() 
     {
     }
-
-	private List logBuffer = new ArrayList();
-
+		
+	private List logBuffer = new ArrayList();    
+    
     /**
      * This method writes a request to the logfile
      */
-
+    
     protected void writeRequest(String date, String row)
-    {
+    {   
     	logBuffer.add(row);
-
+    	
     	if(logBuffer.size() > 20)
     	{
     		String logPath = CmsPropertyHandler.getProperty("statisticsLogPath");
@@ -114,19 +115,19 @@ public class CommonLogger extends Logger
 				file = new File(logPath + File.separator + "stat" + date + ".log");
 
 			boolean isFileCreated = file.exists();
-
-			PrintWriter pout = null;
+				
+			PrintWriter pout = null; 		    
 	    	try
 	    	{
 				pout = new PrintWriter(new FileOutputStream(file, true));
 				if(!isFileCreated)
 				{
 				}
-
+	    	
 				Iterator i = logBuffer.iterator();
 				while(i.hasNext())
-				{
-					pout.println(i.next().toString());
+				{	
+					pout.println(i.next().toString());    
 				}
 			    pout.close();
 	    	}
@@ -144,18 +145,18 @@ public class CommonLogger extends Logger
 	    		{
 	    		}
 	    	}
-
+	    	
 	    	logBuffer = new ArrayList();
     	}
     }
-
-
+    
+    
     /**
      * This method returns a date as a string.
      */
-
+    
     public String getCurrentDate(String pattern)
-    {
+    {	
         /*
         SimpleTimeZone pdt = new SimpleTimeZone(-8 * 60 * 60 * 1000, "PST");
         pdt.setStartRule(Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000);
@@ -167,8 +168,8 @@ public class CommonLogger extends Logger
         String dateString = formatter.format(date);
 		return dateString;
     }
-
-
+    
+    
     private String getOffset()
     {
 		java.util.Calendar cal = java.util.Calendar.getInstance();
@@ -186,19 +187,19 @@ public class CommonLogger extends Logger
 			if(offset > 0)
 				offsetString = "+" + offset + "00";
 			else
-				offsetString = "-" + offset + "00";
+				offsetString = "-" + offset + "00";		
 		}
-
+		
 		return offsetString;
     }
-
+    
     public String getHostAddress()
     {
     	if(hostAddress != null)
     		return hostAddress;
-
+    		
     	String address = null;
-
+    	
     	try
     	{
     		address = java.net.InetAddress.getLocalHost().getHostAddress();
@@ -207,9 +208,9 @@ public class CommonLogger extends Logger
     	{
     		CmsLogger.logSevere(e.getMessage(), e);
     	}
-
+    	
     	hostAddress = address;
-
+    	
     	return address;
     }
 
@@ -219,7 +220,7 @@ public class CommonLogger extends Logger
     		return hostName;
 
     	String name = null;
-
+    	
     	try
     	{
     		name = java.net.InetAddress.getLocalHost().getHostName();
@@ -228,18 +229,18 @@ public class CommonLogger extends Logger
     	{
     		CmsLogger.logSevere(e.getMessage(), e);
     	}
-
+    	
     	hostName = name;
-
+    	
     	return name;
     }
 
-
+    
     public String defaultValueIfNull(String value)
     {
     	if(value == null || value.equals(""))
     		return "-";
-
+    
     	return value;
     }
 }

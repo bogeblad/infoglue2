@@ -1,3 +1,26 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+* 
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+* 
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
+
 package org.infoglue.deliver.util.webservices;
 
 import java.util.Collection;
@@ -11,7 +34,7 @@ import org.apache.axis.encoding.XMLType;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ParameterMode;
 
-/**
+/** 
  * This class helps in requesting information from an webservice.
  * @author Mattias Bogeblad
  */
@@ -19,23 +42,23 @@ import javax.xml.rpc.ParameterMode;
 public class WebServiceHelper
 {
 	private String serviceUrl = "";
-
+	
 	private boolean isSuccessfull;
 	private String message;
-
+	
 	/**
 	 * The constructor for this class.
 	 */
-
+	
 	public WebServiceHelper()
-	{
+	{	
 	}
-
+	
 	/**
 	 * A method to set the serviceUrl which is the endpoint of this call.
 	 */
-
-	public String getServiceUrl()
+	
+	public String getServiceUrl() 
 	{
 		return serviceUrl;
 	}
@@ -43,8 +66,8 @@ public class WebServiceHelper
 	/**
 	 * A method to get the serviceUrl which is the endpoint of this call.
 	 */
-
-	public void setServiceUrl(String serviceUrl)
+	
+	public void setServiceUrl(String serviceUrl) 
 	{
 		this.serviceUrl = serviceUrl;
 	}
@@ -56,7 +79,7 @@ public class WebServiceHelper
 	public String getString(String method)
 	{
 		String response = "";
-
+		
 		try
 		{
 			Service service = new Service();
@@ -80,7 +103,7 @@ public class WebServiceHelper
 		}
 		return response;
 	}
-
+		
 	/**
 	 * This is the method that lets you call the endpoint and get a list of values back.
 	 */
@@ -88,7 +111,7 @@ public class WebServiceHelper
 	public Collection getCollection(String method)
 	{
 		Collection response = null;
-
+		
 		try
 		{
 			Service service = new Service();
@@ -120,7 +143,7 @@ public class WebServiceHelper
 	public Map getMap(String method)
 	{
 		Map response = null;
-
+		
 		try
 		{
 			Service service = new Service();
@@ -146,8 +169,8 @@ public class WebServiceHelper
 		}
 		return response;
 	}
-
-
+	
+	
 	/**
 	 * This is the method that lets you call the endpoint and get a map of values back.
 	 */
@@ -155,7 +178,7 @@ public class WebServiceHelper
 	public Map getMap(String method, Map argument)
 	{
 		Map response = new HashMap();
-
+		
 		try
 		{
 			Service service = new Service();
@@ -181,21 +204,21 @@ public class WebServiceHelper
 			response.put("errorMessage", e.getMessage());
 			e.printStackTrace();
 		}
-
+		
 		return response;
 	}
-
-
+	
+	
 	/**
 	 * A helper method that lets the template get hold of a Map-object to populate.
 	 */
-
+	
 	public Map getMap()
 	{
 		return new HashMap();
 	}
-
-
+	
+	
 	/**
 	 * This method returns true if the request to the webservice returned successfully.
 	 */
@@ -226,7 +249,7 @@ public class WebServiceHelper
 	/**
 	 * This method sets a message from the webservice.
 	 */
-
+	
 	public void setMessage(String message)
 	{
 		this.message = message;

@@ -21,62 +21,41 @@
  * ===============================================================================
  */
 
-package org.infoglue.deliver.applications.databeans;
+package org.infoglue.deliver.util.forms;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.deliver.controllers.kernel.impl.simple.FormDeliveryController;
+
 /**
- * @author mattias
- * This class represents a slot in a page component structure.
- * A slot can contain any number of components. 
+ * This class is an attempt to give template-coders access to helper methods for form-handling.
  */
 
-public class Slot
+public class FormHelper
 {
-	private String id;
-	private String number;
-	private String name;
-	private List components = new ArrayList();
-	
-	public List getComponents()
+	public FormHelper()
 	{
-		return this.components;
 	}
 
-	public String getId()
+	public ContentTypeAttribute getContentTypeAttribute(String schemaValue, String attributeName)
 	{
-		return this.id;
+	    ContentTypeAttribute contentTypeAttribute = null;
+	    
+	    List attributes = FormDeliveryController.getFormDeliveryController().getContentTypeAttributes(schemaValue);
+	    
+	    Iterator attributesIterator = attributes.iterator();
+	    while(attributesIterator.hasNext())
+	    {
+	        ContentTypeAttribute tempContentTypeAttribute = (ContentTypeAttribute)attributesIterator.next();
+	        if(tempContentTypeAttribute.getName().equalsIgnoreCase(attributeName))
+	        {
+	            contentTypeAttribute = tempContentTypeAttribute;
+	            break;
+	        }
+	    }
+	    
+	    return contentTypeAttribute;
 	}
-
-	public String getName()
-	{
-		return this.name;
-	}
-
-	public void setComponents(List components)
-	{
-		this.components = components;
-	}
-
-	public void setId(String id)
-	{
-		this.id = id;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	public String getNumber()
-	{
-		return this.number;
-	}
-
-	public void setNumber(String number)
-	{
-		this.number = number;
-	}
-
 }

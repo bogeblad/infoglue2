@@ -23,35 +23,32 @@
 
 package org.infoglue.deliver.util;
 
-
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.infoglue.cms.util.CmsLogger;
 
 /**
- * URL utility class. Used for tasks involving getting url-contents from remote addresses 
- * within a program.
- * 
  * @author Mattias Bogeblad
- * @version 1
- * @since 1999-10-05
+ *
+ * Various methods to fetch url-contents
  */
 
-
-public class HttpUtilities 
-{            
-
-    /*
-     *
-     */
-    public HttpUtilities()
-    {
-    }
-
+public class HttpHelper 
+{
+	
     /**
      * This method post information to an URL and returns a string.It throws
      * an exception if anything goes wrong.
@@ -63,7 +60,7 @@ public class HttpUtilities
      * @exception java.lang.Exception
      */
     
-    public static String postToUrl(String urlAddress, Hashtable inHash) throws Exception
+    public String postToUrl(String urlAddress, Hashtable inHash) throws Exception
     {      
     	URL url = new URL(urlAddress);
         URLConnection urlConn = url.openConnection();
@@ -108,7 +105,7 @@ public class HttpUtilities
      * @exception java.lang.Exception
      */
     
-    public static String postToUrl(String urlAddress, Hashtable inHash, String userName, String password, boolean shouldEncode) throws Exception
+    public String postToUrl(String urlAddress, Hashtable inHash, String userName, String password, boolean shouldEncode) throws Exception
     {        
         String encodedPassword = HTUU.encode(userName + ":" + password);
         
@@ -148,7 +145,7 @@ public class HttpUtilities
     }
 
 	 
-	public static String getUrlContent(String urlAddress, HttpServletRequest request, boolean includeRequest) throws Exception
+	public String getUrlContent(String urlAddress, HttpServletRequest request, boolean includeRequest) throws Exception
 	{
 		if(includeRequest)
 			return getUrlContent(urlAddress, requestToHashtable(request));
@@ -156,7 +153,7 @@ public class HttpUtilities
 			return getUrlContent(urlAddress);
 	}
 
-	public static String getUrlContent(String urlAddress, HttpServletRequest request, boolean includeRequest, String encoding) throws Exception
+	public String getUrlContent(String urlAddress, HttpServletRequest request, boolean includeRequest, String encoding) throws Exception
 	{
 		if(includeRequest)
 			return getUrlContent(urlAddress, requestToHashtable(request), encoding);
@@ -164,7 +161,7 @@ public class HttpUtilities
 			return getUrlContent(urlAddress, encoding);
 	}
 
-	public static String getUrlContent(String urlAddress, Hashtable inHash) throws Exception
+	public String getUrlContent(String urlAddress, Hashtable inHash) throws Exception
 	{
 	    String argString = "";
 	    if(inHash != null)
@@ -198,7 +195,7 @@ public class HttpUtilities
 	}
 
 
-	public static String getUrlContent(String urlAddress, Hashtable inHash, String encoding) throws Exception
+	public String getUrlContent(String urlAddress, Hashtable inHash, String encoding) throws Exception
 	{
 		String argString = "";
 		if(inHash != null)
@@ -242,7 +239,7 @@ public class HttpUtilities
 	}
 
 	
-	public static String getUrlContent(String urlAddress) throws Exception
+	public String getUrlContent(String urlAddress) throws Exception
 	{
 	    URL url = new URL(urlAddress);
 	    URLConnection connection = url.openConnection();
@@ -263,7 +260,7 @@ public class HttpUtilities
 	}
 	
 	
-	public static String getUrlContent(String urlAddress, String encoding) throws Exception
+	public String getUrlContent(String urlAddress, String encoding) throws Exception
 	{
 		URL url = new URL(urlAddress);
 		URLConnection connection = url.openConnection();
@@ -306,7 +303,7 @@ public class HttpUtilities
      * @exception java.lang.Exception
      */
 	          
-	public static String getUrlContent(String urlAddress, Hashtable inHash, String userName, String password, boolean shouldEncode) throws Exception
+	public String getUrlContent(String urlAddress, Hashtable inHash, String userName, String password, boolean shouldEncode) throws Exception
 	{
 	    String encodedPassword = HTUU.encode(userName + ":" + password);
 	    
@@ -339,7 +336,7 @@ public class HttpUtilities
 	
 	
 	
-	public static String getUrlContent(String urlAddress, String data, String userName, String password) throws Exception
+	public String getUrlContent(String urlAddress, String data, String userName, String password) throws Exception
 	{
 	    String encodedPassword = HTUU.encode(userName + ":" + password);
 	    
@@ -378,7 +375,7 @@ public class HttpUtilities
 	 * @exception java.lang.Exception
 	 */
 	
-	public static InputStream getURLStream(String urlAddress, Hashtable inHash) throws Exception
+	public InputStream getURLStream(String urlAddress, Hashtable inHash) throws Exception
 	{
 	    String argString = "";
 	    if(inHash != null)
@@ -399,7 +396,7 @@ public class HttpUtilities
 	 * This method converts the request-object to a hashtable instead.
 	 */
 	
-	public static Hashtable requestToHashtable(HttpServletRequest request) 
+	public Hashtable requestToHashtable(HttpServletRequest request) 
 	{	
         Hashtable parameters = new Hashtable();
 		
@@ -425,7 +422,7 @@ public class HttpUtilities
 	 * @return A URL encoded string.
 	 */
 		
-	private static String toEncodedString(Hashtable inHash) throws Exception
+	private String toEncodedString(Hashtable inHash) throws Exception
 	{
 	    StringBuffer buffer = new StringBuffer();
 	    Enumeration names = inHash.keys();
@@ -442,7 +439,7 @@ public class HttpUtilities
 	    return buffer.toString();
 	}
 	
-	private static String toString(Hashtable inHash)
+	private String toString(Hashtable inHash)
 	{
 	    StringBuffer buffer = new StringBuffer();
 	    Enumeration names = inHash.keys();
@@ -458,5 +455,4 @@ public class HttpUtilities
 	    }
 	    return buffer.toString();
 	}
-
 }

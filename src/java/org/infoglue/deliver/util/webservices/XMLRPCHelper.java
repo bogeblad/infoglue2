@@ -1,3 +1,26 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+* 
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+* 
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
+
 package org.infoglue.deliver.util.webservices;
 
 import java.util.Vector;
@@ -25,11 +48,11 @@ public class XMLRPCHelper
 	/**
 	 * The constructor for this class.
 	 */
-
+	
 	public XMLRPCHelper()
-	{
+	{	
 	}
-
+	
 	public void makeCall()
 	{
 		try
@@ -40,10 +63,10 @@ public class XMLRPCHelper
 			//params.addElement("7");
 			//params.addElement("peew9yoop");
 			//params.addElement("1");
-
+			
 			// this method returns a string
 			this.result = xmlrpc.execute(this.method, this.parameters);
-
+			
 			CmsLogger.logInfo("result:" + result);
 		}
 		catch(Exception e)
@@ -53,17 +76,17 @@ public class XMLRPCHelper
 			CmsLogger.logWarning("An error occurred:" + e.getMessage(), e);
 		}
 	}
-
+	
 	public void setParameters(Vector parameters)
 	{
 		this.parameters = parameters;
 	}
-
+	
 	public Vector getParameters()
 	{
 		return this.parameters;
 	}
-
+	
 	public String getServiceUrl()
 	{
 		return serviceUrl;

@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -36,20 +36,20 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * The CommonLogger class implements the abstract Logger class.
- * The resulting log will conform to the
+ * The resulting log will conform to the 
  * <a href="http://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format">common log format</a>).
  */
 
 public class IISLogger extends Logger
 {
-	protected static final String monthnames[] =
+	protected static final String monthnames[] = 
 	{
 	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 	};
-
+    
 	protected static String noUrl = "*NOURL*";
-
+	    
 
 	private   byte                 msgbuf[]    = null ;
 	protected RandomAccessFile     log         = null ;
@@ -73,16 +73,16 @@ public class IISLogger extends Logger
 
 	private static String hostAddress = null;
 	private static String hostName = null;
-
-
+	
+	
 	/**
 	 * Log the given HTTP transaction.
 	 * Not implemented yet!!!
 	 */
 
-	public void logRequest(HttpServletRequest request, HttpServletResponse response, String pagePath, long duration)
+	public void logRequest(HttpServletRequest request, HttpServletResponse response, String pagePath, long duration) 
 	{
-		/*
+		/*    	
 	Client client = request.getClient() ;
 	long   date   = reply.getDate();
 
@@ -166,7 +166,7 @@ public class IISLogger extends Logger
 	}
 
 
-
+		
 	/**
 	 * Initialize this logger for the given server.
 	 * This method gets the server properties describe above to
@@ -174,15 +174,15 @@ public class IISLogger extends Logger
 	 * @param server The server to which thiss logger should initialize.
 	 */
 
-	public void initialize()
+	public void initialize() 
 	{
 	}
-
+	
 	/**
 	 * Construct a new Logger instance.
 	 */
 
-	IISLogger()
+	IISLogger() 
 	{
 		this.msgbuf = new byte[128] ;
 	}
@@ -191,25 +191,25 @@ public class IISLogger extends Logger
 	private String headerLine2 = "#Version: 1.0";
 	private String headerLine3 = "#Date: " + new Date();
 	private String headerLine4 = "#Fields: date time c-ip cs-username s-sitename s-computername s-ip s-port cs-method cs-uri-stem cs-uri-query sc-status sc-win32-status sc-bytes cs-bytes time-taken cs-version cs-host cs(User-Agent) cs(Cookie) cs(Referer)";
-
-
-	private List logBuffer = new ArrayList();
-
+	
+	
+	private List logBuffer = new ArrayList();    
+    
 	/**
 	 * This method writes a request to the logfile
 	 */
-
+    
 	protected void writeRequest(String date, String row)
-	{
+	{   
 		logBuffer.add(row);
-
+    	
 		if(logBuffer.size() > 20)
 		{
 			String logPath = CmsPropertyHandler.getProperty("statisticsLogPath");
 			File file = new File(logPath + File.separator + "stat" + date + ".log");
 			boolean isFileCreated = file.exists();
-
-			PrintWriter pout = null;
+				
+			PrintWriter pout = null; 		    
 			try
 			{
 				pout = new PrintWriter(new FileOutputStream(file, true));
@@ -220,11 +220,11 @@ public class IISLogger extends Logger
 					pout.println(headerLine3);
 					pout.println(headerLine4);
 				}
-
+	    	
 				Iterator i = logBuffer.iterator();
 				while(i.hasNext())
-				{
-					pout.println(i.next().toString());
+				{	
+					pout.println(i.next().toString());    
 				}
 				pout.close();
 			}
@@ -242,18 +242,18 @@ public class IISLogger extends Logger
 				{
 				}
 			}
-
+	    	
 			logBuffer = new ArrayList();
 		}
 	}
-
-
+    
+    
 	/**
 	 * This method returns a date as a string.
 	 */
-
+    
 	public String getCurrentDate(String pattern)
-	{
+	{	
 		/*
 		SimpleTimeZone pdt = new SimpleTimeZone(-8 * 60 * 60 * 1000, "PST");
 		pdt.setStartRule(Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000);
@@ -265,15 +265,15 @@ public class IISLogger extends Logger
 		String dateString = formatter.format(date);
 		return dateString;
 	}
-
-
+    
+    
 	public String getHostAddress()
 	{
 		if(hostAddress != null)
 			return hostAddress;
-
+    		
 		String address = null;
-
+    	
 		try
 		{
 			address = java.net.InetAddress.getLocalHost().getHostAddress();
@@ -282,9 +282,9 @@ public class IISLogger extends Logger
 		{
 			CmsLogger.logSevere(e.getMessage(), e);
 		}
-
+    	
 		hostAddress = address;
-
+    	
 		return address;
 	}
 
@@ -294,7 +294,7 @@ public class IISLogger extends Logger
 			return hostName;
 
 		String name = null;
-
+    	
 		try
 		{
 			name = java.net.InetAddress.getLocalHost().getHostName();
@@ -303,18 +303,18 @@ public class IISLogger extends Logger
 		{
 			CmsLogger.logSevere(e.getMessage(), e);
 		}
-
+    	
 		hostName = name;
-
+    	
 		return name;
 	}
 
-
+    
 	public String defaultValueIfNull(String value)
 	{
 		if(value == null || value.equals(""))
 			return "-";
-
+    
 		return value;
 	}
 }

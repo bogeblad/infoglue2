@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -36,18 +36,18 @@ public class W3CExtendedLogger extends CommonLogger
      * Construct a new Logger instance.
      */
 
-    public W3CExtendedLogger()
+    public W3CExtendedLogger() 
     {
-    }
+    }   
 
     /**
      * Logs the given request.
      */
 
     public synchronized void logRequest(HttpServletRequest request, HttpServletResponse response, String pagePath, long duration)
-    {
+    {	
     	StringBuffer sb = new StringBuffer();
-
+		
 		sb.append(defaultValueIfNull(getCurrentDate("yyyy-MM-dd HH:mm:ss")));  	//date + time
 		sb.append(" ");
 		sb.append(defaultValueIfNull(request.getRemoteAddr())); 				//c-ip

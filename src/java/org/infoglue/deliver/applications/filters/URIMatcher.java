@@ -5,15 +5,15 @@
 * ===============================================================================
 *
 *  Copyright (C)
-*
+* 
 * This program is free software; you can redistribute it and/or modify it under
 * the terms of the GNU General Public License version 2, as published by the
 * Free Software Foundation. See the file LICENSE.html for more information.
-*
+* 
 * This program is distributed in the hope that it will be useful, but WITHOUT
 * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
 * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-*
+* 
 * You should have received a copy of the GNU General Public License along with
 * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -57,15 +57,15 @@ public class URIMatcher
     {
         URIMatcher uriMatcher = new URIMatcher();
         List patterns = new ArrayList();
-        if (strings != null && strings.length > 0)
+        if (strings != null && strings.length > 0) 
         {
-            for (int i=0;i<strings.length;i++)
+            for (int i=0;i<strings.length;i++) 
             {
                 String str = strings[i];
-                if (str != null)
+                if (str != null) 
                 {
                     str = str.trim();
-                    if (str.length() > 0)
+                    if (str.length() > 0) 
                     {
                         String patternStr = patternize(str);
                         Pattern pattern = Pattern.compile(patternStr);
@@ -80,9 +80,9 @@ public class URIMatcher
 
     public boolean matches(String URI)
     {
-        if (URI != null && patterns != null && patterns.length > 0)
+        if (URI != null && patterns != null && patterns.length > 0) 
         {
-            for (int i=0;i<patterns.length;i++)
+            for (int i=0;i<patterns.length;i++) 
             {
             	if (patterns[i].matcher(URI).matches())
                     return true;
@@ -106,4 +106,4 @@ public class URIMatcher
         this.patterns = patterns;
     }
 
-}
+} 

@@ -5,15 +5,15 @@
 * ===============================================================================
 *
 *  Copyright (C)
-*
+* 
 * This program is free software; you can redistribute it and/or modify it under
 * the terms of the GNU General Public License version 2, as published by the
 * Free Software Foundation. See the file LICENSE.html for more information.
-*
+* 
 * This program is distributed in the hope that it will be useful, but WITHOUT
 * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
 * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-*
+* 
 * You should have received a copy of the GNU General Public License along with
 * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -24,16 +24,16 @@
 package org.infoglue.deliver.applications.filters;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
+import org.infoglue.deliver.util.CacheController;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.security.Principal;
 import java.util.*;
 
 /**
@@ -69,25 +70,25 @@ public class ViewPageFilter implements Filter
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null)
         	enableNiceURI = "false";
-
+        
     	long end, start = System.currentTimeMillis();
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         HttpSession httpSession = httpRequest.getSession(true);
         validateCmsProperties(httpRequest);
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
-
-        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI))
+        
+        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
         {
-            Integer repositoryId = getRepositoryId(httpRequest, httpSession);
+            Integer repositoryId = getRepositoryId(httpRequest, httpSession); 
             Integer languageId   = getLanguageId(httpRequest, httpSession, repositoryId);
             Integer siteNodeId   = null;
             String[] nodeNames = splitString(requestURI, "/");
             CmsLogger.logInfo("RepositoryId.: "+repositoryId);
             CmsLogger.logInfo("LanguageId...: "+languageId);
             CmsLogger.logInfo("RequestURI...: "+requestURI);
-
-            try
+        
+            try 
 			{
             	InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal)httpSession.getAttribute("infogluePrincipal");
         		if(infoGluePrincipal == null)
@@ -100,21 +101,21 @@ public class ViewPageFilter implements Filter
         				    Map arguments = new HashMap();
         				    arguments.put("j_username", "anonymous");
         				    arguments.put("j_password", "anonymous");
-
+        				    
         					infoGluePrincipal = (InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments);
         					if(infoGluePrincipal != null)
         						CacheController.cacheObject("userCache", "anonymous", infoGluePrincipal);
         				}
         				//this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
-
+        				
         			}
-        			catch(Exception e)
+        			catch(Exception e) 
         			{
         			    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
         			}
         		}
-
-
+        		
+            	
             	siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryId, nodeNames, languageId);
 
                 end = System.currentTimeMillis();
@@ -125,18 +126,18 @@ public class ViewPageFilter implements Filter
                 //CmsLogger.logInfo("wrappedHttpRequest:" + wrappedHttpRequest.getRequestURI() + "?" + wrappedHttpRequest.getQueryString());
                 wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
 
-            }
-            catch (SystemException e)
+            } 
+            catch (SystemException e) 
 			{
                 CmsLogger.logSevere("Failed to resolve siteNodeId",e);
                 throw new ServletException(e);
-            }
-            catch (Exception e)
+            } 
+            catch (Exception e) 
 			{
                 throw new ServletException(e);
             }
-        }
-        else
+        } 
+        else 
         {
             filterChain.doFilter(httpRequest, httpResponse);
         }
@@ -156,42 +157,42 @@ public class ViewPageFilter implements Filter
 
     private Integer getRepositoryId(HttpServletRequest request, HttpSession session) throws ServletException
     {
-        if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null)
+        if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) 
         {
             CmsLogger.logInfo("Fetching repositoryId from session");
             return (Integer) session.getAttribute(FilterConstants.REPOSITORY_ID);
         }
-
+        
         CmsLogger.logInfo("Trying to lookup repositoryId");
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
         CmsLogger.logInfo("serverName:" + serverName);
-
+        
         RepositoryVO repository = null;
-        try
+        try 
 		{
             repository = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryFromServerName(serverName, portNumber);
             CmsLogger.logInfo("repository:" + repository);
-		}
-        catch (Exception e)
+		} 
+        catch (Exception e) 
 		{
             CmsLogger.logInfo("Failed to map servername " + serverName + " to a repository");
             CmsLogger.logInfo("Failed to map servername " + serverName + " to a repository");
 		}
-
-        if (repository == null)
+        
+        if (repository == null) 
         {
-            try
+            try 
 			{
                 repository = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository();
                 CmsLogger.logInfo("masterRepository:" + repository);
-			}
-            catch (Exception e1)
+			} 
+            catch (Exception e1) 
 			{
                 CmsLogger.logSevere("Failed to lookup master repository");
             }
         }
-
+        
         if (repository == null)
             throw new ServletException("Unable to find a repository for server-name " + serverName);
 
@@ -202,39 +203,39 @@ public class ViewPageFilter implements Filter
     private Integer getLanguageId(HttpServletRequest request, HttpSession session, Integer repositoryId) throws ServletException
     {
         Integer languageId = null;
-        if (request.getParameter("languageId") != null)
+        if (request.getParameter("languageId") != null) 
         {
             CmsLogger.logInfo("Language is explicitely given in request");
-            try
+            try 
 			{
                 languageId = Integer.valueOf(request.getParameter("languageId"));
                 session.setAttribute(FilterConstants.LANGUAGE_ID,  languageId);
-            }
+            } 
             catch (NumberFormatException e) {
             }
         }
-
+        
         if (languageId != null)
             return languageId;
-
-        if (session.getAttribute(FilterConstants.LANGUAGE_ID) != null)
+        
+        if (session.getAttribute(FilterConstants.LANGUAGE_ID) != null) 
         {
             CmsLogger.logInfo("Fetching languageId from session");
             return (Integer) session.getAttribute(FilterConstants.LANGUAGE_ID);
         }
-
+        
         CmsLogger.logInfo("Looking for languageId for repository "+repositoryId);
         Locale requestLocale = request.getLocale();
-        try
+        try 
 		{
             List availableLanguagesForRepository = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(repositoryId);
-            if (requestLocale != null)
+            if (requestLocale != null) 
             {
                 for (int i=0;i<availableLanguagesForRepository.size();i++) {
                     LanguageVO language = (LanguageVO) availableLanguagesForRepository.get(i);
                     CmsLogger.logInfo("language:" + language.getLanguageCode());
                     CmsLogger.logInfo("browserLanguage:" + requestLocale.getLanguage());
-                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage()))
+                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage())) 
                     {
                         languageId = language.getLanguageId();
                     }
@@ -296,7 +297,7 @@ public class ViewPageFilter implements Filter
             requestParameters.put("languageId", new String[] { String.valueOf(languageId) } );
             if (requestParameters.get("contentId") == null)
                 requestParameters.put("contentId",  new String[] { String.valueOf(-1) } );
-
+        
             CmsLogger.logInfo("siteNodeId:" + siteNodeId);
             CmsLogger.logInfo("languageId:" + languageId);
             CmsLogger.logInfo("contentId:" + requestParameters.get("contentId"));
@@ -354,4 +355,4 @@ public class ViewPageFilter implements Filter
 
 
 
-}
+} 

@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -44,12 +44,12 @@ import javax.imageio.ImageIO;
 
 
 /**
- * This class demonstrates how to line-break and draw a paragraph
+ * This class demonstrates how to line-break and draw a paragraph 
  * of text using LineBreakMeasurer and TextLayout.
  *
  * This class constructs a LineBreakMeasurer from an
  * AttributedCharacterIterator.  It uses the LineBreakMeasurer
- * to create and draw TextLayouts (lines of text) which fit within
+ * to create and draw TextLayouts (lines of text) which fit within 
  * the Component's width.
  */
 
@@ -65,25 +65,25 @@ public class ImageRenderer //extends JFrame
     private int textStartPosY	= 25;
     private int textWidth		= 300;
     private int textHeight		= 100;
-
+    
     private String fontName 	= "Dialog";
     private int fontStyle 		= Font.PLAIN;
     private int fontSize 		= 12;
-
+    
     private int alignment       = ALIGN_LEFT;
-
+        
     private Color backgroundColor = null;
     private Color foreGroundColor = null;
-
+    
     private String backgroundImageUrl = null;
-
+    
     /*
     Frame frame = null;
-
+	
 	public static void main(String[] args)
 	{
 		ImageRenderer ir = new ImageRenderer();
-
+		
 		ir.setCanvasWidth(300);
     	ir.setCanvasHeight(100);
     	ir.setTextStartPosX(5);
@@ -91,15 +91,15 @@ public class ImageRenderer //extends JFrame
     	ir.setTextWidth(300);
     	ir.setTextHeight(100);
 		ir.setAlignment(ALIGN_RIGHT);
-
+		
 		ir.setFontName("Verdana");
 		ir.setFontStyle(Font.BOLD);
 		ir.setFontSize(20);
-
+		
 		ir.setForeGroundColor(Color.BLACK);
 		ir.setBackgroundColor(Color.WHITE);
 		//ir.setBackgroundImageUrl("http://localhost:8080/infoglueDeliverDev/digitalAssets/94_1080909656343_gradient.jpg");
-
+		
 		//ir.listAvailableFonts();
 		ir.setSize(400, 400);
 		ir.setVisible(true);
@@ -117,11 +117,11 @@ public class ImageRenderer //extends JFrame
 	    }
 	}
 
-
-	public void paint(Graphics g)
+	
+	public void paint(Graphics g) 
 	{
 	    Graphics2D g2d = (Graphics2D)g;
-
+	    
 	    try
 	    {
 	    	drawText(g2d, "Detta är ett test som bör brytas");
@@ -132,7 +132,7 @@ public class ImageRenderer //extends JFrame
 	    	e.printStackTrace();
 	    }
   	}
-
+	
 
 	public ImageRenderer()
 	{
@@ -140,7 +140,7 @@ public class ImageRenderer //extends JFrame
 		//frame.addNotify();
 	}
 	*/
-
+	
 	/**
 	 * This method generates a gif-image from the send in string with the given width/height.
 	 */
@@ -148,14 +148,14 @@ public class ImageRenderer //extends JFrame
 	public void generateGifImageFromText(String file, String text, String encoding) throws Exception
 	{
 		BufferedImage image = new BufferedImage(this.canvasWidth, this.canvasHeight, BufferedImage.TYPE_INT_ARGB);
-
+		
 		//if(!encoding.equalsIgnoreCase("utf-8"))
 		//	text = new String(text.getBytes(encoding), "UTF-8");
-
-		drawText((Graphics2D)image.getGraphics(), text);
+		
+		drawText((Graphics2D)image.getGraphics(), text); 
 		Hashtable arguments = new Hashtable();
-		arguments.put("encoding", "websafe");
-		//CmsLogger.logInfo("Going to generate gif to disc...");
+		arguments.put("encoding", "websafe"); 
+		//CmsLogger.logInfo("Going to generate gif to disc..."); 
 		//new GifEncoder().encode(image, new DataOutputStream(new FileOutputStream(file)), arguments);
 		File outputFile = new File(file);
 		javax.imageio.ImageIO.write(image, "PNG", outputFile);
@@ -167,31 +167,31 @@ public class ImageRenderer //extends JFrame
 		Font font = FontSaver.create(this.fontName, this.fontStyle, this.fontSize);
 
 		if(this.backgroundImageUrl != null)
-		{
-			URL url = new URL(this.backgroundImageUrl);
+		{	
+			URL url = new URL(this.backgroundImageUrl);       
 			BufferedImage bufferedImage = ImageIO.read(url);
 			g2d.drawImage(bufferedImage,0,0, null);
 		}
 		else
-		{
+		{	
 			g2d.setBackground(this.backgroundColor);
-			g2d.setPaint(this.backgroundColor);
+			g2d.setPaint(this.backgroundColor); 
 			g2d.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 		}
-
+		
 		g2d.setPaint(this.foreGroundColor);
     	g2d.setFont(font);
-
-    	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
+		
+    	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY); 
+    	
 		AttributedString as = new AttributedString(text);
 		as.addAttribute(TextAttribute.FONT, font);
 		as.addAttribute(TextAttribute.JUSTIFICATION, font);
 		AttributedCharacterIterator paragraph = as.getIterator();
 		int paragraphStart = paragraph.getBeginIndex();
 		int paragraphEnd = paragraph.getEndIndex();
-
+		        
  		float drawPosY = (float)textStartPosY;
 
     	StringTokenizer st = new StringTokenizer(text);
@@ -201,7 +201,7 @@ public class ImageRenderer //extends JFrame
     		String word = (String)st.nextElement();
     		v.addElement(word);
     	}
-
+		
     	String testString = "";
     	String realString = "";
     	java.util.List lines = new ArrayList();
@@ -210,7 +210,7 @@ public class ImageRenderer //extends JFrame
     	{
     		testString = realString + (String)v.get(i) + " ";
     		TextLayout testLay = new TextLayout(testString, font, g2d.getFontRenderContext());
-
+			 
 			if(testLay.getBounds().getWidth() > textWidth || i == v.size()-2)
 			{
 				String remainingString = testString;
@@ -218,7 +218,7 @@ public class ImageRenderer //extends JFrame
 					remainingString += (String)v.get(i + 1);
 				if(v.size() > i + 2)
 					remainingString += " " + (String)v.get(i + 2);
-
+				
 				TextLayout fullyFilledLay = new TextLayout(remainingString, font, g2d.getFontRenderContext());
 				if(fullyFilledLay.getBounds().getWidth() < textWidth)
 				{
@@ -230,58 +230,58 @@ public class ImageRenderer //extends JFrame
 					String row = "";
 					for(int j=offset; j < i; j++)
 						row = row + (String)v.get(j) + " ";
-
+						
 					lines.add(row);
 					realString = "";
 					testString = "";
 					offset = i;
-					realString = (String)v.get(i) + " ";
+					realString = (String)v.get(i) + " "; 
 				}
 			}
 			else
 			{
 				realString = testString;
 				testString = "";
-			}
+			}	
     	}
 
     	if(!realString.equalsIgnoreCase(""))
 	    	lines.add(realString);
-
-
-	    Iterator i = lines.iterator();
-		while (i.hasNext())
-		{
+		
+			
+	    Iterator i = lines.iterator();   
+		while (i.hasNext()) 
+		{   
 			String word = (String)i.next();
 			if(word != null && word.length() > 0)
 			{
 			   	TextLayout layout = new TextLayout(word, font, g2d.getFontRenderContext());
-
+			   	
 			   	int centerX = this.textWidth / 2;
 				int centeredTextStartX = centerX - ((int)layout.getVisibleAdvance() / 2);
 				int rightTextStartX = this.textWidth - (int)layout.getVisibleAdvance();
-
+				
 			   	// Move y-coordinate by the ascent of the layout.
 			   	drawPosY += layout.getAscent();
-
+			        
 			   	float drawPosX;
-			   	if (layout.isLeftToRight())
+			   	if (layout.isLeftToRight()) 
 			   	{
 			   		if(this.alignment == ALIGN_CENTER)
-			   			drawPosX = centeredTextStartX;
+			   			drawPosX = centeredTextStartX; 
 					if(this.alignment == ALIGN_RIGHT)
-						drawPosX = rightTextStartX - textStartPosX;
+						drawPosX = rightTextStartX - textStartPosX; 
 			   		else
 			   			drawPosX = textStartPosX;
 			   	}
-			   	else
+			   	else  
 			   	{
 					drawPosX = textWidth - layout.getAdvance();
 			   	}
-
-			   	// Draw the TextLayout at (drawPosX, drawPosY).
+			            
+			   	// Draw the TextLayout at (drawPosX, drawPosY). 
 			   	layout.draw(g2d, drawPosX, drawPosY);
-
+			           
 			   	// Move y-coordinate in preparation for next layout.
 			   	drawPosY += layout.getDescent() + layout.getLeading();
 			}

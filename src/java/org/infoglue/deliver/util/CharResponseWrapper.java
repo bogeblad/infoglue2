@@ -20,68 +20,32 @@
 *
 * ===============================================================================
 */
+package org.infoglue.deliver.util;
 
-package org.infoglue.deliver.applications.databeans;
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
 
-/**
- * 
- */
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
-public class ComponentBinding
+public class CharResponseWrapper extends HttpServletResponseWrapper
 {
-	private Integer id;
-	private Integer componentId;
-	private String entityClass;
-	private Integer entityId;
-	private String bindingPath;
-
-	public Integer getId()
+	private CharArrayWriter output;
+	
+	public String toString() 
 	{
-		return this.id;
+		return output.toString();
+	}
+	
+	public CharResponseWrapper(HttpServletResponse response) 
+	{
+		super(response);
+		output = new CharArrayWriter();
+	}
+	
+	public PrintWriter getWriter() 
+	{
+		return new PrintWriter(output);
 	}
 
-	public void setId(Integer id)
-	{
-		this.id = id;
-	}
-
-	public Integer getComponentId()
-	{
-		return componentId;
-	}
-
-	public String getEntityClass()
-	{
-		return entityClass;
-	}
-
-	public Integer getEntityId()
-	{
-		return entityId;
-	}
-
-	public void setComponentId(Integer integer)
-	{
-		componentId = integer;
-	}
-
-	public void setEntityClass(String string)
-	{
-		entityClass = string;
-	}
-
-	public void setEntityId(Integer integer)
-	{
-		entityId = integer;
-	}
-
-	public String getBindingPath()
-	{
-		return bindingPath;
-	}
-
-	public void setBindingPath(String string)
-	{
-		bindingPath = string;
-	}
 }

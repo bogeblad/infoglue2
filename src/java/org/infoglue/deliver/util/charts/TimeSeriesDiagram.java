@@ -5,22 +5,22 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
  */
-
+ 
 package org.infoglue.deliver.util.charts;
 
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -53,7 +53,7 @@ import java.text.SimpleDateFormat;
  *
  * @author David Gilbert
  */
-public class TimeSeriesDiagram implements XMLDataDiagram
+public class TimeSeriesDiagram implements XMLDataDiagram 
 {
 
 	private JFreeChart chart;
@@ -63,13 +63,13 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 	private String axisYHeader;
 	private String axisXHeader;
 	private String timeGranulariry;
-
-	public JFreeChart getChart()
+	
+	public JFreeChart getChart() 
 	{
 		return chart;
 	}
 
-	public void setChart(JFreeChart chart)
+	public void setChart(JFreeChart chart) 
 	{
 		this.chart = chart;
 	}
@@ -82,16 +82,16 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 		JFreeChart chart = createChart(dataset);
 		this.chart = chart;
 	}
-
+	
 	/**
 	 * Creates a chart.
-	 *
+	 * 
 	 * @param dataset  a dataset.
-	 *
+	 * 
 	 * @return A chart.
 	 */
-
-	private JFreeChart createChart(XYDataset dataset)
+	
+	private JFreeChart createChart(XYDataset dataset) 
 	{
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
 			header,	axisXHeader, axisYHeader, dataset, true, true, false);
@@ -108,21 +108,21 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 		plot.setAxisOffset(new Spacer(Spacer.ABSOLUTE, 5.0, 5.0, 5.0, 5.0));
 		plot.setDomainCrosshairVisible(true);
 		plot.setRangeCrosshairVisible(true);
-
+        
 		XYItemRenderer renderer = plot.getRenderer();
 		if (renderer instanceof StandardXYItemRenderer) {
 			StandardXYItemRenderer rr = (StandardXYItemRenderer) renderer;
 			rr.setPlotShapes(true);
 			rr.setShapesFilled(true);
 		}
-
+        
 		DateAxis axis = (DateAxis) plot.getDomainAxis();
 		axis.setDateFormatOverride(new SimpleDateFormat(this.dateFormat));
-
+        
 		return chart;
 
 	}
-
+    
 	/**
 	 * Creates a dataset, consisting of two series of monthly data.
 	 *
@@ -134,7 +134,7 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 
 		Document document = new DOMBuilder().getDocument(this.xmlData);
 		this.writeDebug(document);
-
+		
 		Element headerElement = (Element)document.selectSingleNode("//chartHeader");
 		this.header = headerElement.getText();
 		Element axisYHeaderElement = (Element)document.selectSingleNode("//axisYHeader");
@@ -145,25 +145,25 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 		this.timeGranulariry = timeGranularityElement.getText();
 		Element dateFormatElement = (Element)document.selectSingleNode("//dateFormat");
 		this.dateFormat = dateFormatElement.getText();
-
+						
 		List series = document.selectNodes("//Series");
-
+		
 		Iterator seriesIterator = series.iterator();
 		while(seriesIterator.hasNext())
 		{
 			Element serieElement = (Element)seriesIterator.next();
 			String serieName = serieElement.attributeValue("name");
 			//System.out.println("SerieName:" + serieName);
-
+			
 			TimeSeries s1 = null;
 			if(this.timeGranulariry.equalsIgnoreCase("Month"))
 				s1 = new TimeSeries(serieName, Month.class);
 			else if(this.timeGranulariry.equalsIgnoreCase("Week"))
 				s1 = new TimeSeries(serieName, Week.class);
-
+		
 			List items = serieElement.selectNodes("Item");
 			Iterator itemsIterator = items.iterator();
-			while(itemsIterator.hasNext())
+			while(itemsIterator.hasNext()) 
 			{
 				Element itemElement = (Element)itemsIterator.next();
 				Element yearElement = (Element)itemElement.selectSingleNode("yearId");
@@ -176,13 +176,13 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 				//System.out.println("year:" + year);
 				//System.out.println("month:" + month);
 				//System.out.println("ppd:" + ppd);
-
+				
 				if(this.timeGranulariry.equalsIgnoreCase("Month"))
 					s1.add(new Month(new Integer(time).intValue(), new Integer(year).intValue()), new Float(value));
 				else if(this.timeGranulariry.equalsIgnoreCase("Week"))
-					s1.add(new Week(new Integer(time).intValue(), new Integer(year).intValue()), new Float(value));
+					s1.add(new Week(new Integer(time).intValue(), new Integer(year).intValue()), new Float(value));				
 			}
-
+			
 
 
 			timeSeriesDataset.addSeries(s1);
@@ -199,12 +199,12 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 	/**
 	 * This method takes xml as input for the diagram.
 	 */
-
+	
 	public void setDiagramData(String xmlData)
 	{
 		this.xmlData = xmlData;
 	}
-
+	
 
 	/**
 	 * This method creates a new Document from an xml-string.
@@ -214,9 +214,9 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 	{
 		if(xml == null)
 			return null;
-
+					
 		Document document = null;
-
+		
 		try
 		{
 			SAXReader xmlReader = new SAXReader();
@@ -226,7 +226,7 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 		{
 			e.printStackTrace();
 		}
-
+ 		
 		return document;
 	}
 */
@@ -234,7 +234,7 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 	 * This method writes a document to System.out.
 	 */
 
-	public void writeDebug(Document document) throws Exception
+	public void writeDebug(Document document) throws Exception 
 	{
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		XMLWriter writer = new XMLWriter( System.out, format );

@@ -23,65 +23,45 @@
 
 package org.infoglue.deliver.applications.databeans;
 
+import java.util.*;
+
 /**
  * 
  */
 
-public class ComponentBinding
+public class ComponentTask
 {
-	private Integer id;
-	private Integer componentId;
-	private String entityClass;
-	private Integer entityId;
-	private String bindingPath;
-
-	public Integer getId()
-	{
-		return this.id;
-	}
-
-	public void setId(Integer id)
-	{
-		this.id = id;
-	}
-
-	public Integer getComponentId()
-	{
-		return componentId;
-	}
-
-	public String getEntityClass()
-	{
-		return entityClass;
-	}
-
-	public Integer getEntityId()
-	{
-		return entityId;
-	}
-
-	public void setComponentId(Integer integer)
-	{
-		componentId = integer;
-	}
-
-	public void setEntityClass(String string)
-	{
-		entityClass = string;
-	}
-
-	public void setEntityId(Integer integer)
-	{
-		entityId = integer;
-	}
-
-	public String getBindingPath()
-	{
-		return bindingPath;
-	}
-
-	public void setBindingPath(String string)
-	{
-		bindingPath = string;
-	}
+	private String name;
+	private String view;
+	private Integer componentId;		
+		
+    public Integer getComponentId()
+    {
+        return componentId;
+    }
+    
+    public void setComponentId(Integer componentId)
+    {
+        this.componentId = componentId;
+    }
+    
+    public String getName()
+    {
+        return name;
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+    
+    public String getView()
+    {
+        return view;
+    }
+    
+    public void setView(String view)
+    {
+        this.view = view;
+    }
 }

@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -47,34 +47,34 @@ import java.util.Hashtable;
 
 public class FontSaver
 {
-
+	
 	private static Hashtable h;
-
+   
    	/**
 	 * Works just like the Font Constructor:
  	 * Creates a new font with the specified name, style and point size.
  	 * @param name the font name
  	 * @param style the constant style used
- 	 * @param size the point size of the font
+ 	 * @param size the point size of the font 
  	 */
-
+   
 	public static Font create (String name, int style, int size)
    	{
-   		if (h == null)
+   		if (h == null) 
    			h = new Hashtable(101,.75f);
-
+      
 		FontKey fontKey = new FontKey(name, style, size);
       	Font prevFont = (Font)h.get(fontKey);
-
-      	if (prevFont != null)
+      	
+      	if (prevFont != null) 
       		return prevFont;
-
+      
 		Font newFont = new Font(name, style, size);
-
+      
 		h.put(fontKey, newFont);
-
+      	
       	return newFont;
-	}
+	} 
 
 }
 
@@ -115,7 +115,7 @@ class FontKey
    /**
     * Returns a hashcode for this font.
     */
-
+    
    	public int hashCode()
     {
       	return name.hashCode() ^ style ^ size;
@@ -124,20 +124,20 @@ class FontKey
    /**
     * The logical name of this font.
     */
-
+   	
    	protected String name;
 
    /**
     * The style of the font. This is the sum of the
     * constants PLAIN, BOLD, or ITALIC.
     */
-
+   	
    	protected int style;
 
    /**
     * The point size of this font.
     */
-
+   
    	protected int size;
 
 }
