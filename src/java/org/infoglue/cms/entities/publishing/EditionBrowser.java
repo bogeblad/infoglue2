@@ -34,9 +34,9 @@ public class EditionBrowser implements Serializable
 	{
 		BigDecimal total = new BigDecimal(totalEditions);
 		BigDecimal page = new BigDecimal(pageSize);
-		BigDecimal start = new BigDecimal(startIndex);
+		BigDecimal start = new BigDecimal(startIndex + 0.5d); // handle the case where it s zero
 		totalPages = Math.max(1, total.divide(page, 0, BigDecimal.ROUND_UP).intValue());
-		currentPage = Math.max(1, start.divide(page, 0, BigDecimal.ROUND_UP).intValue());
+		currentPage = start.divide(page, 0, BigDecimal.ROUND_UP).intValue();
 	}
 
 	public int getTotalEditions()		{ return totalEditions; }
@@ -49,18 +49,56 @@ public class EditionBrowser implements Serializable
 	public void setPageSize(int i)		{ pageSize = i; }
 
 	public List getEditions()			{ return editions; }
-	public void setEditions(List c)		{editions = (c != null)? c : new ArrayList(); }
+	public void setEditions(List c)		{ editions = (c != null)? c : new ArrayList(); }
 
 	public int getTotalPages()			{ return totalPages; }
 	public int getCurrentPage()			{ return currentPage; }
 
-	public int getPreviousPageSize()
+	/**
+	 * Returns true if there will be editions on the previous page, false otherwise
+	 */
+	public boolean hasPreviousPage()
 	{
-		return Math.min(pageSize, Math.max(0, startIndex - 1));
+		return getPreviousPageSize() != 0;
 	}
 
+	/**
+	 * Returns true if there will be editions on the next page, false otherwise
+	 */
+	public boolean hasNextPage()
+	{
+		return getNextPageSize() != 0;
+	}
+
+	/**
+	 * Returns the number of editions on the previous page
+	 */
+	public int getPreviousPageSize()
+	{
+		return Math.min(pageSize, Math.max(0, startIndex));
+	}
+
+	/**
+	 * Returns the number of editions on the next page
+	 */
 	public int getNextPageSize()
 	{
 		return Math.min(pageSize, Math.max(0, totalEditions - (startIndex + pageSize)));
+	}
+
+	/**
+	 * Returns the starting index of the previous page
+	 */
+	public int getPreviousPageIndex()
+	{
+		return getStartIndex() - getPreviousPageSize();
+	}
+
+	/**
+	 * Returns the starting index of the next page
+	 */
+	public int getNextPageIndex()
+	{
+		return getStartIndex() + getEditions().size();
 	}
 }
