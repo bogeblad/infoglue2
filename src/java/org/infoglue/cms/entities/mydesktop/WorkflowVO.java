@@ -151,7 +151,7 @@ public class WorkflowVO implements BaseEntityVO
 	 */
 	public List getAvailableActions()
 	{
-		return getActions(currentSteps);
+		return getAvailableActions(null);
 	}
 
 	/**
@@ -162,17 +162,9 @@ public class WorkflowVO implements BaseEntityVO
 	 */
 	public List getAvailableActions(StepFilter filter)
 	{
-		return getActions(getCurrentSteps(filter));
-	}
-
-	/**
-	 * Returns all the actions associated with the given list of steps
-	 * @param steps a list of WorkflowStepVOs
-	 * @return a list of WorkflowActionVOs containing all actions for steps
-	 */
-	private static List getActions(List steps)
-	{
+		List steps = (filter == null) ? currentSteps : getCurrentSteps(filter);
 		List availableActions = new ArrayList();
+
 		for (Iterator i = steps.iterator(); i.hasNext();)
 			availableActions.addAll(((WorkflowStepVO)i.next()).getActions());
 
