@@ -49,6 +49,7 @@ import org.infoglue.cms.util.*;
 import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -98,7 +99,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		try
 		{
 			operatingMode = new Integer(CmsPropertyHandler.getProperty("operatingMode"));
-			CmsLogger.logInfo("Operating mode is:" + operatingMode);
+			//CmsLogger.logInfo("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
 		{
@@ -235,10 +236,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode) throws Exception
 	{
-		CmsLogger.logInfo("content:" + content.getId());
-		CmsLogger.logInfo("operatingMode:" + operatingMode);
-		CmsLogger.logInfo("languageId:" + languageId);
-			
+	    CmsLogger.logInfo("content:" + content.getId());
+	    CmsLogger.logInfo("operatingMode:" + operatingMode);
+	    CmsLogger.logInfo("languageId:" + languageId);
+		
 		ContentVersion contentVersion = null;
 		
 		Collection contentVersions = content.getContentVersions();
@@ -247,7 +248,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		while(versionIterator.hasNext())
 		{
 			ContentVersion contentVersionCandidate = (ContentVersion)versionIterator.next();	
-			CmsLogger.logInfo("contentVersionCandidate:" + contentVersionCandidate.getId() + ":" + contentVersionCandidate.getIsActive() + ":" + contentVersionCandidate.getLanguage() + ":" + contentVersionCandidate.getStateId());
+			//CmsLogger.logInfo("contentVersionCandidate:" + contentVersionCandidate.getId() + ":" + contentVersionCandidate.getIsActive() + ":" + contentVersionCandidate.getLanguage() + ":" + contentVersionCandidate.getStateId());
 			if(contentVersionCandidate.getIsActive().booleanValue() && contentVersionCandidate.getLanguage().getId().intValue() ==  languageId.intValue() && contentVersionCandidate.getStateId().intValue() >= operatingMode.intValue())
 			{
 				if(contentVersion == null || contentVersion.getId().intValue() < contentVersionCandidate.getId().intValue())

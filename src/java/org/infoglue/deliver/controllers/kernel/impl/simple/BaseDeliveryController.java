@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryException;
 import org.exolab.castor.jdo.QueryResults;
 
@@ -234,9 +235,9 @@ public abstract class BaseDeliveryController
 	 * @param query The String OQL query
 	 * @param params A List of Objects to bind to the query sequentially
 	 * @return An OQLQuery instance that can be executer
-	 * @throws org.exolab.castor.jdo.QueryException
+	 * @throws PersistenceException
 	 */
-	protected static OQLQuery createQuery(Database db, String query, List params) throws QueryException
+	protected static OQLQuery createQuery(Database db, String query, List params) throws PersistenceException
 	{
 		OQLQuery oql = db.getOQLQuery(query);
 		if (params != null)
