@@ -93,6 +93,9 @@
 		<javac destdir="${build.classes}" classpathref="build.classpath" depend="true">
 			<src refid="build.sourcepath"/>
 		</javac>
+		<javac destdir="${test.classes}" classpathref="build.classpath" depend="true">
+			<src refid="test.sourcepath"/>
+		</javac>
 		<copy todir="${build.classes}">
 			<fileset dir="${conf}">
 				<include name="*.properties"/>
@@ -139,7 +142,7 @@
 	<!--
 	* Generates API documentation; includes test code as well.
 	-->
-	<target name="javadoc" depends="test-compile" >
+	<target name="javadoc" depends="compile" >
 		<javadoc destdir="${javadoc}" packagenames="org.*" author="true" version="true"
 					windowtitle="${project.fullname} API - ${project.version}"
 					doctitle="${project.fullname} - ${project.version}"
@@ -152,20 +155,11 @@
 	</target>
 
 	<!--
-	* Compiles test classes
-	-->
-	<target name="test-compile" depends="compile">
-		<javac destdir="${test.classes}" classpathref="test.classpath" depend="true">
-			<src refid="test.sourcepath"/>
-		</javac>
-	</target>
-
-	<!--
 	* Runs all the tests.  Requires junit.jar to be in the Ant lib
 	* directory, otherwise the JUnit task will not be able to find the
 	* JUnit classes.
 	-->
-	<target name="all-tests" depends="test-compile">
+	<target name="all-tests" depends="compile">
 		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
 		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
 			<classpath refid="test.classpath"/>
@@ -185,7 +179,7 @@
 	* junit.jar to be in the Ant lib directory, otherwise the JUnit task
 	* will not be able to find the JUnit classes.
 	-->
-	<target name="test" depends="test-compile">
+	<target name="test" depends="compile">
 		<fail unless="test.class">Property test.class was not set. Usage: ant -Dtest.class=package.to.some.TestClass test</fail>
 		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
 		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
@@ -201,7 +195,7 @@
 	* junit.jar to be in the Ant lib directory, otherwise the JUnit task
 	* will not be able to find the JUnit classes.
 	-->
-	<target name="test-swing" depends="test-compile">
+	<target name="test-swing" depends="compile">
 		<fail unless="test.class">Property test.class was not set. Usage: ant -Dtest.class=package.to.some.TestClass</fail>
 		<java classname="${test.class}" classpathref="test.classpath" fork="true">
 			<jvmarg line="-enableassertions"/>
