@@ -336,6 +336,8 @@ select.yesNoDropBox{
 }
 select.sitedropbox {
 	width            : 150px;
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
 }
 select.contenttypes {
 	width            : 300px;
