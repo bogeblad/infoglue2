@@ -19,7 +19,7 @@
 -- Place, Suite 330 / Boston, MA 02111-1307 / USA.
 --
 -- ===============================================================================
--- $Id: hibernate-workflow-store-patch.sql,v 1.2 2005/02/24 14:40:35 jed Exp $
+-- $Id: hibernate-workflow-store-patch.sql,v 1.3 2005/02/24 20:48:02 jed Exp $
 --
 -- This script performs the database updates required to switch to the hibernate
 -- workflow store.
@@ -48,6 +48,22 @@ create table COPY_OF_OS_CURRENTSTEP_PREV select * from OS_CURRENTSTEP_PREV;
 create table COPY_OF_OS_HISTORYSTEP select * from OS_HISTORYSTEP;
 create table COPY_OF_OS_HISTORYSTEP_PREV select * from OS_HISTORYSTEP_PREV;
 create table COPY_OF_OS_PROPERTYENTRY select * from OS_PROPERTYENTRY;
+create table COPY_OF_OS_STEPIDS select * from OS_STEPIDS;
+
+-- -------------------------------------------------------------------------------
+-- Drop OS_STEPIDS; it is not necesary for the hibernate workflow store.
+-- -------------------------------------------------------------------------------
+drop table OS_STEPIDS;
+
+-- -------------------------------------------------------------------------------
+-- Drop foreign key constraints
+-- -------------------------------------------------------------------------------
+alter table OS_CURRENTSTEP drop foreign key 0_3912;
+alter table OS_CURRENTSTEP_PREV drop foreign key 0_3914;
+alter table OS_CURRENTSTEP_PREV drop foreign key 0_3915;
+alter table OS_HISTORYSTEP drop foreign key 0_3917;
+alter table OS_HISTORYSTEP_PREV drop foreign key 0_3919;
+alter table OS_HISTORYSTEP_PREV drop foreign key 0_3920;
 
 ----------------------------------------------------------------------------------
 -- Deletes all data from the workflow tables so we can create the auto_increment
@@ -56,25 +72,20 @@ create table COPY_OF_OS_PROPERTYENTRY select * from OS_PROPERTYENTRY;
 -- id = 1.  You'll have to figure out how to move the data from the copies back
 -- into the changed tables if you care about preserving the data.
 ----------------------------------------------------------------------------------
-set foreign_key_checks=0;
-
 delete from OS_CURRENTSTEP;
 delete from OS_CURRENTSTEP_PREV;
 delete from OS_HISTORYSTEP;
 delete from OS_HISTORYSTEP_PREV;
-delete from OS_STEPIDS;
 delete from OS_WFENTRY;
-
-set foreign_key_checks=1;
 
 ----------------------------------------------------------------------------------
 -- Clear out the property set table, preserving the WYSIWYG config data.
 ----------------------------------------------------------------------------------
 delete from OS_PROPERTYENTRY where item_key not like 'repository_%_WYSIWYGConfig';
 
-----------------------------------------------------------------------------------
--- Drop primary keys on the tables we need to change
-----------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------
+-- Drop primary keys
+-- -------------------------------------------------------------------------------
 alter table OS_WFENTRY drop primary key;
 alter table OS_CURRENTSTEP drop primary key;
 alter table OS_HISTORYSTEP drop primary key;
@@ -87,6 +98,16 @@ alter table OS_PROPERTYENTRY drop primary key;
 alter table OS_WFENTRY change ID ID bigint not null auto_increment primary key;
 alter table OS_CURRENTSTEP change ID ID bigint not null auto_increment primary key;
 alter table OS_HISTORYSTEP change ID ID bigint not null auto_increment primary key;
+
+-- -------------------------------------------------------------------------------
+-- Add foreign key constraints to workflow step tables
+-- -------------------------------------------------------------------------------
+alter table OS_CURRENTSTEP add constraint currentstep_entry_id foreign key (entry_id) references OS_WFENTRY (id);
+alter table OS_HISTORYSTEP add constraint historystep_entry_id foreign key (entry_id) references OS_WFENTRY (id);
+alter table OS_CURRENTSTEP_PREV add constraint currentstep_id foreign key (id) references OS_CURRENTSTEP (id);
+alter table OS_CURRENTSTEP_PREV add constraint currentstep_previous_id foreign key (previous_id) references OS_HISTORYSTEP(id);
+alter table OS_HISTORYSTEP_PREV add constraint historystep_id foreign key (id) references OS_HISTORYSTEP (id);
+alter table OS_CURRENTSTEP_PREV add constraint historystep_previous_id foreign key (previous_id) references OS_HISTORYSTEP(id);
 
 ----------------------------------------------------------------------------------
 -- Add stepIndex columns to OS_CURRENTSTEP and OS_HISTORYSTEP so the lists
