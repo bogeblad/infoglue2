@@ -38,20 +38,20 @@ public class ContentVersionVO implements BaseEntityVO
 	public static final Integer UNPUBLISH_STATE = new Integer(4);
 	public static final Integer UNPUBLISHED_STATE = new Integer(5);
 
-	private java.lang.Integer contentVersionId;
-    private java.lang.Integer stateId 			 = new Integer(0);
-    private java.util.Date modifiedDateTime      = new Date();
-    private java.lang.String versionComment      = "Saved";
-    private java.lang.Boolean isCheckedOut       = new Boolean(false);
-   	private java.lang.Boolean isActive           = new Boolean(true);
-   	//private java.lang.Boolean isUnpublished	  = new Boolean(false);
+	private Integer contentVersionId;
+    private Integer stateId				= new Integer(0);
+    private Date modifiedDateTime		= new Date();
+    private String versionComment		= "Saved";
+    private Boolean isCheckedOut		= new Boolean(false);
+   	private Boolean isActive			= new Boolean(true);
 
 	private Integer languageId					 = null;
+	private String languageName 				 = "";
    	private Integer contentId					 = null;
     private String contentName 					 = "";
-    private String languageName 				 = "";
+    private Integer contentTypeDefinitionId		 = null;
     private String versionModifier				 = null;
-	private java.lang.String versionValue   	 = "";
+	private String versionValue   	 = "";
 
     public java.lang.Integer getContentVersionId()
     {
@@ -63,98 +63,85 @@ public class ContentVersionVO implements BaseEntityVO
         this.contentVersionId = contentVersionId;
     }
 
-    public java.lang.Integer getContentId()
+    public Integer getContentId()
     {
         return this.contentId;
     }
 
-    public void setContentId(java.lang.Integer contentId)
+    public void setContentId(Integer contentId)
     {
         this.contentId = contentId;
     }
 
-    public java.lang.Integer getStateId()
+	public Integer getContentTypeDefinitionId()
+	{
+		return contentTypeDefinitionId;
+	}
+
+	public void setContentTypeDefinitionId(Integer id)
+	{
+		contentTypeDefinitionId = id;
+	}
+
+    public Integer getStateId()
     {
         return this.stateId;
     }
 
-    public void setStateId(java.lang.Integer stateId)
+    public void setStateId(Integer stateId)
     {
         this.stateId = stateId;
     }
 
-    public java.lang.String getVersionValue()
+    public String getVersionValue()
     {
         return this.versionValue;
     }
 
-    public void setVersionValue(java.lang.String versionValue)
+    public void setVersionValue(String versionValue)
     {
     	this.versionValue = versionValue;
     }
 
-    public java.util.Date getModifiedDateTime()
+    public Date getModifiedDateTime()
     {
         return this.modifiedDateTime;
     }
 
-    public void setModifiedDateTime(java.util.Date modifiedDateTime)
+    public void setModifiedDateTime(Date modifiedDateTime)
     {
         this.modifiedDateTime = modifiedDateTime;
     }
 
-    public java.lang.String getVersionComment()
+    public String getVersionComment()
     {
         return this.versionComment;
     }
 
-    public void setVersionComment(java.lang.String versionComment)
+    public void setVersionComment(String versionComment)
     {
         this.versionComment = versionComment;
     }
 
-    public java.lang.Boolean getIsCheckedOut()
+    public Boolean getIsCheckedOut()
     {
         return this.isCheckedOut;
     }
 
-    public void setIsCheckedOut(java.lang.Boolean isCheckedOut)
+    public void setIsCheckedOut(Boolean isCheckedOut)
     {
         this.isCheckedOut = isCheckedOut;
     }
 
-   	public java.lang.Boolean getIsActive()
+   	public Boolean getIsActive()
     {
     	return this.isActive;
 	}
 
-    public void setIsActive(java.lang.Boolean isActive)
+    public void setIsActive(Boolean isActive)
 	{
 		this.isActive = isActive;
 	}
-
-/*
-   	public java.lang.Boolean getIsUnpublished()
-    {
-    	return this.isUnpublished;
-	}
-
-    public void setIsUnpublished(java.lang.Boolean isUnpublished)
-	{
-		this.isUnpublished = isUnpublished;
-	}
-*/
-/*
-    public java.lang.Boolean getIsPublishedVersion()
-    {
-    	return this.isPublishedVersion;
-	}
-
-    public void setIsPublishedVersion(java.lang.Boolean isPublishedVersion)
-	{
-		this.isPublishedVersion = isPublishedVersion;
-	}
-*/
 
     /**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#getId()
@@ -173,24 +160,15 @@ public class ContentVersionVO implements BaseEntityVO
 	}
 
 
-	/**
-	 * Returns the languageId.
-	 * @return Integer
-	 */
 	public Integer getLanguageId()
 	{
 		return languageId;
 	}
 
-	/**
-	 * Sets the languageId.
-	 * @param languageId The languageId to set
-	 */
 	public void setLanguageId(Integer languageId)
 	{
 		this.languageId = languageId;
 	}
-
 
 	public String getVersionModifier()
 	{
@@ -208,6 +186,7 @@ public class ContentVersionVO implements BaseEntityVO
 		ContentVersionVO copy = new ContentVersionVO();
 
 		copy.setContentId(new Integer(this.contentId.intValue()));
+		copy.setContentTypeDefinitionId(new Integer(this.contentTypeDefinitionId.intValue()));
 		copy.setIsActive(new Boolean(this.isActive.booleanValue()));
 		copy.setIsCheckedOut(new Boolean(this.isCheckedOut.booleanValue()));
 		copy.setLanguageId(new Integer(this.languageId.intValue()));
@@ -219,30 +198,19 @@ public class ContentVersionVO implements BaseEntityVO
 
 		return copy;
 	}
-	/**
-	 * @return
-	 */
+
 	public String getContentName() {
 		return contentName;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setContentName(String string) {
 		contentName = string;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getLanguageName() {
 		return languageName;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setLanguageName(String string) {
 		languageName = string;
 	}
@@ -253,6 +221,8 @@ public class ContentVersionVO implements BaseEntityVO
 		sb.append("id=").append(contentVersionId)
 			.append(" contentId=").append(contentId)
 			.append(" contentName=").append(contentName)
+			.append(" contentTypeDefinitionId=").append(contentTypeDefinitionId)
+			.append(" languageId=").append(languageId)
 			.append(" languageName=").append(languageName)
 			.append(" isActive=").append(isActive)
 			.append(" isCheckedOut=").append(isCheckedOut)
