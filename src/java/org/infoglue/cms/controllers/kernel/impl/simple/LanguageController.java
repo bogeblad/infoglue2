@@ -33,6 +33,7 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.*;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
 
 import org.exolab.castor.jdo.Database;
@@ -40,6 +41,7 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;

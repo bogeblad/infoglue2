@@ -23,9 +23,12 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageController;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 
 import java.util.List;
@@ -37,12 +40,16 @@ import java.util.List;
  * @author Mattias Bogeblad  
  */
 
-public class ViewRepositoryAction extends WebworkAbstractAction
+public class ViewRepositoryAction extends InfoGlueAbstractAction
 { 
 
     private RepositoryVO repositoryVO;
-    private List availableLanguageVOList;
-    private List languageVOList;
+
+    private List repositoryLanguageVOList;
+	private List allRemainingLanguageVOList;
+
+    //private List availableLanguageVOList;
+    //private List languageVOList;
 
     public ViewRepositoryAction()
     {
@@ -57,8 +64,12 @@ public class ViewRepositoryAction extends WebworkAbstractAction
     protected void initialize(Integer repositoryId) throws Exception
     {
         repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
-        availableLanguageVOList = LanguageController.getController().getLanguageVOList(repositoryId);
-        languageVOList = LanguageController.getController().getLanguageVOList();
+        
+        this.repositoryLanguageVOList = RepositoryLanguageController.getController().getRepositoryLanguageVOListWithRepositoryId(repositoryId);
+		this.allRemainingLanguageVOList = RepositoryLanguageController.getController().getRemainingLanguages(repositoryId);
+		
+        //availableLanguageVOList = LanguageController.getController().getLanguageVOList(repositoryId);
+		//languageVOList = LanguageController.getController().getLanguageVOList();
     } 
 
     /**
@@ -107,7 +118,8 @@ public class ViewRepositoryAction extends WebworkAbstractAction
     {
         return this.repositoryVO.getDnsName();
     }
-	        
+	
+    /*
     public List getAvailableLanguages()
     {
     	return this.availableLanguageVOList;
@@ -117,10 +129,26 @@ public class ViewRepositoryAction extends WebworkAbstractAction
     {    	
     	return this.languageVOList;
     }
+    */
     
     /*
     public List getRoles()throws Exception{
    		return (List) RepositoryController.getRepositoryRoleVOList(this.getRepositoryId()); 		
     }
    	*/
+    public List getAllRemainingLanguageVOList()
+    {
+        return allRemainingLanguageVOList;
+    }
+    
+    public List getRepositoryLanguageVOList()
+    {
+        return repositoryLanguageVOList;
+    }
+    
+	public LanguageVO getLanguage(Integer repositoryLanguageId) throws Exception
+	{
+		return LanguageController.getController().getLanguageVOWithRepositoryLanguageId(repositoryLanguageId);
+	}
+
 }
