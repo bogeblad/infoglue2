@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.24 2005/03/07 17:25:53 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.25 2005/03/16 16:27:13 mattias Exp $ -->
 <actions>
 
 	<!-- Test -->
@@ -559,6 +559,31 @@
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
+	<!-- Group -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListGroupAction" alias="ViewListGroup">
+		<view name="success">/cms/managementtool/viewListGroup.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewGroupAction" alias="ViewGroup">
+		<view name="success">/cms/managementtool/viewGroup.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.CreateGroupAction" alias="CreateGroup">
+		<view name="input">/cms/managementtool/createGroup.vm</view>
+		<view name="success">ViewGroup.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteGroupAction" alias="DeleteGroup">
+		<view name="success">ViewListGroup.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateGroupAction" alias="UpdateGroup">
+		<view name="input">/cms/managementtool/viewGroup.vm</view>
+		<view name="success">ViewGroup.action</view>
+		<view name="saveAndExit">ViewListGroup.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	
 	<!-- Workflow -->
 	<action name="org.infoglue.cms.applications.workflowtool.actions.ViewListWorkflowAction" alias="ViewListWorkflow">
 		<view name="success">/cms/workflowtool/viewListWorkflow.vm</view>
