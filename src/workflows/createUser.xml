@@ -5,7 +5,7 @@
   <meta name="lastModified">Tue Sep 07 12:08:35 CEST 2004</meta>
   <meta name="generator">OSWOrkflow Designer</meta>
   <initial-actions>
-    <action id="0" name="Start Workflow" view="ViewMyDesktopToolStartPage!invoke.action">
+    <action id="0" name="Start Workflow">
       <restrict-to>
       </restrict-to>
       <results>
@@ -13,7 +13,7 @@
       </results>
     </action>
   </initial-actions>
-  
+
   <global-actions>
 	<action id="200" name="Restart Workflow">
 		<meta name="icon">images/mydesktop/restart.gif</meta>
@@ -26,15 +26,15 @@
 		<meta name="icon">images/mydesktop/stop.gif</meta>
 		<meta name="altKey">Finish</meta>
 		<results>
-			<unconditional-result step="3" old-status="Finished" status="Finished"/>
+			<unconditional-result step="4" old-status="Finished" status="Finished"/>
 		</results>
 	</action>
   </global-actions>
-  
+
   <steps>
     <step id="1" name="Register Name Step">
       <actions>
-        <action id="4" name="Register Name 1" view="ViewMyDesktopToolStartPage!invoke.action">
+        <action id="4" name="Register Name 1">
           <restrict-to>
           </restrict-to>
           <pre-functions>
@@ -83,7 +83,7 @@
     </step>
     <step id="3" name="Register UserInfo 2">
       <actions>
-        <action id="6" name="Register UserInfo" view="ViewMyDesktopToolStartPage!invoke.action">
+        <action id="6" name="Register UserInfo">
           <restrict-to>
           </restrict-to>
           <pre-functions>
@@ -102,7 +102,6 @@
         </action>
       </actions>
     </step>
-    <step id="4" name="Finish Registration">
-    </step>
+    <step id="4" name="Finish Registration"/>
   </steps>
 </workflow>
