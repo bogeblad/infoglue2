@@ -410,8 +410,16 @@
 		lastKeyCode = 0
 	};
 	
-	document.attachEvent( "oncontextmenu", showContextMenu );
-	document.attachEvent( "onkeyup", rememberKeyCode );
+	if(document.attachEvent)
+	{
+		document.attachEvent("oncontextmenu", showContextMenu);
+		document.attachEvent("onkeyup", rememberKeyCode);
+	}
+	else
+	{
+		document.addEventListener("oncontextmenu", showContextMenu, false);
+		document.addEventListener("onkeyup", rememberKeyCode, false);
+	}
 	
 	//]]>
 	</script>

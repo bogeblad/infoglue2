@@ -10,7 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/editor.js"></script>
-	<script type="text/javascript" src="applications/HTMLArea/popups/popup.js"></script>
+	<script type="text/javascript" src="applications/HTMLArea/popups/infogluePopup.js"></script>
 	
 	<script language="JavaScript">
 	<!--
@@ -82,7 +82,7 @@
 				document.inputForm.f_href.value = "#";
 				#set($dollar = "$")
 				attribute = "<a href=\"${dollar}templateLogic.getInlineAssetUrl(" + contentId + ", \"" + assetKey + "\")\" title=\"" + title + "\" target=\"" + target + "\">" + document.inputForm.f_text.value + "</a>";
-				originalTag = transformAttribute(attribute, self.parent.opener.document);
+				originalTag = transformAttribute(attribute, top.opener.document);
 			
 				var required = 
 					{
@@ -125,7 +125,8 @@
 		}
 
 		function onCancel() {
-		    __dlg_close(null);
+		    alert("Parent:" + parent.name) 
+		    parent.onCancel(null);
 			return false;
 		}	
 		
@@ -348,7 +349,7 @@
 <tr>
 	<td>
 		<a href="javascript:onOk();"><img src="$ui.getString("images.structuretool.buttons.save")" border="0"></a>
-		<a href="javascript:parent.close();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
+		<a href="javascript:onCancel();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
 	</td>
 </tr>
 

@@ -10,8 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/editor.js"></script>
-	<script type="text/javascript" src="script/jsrsClient.js"></script>
-	<script type="text/javascript" src="applications/HTMLArea/popups/popup.js"></script>
+	<script type="text/javascript" src="applications/HTMLArea/popups/infogluePopup.js"></script>
 	
 	<script type="text/javascript">
 	<!-- 
@@ -92,6 +91,10 @@
 		  } else f.style.visibility = "hidden";
 		};
 
+		
+
+		/*
+		
 		function onOk() 
 		{
 		  	siteNodeId = document.inputForm.entityId.value;
@@ -135,10 +138,61 @@
 		  __dlg_close(param);
 		  return false;
 		};
-
 		function onCancel() 
 		{
             __dlg_close(null);
+			return false;
+		}
+		*/
+		
+		function onOk() 
+		{
+		  	siteNodeId = document.inputForm.entityId.value;
+			title = document.inputForm.f_title.value;
+			target = document.inputForm.f_target.value;
+			path = document.inputForm.path.value;
+			navigationTitleHash[siteNodeId] = path;
+			//alert("param: " + "<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, null)\">$templateLogic.getPageNavTitle(" + siteNodeId + ")</a>");
+			document.inputForm.f_href.value = "#";
+			originalTag = transformAttribute("<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, null)\" title=\"" + title + "\" target=\"" + target + "\">" + document.inputForm.f_text.value + "</a>", parent.opener.document);
+			
+		  var required = 
+		  	{
+		  	"f_href": "You must select a page in the tree which the link will lead to",
+		    "f_title": "You must enter a title for the url"
+		    };
+		  for (var i in required) {
+		    var el = document.getElementById(i);
+		    if (!el.value) {
+		      alert(required[i]);
+		      el.focus();
+		      return false;
+		    }
+		  }
+		  // pass data back to the calling window
+		  var fields = ["f_href", "f_title", "f_target"];
+		  var param = new Object();
+		  for (var i in fields) {
+		    var id = fields[i];
+		    var el = document.getElementById(id);
+		    param[id] = el.value;
+		  }
+		  if (param.f_target == "_other")
+		    param.f_target = document.getElementById("f_other_target").value;
+		   
+		  param.originaltag = originalTag;  
+		  //alert("param.f_href at closing time:" + param.f_href);  
+		  //alert("param.f_title at closing time:" + param.f_title);  
+		  //alert("param.f_target at closing time:" + param.f_target); 
+		  //alert("param.originaltag at closing time:" + param.originaltag);   
+		  parent.__dlg_close(param);
+		  return false;
+		};
+		
+		function onCancel() 
+		{
+            alert("Parent: " + parent.name);
+            parent.__dlg_close(null);
 			return false;
 		}
 	-->

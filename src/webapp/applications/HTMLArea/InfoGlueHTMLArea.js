@@ -231,7 +231,7 @@ function configInfoGlue(config)
 		var text = editor.getSelectedHTML();
 		//alert("text:" + text);
 		//alert("link:" + link);
-		alert("editor:" + editor);
+		//alert("editor:" + editor);
 		
 		if (link) 
 		{
@@ -302,7 +302,7 @@ function configInfoGlue(config)
 			  	}	
 			}
 		}
-		else
+		else if(text.indexOf("getPageUrl") > -1)
 		{
 			/**
 	  		 * NORMAL INLINE LINK
@@ -325,9 +325,13 @@ function configInfoGlue(config)
 				extraParameters = "&method=inlineLink&oldSiteNodeId=";
 			}  		
 		}
+		else
+		{
+				extraParameters = "&method=externalLink";
+		}
 
   	  	url = _applicationContext + "ViewLinkDialog.action?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
-		alert("url:" + url);
+		//alert("url:" + url);
 		
 		this._relativePopupDialog(url, function(param) 
 		{
@@ -391,165 +395,15 @@ function configInfoGlue(config)
 			a.target = param.f_target.trim();
 			a.title = param.f_title.trim();
 			//alert("param.originaltag:" + param.originaltag);
-			//alert("param.originaltag:" + untransformAttribute(param.originaltag));	
-			a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
+			//alert("param.originaltag:" + untransformAttribute(param.originaltag));
+			if(param.originaltag)	
+				a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
 			
 			//alert("a2:" + a);	
 			editor.selectNodeContents(a);
 			editor.updateToolbar();
 		}, outparam);
-		
-		/*
-		
-  	  	//url = _applicationContext + "ViewContentVersion!viewAssetsDialog.action?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&treatAsLink=true&textAreaId=" + editor.id + extraParameters;
-  		//alert("outparam.f_text:" + outparam.f_text);
-  	
-  		this._relativePopupDialog(url, function(param) 
-		{
-			//alert("relativePopupDialog");
-	
-			if (!param)
-				return false;
-			
-			//alert("param:" + param);
-			//alert("param:" + param["image"]);
-			//alert("param:" + param["f_text"]);
-			//alert("param:" + param["f_url"]);
-			//alert("param:" + param["f_href"]);
-			//alert("param:" + param["f_title"]);
-			//alert("param:" + param["f_target"]);
-			var a = link;
-			if (!a)
-			{ 
-				//alert("no a found:" + a);
-				try 
-				{
-					editor._doc.execCommand("createlink", false, param.f_href);
-					a = editor.getParentElement();
-					var sel = editor._getSelection();
-					var range = editor._createRange(sel);
-					if (!HTMLArea.is_ie) {
-						a = range.startContainer;
-						if (!/^a$/i.test(a.tagName)) {
-							a = a.nextSibling;
-							if (a == null)
-								a = range.startContainer.parentNode;
-						}
-					}
-				} 
-				catch(e) {alert("error:" + e);}
-			}
-			else 
-			{
-				var href = param.f_href.trim();
-				editor.selectNodeContents(a);
-				if (href == "") 
-				{
-					editor._doc.execCommand("unlink", false, null);
-					editor.updateToolbar();
-					return false;
-				}
-				else 
-				{
-					a.href = href;
-				}
-			}
-			
-			if (!(a && /^a$/i.test(a.tagName)))
-			{
-				//alert("returning false a:" + a.tagName);	
-				//alert("returning false i:" + i);	
-				return false;
-			}
 				
-			//alert("a:" + a);	
-			a.target = param.f_target.trim();
-			a.title = param.f_title.trim();
-			//alert("param.originaltag:" + param.originaltag);
-			//alert("param.originaltag:" + untransformAttribute(param.originaltag));	
-			a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
-			
-			//alert("a2:" + a);	
-			editor.selectNodeContents(a);
-			editor.updateToolbar();
-		}, outparam);
-			
-
-			 
-  		url = _applicationContext + "ViewStructureTreeForInlineLink.action?contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
-  		
-  		//alert("outparam.f_text:" + outparam.f_text);
-  	
-  		this._relativePopupDialog(url, function(param) 
-		{
-			//alert("relativePopupDialog");
-	
-			if (!param)
-				return false;
-			
-			//alert("param:" + param);
-			//alert("param:" + param["f_href"]);
-			//alert("param:" + param["f_title"]);
-			//alert("param:" + param["f_target"]);
-			//alert("param:" + param["f_text"]);
-			
-			var a = link;
-			if (!a)
-			{ 
-				//alert("no a found:" + a);
-				try 
-				{
-					editor._doc.execCommand("createlink", false, param.f_href);
-					a = editor.getParentElement();
-					var sel = editor._getSelection();
-					var range = editor._createRange(sel);
-					if (!HTMLArea.is_ie) {
-						a = range.startContainer;
-						if (!/^a$/i.test(a.tagName)) {
-							a = a.nextSibling;
-							if (a == null)
-								a = range.startContainer.parentNode;
-						}
-					}
-				} 
-				catch(e) {alert("error:" + e);}
-			}
-			else 
-			{
-				var href = param.f_href.trim();
-				editor.selectNodeContents(a);
-				if (href == "") 
-				{
-					editor._doc.execCommand("unlink", false, null);
-					editor.updateToolbar();
-					return false;
-				}
-				else 
-				{
-					a.href = href;
-				}
-			}
-			
-			if (!(a && /^a$/i.test(a.tagName)))
-			{
-				//alert("returning false a:" + a.tagName);	
-				//alert("returning false i:" + i);	
-				return false;
-			}
-				
-			//alert("a:" + a);	
-			a.target = param.f_target.trim();
-			a.title = param.f_title.trim();
-			//alert("param.originaltag:" + param.originaltag);
-			//alert("param.originaltag:" + untransformAttribute(param.originaltag));	
-			a.setAttribute("originaltag", escape(untransformAttribute(param.originaltag)));
-			
-			//alert("a2:" + a);	
-			editor.selectNodeContents(a);
-			editor.updateToolbar();
-		}, outparam);
-	*/
-		
 	};
 
 
