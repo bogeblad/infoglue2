@@ -20,28 +20,18 @@
  *
  * ===============================================================================
  *
- * $Id: PublicationControllerTest.java,v 1.1 2005/02/28 23:47:53 frank Exp $
+ * $Id: PublicationControllerTest.java,v 1.2 2005/03/01 23:27:20 frank Exp $
  */
 package org.infoglue.cms.controllers;
 
-import java.util.List;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.CategoryAttribute;
+import java.util.*;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.publishing.PublicationDetailVO;
+import org.infoglue.cms.entities.publishing.EditionBrowser;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
-import org.infoglue.cms.util.ResourceHelper;
 import org.infoglue.cms.util.InfoGlueTestCase;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.exception.SystemException;
 
 /**
@@ -49,16 +39,15 @@ import org.infoglue.cms.exception.SystemException;
  */
 public class PublicationControllerTest extends InfoGlueTestCase
 {
-	private PublicationVO testEdition;
+	public static final Integer TEST_REPO = new Integer(9999999);
+	public static final Integer PAGE_SIZE = new Integer(5);
 
 	ArrayList testEditions = new ArrayList();
-	ArrayList testDetails = new ArrayList();
 
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-
-		//testEdition = createEdition(10);
+		CmsPropertyHandler.setProperty("edition.pageSize", PAGE_SIZE.toString());
 	}
 
 	protected void tearDown() throws Exception
@@ -69,18 +58,39 @@ public class PublicationControllerTest extends InfoGlueTestCase
 			PublicationController.deleteEntity(PublicationImpl.class, publicationVO.getId());
 			assertRemoved(publicationVO.getId());
 		}
-
 	}
 
 	public void testGetEditions() throws Exception
 	{
-		System.out.println("TEST!");
+		int numEditions = 11;
+		for (int i = 0; i < numEditions; i++)
+			createEdition("TestEdition #" + i, changeDate(Calendar.DAY_OF_YEAR, (0-i)), i);
+
+		int startIndex = 4;
+		EditionBrowser browser = PublicationController.getEditionPage(TEST_REPO, startIndex);
+
+		assertEquals("Wrong total number of editions", numEditions, browser.getTotalEditions());
+		assertFalse("No editions returned", browser.getEditions().isEmpty());
+		assertEquals("Wrong number of editions on page", PAGE_SIZE.intValue(), browser.getEditions().size());
+		assertEquals("Wrong start index", startIndex, browser.getStartIndex());
+		assertEquals("Wrong total pages", 3, browser.getTotalPages());
+		assertEquals("Wrong current page", 1, browser.getCurrentPage());
+		assertEquals("Wrong previous page size", 4, browser.getPreviousPageSize());
+		assertEquals("Wrong next page size", 2, browser.getNextPageSize());
+
+		int index = 0;
+		for (Iterator iter = browser.getEditions().iterator(); iter.hasNext(); index++)
+		{
+			PublicationVO found = (PublicationVO) iter.next();
+			PublicationVO expected = (PublicationVO) testEditions.get(startIndex + index);
+			assertEquals("Wrong previous page size", expected.getId(), found.getId());
+		}
 	}
 
 	private PublicationVO createEdition(String name, Date publicationDate, int detailCount) throws SystemException
 	{
 		PublicationVO edition = new PublicationVO();
-		edition.setRepositoryId(getRepoId());
+		edition.setRepositoryId(TEST_REPO);
 		edition.setName(name);
 		edition.setDescription(getName() + " description");
 		edition.setPublicationDateTime(publicationDate);
