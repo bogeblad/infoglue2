@@ -7,75 +7,8 @@
 	<initial-actions>
 		<action id="0" name="Start Workflow">
 			<pre-functions>
-				<function name="beanshell function" type="beanshell">
-					<arg name="script">
-						<![CDATA[
-						/**
-						 * THIS IS VERY TEMPORARY SOLUTION FOR ASSESSING WHERE TO PUT THE NEWS ITEMS.
-						 */
-
-						import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-					 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-					 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-					 import org.infoglue.cms.entities.management.RepositoryVO;
-					 import org.infoglue.cms.entities.content.Content;
-					 import org.infoglue.cms.entities.content.ContentVO;
-					 import org.infoglue.cms.util.CmsLogger;
-
-						System.out.println("Now I start by setting some basic parameters like where this content should end up...");
-					 Integer repositoryId 			= null;
-					  Integer parentContentId 		= null;
-					  Integer contentTypeDefinitionId	= null;
-
-					  try
-					  {
-						  List repositories = RepositoryController.getController().getRepositoryVOList();
-						  Iterator repositoriesIterator = repositories.iterator();
-						  while(repositoriesIterator.hasNext())
-						  {
-								RepositoryVO repositoryVO = (RepositoryVO)repositoriesIterator.next();
-								if(repositoryVO.getName().equalsIgnoreCase("www.officestand.com"))
-								{
-									 repositoryId = repositoryVO.getRepositoryId();
-									break;
-								}
-						  }
-
-						  System.out.println("Found repositoryId when trying to assess where to put the news: " + repositoryId);
-
-						  ContentVO rootContentVO = ContentController.getContentController().getRootContentVO(repositoryId, "${caller}");
-						  System.out.println("rootContentVO: " + rootContentVO.getName());
-
-						  List children = ContentController.getContentController().getContentChildrenVOList(rootContentVO.getId());
-						  Iterator childrenIterator = children.iterator();
-						  while(childrenIterator.hasNext())
-						  {
-								ContentVO childContentVO = (ContentVO)childrenIterator.next();
-								System.out.println("childContentVO: " + childContentVO.getName());
-								if(childContentVO.getName().equalsIgnoreCase("News Items"))
-								{
-									 parentContentId = childContentVO.getId();
-									 break;
-								}
-						  }
-
-						  contentTypeDefinitionId = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Article").getContentTypeDefinitionId();
-						  System.out.println("contentTypeDefintionId: " + contentTypeDefintionId);
-					  }
-					  catch(Exception e)
-					  {
-							CmsLogger.logInfo("An error occurred trying to assess the place where to put it.");
-					  }
-
-					  System.out.println("parentContentId:" + parentContentId);
-					  System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
-					  System.out.println("repositoryId:" + repositoryId);
-
-						propertySet.setString("parentContentId", "" + parentContentId);
-						propertySet.setString("contentTypeDefinitionId", "" + contentTypeDefinitionId);
-						propertySet.setString("repositoryId", "" + repositoryId);
-					]]>
-					</arg>
+				<function type="class">
+					<arg name="class.name">org.infoglue.cms.applications.workflowtool.functions.InitializeCreateNews</arg>
 				</function>
 			</pre-functions>
 			<results>
@@ -105,8 +38,6 @@
 		<step id="1" name="Create news content">
 			<actions>
 				<action id="4" name="Create news content" view="workflows/ig_create_news/createNewsForm.jsp?userName=administrator">
-					<restrict-to>
-					</restrict-to>
 					<pre-functions>
 						<function name="set.caller" type="class">
 							<arg name="class.name">com.opensymphony.workflow.util.Caller</arg>
@@ -116,40 +47,8 @@
 						<unconditional-result id="5" old-status="Finished" status="Queued" step="2" owner="${caller}"/>
 					</results>
 					<post-functions>
-						<function name="beanshell function" type="beanshell">
-							<arg name="script">
-								<![CDATA[
-								System.out.println("transientVars:" + transientVars.getClass().getName());
-								Iterator iterator = transientVars.keySet().iterator();
-								while(iterator.hasNext())
-								{
-									Object key = iterator.next();
-									System.out.println("key:" + key);
-									Object value = transientVars.get(key);
-									System.out.println("value:" + value.getClass().getName());
-								}
-
-								javax.servlet.http.HttpServletRequest request = transientVars.get("request");
-
-								String name = request.getParameter("name");
-								String title = request.getParameter("title");
-								String navigationTitle = request.getParameter("navigationTitle");
-								String leadIn = request.getParameter("leadIn");
-								String fullText = request.getParameter("fullText");
-
-								System.out.println("Caller - ${caller}");
-								System.out.println("name:" + name);
-								System.out.println("title:" + title);
-								System.out.println("navigationTitle:" + navigationTitle);
-								System.out.println("leadIn:" + leadIn);
-								System.out.println("fullText:" + fullText);
-								propertySet.setString("name", name);
-								propertySet.setString("title", title);
-								propertySet.setString("navigationTitle", navigationTitle);
-								propertySet.setString("leadIn", leadIn);
-								propertySet.setString("fullText", fullText);
-							]]>
-							</arg>
+						<function type="class">
+							<arg name="class.name">org.infoglue.cms.applications.workflowtool.functions.StoreRequestParamsInPropertySet</arg>
 						</function>
 					</post-functions>
 				</action>
@@ -187,6 +86,6 @@
 				</action>
 			</actions>
 		</step>
-		<step id="3" name="Finish Registration"/>
+		<step id="3" name="Finish"/>
 	</steps>
 </workflow>
