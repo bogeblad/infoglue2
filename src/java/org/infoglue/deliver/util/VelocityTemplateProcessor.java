@@ -104,7 +104,7 @@ public class VelocityTemplateProcessor
 		RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/Template_" + hashCode + ".jsp");
 		templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.templateLogic", templateController);
 		CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
-		dispatch.forward(templateController.getHttpServletRequest(), wrapper);
+		dispatch.include(templateController.getHttpServletRequest(), wrapper);
 		String result = wrapper.toString();
 		pw.println(result);
 	}
