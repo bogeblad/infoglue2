@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.5 2005/02/22 15:22:55 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.6 2005/02/28 18:47:30 frank Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -125,3 +125,8 @@ CREATE TABLE cmRegistry
 ----------------------------------------------------------------------------------
 CREATE INDEX contentTypeDefinitionId ON cmContent (contentTypeDefinitionId);
 CREATE INDEX parentContentId ON cmContent (parentContentId);
+
+----------------------------------------------------------------------------------
+-- Add indexes to cmPublicationDetail on publicationId (parent)
+----------------------------------------------------------------------------------
+CREATE INDEX publicationId ON cmPublicationDetail (publicationId);
