@@ -42,6 +42,7 @@ public class WorkflowVO implements BaseEntityVO
 	private List declaredSteps = new ArrayList();
 	private List currentSteps = new ArrayList();
 	private List historySteps = new ArrayList();
+	private List initialActions = new ArrayList();
 	private List globalActions = new ArrayList();
 
 	public WorkflowVO() {}
@@ -131,6 +132,16 @@ public class WorkflowVO implements BaseEntityVO
 		historySteps = (steps == null) ? new ArrayList() : steps;
 	}
 
+	public List getInitialActions()
+	{
+		return initialActions;
+	}
+
+	public void setInitialActions(List actions)
+	{
+		initialActions = (actions == null) ? new ArrayList() : actions;
+	}
+
 	public List getGlobalActions()
 	{
 		return globalActions;
@@ -190,7 +201,7 @@ public class WorkflowVO implements BaseEntityVO
 				.append(" historySteps=").append(historySteps.size())
 				.append(" globalActions=").append(globalActions.size()).toString();
 	}
-	
+
 	public ConstraintExceptionBuffer validate()
 	{
 		return new ConstraintExceptionBuffer();
