@@ -36,6 +36,7 @@ import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.util.CmsLogger;
 
@@ -46,7 +47,7 @@ import java.util.List;
  * This class represents the form for creating and updating digital assets.
  */
 
-public class ViewDigitalAssetAction extends WebworkAbstractAction
+public class ViewDigitalAssetAction extends InfoGlueAbstractAction
 {
 	private List availableLanguages  = null;
 	

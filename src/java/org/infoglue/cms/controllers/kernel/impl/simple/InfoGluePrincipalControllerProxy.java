@@ -97,7 +97,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
 	{
 		String value = "";
 		
@@ -143,6 +143,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			{	
 				//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
 				List roles = infoGluePrincipal.getRoles();
+				String largestValue = "-1";
 				//CmsLogger.logInfo("roles:" + roles.size());
 				Iterator rolesIterator = roles.iterator();
 				while(rolesIterator.hasNext())
@@ -174,18 +175,24 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 								CmsLogger.logInfo("Getting value: " + value);
 								if(value != null && escapeSpecialCharacters)
 									value = new VisualFormatter().escapeHTML(value);
+								
+								if(value != null && !value.equals("") && findLargestValue && new Integer(largestValue).intValue() < new Integer(value).intValue())
+								    largestValue = value;
+								
 								break;
 							}
 						}
 					}
-										
 				}
+				
+				if(findLargestValue)
+				    value = largestValue;
 				
 				if(value.equals("") && useLanguageFallback)
 				{
 					LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
 					if(!masterLanguageVO.getLanguageId().equals(languageId))
-						return getPrincipalPropertyValue(infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters);
+						return getPrincipalPropertyValue(infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue);
 				}
 			}
 			
@@ -213,7 +220,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	{
 		Properties properties = new Properties();
 		
-		String attributeValue = getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters);
+		String attributeValue = getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, false);
 		
 		ByteArrayInputStream is = new ByteArrayInputStream(attributeValue.getBytes("UTF-8"));
 
