@@ -1,27 +1,43 @@
+var isDragged = false;
+
 var ns = (navigator.appName.indexOf("Netscape") != -1);
 var d = document;
 var px = document.layers ? "" : "px";
+var elementArray = new Array();
+	
 function floatDiv(id, sx, sy)
 {
 	var el=d.getElementById?d.getElementById(id):d.all?d.all[id]:d.layers[id];
+	//alert("id:"+id);
 	window[id + "_obj"] = el;
+	elementArray["" + id + "_obj"] = el;
+	//alert("elementArray:" + elementArray.length);
+	//alert("elementArray:" + elementArray.toString());
 	if(d.layers)el.style=el;
 	el.cx = el.sx = sx;el.cy = el.sy = sy;
 	el.sP=function(x,y){this.style.left=x+px;this.style.top=y+px;};
 	el.flt=function()
 	{
-		var pX, pY;
-		pX = (this.sx >= 0) ? 0 : ns ? innerWidth : 
-		document.documentElement && document.documentElement.clientWidth ? 
-		document.documentElement.clientWidth : document.body.clientWidth;
-		pY = ns ? pageYOffset : document.documentElement && document.documentElement.scrollTop ? 
-		document.documentElement.scrollTop : document.body.scrollTop;
-		if(this.sy<0) 
-		pY += ns ? innerHeight : document.documentElement && document.documentElement.clientHeight ? 
-		document.documentElement.clientHeight : document.body.clientHeight;
-		this.cx += (pX + this.sx - this.cx)/2;this.cy += (pY + this.sy - this.cy)/2;
-		this.sP(this.cx, this.cy);
-		setTimeout(this.id + "_obj.flt()", 40);
+		if(isDragged)
+		{
+			//alert("isDragged:" + isDragged);
+			//el.cy = el.sy = 50;
+		}
+		else
+		{
+			var pX, pY;
+			pX = (this.sx >= 0) ? 0 : ns ? innerWidth : 
+			document.documentElement && document.documentElement.clientWidth ? 
+			document.documentElement.clientWidth : document.body.clientWidth;
+			pY = ns ? pageYOffset : document.documentElement && document.documentElement.scrollTop ? 
+			document.documentElement.scrollTop : document.body.scrollTop;
+			if(this.sy<0) 
+			pY += ns ? innerHeight : document.documentElement && document.documentElement.clientHeight ? 
+			document.documentElement.clientHeight : document.body.clientHeight;
+			this.cx += (pX + this.sx - this.cx)/2;this.cy += (pY + this.sy - this.cy)/2;
+			this.sP(this.cx, this.cy);
+			setTimeout(this.id + "_obj.flt()", 50);
+		}
 	}
 	return el;
 }
@@ -120,6 +136,16 @@ function expandWindow()
 	
 } 
  
+ 
+/****************************
+ * Hook method to get informed when a drag starts
+ ****************************/
+
+function dragStarted(object)
+{
+	//alert("dragStarted:" + object.id);
+	isDragged = true;
+} 
 
 /****************************
  * Hook method to get informed when a drag ends
@@ -130,10 +156,22 @@ var defaultToolbarTopPosition = "0px";
  
 function dragEnded(object, left, top)
 {
+	
 	//alert("dragEnded:" + object.id);
 	if(object.id == "paletteHandle")
 	{
+		/*
+		for (var i in elementArray) 
+		{
+			alert("i:" + i);
+			var htmlEditor = elementArray[i];
+			//alert("htmlEditor:" + htmlEditor);
+		}
+		*/
+
+		//el.cy = el.sy = 50;
 		topPosition = top;
+		setCookie(toolbarLockPositionCookieName, topPosition);
 		setCookie(toolbarTopPositionCookieName, topPosition);
 	}
 
@@ -667,7 +705,7 @@ function executeTask(url)
 function insertComponent() 
 {
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
-	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 	window.open(insertUrl, "Edit", details);
 }
 

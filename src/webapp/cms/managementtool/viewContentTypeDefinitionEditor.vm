@@ -34,6 +34,22 @@
 
 		window.location.href = "ViewContentTypeDefinition.action?contentTypeDefinitionId=$contentTypeDefinitionId&currentContentTypeEditorViewLanguageCode=" + document.editForm.languageCode.value;
 	}
+	
+	function checkDisplay(value, id)
+	{
+		if(value == "image")
+		{
+			document.getElementById(id).style.display = "block";
+			//document.getElementById(id + "width").readonly = false;
+			//document.getElementById(id + "height").readonly = false;
+		}
+		else
+		{
+			document.getElementById(id).style.display = "none";
+			//document.getElementById(id + "width").readonly = true;
+			//document.getElementById(id + "height").readonly = true;
+		}
+	}
 -->
 </script>
 
@@ -236,8 +252,41 @@
 
 
 #foreach($assetKey in $definedAssetKeys)
-<div id="${assetKey}PropertyLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
-	<form name="${assetKey}PropertiesForm" action="ViewContentTypeDefinition!updateAssetKey.action" method="POST">
+<div id="${assetKey}PropertyLayer" class="smallPropDiv" style="LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+	<div id="${assetKey}PropertiesHandle" class="smallPropDivHandle">
+		Edit AssetKey
+	</div>
+	<div id="${assetKey}PropertiesBody" class="smallPropDivBody">
+		<form name="${assetKey}PropertiesForm" action="ViewContentTypeDefinition!updateAssetKey.action" method="POST">
+		<p>
+			<b>Asset Key:</b> <input type="textfield" name="newAssetKey" value="$assetKey" class="normaltextfield">
+		</p>
+		<p>
+			<b>Max size(KB):</b> <input type="textfield" name="maximumSize" value="$!maximumSize" class="normaltextfield">
+		</p>
+		<p>
+			<b>AssetType:</b>
+			<select name="allowedContentTypes" onchange="checkDisplay(this.value, 'imageProperties${assetKey}');">
+			 	<option value="any">Any</option>
+			 	<option value="image">Image</option>
+			</select>
+		</p>
+		<div id="imageProperties${assetKey}" style="display: none;">
+		<p>
+			<b>Width:</b>
+			<input id="imageProperties${assetKey}width" type="textfield" name="width" value="$!width" class="normaltextfield">
+		</p>
+		<p>
+			<b>Height:</b></td>
+			<input id="imageProperties${assetKey}width" type="textfield" name="height" value="$!height" class="normaltextfield">
+		</p>
+		</div>
+		<p>
+			<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="javascript:hideDiv('${assetKey}PropertyLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+		</p>
+	</div>	
+	<!--
 	<table border="0" cellpadding="4" cellspacing="0">
 	<tr>
 		<td colspan="2" class="propertiesheader">Edit AssetKey</td>
@@ -262,6 +311,7 @@
 		</td>
 	</tr>
 	</table>
+	-->
 	<input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
 	<input type="hidden" name="assetKey" value="$assetKey">
 	</form>
@@ -373,9 +423,6 @@
 		#end
 		</table>
 	</td>
-</tr>
-<tr>
-	<td>&nbsp;</th>
 </tr>
 </table>
 

@@ -65,6 +65,8 @@ var Drag = {
 			if (o.maxY != null) o.minMouseY = -o.maxY + e.clientY + y;
 		}
 
+		dragStarted(Drag.obj);
+
 		document.onmousemove	= Drag.drag;
 		document.onmouseup		= Drag.end;
 

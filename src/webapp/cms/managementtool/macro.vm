@@ -23,6 +23,7 @@
 <head>
 	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
@@ -381,10 +382,10 @@
 					#if($loccnt==0)
 						<nobr>
 						#if($lvConstraint==-1)
-							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" onClick="CheckUncheck('r$cnt',this);"/>
+							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" rowId="r$cnt" onClick="CheckUncheck('r$cnt',this);"/>
 						#end
 						#if($lvConstraint==1)
-							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" onClick="CheckUncheckSingle('r$cnt',this);"/>
+							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" rowId="r$cnt" onClick="CheckUncheckSingle('r$cnt',this);"/>
 						#end
 						 $item
 						</nobr>

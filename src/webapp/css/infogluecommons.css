@@ -52,7 +52,37 @@
 	font-family:verdana, sans-serif;
 	font-size:10px;
 	}
+
+.smallPropDiv {
+	position:absolute;
+	width:400px;
+	background-color: white;
+	background-color:#F4F4F4;
+	border:1px solid #333333;
+	left:10px;
+	top:100px;
+	}
+
+.smallPropDivHandle {
+	margin:2px;
+	padding:2px;
+	width:390px;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
 	
+.smallPropDivBody {
+	margin:2px;
+	padding:2px;
+	width:390px;
+	color:black;
+	background-color:white;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+			
 A.white {
     text-decoration:none;
     COLOR: white;
