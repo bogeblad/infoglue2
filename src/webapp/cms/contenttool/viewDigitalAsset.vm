@@ -133,7 +133,7 @@
 			  <table border="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#808080" id="cboBoxTable">
 			    <tr>
 			      <td width="10" style="border-left-style: solid; border-left-width: 1; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: solid; border-bottom-width: 1">
-			  		<input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" style="border: 1px solid #FFFFFF"></td>
+			  		<input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" style="border: 1px solid #FFFFFF" #if($definedAssetKeys.size() > 0)value="$definedAssetKeys.get(0)" #end></td>
 			      <td onClick="ddClick();" style="border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: solid; border-bottom-width: 1">
 			      	<img border="0" src="images/combodown.gif" width="15" height="20">
 			      </td>
