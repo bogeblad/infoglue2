@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Available languages on $repository.getName()" "Add / Remove Repository Language" "")
+#beginManagementTool("tool.managementtool.repositoryLanguages.header" "tool.managementtool.repositoryLanguages.header" "")
 
 #lvHead(["Language name","Code","Status", "Action", "Order"] "" "" "" "")
 
@@ -48,12 +48,12 @@
 #end
 
 #lvEnd()
-
+ 
 <table>
 	<tr>
 		<td>
 			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
-			<a href="ViewRepositoryOverview.action?repositoryId=$repository.repositoryId"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+			<a href="ViewRepository.action?repositoryId=$repository.repositoryId"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>
 </table>

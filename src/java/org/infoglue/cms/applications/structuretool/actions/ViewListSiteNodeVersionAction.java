@@ -58,6 +58,13 @@ public class ViewListSiteNodeVersionAction extends WebworkAbstractAction
 	{
 		CmsLogger.logInfo("siteNodeId:" + this.siteNodeId);
 		CmsLogger.logInfo("siteNodeVersionId:" + this.siteNodeVersionId);
+		if(this.siteNodeVersionId == null)
+		{
+		    SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
+		    if(siteNodeVersionVO != null)
+		        this.siteNodeVersionId = siteNodeVersionVO.getId();
+		}
+		
 		if(this.siteNodeVersionId != null)
 		{
 			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();

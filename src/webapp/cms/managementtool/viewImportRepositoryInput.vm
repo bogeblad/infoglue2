@@ -38,8 +38,6 @@
 
 <body class="managementtooledit">
 
-<div class="fullymarginalized">
-
 <div id="savingLayer" class="infobackground">
 	<div class="infoheader">Exporting repository</div>
 	<div class="infobody">
@@ -48,8 +46,10 @@
 	</div>
 </div>
 
+<div class="fullymarginalized">
+
 <form enctype="multipart/form-data" name="editForm" method="POST" action="ImportRepository.action">
-<table width="300">
+<table width="300" border="0">
 	<tr>
 		<td class="biglabel">
 			$ui.getString("tool.managementtool.importRepository.header")

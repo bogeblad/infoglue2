@@ -14,8 +14,12 @@
     <frame name="menu" marginwidth="0" marginheight="0" scrolling="no" target="main" src="ViewManagementToolMenu.action?repositoryId=$repositoryId">
 
 	  <frameset rows="57,*">
+		<!--
 		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="ViewManagementToolToolBar.action">
 		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="ViewManagementToolStartPage.action">
+		-->
+		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="cms/managementtool/loading.html">
+		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="cms/managementtool/loading.html">
 	  </frameset>
 
   </frameset>

@@ -406,6 +406,7 @@ adiv.fullymarginalized {
 }
 
 div.fullymarginalized {
+	height			 : 100%;
 	padding-left	 : 15px;
 	padding-right    : 15px;
 	padding-top		 : 15px;

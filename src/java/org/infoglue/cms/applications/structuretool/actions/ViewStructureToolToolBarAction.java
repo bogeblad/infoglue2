@@ -386,7 +386,7 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 	
 	private ImageButton getPublishButton()
 	{
-		return new ImageButton("ViewListSiteNodeVersion.action?siteNodeId=" + this.siteNodeId + "&siteNodeVersionId=" + this.siteNodeVersionId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.publishSiteNode"), "tool.structuretool.publishSiteNode.header");	
+		return new ImageButton("ViewListSiteNodeVersion.action?siteNodeId=" + this.siteNodeId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.publishSiteNode"), "tool.structuretool.publishSiteNode.header");	
 	}
 
 /*

@@ -3,13 +3,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 #if($colorScheme == "ManagementTool")
-	#beginManagementTool("Access Rights - $interceptionPointCategory" "Access Rights" "null")
+	#beginManagementTool("tool.contenttool.accessRights.header" "tool.contenttool.accessRights.header" "null")
 #elseif($colorScheme == "StructureTool")
-	#beginStructureTool("Access Rights - $interceptionPointCategory" "Access Rights" "null" "null" "null" "null")
+	#beginStructureTool("tool.contenttool.accessRights.header" "tool.contenttool.accessRights.header" "null" "null" "null" "null")
 #elseif($colorScheme == "PublishingTool")
-	#beginPublishingTool("Access Rights - $interceptionPointCategory" "Access Rights" "null" "null" "null" "null")
+	#beginPublishingTool("tool.contenttool.accessRights.header" "tool.contenttool.accessRights.header" "null" "null" "null" "null")
 #else
-	#beginContentTool("tool.contenttool.accessRights.header" "Access Rights" "null" "null" "null" "null")
+	#beginContentTool("tool.contenttool.accessRights.header" "tool.contenttool.accessRights.header" "null" "null" "null" "null")
 #end
 
 <div class="fullymarginalized">

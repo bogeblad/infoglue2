@@ -3,49 +3,73 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 #beginManagementTool("tool.managementtool.viewUp2DateList.header" "tool.managementtool.viewUp2DateList.header" "")
-
-<br/>
-<strong>Infoglue AutoUpdate system</strong><br/>
-<br/>
-
 #set($lvConstraint = 0) 
 
+<table cellspacing="2" cellpadding="2">
+<tr>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>
+		<strong>Infoglue AutoUpdate system</strong>
+	</td>
+</tr>
+<tr>
+	<td>Installed updates</td>
+</tr>
+</table>
 
-Installed updates
-#lvHead(["Title","Description"] "" "" "" "")
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+	<td>	
+		#lvHead(["Title","Description"] "" "" "" "")
+		
+		#set($cnt = 0)
+		
+		#set($v = $installedUpdates)
+		#foreach ($upd in $v)
+			#set($confirmUninstall="JavaScript:ruSure('${upd.getTitle()}','UnInstallUpdateMain.action?updatePackageId=${upd.getPackageId()}');")
+			#set($q='"')
+			#set( $row = ["$upd.getTitle()","<table width=98%><tr><td>$upd.getDescription()</td><td align=right>[<a href=$q${confirmUninstall}$q>Uninstall</a>] &nbsp;&nbsp;</td></tr></table>"] )
+			#set($cnt = $cnt + 1)
+			
+			#lvAddRow($row $cnt 1)
+		#end
+		
+		#lvEnd()
+	</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+</tr>
+</table>
 
+<table cellspacing="2" cellpadding="2">
+<tr>
+	<td>
+		#set($available=$this.getAvailableUpdates())
+		<nobr>Available updates ( @ $currentUpdateServer | latest check: $!this.getLatestRefresh() )</nobr>
+		#set($lvConstraint = 1) 
+	</td>
+</tr>	
+</table>
 
-#set($cnt = 0)
-
-#set($v = $installedUpdates)
-#foreach ($upd in $v)
-	#set($confirmUninstall="JavaScript:ruSure('${upd.getTitle()}','UnInstallUpdateMain.action?updatePackageId=${upd.getPackageId()}');")
-	#set($q='"')
-	#set( $row = ["$upd.getTitle()","<table width=98%><tr><td>$upd.getDescription()</td><td align=right>[<a href=$q${confirmUninstall}$q>Uninstall</a>] &nbsp;&nbsp;</td></tr></table>"] )
-	#set($cnt = $cnt + 1)
-	
-	#lvAddRow($row $cnt 1)
-#end
-
-#lvEnd()
-
-<br/>
-<br/>
-#set($available=$this.getAvailableUpdates())
-<nobr>Available updates ( @ $currentUpdateServer | latest check: $!this.getLatestRefresh() )</nobr>
-#set($lvConstraint = 1) 
- 
-
-#lvHead(["Title","Description"] "Install update" "InstallUpdateMain.action" "ViewListUp2Date.action?title=Up2Date" "Do you really want to install the update:<br/><br/>")
-##set($cnt = 0)
-#foreach ($upd in $available)
-	#set ( $rurl = "JavaScript:OpenDetails('${upd.getDecodedDetailsUrl()}');")
-	#set( $row = ["<input type='hidden' name='rowtitle' value='$upd.getTitle()'/><a title='Click to read more about this update' href=$rurl>$upd.getTitle()</a>","$upd.getDescription()"] )
-	#set($cnt = $cnt + 1)
-	#lvAddRow($row $cnt $upd.getPackageId())
-#end
-
-#lvEnd()
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+	<td> 
+		#lvHead(["Title","Description"] "Install update" "InstallUpdateMain.action" "ViewListUp2Date.action?title=Up2Date" "Do you really want to install the update:<br/><br/>")
+		##set($cnt = 0)
+		#foreach ($upd in $available)
+			#set ( $rurl = "JavaScript:OpenDetails('${upd.getDecodedDetailsUrl()}');")
+			#set( $row = ["<input type='hidden' name='rowtitle' value='$upd.getTitle()'/><a title='Click to read more about this update' href=$rurl>$upd.getTitle()</a>","$upd.getDescription()"] )
+			#set($cnt = $cnt + 1)
+			#lvAddRow($row $cnt $upd.getPackageId())
+		#end
+		
+		#lvEnd()
+	</td>
+</tr>
+</table>
 
 #endManagementTool()
 

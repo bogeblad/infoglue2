@@ -155,9 +155,10 @@ public class ContentVersionImpl implements ContentVersion
     public void setOwningContent (org.infoglue.cms.entities.content.impl.simple.ContentImpl owningContent)
     {
         this.owningContent = owningContent;
+       
         if(owningContent != null)
         {
-			this.valueObject.setContentId(owningContent.getContentId());
+        	this.valueObject.setContentId(owningContent.getContentId());
 			this.valueObject.setContentName(owningContent.getName());
 			if(owningContent.getContentTypeDefinition() != null)
 				this.valueObject.setContentTypeDefinitionId(owningContent.getContentTypeDefinition().getId());

@@ -627,12 +627,20 @@ public class PublicationController extends BaseController
 	
 	public static ContentVO getOwningContentVO(Integer id) throws SystemException
     {
+	    ContentVO contentVO = null;
+	    
     	Database db = CastorDatabaseService.getDatabase();
 		ContentVersion contentVersion = null;
         beginTransaction(db);
         try 
         {
 	    	contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(id, db);
+	    	System.out.println("contentVersion:" + contentVersion.getId());
+	    	//System.out.println("contentVersion:" + contentVersion);
+	    	contentVO = contentVersion.getOwningContent().getValueObject();
+	    	//Content content = ContentController.getContentController().getContentWithId(contentVersion.getValueObject().getContentId(), db);
+	    	//contentVO = content.getValueObject();
+	    	
 	    	commitTransaction(db);
         }
         catch(Exception e)
@@ -642,7 +650,7 @@ public class PublicationController extends BaseController
             throw new SystemException(e.getMessage());
         }
     	
-    	return contentVersion.getOwningContent().getValueObject();
+    	return contentVO;
     }
 
 	/**

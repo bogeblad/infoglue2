@@ -2,7 +2,7 @@
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("$labelKey" "$title" "$extraParameters")
+#beginManagementTool("tool.managementtool.viewUserProperties.header" "tool.managementtool.viewUserProperties.header" "$extraParameters")
 
 <script language="javascript" src="script/jsrsClient.js"></script>
 
@@ -558,6 +558,9 @@
 		</tr>
 	#end
 	
+	<tr>
+		<td colspan="3">&nbsp;</td>
+	</tr>
 	#if($userPropertiesVO)
 		<tr>
 			<td colspan="3">

@@ -32,7 +32,7 @@
 			var theNav=document.getElementById("nav");	
 			var theCounter=document.getElementById("counter");
 			
-			theNav.innerHTML = "<img src='" + theLink.icon + "'> " + "<font color=#000000>" + theLink.title + "</font> <font color=#006600>" + theLink.comment + "</font>";
+			theNav.innerHTML = "<img src='" + theLink.getAttribute('icon') + "'> " + "<font color=#000000>" + theLink.title + "</font> (<font color=#006600>" + theLink.comment + "</font>)";
 			
 			theCounter.innerHTML = "<font color=#000000>[" + current + " of " + count + "]</font>";
 			parent.frames["previewMain"].location.href = theLink.href;
@@ -78,7 +78,7 @@
 				#set( $contentVO = $this.getOwningContent($cId) )
 				#set( $title = "${contentVO.getName()}")
 				#set( $comment = "${contentVersionVO.getVersionComment()}")
-				#set($navBar = "${navBar}<a icon='images/tree/contentItem.gif' comment='${comment}' title='${title}' id='lnk${cnt}' href='ViewContentVersion!preview.action?contentId=$contentVO.contentId&contentVersionId=$contentVersionVO.getContentVersionId()' target='previewMain'>${cnt}</a> ")						
+				#set($navBar = "${navBar}<a icon='images/tree/contentItem.gif' title='${title}' id='lnk${cnt}' href='ViewContentVersion!preview.action?contentId=$contentVO.contentId&contentVersionId=$contentVersionVO.getContentVersionId()' target='previewMain'>${cnt}</a> ")						
 				#set($cnt = $cnt + 1)
 			#end
 

@@ -66,8 +66,12 @@
     <frame name="menu" marginwidth="0" marginheight="0" scrolling="no" target="main" src="">
 
 	  <frameset rows="57,*" onload="setInitialPosition();">
+		<!--
 		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="ViewContentToolToolBar.action">
 		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="ViewContentToolStartPage.action">
+		-->
+		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="cms/contenttool/loading.html">
+		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="cms/contenttool/loading.html">
 	  </frameset>
 
   </frameset>

@@ -25,10 +25,10 @@
 
 <frameset rows="58,*,30" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
   <frame name="header" marginwidth="0" marginheight="0" scrolling="no" noresize target="header" src="ViewCMSToolHeader.action?toolId=0">
-
+  
 	<frameset cols="4,*,4" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
 	  <frame name="leftmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="leftmargin" src="cmsToolBackground.html">
-	  <frame name="toolarea" marginwidth="0" marginheight="0" scrolling="no" noresize src="ViewContentTool.action">
+	  <frame name="toolarea" marginwidth="0" marginheight="0" scrolling="no" noresize src="loading.html">
 	  <frame name="rightmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="rightmargin" src="cmsToolBackground.html">
 	</frameset>
   <frame name="footer" marginwidth="0" marginheight="0" scrolling="no" noresize target="footer" src="ViewCMSToolFooter.action">

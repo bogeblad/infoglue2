@@ -7,14 +7,14 @@
 	<title>Menus</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
-	<script type="text/javascript" language="JavaScript">
+	<script type="text/javascript">
 	<!-- 
 		function reloadMain()
 		{
 			#if($repositoryId == 0)
 				parent.frames[3].location.href = "ViewManagementToolStartPage.action";
 			#else
-				parent.frames[3].location.href = "ViewRepositoryOverview.action?repositoryId=" + $repositoryId;
+				parent.frames[3].location.href = "ViewRepositoryOverview.action?repositoryId=$repositoryId";
 			#end
 		}
 
