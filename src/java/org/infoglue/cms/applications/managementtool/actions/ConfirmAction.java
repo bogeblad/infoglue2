@@ -42,11 +42,11 @@ public class ConfirmAction extends WebworkAbstractAction
 	private String header;
 	private String message;
 	private String extraParameters;
-	private String action;
+	private String choice;
 
 	public ConfirmAction()
 	{
-		this.action = "";	
+		this.choice = "";	
 	}
 
 	public void setYesDestination(String yesDestination)
@@ -99,14 +99,14 @@ public class ConfirmAction extends WebworkAbstractAction
 		return this.header;	
 	}
 	
-	public void setAction(String action)
+	public void setChoice(String action)
 	{
-		this.action = action;		
+		this.choice = action;		
 	}
 	
-	public String getAction()
+	public String getChoice()
 	{
-		return this.action;	
+		return this.choice;	
 	}
 	
 	public String getDest()
@@ -121,7 +121,7 @@ public class ConfirmAction extends WebworkAbstractAction
 	
 	private void Reroute()
 	{
-		if(this.action.equalsIgnoreCase("Yes"))
+		if(this.choice.equalsIgnoreCase("yes"))
 		{
 			this.dest = this.yesDestination;
 		}
@@ -133,7 +133,7 @@ public class ConfirmAction extends WebworkAbstractAction
 	
 	protected String doExecute() throws Exception 
 	{
-		if(this.action.length() > 0)
+		if(this.choice.length() > 0)
 		{
 			Reroute();
 			return "reroute";
