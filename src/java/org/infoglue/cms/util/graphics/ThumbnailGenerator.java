@@ -60,6 +60,11 @@ public class ThumbnailGenerator
 		else if(imageHeight < thumbHeight)
 			thumbHeight = imageHeight;
 
+		if(thumbWidth < 1)
+		    thumbWidth = 1;
+		if(thumbHeight < 1)
+		    thumbHeight = 1;
+		
 	    BufferedImage thumbImage = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB);
 	    Graphics2D graphics2D = thumbImage.createGraphics();
 	    graphics2D.setBackground(Color.WHITE);
