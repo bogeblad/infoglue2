@@ -252,7 +252,8 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		{
 			buttons.add(new ImageButton("CreateContent!input.action?isBranch=false&parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newContent"), "tool.contenttool.newContent.header"));	
 			buttons.add(new ImageButton("CreateContent!input.action?isBranch=true&parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newContentFolder"), "tool.contenttool.newContentFolder.header"));	
-			buttons.add(getMoveButton());	
+			buttons.add(getMoveButton());
+			buttons.add(getMoveMultipleButton());
 			buttons.add(getDeleteButton());
 			buttons.add(getPublishButton());
 			buttons.add(getExecuteTaskButton());
@@ -278,7 +279,8 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		try
 		{
 			buttons.add(getDeleteButton());	
-			buttons.add(getMoveButton());	
+			buttons.add(getMoveButton());
+			buttons.add(getMoveMultipleButton());
 			buttons.add(getPublishButton());
 			buttons.add(getExecuteTaskButton());
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
@@ -372,6 +374,11 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 	private ImageButton getMoveButton()
 	{
 		return new ImageButton(true, "javascript:openPopup('ViewContentTree.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'MoveContent', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveContent"), "tool.contenttool.moveContent.header");	
+	}
+
+	private ImageButton getMoveMultipleButton()
+	{
+		return new ImageButton(true, "javascript:openPopup('MoveMultipleContent!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleContent', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveMultipleContent"), "tool.contenttool.moveMultipleContent.header");	
 	}
 
 	private ImageButton getSyncTreeButton()
