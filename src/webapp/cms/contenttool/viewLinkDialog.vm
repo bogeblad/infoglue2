@@ -37,6 +37,7 @@
 			__dlg_init();
 		  	var param = window.dialogArguments;
 		  	//alert("param AA:" + param);
+		  	
 		  	if (param) 
 		  	{
 		  		image = param["image"];
@@ -61,21 +62,6 @@
 		      	alert("f_target:" + f_target);
 		      	*/
 		      	
-		      	/*
-				if(document.all)
-		      	{
-		      		//window.frames['externalLinkFrame'].initSub();
-		      		window.frames['internalLinkFrame'].initSub();
-		      		window.frames['internalAssetFrame'].initSub();
-		      	}
-				else
-				{
-					//frames['externalLinkFrame'].initSub();
-					frames['internalLinkFrame'].initSub();
-					frames['internalAssetFrame'].initSub();
-				}
-				*/		
-				
 				if("$method" == "externalLink")
 					changeTab("externalLink");
 				else if("$method" == "inlineLink")

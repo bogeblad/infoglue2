@@ -201,6 +201,7 @@ function configInfoGlue(config)
 	}
 	
 	
+	
 	//register custom buttons 
 	//config.registerButton("my-popup", "test popup", "ed_custom.gif", false, demopopup); 
 	HTMLArea.prototype._createInlineLink = function(link) 
@@ -209,9 +210,9 @@ function configInfoGlue(config)
 		var outparam = null;
 		/*
 		if (typeof link == "undefined") {
-			alert("link:" + link);
+			//alert("link:" + link);
 			link = this.getParentElement();
-			alert("link:" + link.tagName);
+			//alert("link:" + link.tagName);
 			if (link && !/^a$/i.test(link.tagName))
 				link = null;
 		}
@@ -229,9 +230,40 @@ function configInfoGlue(config)
 		}
 		
 		var text = editor.getSelectedHTML();
-		//alert("text:" + text);
+		if(!text || text == "" /*|| text.toLowerCase().indexOf("<img") == 0*/)
+		{
+			var sel = editor._getSelection();
+			//alert("sel:" + sel);
+			//alert("sel.type:" + sel.type);
+			var range = editor._createRange(sel);
+			
+			var oControlRange = sel.createRange();
+	    	for (i = 0; i < oControlRange.length; i++)
+	      	{	
+	      		//alert("oControlRange(i).tagName:" + oControlRange(i).tagName);
+	      		control = oControlRange(i);
+	      		if (control.tagName == "IMG")
+	      		{
+	      			if(control.parentNode.tagName == "A")
+						control = control.parentNode;
+						
+	      			text = control.outerHTML;
+	      	    }
+			}
+		}
+		
+		//if()
+				
+		alert("text:" + text);
+		//alert("text.tagName:" + text.tagName);
 		//alert("link:" + link);
 		//alert("editor:" + editor);
+		
+		if(!text || text == "")
+		{
+			alert("You must mark a portion of the text to link.")
+			return false;
+		}
 		
 		if (link) 
 		{
@@ -248,19 +280,20 @@ function configInfoGlue(config)
 		    };
 		}
 		else
+		{
 		    outparam = {
 		    f_href   : "",
 			f_title  : "",
 			f_target : "",
 			f_text 	 : text
 		    };
+		}
 		
 		//alert("outparam:" + outparam);
 		//alert("f_href:" + outparam.f_href);
 		//alert("f_title:" + outparam.f_title);
 		//alert("f_target:" + outparam.f_target);
 		//alert("f_text:" + outparam.f_text);
-		
 		
 		// InlineLink
 		urlPrefix = "";
@@ -269,7 +302,8 @@ function configInfoGlue(config)
 	  	if(!languageId)
 	  		languageId = self.opener.languageId;
 	
-		if(text.indexOf("getInlineAssetUrl") > -1)  
+		alert("text:" + text);
+		if(text.indexOf("href=\"$templateLogic.getInlineAssetUrl") > -1)  
 		{
 	  	  	/**
 	  		 * ASSET INLINE LINK
@@ -348,12 +382,26 @@ function configInfoGlue(config)
 			//alert("param:" + param["f_title"]);
 			//alert("param:" + param["f_target"]);
 			var a = link;
+			//alert("a in relativePopupDialog 2:" + a)
 			if (!a)
 			{ 
 				//alert("no a found:" + a);
+				//alert("param.f_href:" + param.f_href);
+				
 				try 
 				{
+					//editor.debugTree();
+					
+					//alert("Inserting link:" + param.f_href);
+					//alert("Inserting link param.originaltag:" + param.originaltag);
 					editor._doc.execCommand("createlink", false, param.f_href);
+					
+					var editorParentElement = editor.getParentElement();
+					//alert("editor:" + editorParentElement.innerHTML);
+					//alert("outer:" + editorParentElement.outerHTML);
+					
+					//editor.debugTree();
+					
 					a = editor.getParentElement();
 					var sel = editor._getSelection();
 					var range = editor._createRange(sel);
@@ -365,12 +413,24 @@ function configInfoGlue(config)
 								a = range.startContainer.parentNode;
 						}
 					}
+					//alert("a after..." + a.tagName);
+					
+					if(!a || a.tagName.toLowerCase() != "a")
+					{
+						a = getTopTag(editor.getParentElement().parentNode, "a");
+					}
+					
+					//alert("a after..." + a.tagName);
+					
 				} 
 				catch(e) {alert("error:" + e);}
+				
 			}
 			else 
 			{
 				var href = param.f_href.trim();
+				//alert("alert href in else:" + href);
+				//alert("a.tagName in else:" + a.tagName);
 				editor.selectNodeContents(a);
 				if (href == "") 
 				{
@@ -383,6 +443,9 @@ function configInfoGlue(config)
 					a.href = href;
 				}
 			}
+			
+			//alert("a:" + a);
+			//alert("a.tagName:" + a.tagName);
 			
 			if (!(a && /^a$/i.test(a.tagName)))
 			{
@@ -544,6 +607,35 @@ function configInfoGlue(config)
 		}, outparam);
 	};
 
+	
+	function getTopTag(element, tagName) 
+	{
+		//alert("getTopTag on:" + element.tagName);
+		return _dt(element, tagName, 0);
+	};
+
+	function _dt(root, tagName, level) 
+	{
+		var tag = root.tagName.toLowerCase(), i;
+		var ns = HTMLArea.is_ie ? root.scopeName : root.prefix;
+		//alert("Debug:" + tag + " [" + ns + "]=" + tagName);
+		if(tag == tagName)
+		{
+			//alert("We got a match...");
+			return root;
+		}
+		
+		var returnElement;	
+		for (i = root.firstChild; i; i = i.nextSibling)
+		{
+			if (i.nodeType == 1)
+				returnElement = _dt(i, tagName, level + 2);
+			
+			//alert("returnElement:" + returnElement);
+			if(returnElement)
+				return returnElement;
+		}
+	};
 	
 };
 

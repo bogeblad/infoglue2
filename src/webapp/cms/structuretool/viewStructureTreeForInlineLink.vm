@@ -156,37 +156,41 @@
 			document.inputForm.f_href.value = "#";
 			originalTag = transformAttribute("<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, null)\" title=\"" + title + "\" target=\"" + target + "\">" + document.inputForm.f_text.value + "</a>", parent.opener.document);
 			
-		  var required = 
+		  	var required = 
 		  	{
-		  	"f_href": "You must select a page in the tree which the link will lead to",
-		    "f_title": "You must enter a title for the url"
+		  		"f_href": "You must select a page in the tree which the link will lead to",
+		    	"f_title": "You must enter a title for the url"
 		    };
-		  for (var i in required) {
-		    var el = document.getElementById(i);
-		    if (!el.value) {
-		      alert(required[i]);
-		      el.focus();
-		      return false;
-		    }
-		  }
-		  // pass data back to the calling window
-		  var fields = ["f_href", "f_title", "f_target"];
-		  var param = new Object();
-		  for (var i in fields) {
-		    var id = fields[i];
-		    var el = document.getElementById(id);
-		    param[id] = el.value;
-		  }
-		  if (param.f_target == "_other")
-		    param.f_target = document.getElementById("f_other_target").value;
-		   
-		  param.originaltag = originalTag;  
-		  //alert("param.f_href at closing time:" + param.f_href);  
-		  //alert("param.f_title at closing time:" + param.f_title);  
-		  //alert("param.f_target at closing time:" + param.f_target); 
-		  //alert("param.originaltag at closing time:" + param.originaltag);   
-		  parent.__dlg_close(param);
-		  return false;
+		  
+		  	for (var i in required) {
+		    	var el = document.getElementById(i);
+			    if (!el.value) {
+			      alert(required[i]);
+			      el.focus();
+			      return false;
+			    }
+		  	}
+		  	
+			// pass data back to the calling window
+			var fields = ["f_href", "f_title", "f_target"];
+			var param = new Object();
+			for (var i in fields) {
+				var id = fields[i];
+			    var el = document.getElementById(id);
+			    param[id] = el.value;
+			}
+			
+			if (param.f_target == "_other")
+			    param.f_target = document.getElementById("f_other_target").value;
+			   
+			param.originaltag = originalTag;  
+			//alert("param.image at closing time:" + param.image);  
+			//alert("param.f_href at closing time:" + param.f_href);  
+			//alert("param.f_title at closing time:" + param.f_title);  
+			//alert("param.f_target at closing time:" + param.f_target); 
+			//alert("param.originaltag at closing time:" + param.originaltag);   
+			parent.__dlg_close(param);
+			return false;
 		};
 		
 		function onCancel() 
