@@ -3,7 +3,7 @@
 	background-color:#F4F4F4;
 	font-family:verdana, sans-serif;
 	font-size:10px;
-	border:1px solid #333;
+	aborder:1px solid #333;
 	z-index:1000001;
 	height:80px; 
 	width:100%; 
@@ -38,7 +38,7 @@
 	top:65px; 
 	left:0px; 
 	border-bottom: 1px solid gray; 
-	border-left: 1px solid white; 
+	aborder-left: 1px solid white; 
 	background:#CCCCCC; 
 	width:100%; 
 	height:15px;
@@ -75,7 +75,7 @@
 	position:absolute;
 	width:250px;
 	background-color:#F4F4F4;
-	border:1px solid #333333;
+    aborder:1px solid #333333;
 	z-index:1000002;
 	right:5px;
 	top:100px;
@@ -377,9 +377,9 @@ A.white:active {
 	padding:0px 4px 0px 4px;
 	}
 
-.componentsBackground {
+.acomponentsBackground {
 	border: 0px solid red; 
-	border-right: solid 1px none;
+	aborder-right: solid 1px none;
 	border-left: solid thin white;
 	position:absolute; 
 	z-index:2; 
@@ -394,7 +394,7 @@ A.white:active {
 	text-align: center;
 	background: #CCCCCC;
 	border-left: solid 1px white;
-	border-right: solid 1px white;
+	aborder-right: solid 1px white;
 	border-bottom: solid 1px black;
 	left:0px;
 	atop:20px;
@@ -412,12 +412,24 @@ A.white:active {
 	padding:0px 4px 0px 4px;
 	visibility:inherited;
 }
+.componentsBackground {
+ 	border-bottom: 1px solid gray; 
+ 	aborder-left: 1px solid white; 
+ 	aborder-right: 0px solid red; 
+ 	background:#CCCCCC; 
+ 	width:100%; 
+ 	height:24px; 
+ 	position:absolute; 
+ 	top:50px; 
+ 	left:10px; 
+ 	visibility: inherited;
+}
 .componentsStatus {
 	font-family:verdana,arial,helvetica;
 	font-size:8pt;
 	font-weight: normal;
-	border-right: 1px solid black;
-	border-left: thin solid white;
+	aborder-right: 1px solid black;
+	aborder-left: thin solid white;
 	border-bottom: solid 1px black;
 	border-top: solid thin gray;
 	position:absolute; 

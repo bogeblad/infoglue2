@@ -488,7 +488,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		timer.setActive(false);
 
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
-				
+		
 		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden;\">");
 		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Properties</td><td align=\"right\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\">close</a></td></tr></table></div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
@@ -498,6 +498,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		sb.append("		<tr>");
 		sb.append("			<td class=\"propertylabel\">Choose language</td>");  //$ui.getString("tool.contenttool.languageVersionsLabel")
+		sb.append("			<td>&nbsp;</td>");
 		sb.append("			<td class=\"propertyvalue\">");
 	
 		sb.append("			");
@@ -617,10 +618,16 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
 					}
 				}
-					
+				
+				StringBuffer helpSB = new StringBuffer();
+				helpSB.append("<div style=\"border: 1px solid black; visibility: hidden; z-index: 200000; position: absolute;\" id=\"helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "\">");
+				helpSB.append("<table bgcolor=\"white\" width=\"200\"><tr><td>" + (componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "</td></tr></table>");
+				helpSB.append("</div>");
+				
 				sb.append("		<tr>");
 				sb.append("			<td class=\"propertylabel\" valign=\"top\">" + componentProperty.getName() + "</td>");
-				sb.append("			<td class=\"propertyvalue\"><a href=\"javascript:window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5');\">" + componentProperty.getValue() + "</a></td>");
+				sb.append("			<td><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" onMouseOver=\"javascript:showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+				sb.append("			<td class=\"propertyvalue\"><a href=\"javascript:window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5');\">" + (componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()) + "</a></td>");
 				//sb.append("			<td class=\"propertyvalue\"><a href=\"" + assignUrl + "\">" + componentProperty.getValue() + "</a></td>");
 				
 				if(componentProperty.getValue().equalsIgnoreCase("Undefined"))
@@ -635,6 +642,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 				sb.append("		<tr>");
 				sb.append("			<td class=\"propertylabel\" valign=\"top\">" + componentProperty.getName() + "<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"></td>");
+				sb.append("			<td><img src=\"" + componentEditorUrl + "/images/questionMark.gif\"></td>");
 				sb.append("			<td class=\"propertyvalue\"><input type=\"text\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\"></td>");
 				sb.append("			<td><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
 				sb.append("			<!--<td>&nbsp;</td>-->");
@@ -677,6 +685,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		Drag.init(theHandle, theRoot);");
 		sb.append("     theRoot.style.left = 160;");
 		sb.append("     theRoot.style.top = 150;");
+		
+		sb.append("     floatDiv(\"component" + componentId + "Properties\", 200, 50).flt();");
+		
 		sb.append("	</script>");
 		
 		return sb.toString();
@@ -948,13 +959,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 			if(index == 0)
 			{
-				sb.append("<div id=\"" + groupName + "ComponentsBg\" style=\"border-bottom: 1px solid gray; border-left: 1px solid white; border-right: 0px solid red; background:#CCCCCC; zIndex:3; width:100%; height:24px; position:absolute; top:50px; left:10px; visibility: inherited;\">");
+				sb.append("<div id=\"" + groupName + "ComponentsBg\" class=\"componentsBackground\" style=\"zIndex:3; visibility: inherited;\">");
 				openGroupName = groupName;
 			}
 			else
-			    sb.append("<div id=\"" + groupName + "ComponentsBg\" style=\"border-bottom: 1px solid gray; border-left: 1px solid white; border-right: 0px solid red; background:#CCCCCC; zIndex:2; width:100%; height:24px; position:absolute; top:50px; left:10px; visibility: inherited;\">");	
+			    sb.append("<div id=\"" + groupName + "ComponentsBg\" class=\"componentsBackground\" style=\"zIndex:2; visibility: inherited;\">");	
 			
-			sb.append("<div id=\"" + groupName + "Components\" style=\"visibility:inherit; position:absolute; top:1px; left:5px; height:50px; border-left: 1px solid white;\">");
+			sb.append("<div id=\"" + groupName + "Components\" style=\"visibility:inherit; position:absolute; top:1px; left:5px; height:50px; \">");
 			sb.append("	<table style=\"width:100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
 			sb.append("	<tr>");
 			//sb.append("	<td width=\"100%\"><nobr>");
@@ -1271,6 +1282,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
 					
 					String name							 = binding.getAttribute("name");
+					String description					 = binding.getAttribute("description");
 					String type							 = binding.getAttribute("type");
 					String allowedContentTypeNamesString = binding.getAttribute("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.getAttribute("visualizingAction");
@@ -1279,7 +1291,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					//CmsLogger.logInfo("type:" + type);
 
 					ComponentProperty property = new ComponentProperty();
+					property.setComponentId(componentId);
 					property.setName(name);
+					property.setDescription(description);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);

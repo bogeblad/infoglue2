@@ -37,6 +37,7 @@ public class ComponentProperty
 	
 	private Integer id;
 	private String name;
+	private String description;
 	private String type;
 	private String[] allowedContentTypeNamesArray = null;
 	private Integer componentId;
@@ -120,6 +121,16 @@ public class ComponentProperty
 	{
 		name = string;
 	}
+
+    public String getDescription()
+    {
+        return description;
+    }
+    
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
 
 	public void setSiteNodeBindings(List list)
 	{
