@@ -102,4 +102,14 @@ class PortletWindowIGImpl implements PortletWindowIG {
     public void setAttribute(String key, Object value) {
         wrappedRequest.setAttribute(key, value);
     }
+
+    /* (non-Javadoc)
+     * @see org.infoglue.cms.portal.PortletWindowIG#setParameter(java.lang.String, java.lang.String[])
+     */
+    public void setParameter(String key, String value) {
+        if(wrappedRequest.getParameter(key) == null || wrappedRequest.getParameter(key).equalsIgnoreCase(""))
+            wrappedRequest.getParameterMap().put(key, new String[]{value});
+    }
+    
+
 }

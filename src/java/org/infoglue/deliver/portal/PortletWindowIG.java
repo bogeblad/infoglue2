@@ -31,4 +31,5 @@ package org.infoglue.deliver.portal;
 public interface PortletWindowIG {
     public String render()throws PortalException;
     public void setAttribute(String key, Object value);
+    public void setParameter(String key, String value);
 }
