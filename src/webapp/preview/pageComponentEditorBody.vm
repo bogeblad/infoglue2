@@ -5,9 +5,6 @@
 </div>
 
 <div id="componentMenu" class="skin0">
-#foreach($a in [1..2])
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="edit();">$a</div>
-#end
 <div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="edit();">Edit</div>
 <div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();"><nobr>Add component</nobr></div>
 <div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();"><nobr>Delete component</nobr></div>
