@@ -34,6 +34,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.util.XMLHelper;
+import org.infoglue.cms.util.sorters.ContentComparator;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
@@ -211,6 +212,19 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		return this.currentAction;
 	}
 
+	public String getContentAttribute(Integer contentId, String attributeName) throws Exception
+	{
+	    String attribute = "Undefined";
+	    
+	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+		
+		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(SiteNodeController.getSiteNodeVOWithId(siteNodeId).getRepositoryId());
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId());
+
+		attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
+		
+		return attribute;
+	}	
 	
 	/**
 	 * This method shows the user a list of Components(HTML Templates). 
@@ -1076,7 +1090,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		argumentList.add(argument);
 		arguments.put("arguments", argumentList);
 		
-		return ContentController.getContentController().getContentVOList(arguments);
+		List results = ContentController.getContentController().getContentVOList(arguments);
+		
+		return results;	
 	}
 	
 	/**
