@@ -1,7 +1,26 @@
-/**
- * $Id: WorkflowVOTest.java,v 1.3 2005/01/14 15:48:39 jed Exp $
- * Created by jed on Dec 29, 2004
- */
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+* Copyright (C) Mattias Bogeblad
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+* $Id: WorkflowVOTest.java,v 1.4 2005/01/17 21:03:37 jed Exp $
+*/
 package org.infoglue.cms.entities.mydesktop;
 
 import java.util.Iterator;
@@ -10,10 +29,6 @@ import org.infoglue.cms.util.InfoGlueTestCase;
 import org.infoglue.cms.util.workflow.*;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
-/**
- * @author jed
- * @version $Revision: 1.3 $ $Date: 2005/01/14 15:48:39 $
- */
 public class WorkflowVOTest extends InfoGlueTestCase
 {
 	private static final StepFilter adminFilter = new OwnerStepFilter(getAdminPrincipal());
