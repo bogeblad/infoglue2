@@ -36,8 +36,9 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class WorkflowActionVO implements BaseEntityVO
 {
-	private Long workflowId;
 	private Integer id;
+	private Long workflowId;
+	private WorkflowStepVO step;
 	private String name;
 	private String view;
 	private boolean autoExecute;
@@ -61,6 +62,25 @@ public class WorkflowActionVO implements BaseEntityVO
 	public void setWorkflowId(Long workflowId)
 	{
 		this.workflowId = workflowId;
+	}
+
+	public WorkflowStepVO getStep()
+	{
+		return step;
+	}
+
+	public void setStep(WorkflowStepVO step)
+	{
+		this.step = step;
+	}
+
+	/**
+	 * Convenience method to retrn the name of the associated step.
+	 * @return the name of the step that this action is part of.
+	 */
+	public String getStepName()
+	{
+		return (step == null) ? null : step.getName();
 	}
 
 	public String getName()
@@ -111,5 +131,15 @@ public class WorkflowActionVO implements BaseEntityVO
 	public boolean hasView()
 	{
 		return view != null && view.length() > 0;
+	}
+
+	public String toString()
+	{
+		return new StringBuffer(getClass().getName())
+				.append(" id=").append(id)
+				.append(" name=").append(name)
+				.append(" step=").append(getStepName())
+				.append(" view=").append(view)
+				.append(" workflowId=").append(workflowId).toString();
 	}
 }
