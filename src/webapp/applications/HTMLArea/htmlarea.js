@@ -9,7 +9,7 @@
 // Version 3.0 developed by Mihai Bazon.
 //   http://dynarch.com/mishoo
 //
-// $Id: htmlarea.js,v 1.1 2004/11/29 15:28:46 jed Exp $
+// $Id: htmlarea.js,v 1.3 2005/02/03 07:51:17 mattias Exp $
 
 if (typeof _editor_url == "string") {
 	// Leave exactly one backslash at the end of _editor_url
@@ -2032,7 +2032,10 @@ HTMLArea.isBlockElement = function(el) {
 		"tbody tfoot tr td iframe address ";
 		//alert("el:" + el);
 		//alert("el:" + el.tagName);
-	return (blockTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
+		if(el && el.tagName)
+			return (blockTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
+		else
+			return false;
 };
 
 HTMLArea.needsClosingTag = function(el) {

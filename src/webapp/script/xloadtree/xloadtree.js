@@ -99,7 +99,7 @@ WebFXLoadTree.prototype.expand = function() {
  * WebFXLoadTreeItem class
  */
 
-function WebFXLoadTreeItem(sText, sXmlSrc, sAction, eParent, sIcon, sOpenIcon) {
+function WebFXLoadTreeItem(sText, sXmlSrc, sAction, eParent, sIcon, sOpenIcon, hasChildren) {
 	// call super
 	this.WebFXTreeItem = WebFXTreeItem;
 	this.WebFXTreeItem(sText, sAction, eParent, sIcon, sOpenIcon);
@@ -113,10 +113,14 @@ function WebFXLoadTreeItem(sText, sXmlSrc, sAction, eParent, sIcon, sOpenIcon) {
 	// check start state and load if open
 	if (this.open)
 		_startLoadXmlTree(this.src, this);
-	else {
+	else 
+	{
 		// and create loading item if not
-		this._loadingItem = new WebFXTreeItem(webFXTreeConfig.loadingText);
-		this.add(this._loadingItem);
+		if(hasChildren == "true")
+		{
+			this._loadingItem = new WebFXTreeItem(webFXTreeConfig.loadingText);
+			this.add(this._loadingItem);
+		}
 	}
 }
 
@@ -190,6 +194,7 @@ function _xmlTreeToJsTree(oNode) {
 	var icon = oNode.getAttribute("icon");
 	var openIcon = oNode.getAttribute("openIcon");
 	var src = oNode.getAttribute("src");
+	var hasChildren = oNode.getAttribute("hasChildren");
 	
 	// Stefan Sik addition 20041120
 	var type = oNode.getAttribute("type");
@@ -203,10 +208,14 @@ function _xmlTreeToJsTree(oNode) {
 	// create jsNode
 	var jsNode;
 	if (src != null && src != "")
-		jsNode = new WebFXLoadTreeItem(text, src, action, parent, icon, openIcon);
+		jsNode = new WebFXLoadTreeItem(text, src, action, parent, icon, openIcon, hasChildren);
 	else
 		jsNode = new WebFXTreeItem(text, action, parent, icon, openIcon);
 		
+
+	jsNode.myType = type;
+	jsNode.myId = oNode.getAttribute("id");
+	
 	// go through childNOdes
 	var cs = oNode.childNodes;
 	var l = cs.length;
@@ -231,7 +240,7 @@ function _xmlFileLoaded(oXmlDoc, jsParentNode) {
 
 	// check that the load of the xml file went well
 	if( oXmlDoc == null || oXmlDoc.documentElement == null) {
-		alert(oXmlDoc.xml);
+		alert("" + oXmlDoc.xml);
 		jsParentNode.errorText = parseTemplateString(webFXTreeConfig.loadErrorTextTemplate,
 							jsParentNode.src);
 	}
@@ -251,9 +260,14 @@ function _xmlFileLoaded(oXmlDoc, jsParentNode) {
 		}
 
 		// if no children we got an error
+		/*
 		if (!bAnyChildren)
 			jsParentNode.errorText = parseTemplateString(webFXTreeConfig.emptyErrorTextTemplate,
 										jsParentNode.src);
+		*/
+		if (!bAnyChildren)
+		{
+		}
 	}
 	
 	// remove dummy
@@ -269,7 +283,11 @@ function _xmlFileLoaded(oXmlDoc, jsParentNode) {
 	
 	// show error in status bar
 	if (jsParentNode.errorText != "")
-		window.status = jsParentNode.errorText;
+		; //alert(jsParentNode.errorText);
+		// window.status = jsParentNode.errorText;
+		
+	// alert(jsParentNode.myType);
+	
 }
 
 // parses a string and replaces %n% with argument nr n

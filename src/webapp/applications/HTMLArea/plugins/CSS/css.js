@@ -6,7 +6,7 @@
 // Distributed under the same terms as HTMLArea itself.
 // This notice MUST stay intact for use (see license.txt).
 //
-// $Id: css.js,v 1.1 2004/11/29 15:28:49 jed Exp $
+// $Id: css.js,v 1.3 2005/02/03 07:51:17 mattias Exp $
 
 function CSS(editor, params) {
 	this.editor = editor;
@@ -68,7 +68,7 @@ CSS.prototype.onSelect = function(editor, obj, context, updatecontextclass) {
 
 	var is_span = (parent && parent.tagName.toLowerCase() == "span");
 	var update_parent = (context && updatecontextclass && parent && parent.tagName.toLowerCase() == context);
-
+	
 	if (update_parent) {
 		parent.className = className;
 		editor.updateToolbar();

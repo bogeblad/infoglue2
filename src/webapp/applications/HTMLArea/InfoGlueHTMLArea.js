@@ -206,19 +206,38 @@ function configInfoGlue(config)
 	HTMLArea.prototype._createInlineLink = function(link) {
 		var editor = this;
 		var outparam = null;
+		/*
 		if (typeof link == "undefined") {
+			alert("link:" + link);
 			link = this.getParentElement();
+			alert("link:" + link.tagName);
 			if (link && !/^a$/i.test(link.tagName))
 				link = null;
+		}
+		*/
+		
+		if (typeof link == "undefined") {
+			link = this.getParentElement();
+			//alert("link:" + link.tagName);
+			while (link && !/^a$/i.test(link.tagName))
+			{
+				//alert("link:" + link.tagName);
+				link = link.parentNode;
+				//alert("link2:" + link);
+			}			
 		}
 		
 		var text = editor.getSelectedHTML();
 		//alert("text:" + text);
+		//alert("link:" + link);
 		
 		if (link) 
 		{
 			//alert("link:" + link);
-			//alert("link:" + link.title);
+			//alert("link.href:" + (HTMLArea.is_ie ? editor.stripBaseURL(link.href) : link.getAttribute("href")));
+			//alert("link.title:" + link.title);
+			//alert("link.target:" + link.target);
+			//alert("text:" + text);
 		    outparam = {
 			f_href   : HTMLArea.is_ie ? editor.stripBaseURL(link.href) : link.getAttribute("href"),
 			f_title  : link.title,

@@ -24,16 +24,22 @@
 	text-decoration: none;
 }
 
+a.selected {
+	background: black;
+	font: bold;
+	color: white;
+}
+
 .webfx-tree-item a:hover {
-	color: blue;
+	ccolor: blue;
 	text-decoration: underline;
 }
 
-.webfx-tree-item a:active {
+/*.webfx-tree-item a:active {
 	background: highlight;
 	color: highlighttext;
 	text-decoration: none;
-}
+}*/
 
 .webfx-tree-item img {
 	vertical-align: middle;
