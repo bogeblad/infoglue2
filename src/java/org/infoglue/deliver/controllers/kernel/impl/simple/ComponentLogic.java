@@ -23,24 +23,19 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.deliver.applications.actions.InfoGlueComponent;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
+import org.infoglue.deliver.applications.actions.InfoGlueComponent;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
 
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
 
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class ComponentLogic
 {
@@ -79,6 +74,33 @@ public class ComponentLogic
 		}
 
 		return childContents;
+	}
+
+	/**
+	 * The method returns a list of ContentVO-objects that are related to the category of named binding on the siteNode sent in.
+	 * The method is great for collection-pages on any site where you want to bind a category.
+	 */
+	public List getBoundCategoryContents(String categoryAttribute, String typeAttribute) throws Exception
+	{
+		Map categoryComponent = getInheritedComponentProperty(infoGlueComponent, categoryAttribute);
+		Map attributeComponent = getInheritedComponentProperty(infoGlueComponent, typeAttribute);
+		if(categoryComponent != null && attributeComponent != null)
+		{
+			String attr = (String)attributeComponent.get("path");
+			Integer categoryId = getSingleBindingAsInteger(categoryComponent);
+			final List contentVersionsByCategory = templateController.getContentVersionsByCategory(categoryId, attr);
+			return contentVersionsByCategory;
+		}
+
+		return Collections.EMPTY_LIST;
+	}
+
+	private Integer getSingleBindingAsInteger(Map componentProperty)
+	{
+		List bindings = (List)componentProperty.get("bindings");
+		return (bindings.size() > 0)
+			   		? new Integer((String)bindings.get(0))
+			   		: new Integer(0);
 	}
 
 	public String getAssetUrl(String propertyName) throws Exception
