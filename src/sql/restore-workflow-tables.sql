@@ -19,11 +19,11 @@
 -- Place, Suite 330 / Boston, MA 02111-1307 / USA.
 --
 -- ===============================================================================
--- $Id: restore-workflow-tables.sql,v 1.2 2005/02/24 20:49:17 jed Exp $
+-- $Id: restore-workflow-tables.sql,v 1.3 2005/02/24 22:11:32 frank Exp $
 --
 -- Restores the original workflow tables from copies made by
 -- backup-workflow-tables.sql.
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 set foreign_key_checks=0;
 
 drop table OS_WFENTRY;

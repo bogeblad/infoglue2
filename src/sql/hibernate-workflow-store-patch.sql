@@ -19,7 +19,7 @@
 -- Place, Suite 330 / Boston, MA 02111-1307 / USA.
 --
 -- ===============================================================================
--- $Id: hibernate-workflow-store-patch.sql,v 1.3 2005/02/24 20:48:02 jed Exp $
+-- $Id: hibernate-workflow-store-patch.sql,v 1.4 2005/02/24 22:11:32 frank Exp $
 --
 -- This script performs the database updates required to switch to the hibernate
 -- workflow store.
@@ -35,13 +35,13 @@
 -- Since we can't anticipate every possible data conversion scenario, we leave
 -- it to you to determine how to convert the data by leaving you with copies of
 -- the original tables.
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 
------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 -- Copies original OS Workflow tables, preserving the data for safety and for later
 -- use in case you need to do some conversions to get it to work with the new
 -- tables.
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 create table COPY_OF_OS_WFENTRY select * from OS_WFENTRY;
 create table COPY_OF_OS_CURRENTSTEP select * from OS_CURRENTSTEP;
 create table COPY_OF_OS_CURRENTSTEP_PREV select * from OS_CURRENTSTEP_PREV;
@@ -65,22 +65,22 @@ alter table OS_HISTORYSTEP drop foreign key 0_3917;
 alter table OS_HISTORYSTEP_PREV drop foreign key 0_3919;
 alter table OS_HISTORYSTEP_PREV drop foreign key 0_3920;
 
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 -- Deletes all data from the workflow tables so we can create the auto_increment
 -- columns, particularly for OS_WFENTRY, which could have a row with id = 0.  This
 -- messes up the alter table statement by causing a duplicate key violation on
 -- id = 1.  You'll have to figure out how to move the data from the copies back
 -- into the changed tables if you care about preserving the data.
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 delete from OS_CURRENTSTEP;
 delete from OS_CURRENTSTEP_PREV;
 delete from OS_HISTORYSTEP;
 delete from OS_HISTORYSTEP_PREV;
 delete from OS_WFENTRY;
 
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 -- Clear out the property set table, preserving the WYSIWYG config data.
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 delete from OS_PROPERTYENTRY where item_key not like 'repository_%_WYSIWYGConfig';
 
 -- -------------------------------------------------------------------------------
@@ -91,10 +91,10 @@ alter table OS_CURRENTSTEP drop primary key;
 alter table OS_HISTORYSTEP drop primary key;
 alter table OS_PROPERTYENTRY drop primary key;
 
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 -- Change primary key columns in OS Workflow tables to auto_increment, so
 -- Hibernate can use the "native" ID generator.
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 alter table OS_WFENTRY change ID ID bigint not null auto_increment primary key;
 alter table OS_CURRENTSTEP change ID ID bigint not null auto_increment primary key;
 alter table OS_HISTORYSTEP change ID ID bigint not null auto_increment primary key;
@@ -109,18 +109,18 @@ alter table OS_CURRENTSTEP_PREV add constraint currentstep_previous_id foreign k
 alter table OS_HISTORYSTEP_PREV add constraint historystep_id foreign key (id) references OS_HISTORYSTEP (id);
 alter table OS_CURRENTSTEP_PREV add constraint historystep_previous_id foreign key (previous_id) references OS_HISTORYSTEP(id);
 
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 -- Add stepIndex columns to OS_CURRENTSTEP and OS_HISTORYSTEP so the lists
 -- in HibernateWorkflowEntry have a place to store their indices
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 alter table OS_CURRENTSTEP add stepIndex int not null;
 alter table OS_HISTORYSTEP add stepIndex int not null;
 
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 -- Rename columns in OS_PROPERTYENTRY and redefined the primary key, altering the
 -- table to match what the hibernate property set expects, as defined in the
 -- mapping file.
-----------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
 alter table OS_PROPERTYENTRY change GLOBAL_KEY entity_name varchar(125) not null;
 alter table OS_PROPERTYENTRY add entity_id bigint not null after entity_name;
 alter table OS_PROPERTYENTRY change ITEM_KEY entity_key varchar(255) not null;
