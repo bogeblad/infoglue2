@@ -29,7 +29,8 @@ import org.infoglue.cms.exception.SystemException;
 
 /**
  * This class implements the action class for starting a new workflow of a certain type.
- *
+ * @deprecated This class is no longer used; it should be removed in the next release, along with the corresponding
+ * action element in actions.xml.
  * @author Mattias Bogeblad
  */
 
