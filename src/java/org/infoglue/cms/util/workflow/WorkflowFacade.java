@@ -42,20 +42,13 @@ import com.opensymphony.module.propertyset.PropertySet;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.7 $ $Date: 2005/01/13 17:09:53 $
+ * @version $Revision: 1.8 $ $Date: 2005/01/13 23:35:06 $
  */
 public class WorkflowFacade
 {
-	/**
-	 * The initial action ID.  It is hard-coded to 0, which implies that the initial action of any workflow nust
-	 * also be 0.
-	 * TODO: At some point we should find a way around this.
-	 */
-	private static final int INITIAL_ACTION = 0;
-
 	private final Workflow workflow;
-
 	private long workflowId;
+
 	private WorkflowDescriptor workflowDescriptor;
 
 	/**
@@ -68,7 +61,21 @@ public class WorkflowFacade
 	}
 
 	/**
-	 * Constructs a WorkflowFacade for a user with the given workflow ID
+	 * Constructs a WorkflowFacade with the given user principal representing an initialized instance of the workflow
+	 * with the given name.  "Initialized" in this context means that the initial action has been executed and we have
+	 * the workflow ID.
+	 * @param userPrincipal an InfoGluePrincipal representing a system user
+	 * @param name the name of the workflow to create
+	 * @param initialAction thr ID of the initial action to perform to get the workflow started.
+	 */
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, String name, int initialAction) throws SystemException
+	{
+		this(userPrincipal);
+		initialize(name, initialAction);
+	}
+
+	/**
+	 * Constructs a WorkflowFacade for a user with the given workflow ID.
 	 * @param userPrincipal an InfoGluePrincipal representing a system user
 	 * @param workflowId the ID representing an instance of the desired workflow
 	 */
@@ -101,11 +108,11 @@ public class WorkflowFacade
 	 * @param name the name of the workflow to initialize
 	 * @throws org.infoglue.cms.exception.SystemException if a workflow error occurs.
 	 */
-	public void initialize(String name) throws SystemException
+	private void initialize(String name, int initialAction) throws SystemException
 	{
 		try
 		{
-			workflowId = workflow.initialize(name, INITIAL_ACTION, new HashMap());
+			workflowId = workflow.initialize(name, initialAction, new HashMap());
 		}
 		catch (Exception e)
 		{
@@ -172,11 +179,7 @@ public class WorkflowFacade
 		List availableWorkflows = new ArrayList();
 
 		for (int i = 0; i < workflowNames.length; i++)
-		{
-			CmsLogger.logInfo("workflowName:" + workflowNames[i]);
-			if (workflow.canInitialize(workflowNames[i], INITIAL_ACTION))
-				availableWorkflows.add(createWorkflowVO(workflowNames[i]));
-		}
+			availableWorkflows.add(createWorkflowVO(workflowNames[i]));
 
 		return availableWorkflows;
 	}
