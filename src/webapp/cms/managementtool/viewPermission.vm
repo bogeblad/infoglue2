@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-#beginManagementTool("Add / Remove Repository Roles " "Permissions" "")
+#beginManagementTool("tool.managementtool.viewPermission.header" "tool.managementtool.viewPermission.header" "")
 	
 ## DEFINED ROLES
 #set( $lvConstraint =0 )
