@@ -62,8 +62,9 @@ public class HTMLPageInvoker extends PageInvoker
 		try
 		{  			
 			String templateString = getPageTemplateString(); 
-			Map context = new HashMap();
-			context.put("templateLogic", this.getTemplateController());
+			
+			Map context = getDefaultContext();
+
 			StringWriter cacheString = new StringWriter();
 			PrintWriter cachedStream = new PrintWriter(cacheString);
 			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, templateString);

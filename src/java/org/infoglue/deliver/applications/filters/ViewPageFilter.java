@@ -23,27 +23,40 @@
 
 package org.infoglue.deliver.applications.filters;
 
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.util.CacheController;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.security.Principal;
-import java.util.*;
 
 /**
  *
@@ -51,148 +64,157 @@ import java.util.*;
  * @author Lars Borup Jensen (lbj@atira.dk)
  */
 
-public class ViewPageFilter implements Filter
-{
+public class ViewPageFilter implements Filter {
     private FilterConfig filterConfig = null;
     private URIMatcher uriMatcher = null;
     private URIMapperCache uriCache = null;
 
-    public void init(FilterConfig filterConfig) throws ServletException
-    {
+    public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
         String filterURIs = filterConfig.getInitParameter(FilterConstants.FILTER_URIS_PARAMETER);
         uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","));
         uriCache = new URIMapperCache();
     }
 
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException
-    {
+    public void doFilter(
+        ServletRequest servletRequest,
+        ServletResponse servletResponse,
+        FilterChain filterChain)
+        throws IOException, ServletException {
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
-        if(enableNiceURI == null)
-        	enableNiceURI = "false";
-        
-    	long end, start = System.currentTimeMillis();
+        if (enableNiceURI == null)
+            enableNiceURI = "false";
+
+        long end, start = System.currentTimeMillis();
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         HttpSession httpSession = httpRequest.getSession(true);
         validateCmsProperties(httpRequest);
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
-        
-        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
-        {
-            Integer repositoryId = getRepositoryId(httpRequest, httpSession); 
-            Integer languageId   = getLanguageId(httpRequest, httpSession, repositoryId);
-            Integer siteNodeId   = null;
+
+        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) {
+            Integer repositoryId = getRepositoryId(httpRequest, httpSession);
+            Integer languageId = getLanguageId(httpRequest, httpSession, repositoryId);
+            Integer siteNodeId = null;
             String[] nodeNames = splitString(requestURI, "/");
-            CmsLogger.logInfo("RepositoryId.: "+repositoryId);
-            CmsLogger.logInfo("LanguageId...: "+languageId);
-            CmsLogger.logInfo("RequestURI...: "+requestURI);
-        
-            try 
-			{
-            	InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal)httpSession.getAttribute("infogluePrincipal");
-        		if(infoGluePrincipal == null)
-        		{
-        			try
-        			{
-        				infoGluePrincipal = (InfoGluePrincipal)CacheController.getCachedObject("userCache", "anonymous");
-        				if(infoGluePrincipal == null)
-        				{
-        				    Map arguments = new HashMap();
+            //System.out.println("RepositoryId.: "+repositoryId);
+            //System.out.println("LanguageId...: "+languageId);
+            //System.out.println("RequestURI...: "+requestURI);
+
+            try {
+                InfoGluePrincipal infoGluePrincipal =
+                    (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
+                if (infoGluePrincipal == null) {
+                    try {
+                        infoGluePrincipal =
+                            (InfoGluePrincipal) CacheController.getCachedObject(
+                                "userCache",
+                                "anonymous");
+                        if (infoGluePrincipal == null) {
+           				    Map arguments = new HashMap();
         				    arguments.put("j_username", "anonymous");
         				    arguments.put("j_password", "anonymous");
         				    
         					infoGluePrincipal = (InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments);
         					if(infoGluePrincipal != null)
         						CacheController.cacheObject("userCache", "anonymous", infoGluePrincipal);
-        				}
-        				//this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
-        				
-        			}
-        			catch(Exception e) 
-        			{
-        			    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
-        			}
-        		}
-        		
-            	
-            	siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryId, nodeNames, languageId);
+                            
+                        }
+                        //this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
+
+                    } catch (Exception e) {
+                        throw new SystemException(
+                            "There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.",
+                            e);
+                    }
+                }
+
+                siteNodeId =
+                    NodeDeliveryController.getSiteNodeIdFromPath(
+                        infoGluePrincipal,
+                        repositoryId,
+                        nodeNames,
+                        languageId);
 
                 end = System.currentTimeMillis();
 
-                CmsLogger.logInfo("Mapped URI "+requestURI+" --> "+siteNodeId+" in "+(end-start)+"ms");
+                System.out.println(
+                    "Mapped URI "
+                        + requestURI
+                        + " --> "
+                        + siteNodeId
+                        + " in "
+                        + (end - start)
+                        + "ms");
 
-                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId);
-                //CmsLogger.logInfo("wrappedHttpRequest:" + wrappedHttpRequest.getRequestURI() + "?" + wrappedHttpRequest.getQueryString());
-                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
+                HttpServletRequest wrappedHttpRequest =
+                    prepareRequest(httpRequest, siteNodeId, languageId);
+                //System.out.println("wrappedHttpRequest:" + wrappedHttpRequest.getRequestURI() + "?" + wrappedHttpRequest.getQueryString());
+                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(
+                    wrappedHttpRequest,
+                    httpResponse);
 
-            } 
-            catch (SystemException e) 
-			{
-                CmsLogger.logSevere("Failed to resolve siteNodeId",e);
+            } catch (SystemException e) {
+                CmsLogger.logSevere("Failed to resolve siteNodeId", e);
                 throw new ServletException(e);
-            } 
-            catch (Exception e) 
-			{
+            } catch (Exception e) {
                 throw new ServletException(e);
             }
-        } 
-        else 
-        {
+        } else {
             filterChain.doFilter(httpRequest, httpResponse);
         }
     }
 
-    public void destroy()
-    {
+    public void destroy() {
         this.filterConfig = null;
     }
 
-    private void validateCmsProperties(HttpServletRequest request)
-    {
+    private void validateCmsProperties(HttpServletRequest request) {
         if (CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT) == null) {
-            CmsPropertyHandler.setProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT, request.getContextPath());
+            CmsPropertyHandler.setProperty(
+                FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT,
+                request.getContextPath());
         }
     }
 
-    private Integer getRepositoryId(HttpServletRequest request, HttpSession session) throws ServletException
-    {
-        if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) 
-        {
-            CmsLogger.logInfo("Fetching repositoryId from session");
+    private Integer getRepositoryId(HttpServletRequest request, HttpSession session)
+        throws ServletException {
+        if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) {
+            System.out.println("Fetching repositoryId from session");
             return (Integer) session.getAttribute(FilterConstants.REPOSITORY_ID);
         }
-        
-        CmsLogger.logInfo("Trying to lookup repositoryId");
+
+        System.out.println("Trying to lookup repositoryId");
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
-        CmsLogger.logInfo("serverName:" + serverName);
-        
+        System.out.println("serverName:" + serverName);
+
         RepositoryVO repository = null;
-        try 
-		{
-            repository = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryFromServerName(serverName, portNumber);
-            CmsLogger.logInfo("repository:" + repository);
-		} 
-        catch (Exception e) 
-		{
+        try {
+            repository =
+                RepositoryDeliveryController
+                    .getRepositoryDeliveryController()
+                    .getRepositoryFromServerName(
+                    serverName,
+                    portNumber);
+            System.out.println("repository:" + repository);
+        } catch (Exception e) {
             CmsLogger.logInfo("Failed to map servername " + serverName + " to a repository");
-            CmsLogger.logInfo("Failed to map servername " + serverName + " to a repository");
-		}
-        
-        if (repository == null) 
-        {
-            try 
-			{
-                repository = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository();
-                CmsLogger.logInfo("masterRepository:" + repository);
-			} 
-            catch (Exception e1) 
-			{
+            System.out.println("Failed to map servername " + serverName + " to a repository");
+        }
+
+        if (repository == null) {
+            try {
+                repository =
+                    RepositoryDeliveryController
+                        .getRepositoryDeliveryController()
+                        .getMasterRepository();
+                System.out.println("masterRepository:" + repository);
+            } catch (Exception e1) {
                 CmsLogger.logSevere("Failed to lookup master repository");
             }
         }
-        
+
         if (repository == null)
             throw new ServletException("Unable to find a repository for server-name " + serverName);
 
@@ -200,63 +222,64 @@ public class ViewPageFilter implements Filter
         return repository.getRepositoryId();
     }
 
-    private Integer getLanguageId(HttpServletRequest request, HttpSession session, Integer repositoryId) throws ServletException
-    {
+    private Integer getLanguageId(
+        HttpServletRequest request,
+        HttpSession session,
+        Integer repositoryId)
+        throws ServletException {
         Integer languageId = null;
-        if (request.getParameter("languageId") != null) 
-        {
-            CmsLogger.logInfo("Language is explicitely given in request");
-            try 
-			{
+        if (request.getParameter("languageId") != null) {
+            System.out.println("Language is explicitely given in request");
+            try {
                 languageId = Integer.valueOf(request.getParameter("languageId"));
-                session.setAttribute(FilterConstants.LANGUAGE_ID,  languageId);
-            } 
-            catch (NumberFormatException e) {
+                session.setAttribute(FilterConstants.LANGUAGE_ID, languageId);
+            } catch (NumberFormatException e) {
             }
         }
-        
+
         if (languageId != null)
             return languageId;
-        
-        if (session.getAttribute(FilterConstants.LANGUAGE_ID) != null) 
-        {
-            CmsLogger.logInfo("Fetching languageId from session");
+
+        if (session.getAttribute(FilterConstants.LANGUAGE_ID) != null) {
+            System.out.println("Fetching languageId from session");
             return (Integer) session.getAttribute(FilterConstants.LANGUAGE_ID);
         }
-        
-        CmsLogger.logInfo("Looking for languageId for repository "+repositoryId);
+
+        System.out.println("Looking for languageId for repository " + repositoryId);
         Locale requestLocale = request.getLocale();
-        try 
-		{
-            List availableLanguagesForRepository = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(repositoryId);
-            if (requestLocale != null) 
-            {
-                for (int i=0;i<availableLanguagesForRepository.size();i++) {
+        try {
+            List availableLanguagesForRepository =
+                LanguageDeliveryController
+                    .getLanguageDeliveryController()
+                    .getAvailableLanguagesForRepository(
+                    repositoryId);
+            if (requestLocale != null) {
+                for (int i = 0; i < availableLanguagesForRepository.size(); i++) {
                     LanguageVO language = (LanguageVO) availableLanguagesForRepository.get(i);
-                    CmsLogger.logInfo("language:" + language.getLanguageCode());
-                    CmsLogger.logInfo("browserLanguage:" + requestLocale.getLanguage());
-                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage())) 
-                    {
+                    System.out.println("language:" + language.getLanguageCode());
+                    System.out.println("browserLanguage:" + requestLocale.getLanguage());
+                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage())) {
                         languageId = language.getLanguageId();
                     }
                 }
             }
             if (languageId == null && availableLanguagesForRepository.size() > 0) {
-                languageId = ((LanguageVO)availableLanguagesForRepository.get(0)).getLanguageId();
+                languageId = ((LanguageVO) availableLanguagesForRepository.get(0)).getLanguageId();
             }
         } catch (Exception e) {
-            CmsLogger.logSevere("Failed to fetch available languages for repository "+repositoryId);
+            CmsLogger.logSevere(
+                "Failed to fetch available languages for repository " + repositoryId);
         }
         if (languageId == null)
-            throw new ServletException("Unable to determine language for repository "+repositoryId);
+            throw new ServletException(
+                "Unable to determine language for repository " + repositoryId);
 
         session.setAttribute(FilterConstants.LANGUAGE_ID, languageId);
         return languageId;
     }
 
     // @TODO should I URLDecode the strings first? (incl. context path)
-    private String getContextRelativeURI(HttpServletRequest request)
-    {
+    private String getContextRelativeURI(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         String contextPath = request.getContextPath();
         if (contextPath != null && requestURI.length() > 0) {
@@ -266,63 +289,68 @@ public class ViewPageFilter implements Filter
             return "/";
         return requestURI;
     }
-
-    private String[] splitString(String str, String delimiter)
-    {
+    
+    private String[] splitString(String str, String delimiter) {
         List list = new ArrayList();
         StringTokenizer st = new StringTokenizer(str, delimiter);
-        while (st.hasMoreTokens())
-            list.add(st.nextToken().trim());
-        return (String[]) list.toArray(new String[0]);
+        while (st.hasMoreTokens()) {
+            // Updated to handle portal-url:s
+            String t = st.nextToken();
+            if (t.startsWith("_")) {
+                break;
+            } else {
+                // Not related to portal - add
+                list.add(t.trim());
+            }
+        }
+        return (String[]) list.toArray(new String[list.size()]);
     }
 
-    private HttpServletRequest prepareRequest(HttpServletRequest request, Integer siteNodeId, Integer languageId)
-    {
-        HttpServletRequest wrappedRequest = new IGHttpServletRequest(request, siteNodeId, languageId);
+    private HttpServletRequest prepareRequest(
+        HttpServletRequest request,
+        Integer siteNodeId,
+        Integer languageId) {
+        HttpServletRequest wrappedRequest =
+            new IGHttpServletRequest(request, siteNodeId, languageId);
 
         return wrappedRequest;
     }
 
-
-
-    private class IGHttpServletRequest extends HttpServletRequestWrapper
-    {
+    private class IGHttpServletRequest extends HttpServletRequestWrapper {
         Map requestParameters = new HashMap();
 
-        public IGHttpServletRequest(HttpServletRequest httpServletRequest, Integer siteNodeId, Integer languageId)
-        {
+        public IGHttpServletRequest(
+            HttpServletRequest httpServletRequest,
+            Integer siteNodeId,
+            Integer languageId) {
             super(httpServletRequest);
             requestParameters.putAll(httpServletRequest.getParameterMap());
-            requestParameters.put("siteNodeId", new String[] { String.valueOf(siteNodeId) } );
-            requestParameters.put("languageId", new String[] { String.valueOf(languageId) } );
+            requestParameters.put("siteNodeId", new String[] { String.valueOf(siteNodeId)});
+            requestParameters.put("languageId", new String[] { String.valueOf(languageId)});
             if (requestParameters.get("contentId") == null)
-                requestParameters.put("contentId",  new String[] { String.valueOf(-1) } );
-        
-            CmsLogger.logInfo("siteNodeId:" + siteNodeId);
-            CmsLogger.logInfo("languageId:" + languageId);
-            CmsLogger.logInfo("contentId:" + requestParameters.get("contentId"));
+                requestParameters.put("contentId", new String[] { String.valueOf(-1)});
+
+            System.out.println("siteNodeId:" + siteNodeId);
+            System.out.println("languageId:" + languageId);
+            System.out.println("contentId:" + requestParameters.get("contentId"));
         }
 
-        public String getParameter(String s)
-        {
+        public String getParameter(String s) {
             String[] array = (String[]) requestParameters.get(s);
             if (array != null && array.length > 0)
                 return array[0];
             return null;
         }
 
-        public Map getParameterMap()
-        {
+        public Map getParameterMap() {
             return Collections.unmodifiableMap(requestParameters);
         }
 
-        public Enumeration getParameterNames()
-        {
+        public Enumeration getParameterNames() {
             return new ParameterNamesEnumeration(requestParameters.keySet().iterator());
         }
 
-        public String[] getParameterValues(String s)
-        {
+        public String[] getParameterValues(String s) {
             String[] array = (String[]) requestParameters.get(s);
             if (array != null && array.length > 0)
                 return array;
@@ -331,28 +359,21 @@ public class ViewPageFilter implements Filter
 
     }
 
-    private class ParameterNamesEnumeration
-        implements Enumeration
-    {
-        Iterator it         = null;
+    private class ParameterNamesEnumeration implements Enumeration {
+        Iterator it = null;
 
-        public ParameterNamesEnumeration(Iterator it)
-        {
+        public ParameterNamesEnumeration(Iterator it) {
             this.it = it;
         }
 
-        public boolean hasMoreElements()
-        {
+        public boolean hasMoreElements() {
             return it.hasNext();
         }
 
-        public Object nextElement()
-        {
+        public Object nextElement() {
             return it.next();
         }
 
     }
 
-
-
-} 
+}

@@ -31,6 +31,7 @@ import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.invokers.HTMLPageInvoker;
 import org.infoglue.deliver.invokers.PageInvoker;
+import org.infoglue.deliver.portal.PortalService;
 import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
@@ -129,6 +130,32 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	
 		CmsLogger.logInfo("handled extranet users");
 
+		// ----
+		// -- portlet
+		// ----
+		
+		// -- check if the portal is active
+        String portalEnabled = CmsPropertyHandler.getProperty("enablePortal") ;
+        boolean portalActive = ((portalEnabled != null) && portalEnabled.equals("true"));
+		
+        if (portalActive) 
+        {
+            CmsLogger.logInfo("---> Checking for portlet action");
+            PortalService service = new PortalService();
+            //TODO: catch PortalException?
+            boolean actionExecuted = service.service(getRequest(), getResponse());
+            
+            // -- if an action was executed return NONE as a redirect is issued
+            if (actionExecuted) 
+            {
+                CmsLogger.logInfo("---> PortletAction was executed, returning NONE as a redirect has been issued");
+                //TODO: maybe statistics service should run here
+                CmsLogger.logWarning("No statistics have been run for this request");
+                return NONE;
+            }
+        }
+
+		
 		if(!isUserRedirected)
 		{	
 			CmsLogger.logInfo("this.templateController.getPrincipal():" + this.templateController.getPrincipal());

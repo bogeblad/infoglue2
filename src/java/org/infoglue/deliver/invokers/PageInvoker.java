@@ -24,6 +24,8 @@
 package org.infoglue.deliver.invokers;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +37,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.portal.PortalController;
 import org.infoglue.deliver.util.CacheController;
 
 /**
@@ -216,6 +219,35 @@ public abstract class PageInvoker
 	public void setPageString(String string)
 	{
 		pageString = string;
+	}
+
+	
+	/**
+	 * Creates and returns a defaultContext, currently with the templateLogic 
+	 * and if the portal support is enabled the portalLogic object. 
+	 * (Added to avoid duplication of context creation in the concrete 
+	 * implementations of pageInvokers)
+	 * @author robert
+	 * @return A default context with the templateLogic and portalLogic object in it.
+	 */
+	
+	public Map getDefaultContext() 
+	{
+		Map context = new HashMap();
+		context.put("templateLogic", getTemplateController());		
+		
+		// -- check if the portal is active
+        String portalEnabled = CmsPropertyHandler.getProperty("enablePortal") ;
+        boolean active = ((portalEnabled != null) && portalEnabled.equals("true"));
+		if (active) 
+		{
+		    PortalController pController = new PortalController(getRequest(), getResponse());
+		    context.put(PortalController.NAME, pController);
+		    System.out.println("PortalController.NAME:" + PortalController.NAME);
+		    System.out.println("pController:" + pController);
+		}
+		
+		return context;
 	}
 
 }
