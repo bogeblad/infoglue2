@@ -43,6 +43,8 @@ import webwork.action.ActionContext;
  */
 public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 {
+	private static final WorkflowController controller = WorkflowController.getController();
+
 	private List availableWorkflowVOList;
 	private List workflowVOList;
 
@@ -124,10 +126,8 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		CmsLogger.logInfo("actionId:" + actionId);
 		CmsLogger.logInfo("****************************************");
 
-		WorkflowVO workflow = WorkflowController.getController().invokeAction(getInfoGluePrincipal(),
-																									 ActionContext.getRequest(),
-																									 workflowId, actionId);
-		return redirectToView(workflow);
+		return redirectToView(controller.invokeAction(getInfoGluePrincipal(),
+																	 ActionContext.getRequest(), workflowId, actionId));
 	}
 
 	/**
@@ -161,8 +161,8 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	private void populateLists() throws SystemException
 	{
-		availableWorkflowVOList = WorkflowController.getController().getAvailableWorkflowVOList(getInfoGluePrincipal());
-		workflowVOList = WorkflowController.getController().getCurrentWorkflowVOList(getInfoGluePrincipal());
+		availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
+		workflowVOList = controller.getCurrentWorkflowVOList(getInfoGluePrincipal());
 	}
 
 	/**
