@@ -164,6 +164,16 @@ public class ContentVersionImpl implements ContentVersion
 				this.valueObject.setContentTypeDefinitionId(owningContent.getContentTypeDefinition().getId());
         }
     }
+    
+    public Integer getContentId()
+    {
+        return this.valueObject.getContentId();
+    }
+            
+    public void setContentId(Integer contentId)
+    {
+        this.valueObject.setContentId(contentId);
+    }
       
     public org.infoglue.cms.entities.management.impl.simple.LanguageImpl getLanguage()
     {

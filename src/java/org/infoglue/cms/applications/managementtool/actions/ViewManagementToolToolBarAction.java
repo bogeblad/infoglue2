@@ -308,7 +308,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 				return getContentTypeDefinitionsButtons();
 			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinition.header"))
 				return getContentTypeDefinitionDetailsButtons();
-			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewCategoryList.header") || this.toolbarKey.equalsIgnoreCase("tool.managementtool.editCategoryList.header"))
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewCategoryList.header") || this.toolbarKey.equalsIgnoreCase("tool.managementtool.editCategory.header"))
 				return getCategoryButtons();
 			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewUp2DateList.header"))
 				return getAvailablePackagesButtons();
