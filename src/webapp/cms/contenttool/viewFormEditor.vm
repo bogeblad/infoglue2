@@ -273,10 +273,6 @@
 	</tr>
 	<tr>
 		<td>
-<!--
-			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25"> 
-			<a href="javascript:saveAndExit(document.editForm, 'UpdateContentTypeDefinition!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
--->
 			<a href="javascript:window.opener.location.reload();window.close();"><img src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" border="0"></a>
 		</td>
 	</tr>

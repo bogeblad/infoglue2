@@ -723,6 +723,7 @@
 						    </tr>
 						    </table>
 						</div>
+						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
 						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
@@ -769,6 +770,7 @@
 						    </tr>
 						    </table>
 						</div>
+						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
 						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
@@ -810,6 +812,7 @@
 						    </tr>
 						    </table>
 						</div>
+						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
 						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
@@ -1064,9 +1067,14 @@
 			        }
 					else
 					{
+						var hiddenField = document.getElementById(elementId + "Hidden");
+						if(hiddenField)
+							fieldName = "document.editForm." + elementId + "Hidden";
+						else
+							fieldName = "document.editForm." + elementId;
+							
 						//alert("elementId:" + elementId);
 						//alert(document.getElementById(elementId).value);
-						fieldName = "document.editForm." + elementId;
 						//alert(fieldName);
 						//alert(eval(fieldName).value);
 						value = eval(fieldName).value;
