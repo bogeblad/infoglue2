@@ -14,10 +14,14 @@
 
 	<property name="build" value="build"/>
 	<property name="build.classes" value="${build}/classes"/>
+	<property name="build.applets" value="${build}/applets"/>
 	<property name="javadoc" value="${build}/javadoc"/>
 	<property name="war.file.prefix" value="${build}/${ant.project.name}"/>
 	<property name="cms.war.file" value="${war.file.prefix}-cms.war"/>
 	<property name="deliver.war.file" value="${war.file.prefix}-deliver.war"/>
+
+	<property name="opentree.jar.file" value="opentree.jar"/>
+	<property name="codeeditor.jar.file" value="code-editor.jar"/>
 
 	<property name="test" value="test"/>
 	<property name="test.java" value="${test}/java"/>
@@ -176,12 +180,33 @@
 	</target>
 
 	<!--
+	* Creates jar files for applets needed by the CMS tool.
+	-->
+	<target name="jar-apps" depends="compile" description="Creates a applet jar file">
+		<mkdir dir="${build.applets}/applications"/>
+		<jar file="${build.applets}/applications/${opentree.jar.file}">
+			<fileset dir="${build.classes}">
+				<include name="org/infoglue/cms/plugins/opentree/**/*.class"/>
+				<include name="org/infoglue/cms/net/*.class"/>
+ 			</fileset>
+		</jar>
+		<jar file="${build.applets}/applications/${codeeditor.jar.file}">
+			<fileset dir="${build.classes}">
+				<include name="org/infoglue/cms/plugins/codeeditor/**/*.class"/>
+ 			</fileset>
+		</jar>
+		<!-- extra jar needed for the code editor -->
+		<copy todir="${build.applets}/applications" file="${lib}/build/netscape-javascript.jar"/>
+	</target>
+
+	<!--
 	* Creates the CMS war file.  Since we deploy an exploded war, the primary
 	* purpose of this target is to organize the files required to deploy.
 	-->
-	<target name="war-cms" depends="compile" description="Creates the CMS war file">
+	<target name="war-cms" depends="compile,jar-apps" description="Creates the CMS war file">
 		<war warfile="${cms.war.file}" webxml="${conf}/cms-web.xml">
 			<fileset dir="${webapp}"/>
+			<fileset dir="${build.applets}"/>
 			<classes dir="${build.classes}"/>
 			<lib refid="build.libs"/>
 			<lib refid="core.libs"/>
@@ -260,7 +285,7 @@
 		</copy>
 	</target>
 
-	
+
 	<!--
 	* Deploys the deliver live app, replacing deliver.properties with one that
 	* has context.root.deliver and operatingMode.deliver set appropriately.
@@ -275,28 +300,28 @@
 				<exclude name="deliver-web.xml"/>
 			</fileset>
 		</copy>
-		
+
 		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
 		<copy todir="${build}/deliverwebapp/WEB-INF/classes">
 			<fileset dir="${build.classes}">
 				<include name="**/*.*"/>
 				<exclude name="cms-web.xml"/>
 				<exclude name="deliver-web.xml"/>
-			</fileset> 
+			</fileset>
 		</copy>
 
 		<echo message="Copying infoglueDeliver"/>
 		<copy todir="${build}/deliverwebapp">
 			<fileset dir="${webapp}">
 				<include name="**/*.*"/>
-			</fileset> 
+			</fileset>
 		</copy>
 
 		<echo message="Copying infoglueCMS"/>
 		<copy todir="${build}/cmswebapp">
 			<fileset dir="${webapp}">
 				<include name="**/*.*"/>
-			</fileset> 
+			</fileset>
 		</copy>
 
 		<echo message="Copying confs to deliver"/>
@@ -347,8 +372,8 @@
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
 </target>
-	
-	
+
+
 	<!--
 	* Deploys all the apps: cms, working, preview, and live
 	-->
