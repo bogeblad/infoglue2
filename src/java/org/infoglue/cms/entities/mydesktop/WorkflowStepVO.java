@@ -139,12 +139,20 @@ public class WorkflowStepVO implements BaseEntityVO
 
 	public List getActions()
 	{
-		return actions;
+		return Collections.unmodifiableList(actions);
 	}
 
-	public void setActions(List actions)
+	/**
+	 * Adds the given action to this step, associating this step with the given action.
+	 * @param action a WorkflowActionVO representing a workflow action
+	 */
+	public void addAction(WorkflowActionVO action)
 	{
-		this.actions = (actions == null) ? new ArrayList() : actions;
+		if (actions == null)
+			actions = new ArrayList();
+
+		action.setStep(this);
+		actions.add(action);
 	}
 
 	/**
@@ -169,5 +177,19 @@ public class WorkflowStepVO implements BaseEntityVO
 	public ConstraintExceptionBuffer validate()
 	{
 		return new ConstraintExceptionBuffer();
+	}
+
+	public String toString()
+	{
+		return new StringBuffer(getClass().getName())
+				.append(" stepId=").append(stepId)
+				.append(" name=").append(name)
+				.append(" status=").append(status)
+				.append(" owner=").append(owner)
+				.append(" caller=").append(caller)
+				.append(" startDate=").append(startDate)
+				.append(" finishDate=").append(finishDate)
+				.append(" id=").append(id)
+				.append(" workflowId=").append(workflowId).toString();
 	}
 }
