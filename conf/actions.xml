@@ -978,35 +978,35 @@
 	</action>
 
 	<!-- Update Cache -->
-	<action name="org.infoglue.cms.applications.deliver.actions.UpdateCacheAction" alias="UpdateCache">
+	<action name="org.infoglue.deliver.applications.actions.UpdateCacheAction" alias="UpdateCache">
 		<view name="error">deliver/error.vm</view>
 	</action>
 
 	<!-- Site Delivery -->
-	<action name="org.infoglue.cms.applications.deliver.actions.ViewPageAction" alias="ViewPage">
+	<action name="org.infoglue.deliver.applications.actions.ViewPageAction" alias="ViewPage">
 		<view name="error">deliver/error.vm</view>
 	</action>
 
 	<!-- Application state action - used to monitor the delivery engine -->
-	<action name="org.infoglue.cms.applications.deliver.actions.ViewApplicationStateAction" alias="ViewApplicationState">
+	<action name="org.infoglue.deliver.applications.actions.ViewApplicationStateAction" alias="ViewApplicationState">
 		<view name="success">deliver/viewApplicationState.vm</view>
 		<view name="error">deliver/error.vm</view>
 	</action>
 
 	<!-- Application query action - used to ask questions about the delivery engine -->
-	<action name="org.infoglue.cms.applications.deliver.actions.ViewApplicationSettingsAction" alias="ViewApplicationSettings">
+	<action name="org.infoglue.deliver.applications.actions.ViewApplicationSettingsAction" alias="ViewApplicationSettings">
 		<view name="templateMethods">deliver/viewTemplateMethods.vm</view>
 		<view name="navigationTitle">deliver/viewNavigationTitle.vm</view>
 		<view name="error">deliver/error.vm</view>
 	</action>
 
 	<!-- Delivery engine indata entry point - used to handle form input -->
-	<action name="org.infoglue.cms.applications.deliver.actions.InfoGlueDefaultInputHandlerAction" alias="InfoGlueDefaultInputHandler">
+	<action name="org.infoglue.deliver.applications.actions.InfoGlueDefaultInputHandlerAction" alias="InfoGlueDefaultInputHandler">
 		<view name="error">deliver/error.vm</view>
 	</action>
 
 	<!-- Extranet Login action -->
-	<action name="org.infoglue.cms.applications.deliver.actions.ExtranetLoginAction" alias="ExtranetLogin">
+	<action name="org.infoglue.deliver.applications.actions.ExtranetLoginAction" alias="ExtranetLogin">
 		<view name="loginForm">deliver/extranetLoginForm.vm</view>
 		<view name="userAccepted">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ViewPage.action#requestParameters</view>
 		<view name="invalidLogin">deliver/extranetLoginError.vm</view>
