@@ -24,17 +24,14 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.management.ContentTypeAttribute;
-import org.infoglue.cms.entities.management.ContentTypeAttributeParameter;
-import org.infoglue.cms.entities.management.ContentTypeAttributeParameterValue;
-import org.infoglue.cms.entities.management.ContentTypeDefinition;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.*;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.DomainUtils;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -42,10 +39,15 @@ import org.exolab.castor.jdo.QueryResults;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.*;
 
+import javax.xml.transform.TransformerException;
+
 import org.apache.xerces.parsers.DOMParser;
+import org.apache.xpath.XPathAPI;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,6 +65,15 @@ import org.w3c.dom.NamedNodeMap;
  */
 public class ContentTypeDefinitionController extends BaseController
 {
+	public static final String ASSET_KEYS = "assetKeys";
+	public static final String CATEGORY_KEYS = "categoryKeys";
+
+	private static final NodeList EMPTY_NODELIST = new NodeList()
+	{
+		public int getLength()	{ return 0; }
+		public Node item(int i)	{ return null; }
+	};
+
 	/**
 	 * Factory method
 	 */
@@ -247,11 +258,75 @@ public class ContentTypeDefinitionController extends BaseController
 	/**
 	 * This method fetches any predefined assetKeys from a xml-string representing a contentTypeDefinition.
 	 */
-
 	public List getDefinedAssetKeys(String contentTypeDefinitionString)
 	{
-		List keys = new ArrayList();
+		NodeList nodes = getEnumerationNodeList(contentTypeDefinitionString, ASSET_KEYS);
+		return getEnumValues(nodes);
+	}
 
+	/**
+	 * This method fetches any predefined categoryKeys from a xml-string representing a contentTypeDefinition.
+	 */
+	public List getDefinedCategoryKeys(String contentTypeDefinitionString)
+	{
+		NodeList nodes = getEnumerationNodeList(contentTypeDefinitionString, CATEGORY_KEYS);
+		return getCategoryInfo(nodes);
+	}
+
+	/**
+	 * Returns a List of values fro the "value" atribute of the provided NodeList
+	 */
+	protected List getEnumValues(NodeList nodes)
+	{
+		List keys = new ArrayList();
+		for(int i = 0; i < nodes.getLength(); i++)
+		{
+			Node ichild = nodes.item(i);
+			Node attributeValue = ichild.getAttributes().getNamedItem("value");
+			keys.add(attributeValue.getNodeValue());
+		}
+		return keys;
+	}
+
+	/**
+	 * Returns a List of CategoryInfos for the category atributes of the NodeList
+	 */
+	protected List getCategoryInfo(NodeList nodes)
+	{
+		String attributesXPath = "xs:annotation/xs:appinfo/params";
+
+		List keys = new ArrayList();
+		for(int i = 0; i < nodes.getLength(); i++)
+		{
+			Node enum = nodes.item(i);
+			String value = enum.getAttributes().getNamedItem("value").getNodeValue();
+			try
+			{
+				CategoryAttribute category = new CategoryAttribute(value);
+				keys.add(category);
+
+				Element params = (Element)XPathAPI.selectSingleNode(enum, attributesXPath);
+				if(params != null)
+				{
+					category.setTitle(getElementValue(params, "title"));
+					category.setDescription(getElementValue(params, "description"));
+					category.setCategoryId(getElementValue(params, "categoryId"));
+				}
+			}
+			catch (TransformerException e)
+			{
+				keys.add(new CategoryAttribute(value));
+			}
+		}
+		return keys;
+	}
+
+	/**
+	 * Returns a list of xs:enumeration nodes base on the provided key.
+	 * @param keyType The key to find enumerations for
+	 */
+	protected NodeList getEnumerationNodeList(String contentTypeDefinitionString, String keyType)
+	{
         try
         {
         	if(contentTypeDefinitionString != null)
@@ -262,25 +337,8 @@ public class ContentTypeDefinitionController extends BaseController
 				parser.parse(xmlSource);
 				Document document = parser.getDocument();
 
-			    String attributesXPath = "/xs:schema/xs:simpleType";
-
-				// Get assetKeys node
-				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
-				for(int i=0; i < anl.getLength(); i++)
-				{
-					Node child = anl.item(i);
-					Node attributeName = child.getAttributes().getNamedItem("name");
-					if (attributeName.getNodeValue().compareTo("assetKeys") == 0)
-					{
-						NodeList ianl = org.apache.xpath.XPathAPI.selectNodeList(child, "xs:restriction/xs:enumeration");
-						for(int ii=0; ii < ianl.getLength(); ii++)
-						{
-							Node ichild = ianl.item(ii);
-							Node attributeValue = ichild.getAttributes().getNamedItem("value");
-							keys.add(attributeValue.getNodeValue());
-						}
-					}
-				}
+				String attributesXPath = "/xs:schema/xs:simpleType[@name = '" + keyType + "']/xs:restriction/xs:enumeration";
+				return XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
         	}
         }
         catch(Exception e)
@@ -288,9 +346,26 @@ public class ContentTypeDefinitionController extends BaseController
         	CmsLogger.logWarning("An error occurred when trying to fetch the asset keys:" + e.getMessage(), e);
         }
 
-		return keys;
+		return EMPTY_NODELIST;
 	}
 
+	/**
+	 * Get the CDATA value from the provided elements child tag
+	 * @param root The root element to find the child tag
+	 * @param tagName The tag name of the child to get the CDATA value
+	 * @return The String CDATA or null if the tag does not exist or no value is set.
+	 */
+	protected String getElementValue(Element root, String tagName)
+	{
+		NodeList nodes = root.getElementsByTagName(tagName);
+		if(nodes.getLength() > 0)
+		{
+			Node cdata = nodes.item(0).getFirstChild();
+			return (cdata != null)? cdata.getNodeValue() : null;
+		}
+
+		return null;
+	}
 
 	/**
 	 * This method returns the attributes in the content type definition for generation.
@@ -354,7 +429,7 @@ public class ContentTypeDefinitionController extends BaseController
 								NamedNodeMap nodeMap = value.getAttributes();
 								for(int nmi =0; nmi < nodeMap.getLength(); nmi++)
 								{
-									Node attribute = nodeMap.item(nmi);
+									Node attribute = (Node)nodeMap.item(nmi);
 									String valueAttributeName = attribute.getNodeName();
 									String valueAttributeValue = attribute.getNodeValue();
 									contentTypeAttributeParameterValue.addAttribute(valueAttributeName, valueAttributeValue);
@@ -863,5 +938,4 @@ public class ContentTypeDefinitionController extends BaseController
 	{
 		return new ContentTypeDefinitionVO();
 	}
-
 }
