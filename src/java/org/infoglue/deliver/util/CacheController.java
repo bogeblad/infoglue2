@@ -289,7 +289,7 @@ public class CacheController extends Thread
 			Class[] ids = {null};
 			//CacheManager manager = db.getCacheManager();
 			//manager.expireCache(types);
-			db.expireCache(types, ids);
+			db.expireCache(types, null);
 		}
 		catch(Exception e)
 		{

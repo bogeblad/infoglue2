@@ -139,11 +139,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 
 		try
 		{
-			Class[] types = {c};
+		    Class[] types = {c};
 			Class[] ids = {null};
 			//CacheManager manager = db.getCacheManager();
 			//manager.expireCache(types);
-			db.expireCache(types, ids);
+			db.expireCache(types, null);
 		}
 		catch(Exception e)
 		{
