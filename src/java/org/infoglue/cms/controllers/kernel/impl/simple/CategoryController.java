@@ -1,0 +1,251 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ *
+ * $Id: CategoryController.java,v 1.1 2004/12/01 23:40:42 frank Exp $
+ */
+package org.infoglue.cms.controllers.kernel.impl.simple;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
+import org.infoglue.cms.exception.SystemException;
+
+/**
+ * The CategoryController manages all actions related to persistence
+ * and querying for Categories.
+ *
+ * TODO: When we convert have Hibernate manage all of these relationships, it will pull it
+ * TODO: all back with one query and be a helluva lot faster than this pasic implementation
+ *
+ * @author Frank Febbraro (frank@phase2technology.com)
+ */
+public class CategoryController extends BaseController
+{
+	private static final CategoryController instance = new CategoryController();
+	private static final ContentCategoryController contentCategoryStore = ContentCategoryController.getController();
+
+	private static final String findByParent = new StringBuffer("SELECT c ")
+			.append("FROM org.infoglue.cms.entities.management.impl.simple.CategoryImpl c ")
+			.append("WHERE c.parentId = $1 ")
+			.append("ORDER BY c.name ASC").toString();
+
+	private static final String findActiveByParent = new StringBuffer("SELECT c ")
+			.append("FROM org.infoglue.cms.entities.management.impl.simple.CategoryImpl c ")
+			.append("WHERE c.parentId = $1 ")
+			.append("AND c.active = $2 ")
+			.append("ORDER BY c.name ASC").toString();
+
+	private static final String findRootCategories = new StringBuffer("SELECT c ")
+			.append("FROM org.infoglue.cms.entities.management.impl.simple.CategoryImpl c ")
+			.append("WHERE is_undefined(c.parentId) ")
+			.append("ORDER BY c.name ASC").toString();
+
+	private static final String findActiveRootCategories = new StringBuffer("SELECT c ")
+			.append("FROM org.infoglue.cms.entities.management.impl.simple.CategoryImpl c ")
+			.append("WHERE is_undefined(c.parentId) ")
+			.append("AND c.active = $1 ")
+			.append("ORDER BY c.name ASC").toString();
+
+	public static CategoryController getController()
+	{ return instance; }
+
+	private CategoryController()
+	{}
+
+	/**
+	 * Find a Category by it's identifier.
+	 *
+	 * @param	id The id of the Category to find
+	 * @return	The CategoryVO identified by the provided id
+	 * @throws	SystemException If an error happens
+	 */
+	public CategoryVO findById(Integer id) throws SystemException
+	{
+		return (CategoryVO)getVOWithId(CategoryImpl.class, id);
+	}
+
+	/**
+	 * Find a List of Categories by parent.
+	 *
+	 * @param	parentId The parent id of the Category to find
+	 * @return	A list of CategoryVOs that have the provided parentId
+	 * @throws	SystemException If an error happens
+	 */
+	public List findByParent(Integer parentId) throws SystemException
+	{
+		List params = new ArrayList();
+		params.add(parentId);
+		return executeQuery(findByParent, params);
+	}
+
+	/**
+	 * Find a List of active Categories by parent.
+	 *
+	 * @param	parentId The parent id of the Category to find
+	 * @return	A list of CategoryVOs that have the provided parentId
+	 * @throws	SystemException If an error happens
+	 */
+	public List findActiveByParent(Integer parentId) throws SystemException
+	{
+		List params = new ArrayList();
+		params.add(parentId);
+		params.add(Boolean.TRUE);
+		return executeQuery(findActiveByParent, params);
+	}
+
+	/**
+	 * Find a Category with it's children populated.
+	 *
+	 * @param	id The id of the Category to find
+	 * @return	A list of CategoryVOs that are at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public CategoryVO findWithChildren(Integer id) throws SystemException
+	{
+		CategoryVO c = findById(id);
+		c.setChildren(findByParent(c.getId()));
+		return c;
+	}
+
+	/**
+	 * Find a List of Categories that have no parent.
+	 *
+	 * @return	A list of CategoryVOs that are at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public List findRootCategories() throws SystemException
+	{
+		return executeQuery(findRootCategories);
+	}
+
+	/**
+	 * Find a list of all Categories in the system.
+	 *
+	 * @return	A list of CategoryVOs starting at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public List findAllActiveCategories() throws SystemException
+	{
+		List params = new ArrayList();
+		params.add(Boolean.TRUE);
+		List roots = executeQuery(findActiveRootCategories, params);
+		for (Iterator iter = roots.iterator(); iter.hasNext();)
+		{
+			CategoryVO root = (CategoryVO) iter.next();
+			root.setChildren(findAllActiveChildren(root.getId()));
+		}
+		return roots;
+	}
+
+	/**
+	 * Finds all children for a given parent id, recursively until no children are found.
+	 *
+	 * @return A list of children nodes, with thier children populated
+	 */
+	public List findAllActiveChildren(Integer parentId) throws SystemException
+	{
+		List children = findActiveByParent(parentId);
+		for (Iterator iter = children.iterator(); iter.hasNext();)
+		{
+			CategoryVO child = (CategoryVO) iter.next();
+			child.setChildren(findAllActiveChildren(child.getId()));
+		}
+		return children;
+	}
+
+	/**
+	 * Saves a CategoryVO whether it is new or not.
+	 *
+	 * @param	c The CategoryVO to save
+	 * @return	The saved CategoryVO
+	 * @throws	SystemException If an error happens
+	 */
+	public CategoryVO save(CategoryVO c) throws SystemException
+	{
+		return (c.isUnsaved())
+					? create(c)
+					: (CategoryVO)updateEntity(CategoryImpl.class, c);
+	}
+
+	/**
+	 * Creates a Category from a CategoryVO
+	 */
+	private CategoryVO create(CategoryVO c) throws SystemException
+	{
+		CategoryImpl impl = new CategoryImpl(c);
+		return ((CategoryImpl)createEntity(impl)).getValueObject();
+	}
+
+	/**
+	 * Moves a CategoryVO to a different parent category
+	 *
+	 * @param	categoryId The id of the CategoryVO to move
+	 * @param	newParentId The id of the parent to move the CategoryVO
+	 * @return	The saved CategoryVO
+	 * @throws	SystemException If an error happens
+	 */
+	public CategoryVO moveCategory(Integer categoryId, Integer newParentId) throws SystemException
+	{
+		CategoryVO category = findById(categoryId);
+		category.setParentId(newParentId);
+		return save(category);
+	}
+
+	/**
+	 * Deletes a CategoryVO, and all children.
+	 *
+	 * TODO: The reason we delete the ContentCategory first is that once the Category
+	 * TODO: is gone, Castor will never find them again. When we move to Hibernate we
+	 * TODO: can probalby put this afterwards, in it's more logical place.
+	 *
+	 * @param	id The id of the Category to delete
+	 * @throws	SystemException If an error happens
+	 */
+	public void delete(Integer id) throws SystemException
+	{
+		contentCategoryStore.deleteByCategory(id);
+		deleteEntity(CategoryImpl.class, id);
+		deleteChildren(id);
+	}
+
+	/**
+	 * Deletes the children of the supplied category
+	 */
+	private void deleteChildren(Integer id) throws SystemException
+	{
+		List children = findByParent(id);
+		for (Iterator iter = children.iterator(); iter.hasNext();)
+			delete(((CategoryVO) iter.next()).getId());
+	}
+
+	/**
+	 * Implemented for BaseController
+	 */
+	public BaseEntityVO getNewVO()
+	{
+		return new CategoryVO();
+	}
+}
