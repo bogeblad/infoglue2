@@ -20,45 +20,37 @@
  *
  * ===============================================================================
  */
-
 package org.infoglue.cms.applications.common.actions;
 
-import org.infoglue.cms.exception.AccessConstraintException;
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConfigurationError;
-import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
-
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import webwork.action.Action;
-import webwork.action.CommandDriven;
-import webwork.action.ResultException;
-import webwork.action.ServletRequestAware;
-import webwork.action.ServletResponseAware;
+import org.apache.log4j.Logger;
 
-import org.infoglue.deliver.util.BrowserBean;
+import webwork.action.*;
+
+import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConfigurationError;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
 
-import org.infoglue.cms.applications.common.Session;
-
-import org.apache.log4j.Logger;
-
-import java.util.Locale;
-import java.net.URLEncoder;
+import org.infoglue.deliver.util.BrowserBean;
 
 /**
  * @author Mattias Bogeblad
+ * @author Frank Febbraro (frank@phase2technology.com)
  */
-
 public abstract class WebworkAbstractAction implements Action, ServletRequestAware, ServletResponseAware, CommandDriven
 {
 	private final String ACCESS_DENIED = "accessDenied";
@@ -274,57 +266,47 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
     	}
     	catch(Exception ie)
     	{
-			ie.printStackTrace();
-    	    CmsLogger.logSevere("Exception " + ie, ie);
-
 			try
 			{
 				throw ie.getCause();
 			}
 			catch(ResultException e)
 			{
-				e.printStackTrace();
 				CmsLogger.logSevere("ResultException " + e, e);
 				return e.getResult();
 			}
 			catch(AccessConstraintException e)
 			{
-				e.printStackTrace();
 				CmsLogger.logWarning("AccessConstraintException " + e, e);
 				setErrors(e);
 				return ACCESS_DENIED;
 			}
 			catch(ConstraintException e)
 			{
-				e.printStackTrace();
 				CmsLogger.logWarning("ConstraintException " + e, e);
 				setErrors(e);
 				return INPUT;
 			}
 			catch(Bug e)
 			{
-				e.printStackTrace();
 				CmsLogger.logSevere("Bug " + e);
 				setError(e, e.getCause());
 				return ERROR;
 			}
 			catch(ConfigurationError e)
 			{
-				e.printStackTrace();
 				CmsLogger.logSevere("ConfigurationError " + e);
 				setError(e, e.getCause());
 				return ERROR;
 			}
 			catch(SystemException e)
 			{
-				e.printStackTrace();
 				CmsLogger.logSevere("SystemException " + e, e);
 				setError(e, e.getCause());
 				return ERROR;
 			}
 			catch(Throwable e)
 			{
-				e.printStackTrace();
 				CmsLogger.logSevere("Throwable " + e);
 				final Bug bug = new Bug("Uncaught exception!", e);
 				setError(bug, bug.getCause());
@@ -341,22 +323,19 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
     /**
      * This method returns a logged in principal if existing.
      */
-
     public final InfoGluePrincipal getInfoGluePrincipal()
     {
-    	return (InfoGluePrincipal)this.getHttpSession().getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
+    	return getSession().getInfoGluePrincipal();
     }
 
 	/**
-	 *
+	 * Subclasses implement this
 	 */
-
 	protected abstract String doExecute() throws Exception;
 
 	/**
 	 *
 	 */
-
 	public final BrowserBean getBrowserBean()
 	{
 		BrowserBean browserBean = new BrowserBean();
@@ -365,25 +344,42 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	}
 
 	/**
-	 *
+	 * Get a single parameter from the ActionContext (hides Servlet implementation)
 	 */
+	protected final String getSingleParameter(String parameterName)
+	{
+		return (String)ActionContext.getSingleValueParameters().get(parameterName);
+	}
 
+	/**
+	 * Get a parameter (could possibly be an array) from the ActionContext (hides Servlet implementation)
+	 */
+	protected final String getParameter(String parameterName)
+	{
+		return (String)ActionContext.getParameters().get(parameterName);
+	}
+
+	/**
+	 * Returns the HttpServletRequest
+	 * TODO: Hide the implementation behind WebWorks abstractions in ActionContext
+	 */
 	protected final HttpServletRequest getRequest()
 	{
 		return this.request;
 	}
 
 	/**
-	 *
+	 * Returns the HttpServletResponse
+	 * TODO: Hide the implementation behind WebWorks abstractions in ActionContext
 	 */
-
 	protected final HttpServletResponse getResponse()
 	{
 		return this.response;
 	}
 
 	/**
-	 *
+	 * Returns the HttpSession
+	 * TODO: Hide the implementation behind WebWorks abstractions in ActionContext
 	 */
 	protected final HttpSession getHttpSession()
 	{
@@ -391,21 +387,19 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	}
 
     /**
-     *
+     * Use the ActionContext to initialize the Session and remove the dependence
+	 * on HTTP and the Servlet Spec. Makes it much easier for testing.
      */
-
     public final Session getSession()
     {
-        return new Session(getHttpSession());
+        return new Session(ActionContext.getSession());
     }
 
     /**
-     *
+     * Returns a Logger
      */
-
     protected Logger getLogger()
     {
         return Logger.getLogger(getClass().getName());
     }
-
 }
