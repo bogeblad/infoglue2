@@ -29,9 +29,13 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.*;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.CmsLogger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ViewContentAction extends WebworkAbstractAction
@@ -58,7 +62,10 @@ public class ViewContentAction extends WebworkAbstractAction
     {   
 		this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
         this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);
-        this.availableLanguages = ContentController.getContentController().getRepositoryLanguages(contentId);
+        this.availableLanguages = RepositoryLanguageController.getController().getAvailableLanguageVOListForRepositoryId(this.contentVO.getRepositoryId());
+        
+        if(this.repositoryId == null)
+            this.repositoryId = this.contentVO.getRepositoryId();
     } 
 
     public String doExecute() throws Exception
@@ -232,6 +239,38 @@ public class ViewContentAction extends WebworkAbstractAction
 	public ContentVO getContentVO()
 	{
 		return contentVO;
+	}
+	
+	/**
+	 * This method fetches the list of ContentTypeDefinitions
+	 */
+	
+	public List getContentTypeDefinitions() throws Exception
+	{
+		return ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+	}      
+
+	
+	public List getContentPath()
+	{
+		ContentVO contentVO = this.contentVO;
+		List ret = new ArrayList();
+		// ret.add(0, contentVO);
+		
+		while (contentVO.getParentContentId() != null)
+		{
+			try {
+				contentVO = ContentControllerProxy.getController().getContentVOWithId(contentVO.getParentContentId());
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Bug e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ret.add(0, contentVO);
+		}
+		return ret;
 	}
 
 	public void setContentVO(ContentVO contentVO)

@@ -27,6 +27,8 @@
  * @since 1.3
  * 
  * TODO: Quick due to sudden changes. Refactor as soon as possible
+ * 
+ * @deprecated
  */
 
 package org.infoglue.cms.applications.contenttool.actions;
@@ -38,16 +40,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 
 public class SimpleContentXmlServiceAction extends WebworkAbstractAction {
+	
 	private String serviceRequest = null;
-
 	private Integer contentVersionId = null;
-
 	private Integer languageId = null;
-
 	private Integer contentId = null;
-
 	private Integer digitalAssetId = null;
-
 	private String digitalAssetKey = null;
 
 	public SimpleContentXmlServiceAction() {

@@ -24,7 +24,11 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +39,7 @@ import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
@@ -114,7 +119,12 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 			FileUploadHelper fileUploadHelper = new FileUploadHelper();
 			File file = fileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
 			
-			Reader reader = new FileReader(file);
+			String encoding = "UTF-8";
+			//String encoding = "ISO-8859-1";
+	        FileInputStream fis = new FileInputStream(file);
+            InputStreamReader reader = new InputStreamReader(fis, encoding);
+			//Reader reader = new FileReader(file);
+
 			Unmarshaller unmarshaller = new Unmarshaller(map);
 			InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
 			SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
@@ -411,17 +421,25 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 	    while(allContentsIterator.hasNext())
 	    {
 	        Content content = (Content)allContentsIterator.next();
+	        
+	        CmsLogger.logInfo("content:" + content);
+	        
 	        Iterator contentVersionIterator = content.getContentVersions().iterator();
 	        while(contentVersionIterator.hasNext())
 	        {
 	            ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
 	            String contentVersionValue = contentVersion.getVersionValue();
 	            
+	            CmsLogger.logInfo("contentVersionValue before:" + contentVersionValue);
+                
 	            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
 	            while (contentIdMapIterator.hasNext()) 
 	            {
 	                String oldContentId = (String)contentIdMapIterator.next();
 	                String newContentId = (String)contentIdMap.get(oldContentId);
+	                
+	                CmsLogger.logInfo("Replacing all:" + oldContentId + " with " + newContentId);
+	                
 	                contentVersionValue = contentVersionValue.replaceAll("contentId=\"" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>" + oldContentId + "</id>", "entity='Content'><id>" + newContentId + "</id>");
@@ -432,11 +450,16 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 	            {
 	                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
 	                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
+	                
+	                CmsLogger.logInfo("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
+	                
 	                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
 	            }
 	            
+	            CmsLogger.logInfo("contentVersionValue after:" + contentVersionValue);
+
 	            CmsLogger.logInfo("new contentVersionValue:" + contentVersionValue);
 	            contentVersion.setVersionValue(contentVersionValue);
 	        }

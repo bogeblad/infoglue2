@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -24,9 +24,10 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.exolab.castor.jdo.Database;
-import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RoleProperties;
+import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.content.impl.simple.*;
 import org.infoglue.cms.exception.Bug;
@@ -36,6 +37,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.graphics.*;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 
 import java.util.List;
 import java.util.Iterator;
@@ -47,22 +49,28 @@ import java.io.*;
  * @author Mattias Bogeblad
  */
 
-public class DigitalAssetController extends BaseController
+public class DigitalAssetController extends BaseController 
 {
+	
+    public static DigitalAssetController getController()
+    {
+        return new DigitalAssetController();
+    }
 
+    
    	/**
    	 * returns the digital asset VO
    	 */
-
+   	
    	public static DigitalAssetVO getDigitalAssetVOWithId(Integer digitalAssetId) throws SystemException, Bug
     {
 		return (DigitalAssetVO) getVOWithId(DigitalAssetImpl.class, digitalAssetId);
     }
-
+    
     /**
      * returns a digitalasset
      */
-
+    
     public static DigitalAsset getDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
     {
 		return (DigitalAsset) getObjectWithId(DigitalAssetImpl.class, digitalAssetId, db);
@@ -79,25 +87,25 @@ public class DigitalAssetController extends BaseController
 		Database db = CastorDatabaseService.getDatabase();
 
 		DigitalAsset digitalAsset = null;
-
+		
 		beginTransaction(db);
-
+		
 		try
 		{
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, db);
 			Collection contentVersions = new ArrayList();
 			contentVersions.add(contentVersion);
 			CmsLogger.logInfo("Added contentVersion:" + contentVersion.getId());
-
+   		
 			digitalAsset = new DigitalAssetImpl();
 			digitalAsset.setValueObject(digitalAssetVO);
 			digitalAsset.setAssetBlob(is);
 			digitalAsset.setContentVersions(contentVersions);
 
 			db.create(digitalAsset);
-
+        
 			contentVersion.getDigitalAssets().add(digitalAsset);
-
+		
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -105,16 +113,16 @@ public class DigitalAssetController extends BaseController
 			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
-		}
-
+		}		
+				
         return digitalAsset.getValueObject();
    	}
 
-
-	/**
-	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
-	 * The asset is send in as an InputStream which castor inserts automatically.
-	 */
+   	
+   	/**
+   	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
+   	 * The asset is send in as an InputStream which castor inserts automatically.
+   	 */
 
 	public DigitalAssetVO createByCopy(Integer originalContentVersionId, String oldAssetKey, Integer newContentVersionId, String newAssetKey, Database db) throws ConstraintException, SystemException
 	{
@@ -124,26 +132,26 @@ public class DigitalAssetController extends BaseController
 		CmsLogger.logInfo("newContentVersionId:" + newContentVersionId);
 		CmsLogger.logInfo("newAssetKey:" + newAssetKey);
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
+		
 		DigitalAsset oldDigitalAsset = getDigitalAsset(originalContentVersionId, oldAssetKey, db);
-
+		
 		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersionId, db);
 		Collection contentVersions = new ArrayList();
 		contentVersions.add(contentVersion);
 		CmsLogger.logInfo("Added contentVersion:" + contentVersion.getId());
-
+   		
 		DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
 		digitalAssetVO.setAssetContentType(oldDigitalAsset.getAssetContentType());
 		digitalAssetVO.setAssetFileName(oldDigitalAsset.getAssetFileName());
 		digitalAssetVO.setAssetFilePath(oldDigitalAsset.getAssetFilePath());
 		digitalAssetVO.setAssetFileSize(oldDigitalAsset.getAssetFileSize());
 		digitalAssetVO.setAssetKey(newAssetKey);
-
+		
 		DigitalAsset digitalAsset = new DigitalAssetImpl();
 		digitalAsset.setValueObject(digitalAssetVO);
 		digitalAsset.setAssetBlob(oldDigitalAsset.getAssetBlob());
 		digitalAsset.setContentVersions(contentVersions);
-
+		
 		try
 		{
 			db.create(digitalAsset);
@@ -154,18 +162,18 @@ public class DigitalAssetController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 		//contentVersion.getDigitalAssets().add(digitalAsset);
-
+		
 		return digitalAsset.getValueObject();
 	}
 
 	/**
 	 * This method gets a asset with a special key inside the given transaction.
 	 */
-
+	
 	public DigitalAsset getDigitalAsset(Integer contentVersionId, String assetKey, Database db) throws SystemException
 	{
 		DigitalAsset digitalAsset = null;
-
+		
 		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, db);
 		Collection digitalAssets = contentVersion.getDigitalAssets();
 		Iterator assetIterator = digitalAssets.iterator();
@@ -178,11 +186,11 @@ public class DigitalAssetController extends BaseController
 				break;
 			}
 		}
-
+		
 		return digitalAsset;
 	}
-
-
+	
+    
    	/**
    	 * This method deletes a digital asset in the database.
    	 */
@@ -193,47 +201,83 @@ public class DigitalAssetController extends BaseController
    	}
 
    	/**
+   	 * This method deletes a digital asset in the database.
+   	 */
+
+   	public void delete(Integer digitalAssetId, String entity, Integer entityId) throws ConstraintException, SystemException
+   	{
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {           
+    		DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetId, db);			
+    		
+    		if(entity.equalsIgnoreCase("ContentVersion"))
+                ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(entityId, digitalAsset, db);
+            else if(entity.equalsIgnoreCase("UserProperties"))
+                UserPropertiesController.getController().deleteDigitalAssetRelation(entityId, digitalAsset, db);
+            else if(entity.equalsIgnoreCase("RoleProperties"))
+                RolePropertiesController.getController().deleteDigitalAssetRelation(entityId, digitalAsset, db);
+
+            db.remove(digitalAsset);
+
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+   	}
+   	
+
+   	/**
 	 * This method removes all images in the digitalAsset directory which belongs to a certain digital asset.
 	 */
-
+	
 	public static void deleteCachedDigitalAssets(Integer digitalAssetId) throws SystemException, Exception
-	{
+	{ 
 		try
 		{
 			File assetDirectory = new File(CmsPropertyHandler.getProperty("digitalAssetPath"));
-			File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString()));
+			File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
 			for(int i=0; i<files.length; i++)
 			{
 				File file = files[i];
 				file.delete();
 			}
-
+	
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logSevere("Could not delete the assets for the digitalAsset " + digitalAssetId + ":" + e.getMessage(), e);
 		}
 	}
-
+	
    	/**
    	 * This method updates a digital asset in the database.
    	 */
-
+   	
    	public static DigitalAssetVO update(DigitalAssetVO digitalAssetVO, InputStream is) throws ConstraintException, SystemException
     {
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
+		
 		DigitalAsset digitalAsset = null;
-
+		
 		beginTransaction(db);
 
 		try
 		{
 			digitalAsset = getDigitalAssetWithId(digitalAssetVO.getId(), db);
-
+			
 			digitalAsset.setValueObject(digitalAssetVO);
-			digitalAsset.setAssetBlob(is);
+			if(is != null)
+			    digitalAsset.setAssetBlob(is);
 
 			commitTransaction(db);
 		}
@@ -244,9 +288,9 @@ public class DigitalAssetController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 
-		return digitalAsset.getValueObject();
-    }
-
+		return digitalAsset.getValueObject();		
+    } 
+    
    	/**
 	 * This method deletes all contentVersions for the content sent in and also clears all the digital Assets.
 	 * Should not be available probably as you might destroy for other versions and other contents.
@@ -260,17 +304,17 @@ public class DigitalAssetController extends BaseController
         beginTransaction(db);
 		List digitalAssets = new ArrayList();
         try
-        {
+        {        
             ContentVersion contentVersion = ContentVersionController.getContentVersionWithId(contentVersionId, db);
-
+            
         	Collection digitalAssetList = contentVersion.getDigitalAssets();
 			Iterator assets = digitalAssetList.iterator();
-			while (assets.hasNext())
+			while (assets.hasNext()) 
             {
             	DigitalAsset digitalAsset = (DigitalAsset)assets.next();
 				digitalAssets.add(digitalAsset.getValueObject());
             }
-
+            
             commitTransaction(db);
         }
         catch(Exception e)
@@ -287,7 +331,7 @@ public class DigitalAssetController extends BaseController
 			DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
 			CmsLogger.logInfo("Deleting digitalAsset:" + digitalAssetVO.getDigitalAssetId());
 			delete(digitalAssetVO.getDigitalAssetId());
-		}
+		}    	
 
     }
 	*/
@@ -295,7 +339,7 @@ public class DigitalAssetController extends BaseController
 	/**
 	 * This method should return a list of those digital assets the contentVersion has.
 	 */
-
+	   	
 	public static List getDigitalAssetVOList(Integer contentVersionId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -307,13 +351,13 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getReadOnlyContentVersionWithId(contentVersionId, db);
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getReadOnlyContentVersionWithId(contentVersionId, db); 
 			if(contentVersion != null)
 			{
 				Collection digitalAssets = contentVersion.getDigitalAssets();
 				digitalAssetVOList = toVOList(digitalAssets);
 			}
-
+			            
             commitTransaction(db);
         }
         catch(Exception e)
@@ -323,7 +367,7 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+    	
 		return digitalAssetVOList;
     }
 
@@ -331,7 +375,7 @@ public class DigitalAssetController extends BaseController
 	/**
 	 * This method should return a String containing the URL for this digital asset.
 	 */
-
+	   	
 	public static List getDigitalAssetVOList(Integer contentId, Integer languageId, boolean useLanguageFallback) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -344,7 +388,7 @@ public class DigitalAssetController extends BaseController
         try
         {
             digitalAssetVOList = getDigitalAssetVOList(contentId, languageId, useLanguageFallback, db);
-
+        	
             commitTransaction(db);
         }
         catch(Exception e)
@@ -354,14 +398,14 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+    	
 		return digitalAssetVOList;
     }
 
 	/**
 	 * This method should return a String containing the URL for this digital asset.
 	 */
-
+	   	
 	public static List getDigitalAssetVOList(Integer contentId, Integer languageId, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
     {
 	    List digitalAssetVOList = new ArrayList();
@@ -371,14 +415,14 @@ public class DigitalAssetController extends BaseController
     	CmsLogger.logInfo("repositoryId:" + content.getRepository().getId());
     	CmsLogger.logInfo("languageId:" + languageId);
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
-    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);
-
+    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
+		
     	CmsLogger.logInfo("contentVersion:" + contentVersion);
 		if(contentVersion != null)
 		{
 		    Collection digitalAssets = contentVersion.getDigitalAssets();
 			digitalAssetVOList = toModifiableVOList(digitalAssets);
-
+			
 			CmsLogger.logInfo("digitalAssetVOList:" + digitalAssetVOList.size());
 			if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 			{
@@ -387,7 +431,7 @@ public class DigitalAssetController extends BaseController
 			    while(digitalAssetVOListIterator.hasNext())
 			    {
 			        DigitalAssetVO currentDigitalAssetVO = (DigitalAssetVO)digitalAssetVOListIterator.next();
-
+			        
 			        Iterator masterDigitalAssetVOListIterator = masterDigitalAssetVOList.iterator();
 				    while(masterDigitalAssetVOListIterator.hasNext())
 				    {
@@ -402,20 +446,20 @@ public class DigitalAssetController extends BaseController
 		else if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 		{
 		    contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
-
+	    	
 	    	CmsLogger.logInfo("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{
 			    Collection digitalAssets = contentVersion.getDigitalAssets();
-				digitalAssetVOList = toModifiableVOList(digitalAssets);
+				digitalAssetVOList = toModifiableVOList(digitalAssets);				
 			}
 		}
-
+		
 		return digitalAssetVOList;
     }
-
-
-
+	
+	
+	
 	/**
 	 * This method should return a String containing the URL for this digital asset.
 	 */
@@ -432,7 +476,7 @@ public class DigitalAssetController extends BaseController
         try
         {
 			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
-
+						
 			if(digitalAsset != null)
 			{
 				CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
@@ -441,7 +485,7 @@ public class DigitalAssetController extends BaseController
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 				dumpDigitalAsset(digitalAsset, fileName, filePath);
 				assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-			}
+			}			       	
 
             commitTransaction(db);
         }
@@ -452,7 +496,7 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+    	
 		return assetUrl;
     }
 
@@ -462,7 +506,7 @@ public class DigitalAssetController extends BaseController
 	 * In the case of an image the downscaled image is returned - otherwise an icon that represents the
 	 * content-type of the file. It always fetches the latest one if several assets exists.
 	 */
-
+	   	
 	public static String getDigitalAssetThumbnailUrl(Integer digitalAssetId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -475,12 +519,12 @@ public class DigitalAssetController extends BaseController
         try
         {
 			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
-
+			
 			if(digitalAsset != null)
 			{
 				CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String contentType = digitalAsset.getAssetContentType();
-
+				
 				if(contentType.equalsIgnoreCase("image/gif") || contentType.equalsIgnoreCase("image/jpg") || contentType.equalsIgnoreCase("image/pjpeg") || contentType.equalsIgnoreCase("image/jpeg"))
 				{
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
@@ -504,15 +548,15 @@ public class DigitalAssetController extends BaseController
 				{
 					if(contentType.equalsIgnoreCase("application/pdf"))
 					{
-						assetUrl = "images/pdf.gif";
+						assetUrl = "images/pdf.gif"; 
 					}
 					else
 					{
-						assetUrl = "images/digitalAsset.gif";
-					}
-				}
-			}
-
+						assetUrl = "images/digitalAsset.gif"; 
+					}		
+				}	
+			}	
+			            
             commitTransaction(db);
         }
         catch(Exception e)
@@ -521,15 +565,15 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+    	
 		return assetUrl;
     }
 
-
+   	
 	/**
 	 * This method should return a String containing the URL for this digital asset.
 	 */
-
+	   	
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -541,23 +585,23 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db);
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db); 
 			if(contentVersion != null)
 			{
 				DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
-
+				
 				if(digitalAsset != null)
 				{
 					CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					//String filePath = digitalAsset.getAssetFilePath();
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
-
+					
 					dumpDigitalAsset(digitalAsset, fileName, filePath);
 					assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-				}
+				}			       	
 			}
-
+			            
             commitTransaction(db);
         }
         catch(Exception e)
@@ -567,14 +611,14 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+    	
 		return assetUrl;
     }
 
 	/**
 	 * This method should return a String containing the URL for this digital asset.
 	 */
-
+	   	
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -587,7 +631,7 @@ public class DigitalAssetController extends BaseController
         try
         {
         	assetUrl = getDigitalAssetUrl(contentId, languageId, assetKey, useLanguageFallback, db);
-
+        	
             commitTransaction(db);
         }
         catch(Exception e)
@@ -597,14 +641,14 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+    	
 		return assetUrl;
     }
 
 	/**
 	 * This method should return a String containing the URL for this digital asset.
 	 */
-
+	   	
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
     {
     	String assetUrl = null;
@@ -615,7 +659,7 @@ public class DigitalAssetController extends BaseController
     	CmsLogger.logInfo("languageId:" + languageId);
     	CmsLogger.logInfo("assetKey:" + assetKey);
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
-    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);
+    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
 		CmsLogger.logInfo("contentVersion:" + contentVersion);
 		if(contentVersion != null)
 		{
@@ -627,7 +671,7 @@ public class DigitalAssetController extends BaseController
 				CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
-
+				
 				dumpDigitalAsset(digitalAsset, fileName, filePath);
 				assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
 			}
@@ -641,7 +685,7 @@ public class DigitalAssetController extends BaseController
 		else if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 		{
 		    contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
-
+	    	
 	    	CmsLogger.logInfo("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{
@@ -653,20 +697,20 @@ public class DigitalAssetController extends BaseController
 					CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
-
+					
 					dumpDigitalAsset(digitalAsset, fileName, filePath);
 					assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
 				}
 			}
 		}
-
+		
 		return assetUrl;
     }
 
 	/**
 	 * This method should return a String containing the URL for this digital asset.
 	 */
-
+	   	
 	public static DigitalAssetVO getDigitalAssetVO(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -679,7 +723,7 @@ public class DigitalAssetController extends BaseController
         try
         {
         	digitalAssetVO = getDigitalAssetVO(contentId, languageId, assetKey, useLanguageFallback, db);
-
+        	
             commitTransaction(db);
         }
         catch(Exception e)
@@ -689,14 +733,14 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+    	
 		return digitalAssetVO;
     }
 
 	/**
 	 * This method should return a DigitalAssetVO
 	 */
-
+	   	
 	public static DigitalAssetVO getDigitalAssetVO(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
     {
     	DigitalAssetVO digitalAssetVO = null;
@@ -717,18 +761,18 @@ public class DigitalAssetController extends BaseController
 					return getDigitalAssetVO(contentId, masterLanguageVO.getId(), assetKey, useLanguageFallback, db);
 			}
 		}
-
+		
 		return digitalAssetVO;
     }
 
-
-
+	
+	
 	/**
 	 * This method should return a String containing the URL for this digital assets icon/thumbnail.
 	 * In the case of an image the downscaled image is returned - otherwise an icon that represents the
 	 * content-type of the file. It always fetches the latest one if several assets exists.
 	 */
-
+	   	
 	public static String getDigitalAssetThumbnailUrl(Integer contentId, Integer languageId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -740,16 +784,16 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db);
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db); 
 			if(contentVersion != null)
 			{
 				DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
-
+				
 				if(digitalAsset != null)
 				{
 					CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
 					String contentType = digitalAsset.getAssetContentType();
-
+					
 					if(contentType.equalsIgnoreCase("image/gif") || contentType.equalsIgnoreCase("image/jpg"))
 					{
 						String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
@@ -767,24 +811,24 @@ public class DigitalAssetController extends BaseController
 					}
 					else
 					{
-
+					
 						if(contentType.equalsIgnoreCase("application/pdf"))
 						{
-							assetUrl = "images/pdf.gif";
+							assetUrl = "images/pdf.gif"; 
 						}
 						else
 						{
-							assetUrl = "images/digitalAsset.gif";
-						}
-
-					}
-				}
+							assetUrl = "images/digitalAsset.gif"; 
+						}		
+					
+					}	
+				}	
 				else
 				{
 					assetUrl = "images/notDefined.gif";
-				}
+				}		       	
 			}
-
+			            
             commitTransaction(db);
         }
         catch(Exception e)
@@ -793,23 +837,23 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+    	
 		return assetUrl;
     }
 
 	/**
 	 * Returns the latest digital asset for a contentversion.
 	 */
-
+	
 	private static DigitalAsset getLatestDigitalAsset(ContentVersion contentVersion)
 	{
 		Collection digitalAssets = contentVersion.getDigitalAssets();
 		Iterator iterator = digitalAssets.iterator();
-
+		
 		DigitalAsset digitalAsset = null;
 		while(iterator.hasNext())
 		{
-			DigitalAsset currentDigitalAsset = (DigitalAsset)iterator.next();
+			DigitalAsset currentDigitalAsset = (DigitalAsset)iterator.next();	
 			if(digitalAsset == null || currentDigitalAsset.getDigitalAssetId().intValue() > digitalAsset.getDigitalAssetId().intValue())
 				digitalAsset = currentDigitalAsset;
 		}
@@ -819,16 +863,16 @@ public class DigitalAssetController extends BaseController
 	/**
 	 * Returns the latest digital asset for a contentversion.
 	 */
-
+	
 	private static DigitalAsset getLatestDigitalAsset(ContentVersion contentVersion, String assetKey)
 	{
 		Collection digitalAssets = contentVersion.getDigitalAssets();
 		Iterator iterator = digitalAssets.iterator();
-
+		
 		DigitalAsset digitalAsset = null;
 		while(iterator.hasNext())
 		{
-			DigitalAsset currentDigitalAsset = (DigitalAsset)iterator.next();
+			DigitalAsset currentDigitalAsset = (DigitalAsset)iterator.next();	
 			if((digitalAsset == null || currentDigitalAsset.getDigitalAssetId().intValue() > digitalAsset.getDigitalAssetId().intValue()) && currentDigitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 				digitalAsset = currentDigitalAsset;
 		}
@@ -838,33 +882,33 @@ public class DigitalAssetController extends BaseController
 
 	/**
 	 * This method checks if the given file exists on disk. If it does it's ignored because
-	 * that means that the file is allready cached on the server. If not we take out the stream from the
+	 * that means that the file is allready cached on the server. If not we take out the stream from the 
 	 * digitalAsset-object and dumps it.
 	 */
-
+   	
 	public static void dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
 		long timer = System.currentTimeMillis();
-
+		
 		File outputFile = new File(filePath + File.separator + fileName);
 		if(outputFile.exists())
 		{
 			CmsLogger.logInfo("The file allready exists so we don't need to dump it again..");
 			return;
 		}
-
+		
 		FileOutputStream fis = new FileOutputStream(outputFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fis);
-
+		
 		BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
-
+		
 		int character;
 		while ((character = bis.read()) != -1)
 		{
 			bos.write(character);
 		}
 		bos.flush();
-
+		
 		bis.close();
 		fis.close();
 		bos.close();
@@ -881,18 +925,19 @@ public class DigitalAssetController extends BaseController
 		return new DigitalAssetVO();
 	}
 
+
 }
 
-class FilenameFilterImpl implements FilenameFilter
+class FilenameFilterImpl implements FilenameFilter 
 {
 	private String filter = ".";
-
+	
 	public FilenameFilterImpl(String aFilter)
 	{
 		filter = aFilter;
 	}
-
-	public boolean accept(File dir, String name)
+	
+	public boolean accept(File dir, String name) 
 	{
     	return name.startsWith(filter);
 	}

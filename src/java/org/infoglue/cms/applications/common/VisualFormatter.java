@@ -122,7 +122,7 @@ public class VisualFormatter
 	 * This method converts all non-standard characters to html-equivalents.
 	 */
 	
-	public final String escapeHTML(String s) throws Exception
+	public final String escapeHTML(String s)
 	{
 		if(s == null)
 			return null;

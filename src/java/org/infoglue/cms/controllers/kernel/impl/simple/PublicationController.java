@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -50,31 +50,32 @@ import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.mail.*;
 
+
 /**
  * PublicationController.java
- *
- * @author Stefan Sik, Mattias Bogeblad
+ * 
+ * @author Stefan Sik, Mattias Bogeblad 
  */
 
 public class PublicationController extends BaseController
 {
 	public static final int OVERIDE_WORKING = 1;
-	public static final int LEAVE_WORKING = 2;
-
+	public static final int LEAVE_WORKING   = 2;
+	
 	/**
 	 * This method just returns the publication with the given id within the given transaction.
 	 */
-
-	public static Publication getPublicationWithId(Integer publicationId, Database db) throws SystemException
+	
+	public static Publication getPublicationWithId(Integer publicationId, Database db) throws SystemException 
 	{
-		return (Publication)getObjectWithId(PublicationImpl.class, publicationId, db);
+		return (Publication) getObjectWithId(PublicationImpl.class, publicationId, db);
 	}
-
+	
 	/**
 	 * This method returns a list of those events that are publication events and
 	 * concerns this repository
 	 */
-
+	
 	public static List getPublicationEvents(Integer repositoryId) throws SystemException, Exception
 	{
 		return EventController.getPublicationEventVOListForRepository(repositoryId);
@@ -83,123 +84,125 @@ public class PublicationController extends BaseController
 	/**
 	 * This method returns a list of earlier editions for this site.
 	 */
-
+	
 	public static List getEditions(Integer repositoryId) throws SystemException
 	{
-		Database db = CastorDatabaseService.getDatabase();
-		beginTransaction(db);
+    	Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
 		List res = new ArrayList();
-		try
-		{
-			OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl c WHERE c.repositoryId = $1 order by publicationDateTime desc");
+        try
+        {
+            OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl c WHERE c.repositoryId = $1 order by publicationDateTime desc");
 			oql.bind(repositoryId);
-
-			QueryResults results = oql.execute(Database.ReadOnly);
-
-			while (results.hasMore())
-			{
-				Publication publication = (Publication)results.next();
-				res.add(publication.getValueObject());
-			}
-
-			commitTransaction(db);
-		}
-		catch (Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-
-		return res;
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while (results.hasMore()) 
+            {
+            	Publication publication = (Publication)results.next();
+            	res.add(publication.getValueObject());
+            }
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return res;            			
 	}
+
 
 	/**
 	 * This method denies a requested publishing. What that means is that the entity specified in the
-	 * event does not get published and that the request-event is deleted and a new one created to
+	 * event does not get published and that the request-event is deleted and a new one created to 
 	 * deliver the message back to the requester. If it is a deny of publishing we also deletes the
-	 * publish-version as it no longer has any purpose.
+	 * publish-version as it no longer has any purpose. 
 	 */
 
 	public static void denyPublicationRequest(Integer eventId, String publisherUserName, String referenceUrl) throws SystemException
 	{
-		Database db = CastorDatabaseService.getDatabase();
+    	Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
 
-		try
-		{
-			Event event = EventController.getEventWithId(eventId, db);
-			if (event.getTypeId().intValue() == EventVO.PUBLISH.intValue())
-			{
-				event.setTypeId(EventVO.PUBLISH_DENIED);
-				if (event.getEntityClass().equals(ContentVersion.class.getName()))
-				{
-					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
-					if (contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue())
-					{
-						//If its a published version we just deletes the event - we don't want to delete the version.
-						EventController.delete(event, db);
-					}
-					else
-					{
-						Content content = contentVersion.getOwningContent();
-						Language language = contentVersion.getLanguage();
-						//event.setEntityId(ContentVersionController.getPreviousContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
-						event.setEntityId(ContentVersionController.getContentVersionController().getPreviousActiveContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
-						ContentVersionController.getContentVersionController().delete(contentVersion, db);
-					}
-				}
-				else if (event.getEntityClass().equals(SiteNodeVersion.class.getName()))
-				{
-					SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db);
-					if (siteNodeVersion.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())
-					{
-						//If its a published version we just deletes the event - we don't want to delete the version.
-						EventController.delete(event, db);
-					}
-					else
-					{
-						SiteNode siteNode = siteNodeVersion.getOwningSiteNode();
-						//event.setEntityId(SiteNodeVersionController.getPreviousSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
-						event.setEntityId(SiteNodeVersionController.getPreviousActiveSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
-						SiteNodeVersionController.getController().delete(siteNodeVersion, db);
-						//db.remove(siteNodeVersion);
-					}
-				}
-			}
-			else if (event.getTypeId().intValue() == EventVO.UNPUBLISH_LATEST.intValue())
-			{
-				event.setTypeId(EventVO.UNPUBLISH_DENIED);
-				if (event.getEntityClass().equals(ContentVersion.class.getName()))
-				{
-					event.setEntityClass(Content.class.getName());
-					event.setEntityId(ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db).getOwningContent().getId());
-				}
-				else if (event.getEntityClass().equals(SiteNodeVersion.class.getName()))
-				{
-					event.setEntityClass(SiteNode.class.getName());
-					event.setEntityId(SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db).getOwningSiteNode().getId());
-				}
-			}
-
-			InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
-			mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), referenceUrl);
-
+        try
+        {
+        	Event event = EventController.getEventWithId(eventId, db);
+        	if(event.getTypeId().intValue() == EventVO.PUBLISH.intValue())
+        	{
+        		event.setTypeId(EventVO.PUBLISH_DENIED);
+        		if(event.getEntityClass().equals(ContentVersion.class.getName()))
+	        	{
+	        		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
+        			if(contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue())
+        			{
+        				//If its a published version we just deletes the event - we don't want to delete the version.
+	        			EventController.delete(event, db);
+	        		}
+        			else
+        			{
+	        			Content content = contentVersion.getOwningContent();
+	        			Language language = contentVersion.getLanguage();
+	        			//event.setEntityId(ContentVersionController.getPreviousContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
+	        			event.setEntityId(ContentVersionController.getContentVersionController().getPreviousActiveContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
+	        			ContentVersionController.getContentVersionController().delete(contentVersion, db);
+        			}
+	        	}
+	        	else if(event.getEntityClass().equals(SiteNodeVersion.class.getName()))
+	        	{
+	        		SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db);
+	        		if(siteNodeVersion.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())
+        			{
+        				//If its a published version we just deletes the event - we don't want to delete the version.
+	        			EventController.delete(event, db);
+	        		}
+        			else
+        			{
+		        		SiteNode siteNode = siteNodeVersion.getOwningSiteNode();
+	        			//event.setEntityId(SiteNodeVersionController.getPreviousSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
+	        			event.setEntityId(SiteNodeVersionController.getPreviousActiveSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
+	        			SiteNodeVersionController.getController().delete(siteNodeVersion, db);
+	        			//db.remove(siteNodeVersion);
+        			}
+	        	}
+        	}
+        	else if(event.getTypeId().intValue() == EventVO.UNPUBLISH_LATEST.intValue()) 
+        	{
+        		event.setTypeId(EventVO.UNPUBLISH_DENIED);        	
+	        	if(event.getEntityClass().equals(ContentVersion.class.getName()))
+	        	{
+	        		event.setEntityClass(Content.class.getName());
+        			event.setEntityId(ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db).getOwningContent().getId());
+	        	}
+	        	else if(event.getEntityClass().equals(SiteNodeVersion.class.getName()))
+	        	{
+	        		event.setEntityClass(SiteNode.class.getName());
+        			event.setEntityId(SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db).getOwningSiteNode().getId());	        		
+	        	}
+        	}
+        	        	
+        	InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
+        	mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), referenceUrl);
+			
 			commitTransaction(db);
-		}
-		catch (Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
+        }
+        catch(Exception e)
+        {
+        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
 	}
+
 
 	/**
 	 * This method denies a list of requested publishing. What that means is that the entities specified in the
-	 * event does not get published and that the request-event is deleted and a new one created to
+	 * event does not get published and that the request-event is deleted and a new one created to 
 	 * deliver the message back to the requester. If it is a deny of publishing we also deletes the
-	 * publish-version as it no longer has any purpose.
+	 * publish-version as it no longer has any purpose. 
 	 */
 
 	public static void denyPublicationRequest(List eventVOList, String publisherUserName, String referenceUrl) throws SystemException
@@ -210,18 +213,18 @@ public class PublicationController extends BaseController
 		try
 		{
 			Iterator eventIterator = eventVOList.iterator();
-			while (eventIterator.hasNext())
+			while(eventIterator.hasNext())
 			{
 				EventVO eventVO = (EventVO)eventIterator.next();
-
+				
 				Event event = EventController.getEventWithId(eventVO.getId(), db);
-				if (event.getTypeId().intValue() == EventVO.PUBLISH.intValue())
+				if(event.getTypeId().intValue() == EventVO.PUBLISH.intValue())
 				{
 					event.setTypeId(EventVO.PUBLISH_DENIED);
-					if (event.getEntityClass().equals(ContentVersion.class.getName()))
+					if(event.getEntityClass().equals(ContentVersion.class.getName()))
 					{
 						ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
-						if (contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue())
+						if(contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue())
 						{
 							//If its a published version we just deletes the event - we don't want to delete the version.
 							EventController.delete(event, db);
@@ -235,10 +238,10 @@ public class PublicationController extends BaseController
 							ContentVersionController.getContentVersionController().delete(contentVersion, db);
 						}
 					}
-					else if (event.getEntityClass().equals(SiteNodeVersion.class.getName()))
+					else if(event.getEntityClass().equals(SiteNodeVersion.class.getName()))
 					{
 						SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db);
-						if (siteNodeVersion.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())
+						if(siteNodeVersion.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())
 						{
 							//If its a published version we just deletes the event - we don't want to delete the version.
 							EventController.delete(event, db);
@@ -253,28 +256,28 @@ public class PublicationController extends BaseController
 						}
 					}
 				}
-				else if (event.getTypeId().intValue() == EventVO.UNPUBLISH_LATEST.intValue())
+				else if(event.getTypeId().intValue() == EventVO.UNPUBLISH_LATEST.intValue()) 
 				{
-					event.setTypeId(EventVO.UNPUBLISH_DENIED);
-					if (event.getEntityClass().equals(ContentVersion.class.getName()))
+					event.setTypeId(EventVO.UNPUBLISH_DENIED);        	
+					if(event.getEntityClass().equals(ContentVersion.class.getName()))
 					{
 						event.setEntityClass(Content.class.getName());
 						event.setEntityId(ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db).getOwningContent().getId());
 					}
-					else if (event.getEntityClass().equals(SiteNodeVersion.class.getName()))
+					else if(event.getEntityClass().equals(SiteNodeVersion.class.getName()))
 					{
 						event.setEntityClass(SiteNode.class.getName());
-						event.setEntityId(SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db).getOwningSiteNode().getId());
+						event.setEntityId(SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db).getOwningSiteNode().getId());	        		
 					}
 				}
-
+	        	        	
 				InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
 				mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), referenceUrl);
 			}
-
+			
 			commitTransaction(db);
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
 			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
@@ -282,10 +285,12 @@ public class PublicationController extends BaseController
 		}
 	}
 
+
+
 	/**
 	 * This method mails the rejection to the recipient.
 	 */
-
+	
 	private static void mailNotification(Event event, String editorName, String recipient, String referenceUrl)
 	{
 		StringBuffer sb = new StringBuffer();
@@ -298,66 +303,67 @@ public class PublicationController extends BaseController
 		sb.append("-----------------------------------------------------------------------\n");
 		sb.append("This email was automatically generated and the sender is the CMS-system. \n");
 		sb.append("Do not reply to this email. \n");
-
+		
 		try
 		{
 			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
-			if (systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
+			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
 				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
-
+	
 			MailServiceFactory.getService().send(systemEmailSender, recipient, "CMS - Publishing was denied!!", sb.toString());
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
 			CmsLogger.logSevere("The notification was not sent. Reason:" + e.getMessage(), e);
 		}
 	}
-
+	
+	
 	/**
 	 * This method creates a new publication with the concerned events carried out.
 	 */
-
+	
 	public static PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal) throws SystemException
-	{
-		Database db = CastorDatabaseService.getDatabase();
+    {
+    	Database db = CastorDatabaseService.getDatabase();
 
-		try
+		try 
 		{
-			beginTransaction(db);
-
-			CmsLogger.logInfo("*********************************");
-			CmsLogger.logInfo("Creating edition ");
-			CmsLogger.logInfo("*********************************");
-
-			Publication publication = new PublicationImpl();
-			publicationVO.setPublicationDateTime(Calendar.getInstance().getTime());
-			publication.setValueObject(publicationVO);
+	        beginTransaction(db);
+	
+	    	CmsLogger.logInfo("*********************************");
+	    	CmsLogger.logInfo("Creating edition ");
+	    	CmsLogger.logInfo("*********************************");
+	    	
+	        Publication publication = new PublicationImpl();
+	        publicationVO.setPublicationDateTime(Calendar.getInstance().getTime());
+	        publication.setValueObject(publicationVO);	        
 			publication.setPublisher(infoGluePrincipal.getName());
-
+	        
 			Iterator eventIterator = events.iterator();
-			while (eventIterator.hasNext())
+			while(eventIterator.hasNext())
 			{
 				EventVO event = (EventVO)eventIterator.next();
 				createPublicationInformation(publication, EventController.getEventWithId(event.getId(), db), infoGluePrincipal, db);
 			}
-
+			
 			db.create(publication);
-
-			commitTransaction(db);
-			CmsLogger.logInfo("Done with the transaction for the publication...");
+			
+	        commitTransaction(db);			
+	    	CmsLogger.logInfo("Done with the transaction for the publication...");
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
 			CmsLogger.logSevere("An error occurred when we tried to commit the publication: " + e.getMessage(), e);
-			rollbackTransaction(db);
+	    	rollbackTransaction(db);
 		}
-
-		// Replicate database!!!
-		try
+      	
+        // Replicate database!!!
+        try
 		{
-			CmsLogger.logInfo("Starting replication...");
+	    	CmsLogger.logInfo("Starting replication...");
 			ReplicationMySqlController.updateSlaveServer();
-			CmsLogger.logInfo("Finished replication...");
+	    	CmsLogger.logInfo("Finished replication...");
 		}
 		catch (Exception e)
 		{
@@ -377,47 +383,49 @@ public class PublicationController extends BaseController
 		{
 			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
 		}
+		      	
+        return publicationVO;
+    }
 
-		return publicationVO;
-	}
+
 
 	/**
 	 * Creates a connection between contentversion or siteNodeVersion and publication, ie adds a contentversion
-	 * to the publication.
+	 * to the publication. 
 	 */
-
+	
 	private static void createPublicationInformation(Publication publication, Event event, InfoGluePrincipal infoGluePrincipal, Database db) throws Exception
 	{
 		String entityClass = event.getEntityClass();
-		Integer entityId = event.getEntityId();
-		Integer typeId = event.getTypeId();
+		Integer entityId   = event.getEntityId();
+		Integer typeId     = event.getTypeId();
 		CmsLogger.logInfo("entityClass:" + entityClass);
 		CmsLogger.logInfo("entityId:" + entityId);
 		CmsLogger.logInfo("typeId:" + typeId);
-
+	
 		// Publish contentversions
-		if (entityClass.equals(ContentVersion.class.getName()))
+        if(entityClass.equals(ContentVersion.class.getName()))
 		{
 			ContentVersion contentVersion = null;
 			ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(entityId, db);
-			if (oldContentVersion != null && oldContentVersion.getOwningContent() != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
+			if(oldContentVersion != null && oldContentVersion.getOwningContent() != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
 			{
 				contentVersion = ContentVersionController.getContentVersionController().getLatestPublishedContentVersion(oldContentVersion.getOwningContent().getContentId(), oldContentVersion.getLanguage().getLanguageId(), db);
-				if (contentVersion != null)
+				if(contentVersion != null)
 				{
 					//We just set the published version to not active.
 					contentVersion.setIsActive(new Boolean(false));
 				}
 			}
-			else if (oldContentVersion != null && oldContentVersion.getOwningContent() != null)
+			else if(oldContentVersion != null && oldContentVersion.getOwningContent() != null)
 			{
 				Integer contentId = oldContentVersion.getOwningContent().getContentId();
-				ContentVersion newContentVersion = ContentStateController.changeState(entityId, ContentVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, contentId, db);
-				contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersion.getContentVersionId(), db);
+	    		ContentVersion newContentVersion = ContentStateController.changeState(entityId, ContentVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, contentId, db);    		
+	    		contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersion.getContentVersionId(), db);
 			}
-
-			if (contentVersion != null)
-			{
+			
+			if(contentVersion != null)
+			{    	
 				//The contentVersion in here is the version we have done something with...
 				PublicationDetail publicationDetail = new PublicationDetailImpl();
 				publicationDetail.setCreationDateTime(new Date());
@@ -428,39 +436,39 @@ public class PublicationController extends BaseController
 				publicationDetail.setTypeId(event.getTypeId());
 				publicationDetail.setPublication((PublicationImpl)publication);
 				publicationDetail.setCreator(event.getCreator());
-
+				
 				Collection publicationDetails = publication.getPublicationDetails();
-				if (publicationDetails == null)
+				if(publicationDetails == null)
 					publication.setPublicationDetails(new ArrayList());
-
+					
 				publication.getPublicationDetails().add(publicationDetail);
-				db.remove(event);
+				db.remove(event);	
 			}
 		}
-
+		
 		// Publish sitenodeversions
-		if (entityClass.equals(SiteNodeVersion.class.getName()))
+        if(entityClass.equals(SiteNodeVersion.class.getName()))
 		{
 			SiteNodeVersion siteNodeVersion = null;
 			SiteNodeVersion oldSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(entityId, db);
-			if (oldSiteNodeVersion != null && oldSiteNodeVersion.getOwningSiteNode() != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
+			if(oldSiteNodeVersion != null && oldSiteNodeVersion.getOwningSiteNode() != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
 			{
 				siteNodeVersion = SiteNodeVersionController.getLatestPublishedSiteNodeVersion(oldSiteNodeVersion.getOwningSiteNode().getSiteNodeId(), db);
-				if (siteNodeVersion != null)
+				if(siteNodeVersion != null)
 				{
 					//We just set the published version to not active.
 					siteNodeVersion.setIsActive(new Boolean(false));
 				}
 			}
-			else if (oldSiteNodeVersion != null && oldSiteNodeVersion.getOwningSiteNode() != null)
+			else if(oldSiteNodeVersion != null && oldSiteNodeVersion.getOwningSiteNode() != null)
 			{
 				Integer siteNodeId = oldSiteNodeVersion.getOwningSiteNode().getSiteNodeId();
-				SiteNodeVersion newSiteNodeVersion = SiteNodeStateController.changeState(entityId, SiteNodeVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, siteNodeId, db);
-				siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(newSiteNodeVersion.getSiteNodeVersionId(), db);
+	    		SiteNodeVersion newSiteNodeVersion = SiteNodeStateController.changeState(entityId, SiteNodeVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, siteNodeId, db);    		
+	    		siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(newSiteNodeVersion.getSiteNodeVersionId(), db);
 			}
-
-			if (siteNodeVersion != null)
-			{
+			
+			if(siteNodeVersion != null)
+			{    	
 				//The siteNodeVersion in here is the version we have done something with...
 				PublicationDetail publicationDetail = new PublicationDetailImpl();
 				publicationDetail.setCreationDateTime(new Date());
@@ -471,13 +479,13 @@ public class PublicationController extends BaseController
 				publicationDetail.setTypeId(event.getTypeId());
 				publicationDetail.setPublication((PublicationImpl)publication);
 				publicationDetail.setCreator(event.getCreator());
-
+				
 				Collection publicationDetails = publication.getPublicationDetails();
-				if (publicationDetails == null)
+				if(publicationDetails == null)
 					publication.setPublicationDetails(new ArrayList());
-
+					
 				publication.getPublicationDetails().add(publicationDetail);
-				db.remove(event);
+				db.remove(event);	
 			}
 		}
 	}
@@ -485,72 +493,75 @@ public class PublicationController extends BaseController
 	/**
 	 * This method returns a list of all details a publication has.
 	 */
-
+	
 	public static List getPublicationDetailVOList(Integer publicationId) throws SystemException
 	{
 		List publicationDetails = new ArrayList();
+		
 		Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
 
-		try
-		{
-			Publication publication = getPublicationWithId(publicationId, db);
-			Collection details = publication.getPublicationDetails();
-			publicationDetails = toVOList(details);
-
+        try
+        {
+        	Publication publication = getPublicationWithId(publicationId, db);
+        	Collection details = publication.getPublicationDetails();
+            publicationDetails = toVOList(details);
+        	
 			commitTransaction(db);
-		}
-		catch (Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-
-		return publicationDetails;
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return publicationDetails;
 	}
-
+	
+	
 	/**
 	 * This method unpublishes all entities in an edition if they are not unpublish-events.
 	 */
-
+	
 	public static PublicationVO unPublish(Integer publicationId, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
 		CmsLogger.logInfo("Starting unpublishing operation...");
-
+		
 		Database db = CastorDatabaseService.getDatabase();
 		Publication publication = null;
-		beginTransaction(db);
+		
+        beginTransaction(db);
 
-		try
-		{
+        try
+        {
 			publication = getPublicationWithId(publicationId, db);
-			Collection publicationDetails = publication.getPublicationDetails();
+			Collection publicationDetails = publication.getPublicationDetails();			
 
 			Iterator i = publicationDetails.iterator();
 			while (i.hasNext())
 			{
 				PublicationDetail publicationDetail = (PublicationDetail)i.next();
 				//We unpublish them as long as they are not unpublish-requests.
-				if (publicationDetail.getTypeId().intValue() != PublicationDetailVO.UNPUBLISH_LATEST.intValue())
+				if(publicationDetail.getTypeId().intValue() != PublicationDetailVO.UNPUBLISH_LATEST.intValue())
 				{
 					unpublishEntity(publicationDetail, infoGluePrincipal, db);
 				}
 			}
-
-			db.remove(publication);
-
+			
+            db.remove(publication);
+			
 			commitTransaction(db);
 			CmsLogger.logInfo("Done unpublishing operation...");
-		}
-		catch (Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-
-		try
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        try
 		{
 			CmsLogger.logInfo("Starting replication operation...");
 			ReplicationMySqlController.updateSlaveServer();
@@ -559,45 +570,46 @@ public class PublicationController extends BaseController
 		catch (Exception e)
 		{
 			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
-		}
+		}        
 
 		//Update live site!!!
 		try
 		{
 			CmsLogger.logInfo("Notifying the entire system about an unpublishing...");
 			NotificationMessage notificationMessage = new NotificationMessage("PublicationController.unPublish():", PublicationImpl.class.getName(), infoGluePrincipal.getName(), NotificationMessage.UNPUBLISHING, publication.getId(), publication.getName());
-			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-			CmsLogger.logInfo("Finished Notifying...");
+	      	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+	      	CmsLogger.logInfo("Finished Notifying...");
 		}
 		catch (Exception e)
 		{
 			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
 		}
-
-		return publication.getValueObject();
+			
+        return publication.getValueObject();            	
 	}
+
 
 	/**
 	 * Unpublished a entity by just setting it to isActive = false.
 	 */
-
+	
 	private static void unpublishEntity(PublicationDetail publicationDetail, InfoGluePrincipal infoGluePrincipal, Database db) throws ConstraintException, SystemException
 	{
 		Integer repositoryId = null;
-
-		if (publicationDetail.getEntityClass().equals(ContentVersion.class.getName()))
+		
+		if(publicationDetail.getEntityClass().equals(ContentVersion.class.getName()))
 		{
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(publicationDetail.getEntityId(), db);
 			contentVersion.setIsActive(new Boolean(false));
 			repositoryId = contentVersion.getOwningContent().getRepository().getId();
 		}
-		else if (publicationDetail.getEntityClass().equals(SiteNodeVersion.class.getName()))
+		else if(publicationDetail.getEntityClass().equals(SiteNodeVersion.class.getName()))
 		{
-			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(publicationDetail.getEntityId(), db);
+		 	SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(publicationDetail.getEntityId(), db);
 			siteNodeVersion.setIsActive(new Boolean(false));
 			repositoryId = siteNodeVersion.getOwningSiteNode().getRepository().getId();
 		}
-
+		
 		EventVO eventVO = new EventVO();
 		eventVO.setDescription(publicationDetail.getDescription());
 		eventVO.setEntityClass(publicationDetail.getEntityClass());
@@ -605,57 +617,59 @@ public class PublicationController extends BaseController
 		eventVO.setName(publicationDetail.getName());
 		eventVO.setTypeId(EventVO.PUBLISH);
 		EventController.create(eventVO, repositoryId, infoGluePrincipal, db);
-
+								
 	}
+
 
 	/**
 	 * This method returns the owning content to a contentVersion.
 	 */
-
+	
 	public static ContentVO getOwningContentVO(Integer id) throws SystemException
-	{
-		Database db = CastorDatabaseService.getDatabase();
+    {
+    	Database db = CastorDatabaseService.getDatabase();
 		ContentVersion contentVersion = null;
-		beginTransaction(db);
-		try
-		{
-			contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(id, db);
-			commitTransaction(db);
-		}
-		catch (Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-
-		return contentVersion.getOwningContent().getValueObject();
-	}
+        beginTransaction(db);
+        try 
+        {
+	    	contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(id, db);
+	    	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+    	return contentVersion.getOwningContent().getValueObject();
+    }
 
 	/**
 	 * This method returns the owning siteNode to a siteNodeVersion.
 	 */
-
-	public static SiteNodeVO getOwningSiteNodeVO(Integer id) throws SystemException
-	{
-		Database db = CastorDatabaseService.getDatabase();
+	
+    public static SiteNodeVO getOwningSiteNodeVO(Integer id) throws SystemException
+    {
+    	Database db = CastorDatabaseService.getDatabase();
 		SiteNodeVersion siteNodeVersion = null;
-		beginTransaction(db);
-		try
-		{
-			siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(id, db);
-			commitTransaction(db);
-		}
-		catch (Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
+        beginTransaction(db);
+        try 
+        {
+	    	siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(id, db);
+	    	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+    	return siteNodeVersion.getOwningSiteNode().getValueObject();
+    }
 
-		return siteNodeVersion.getOwningSiteNode().getValueObject();
-	}
-
+	
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.
@@ -666,4 +680,5 @@ public class PublicationController extends BaseController
 		return new PublicationVO();
 	}
 
+			
 }

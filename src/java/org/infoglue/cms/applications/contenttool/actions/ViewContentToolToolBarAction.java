@@ -256,6 +256,9 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 			buttons.add(getExecuteTaskButton());
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
+
+			buttons.add(getSyncTreeButton());
+			
 		}
 		catch(Exception e)
 		{
@@ -276,6 +279,9 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 			buttons.add(getExecuteTaskButton());
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
+
+			buttons.add(getSyncTreeButton());
+			
 		}
 		catch(Exception e)
 		{
@@ -311,6 +317,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 				if(!isReadOnly())
 					buttons.add(getPublishButton());
 			}
+			buttons.add(getSyncTreeButton());
 		}
 		catch(Exception e)
 		{
@@ -346,6 +353,11 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 	private ImageButton getMoveButton()
 	{
 		return new ImageButton(true, "javascript:openPopup('ViewContentTree.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'Content', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.moveContent.header"));	
+	}
+
+	private ImageButton getSyncTreeButton()
+	{
+		return new ImageButton(true, "javascript:parent.frames['main'].syncWithTree();", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.revealInTree"), getLocalizedString(getSession().getLocale(), "tool.contenttool.revealInTree.header"));	
 	}
 
 	private ImageButton getPublishButton()

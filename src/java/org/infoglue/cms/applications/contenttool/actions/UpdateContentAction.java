@@ -40,8 +40,9 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 	
 	private ContentVO contentVO = null;
     private Integer repositoryId;
-
-	private ConstraintExceptionBuffer ceb;
+    private Integer contentTypeDefinitionId;
+	
+    private ConstraintExceptionBuffer ceb;
 	
 	public UpdateContentAction()
 	{
@@ -68,7 +69,7 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 		CmsLogger.logInfo("Errors in contentVO:" + ceb.toString());
 		ceb.throwIfNotEmpty();
     	
-    	ContentControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentVO);
+    	ContentControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentVO, this.contentTypeDefinitionId);
 		//ContentController.update(this.contentVO);
 		
 		return "success";
@@ -138,6 +139,11 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
     public void setIsBranch(Boolean isBranch)
     {
        	this.contentVO.setIsBranch(isBranch);
+    }
+
+    public void setContentTypeDefinitionId(Integer contentTypeDefinitionId)
+    {
+       	this.contentTypeDefinitionId = contentTypeDefinitionId;
     }
 
     public void setRepositoryId(Integer repositoryId)

@@ -24,7 +24,9 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Date;
 
@@ -102,16 +104,23 @@ public class ExportRepositoryAction extends WebworkAbstractAction
 			fileUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
 			this.fileName = fileName;
 						
+			String encoding = "UTF-8";
 			File file = new File(fileSystemName);
-			Writer writer = new FileWriter(file);
-			Marshaller marshaller = new Marshaller(writer);
-			marshaller.setMapping(map);
+            FileOutputStream fos = new FileOutputStream(file);
+            OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
+            Marshaller marshaller = new Marshaller(osw);
+            marshaller.setMapping(map);
+			marshaller.setEncoding(encoding);
+            
 			infoGlueExportImpl.setRootContent((ContentImpl)content);
 			infoGlueExportImpl.setRootSiteNode((SiteNodeImpl)siteNode);
 			marshaller.marshal(infoGlueExportImpl);
-						
-			writer.flush();
-			writer.close();
+				
+			osw.flush();
+			osw.close();
+			
+			//fos.flush();
+			//fos.close();
 			
 			db.commit();
 			db.close();

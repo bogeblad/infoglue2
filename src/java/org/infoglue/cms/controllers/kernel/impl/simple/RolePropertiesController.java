@@ -24,12 +24,14 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.RoleContentTypeDefinition;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.impl.simple.RoleContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
@@ -48,6 +50,7 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -252,6 +255,53 @@ public class RolePropertiesController extends BaseController
     {
     	deleteEntity(RolePropertiesImpl.class, rolePropertiesVO.getRolePropertiesId());
     }        
+
+    
+	/**
+	 * This method should return a list of those digital assets the contentVersion has.
+	 */
+	   	
+	public List getDigitalAssetVOList(Integer rolePropertiesId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+    	List digitalAssetVOList = new ArrayList();
+
+        beginTransaction(db);
+
+        try
+        {
+			RoleProperties roleProperties = RolePropertiesController.getController().getRolePropertiesWithId(rolePropertiesId, db); 
+			if(roleProperties != null)
+			{
+				Collection digitalAssets = roleProperties.getDigitalAssets();
+				digitalAssetVOList = toVOList(digitalAssets);
+			}
+			            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logInfo("An error occurred when we tried to fetch the list of digitalAssets belonging to this roleProperties:" + e);
+            e.printStackTrace();
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return digitalAssetVOList;
+    }
+
+	
+	/**
+	 * This method deletes the relation to a digital asset - not the asset itself.
+	 */
+	public void deleteDigitalAssetRelation(Integer rolePropertiesId, DigitalAsset digitalAsset, Database db) throws SystemException, Bug
+    {
+	    RoleProperties roleProperties = getRolePropertiesWithId(rolePropertiesId, db);
+	    roleProperties.getDigitalAssets().remove(digitalAsset);
+        digitalAsset.getRoleProperties().remove(roleProperties);
+    }
 
 
 	/**

@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -30,9 +30,9 @@ import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Interceptor;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.exception.*;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.CacheController;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -51,7 +51,7 @@ import java.util.List;
 
 public class InterceptionPointController extends BaseController
 {
-
+	
 	/**
 	 * Factory method
 	 */
@@ -60,17 +60,17 @@ public class InterceptionPointController extends BaseController
 	{
 		return new InterceptionPointController();
 	}
-
+	
 	public InterceptionPoint getInterceptionPointWithId(Integer interceptionPointId, Database db) throws SystemException, Bug
 	{
 		return (InterceptionPoint) getObjectWithId(InterceptionPointImpl.class, interceptionPointId, db);
 	}
-
+    
 	public InterceptionPointVO getInterceptionPointVOWithId(Integer interceptionPointId) throws SystemException, Bug
 	{
 		return (InterceptionPointVO) getVOWithId(InterceptionPointImpl.class, interceptionPointId);
 	}
-
+  
 	public List getInterceptionPointVOList() throws SystemException, Bug
 	{
 		return getAllVOObjects(InterceptionPointImpl.class, "interceptionPointId");
@@ -80,41 +80,41 @@ public class InterceptionPointController extends BaseController
 	{
 		return getAllVOObjects(InterceptionPointImpl.class, "category", "asc");
 	}
-
+	
 	public List getInterceptorsVOList(Integer interceptionPointId) throws SystemException, Bug
 	{
 		List interceptorVOList = null;
-
+		
 		Database db = CastorDatabaseService.getDatabase();
 
-		try
+		try 
 		{
 			beginTransaction(db);
 
 			interceptorVOList = getInterceptorsVOList(interceptionPointId, db);
 
 			commitTransaction(db);
-		}
-		catch (Exception e)
+		} 
+		catch (Exception e) 
 		{
 			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
-		return interceptorVOList;
+		
+		return interceptorVOList;	
 	}
-
+	
 	/**
 	 * Gets the interceptors for this interceptionPoint withing a transaction
-	 *
+	 * 
 	 * @param interceptionPointId
 	 * @param db
 	 * @return
 	 * @throws SystemException
 	 * @throws Bug
 	 */
-
+	
 	public List getInterceptorsVOList(Integer interceptionPointId, Database db)  throws SystemException, Bug
 	{
 		String key = "" + interceptionPointId;
@@ -125,28 +125,28 @@ public class InterceptionPointController extends BaseController
 			CmsLogger.logInfo("There was an cached InterceptorVOList:" + cachedInterceptorVOList.size());
 			return cachedInterceptorVOList;
 		}
-
+		
 		List interceptorsVOList = null;
-
+		
 		InterceptionPoint interceptionPoint = this.getInterceptionPointWithId(interceptionPointId, db);
-
+		
 		Collection interceptors = interceptionPoint.getInterceptors();
-
+		
 		interceptorsVOList = toVOList(interceptors);
-
+		
 		CacheController.cacheObject("interceptorsCache", key, interceptorsVOList);
 
-		return interceptorsVOList;
+		return interceptorsVOList;		
 	}
 
 
 	public InterceptionPointVO getInterceptionPointVOWithName(String interceptorPointName)  throws SystemException, Bug
 	{
 		InterceptionPointVO interceptionPointVO = null;
-
+		
 		Database db = CastorDatabaseService.getDatabase();
 
-		try
+		try 
 		{
 			beginTransaction(db);
 
@@ -155,78 +155,78 @@ public class InterceptionPointController extends BaseController
 				interceptionPointVO = interceptionPoint.getValueObject();
 
 			commitTransaction(db);
-		}
-		catch (Exception e)
+		} 
+		catch (Exception e) 
 		{
 			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
-		return interceptionPointVO;
-	}
+		
+		return interceptionPointVO;		
+	}	
 
 
 	public InterceptionPoint getInterceptionPointWithName(String interceptorPointName, Database db)  throws SystemException, Bug
 	{
 		InterceptionPoint interceptorPoint = null;
-
+		
 		try
 		{
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl f WHERE f.name = $1");
 			oql.bind(interceptorPointName);
-
+			
 			QueryResults results = oql.execute();
-			if(results.hasMore())
+			if(results.hasMore()) 
 			{
 				interceptorPoint = (InterceptionPoint)results.next();
 			}
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch an InterceptionPointVO. Reason:" + e.getMessage(), e);
+			throw new SystemException("An error occurred when we tried to fetch an InterceptionPointVO. Reason:" + e.getMessage(), e);    
 		}
-
-		return interceptorPoint;
+		
+		return interceptorPoint;		
 	}
-
-
+	
+	
 	public List getInterceptionPointVOList(String category) throws SystemException, Bug
 	{
 		List interceptionPointVOList = null;
-
+		
 		Database db = CastorDatabaseService.getDatabase();
 
-		try
+		try 
 		{
 			beginTransaction(db);
 
 			interceptionPointVOList = toVOList(getInterceptionPointList(category, db));
 
 			commitTransaction(db);
-		}
-		catch (Exception e)
+		} 
+		catch (Exception e) 
 		{
 			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
-		return interceptionPointVOList;
+		
+		return interceptionPointVOList;	
 	}
-
-
+	
+	
 	public List getInterceptionPointList(String category, Database db)  throws SystemException, Bug
 	{
 		List interceptionPoints = new ArrayList();
-
+		
 		try
 		{
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl f WHERE f.category = $1");
 			oql.bind(category);
-
+			
 			QueryResults results = oql.execute();
-			while(results.hasMore())
+			while(results.hasMore()) 
 			{
 				InterceptionPoint interceptionPoint = (InterceptionPoint)results.next();
 				interceptionPoints.add(interceptionPoint);
@@ -234,86 +234,86 @@ public class InterceptionPointController extends BaseController
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch an InterceptionPointVO. Reason:" + e.getMessage(), e);
+			throw new SystemException("An error occurred when we tried to fetch an InterceptionPointVO. Reason:" + e.getMessage(), e);    
 		}
-
-		return interceptionPoints;
+		
+		return interceptionPoints;		
 	}
 
 	/**
 	 * Creates a new Interception point
-	 *
+	 * 
 	 * @param interceptionPointVO
 	 * @return
 	 * @throws ConstraintException
 	 * @throws SystemException
 	 */
-
+	
 	public InterceptionPointVO create(InterceptionPointVO interceptionPointVO) throws ConstraintException, SystemException
 	{
 		InterceptionPointVO newInterceptionPointVO = null;
-
+		
 		Database db = CastorDatabaseService.getDatabase();
 
-		try
+		try 
 		{
 			beginTransaction(db);
 
 			newInterceptionPointVO = create(interceptionPointVO, db);
-
+				
 			commitTransaction(db);
-		}
-		catch (Exception e)
+		} 
+		catch (Exception e) 
 		{
 			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
+		
 		return newInterceptionPointVO;
-	}
-
+	}		
+	
 	/**
 	 * Creates a new Interception point within a transaction
-	 *
+	 * 
 	 * @param interceptionPointVO
 	 * @return
 	 * @throws ConstraintException
 	 * @throws SystemException
 	 */
-
+	
 	public InterceptionPointVO create(InterceptionPointVO interceptionPointVO, Database db) throws SystemException, Exception
 	{
 		InterceptionPoint interceptionPoint = new InterceptionPointImpl();
 		interceptionPoint.setValueObject(interceptionPointVO);
-
+		
 		db.create(interceptionPoint);
-
+					
 		return interceptionPoint.getValueObject();
-	}
+	}     
 
-
+	
 	public InterceptionPointVO update(InterceptionPointVO interceptionPointVO) throws ConstraintException, SystemException
 	{
 		return (InterceptionPointVO) updateEntity(InterceptionPointImpl.class, interceptionPointVO);
-	}
+	}        
 
-
+	
 	public void update(InterceptionPointVO interceptionPointVO, String[] values) throws ConstraintException, SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
 
-		try
+		try 
 		{
 			beginTransaction(db);
-
+			
 			ConstraintExceptionBuffer ceb = interceptionPointVO.validate();
 			ceb.throwIfNotEmpty();
-
+			
 			InterceptionPoint interceptionPoint = this.getInterceptionPointWithId(interceptionPointVO.getInterceptionPointId(), db);
 
 			interceptionPoint.setValueObject(interceptionPointVO);
-
+			
 			Collection interceptors = interceptionPoint.getInterceptors();
 			Iterator interceptorsIterator = interceptors.iterator();
 			while(interceptorsIterator.hasNext())
@@ -321,9 +321,9 @@ public class InterceptionPointController extends BaseController
 				Interceptor interceptor = (Interceptor)interceptorsIterator.next();
 				interceptor.getInterceptionPoints().remove(interceptor);
 			}
-
+			
 			interceptionPoint.getInterceptors().clear();
-
+	    	
 	    	if(values != null)
 	    	{
 				for(int i=0; i<values.length; i++)
@@ -334,30 +334,30 @@ public class InterceptionPointController extends BaseController
 					interceptor.getInterceptionPoints().add(interceptionPoint);
 				}
 			}
-
+			
 	    	CmsLogger.logInfo("Interceptors:" + interceptionPoint.getInterceptors().size());
-
+			
 			commitTransaction(db);
-		}
-		catch (Exception e)
+		} 
+		catch (Exception e) 
 		{
 			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-	}
-
-
+	}			
+	
+	
 	public void delete(InterceptionPointVO interceptionPointVO) throws ConstraintException, SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
-
+		
 		beginTransaction(db);
 
 		try
 		{
 			InterceptionPoint interceptionPoint = this.getInterceptionPointWithId(interceptionPointVO.getInterceptionPointId(), db);
-
+			
 			List accessRights = AccessRightController.getController().getAccessRightList(interceptionPoint.getInterceptionPointId(), db);
 			Iterator accessRightsIterator = accessRights.iterator();
 			while(accessRightsIterator.hasNext())
@@ -366,9 +366,9 @@ public class InterceptionPointController extends BaseController
 				db.remove(accessRight);
 				accessRightsIterator.remove();
 			}
-
+			
 			db.remove(interceptionPoint);
-
+	
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -377,8 +377,8 @@ public class InterceptionPointController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
-	}
+	
+	}        
 
 	/*
 	public void delete(String name, String value, Database db) throws SystemException, Exception
@@ -390,8 +390,8 @@ public class InterceptionPointController extends BaseController
 			Access Access = (Access)i.next();
 			db.remove(Access);
 		}
-
-	}
+		
+	}        
 	*/
 
 	/**
@@ -405,3 +405,4 @@ public class InterceptionPointController extends BaseController
 	}
 
 }
+ 

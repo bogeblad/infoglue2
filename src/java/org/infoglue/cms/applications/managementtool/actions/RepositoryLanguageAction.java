@@ -65,11 +65,27 @@ public class RepositoryLanguageAction extends WebworkAbstractAction
 		return "success";
 	}
 
+	public String doMoveDown() throws Exception 
+	{
+		RepositoryLanguageController.getController().moveRepositoryLanguage(this.repositoryLanguageVO, true);
+
+		return "success";
+	}
+
+	public String doMoveUp() throws Exception 
+	{
+		RepositoryLanguageController.getController().moveRepositoryLanguage(this.repositoryLanguageVO, false);
+
+		return "success";
+	}
+
+	/*
 	public String doCreate() throws Exception 
 	{
 		RepositoryLanguageController.getController().createRepositoryLanguage(this.repositoryId, this.languageId);
 		return "success";
 	}
+	*/
 	
 	public String doUpdate() throws Exception
 	{

@@ -27,9 +27,15 @@ import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.RoleProperties;
+import org.infoglue.cms.entities.management.RolePropertiesVO;
+import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.util.CmsLogger;
 
@@ -43,10 +49,16 @@ import java.util.List;
 public class ViewDigitalAssetAction extends WebworkAbstractAction
 {
 	private List availableLanguages  = null;
+	
+	private String entity;
+	private Integer entityId;
+	
 	private Integer contentVersionId = null;	
 	private Integer digitalAssetId   = null;
 	private Integer uploadedFilesCounter = new Integer(0);
 
+	private UserPropertiesVO userPropertiesVO;
+	private UserPropertiesVO rolePropertiesVO;
 	private ContentVersionVO contentVersionVO;
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
 	private DigitalAssetVO digitalAssetVO;
@@ -64,17 +76,50 @@ public class ViewDigitalAssetAction extends WebworkAbstractAction
     
     public String doExecute() throws Exception
     {
-    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
-        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
-
+        if(this.contentVersionId != null)
+        {
+	    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+	        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
+        }
+        else
+        {
+            if(this.entity.equalsIgnoreCase("UserProperties"))
+            {
+                UserPropertiesVO userPropertiesVO = UserPropertiesController.getController().getUserPropertiesVOWithId(this.entityId);
+                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(userPropertiesVO.getContentTypeDefinitionId());            
+            }
+            else if(this.entity.equalsIgnoreCase("RoleProperties"))
+            {
+                RolePropertiesVO rolePropertiesVO = RolePropertiesController.getController().getRolePropertiesVOWithId(this.entityId);
+                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(rolePropertiesVO.getContentTypeDefinitionId());            
+            }
+        }
+        
         return "success";
     }
        
     public String doUpdate() throws Exception
     {
     	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
-    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
-        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
+
+    	if(this.contentVersionId != null)
+        {
+        	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+            this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
+        }
+        else
+        {
+            if(this.entity.equalsIgnoreCase("UserProperties"))
+            {
+                UserPropertiesVO userPropertiesVO = UserPropertiesController.getController().getUserPropertiesVOWithId(this.entityId);
+                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(userPropertiesVO.getContentTypeDefinitionId());            
+            }
+            else if(this.entity.equalsIgnoreCase("RoleProperties"))
+            {
+                RolePropertiesVO rolePropertiesVO = RolePropertiesController.getController().getRolePropertiesVOWithId(this.entityId);
+                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(rolePropertiesVO.getContentTypeDefinitionId());            
+            }
+        }
 
         return "update";
     }
@@ -120,4 +165,23 @@ public class ViewDigitalAssetAction extends WebworkAbstractAction
 		return this.digitalAssetVO.getAssetKey();
 	}
 
+    public String getEntity()
+    {
+        return entity;
+    }
+    
+    public void setEntity(String entity)
+    {
+        this.entity = entity;
+    }
+    
+    public Integer getEntityId()
+    {
+        return entityId;
+    }
+    
+    public void setEntityId(Integer entityId)
+    {
+        this.entityId = entityId;
+    }
 }

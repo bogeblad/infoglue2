@@ -5,15 +5,15 @@
 * ===============================================================================
 *
 *  Copyright (C)
-*
+* 
 * This program is free software; you can redistribute it and/or modify it under
 * the terms of the GNU General Public License version 2, as published by the
 * Free Software Foundation. See the file LICENSE.html for more information.
-*
+* 
 * This program is distributed in the hope that it will be useful, but WITHOUT
 * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
 * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-*
+* 
 * You should have received a copy of the GNU General Public License along with
 * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -23,9 +23,9 @@
 
 /*
  * Created on 2004-jun-16
- *
+ * 
  * Embryo of RenderStudio, a common playground for templatefragment testing
- *
+ * 
  *
  */
 package org.infoglue.cms.applications.contenttool.actions;
@@ -38,9 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
@@ -50,13 +47,16 @@ import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.util.BrowserBean;
 
 /**
  * @author Stefan Sik
  * @version 1.0
  * @since InfoglueCMS 1.2.0
- *
+ * 
  */
 public class TextToImageEditorAction extends WebworkAbstractAction
 {
@@ -64,17 +64,17 @@ public class TextToImageEditorAction extends WebworkAbstractAction
     private Integer contentId = null;
     private Integer siteNodeId = null;
     private Integer repositoryId = null;
-
+    
     /* (non-Javadoc)
      * @see org.infoglue.cms.applications.common.actions.WebworkAbstractAction#doExecute()
      */
-
-    private String[] defaultSizes =
+    
+    private String[] defaultSizes = 
     	{	"8", "9",
-            "10","11","12","13","14","15","16","18","20","22",
-            "24","26","28","30","36","42","48","72"
+            "10","11","12","13","14","15","16","18","20","22", 
+            "24","26","28","30","36","42","48","72" 
         };
-
+    
     private String text = "Sample";
     private String canvasWidth = "200";
     private String canvasHeight = "50";
@@ -86,9 +86,9 @@ public class TextToImageEditorAction extends WebworkAbstractAction
     private String fontStyle = "0";
     private String fontSize = "12";
     private String foregroundColor = "000000";
-    private String backgroundColor = "FFFFFF";
-
-
+    private String backgroundColor = "FFFFFF";    
+    
+    
     private String generatedImage = "";
     private String generatedCommand = "";
     private Collection fontNames = new ArrayList();
@@ -98,7 +98,7 @@ public class TextToImageEditorAction extends WebworkAbstractAction
     private SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO;
     private List availableServiceBindings;
     private List serviceBindings;
-
+    
     public int getBoldValue()
     {
         return Font.BOLD;
@@ -111,8 +111,8 @@ public class TextToImageEditorAction extends WebworkAbstractAction
     {
         return defaultSizes;
     }
-
-
+    
+    
     private String q(String t)
     {
         return "\"" + t + "\"";
@@ -125,53 +125,53 @@ public class TextToImageEditorAction extends WebworkAbstractAction
     {
         return "" + t + ", ";
     }
-
+    
     protected void initialize(Integer siteNodeId) throws Exception
     {
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
         this.siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
-
+		
         if(siteNodeVO.getSiteNodeTypeDefinitionId() != null)
         {
 	        this.siteNodeTypeDefinitionVO = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(siteNodeVO.getSiteNodeTypeDefinitionId());
 			this.availableServiceBindings = SiteNodeTypeDefinitionController.getController().getAvailableServiceBindingVOList(siteNodeVO.getSiteNodeTypeDefinitionId());
 			this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId());
 		}
-    }
-
+    } 
+    
     protected String doExecute() throws Exception
     {
         if(siteNodeId==null)
             siteNodeId = SiteNodeController.getController().getRootSiteNodeVO(repositoryId).getId();
-
+        
         if(languageId==null)
             languageId = LanguageController.getController().getMasterLanguage(repositoryId).getId();
-
+        
         if(contentId==null)
             contentId = new Integer(-1);
 
         initialize(siteNodeId);
-
+        
         /* An editor to simplify textToImage statements in templates
          * This class generates visually a getTextAsImageUrl(..)
          * Use BasicTemplateController.renderString(template)
          */
-
+        
         /*
          * Setup font lists
          */
-
+        
         Font allFonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
         for(int i = 0;i<allFonts.length;i++)
         {
             fonts.add(allFonts[i]);
         }
-
+        
         String[] fontNamesList = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         for(int i = 0;i<fontNamesList.length;i++)
             fontNames.add(fontNamesList[i]);
-
-
+        
+        
         StringBuffer t  = new StringBuffer();
         t.append("$templateLogic.getStringAsImageUrl(");
         t.append(qc(text));
@@ -188,28 +188,28 @@ public class TextToImageEditorAction extends WebworkAbstractAction
         t.append(q(backgroundColor));
         t.append(")");
 
-
+        
         BasicTemplateController templateController = getTemplateController(siteNodeId, languageId, contentId);
         generatedImage = templateController.renderString(t.toString());
         generatedCommand = t.toString();
-
+        
         return "success";
     }
 
     public BasicTemplateController getTemplateController(Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
         BasicTemplateController templateController = new BasicTemplateController(this.getInfoGluePrincipal());
-		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);
-		templateController.setHttpRequest(getRequest());
+		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
+		templateController.setHttpRequest(getRequest());	
 		templateController.setBrowserBean(new BrowserBean());
-		templateController.setDeliveryControllers(NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId), null, IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId,languageId, contentId));
-		return templateController;
+		templateController.setDeliveryControllers(NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId), null, IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId,languageId, contentId));	
+		return templateController;		
 	}
 
 	public List getSortedAvailableServiceBindings()
 	{
 		List sortedAvailableServiceBindings = new ArrayList();
-
+		
 		Iterator iterator = this.availableServiceBindings.iterator();
 		while(iterator.hasNext())
 		{
@@ -219,10 +219,10 @@ public class TextToImageEditorAction extends WebworkAbstractAction
 			while(sortedListIterator.hasNext())
 			{
 				AvailableServiceBindingVO sortedAvailableServiceBinding = (AvailableServiceBindingVO)sortedListIterator.next();
-
+				
 				String currentAttribute = availableServiceBinding.getName();
 				String sortedAttribute  = sortedAvailableServiceBinding.getName();
-
+				
 				if(currentAttribute != null && sortedAttribute != null && currentAttribute.compareTo(sortedAttribute) < 0)
 		    	{
 		    		break;
@@ -231,10 +231,10 @@ public class TextToImageEditorAction extends WebworkAbstractAction
 			}
 			sortedAvailableServiceBindings.add(index, availableServiceBinding);
 		}
-
+			
 		return sortedAvailableServiceBindings;
 	}
-
+	
 	/**
 	 * This method sorts a list of available service bindings on the name of the binding.
 	 */
@@ -242,7 +242,7 @@ public class TextToImageEditorAction extends WebworkAbstractAction
 	public List getSortedAvailableContentServiceBindings()
 	{
 		List sortedAvailableContentServiceBindings = new ArrayList();
-
+		
 		Iterator sortedListIterator = getSortedAvailableServiceBindings().iterator();
 		while(sortedListIterator.hasNext())
 		{
@@ -250,13 +250,13 @@ public class TextToImageEditorAction extends WebworkAbstractAction
 			if(sortedAvailableServiceBinding.getVisualizationAction().indexOf("Structure") == -1)
 				sortedAvailableContentServiceBindings.add(sortedAvailableServiceBinding);
 		}
-
+			
 		return sortedAvailableContentServiceBindings;
 	}
 	public List getSortedAvailableSingleContentServiceBindings()
 	{
 		List sortedAvailableContentServiceBindings = new ArrayList();
-
+		
 		Iterator sortedListIterator = getSortedAvailableServiceBindings().iterator();
 		while(sortedListIterator.hasNext())
 		{
@@ -265,14 +265,14 @@ public class TextToImageEditorAction extends WebworkAbstractAction
 			   sortedAvailableServiceBinding.getVisualizationAction().indexOf("Multi") == -1 )
 				sortedAvailableContentServiceBindings.add(sortedAvailableServiceBinding);
 		}
-
+			
 		return sortedAvailableContentServiceBindings;
 	}
 
 	public List getAvailableAttributes()
 	{
 		List sortedAvailableContentServiceBindings = new ArrayList();
-
+		
 		Iterator sortedListIterator = getSortedAvailableServiceBindings().iterator();
 		while(sortedListIterator.hasNext())
 		{
@@ -281,13 +281,13 @@ public class TextToImageEditorAction extends WebworkAbstractAction
 			   sortedAvailableServiceBinding.getVisualizationAction().indexOf("Multi") == -1 )
 			{
 				sortedAvailableContentServiceBindings.add(sortedAvailableServiceBinding);
-
+				
 			}
-
+			
 		}
-
-
-
+		
+		
+		
 		return sortedAvailableContentServiceBindings;
 	}
 
@@ -298,7 +298,7 @@ public class TextToImageEditorAction extends WebworkAbstractAction
 	public List getSortedAvailableStructureServiceBindings()
 	{
 		List sortedAvailableStructureServiceBindings = new ArrayList();
-
+		
 		Iterator sortedListIterator = getSortedAvailableServiceBindings().iterator();
 		while(sortedListIterator.hasNext())
 		{
@@ -306,17 +306,17 @@ public class TextToImageEditorAction extends WebworkAbstractAction
 			if(sortedAvailableServiceBinding.getVisualizationAction().indexOf("Structure") > -1)
 				sortedAvailableStructureServiceBindings.add(sortedAvailableServiceBinding);
 		}
-
+			
 		return sortedAvailableStructureServiceBindings;
 	}
 
-
+	
 	public List getServiceBindings()
 	{
 		return this.serviceBindings;
-	}
-
-
+	}	
+    
+    
     public String getGeneratedImage()
     {
         return generatedImage;

@@ -25,6 +25,8 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.RolePropertiesVO;
+import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
@@ -40,6 +42,9 @@ import java.util.List;
 
 public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 {
+	private String entity;
+	private Integer entityId;
+
 	private Integer contentVersionId = null;
 	private String digitalAssetKey   = "";
 	private Integer uploadedFilesCounter = new Integer(0);
@@ -82,8 +87,25 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	
     public String doExecute() throws Exception
     {
-    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
-        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
+        if(this.contentVersionId != null)
+        {
+	    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+	        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
+        }
+        else
+        {
+            if(this.entity.equalsIgnoreCase("UserProperties"))
+            {
+                UserPropertiesVO userPropertiesVO = UserPropertiesController.getController().getUserPropertiesVOWithId(this.entityId);
+                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(userPropertiesVO.getContentTypeDefinitionId());            
+            }
+            else if(this.entity.equalsIgnoreCase("RoleProperties"))
+            {
+                RolePropertiesVO rolePropertiesVO = RolePropertiesController.getController().getRolePropertiesVOWithId(this.entityId);
+                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(rolePropertiesVO.getContentTypeDefinitionId());            
+            }
+        }
+        
 
     	InputStream is = null;
 		//File renamedFile = null;
@@ -127,8 +149,13 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 					newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
 					//is = new FileInputStream(renamedFile);
 					is = new FileInputStream(file);
-					DigitalAssetController.create(newAsset, is, this.contentVersionId);
-	         		this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
+					
+					if(this.contentVersionId != null)
+					    DigitalAssetController.create(newAsset, is, this.contentVersionId);
+	         		else
+	         		    DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
+	         		    
+					this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
 	         	}
     		}
     		else
@@ -154,4 +181,23 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
     }
     
 
+    public String getEntity()
+    {
+        return entity;
+    }
+    
+    public void setEntity(String entity)
+    {
+        this.entity = entity;
+    }
+    
+    public Integer getEntityId()
+    {
+        return entityId;
+    }
+    
+    public void setEntityId(Integer entityId)
+    {
+        this.entityId = entityId;
+    }
 }

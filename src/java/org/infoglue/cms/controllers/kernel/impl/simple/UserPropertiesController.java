@@ -24,9 +24,11 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
-import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.UserContentTypeDefinition;
@@ -48,6 +50,7 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -191,6 +194,17 @@ public class UserPropertiesController extends BaseController
     {
     	deleteEntity(UserPropertiesImpl.class, userPropertiesVO.getUserPropertiesId());
     }        
+
+	/**
+	 * This method deletes the relation to a digital asset - not the asset itself.
+	 */
+	public void deleteDigitalAssetRelation(Integer userPropertiesId, DigitalAsset digitalAsset, Database db) throws SystemException, Bug
+    {
+	    UserProperties userProperties = getUserPropertiesWithId(userPropertiesId, db);
+	    
+		userProperties.getDigitalAssets().remove(digitalAsset);
+        digitalAsset.getUserProperties().remove(userProperties);
+    }
 
 	/**
 	 * This method gets a list of roleProperties for a role
@@ -493,6 +507,42 @@ public class UserPropertiesController extends BaseController
 	}
 	
 	/**
+	 * This method should return a list of those digital assets the contentVersion has.
+	 */
+	   	
+	public List getDigitalAssetVOList(Integer userPropertiesId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+    	List digitalAssetVOList = new ArrayList();
+
+        beginTransaction(db);
+
+        try
+        {
+			UserProperties userProperties = UserPropertiesController.getController().getUserPropertiesWithId(userPropertiesId, db); 
+			if(userProperties != null)
+			{
+				Collection digitalAssets = userProperties.getDigitalAssets();
+				digitalAssetVOList = toVOList(digitalAssets);
+			}
+			            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logInfo("An error occurred when we tried to fetch the list of digitalAssets belonging to this userProperties:" + e);
+            e.printStackTrace();
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return digitalAssetVOList;
+    }
+
+	
+	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.
 	 */
@@ -501,6 +551,8 @@ public class UserPropertiesController extends BaseController
 	{
 		return new UserPropertiesVO();
 	}
+
+
 
 }
  

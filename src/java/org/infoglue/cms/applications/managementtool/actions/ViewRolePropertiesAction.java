@@ -26,9 +26,11 @@ package org.infoglue.cms.applications.managementtool.actions;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -147,6 +149,73 @@ public class ViewRolePropertiesAction extends InfoGlueAbstractAction
 		}
 
 		return value;
+	}
+	
+	/**
+	 * Returns a list of digital assets available for this content version.
+	 */
+	
+	public List getDigitalAssets()
+	{
+		List digitalAssets = null;
+		
+		try
+		{
+			if(this.rolePropertiesVO != null && this.rolePropertiesVO.getId() != null)
+	       	{
+	       		digitalAssets = RolePropertiesController.getController().getDigitalAssetVOList(this.rolePropertiesVO.getId());
+	       	}
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+		}
+		
+		return digitalAssets;
+	}	
+
+	
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetUrl(Integer digitalAssetId) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetId);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+	
+	
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetThumbnailUrl(Integer digitalAssetId) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(digitalAssetId);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
 	}
 	
 	public List getAvailableLanguages()
