@@ -7,7 +7,7 @@ import org.infoglue.cms.util.DomainUtils;
  *
  * @author Frank Febbraro (frank@phase2technology.com)
  */
-public class CategoryAttribute
+public class CategoryAttribute implements Comparable
 {
 	private String value;
 	private String title;
@@ -48,6 +48,29 @@ public class CategoryAttribute
 
 	public String getCategoryName()			{ return categoryName; }
 	public void setCategoryName(String s)	{ categoryName = s; }
+
+	/**
+	 * Compares this object to another for order
+	 * @param o an object
+	 * @return a value less then 0, 0, or greater than 0 as this object is less than, equal to, or greater than o
+	 * @throws ClassCastException if o is not an instance of CategoryAttribute
+	 */
+	public int compareTo(Object o)
+	{
+		if (!(o instanceof CategoryAttribute))
+			throw new ClassCastException();
+
+		return new Integer(hashCode()).compareTo(new Integer(o.hashCode()));
+	}
+
+	/**
+	 * Defines the hash code for this object, which is based on category ID.
+	 * @return the hash code associated with the category ID
+	 */
+	public int hashCode()
+	{
+		return (categoryId == null) ? new Integer(0).hashCode() : categoryId.hashCode();
+	}
 
 	public boolean equals(Object o)
 	{
