@@ -76,7 +76,7 @@
       <sql name="value" type="clob" dirty="ignore" />
     </field>
   </class>
-  
+
   <!--  Mapping for UserContentTypeDefinition  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl" identity="userContentTypeDefinitionId" key-generator="SEQUENCE">
     <description>UserContentTypeDefinition</description>
@@ -308,7 +308,7 @@
       <sql name="ServDefId"/>
     </field>
   </class>
- 
+
 <!--  Mapping for Qualifyer  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" identity="qualifyerId" key-generator="SEQUENCE">
     <description>Qualifyer</description>
@@ -401,7 +401,7 @@
         <field name="repositoryLanguages" type="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl" lazy="true" collection="collection">
       <sql many-key="languageId"/>
     </field>
-    </class> 
+    </class>
 
 
 <!--  Mapping for ServiceDefinition  -->
@@ -426,7 +426,7 @@
     </field>
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId"/>
-    </field>    
+    </field>
     </class>
 
 
@@ -461,10 +461,10 @@
     </field>
         <field name="serviceDefinitions" type="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId" many-table="cmServDefAvailServBind"/>
-    </field>    
+    </field>
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId"/>
-    </field>    
+    </field>
     </class>
 
 
@@ -490,9 +490,9 @@
     </field>
     <field name="interceptors" type="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" lazy="false" collection="collection">
       <sql many-key="interceptionPointId" many-table="cmIntPointInterceptor"/>
-    </field>    
+    </field>
   </class>
-  
+
   <!--  Mapping for Interceptor  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" identity="interceptorId" key-generator="SEQUENCE">
     <description>Interceptor</description>
@@ -512,10 +512,10 @@
     </field>
     <field name="interceptionPoints" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" lazy="false" collection="collection">
       <sql many-key="interceptorId" many-table="cmIntPointInterceptor"/>
-    </field>    
+    </field>
   </class>
 
-  
+
 <!-- ************************************* -->
 <!-- ****   CONTENT SPECIFIC PARTS   **** -->
 <!-- ************************************* -->
@@ -609,7 +609,7 @@
       <sql name="parentContId" type="integer"/>
     </field>
   </class>
-  
+
   <!--  Mapping for MediumContent  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.MediumContentImpl" identity="contentId" key-generator="SEQUENCE">
     <description>MediumContent</description>
@@ -650,7 +650,7 @@
     </field>
     <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" lazy="true" collection="collection">
       <sql many-key="ContId"/>
-    </field>    
+    </field>
   </class>
 
 <!--  Mapping for ContentVersion  -->
@@ -776,8 +776,8 @@
       <sql name="assetBlob" type="blob" dirty="ignore" />
     </field>
   </class>
-    
-    
+
+
 <!-- ************************************* -->
 <!-- ****   WORKFLOW SPECIFIC PARTS   **** -->
 <!-- ************************************* -->
@@ -881,6 +881,47 @@
       <sql name="publisher" type="varchar" dirty="check" />
     </field>
   </class>
+
+	<!--  Mapping for Category  -->
+	<class name="org.infoglue.cms.entities.management.impl.simple.CategoryImpl" identity="categoryId" key-generator="IDENTITY">
+		<description>Category</description>
+		<cache-type type="unlimited" capacity="10000"/>
+		<map-to table="cmCategory"/>
+		<field name="categoryId" type="java.lang.Integer">
+			<sql name="categoryId" type="integer" dirty="check" />
+		</field>
+		<field name="name" type="java.lang.String">
+			<sql name="name" type="varchar" dirty="check" />
+		</field>
+		<field name="description" type="java.lang.String">
+			<sql name="description" type="varchar" dirty="check" />
+		</field>
+		<field name="active" type="boolean" get-method="isActive" set-method="setActive">
+			<sql name="active" type="integer" dirty="check" />
+		</field>
+		<field name="parentId" type="java.lang.Integer">
+			<sql name="parentId" type="integer" dirty="check" />
+		</field>
+	</class>
+
+	<!--  Mapping for ContentCategory  -->
+	<class name="org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl" identity="contentCategoryId" key-generator="IDENTITY">
+		<description>ContentCategory</description>
+		<cache-type type="unlimited" capacity="10000"/>
+		<map-to table="cmContentCategory"/>
+		<field name="contentCategoryId" type="java.lang.Integer">
+			<sql name="contentCategoryId" type="integer" dirty="check" />
+		</field>
+		<field name="attributeName" type="java.lang.String">
+			<sql name="attributeName" type="varchar" dirty="check" />
+		</field>
+		<field name="contentVersionId" type="java.lang.Integer">
+			<sql name="contentVersionId" type="integer" dirty="check" />
+		</field>
+		<field name="category" type="org.infoglue.cms.entities.management.impl.simple.CategoryImpl">
+		  <sql name="categoryId"/>
+		</field>
+	</class>
 
 </mapping>
 
