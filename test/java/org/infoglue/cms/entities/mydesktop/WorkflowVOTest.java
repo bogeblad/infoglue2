@@ -1,5 +1,5 @@
 /**
- * $Id: WorkflowVOTest.java,v 1.1 2004/12/29 17:20:08 jed Exp $
+ * $Id: WorkflowVOTest.java,v 1.2 2005/01/04 01:39:44 jed Exp $
  * Created by jed on Dec 29, 2004
  */
 package org.infoglue.cms.entities.mydesktop;
@@ -12,7 +12,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
  * @author jed
- * @version $Revision: 1.1 $ $Date: 2004/12/29 17:20:08 $
+ * @version $Revision: 1.2 $ $Date: 2005/01/04 01:39:44 $
  */
 public class WorkflowVOTest extends InfoGlueTestCase
 {
@@ -28,7 +28,7 @@ public class WorkflowVOTest extends InfoGlueTestCase
 		workflow.getCurrentSteps().add(new WorkflowStepVO());
 
 		for (Iterator steps = workflow.getCurrentSteps().iterator(); steps.hasNext();)
-			((WorkflowStepVO)steps.next()).getActions().add(new WorkflowActionVO());
+			((WorkflowStepVO)steps.next()).addAction(new WorkflowActionVO());
 	}
 
 	public void testGetAvailableActions() throws Exception
