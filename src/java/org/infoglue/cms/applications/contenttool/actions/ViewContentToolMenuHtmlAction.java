@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.TreeViewAbstractAction;
@@ -43,6 +44,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	private String treeMode = "classic";
 	private Integer select;
 	private BaseNode rootNode = null;
+	private String[] allowedContentTypeNames = null;
 	
 	/* Experiment 2003-09-11 TODO:
 	 * Provide a list of content-type definition, so that
@@ -94,6 +96,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 		{
 			ContentNodeSupplier contentNodeSupplier = new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal().getName());
 			contentNodeSupplier.setShowLeafs(showLeafs.compareTo("yes")==0);
+			contentNodeSupplier.setAllowedContentTypeNames(allowedContentTypeNames);
 			sup = contentNodeSupplier;
         }
 		
@@ -191,14 +194,44 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
     {
         return rootNode;
     }
+    
     public void setRootNode(BaseNode rootNode)
     {
         this.rootNode = rootNode;
     }
-	public String getTreeMode() {
+	
+    public String getTreeMode() 
+	{
 		return treeMode;
 	}
-	public void setTreeMode(String treeMode) {
+	
+	public void setTreeMode(String treeMode) 
+	{
 		this.treeMode = treeMode;
 	}
+	
+    public String[] getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+    
+    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    {
+        this.allowedContentTypeNames = allowedContentTypeNames;
+    }
+    
+    public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeNames.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNames[i], "UTF-8"));
+        }
+        
+        return sb.toString();
+    }
 }

@@ -79,6 +79,7 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
 	private String action = "";
 	private boolean createAction = false;
 	private boolean useTemplate = false;
+	private String[] allowedContentTypeNames = null;
 
 	public INodeSupplier getNodeSupplier() throws SystemException
 	{
@@ -293,9 +294,11 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
     	        RepositoryVO r = (RepositoryVO) i.next();
     			ContentVO contentVO = ContentControllerProxy.getController().getRootContentVO(r.getId(), this.getInfoGluePrincipal().getName());
     	        
-    	        String src= action + "?repositoryId=" + r.getId() + urlArgSeparator + "parent=" + contentVO.getId();
+    			String src= action + "?repositoryId=" + r.getId() + urlArgSeparator + "parent=" + contentVO.getId();
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
+				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
+    			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
     	        String text=r.getName();
     	        Element element = root.addElement("tree");
     	        element
@@ -311,6 +314,7 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
     	
     	sup = getNodeSupplier();
 		((ContentNodeSupplier) sup).setShowLeafs(showLeafs.compareTo("yes")==0);
+		((ContentNodeSupplier) sup).setAllowedContentTypeNames(allowedContentTypeNames);
     	
     	if(parent == null)
     	{
@@ -320,7 +324,9 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
 			String src = action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + node.getId();
 			if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 			if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-			
+			String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
+			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+	        
 			
 	        Element elm = root.addElement("tree");
 	        elm
@@ -355,7 +361,9 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(createAction && src.length() >0) src += urlArgSeparator + "showLeafs=" + showLeafs;
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-				
+				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
+    			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+    	        
 		        Element elm = root.addElement("tree");
 		        elm
 		        	.addAttribute("id", "" + theNode.getId())
@@ -413,19 +421,23 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
 		return null;
     }
 
-	public Integer getParent() {
+	public Integer getParent() 
+	{
 		return parent;
 	}
 
-	public void setParent(Integer integer) {
+	public void setParent(Integer integer) 
+	{
 		parent = integer;
 	}
 
-	public Integer getRepositoryId() {
+	public Integer getRepositoryId() 
+	{
 		return repositoryId;
 	}
 
-	public void setRepositoryId(Integer integer) {
+	public void setRepositoryId(Integer integer) 
+	{
 		repositoryId = integer;
 	}
 
@@ -433,30 +445,65 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
     {
         return createAction;
     }
+    
     public void setCreateAction(boolean createAction)
     {
         this.createAction = createAction;
     }
+    
     public boolean isUseTemplate()
     {
         return useTemplate;
     }
+    
     public void setUseTemplate(boolean useTemplate)
     {
         this.useTemplate = useTemplate;
     }
+    
     public String getAction()
     {
         return action;
     }
+    
     public void setAction(String action)
     {
         this.action = action;
     }
-	public String getShowLeafs() {
+	
+    public String getShowLeafs() 
+    {
 		return showLeafs;
 	}
-	public void setShowLeafs(String showLeafs) {
+	
+	public void setShowLeafs(String showLeafs) 
+	{
 		this.showLeafs = showLeafs;
 	}
-  }
+	
+    public String[] getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+    
+    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    {
+        this.allowedContentTypeNames = allowedContentTypeNames;
+    }
+    
+    public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeNames.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNames[i], "UTF-8"));
+        }
+        
+        return sb.toString();
+    }
+
+}

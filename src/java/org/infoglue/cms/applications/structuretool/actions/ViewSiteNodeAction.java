@@ -27,12 +27,17 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import java.util.Date;
 import java.util.List;
@@ -45,7 +50,7 @@ import java.util.ArrayList;
  * view of the siteNode as well as the view of the latest siteNodeVersion as well.
  */
 
-public class ViewSiteNodeAction extends WebworkAbstractAction
+public class ViewSiteNodeAction extends InfoGlueAbstractAction
 {
 	private Integer unrefreshedSiteNodeId = new Integer(0);
 	private Integer changeTypeId = new Integer(0);
@@ -56,6 +61,10 @@ public class ViewSiteNodeAction extends WebworkAbstractAction
 	
 	private SiteNodeVO siteNodeVO;
 	private SiteNodeVersionVO siteNodeVersionVO;
+	
+   	private String stay = null;
+   	private String dest = "";
+
 
     public ViewSiteNodeAction()
     {
@@ -100,12 +109,51 @@ public class ViewSiteNodeAction extends WebworkAbstractAction
 
     public String doExecute() throws Exception
     {
-    	if(getSiteNodeId() != null)
-		{		
-			long start = new Date().getTime();
-			this.initialize(getSiteNodeId());
-            CmsLogger.logWarning("ViewSIteNodeAction took " + (new Date().getTime() - start) + "ms");
-			return "success";
+        if(getSiteNodeId() != null)
+		{	
+            this.initialize(getSiteNodeId());
+
+            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVersionVO.getStateId().intValue() == SiteNodeVersionVO.WORKING_STATE.intValue() && getShowComponentsFirst().equalsIgnoreCase("true"))
+	        {
+                boolean isMetaInfoInWorkingState = false;
+    			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
+    			Integer languageId = masterLanguageVO.getLanguageId();
+    			
+    			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
+    			Integer metaInfoAvailableServiceBindingId = null;
+    			if(availableServiceBindingVO != null)
+    			    metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
+    			
+    			List boundContents = ContentController.getBoundContents(metaInfoAvailableServiceBindingId); 			
+    			if(boundContents.size() > 0)
+    			{
+    				ContentVO contentVO = (ContentVO)boundContents.get(0);
+    				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
+    				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+    					isMetaInfoInWorkingState = true;
+    			}
+                
+    			if(isMetaInfoInWorkingState)
+    			{
+    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1";
+    			    url = this.getResponse().encodeURL(url);
+    				this.getResponse().sendRedirect(url);
+    			    return NONE;
+    			}
+    			else
+    			    return "success";
+	            
+    			//if(this.repositoryId == null)
+	            //    this.repositoryId = contentVO.getRepositoryId();
+	            
+	            //this.languageId = getMasterLanguageVO().getId();
+	            //return "viewVersion";
+	        }
+	        else
+	        {
+    			
+    			return "success";
+	        }
 		}
 		else
 			return "blank";
@@ -124,12 +172,7 @@ public class ViewSiteNodeAction extends WebworkAbstractAction
     	CmsLogger.logInfo("Gonna show the comment-view");
         return "commentVersion";
     }
-        
-    public ViewSiteNodeAction getThis()
-	{
-		return this;
-	}
-	
+        	
     public java.lang.Integer getSiteNodeId()
     {
         return this.siteNodeVO.getSiteNodeId();
@@ -292,6 +335,11 @@ public class ViewSiteNodeAction extends WebworkAbstractAction
 	{
 		return this.availableServiceBindings;
 	}	
+	
+	public String getShowComponentsFirst()
+	{
+	    return CmsPropertyHandler.getProperty("showComponentsFirst");
+	}
 	
 	/**
 	 * This method sorts a list of available service bindings on the name of the binding.
@@ -484,4 +532,18 @@ public class ViewSiteNodeAction extends WebworkAbstractAction
 		return siteNodeVersionVO;
 	}
 
+    public String getStay()
+    {
+        return stay;
+    }
+    
+    public void setStay(String stay)
+    {
+        this.stay = stay;
+    }
+    
+    public String getDest()
+    {
+        return dest;
+    }
 }

@@ -561,10 +561,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				{	
 					if(componentProperty.getEntityClass().equalsIgnoreCase("Content"))
 					{
+					    String allowedContentTypeNamesParameters = "";
+					    //System.out.println();
+					    if(componentProperty.getAllowedContentTypeNamesArray() != null && componentProperty.getAllowedContentTypeNamesArray().length > 0)
+					    {
+					        allowedContentTypeNamesParameters = "&" + componentProperty.getAllowedContentTypeNamesAsUrlEncodedString();
+					        System.out.println("allowedContentTypeNamesParameters:" + allowedContentTypeNamesParameters);
+					    }
+					    
 						if(componentProperty.getIsMultipleBinding())
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeNamesParameters;
 						else
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeNamesParameters;
 					}
 					else if(componentProperty.getEntityClass().equalsIgnoreCase("SiteNode"))
 					{
@@ -1262,10 +1270,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				{
 					org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
 					
-					String name		= binding.getAttribute("name");
-					String type		= binding.getAttribute("type");
-					String visualizingAction = binding.getAttribute("visualizingAction");
-					String createAction = binding.getAttribute("createAction");
+					String name							 = binding.getAttribute("name");
+					String type							 = binding.getAttribute("type");
+					String allowedContentTypeNamesString = binding.getAttribute("allowedContentTypeDefinitionNames");
+					String visualizingAction 			 = binding.getAttribute("visualizingAction");
+					String createAction 				 = binding.getAttribute("createAction");
 					//CmsLogger.logInfo("name:" + name);
 					//CmsLogger.logInfo("type:" + type);
 
@@ -1274,6 +1283,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);
+					if(allowedContentTypeNamesString != null && allowedContentTypeNamesString.length() > 0)
+					{
+					    String[] allowedContentTypeNamesArray = allowedContentTypeNamesString.split(",");
+					    property.setAllowedContentTypeNamesArray(allowedContentTypeNamesArray);
+					}
 					
 					if(type.equalsIgnoreCase(ComponentProperty.BINDING))
 					{

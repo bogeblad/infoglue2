@@ -78,46 +78,46 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
     {
 	    try
 	    {
-		if(siteNodeVersionId != null)
-    	{
-			this.siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			
-			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
-			if(availableServiceBindingVO != null)
-				this.metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
-			
-			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionId);
-			Iterator serviceBindingIterator = serviceBindings.iterator();
-			while(serviceBindingIterator.hasNext())
-			{
-				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
-				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+			if(siteNodeVersionId != null)
+	    	{
+				this.siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				
+				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
+				if(availableServiceBindingVO != null)
+					this.metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
+				
+				List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionId);
+				Iterator serviceBindingIterator = serviceBindings.iterator();
+				while(serviceBindingIterator.hasNext())
 				{
-					this.serviceBindingId = serviceBindingVO.getServiceBindingId();
-					break;
+					ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
+					if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+					{
+						this.serviceBindingId = serviceBindingVO.getServiceBindingId();
+						break;
+					}
 				}
 			}
-		}
-		else if(siteNodeId != null)
-		{
-			this.siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(siteNodeId);
-			
-			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
-			if(availableServiceBindingVO != null)
-				this.metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
-			
-			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getId());
-			Iterator serviceBindingIterator = serviceBindings.iterator();
-			while(serviceBindingIterator.hasNext())
+			else if(siteNodeId != null)
 			{
-				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
-				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+				this.siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(siteNodeId);
+				
+				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
+				if(availableServiceBindingVO != null)
+					this.metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
+				
+				List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getId());
+				Iterator serviceBindingIterator = serviceBindings.iterator();
+				while(serviceBindingIterator.hasNext())
 				{
-					this.serviceBindingId = serviceBindingVO.getServiceBindingId();
-					break;
-				}
-			}		    
-		}
+					ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
+					if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+					{
+						this.serviceBindingId = serviceBindingVO.getServiceBindingId();
+						break;
+					}
+				}		    
+			}
 	    }
 	    catch(Exception e)
 	    {
@@ -293,7 +293,7 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 		buttons.add(getMoveButton());	
 		buttons.add(new ImageButton("Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
 		String serviceBindingIdString = this.serviceBindingId == null ? "" : this.serviceBindingId.toString();
-		buttons.add(new ImageButton(true, "javascript:openPopup('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionId + "&availableServiceBindingId=" + this.metaInfoAvailableServiceBindingId + "&serviceBindingId=" + serviceBindingIdString + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
+		buttons.add(new ImageButton(true, "javascript:openPopup('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "&availableServiceBindingId=" + this.metaInfoAvailableServiceBindingId + "&serviceBindingId=" + serviceBindingIdString + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
 
 		//buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "', 'SiteNode', 'width=800,height=600,resizable=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode"));
 		buttons.add(getPreviewButtons());
@@ -301,7 +301,7 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 		if(hasPublishedVersion())
 			buttons.add(new ImageButton("Confirm.action?header=Unpublish%20node&yesDestination=" + URLEncoder.encode(URLEncoder.encode("RequestSiteNodeVersionUnpublish.action?entityClass=" + SiteNodeVersion.class.getName() + "&entityId=" + this.lastPublishedSiteNodeVersionId + "&typeId=" + EventVO.UNPUBLISH_LATEST + "&repositoryId=" + this.repositoryId + "&name=" + this.name + "&description=Unpublish of latest published version&siteNodeId=" + this.siteNodeId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=tool.structuretool.siteNodeDetailsHeader&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to ask the editor to unpublish the latest published version of " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.unpublishVersion"), "Unpublish SiteNode"));
 		
-		buttons.add(new ImageButton("ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeCover"), "SiteNode Cover"));	
+		buttons.add(new ImageButton("ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeCover"), "SiteNode Cover"));	
 
 		if(!isReadOnly())
 			buttons.add(getViewPageComponentsButton());	

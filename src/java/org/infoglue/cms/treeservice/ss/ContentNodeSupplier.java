@@ -24,6 +24,7 @@
 package org.infoglue.cms.treeservice.ss;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsLogger;
@@ -52,6 +54,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 
 	private ArrayList cacheLeafs;
 	private boolean showLeafs = true;
+	private String[] allowedContentTypeNames = null;
 	
 	public ContentNodeSupplier(Integer repositoryId, String userName) throws SystemException
 	{
@@ -106,6 +109,49 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			CmsLogger.logWarning("Error getting Content Children", e);
 		}
 		
+		//Filter list on content type names if set such is stated
+		try
+		{
+		    if(allowedContentTypeNames != null)
+			{
+		        List filteredList = new ArrayList();
+		        Iterator iterator = children.iterator();
+				while(iterator.hasNext())
+				{
+					ContentVO contentVO = (ContentVO) iterator.next();
+					if(contentVO.getContentTypeDefinitionId() != null && !contentVO.getIsBranch().booleanValue())
+					{
+						ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+						boolean exists = false;
+						for(int i=0; i<allowedContentTypeNames.length; i++)
+						{
+						    String allowedName = allowedContentTypeNames[i];
+							if(allowedName.equalsIgnoreCase(contentTypeDefinitionVO.getName()))
+							{
+						        exists = true;
+						        break;
+							}
+						}
+
+						if(exists)
+						{
+						    filteredList.add(contentVO);
+						}
+					}
+					else
+					{
+					    filteredList.add(contentVO);
+					}
+				}
+				
+				children = filteredList;
+			}
+		}
+		catch(Exception e)
+		{
+		    CmsLogger.logWarning("Error filtering Content Children", e);
+		}
+		
 		//Sort the tree nodes if setup to do so
 		String sortProperty = CmsPropertyHandler.getProperty("content.tree.sort");
 		if(sortProperty != null)
@@ -131,7 +177,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			{
 				node.setContainer(false);
 				
-				cacheLeafs.add(node);				
+			    cacheLeafs.add(node);				
 			}
 			
 		}
@@ -156,4 +202,13 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		this.showLeafs = showLeafs;
 	}
 
+    public String[] getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+    
+    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    {
+        this.allowedContentTypeNames = allowedContentTypeNames;
+    }
 }

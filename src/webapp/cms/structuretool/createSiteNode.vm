@@ -68,7 +68,7 @@
 				#foreach ($content in $sortedPageTemplates)
 					##if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
 						#if($isOdd)
-							#set($class = "class='lightyellow'")
+							#set($class = "class='lightapricot'")
 							#set($isOdd = false)
 						#else
 							#set($class = "class='white'")

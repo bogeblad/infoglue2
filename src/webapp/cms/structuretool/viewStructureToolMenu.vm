@@ -22,11 +22,14 @@
 
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
+			#*
 			#if($showComponentsFirst == "true")
 				parent.frames['main'].location.href="${componentRendererUrl}${componentRendererAction}?siteNodeId=" + itemId + "&languageId=" + $masterLanguageVO.getId() + "&contentId=-1";
 			#else
 				parent.frames['main'].location.href="ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
 			#end
+			*#
+			parent.frames['main'].location.href="ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
 			
 			refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
 		}

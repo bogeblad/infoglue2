@@ -256,7 +256,7 @@
 	<td valign="top">
 		
 		<table cellpadding="0" cellspacing="0" border="0">
-		<tr class="darkyellow">
+		<tr class="darkapricot">
 			<td class="smalllabel">Click on page the binding should use and then "add".</td>
 		</tr>
 		<tr>
@@ -318,7 +318,7 @@
 	<td>&nbsp;</td>
 	<td valign="top">
 		<table cellpadding="0" cellspacing="0" border="0">
-		<tr class="darkyellow">
+		<tr class="darkapricot">
 			<td class="smalllabel">The following pages is in the binding so far</td>
 		</tr>
 		<tr>
@@ -335,7 +335,7 @@
 		#set($count = 0)
 		#foreach($qualifyer in $qualifyers)
 			#if($isOdd)
-				#set($class = "class='lightyellow'")
+				#set($class = "class='lightapricot'")
 				#set($isOdd = false)
 			#else
 				#set($class = "class='white'")

@@ -153,7 +153,7 @@
 <tr>
 	<td valign="top" width="100%">
 		<table cellpadding="0" cellspacing="0" border="0" width="100%">
-		<tr class="darkyellow">
+		<tr class="darkapricot">
 			<td class="smalllabel">Select which page to link to</td>
 		</tr>
 		<tr>
@@ -195,7 +195,7 @@
 	<td valign="top">
 		<form name="inputForm" action="CreateServiceBinding.action">
 		<table cellpadding="0" cellspacing="0" border="0" width="350">
-		<tr class="darkyellow">
+		<tr class="darkapricot">
 			<td class="smalllabel" colspan="2">$ui.getString("tool.structuretool.linkProperties")</td>
 		</tr>
 		<tr>

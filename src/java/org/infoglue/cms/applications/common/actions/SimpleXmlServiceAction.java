@@ -80,6 +80,8 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     protected boolean createAction = false;
     protected boolean useTemplate = false;
     protected VisualFormatter formatter = new VisualFormatter();
+	protected String[] allowedContentTypeNames = null;
+
 
 	public abstract INodeSupplier getNodeSupplier() throws SystemException;
 	
@@ -215,7 +217,13 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     	        String src= action + "?repositoryId=" + r.getId() + urlArgSeparator + "parent=" + entityVO.getId();
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-    	        String text=r.getName();
+				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
+				System.out.println("allowedContentTypeNamesUrlEncodedString1:" + allowedContentTypeNamesUrlEncodedString);
+				if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+    	        
+    			System.out.println("src1:" + src);
+    			
+				String text=r.getName();
     	        Element element = root.addElement("tree");
     	        element
 	        	.addAttribute("id", "" + r.getId())
@@ -239,8 +247,12 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 			String src = action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + node.getId();
 			if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 			if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-			
-			
+			String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
+			System.out.println("allowedContentTypeNamesUrlEncodedString2:" + allowedContentTypeNamesUrlEncodedString);
+			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+	        
+			System.out.println("src2:" + src);
+
 	        Element elm = root.addElement("tree");
 	        elm
 	        	.addAttribute("id", "" + node.getId())
@@ -276,7 +288,9 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(createAction && src.length() >0) src += urlArgSeparator + "showLeafs=" + showLeafs;
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-				
+				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
+				if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+    	        
 		        Element elm = root.addElement("tree");
 		        elm
 		        	.addAttribute("id", "" + theNode.getId())
@@ -376,4 +390,32 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 	public void setShowLeafs(String showLeafs) {
 		this.showLeafs = showLeafs;
 	}
-  }
+	
+    public String[] getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+    
+    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    {
+        this.allowedContentTypeNames = allowedContentTypeNames;
+    }
+    
+	public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+    {
+	    if(allowedContentTypeNames == null)
+	        return "";
+	    
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeNames.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNames[i], "UTF-8"));
+        }
+        
+        return sb.toString();
+    }
+}

@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.applications.databeans;
 
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -37,6 +38,7 @@ public class ComponentProperty
 	private Integer id;
 	private String name;
 	private String type;
+	private String[] allowedContentTypeNamesArray = null;
 	private Integer componentId;
 	private String entityClass;
 	private Integer entityId;
@@ -169,6 +171,31 @@ public class ComponentProperty
 		this.createAction = createAction;
 	}
 
+    public String[] getAllowedContentTypeNamesArray()
+    {
+        return allowedContentTypeNamesArray;
+    }
+    
+    public void setAllowedContentTypeNamesArray(String[] allowedContentTypeNamesArray)
+    {
+        this.allowedContentTypeNamesArray = allowedContentTypeNamesArray;
+    }
+
+    public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeNamesArray.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNamesArray[i], "UTF-8"));
+        }
+        
+        return sb.toString();
+    }
+    
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer();
@@ -182,9 +209,11 @@ public class ComponentProperty
 			.append(" isMultipleBinding=").append(isMultipleBinding)
 			.append(" visualizingAction=").append(visualizingAction)
 			.append(" createAction=").append(createAction)
+			.append(" allowedContentTypeNames=").append(allowedContentTypeNamesArray)
 			.append(" contentBindings.size=").append(contentBindings.size())
 			.append(" siteNodeBindings.size=").append(siteNodeBindings.size())
 			.append(" categoryBindings.size=").append("not implemented");
 		return sb.toString();
 	}
+	
 }

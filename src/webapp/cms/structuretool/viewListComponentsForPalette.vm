@@ -23,7 +23,7 @@
 	<td valign="top">
 		
 		<table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
-		<tr class="darkyellow">
+		<tr class="darkapricot">
 			<td colspan="2" class="smalllabel">Drag a component to the slot</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 		#set($isOdd = true)
 		#foreach ($content in $components)
 			#if($isOdd)
-				#set($class = "class='lightyellow'")
+				#set($class = "class='lightapricot'")
 				#set($isOdd = false)
 			#else
 				#set($class = "class='white'")

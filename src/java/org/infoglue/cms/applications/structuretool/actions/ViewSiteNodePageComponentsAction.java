@@ -46,6 +46,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
 
+import java.net.URLEncoder;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,10 +72,11 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	
 	LanguageVO masterLanguageVO = null;
 	
-	private List repositories 			= null;
-	private String currentAction 		= null;
-	private Integer filterRepositoryId 	= null; 
-	private String sortProperty 		= "name";
+	private List repositories 				 = null;
+	private String currentAction 		 	 = null;
+	private Integer filterRepositoryId 		 = null; 
+	private String sortProperty 			 = "name";
+	private String[] allowedContentTypeNames = null;
 	
 	public ViewSiteNodePageComponentsAction()
 	{
@@ -1361,5 +1363,36 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
     public void setDirection(Integer direction)
     {
         this.direction = direction;
+    }
+    
+    public String[] getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+    
+    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    {
+        System.out.println("allowedContentTypeNames in ViewSiteNodePageComponents:" + allowedContentTypeNames);
+        for(int i=0; i<allowedContentTypeNames.length; i++)
+        {
+            System.out.println("" + allowedContentTypeNames[i]);
+        }
+        
+        this.allowedContentTypeNames = allowedContentTypeNames;
+    }
+    
+    public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeNames.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNames[i], "UTF-8"));
+        }
+        
+        return sb.toString();
     }
 }

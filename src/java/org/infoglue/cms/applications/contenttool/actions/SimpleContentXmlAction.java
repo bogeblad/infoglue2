@@ -64,11 +64,13 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	private String digitalAssetKey;
 	private Integer digitalAssetId;
 	private Integer languageId;
+	//private String[] allowedContentTypeNames = null;
 
 	public INodeSupplier getNodeSupplier() throws SystemException
 	{
 		ContentNodeSupplier sup =  new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal().getName());
 		sup.setShowLeafs(showLeafs.compareTo("yes")==0);
+		sup.setAllowedContentTypeNames(allowedContentTypeNames);
 		return sup;
 	}
 	
@@ -178,4 +180,16 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	protected BaseEntityVO getRootEntityVO(Integer repositoryId, InfoGluePrincipal principal) throws ConstraintException, SystemException {
 		return ContentControllerProxy.getController().getRootContentVO(repositoryId, principal.getName());
 	}
-  }
+	
+	/*
+    public String[] getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+    
+    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    {
+        this.allowedContentTypeNames = allowedContentTypeNames;
+    }
+    */
+}

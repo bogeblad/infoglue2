@@ -311,7 +311,7 @@
 	<td valign="top">
 		
 		<table cellpadding="0" cellspacing="0" border="0">
-		<tr class="darkyellow">
+		<tr class="darkapricot">
 			<td class="smalllabel">Mark the sitenodes you want to relate and click "Add".</td>
 		</tr>
 		<tr>
@@ -370,7 +370,7 @@
 	<td>&nbsp;</td>
 	<td valign="top">
 		<table cellpadding="0" cellspacing="0" border="0">
-		<tr class="darkyellow">
+		<tr class="darkapricot">
 			<td class="smalllabel">The following pages are bound so far</td>
 		</tr>
 		<tr>

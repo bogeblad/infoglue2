@@ -142,6 +142,8 @@ public class ContentImpl implements Content
     public void setContentTypeDefinition (org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl contentTypeDefinition)
     {
         this.contentTypeDefinition = contentTypeDefinition;
+        if(contentTypeDefinition != null)
+            this.valueObject.setContentTypeDefinitionId(contentTypeDefinition.getId());
     }
       
     public java.util.Collection getChildren()

@@ -42,7 +42,7 @@
 		<tr>
 			<td><img src="images/trans.gif" height="10"></td>
 		</tr>
-		<tr class="darkyellow">
+		<tr class="darkapricot">
 			<td class="smalllabel">Click on the template(layout) the page should use</td>
 		</tr>
 		<tr>
@@ -55,7 +55,7 @@
 		#set($isOdd = true)
 		#foreach ($template in $templates)
 			#if($isOdd)
-				#set($class = "class='lightyellow'")
+				#set($class = "class='lightapricot'")
 				#set($isOdd = false)
 			#else
 				#set($class = "class='white'")

@@ -433,7 +433,7 @@
 				#if($tree == "applet")
 					#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
 				#else
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree!bindingView.action?repositoryId=${repositoryId}" width="350" height="400" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree!bindingView.action?repositoryId=${repositoryId}&${allowedContentTypeNames}" width="350" height="400" align="baseline"></IFRAME>
 				#end
 			</td>
 		</tr>	
