@@ -316,6 +316,7 @@
 		</copy>
 		<copy todir="${build}/deliverwebapp/WEB-INF/classes">
 			<fileset dir="${conf}/deliver" includes="mapping.xml"/>
+			<fileset dir="${conf}/deliver" includes="webwork.properties"/>
 		</copy>
 		<copy todir="${build}/deliverwebapp/WEB-INF/classes">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
@@ -338,6 +339,7 @@
 		</copy>
 		<copy todir="${build}/cmswebapp/WEB-INF/classes">
 			<fileset dir="${conf}/cms" includes="mapping.xml"/>
+			<fileset dir="${conf}/cms" includes="webwork.properties"/>
 		</copy>
 		<copy todir="${build}/cmswebapp/WEB-INF/classes">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
