@@ -42,7 +42,7 @@ import com.opensymphony.module.propertyset.PropertySet;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.9 $ $Date: 2005/01/14 15:49:36 $
+ * @version $Revision: 1.10 $ $Date: 2005/01/18 16:22:25 $
  */
 public class WorkflowFacade
 {
@@ -82,16 +82,17 @@ public class WorkflowFacade
 	public WorkflowFacade(InfoGluePrincipal userPrincipal, long workflowId)
 	{
 		this(userPrincipal);
-		this.workflowId = workflowId;
+		setWorkflowIdAndDescriptor(workflowId);
 	}
 
 	/**
-	 * Returns the name of the underlying workflow
-	 * @return the name of the underlying workflow
+	 * Sets the workflow ID to the given value, and caches the associated workflow descriptor
+	 * @param workflowId the desired workflow ID
 	 */
-	public String getName()
+	private void setWorkflowIdAndDescriptor(long workflowId)
 	{
-		return workflow.getWorkflowName(workflowId);
+		this.workflowId = workflowId;
+		workflowDescriptor = workflow.getWorkflowDescriptor(workflow.getWorkflowName(workflowId));
 	}
 
 	/**
@@ -112,7 +113,7 @@ public class WorkflowFacade
 	{
 		try
 		{
-			workflowId = workflow.initialize(name, initialAction, new HashMap());
+			setWorkflowIdAndDescriptor(workflow.initialize(name, initialAction, new HashMap()));
 		}
 		catch (Exception e)
 		{
@@ -136,28 +137,6 @@ public class WorkflowFacade
 		{
 			throw new SystemException(e);
 		}
-	}
-
-	/**
-	 * Returns the workflow descriptor, lazily initializing it if necessary.
-	 * @return the workflow descriptor associated with the workflow with workflowId.
-	 */
-	private WorkflowDescriptor getWorkflowDescriptor()
-	{
-		if (workflowDescriptor == null)
-			workflowDescriptor = getWorkflowDescriptor(getName());
-
-		return workflowDescriptor;
-	}
-
-	/**
-	 * Returns the workflow descriptor for the workflow with the given name.
-	 * @param name a workflow name
-	 * @return the descriptor for the workflow with name
-	 */
-	private WorkflowDescriptor getWorkflowDescriptor(String name)
-	{
-		return workflow.getWorkflowDescriptor(name);
 	}
 
 	/**
@@ -191,12 +170,11 @@ public class WorkflowFacade
 	 */
 	public List getActiveWorkflows() throws SystemException
 	{
-		List workflows = findActiveWorkflows();
 		List workflowVOs = new ArrayList();
 
-		for (Iterator iterator = workflows.iterator(); iterator.hasNext();)
+		for (Iterator workflows = findActiveWorkflows().iterator(); workflows.hasNext();)
 		{
-			workflowId = ((Long)iterator.next()).longValue();
+			setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
 			CmsLogger.logInfo("workflowId:" + workflowId);
 			workflowVOs.add(createWorkflowVO());
 		}
@@ -250,7 +228,7 @@ public class WorkflowFacade
 	 */
 	public List getDeclaredSteps()
 	{
-		return getDeclaredSteps(getWorkflowDescriptor());
+		return getDeclaredSteps(workflowDescriptor);
 	}
 
 	/**
@@ -288,7 +266,7 @@ public class WorkflowFacade
 	 */
 	private List getInitialActions()
 	{
-		return createActionVOs(getWorkflowDescriptor().getInitialActions());
+		return createActionVOs(workflowDescriptor.getInitialActions());
 	}
 
 	/**
@@ -297,7 +275,7 @@ public class WorkflowFacade
 	 */
 	private List getGlobalActions()
 	{
-		return createActionVOs(getWorkflowDescriptor().getGlobalActions());
+		return createActionVOs(workflowDescriptor.getGlobalActions());
 	}
 
 	/**
@@ -364,7 +342,7 @@ public class WorkflowFacade
 		stepVO.setOwner(step.getOwner());
 		stepVO.setCaller(step.getCaller());
 
-		StepDescriptor stepDescriptor = getWorkflowDescriptor().getStep(step.getStepId());
+		StepDescriptor stepDescriptor = workflowDescriptor.getStep(step.getStepId());
 		stepVO.setName(stepDescriptor.getName());
 		for (Iterator i = stepDescriptor.getActions().iterator(); i.hasNext();)
 			stepVO.addAction(createActionVO((ActionDescriptor)i.next()));
