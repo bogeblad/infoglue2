@@ -190,6 +190,27 @@ public class WorkflowVO implements BaseEntityVO
 		return availableActions;
 	}
 
+	/**
+	 * Returns the initial action with the given ID.  Since the number of initial actions expected to be small, an
+	 * iterative match works fine here.  We don't need to introduce the overhead of a map until we get more than 5
+	 * initial actions, which seems far-fetched for a realistic workflow.
+	 * @param id the id of the desired initial action
+	 * @return the initial action with id
+	 * @throws IllegalArgumentException if no initial action exists with id
+	 * @throws NullPointerException if id is null.
+	 */
+	public WorkflowActionVO getInitialAction(Integer id)
+	{
+		for (Iterator actions = initialActions.iterator(); actions.hasNext();)
+		{
+			WorkflowActionVO action = (WorkflowActionVO)actions.next();
+			if (id.equals(action.getId()))
+				return action;
+		}
+
+		throw new IllegalArgumentException("Initial action " + id + " does not exist in workflow " + name);
+	}
+
 	public String toString()
 	{
 		return new StringBuffer(getClass().getName())
