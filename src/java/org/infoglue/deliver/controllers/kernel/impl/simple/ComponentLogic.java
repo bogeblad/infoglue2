@@ -68,7 +68,7 @@ public class ComponentLogic
 		//Map property = this.getComponentProperty(propertyName);
 		//if(property != null)
 		//{
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -88,8 +88,8 @@ public class ComponentLogic
 	 */
 	public List getBoundCategoryContents(String categoryAttribute, String typeAttribute) throws Exception
 	{
-		Map categoryComponent = getInheritedComponentProperty(infoGlueComponent, categoryAttribute);
-		Map attributeComponent = getInheritedComponentProperty(infoGlueComponent, typeAttribute);
+		Map categoryComponent = getInheritedComponentProperty(infoGlueComponent, categoryAttribute, true);
+		Map attributeComponent = getInheritedComponentProperty(infoGlueComponent, typeAttribute, true);
 		if(categoryComponent != null && attributeComponent != null)
 		{
 			String attr = (String)attributeComponent.get("path");
@@ -112,11 +112,8 @@ public class ComponentLogic
 	public String getAssetUrl(String propertyName) throws Exception
 	{
 		String assetUrl = "";
-		 		
-		//Map property = this.getComponentProperty(propertyName);
-		//if(property != null)
-		//{
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -135,10 +132,7 @@ public class ComponentLogic
 	{
 		String assetUrl = "";
 		 		
-		//Map property = this.getComponentProperty(propertyName);
-		//if(property != null)
-		//{
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -153,12 +147,14 @@ public class ComponentLogic
 
 	public String getAssetThumbnailUrl(String propertyName, int width, int height) throws Exception
 	{
+	    return getAssetThumbnailUrl(propertyName, width, height, true);
+	}
+	
+	public String getAssetThumbnailUrl(String propertyName, int width, int height, boolean useInheritance) throws Exception
+	{
 		String assetUrl = "";
 		 		
-		//Map property = this.getComponentProperty(propertyName);
-		//if(property != null)
-		//{
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -173,14 +169,16 @@ public class ComponentLogic
 
  	public String getAssetThumbnailUrl(String propertyName, String assetKey, int width, int height) throws Exception
  	{
+ 	   return getAssetThumbnailUrl(propertyName, assetKey, width, height, true);
+ 	}
+ 	
+	public String getAssetThumbnailUrl(String propertyName, String assetKey, int width, int height, boolean useInheritance) throws Exception
+ 	{
 		String assetUrl = "";
 
 		try
 		{
-			//Map property = this.getComponentProperty(propertyName);
-			//if(property != null)
-			//{
-			Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+			Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 			if(property != null)
 			{	
 				List bindings = (List)property.get("bindings");
@@ -219,12 +217,22 @@ public class ComponentLogic
 		return assetUrl;
 	}
 	
+	public String getContentAttribute(String propertyName, String attributeName)
+	{
+	    return getContentAttribute(propertyName, attributeName, false, true);
+	}
 
+	public String getContentAttribute(String propertyName, String attributeName, boolean disableEditOnSight)
+	{
+	    return getContentAttribute(propertyName, attributeName, disableEditOnSight, true);
+	}
+
+	/*
 	public String getContentAttribute(String propertyName, String attributeName)
 	{
 		String attributeValue = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{
 			List bindings = (List)property.get("bindings");
@@ -237,13 +245,14 @@ public class ComponentLogic
 
 		return attributeValue;
 	}
+	*/
 	
 	
-	public String getContentAttribute(String propertyName, String attributeName, boolean disableEditOnSight)
+	public String getContentAttribute(String propertyName, String attributeName, boolean disableEditOnSight, boolean useInheritance)
 	{
 		String attributeValue = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -261,7 +270,7 @@ public class ComponentLogic
 	{
 		String attributeValue = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -280,7 +289,7 @@ public class ComponentLogic
 	{
 		List formAttributes = new ArrayList();
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -302,11 +311,16 @@ public class ComponentLogic
 
 	public String getPropertyValue(String propertyName, boolean useLangaugeFallback)
 	{
+		return getPropertyValue(propertyName, useLangaugeFallback, true);
+	}
+
+	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance)
+	{
 		String propertyValue = "";
 
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getLanguageId());
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			if(property != null)
@@ -325,12 +339,17 @@ public class ComponentLogic
 
 		return propertyValue;
 	}
-
+	
 	public Integer getBoundContentId(String propertyName)
+	{
+	    return getBoundContentId(propertyName, true);
+	}
+	
+	public Integer getBoundContentId(String propertyName, boolean useInheritance)
 	{
 		Integer contentId = null;
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -345,9 +364,14 @@ public class ComponentLogic
 
 	public List getBoundContents(String propertyName)
 	{
+	    return getBoundContents(propertyName, true);
+	}
+	
+	public List getBoundContents(String propertyName, boolean useInheritance)
+	{
 		List contents = new ArrayList();
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -362,15 +386,20 @@ public class ComponentLogic
 		return contents;
 	}
 	
+	public List getBoundPages(String propertyName)
+	{
+	    return getBoundPages(propertyName, true);
+	}
+	
 	/**
 	 * This method returns a list of pages bound to the component.
 	 */
 
-	public List getBoundPages(String propertyName)
+	public List getBoundPages(String propertyName, boolean useInheritance)
 	{
 		List pages = new ArrayList();
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -410,12 +439,16 @@ public class ComponentLogic
 		return pages;
 	}
 
-
 	public String getPageUrl(String propertyName) throws Exception
+	{
+	    return getPageUrl(propertyName, true);
+	}
+
+	public String getPageUrl(String propertyName, boolean useInheritance) throws Exception
 	{
 		String pageUrl = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -440,9 +473,14 @@ public class ComponentLogic
 
 	public String getPageUrl(String propertyName, Integer contentId)
 	{
+	    return getPageUrl(propertyName, contentId, true);
+	}
+	
+	public String getPageUrl(String propertyName, Integer contentId, boolean useInheritance)
+	{
 		String pageUrl = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -460,7 +498,7 @@ public class ComponentLogic
 	{
 		String pageUrl = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -478,11 +516,11 @@ public class ComponentLogic
 	 * This method gets a property from the component and if not found there checks in parent components.
 	 */
 
-	public Map getInheritedComponentProperty(InfoGlueComponent component, String propertyName)
+	public Map getInheritedComponentProperty(InfoGlueComponent component, String propertyName, boolean useInheritance)
 	{
 		try
 		{
-			Map property1 = getComponentProperty(propertyName);
+			Map property1 = getComponentProperty(propertyName, useInheritance);
 			if(property1 != null)
 				return property1;
 				
@@ -555,26 +593,29 @@ public class ComponentLogic
 	 * This method fetches the component named component property. If not available on the current page metainfo we go up recursive.
 	 */
 	
-	private Map getComponentProperty(String propertyName) throws Exception
+	private Map getComponentProperty(String propertyName, boolean useInheritance) throws Exception
 	{
 		Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
-
-		try
-		{
-			NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
 		
-			SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(this.templateController.getSiteNodeId()).getValueObject();
-			while(property == null && parentSiteNodeVO != null)
-			{
-			    //CmsLogger.logInfo("parentSiteNodeVO: " + parentSiteNodeVO.getName());
-				
-			    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
-				parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(parentSiteNodeVO.getId());
-			}
-		}
-		catch(Exception e)
+		if(useInheritance)
 		{
-			e.printStackTrace();
+			try
+			{
+				NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
+			
+				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(this.templateController.getSiteNodeId()).getValueObject();
+				while(property == null && parentSiteNodeVO != null)
+				{
+				    //CmsLogger.logInfo("parentSiteNodeVO: " + parentSiteNodeVO.getName());
+					
+				    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
+					parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(parentSiteNodeVO.getId());
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		return property;
