@@ -609,6 +609,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getAssetUrl(Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
+	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + useLanguageFallback;
+		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
+		String cacheName = "assetUrlCache";
+		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		if(cachedAssetUrl != null)
+		{
+			CmsLogger.logInfo("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			return cachedAssetUrl;
+		}
+		
 		String assetUrl = "";
 		
     	Database db = CastorDatabaseService.getDatabase();
@@ -653,6 +663,8 @@ public class ContentDeliveryController extends BaseDeliveryController
             throw new SystemException(e.getMessage());
         }
 		
+        CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+        
 		return assetUrl;
 	}
 
@@ -666,6 +678,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getAssetUrl(Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
+	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback;
+		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
+		String cacheName = "assetUrlCache";
+		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		if(cachedAssetUrl != null)
+		{
+			CmsLogger.logInfo("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			return cachedAssetUrl;
+		}
+		
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
 		
@@ -743,6 +765,8 @@ public class ContentDeliveryController extends BaseDeliveryController
             throw new SystemException(e.getMessage());
         }
 
+        CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+        
         return assetUrl;
 	}
 	
@@ -756,6 +780,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getAssetThumbnailUrl(Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws SystemException, Exception
 	{
+	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + useLanguageFallback + "_" + width + "_" + height;
+		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
+		String cacheName = "assetThumbnailUrlCache";
+		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		if(cachedAssetUrl != null)
+		{
+			CmsLogger.logInfo("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			return cachedAssetUrl;
+		}
+		
 		String assetUrl = "";
 		
 		Database db = CastorDatabaseService.getDatabase();
@@ -802,6 +836,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 			throw new SystemException(e.getMessage());
 		}
 		
+		CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+		
 		return assetUrl;
 	}
 
@@ -815,6 +851,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getAssetThumbnailUrl(Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws SystemException, Exception
 	{
+	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + width + "_" + height;
+		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
+		String cacheName = "assetThumbnailUrlCache";
+		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		if(cachedAssetUrl != null)
+		{
+			CmsLogger.logInfo("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			return cachedAssetUrl;
+		}
+
 		String assetUrl = "";
 		
 		Database db = CastorDatabaseService.getDatabase();
@@ -861,6 +907,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
+		
+		CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
 		
 		return assetUrl;
 	}

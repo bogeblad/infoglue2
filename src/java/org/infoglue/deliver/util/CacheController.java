@@ -167,6 +167,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if((cacheName.equalsIgnoreCase("assetUrlCache") || cacheName.equalsIgnoreCase("assetThumbnailUrlCache")) && (entity.indexOf("DigitalAsset") > 0 || entity.indexOf("ContentVersion") > 0))
+				{
+					clear = true;
+				}
 				
 				
 				if(clear)
