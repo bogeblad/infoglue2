@@ -26,11 +26,19 @@ package org.infoglue.cms.services;
 import java.util.List;
 import java.util.HashMap;
 
+import org.exolab.castor.jdo.Database;
+
 public interface BaseService
 {
 	/**
 	 * The method that fetches a list of 0..n entities from a distributed and/or local source.
 	 */
 	
-	public List selectMatchingEntities(HashMap argumentHashMap) throws Exception;
+    public List selectMatchingEntities(HashMap argumentHashMap) throws Exception;
+
+	/**
+	 * The method that fetches a list of 0..n entities from a distributed and/or local source within a transaction.
+	 */
+	
+	public List selectMatchingEntities(HashMap argumentHashMap, Database db) throws Exception;
 }

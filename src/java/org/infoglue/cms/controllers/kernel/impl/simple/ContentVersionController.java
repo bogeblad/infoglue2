@@ -41,6 +41,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.applications.actions.ViewPageAction;
 
 import java.util.Date;
 import java.util.List;
@@ -277,7 +278,7 @@ public class ContentVersionController extends BaseController
     }
 
 
-	/**
+   	/**
 	 * This method returns the latest active content version.
 	 */
     
@@ -305,7 +306,7 @@ public class ContentVersionController extends BaseController
 					contentVersion = currentContentVersion;
 			}
 		}
-         	
+        
 		return contentVersion;
 	}
     
@@ -342,6 +343,7 @@ public class ContentVersionController extends BaseController
             throw new SystemException(e.getMessage());
         }
     	
+        
 		return contentVersionVO;
     }
 

@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInfoBean;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
@@ -89,6 +90,20 @@ public class ContentControllerProxy extends ContentController
 	 * This method returns a specific content-object after checking that it is accessable by the given user
 	 */
 	
+    public ContentVO getACContentVOWithId(InfoGluePrincipal infogluePrincipal, Integer contentId, Database db) throws ConstraintException, SystemException, Bug, Exception
+    {
+    	Map hashMap = new HashMap();
+    	hashMap.put("contentId", contentId);
+    	
+		intercept(hashMap, "Content.Read", infogluePrincipal);
+				
+		return getSmallContentVOWithId(contentId, db);
+    } 
+
+	/**
+	 * This method returns a specific content-object after checking that it is accessable by the given user
+	 */
+	
     public ContentVO getACContentVOWithId(InfoGluePrincipal infogluePrincipal, Integer contentId) throws ConstraintException, SystemException, Bug, Exception
     {
     	Map hashMap = new HashMap();
@@ -98,7 +113,68 @@ public class ContentControllerProxy extends ContentController
 				
 		return getContentVOWithId(contentId);
     } 
+    
+	/**
+	 * This method returns a list of content-objects after checking that it is accessable by the given user
+	 */
+		
+    public List getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, Database db) throws SystemException, Bug
+    {
+    	List contents = null;
+    	
+    	String method = (String)argumentHashMap.get("method");
+    	CmsLogger.logInfo("method:" + method);
+    	
+    	if(method.equalsIgnoreCase("selectContentListOnIdList"))
+    	{
+			contents = new ArrayList();
+			List arguments = (List)argumentHashMap.get("arguments");
+			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			Iterator argumentIterator = arguments.iterator();
+			while(argumentIterator.hasNext())
+			{ 		
+				HashMap argument = (HashMap)argumentIterator.next(); 
+				Integer contentId = new Integer((String)argument.get("contentId"));
+				CmsLogger.logInfo("Getting the content with Id:" + contentId);
+				try
+				{
+				    contents.add(this.getACContentVOWithId(infoGluePrincipal, contentId, db));
+				}
+				catch(Exception e)
+				{
+				    //TODO - remove later
+				    e.printStackTrace();
+				}
+			}
+    	}
+        else if(method.equalsIgnoreCase("selectListOnContentTypeName"))
+    	{
+			List arguments = (List)argumentHashMap.get("arguments");
+			CmsLogger.logInfo("Arguments:" + arguments.size());   		
+			contents = getContentVOListByContentTypeNames(arguments);
+			Iterator contentIterator = contents.iterator();
+			while(contentIterator.hasNext())
+			{
+			    ContentVO candidateContentVO = (ContentVO)contentIterator.next();
+			    
+		    	Map hashMap = new HashMap();
+		    	hashMap.put("contentId", candidateContentVO.getContentId());
+		    	
+		    	try
+		    	{
+		    	    intercept(hashMap, "Content.Read", infoGluePrincipal);
+		    	}
+		    	catch(Exception e)
+		    	{
+		    		CmsLogger.logInfo("Was not authorized to look at task...");
+		    	    contentIterator.remove();
+		    	}
+			}
+    	}
+        return contents;
+    }
 
+    
 	/**
 	 * This method returns a list of content-objects after checking that it is accessable by the given user
 	 */
@@ -158,7 +234,7 @@ public class ContentControllerProxy extends ContentController
     	}
         return contents;
     }
-
+    
 	/**
 	 * This method finishes up what the create content wizard has resulted after first checking that the user has rights to complete the action.
 	 */

@@ -74,7 +74,12 @@ public class ContentController extends BaseController
     {
     	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId);
     } 
-	
+
+	public ContentVO getSmallContentVOWithId(Integer contentId, Database db) throws SystemException, Bug
+    {
+    	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId, db);
+    } 
+
     public Content getContentWithId(Integer contentId, Database db) throws SystemException, Bug
     {
 		return (Content) getObjectWithId(ContentImpl.class, contentId, db);
@@ -615,7 +620,6 @@ public class ContentController extends BaseController
 
     }   
     
-	
 	/**
 	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
 	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
@@ -640,6 +644,41 @@ public class ContentController extends BaseController
 				Integer contentId = new Integer((String)argument.get("contentId"));
 				CmsLogger.logInfo("Getting the content with Id:" + contentId);
 				contents.add(getContentVOWithId(contentId));
+			}
+    	}
+        else if(method.equalsIgnoreCase("selectListOnContentTypeName"))
+    	{
+			List arguments = (List)argumentHashMap.get("arguments");
+			CmsLogger.logInfo("Arguments:" + arguments.size());   		
+			contents = getContentVOListByContentTypeNames(arguments);
+    	}
+        return contents;
+    }
+	
+	/**
+	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
+	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
+	 */
+	
+    public List getContentVOList(HashMap argumentHashMap, Database db) throws SystemException, Bug
+    {
+    	List contents = null;
+    	
+    	String method = (String)argumentHashMap.get("method");
+    	CmsLogger.logInfo("method:" + method);
+    	
+    	if(method.equalsIgnoreCase("selectContentListOnIdList"))
+    	{
+			contents = new ArrayList();
+			List arguments = (List)argumentHashMap.get("arguments");
+			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			Iterator argumentIterator = arguments.iterator();
+			while(argumentIterator.hasNext())
+			{ 		
+				HashMap argument = (HashMap)argumentIterator.next(); 
+				Integer contentId = new Integer((String)argument.get("contentId"));
+				CmsLogger.logInfo("Getting the content with Id:" + contentId);
+				contents.add(getSmallContentVOWithId(contentId, db));
 			}
     	}
         else if(method.equalsIgnoreCase("selectListOnContentTypeName"))

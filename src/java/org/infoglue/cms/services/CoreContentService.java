@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.services;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 
 import java.util.List;
@@ -45,5 +46,17 @@ public class CoreContentService implements BaseService
 	public List selectMatchingEntities(HashMap argumentHashMap) throws Exception
 	{
 		return ContentController.getContentController().getContentVOList(argumentHashMap);		
+	}
+
+	/**
+	 * As this is a local service for now we just use the ContentController to get us the contents
+	 * matching the criterias. It could be interessting in the future to have distributed sources as well
+	 * and then this class would act as the adaptor and use SOAP or another tech to query the source.
+	 * We must allways convert the result to a list of ContentVO after all.  
+	 */
+	
+	public List selectMatchingEntities(HashMap argumentHashMap, Database db) throws Exception
+	{
+		return ContentController.getContentController().getContentVOList(argumentHashMap, db);		
 	}
 }

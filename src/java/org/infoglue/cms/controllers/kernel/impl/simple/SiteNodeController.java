@@ -33,6 +33,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.entities.management.*;
 import org.infoglue.cms.entities.management.impl.simple.*;
 
@@ -72,6 +73,15 @@ public class SiteNodeController extends BaseController
     public static SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId) throws SystemException, Bug
     {
 		return (SiteNodeVO) getVOWithId(SiteNodeImpl.class, siteNodeId);
+    }
+
+    /**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
+    public static SiteNodeVO getSmallSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug
+    {
+		return (SiteNodeVO) getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
     }
 
 
@@ -489,7 +499,42 @@ public class SiteNodeController extends BaseController
         return siteNodes;
     }
 
+    /**
+	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
+	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
+	 */
+	
+    public static List getSiteNodeVOList(HashMap argumentHashMap, Database db) throws SystemException, Bug
+    {
+    	List siteNodes = null;
+    	
+    	String method = (String)argumentHashMap.get("method");
+    	CmsLogger.logInfo("method:" + method);
+    	
+    	if(method.equalsIgnoreCase("selectSiteNodeListOnIdList"))
+    	{
+			siteNodes = new ArrayList();
+			List arguments = (List)argumentHashMap.get("arguments");
+			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			Iterator argumentIterator = arguments.iterator();
+			while(argumentIterator.hasNext())
+			{ 		
+				HashMap argument = (HashMap)argumentIterator.next(); 
+				CmsLogger.logInfo("argument:" + argument.size());
+				 
+				Iterator iterator = argument.keySet().iterator();
+			    while ( iterator.hasNext() )
+			       CmsLogger.logInfo( "   " + iterator.next() );
 
+
+				Integer siteNodeId = new Integer((String)argument.get("siteNodeId"));
+				CmsLogger.logInfo("Getting the siteNode with Id:" + siteNodeId);
+				siteNodes.add(getSmallSiteNodeVOWithId(siteNodeId, db));
+			}
+    	}
+        
+        return siteNodes;
+    }
 	/**
 	 * This method fetches the root siteNode for a particular repository.
 	 */
