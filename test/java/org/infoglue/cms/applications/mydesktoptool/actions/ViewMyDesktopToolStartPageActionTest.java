@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.3 2005/01/18 19:18:50 jed Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.4 2005/01/19 00:02:00 jed Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool.actions;
 
@@ -32,6 +32,7 @@ import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.mydesktop.*;
 import webwork.action.ActionContext;
+import com.opensymphony.module.propertyset.PropertySet;
 
 /**
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
@@ -72,9 +73,8 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 
 			List availableActions = action.getWorkflowActionVOList();
 			assertTrue("There should be at least 2 current actions", availableActions.size() >= 2);
-			assertContains(availableActions, createCreateNewsAction(workflow1.getWorkflowId()));
-			assertContains(availableActions,
-								new WorkflowActionVO(new Integer(4), workflow2.getWorkflowId(), "Register Name 1"));
+			assertContains(availableActions, createCreateNews(workflow1.getWorkflowId()));
+			assertContains(availableActions, createRegisterUser(workflow2.getWorkflowId()));
 		}
 		finally
 		{
@@ -83,27 +83,44 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 		}
 	}
 
-	public void testStartWorkflow() throws Exception
+	public void testStartWorkflowCreateNews() throws Exception
 	{
 		action.setWorkflowName("Create News");
-		action.doStartWorkflow();
+		assertNone(action.doStartWorkflow());
+
+		try
+		{
+			assertNull("Available workflows should be null:", action.getAvailableWorkflowVOList());
+			assertNull("Current workflows should be null:", action.getWorkflowVOList());
+		}
+		finally
+		{
+			finishWorkflow();
+		}
+	}
+
+	public void testStartWorkflowCreateUser() throws Exception
+	{
+		action.setWorkflowName("Create User");
+		assertSuccess(action.doStartWorkflow());
 
 		try
 		{
 			assertFalse("There should be at least 1 current workflow", action.getWorkflowVOList().isEmpty());
 			List workflowActions = action.getWorkflowActionVOList();
 			assertFalse("There should be at least 1 current action", workflowActions.isEmpty());
-			assertContains(workflowActions, createCreateNewsAction(action.getWorkflow().getWorkflowId()));
+			assertContains(workflowActions, createRegisterUser(action.getWorkflow().getWorkflowId()));
 		}
 		finally
 		{
-			finishWorkflow(action.getWorkflow().getIdAsPrimitive());
+			finishWorkflow();
 		}
 	}
 
-	public void testInvoke() throws Exception
+	public void testInvokeCreateNews() throws Exception
 	{
-		WorkflowVO workflow = controller.initializeWorkflow(getAdminPrincipal(), "Create News", 0);
+		action.setWorkflowName("Create News");
+		assertNone(action.doStartWorkflow());
 
 		try
 		{
@@ -113,17 +130,29 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 			request.setParameter("leadIn", getName());
 			request.setParameter("fullText", getName());
 
-			action.setWorkflowId(workflow.getIdAsPrimitive());
+			action.setWorkflowId(action.getWorkflow().getIdAsPrimitive());
 			action.setActionId(4);
 			assertNone(action.doInvoke());
 
 			assertNull("Available workflows should be null:", action.getAvailableWorkflowVOList());
 			assertNull("Current workflows should be null:", action.getWorkflowVOList());
+
+			PropertySet propertySet = controller.getPropertySet(getAdminPrincipal(), action.getWorkflow().getIdAsPrimitive());
+			assertEquals("Wrong name:", request.getParameter("name"), propertySet.getString("name"));
+			assertEquals("Wrong title:", request.getParameter("title"), propertySet.getString("title"));
+			assertEquals("Wrong navigationTitle:", request.getParameter("navigationTitle"), propertySet.getString("navigationTitle"));
+			assertEquals("Wrong leadIn:", request.getParameter("leadIn"), propertySet.getString("leadIn"));
+			assertEquals("Wrong fullText:", request.getParameter("fullText"), propertySet.getString("fullText"));
 		}
 		finally
 		{
-			finishWorkflow(workflow.getIdAsPrimitive());
+			finishWorkflow();
 		}
+	}
+
+	private void finishWorkflow() throws Exception
+	{
+		finishWorkflow(action.getWorkflow().getIdAsPrimitive());
 	}
 
 	private void finishWorkflow(long workflowId) throws Exception
@@ -156,8 +185,13 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 				&& one.getName().equals(another.getName());
 	}
 
-	private static WorkflowActionVO createCreateNewsAction(Long workflowId)
+	private static WorkflowActionVO createCreateNews(Long workflowId)
 	{
 		return new WorkflowActionVO(new Integer(4), workflowId, "Create news content");
+	}
+
+	private static WorkflowActionVO createRegisterUser(Long workflowId)
+	{
+		return new WorkflowActionVO(new Integer(4), workflowId, "Register Name 1");
 	}
 }
