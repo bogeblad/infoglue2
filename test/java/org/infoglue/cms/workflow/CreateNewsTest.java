@@ -20,123 +20,24 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsTest.java,v 1.2 2005/01/13 23:38:32 jed Exp $
+ * $Id: CreateNewsTest.java,v 1.3 2005/01/18 21:48:52 jed Exp $
  */
 package org.infoglue.cms.workflow;
 
-import java.util.*;
-
 import junit.framework.*;
 import junit.swingui.TestRunner;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
-import org.infoglue.cms.entities.mydesktop.*;
 
 /**
  * Tests the WorkflowController using the Create News sample workflow
  * @see org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
  */
-public class CreateNewsTest extends WorkflowTestCase
+public class CreateNewsTest extends NewsWorkflowTestCase
 {
-	protected void setUp() throws Exception
-	{
-		super.setUp();
-		setUserPrincipal(getAdminPrincipal());
-		startWorkflow(0);
-		checkWorkflow(1, 0, 1);
-	}
-
-	public void testGetAvailableWorkflowVOList() throws Exception
-	{
-		List workflows = WorkflowController.getController().getAvailableWorkflowVOList(getUserPrincipal());
-		assertEquals("Wrong number of available workflows:", 2, workflows.size());
-
-		WorkflowVO workflow = findWorkflowByName(workflows);
-		assertNull("There should not be a workflow ID", workflow.getWorkflowId());
-		assertEquals("Wrong name:", getWorkflowName(), workflow.getName());
-		assertEquals("Wrong number of declared steps:", 3, workflow.getDeclaredSteps().size());
-		assertTrue("There should be no current steps:", workflow.getCurrentSteps().isEmpty());
-		assertTrue("There should be no history steps:", workflow.getHistorySteps().isEmpty());
-		assertTrue("There should be no steps:", workflow.getSteps().isEmpty());
-		assertTrue("There should be no available actions:", workflow.getAvailableActions().isEmpty());
-		assertTrue("There should be no global actions:", workflow.getGlobalActions().isEmpty());
-	}
-
-	public void testGetCurrentWorkflowVOList() throws Exception
-	{
-		List workflows = WorkflowController.getController().getCurrentWorkflowVOList(getUserPrincipal());
-		assertFalse("There should be at least one active workflow", workflows.isEmpty());
-		assertNotNull("Current workflow should be in the list", findCurrentWorkflow());
-	}
-
 	public void testWorkflow() throws Exception
 	{
 		invokeCreateNews();
 		checkWorkflow(1, 1, 1);
-	}
-
-	public void testGetAllSteps() throws Exception
-	{
-		assertEquals("Wrong number of steps:", 3,
-						 WorkflowController.getController().getAllSteps(getUserPrincipal(), getWorkflowId()).size());
-	}
-
-	public void testGetCurrentSteps() throws Exception
-	{
-		List steps = WorkflowController.getController().getCurrentSteps(getUserPrincipal(), getWorkflowId());
-		assertEquals("Wrong number of steps:", 1, steps.size());
-		assertEquals("Wrong name:", "Create news content", ((WorkflowStepVO)steps.get(0)).getName());
-
-		invokeCreateNews();
-		steps = WorkflowController.getController().getCurrentSteps(getUserPrincipal(), getWorkflowId());
-		assertEquals("Wrong number of steps:", 1, steps.size());
-		assertEquals("Wrong name:", "Preview news and approve", ((WorkflowStepVO)steps.get(0)).getName());
-	}
-
-	public void testGetHistorySteps() throws Exception
-	{
-		assertEquals("Wrong number of steps:", 0,
-						 WorkflowController.getController().getHistorySteps(getUserPrincipal(), getWorkflowId()).size());
-
-		invokeCreateNews();
-		List steps = WorkflowController.getController().getHistorySteps(getUserPrincipal(), getWorkflowId());
-		assertEquals("Wrong number of steps:", 1, steps.size());
-		assertEquals("Wrong name:", "Create news content", ((WorkflowStepVO)steps.get(0)).getName());
-	}
-
-	/**
-	 * Returns the name of the workflow under test
-	 * @return "Create News"
-	 */
-	protected String getWorkflowName()
-	{
-		return "Create News";
-	}
-
-	/**
-	 * Returns the number of global actions
-	 * @return the number of global actions
-	 */
-	protected int getNumberOfGlobalActions()
-	{
-		return 2;
-	}
-
-	/**
-	 * Invokes the "Create News" workflow action
-	 * @throws java.lang.Exception if an error occurs
-	 */
-	private void invokeCreateNews() throws Exception
-	{
-		FakeHttpServletRequest request = new FakeHttpServletRequest();
-		request.setParameter("name", getName());
-		request.setParameter("title", getName());
-		request.setParameter("navigationTitle", getName());
-		request.setParameter("leadIn", getName());
-		request.setParameter("fullText", getName());
-
-		invokeAction(request, 4);
 	}
 
 	public static Test suite()
