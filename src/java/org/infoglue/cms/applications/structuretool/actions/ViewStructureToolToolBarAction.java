@@ -232,14 +232,9 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 	{
 		CmsLogger.logInfo("Title:" + this.title);
 		CmsLogger.logInfo("toolbarKey:" + this.toolbarKey);
-		System.out.println("Title:" + this.title);
-		System.out.println("toolbarKey:" + this.toolbarKey);
-		System.out.println("isBranch:" + this.isBranch);
 		try
 		{		
-		    System.out.println("isBranch:" + this.isBranch.booleanValue());
-		    System.out.println("toolbarKey:" + this.toolbarKey);
-			if(this.toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeDetailsHeader") || this.toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeComponentsHeader"))
+		    if(this.toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeDetailsHeader") || this.toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeComponentsHeader"))
 			{
 			    if(this.isBranch.booleanValue())
 					return getBranchSiteNodeButtons();
