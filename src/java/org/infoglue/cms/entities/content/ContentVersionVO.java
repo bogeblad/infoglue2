@@ -39,19 +39,19 @@ public class ContentVersionVO implements BaseEntityVO
 	public static final Integer UNPUBLISHED_STATE = new Integer(5);
 	
 	private Integer contentVersionId;
-    private Integer stateId				= new Integer(0);
-    private Date modifiedDateTime		= new Date();
-    private String versionComment		= "Saved";
-    private Boolean isCheckedOut		= new Boolean(false);
-   	private Boolean isActive			= new Boolean(true);
+    private Integer stateId						= new Integer(0);
+    private Date modifiedDateTime				= new Date();
+    private String versionComment				= "Saved";
+    private Boolean isCheckedOut				= new Boolean(false);
+   	private Boolean isActive					= new Boolean(true);
 	
-	private Integer languageId					 = null;
-	private String languageName 				 = "";
-   	private Integer contentId					 = null;
-    private String contentName 					 = "";
-    private Integer contentTypeDefinitionId		 = null;
-    private String versionModifier				 = null;
-	private String versionValue   	 			 = "";
+	private Integer languageId					= null;
+	private String languageName 				= "";
+   	private Integer contentId					= null;
+    private String contentName 					= "";
+    private Integer contentTypeDefinitionId		= null;
+    private String versionModifier				= null;
+	private String versionValue   	 			= "";
 	    
     public java.lang.Integer getContentVersionId()
     {
@@ -182,7 +182,7 @@ public class ContentVersionVO implements BaseEntityVO
 	}
 
 
-	public ContentVersionVO getCopy()
+	public ContentVersionVO copy()
 	{
 		ContentVersionVO copy = new ContentVersionVO();
 		
