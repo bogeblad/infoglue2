@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.validation.header" "tool.managementtool.validation.header" "")
+
+<div class="fullymarginalized">
+<table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
+<tr>
+	<td colspan="2">
+	 	$ui.getString("tool.managementtool.validation.resultText")
+	</td>
+</tr>
+<tr>
+	<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+</div>
+
+#set($lvConstraint = 0)
+#set($nameLabel = $ui.getString("tool.managementtool.validation.nameLabel"))
+#set($descriptionLabel = $ui.getString("tool.managementtool.validation.descriptionLabel"))
+#set($statusLabel = $ui.getString("tool.managementtool.validation.statusLabel"))
+#set($reasonLabel = $ui.getString("tool.managementtool.validation.reasonLabel"))
+#lvHead([$nameLabel,$descriptionLabel,$statusLabel,$reasonLabel] "" "" "" "")
+
+#set($cnt = 0)
+#foreach ($validatedItem in $validatedItems)
+	#if($validatedItem.validationResult == true)
+		#set($status = "Passed")
+    #else
+    	#set($status = "Failed")
+    #end
+    	
+	#set( $rowUrl = "")
+	#set( $row = ["$validatedItem.name","$validatedItem.description","$status","$validatedItem.reason"] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $validatedItem.name)
+#end
+
+#lvEnd()
+#endManagementTool()
+
