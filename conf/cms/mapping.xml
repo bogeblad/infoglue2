@@ -78,9 +78,9 @@
     <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
       <sql many-key="userPropertiesId" many-table="cmUserPropertiesDigitalAsset"/>
     </field>
-    
+
   </class>
-  
+
   <!--  Mapping for UserContentTypeDefinition  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl" identity="userContentTypeDefinitionId" key-generator="IDENTITY">
     <description>UserContentTypeDefinition</description>
@@ -136,7 +136,7 @@
     <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
       <sql many-key="rolePropertiesId" many-table="cmRolePropertiesDigitalAsset"/>
     </field>
-    
+
   </class>
 
   <!--  Mapping for RoleContentTypeDefinition  -->
@@ -360,7 +360,7 @@
       <sql name="serviceDefinitionId"/>
     </field>
     </class>
- 
+
 <!--  Mapping for Qualifyer  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" depends="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" identity="qualifyerId" key-generator="IDENTITY">
     <description>Qualifyer</description>
@@ -455,7 +455,7 @@
         <field name="repositoryLanguages" type="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl" lazy="true" collection="collection">
       <sql many-key="languageId"/>
     </field>
-    </class> 
+    </class>
 
 
 <!--  Mapping for ServiceDefinition  -->
@@ -480,7 +480,7 @@
     </field>
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="availableServiceBindingId"/>
-    </field>    
+    </field>
     </class>
 
 
@@ -515,12 +515,12 @@
     </field>
         <field name="serviceDefinitions" type="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl" lazy="true" collection="collection">
       <sql many-key="availableServiceBindingId" many-table="cmServiceDefinitionAvailableServiceBinding"/>
-    </field>    
+    </field>
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="availableServiceBindingId"/>
-    </field>    
+    </field>
   </class>
-  
+
 <!--  Mapping for SmallAvailableServiceBinding  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl" identity="availableServiceBindingId" key-generator="IDENTITY">
     <description>AvailableServiceBinding</description>
@@ -548,7 +548,7 @@
       <sql name="isInheritable" type="integer" dirty="check" />
     </field>
   </class>
-  
+
 <!--  Mapping for InterceptionPoint  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" identity="interceptionPointId" key-generator="IDENTITY">
     <description>InterceptionPoint</description>
@@ -571,9 +571,9 @@
     </field>
     <field name="interceptors" type="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" lazy="false" collection="collection">
       <sql many-key="interceptionPointId" many-table="cmInterceptionPointInterceptor"/>
-    </field>    
+    </field>
   </class>
-  
+
   <!--  Mapping for Interceptor  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" identity="interceptorId" key-generator="IDENTITY">
     <description>Interceptor</description>
@@ -593,7 +593,7 @@
     </field>
     <field name="interceptionPoints" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" lazy="false" collection="collection">
       <sql many-key="interceptorId" many-table="cmInterceptionPointInterceptor"/>
-    </field>    
+    </field>
   </class>
 
 
@@ -727,7 +727,7 @@
     </field>
     <field name="contentTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl">
       <sql name="contentTypeDefinitionId"/>
-    </field>    
+    </field>
     <field name="contentTypeDefinitionId" type="java.lang.Integer">
       <sql name="contentTypeDefinitionId" type="integer"/>
     </field>
@@ -867,8 +867,8 @@
       <sql name="assetBlob" type="blob" dirty="ignore" />
     </field>
   </class>
-    
-    
+
+
 <!-- ************************************* -->
 <!-- ****   WORKFLOW SPECIFIC PARTS   **** -->
 <!-- ************************************* -->
@@ -925,7 +925,7 @@
     <field name="publicationDateTime" type="java.util.Date">
       <sql name="publicationDateTime" type="timestamp" dirty="ignore" />
     </field>
-    <field name="publicationDetails" type="org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl" collection="collection">
+    <field name="publicationDetails" type="org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl" collection="collection" lazy="true">
       <sql many-key="publicationId" />
     </field>
     <field name="publisher" type="java.lang.String">
@@ -1042,6 +1042,6 @@
 	      	<sql name="referencingEntityComplId" type="varchar" dirty="check" />
 	    </field>
     </class>
-    
+
 </mapping>
 
