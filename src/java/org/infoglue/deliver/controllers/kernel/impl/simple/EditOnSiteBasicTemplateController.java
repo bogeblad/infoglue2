@@ -72,12 +72,12 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 
 		try
 		{
-			String extraHeader = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteHeader.vm"));
+			String extraHeader = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/preview/editOnSiteHeader.vm"));
 			String servletContext = request.getContextPath();
 			//CmsLogger.logInfo("extraHeader:" + extraHeader);
 			extraHeader = extraHeader.replaceAll("\\{applicationContext\\}", servletContext);
 			//CmsLogger.logInfo("extraHeader:" + extraHeader);
-			String extraBody   = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteBody.vm"));
+			String extraBody   = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/preview/editOnSiteBody.vm"));
 
 			StringBuffer modifiedTemplate = new StringBuffer(page);
 
