@@ -344,6 +344,31 @@ public class VisualFormatter
 	 * This method converts all non-standard characters to html-equivalents.
 	 */
 	
+	public final String escapeForAdvancedJavascripts(String s)
+	{
+		if(s == null)
+			return null;
+			
+		StringBuffer sb = new StringBuffer();
+		int n = s.length();
+		for (int i = 0; i < n; i++) 
+		{
+		    char c = s.charAt(i);
+			switch (c) 
+			{
+				case '\'': sb.append("\\'"); break;
+				case '"': sb.append("&quot;"); break;
+				default:  sb.append(c); break;
+			}
+		}
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * This method converts all non-standard characters to html-equivalents.
+	 */
+	
 	public final String encode(String s) throws Exception
 	{
 		if(s == null)
