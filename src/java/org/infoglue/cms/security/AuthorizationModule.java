@@ -126,6 +126,12 @@ public interface AuthorizationModule
 	public void updateInfoGluePrincipalPassword(String userName) throws Exception;
 
 	/**
+	 * This method is used to send out a newpassword to an existing users.  
+	 */
+
+	public void updateInfoGluePrincipalPassword(String userName, String oldPassword, String newPassword) throws Exception;
+
+	/**
 	 * This method is used to delete an existing user.  
 	 */
 

@@ -42,6 +42,7 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.Bug;
@@ -750,6 +751,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		throw new SystemException("The JNDI BASIC Authorization module does not support updates of users yet...");
 	}
 
+	public void updateInfoGluePrincipalPassword(String userName, String oldPassword, String newPassword) throws Exception
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support updates of user password yet...");
+	}
+	
 	public void deleteInfoGluePrincipal(String userName) throws Exception
 	{
 		throw new SystemException("The JNDI BASIC Authorization module does not support deletion of users yet...");

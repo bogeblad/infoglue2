@@ -71,15 +71,18 @@
 <form method="POST" name="editForm" action="UpdateSystemUser.action">
 <table>
 	<tr>
-		<td>#editReadOnlyField("SystemUser.firstName" "firstName" $!firstName "51" $readonly)</td><td>#editReadOnlyField("SystemUser.lastName" "lastName" $!lastName "51" $readonly)</td>
+		<td>#editReadOnlyField("SystemUser.firstName" "firstName" $!firstName "51" $readonly)</td>
+		<td>#editReadOnlyField("SystemUser.lastName" "lastName" $!lastName "51" $readonly)</td>
 	</tr>	
 	
 	<tr>
-		<td>#editReadOnlyField("SystemUser.userName" "newUserName" $!userName "51" "disabled")</td><td>#editReadOnlyField("SystemUser.password" "password" "********" "20" "disabled")<img src="images/trans.gif" width="10" height="1"><a href="UpdateSystemUser!changePassword.action?userName=$formatter.encodeURI($userName)">Send me a new password<a></td>
+		<td>#editReadOnlyField("SystemUser.userName" "newUserName" $!userName "51" "disabled")</td>
+		<td>#editReadOnlyField("SystemUser.password" "password" "********" "20" "disabled")<img src="images/trans.gif" width="10" height="1"><a href="UpdateSystemUser!changePassword.action?userName=$formatter.encodeURI($userName)">Send me a new password<a></td>
 	</tr>
 
 	<tr>
-		<td>#editReadOnlyField("SystemUser.email" "email" $!email "51" $readonly)</td><td>&nbsp;</td>
+		<td>#editReadOnlyField("SystemUser.email" "email" $!email "51" $readonly)</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>

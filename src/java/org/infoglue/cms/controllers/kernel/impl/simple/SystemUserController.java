@@ -184,6 +184,7 @@ public class SystemUserController extends BaseController
 		return systemUserVO;		
 	}	
 
+
 	public SystemUserVO getSystemUserVO(Database db, String userName, String password)  throws SystemException, Exception
 	{
 		SystemUserVO systemUserVO = null;
@@ -203,8 +204,26 @@ public class SystemUserController extends BaseController
 
 		return systemUserVO;		
 	}	
-
     
+	public SystemUser getSystemUser(Database db, String userName, String password)  throws SystemException, Exception
+	{
+		SystemUser systemUser = null;
+		
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1 AND u.password = $2");
+		oql.bind(userName);
+		oql.bind(password);
+    	
+		QueryResults results = oql.execute();
+		
+		if (results.hasMore()) 
+		{
+			systemUser = (SystemUser)results.next();
+			CmsLogger.logInfo("found one:" + systemUser.getFirstName());
+		}
+
+		return systemUser;		
+	}	
+	
     public List getSystemUserVOList() throws SystemException, Bug
     {
         return getAllVOObjects(SystemUserImpl.class, "userName");
@@ -461,7 +480,42 @@ public class SystemUserController extends BaseController
         }
     }        
 
-    
+    public void updatePassword(String userName, String oldPassword, String newPassword) throws ConstraintException, SystemException
+    {
+        if(newPassword == null)
+            throw new ConstraintException("SystemUser.newPassword", "301");
+
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+
+            SystemUser systemUser = getSystemUser(db, userName, oldPassword);
+            if(systemUser == null)
+                throw new ConstraintException("SystemUser.oldPassword", "310");
+            
+            systemUser.setPassword(newPassword);
+			
+            commitTransaction(db);
+        }
+        catch(ConstraintException ce)
+        {
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }        
+  
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.

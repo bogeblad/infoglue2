@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.23 2005/02/24 15:48:48 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.24 2005/03/07 17:25:53 mattias Exp $ -->
 <actions>
 
 	<!-- Test -->
@@ -463,6 +463,11 @@
 		<view name="success">ViewSystemUser.action</view>
 		<view name="saveAndExit">ViewListSystemUser.action</view>
 		<view name="passwordSentSuccess">ViewSystemUser.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateSystemUserPasswordAction" alias="UpdateSystemUserPassword">
+		<view name="input">/cms/managementtool/viewSystemUserPasswordDialog.vm</view>
+		<view name="success">ViewSystemUser.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteSystemUserAction" alias="DeleteSystemUser">

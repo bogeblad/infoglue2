@@ -370,6 +370,8 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		List buttons = new ArrayList();
 		if(UserControllerProxy.getController().getSupportDelete())
 			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(this.userName, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(this.userName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
+		if(UserControllerProxy.getController().getSupportUpdate())
+			buttons.add(new ImageButton("UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(this.userName, URIEncoding), URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
 		
 		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(this.userName);
 		if(contentTypeDefinitionVOList.size() > 0)

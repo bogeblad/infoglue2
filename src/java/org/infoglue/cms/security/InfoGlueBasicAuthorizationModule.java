@@ -306,6 +306,14 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		SystemUserController.getController().updatePassword(userName);
 	}
 	
+	/**
+	 * This method is used to let a user update his password by giving his/her old one first.  
+	 */
+
+	public void updateInfoGluePrincipalPassword(String userName, String oldPassword, String newPassword) throws Exception
+	{
+		SystemUserController.getController().updatePassword(userName, oldPassword, newPassword);
+	}
 	
 	public void deleteInfoGluePrincipal(String userName) throws Exception
 	{
