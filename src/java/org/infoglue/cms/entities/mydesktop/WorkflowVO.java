@@ -63,6 +63,11 @@ public class WorkflowVO implements BaseEntityVO
 		setWorkflowId(new Long(id.longValue()));
 	}
 
+	public long getIdAsPrimitive()
+	{
+		return (workflowId == null) ? 0 : workflowId.longValue();
+	}
+
 	public Long getWorkflowId()
 	{
 		return workflowId;
