@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.2 2005/01/18 22:14:43 jed Exp $
  */
 package org.infoglue.cms.util;
 
@@ -51,6 +51,11 @@ public class FakeHttpServletRequest implements HttpServletRequest
 		setSession(session);
 	}
 
+	public FakeHttpServletRequest(Map parameters)
+	{
+		this.parameters.putAll(parameters);
+	}
+	
 	public Object getAttribute(String name)
 	{
 		return attributes.get(name);
