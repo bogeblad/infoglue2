@@ -699,6 +699,9 @@
       <sql name="contentId"/>
     </field>
     -->
+    <field name="contentId" type="java.lang.Integer">
+      <sql name="contentId" type="integer" dirty="ignore"/>
+    </field>
     <field name="language" type="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">
       <sql name="languageId"/>
     </field>

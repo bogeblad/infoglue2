@@ -40,6 +40,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.exception.SystemException;
@@ -428,14 +429,20 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentCategories.isEmpty())
 			return Collections.EMPTY_LIST;
 
+		/*
 		StringBuffer oql = new StringBuffer();
 		oql.append("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl c ")
 				.append("WHERE c.owningContent.publishDateTime <= $1 AND c.owningContent.expireDateTime >= $2 ")
 				.append("AND c.contentVersionId IN LIST ").append(toVersionIdList(contentCategories));
+        */
+		
+		StringBuffer oql = new StringBuffer();
+		oql.append("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl c ")
+				.append("WHERE c.contentVersionId IN LIST ").append(toVersionIdList(contentCategories));
 
 		ArrayList params = new ArrayList();
-		params.add(new Date());
-		params.add(new Date());
+		//params.add(new Date());
+		//params.add(new Date());
 		return  executeQuery(db, oql.toString(), params);
 	}
 
@@ -447,8 +454,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	private boolean isValidContentVersion(ContentVersion version, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, Database db)
 			throws Exception
 	{
-		Content content = version.getOwningContent();
-
+		//Content content = version.getOwningContent();
+	    Integer contentId = version.getValueObject().getContentId();
+	    System.out.println("contentId:" + contentId);
+	    Content content = ContentController.getContentController().getContentWithId(contentId, db);
+	    
 		ContentVersionVO mostRecentVersion = getContentVersionVO(siteNodeId, content.getContentId(), languageId, useLanguageFallback);
 		boolean isProperVersion = (mostRecentVersion != null) && (mostRecentVersion.getId().equals(version.getId()));
 
