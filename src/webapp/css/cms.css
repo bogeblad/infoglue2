@@ -51,7 +51,7 @@ body.mydesktoptool {
 }
 
 body.mydesktoptooledit {
-	background-color : #F7F7CE;
+	background-color : #F8F8A1;
 }
 
 
@@ -104,6 +104,10 @@ tr.darkgreen {
 	background-color : #C7D1B3;
 	height 			 : 12pt;
 }
+tr.darkapricot {
+	background-color : #F0E1B4;
+	height 			 : 12pt;
+}
 tr.darkyellow {
 	background-color : #DFDA5E;
 	height 			 : 14pt;
@@ -120,8 +124,12 @@ tr.lightgreen {
 	background-color : #EEF7DC;
 	height 			 : 14pt;
 }
-tr.lightyellow {
+tr.lightapricot {
 	background-color : #FEF8D0;
+	height 			 : 12pt;
+}
+tr.lightyellow {
+	background-color : #F8F8A1;
 	height 			 : 14pt;
 }
 tr.white {
