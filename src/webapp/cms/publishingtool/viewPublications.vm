@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <script Language=JavaScript>
-function showHide(a) 
+function showHide(a)
 {
-	var theDiv=document.getElementById("e"+a);	
-	var theImg=document.getElementById("i"+a);	
-	
+	var theDiv=document.getElementById("e"+a);
+	var theImg=document.getElementById("i"+a);
+
 	if(theDiv.style.display == '')
-	{	
+	{
 		theImg.src = "images/tree/smallplus.gif";
 		theDiv.style.display ='none';
 	}
@@ -63,7 +63,7 @@ function uncheckAllBoxes()
 <tr>
 <td valign="top">
 
-#set($eh = $editions.size())
+#set($eh = $editionBrowser.editions.size())
 #set($vh = $contentToPublish.size() + $siteNodeToPublish.size())
 
 #if($eh > $vh)
@@ -77,8 +77,8 @@ function uncheckAllBoxes()
 
 <strong>Submitted for publishing</strong><br/><br/>
 
-#set($lvBorder = 0) 
-#set($lvConstraint = -1) 
+#set($lvBorder = 0)
+#set($lvConstraint = -1)
 ##lvHead(["Name (comment)","Modified", "&nbsp;"] "Publish items" "" "" "")
 #lvHead(["Name (comment)","Modified"] "Publish items" "" "" "")
 
@@ -89,15 +89,15 @@ function uncheckAllBoxes()
 
 ## EVENTS UP FOR REVIEW
 #foreach ($publicationEvent in $publicationEvents)
-	#set($cId = $publicationEvent.id) 
+	#set($cId = $publicationEvent.id)
 	#set($q='"')
 	#set($singleQuote="'")
 	#set($publicationName = $this.escape($publicationEvent.name))
 	#set($deny="JavaScript:ruSure('Do you really want to deny $publicationName','DenyPublicationRequest.action?eventId=$publicationEvent.id&repositoryId=${repositoryId}');")
 	#set($deny="$q$deny$q")
-	#set($denyUrlStart = "<a title='Deny content, $publicationName, and send it back to content provider' href=") 
+	#set($denyUrlStart = "<a title='Deny content, $publicationName, and send it back to content provider' href=")
 	#set($denyUrlEnd="><img src=images/deny.gif border=0></a>")
-	
+
 	#set($rowUrl = "ViewContent.action?contentId=$contentVO.getContentId()&title=Content%20details")
 
 	#if($publicationEvent.entityClass.indexOf("ContentVersion") > -1)
@@ -111,20 +111,20 @@ function uncheckAllBoxes()
 			#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
 		#else
 			#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
-		#end	
+		#end
 	#end
-	
+
 	#if($publicationEvent.description.length() > 50)
 		#set($description = "${publicationEvent.description.substring(0,50)}...")
 	#else
 		#set($description = "${publicationEvent.description}")
 	#end
-	
-	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))	
+
+	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
 	##set( $row = ["$icon $publicationEvent.name ($description)","$modifiedDate", "$denyUrlStart$deny$denyUrlEnd"] )
 	#set( $row = ["$icon $publicationEvent.name <span title='$publicationEvent.description'>($description)</span>","$modifiedDate"] )
 	#set($cnt = $cnt + 1)
-	
+
 	#lvAddRow($row $cnt $cId)
 #end
 
@@ -140,7 +140,7 @@ function uncheckAllBoxes()
 <a href="javascript:checkAllBoxes();">
 <img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0">
 </a>
-		
+
 <a href="javascript:uncheckAllBoxes();">
 <img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0">
 </a>
@@ -154,9 +154,11 @@ function uncheckAllBoxes()
 <td valign="top">
 
 <!--   *****  EDITIONS  *******  -->
-<strong>Previous published editions</strong><br/><br/>
-	
-#set($lvConstraint = 0) 
+#set( $start = $editionBrowser.startIndex + 1 )
+#set( $end = $editionBrowser.startIndex + $editionBrowser.editions.size() )
+<strong>Previous published editions ($start - $end of $editionBrowser.totalEditions)</strong><br/><br/>
+
+#set($lvConstraint = 0)
 #lvHead(["Name","Description", "Date"] "" "" "" "")
 
 		<form name="listFormPublication" action="Confirm.action" method="POST">
@@ -175,26 +177,27 @@ function uncheckAllBoxes()
 #end
 #set($newcnt = $cnt)
 
-#foreach ($publicationVO in $editions)
+#foreach ($publicationVO in $editionBrowser.editions)
 	#set($cnt = $cnt + 1)
-	#set( $cId = $publicationVO.getId() ) 
-	
+	#set( $cId = $publicationVO.getId() )
+
 	#set( $rowUrl = "")
-	
-	#if ($cnt > $newcnt + 1)
-		#set( $chkbox = "<input type='checkbox' disabled='1'/>")
-	#else
+
+	## Only the most recent of all editions should be selectable
+	#if($velocityCount == 1 && $editionBrowser.startIndex == 0)
 		#set( $chkbox = "<input type='checkbox' id='sel' name='sel' value='$cId' onClick=CheckUncheck('r${cnt}',this); /><input type='hidden' name='rowtitle' value='$publicationVO.getName()'/>")
-	#end	
-	
+	#else
+		#set( $chkbox = "<input type='checkbox' disabled='true'/>")
+	#end
+
 	#set( $row = "<a onclick=showHide('$publicationVO.getPublicationId()');><img id='i$publicationVO.getPublicationId()' src='images/tree/smallplus.gif' border=0></a><a href=JavaScript:showHide('$publicationVO.getPublicationId()');>$publicationVO.getName()</a>")
 
 	#set( $row = "$row <div id='e$publicationVO.getPublicationId()' style='display:none;'>")
-	
+
 	## PUBLICATION_DETAILS
-	#set( $versions = $this.getPublicationDetails($cId) )
+	#set( $versions = $publicationVO.publicationDetails )
 	#foreach ($publicationEvent in $versions)
-		
+
 		#if($publicationEvent.entityClass.indexOf("ContentVersion") > -1)
 			#if($publicationEvent.typeId == 3)
 				#set($icon = "<img src='images/tree/unpublishContentItem.gif' border=0>")
@@ -206,36 +209,62 @@ function uncheckAllBoxes()
 				#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
 			#else
 				#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
-			#end	
+			#end
 		#end
-					
+
 		#if($velocityCount != $versions.size() || $versionssn.size() > 0)
 			#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space3.gif'>  $icon")
 			#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space1.gif'> <img src='images/tree/space0.gif'>")
 		#else
-			#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space2.gif'> $icon")			
+			#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space2.gif'> $icon")
 			#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space0.gif'> <img src='images/tree/space0.gif'>")
 		#end
-		
-		#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))			
+
+		#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
 		#set( $row = "$row$tree $publicationEvent.name ($publicationEvent.description) $newLine <font color=669999><small>modified: $modifiedDate </small></font> <br>")
 	#end
 
 	#set( $row = "$row </div>")
 
-	#set($modifiedDate = $formatter.formatDate($publicationVO.getPublicationDateTime(), "yyyy-MM-dd HH:mm"))	
+	#set($modifiedDate = $formatter.formatDate($publicationVO.getPublicationDateTime(), "yyyy-MM-dd HH:mm"))
 	#set( $roww = ["$chkbox $row","$publicationVO.getDescription()", "$modifiedDate"] )
-	
+
 	#lvAddRow($roww $cnt $cId)
 #end
 
-#if( $cnt==0)
+#if( $cnt == 0 )
 	<tr><td></td><td>&nbsp;No editions available</td></tr>
 #end
 
 #lvEnd()
 </form>
 
+#if( $cnt != 0 )
+	#set( $pageUrl = "ViewPublications.action?repositoryId=$repositoryId")
+	<table width="100%">
+	<tr>
+		<td align="left" width="33%">
+			#if($editionBrowser.hasPreviousPage())
+				#set( $prevStart = $editionBrowser.previousPageIndex + 1)
+				#set( $prevEnd = $editionBrowser.previousPageIndex + $editionBrowser.previousPageSize)
+				<a href="$pageUrl&startIndex=$editionBrowser.previousPageIndex">&lt;&lt; $prevStart - $prevEnd</a>
+			#else
+				<img src="images/trans.gif" width="10" height="1"/>
+			#end
+		</td>
+		<td align="center" width="34%">Page $editionBrowser.currentPage of $editionBrowser.totalPages</td>
+		<td align="right" width="33%">
+			#if($editionBrowser.hasNextPage())
+				#set( $nextStart = $editionBrowser.nextPageIndex + 1)
+				#set( $nextEnd = $editionBrowser.nextPageIndex + $editionBrowser.nextPageSize)
+				<a href="$pageUrl&startIndex=$editionBrowser.nextPageIndex">$nextStart - $nextEnd &gt;&gt;</a>
+			#else
+				<img src="images/trans.gif" width="10" height="1"/>
+			#end
+		</td>
+	</tr>
+	</table>
+#end
 
 </td>
 </tr>
