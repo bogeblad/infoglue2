@@ -1,57 +1,123 @@
+var ns = (navigator.appName.indexOf("Netscape") != -1);
+var d = document;
+var px = document.layers ? "" : "px";
+function floatDiv(id, sx, sy)
+{
+	var el=d.getElementById?d.getElementById(id):d.all?d.all[id]:d.layers[id];
+	window[id + "_obj"] = el;
+	if(d.layers)el.style=el;
+	el.cx = el.sx = sx;el.cy = el.sy = sy;
+	el.sP=function(x,y){this.style.left=x+px;this.style.top=y+px;};
+	el.flt=function()
+	{
+		var pX, pY;
+		pX = (this.sx >= 0) ? 0 : ns ? innerWidth : 
+		document.documentElement && document.documentElement.clientWidth ? 
+		document.documentElement.clientWidth : document.body.clientWidth;
+		pY = ns ? pageYOffset : document.documentElement && document.documentElement.scrollTop ? 
+		document.documentElement.scrollTop : document.body.scrollTop;
+		if(this.sy<0) 
+		pY += ns ? innerHeight : document.documentElement && document.documentElement.clientHeight ? 
+		document.documentElement.clientHeight : document.body.clientHeight;
+		this.cx += (pX + this.sx - this.cx)/2;this.cy += (pY + this.sy - this.cy)/2;
+		this.sP(this.cx, this.cy);
+		setTimeout(this.id + "_obj.flt()", 40);
+	}
+	return el;
+}
+
 /****************************
  * Called when rezising popup
  ****************************/
  
-cookie_name = "pageStructureDivWidth";
-var pageStructureDivWidth = "225px";
+toolbarLockPositionCookieName = "toolbarLockPosition";
+pageStructureDivVisibleCookieName = "pageStructureDivVisible";
+pageStructureDivWidthCookieName = "pageStructureDivWidth";
+pageStructureDivHeightCookieName = "pageStructureDivHeight";
+pageStructureDivHeightBodyCookieName = "pageStructureDivHeightBody";
+pageComponentsTopPositionCookieName = "pageStructureTopPosition";
+pageComponentsLeftPositionCookieName = "pageStructureLeftPosition";
 
-/*
-function setInitialPosition()
+var pageStructureDivWidth = "300px";
+var pageStructureDivHeight = "380px";
+var pageStructureDivHeightBody = "360px";
+
+/**
+ * This method sets a cookie in the browser.
+ */
+ 
+function setCookie(name, value)
 {
-	//alert("Setting initial position...");
-	if(document.cookie)
+	if(document.cookie != document.cookie)
+		index = document.cookie.indexOf(name);
+	else
+		index = -1;
+	
+	if (index == -1)
+		document.cookie=name+"="+value+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+}
+
+/**
+ * This method gets a cookie
+ */
+ 
+function getCookieValue(name)
+{ 
+	var value = "";
+ 	if(document.cookie)
 	{
-		index = document.cookie.indexOf(cookie_name);
+		index = document.cookie.indexOf(name);
 		//alert("index:" + index);
 		if (index != -1)
 		{
 			namestart = (document.cookie.indexOf("=", index) + 1);
 			nameend = document.cookie.indexOf(";", index);
 			if (nameend == -1) {nameend = document.cookie.length;}
-			defaultMenuSize = document.cookie.substring(namestart, nameend);
+			value = document.cookie.substring(namestart, nameend);
 			//alert("defaultMenuSize" + defaultMenuSize);
 		}
 	}
-
-	//alert("defaultMenuSize" + defaultMenuSize)
-	this.document.getElementById('mainarea').cols=defaultMenuSize;
-}
-*/
+	
+	return value;
+} 
 
 function expandWindow()
 {
-	size = document.getElementById('pageComponents').style.width;
-	//alert("size:" + size);
-	if(size.indexOf("225") > -1)
-		size = "300px";
-	else if(size.indexOf("300") > -1)
-		size = "350px";
-	else if(size.indexOf("350") > -1)
-		size = "400px";
+	width = document.getElementById('pageComponents').style.width;
+	//alert("width:" + width);
+	if(width.indexOf("300") > -1)
+	{
+		width = "350";
+		height = "500";	
+	}
+	else if(width.indexOf("350") > -1)
+	{
+		width = "400";
+		height = "550";	
+	}
+	else if(width.indexOf("400") > -1)
+	{
+		width = "450";
+		height = "600";	
+	}
 	else
-		size = "225px";
+	{
+		width = "300";
+		height = "450";	
+	}
 	
-	document.getElementById('pageComponents').style.width=size;
+	width = width+"px";
+	heightBody = height-20+"px";
+	height = height+"px";
 	
-	/*
-	if(document.cookie != document.cookie)
-		index = document.cookie.indexOf(cookie_name);
-	else
-		index = -1;
+	document.getElementById('pageComponents').style.width=width;
+	document.getElementById('pageComponents').style.height=height;
+	document.getElementById('pageComponentsBody').style.height=heightBody;
 	
-	if (index == -1)
-		document.cookie=cookie_name+"="+size+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
-	*/
+	setCookie(pageStructureDivWidthCookieName, width);
+	setCookie(pageStructureDivHeightCookieName, height);
+	setCookie(pageStructureDivHeightBodyCookieName, heightBody);
+	
 } 
  
 
@@ -64,37 +130,71 @@ var defaultToolbarTopPosition = "0px";
  
 function dragEnded(object, left, top)
 {
-	alert("dragEnded:" + dragEnded);
-	topPosition = top;
-	if(document.cookie != document.cookie)
-		index = document.cookie.indexOf(toolbarTopPositionCookieName);
-	else
-		index = -1;
-	
-	if (index == -1)
+	//alert("dragEnded:" + object.id);
+	if(object.id == "paletteHandle")
 	{
-		document.cookie=toolbarTopPositionCookieName+"="+topPosition+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+		topPosition = top;
+		setCookie(toolbarTopPositionCookieName, topPosition);
+	}
+
+	if(object.id == "pageComponentsHandle")
+	{
+		setCookie(pageComponentsTopPositionCookieName, top);
+		setCookie(pageComponentsLeftPositionCookieName, left);
 	}
 }
 
 function setToolbarInitialPosition()
-{
-	if(document.cookie)
-	{
-		index = document.cookie.indexOf(toolbarTopPositionCookieName);
-		//alert("index:" + index);
-		if (index != -1)
-		{
-			namestart = (document.cookie.indexOf("=", index) + 1);
-			nameend = document.cookie.indexOf(";", index);
-			if (nameend == -1) {nameend = document.cookie.length;}
-			defaultToolbarTopPosition = document.cookie.substring(namestart, nameend);
-			//alert("defaultMenuSize" + defaultMenuSize);
-		}
-	}
+{	
+	//alert("setToolbarInitialPosition ran");
+	defaultToolbarTopPosition = getCookieValue(toolbarTopPositionCookieName);
+	toolbarLockPosition = getCookieValue(toolbarLockPositionCookieName);
+	
+	pageComponentsVisibility = getCookieValue(pageStructureDivVisibleCookieName);	
+	
+	//pageComponentsTopPosition = getCookieValue(pageComponentsTopPositionCookieName);
+	//pageComponentsLeftPosition = getCookieValue(pageComponentsLeftPositionCookieName);
+	
+	pageStructureDivWidth = getCookieValue(pageStructureDivWidthCookieName);
+	pageStructureDivHeight = getCookieValue(pageStructureDivHeightCookieName);
+	pageStructureDivHeightBody = getCookieValue(pageStructureDivHeightBodyCookieName);
 
+	propertiesDiv = document.getElementById('pageComponents');
+	
+		
+	//alert("window.innerHeight:" + document.height + ":" + window.innerHeight);
+	pageComponentsTopPosition = (getScrollY() + ((document.body.clientHeight - propertiesDiv.offsetHeight) / 2));
+	pageComponentsLeftPosition = (getScrollX() + ((document.body.clientWidth - propertiesDiv.offsetWidth) / 2));
+	
+	floatDiv("pageComponents", 200, 50).flt();
+	
 	//alert("defaultToolbarTopPosition" + defaultToolbarTopPosition)
-	this.document.getElementById('paletteDiv').style.top=defaultToolbarTopPosition;
+	//alert("toolbarLockPosition" + toolbarLockPosition)
+	if(toolbarLockPosition == "up")
+		floatDiv("paletteDiv", 0, 0).flt();
+	else if(toolbarLockPosition == "down")
+		floatDiv("paletteDiv", 0, -250).flt();
+	else
+		this.document.getElementById('paletteDiv').style.top=defaultToolbarTopPosition;
+		
+	//alert("getScrollY()" + getScrollY() + ":" + propertiesDiv.offsetHeight + ":" + (document.body.clientHeight));
+	//alert("pageComponentsTopPosition" + pageComponentsTopPosition)
+	//alert("pageComponentsLeftPosition" + pageComponentsLeftPosition)
+	//document.getElementById('pageComponents').style.top=pageComponentsTopPosition + "px";
+	//document.getElementById('pageComponents').style.left=pageComponentsLeftPosition + "px";
+	document.getElementById('pageComponents').style.width=pageStructureDivWidth;
+	document.getElementById('pageComponents').style.height=pageStructureDivHeight;
+	document.getElementById('pageComponentsBody').style.height=pageStructureDivHeightBody;
+	
+	//alert("pageComponentsVisibility:" + pageComponentsVisibility);
+	if(pageComponentsVisibility != "")
+	{
+		if(pageComponentsVisibility == "visible")
+			propertiesDiv.style.display = 'block';
+
+		propertiesDiv.style.visibility = pageComponentsVisibility;
+	}
+	
 }
 
 function moveDivDown(id)
@@ -105,8 +205,13 @@ function moveDivDown(id)
 
 	var div = document.getElementById(id);
 
-	if(div)
-		div.style.top = position;
+	setCookie(toolbarLockPositionCookieName, "down");
+	floatDiv("paletteDiv", 0, -250).flt();
+	
+	//if(div)
+	//	div.style.top = position;
+	/*
+	
 	
 	if(document.cookie != document.cookie)
 		index = document.cookie.indexOf(toolbarTopPositionCookieName);
@@ -115,6 +220,7 @@ function moveDivDown(id)
 	
 	if (index == -1)
 		document.cookie=toolbarTopPositionCookieName+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";	
+	*/
 }
 
 function moveDivUp(id)
@@ -123,9 +229,12 @@ function moveDivUp(id)
 
 	var div = document.getElementById(id);
 	
-	if(div)
-		div.style.top = position;
+	setCookie(toolbarLockPositionCookieName, "up");
 	
+	floatDiv("paletteDiv", 0, 0).flt();
+	//if(div)
+	//	div.style.top = position;
+	/*
 	if(document.cookie != document.cookie)
 		index = document.cookie.indexOf(toolbarTopPositionCookieName);
 	else
@@ -133,7 +242,7 @@ function moveDivUp(id)
 	
 	if (index == -1)
 		document.cookie=toolbarTopPositionCookieName+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
-	
+	*/
 }
 
 
@@ -427,11 +536,21 @@ function showDiv(id)
 {
 	//alert("id:" + id)
 	document.getElementById(id).style.visibility = 'visible';
+	if(id == "pageComponents")
+	{
+		document.getElementById(id).style.display = 'block';
+		setCookie(pageStructureDivVisibleCookieName, "visible");
+	}
 }
 
 function hideDiv(id)
 {
 	document.getElementById(id).style.visibility = 'hidden';
+	if(id == "pageComponents")
+	{
+		document.getElementById(id).style.display = 'none';
+		setCookie(pageStructureDivVisibleCookieName, "hidden");
+	}
 }
 
 function toggleDiv(id)
@@ -441,6 +560,17 @@ function toggleDiv(id)
 		div.style.visibility = 'hidden';
 	else
 		div.style.visibility = 'visible';
+		
+	if(id == "pageComponents")
+	{
+		if(div.style.visibility == 'hidden')
+			document.getElementById(id).style.display = 'none';
+		else
+			document.getElementById(id).style.display = 'block';
+			
+		setCookie(pageStructureDivVisibleCookieName, div.style.visibility);
+	}
+		
 }
 
 /**
@@ -494,7 +624,7 @@ function assignComponent(siteNodeId, languageId, contentId, parentComponentId, s
 		//alert("slotId" + slotId);
 		//alert("specifyBaseTemplate" + specifyBaseTemplate);
 		
-		insertUrl = "${componentEditorUrl}ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "";
+		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "";
 		//alert("insertUrl:" + insertUrl);
 		document.location.href = insertUrl;
 		draggedComponentId = -1;
@@ -550,8 +680,20 @@ function deleteComponent()
 
 function showComponent() 
 {
-	//alert("component" + componentId + "Properties");
-	showDiv("component" + componentId + "Properties");
+	showComponentProperties("component" + componentId + "Properties");
+}
+
+function showComponentProperties(id) 
+{
+	showDiv(id);
+
+	propertiesDiv = document.getElementById(id);
+
+	newLeft = (getScrollX() + (document.body.clientWidth / 2) - (propertiesDiv.offsetWidth / 2));
+	newTop = (getScrollY() + (document.body.clientHeight / 2) - (propertiesDiv.offsetHeight / 2));
+	
+	propertiesDiv.style.top = newTop + "px";	
+	propertiesDiv.style.left = newLeft + "px";	
 }
 
 function invokeAction() 
@@ -1137,17 +1279,7 @@ function viewSource()
 	
 	function changeLanguage(siteNodeId, languageId, contentId)
 	{
-		//alert("Language:" + languageId.value);
-		//languageId = $language;
-		//alert(document.location.href);
-		//if (confirm('$ui.getString("tool.contenttool.languageVersionChangeWarning")'))
-		//{
-			window.location.href = "ViewPage!renderDecoratedPage.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId.value + "&contentId=" + contentId + "";
-		//}
-		//else
-		//{
-		//	document.editForm.languageId.selectedIndex = originalIndex - 1;
-		//}
+		window.location.href = "ViewPage!renderDecoratedPage.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId.value + "&contentId=" + contentId + "";
 	}
 	
 	//*******************************************

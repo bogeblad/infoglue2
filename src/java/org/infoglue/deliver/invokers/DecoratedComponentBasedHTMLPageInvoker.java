@@ -326,7 +326,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(component.getParentComponent() == null && bodyIndex > -1)
 			{
 				//CmsLogger.logInfo("onContextMenu.contentId:" + contentId);
-				String onContextMenu = " style=\"border: 1px solid blue; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;\" AAAonload=\"javascript:initializeSlotEventHandler('" + component.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=" + component.getId() + "', '');\" ";
+				String onContextMenu = " style=\"border: 1px solid blue; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;\" onload=\"javascript:setToolbarInitialPosition();\"";
 				StringBuffer sb = new StringBuffer(componentString);
 				sb.insert(bodyIndex + 5, onContextMenu);
 				componentString = sb.toString();
@@ -728,9 +728,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 
-		sb.append("<div id=\"pageComponents\" style=\"right:5px; top:5px; visibility:hidden;\">");
+		sb.append("<div id=\"pageComponents\" style=\"right:5px; top:5px; visibility:hidden; display: none;\">");
 
-		sb.append("	<div id=\"dragCorner\" style=\"position: absolute; width: 20px; height: 20px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"images/winresize.gif\" border=\"0\" width=\"20\" height=\"20\"></a></div>");
+		sb.append("	<div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
 			
 		sb.append("		<div id=\"pageComponentsHandle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Page components</td><td align=\"right\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\">close</a></td></tr></table></div>");
 		sb.append("		<div id=\"pageComponentsBody\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
@@ -761,15 +761,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("     theRoot.style.top = 150;");
 		sb.append("	</script>");
 
-		/*
-		sb.append("	<script type=\"text/javascript\">");
-		sb.append("		var theHandle = document.getElementById(\"dragCorner\");");
-		sb.append("		var theRoot   = document.getElementById(\"dragCorner\");");
-		sb.append("		Drag.init(theHandle, theRoot);");
-		sb.append("     theRoot.style.bottom = 0;");
-		sb.append("     theRoot.style.right  = 0;");
-		sb.append("	</script>");
-		*/
 		return sb.toString();
 	}
 
@@ -812,7 +803,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		{
 			sb.append("<td><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
-		sb.append("<td><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/propertiesIcon.gif\" width=\"16\" height=\"16\" border=\"0\"></td><td colspan=\"" + (colspan - 3) + "\"><span onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"label\">Properties</span></td>");
+		sb.append("<td><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/propertiesIcon.gif\" width=\"16\" height=\"16\" border=\"0\"></td><td colspan=\"" + (colspan - 3) + "\"><span onclick=\"javascript:showComponentProperties('component" + component.getId() + "Properties');\" class=\"label\">Properties</span></td>");
 		sb.append("		</tr>");
 		
 		sb.append("		<tr>");
@@ -1017,7 +1008,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		sb.append("<script type=\"text/javascript\">");
 		sb.append("var currentGroup = \"" + initialGroupName + "\";");
-		sb.append("setToolbarInitialPosition();");
 		sb.append("</script>");
 				
 		String openGroupName = "";
@@ -1088,7 +1078,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		sb.append("	<script type=\"text/javascript\">");
 		sb.append("	  	changeTab('" + openGroupName + "');");
-		sb.append("	  	setToolbarInitialPosition();");
 		
 		sb.append("		var theHandle = document.getElementById(\"paletteHandle\");");
 		sb.append("		var theRoot   = document.getElementById(\"paletteDiv\");");

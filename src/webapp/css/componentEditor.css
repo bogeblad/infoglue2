@@ -1,45 +1,118 @@
+#palette {
+	aposition:absolute;
+	width:250px;
+	background-color:#F4F4F4;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	border:1px solid #333;
+	z-index:1000001;
+	right:300px;
+	top:100px;
+	height: 400px;
+	}
+
+#paletteHandle {
+	margin:2px;
+	padding:2px;
+	width:242px;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+#paletteHeader {
+	margin:2px;
+	padding:2px;
+	width:244;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	height: 30px;
+	}
+
+#paletteBody {
+	margin:2px;
+	padding:2px;
+	width:244px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	height: 332px;
+	overflow: auto;
+	}
+
+#pageComponents {
+	position:absolute;
+	width:250px;
+	background-color:#F4F4F4;
+	border:1px solid #333333;
+	z-index:1000002;
+	right:5px;
+	top:100px;
+	height: 400px;
+	}
+
+#pageComponentsHandle {
+	padding-top:2px;
+	padding-bottom:2px;
+	width:100%;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+#pageComponentsBody {
+	padding-top:2px;
+	padding-bottom:2px;
+	width:100%;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	height: 380px;
+	overflow: auto;
+	}
+	
 #buffer { 
-position:	absolute;
-z-index:	1000;
-height:		1em;
-width:		1em;
-background:	#777777;
-border: 	0px solid black;
-color:		#ffffff;
-visibility:	hidden; 
-top:		0px;
-left:		0px;
+	position:	absolute;
+	z-index:	1000003;
+	height:		1em;
+	width:		1em;
+	background:	#777777;
+	border: 	0px solid black;
+	color:		#ffffff;
+	visibility:	hidden; 
+	top:		0px;
+	left:		0px;
 }
 
 .skin0 {
-position:absolute;
-z-index:250;
-text-align:left;
-width:350px;
-border:2px solid red;
-background-color:menu;
-font-family:Verdana;
-line-height:20px;
-cursor:default;
-visibility:hidden;
+	position:absolute;
+	z-index:1000004;
+	text-align:left;
+	width:350px;
+	border:2px solid red;
+	background-color:menu;
+	font-family:Verdana;
+	line-height:20px;
+	cursor:default;
+	visibility:hidden;
 }
 .skin1 {
-cursor:default;
-font:menutext;
-position:absolute;
-z-index:250;
-text-align:left;
-font-family: Arial, Helvetica, sans-serif;
-font-size: 10pt;
-width:140px;
-background-color:menu;
-border:1px solid buttonface;
-visibility:hidden;
-border:2px outset buttonhighlight;
+	cursor:default;
+	font:menutext;
+	position:absolute;
+	z-index:1000004;
+	text-align:left;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	width:140px;
+	background-color:menu;
+	border:1px solid buttonface;
+	visibility:hidden;
+	border:2px outset buttonhighlight;
 }
 .menuitems {
-padding-left:15px;
-padding-right:10px;
+	padding-left:15px;
+	padding-right:10px;
 }
 
 td.propertiesheader {	
@@ -135,51 +208,7 @@ input.normaltextfield {
 	width:100%;
 	filter:gray;
 }
-
-
-#palette {
-	aposition:absolute;
-	width:250px;
-	background-color:#F4F4F4;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	border:1px solid #333;
-	z-index:101;
-	right:300px;
-	top:100px;
-	height: 400px;
-	}
-
-#paletteHandle {
-	margin:2px;
-	padding:2px;
-	width:242px;
-	color:white;
-	background-color:navy;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	}
-
-#paletteHeader {
-	margin:2px;
-	padding:2px;
-	width:244;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	height: 30px;
-	}
-
-#paletteBody {
-	margin:2px;
-	padding:2px;
-	width:244px;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	height: 332px;
-	overflow: auto;
-	}
-
-
+	
 .draggableItem {
 	font-family:verdana, sans-serif;
 	font-size:10px;
@@ -225,45 +254,12 @@ A.white:active {
 	font-weight:bold;
 	}
 	
-	
-#pageComponents {
-	position:absolute;
-	width:250px;
-	background-color:#F4F4F4;
-	border:1px solid #333333;
-	z-index:101;
-	right:5px;
-	top:100px;
-	height: 400px;
-	aoverflow: auto;
-	}
-
-#pageComponentsHandle {
-	padding-top:2px;
-	padding-bottom:2px;
-	width:100%;
-	color:white;
-	background-color:navy;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	}
-
-#pageComponentsBody {
-	padding-top:2px;
-	padding-bottom:2px;
-	width:100%;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	height: 380px;
-	overflow: auto;
-	}
-
 .componentProperties {
 	position:absolute;
 	width:350px;
 	background-color:#F4F4F4;
 	border:1px solid #333333;
-	z-index:201;
+	z-index:1000003;
 	right:5px;
 	top:100px;
 	}
