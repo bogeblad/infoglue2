@@ -24,11 +24,13 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -41,6 +43,7 @@ import webwork.multipart.MultiPartRequestWrapper;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.awt.Image;
 import java.io.*;
 import java.util.List;
 
@@ -58,6 +61,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	private String reasonKey;
 	private DigitalAssetVO digitalAssetVO = null;
 	private String closeOnLoad;
+	private Integer contentTypeDefinitionId;
 
     public CreateDigitalAssetAction()
     {
@@ -174,6 +178,78 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						//is = new FileInputStream(renamedFile);
 						is = new FileInputStream(file);
 						
+						this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentTypeDefinitionId);
+						AssetKeyDefinition assetKeyDefinition = ContentTypeDefinitionController.getController().getDefinedAssetKey(contentTypeDefinitionVO.getSchemaValue(), digitalAssetKey);
+						
+						if(assetKeyDefinition.getMaximumSize().intValue() < new Long(file.length()).intValue())
+						{   
+						    file.delete();
+						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+		                	return "uploadFailed";
+						}
+						if(assetKeyDefinition.getAllowedContentTypes().startsWith("image"))
+						{
+						    if(!contentType.startsWith("image"))
+						    {
+							    file.delete();
+							    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnTypeNotImageText";
+			                	return "uploadFailed";						        
+						    }
+
+						    Image image = javax.imageio.ImageIO.read(file);
+						    int width = image.getWidth(null);
+						    int height = image.getHeight(null);
+						    
+						    String allowedWidth = assetKeyDefinition.getImageWidth();
+						    String allowedHeight = assetKeyDefinition.getImageHeight();
+						    
+						    if(!allowedWidth.equals("*"))
+						    {
+						        Integer allowedWidthNumber = new Integer(allowedWidth.substring(1));
+						        if(allowedWidth.startsWith("<") && width >= allowedWidthNumber.intValue())
+						        {
+							        file.delete();
+								    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageToWideText";
+				                	return "uploadFailed";			
+						        }
+						        if(allowedWidth.startsWith(">") && width <= allowedWidthNumber.intValue())
+						        {
+							        file.delete();
+								    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageNotWideEnoughText";
+				                	return "uploadFailed";			
+						        }
+						        if(!allowedWidth.startsWith(">") && !allowedWidth.startsWith("<") && width != new Integer(allowedWidth).intValue())
+						        {
+						            file.delete();
+								    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageWrongWidthText";
+				                	return "uploadFailed";	
+						        }
+						    }
+						    
+						    if(!allowedHeight.equals("*"))
+						    {
+						        Integer allowedHeightNumber = new Integer(allowedHeight.substring(1));
+						        if(allowedHeight.startsWith("<") && height >= allowedHeightNumber.intValue())
+						        {
+							        file.delete();
+								    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageToHighText";
+				                	return "uploadFailed";			
+						        }
+						        if(allowedHeight.startsWith(">") && height <= allowedHeightNumber.intValue())
+						        {
+							        file.delete();
+								    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageNotHighEnoughText";
+				                	return "uploadFailed";			
+						        }
+						        if(!allowedHeight.startsWith(">") && !allowedHeight.startsWith("<") && height != new Integer(allowedHeight).intValue())
+						        {
+						            file.delete();
+								    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageWrongHeightText";
+				                	return "uploadFailed";	
+						        }
+						    }
+						}
+						    
 						if(this.contentVersionId != null)
 						    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
 		         		else
@@ -204,6 +280,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
         }
         catch(Throwable e){ e.printStackTrace(); }
         
+        System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
         return "success";
     }
 
@@ -276,5 +353,20 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
     public void setCloseOnLoad(String closeOnLoad)
     {
         this.closeOnLoad = closeOnLoad;
+    }
+    
+    public Integer getContentTypeDefinitionId()
+    {
+        return contentTypeDefinitionId;
+    }
+    
+    public void setContentTypeDefinitionId(Integer contentTypeDefinitionId)
+    {
+        this.contentTypeDefinitionId = contentTypeDefinitionId;
+    }
+    
+    public ContentTypeDefinitionVO getContentTypeDefinitionVO()
+    {
+        return contentTypeDefinitionVO;
     }
 }

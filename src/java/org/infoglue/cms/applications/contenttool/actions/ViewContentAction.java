@@ -105,6 +105,8 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	            if(this.repositoryId == null)
 	                this.repositoryId = contentVO.getRepositoryId();
 	            
+	            System.out.println("**********newContentId:" + contentVO.getId());
+	            
 		        this.languageId = getMasterLanguageVO().getId();
 	            return "viewVersion";
 	        }
@@ -159,12 +161,17 @@ public class ViewContentAction extends InfoGlueAbstractAction
     {
         return this.changeTypeId;
     }
-        
+
     public void setChangeTypeId(java.lang.Integer changeTypeId)
     {
 	    this.changeTypeId = changeTypeId;
     }
-    
+
+    public java.lang.Integer getNewContentId()
+    {
+        return this.contentVO.getId();
+    }
+
     public String getName()
     {
         return this.contentVO.getName();

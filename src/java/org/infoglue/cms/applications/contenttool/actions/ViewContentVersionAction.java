@@ -69,6 +69,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	private Integer unrefreshedContentId = new Integer(0);
 	private Integer changeTypeId = new Integer(0);
+	private Integer newContentId = new Integer(0);
+	
 	private Integer digitalAssetId = null;
 	public ContentTypeDefinitionVO contentTypeDefinitionVO;
 	public List availableLanguages = null;
@@ -999,5 +1001,15 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     public void setCloseOnLoad(String closeOnLoad)
     {
         this.closeOnLoad = closeOnLoad;
+    }
+    
+    public Integer getNewContentId()
+    {
+        return newContentId;
+    }
+    
+    public void setNewContentId(Integer newContentId)
+    {
+        this.newContentId = newContentId;
     }
 }

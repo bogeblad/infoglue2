@@ -184,4 +184,9 @@ public class ViewDigitalAssetAction extends WebworkAbstractAction
     {
         this.entityId = entityId;
     }
+    
+    public ContentTypeDefinitionVO getContentTypeDefinitionVO()
+    {
+        return contentTypeDefinitionVO;
+    }
 }

@@ -143,8 +143,8 @@
 			    </tr>
 			  	</table>
 			  	<select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 222px; height: 80px; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
-						#foreach($key in $definedAssetKeys)
-							<option style="width: 200px;" value="${key}">${key}</option>
+						#foreach($assetKeyDefinition in $definedAssetKeys)
+							<option style="width: 200px;" value="$assetKeyDefinition.assetKey">$assetKeyDefinition.assetKey</option>
 						#end
 			  	</select>  
 			  </div>

@@ -251,69 +251,44 @@
 #end
 
 
-#foreach($assetKey in $definedAssetKeys)
-<div id="${assetKey}PropertyLayer" class="smallPropDiv" style="LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+#foreach($assetKeyDefinition in $definedAssetKeys)
+<div id="${assetKeyDefinition.assetKey}PropertyLayer" class="smallPropDiv" style="LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 	<div id="${assetKey}PropertiesHandle" class="smallPropDivHandle">
 		Edit AssetKey
 	</div>
-	<div id="${assetKey}PropertiesBody" class="smallPropDivBody">
-		<form name="${assetKey}PropertiesForm" action="ViewContentTypeDefinition!updateAssetKey.action" method="POST">
+	<div id="${assetKeyDefinition.assetKey}PropertiesBody" class="smallPropDivBody">
+		<form name="${assetKeyDefinition.assetKey}PropertiesForm" action="ViewContentTypeDefinition!updateAssetKey.action" method="POST">
 		<p>
-			<b>Asset Key:</b> <input type="textfield" name="newAssetKey" value="$assetKey" class="normaltextfield">
+			<b>Asset Key:</b> <input type="textfield" name="newAssetKey" value="$assetKeyDefinition.assetKey" class="normaltextfield">
 		</p>
 		<p>
-			<b>Max size(KB):</b> <input type="textfield" name="maximumSize" value="$!maximumSize" class="normaltextfield">
+			<b>Max size(b):</b> <input type="textfield" name="maximumSize" value="$!assetKeyDefinition.maximumSize" class="normaltextfield">
 		</p>
 		<p>
 			<b>AssetType:</b>
-			<select name="allowedContentTypes" onchange="checkDisplay(this.value, 'imageProperties${assetKey}');">
-			 	<option value="any">Any</option>
-			 	<option value="image">Image</option>
+			<select name="allowedContentTypes" onchange="checkDisplay(this.value, 'imageProperties${assetKeyDefinition.assetKey}');">
+			 	<option value="any" #checkSelected("$assetKeyDefinition.allowedContentTypes" "any")>Any</option>
+			 	<option value="image" #checkSelected("$assetKeyDefinition.allowedContentTypes" "image")>Image</option>
 			</select>
 		</p>
-		<div id="imageProperties${assetKey}" style="display: none;">
+		<div id="imageProperties${assetKeyDefinition.assetKey}" style="#if($assetKeyDefinition.allowedContentTypes == "any") display: none; #else display: block;#end">
 		<p>
 			<b>Width:</b>
-			<input id="imageProperties${assetKey}width" type="textfield" name="width" value="$!width" class="normaltextfield">
+			<input id="imageProperties${assetKeyDefinition.assetKey}width" type="textfield" name="imageWidth" value="$!assetKeyDefinition.imageWidth" class="normaltextfield">
 		</p>
 		<p>
 			<b>Height:</b></td>
-			<input id="imageProperties${assetKey}width" type="textfield" name="height" value="$!height" class="normaltextfield">
+			<input id="imageProperties${assetKeyDefinition.assetKey}width" type="textfield" name="imageHeight" value="$!assetKeyDefinition.imageHeight" class="normaltextfield">
 		</p>
 		</div>
 		<p>
 			<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="javascript:hideDiv('${assetKey}PropertyLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+			<a href="javascript:hideDiv('${assetKeyDefinition.assetKey}PropertyLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
 		</p>
 	</div>	
-	<!--
-	<table border="0" cellpadding="4" cellspacing="0">
-	<tr>
-		<td colspan="2" class="propertiesheader">Edit AssetKey</td>
-	</tr>
-	<tr>
-		<td colspan="2"><img src="images/trans.gif" height="5" width="1"></td>
-	</tr>
-	<tr>
-		<td><b>Asset Key</b></td>
-		<td><input type="textfield" name="newAssetKey" value="$assetKey" class="normaltextfield"></td>
-	</tr>
-	<tr>
-		<td colspan="2">
-			<img src="images/trans.gif" width="80" height="25" border="0">
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-			<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="javascript:hideDiv('${assetKey}PropertyLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
-		</td>
-	</tr>
-	</table>
-	-->
+	
 	<input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
-	<input type="hidden" name="assetKey" value="$assetKey">
+	<input type="hidden" name="assetKey" value="${assetKeyDefinition.assetKey}">
 	</form>
 </div>
 #end
@@ -413,7 +388,7 @@
 			<tr>
 				<td width="45%">$category.title ($categoryKey)</td>
 				<td width="45%">$category.categoryName</td>
-				<td>
+				<td align="right">
 					<nobr>
 					<a href="javascript:showDiv('${categoryKey}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
 					<a href="ViewContentTypeDefinition!deleteCategoryKey.action?contentTypeDefinitionId=$contentTypeDefinitionId&categoryKey=$categoryKey"><img src="images/delete.gif" border="0"></a>
@@ -438,14 +413,14 @@
 			</tr>
 		</table>
 		<table width="500" cellpadding="0" cellspacing="2" border="0" class="bordered">
-		#foreach($assetKey in $definedAssetKeys)
+		#foreach($assetKeyDefinition in $definedAssetKeys)
 			<tr>
-				<td><nobr><a href="ViewContentTypeDefinition!moveAssetKeyUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKey"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAssetKeyDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKey"><img src="images/moveDown.gif" border="0"></a></nobr></td>
-				<td width="90%">$assetKey</td>
-				<td>
+				<td><nobr><a href="ViewContentTypeDefinition!moveAssetKeyUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKeyDefinition.assetKey"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAssetKeyDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKeyDefinition.assetKey"><img src="images/moveDown.gif" border="0"></a></nobr></td>
+				<td width="90%">$assetKeyDefinition.assetKey</td>
+				<td align="right">
 					<nobr>
-					<a href="javascript:showDiv('${assetKey}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
-					<a href="ViewContentTypeDefinition!deleteAssetKey.action?contentTypeDefinitionId=$contentTypeDefinitionId&assetKey=$assetKey"><img src="images/delete.gif" border="0"></a>
+					<a href="javascript:showDiv('${assetKeyDefinition.assetKey}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
+					<a href="ViewContentTypeDefinition!deleteAssetKey.action?contentTypeDefinitionId=$contentTypeDefinitionId&assetKey=$assetKeyDefinition.assetKey"><img src="images/delete.gif" border="0"></a>
 					</nobr>
 				</td>
 			</tr>

@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.management.*;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
@@ -305,6 +306,27 @@ public class ContentTypeDefinitionController extends BaseController
     	return (ContentTypeDefinitionVO) updateEntity(ContentTypeDefinitionImpl.class, contentTypeDefinitionVO);
     }
 
+	/**
+	 * This method fetches a predefined assetKeys from a xml-string representing a contentTypeDefinition.
+	 */
+	public AssetKeyDefinition getDefinedAssetKey(String contentTypeDefinitionString, String assetKey)
+	{
+	    AssetKeyDefinition assetKeyDefinition = null;
+	    
+	    List definedAssetKeys = getDefinedAssetKeys(contentTypeDefinitionString);
+	    Iterator i = definedAssetKeys.iterator();
+	    while(i.hasNext())
+	    {
+	        AssetKeyDefinition currentAssetKeyDefinition = (AssetKeyDefinition)i.next();
+	        if(currentAssetKeyDefinition.getAssetKey().equals(assetKey))
+	        {
+	            assetKeyDefinition = currentAssetKeyDefinition;
+	        	break;
+	        }
+	    }
+	    
+	    return assetKeyDefinition;
+	}
 
 	/**
 	 * This method fetches any predefined assetKeys from a xml-string representing a contentTypeDefinition.
@@ -312,6 +334,7 @@ public class ContentTypeDefinitionController extends BaseController
 	public List getDefinedAssetKeys(String contentTypeDefinitionString)
 	{
 		NodeList nodes = getEnumerationNodeList(contentTypeDefinitionString, ASSET_KEYS);
+
 		return getEnumValues(nodes);
 	}
 
@@ -330,13 +353,56 @@ public class ContentTypeDefinitionController extends BaseController
 	 */
 	protected List getEnumValues(NodeList nodes)
 	{
+	    System.out.println("nodes:" + nodes.getLength());
+	    
 		List keys = new ArrayList();
 		for(int i = 0; i < nodes.getLength(); i++)
 		{
-			Node ichild = nodes.item(i);
-			Node attributeValue = ichild.getAttributes().getNamedItem("value");
-			keys.add(attributeValue.getNodeValue());
+		    Node ichild = nodes.item(i);
+		    
+			System.out.println("ichild:" + ichild.getNodeName() + ":" + ichild.getNodeValue());
+			
+			try
+			{
+			    Node assetKeyValue = ichild.getAttributes().getNamedItem("value");
+
+			    Element params = (Element)XPathAPI.selectSingleNode(ichild, "xs:annotation/xs:appinfo/params");
+
+			    String descriptionValue = "";
+			    String maximumSizeValue = "100";
+			    String allowedContentTypesValue = "*";
+			    String imageWidthValue = "*";
+			    String imageHeightValue = "*";
+		    
+			    if(params != null)
+			    {
+				    descriptionValue = getElementValue(params, "description");
+				    maximumSizeValue = getElementValue(params, "maximumSize");
+				    allowedContentTypesValue = getElementValue(params, "allowedContentTypes");
+				    imageWidthValue = getElementValue(params, "imageWidth");
+				    imageHeightValue = getElementValue(params, "imageHeight");
+			    }
+			    
+				AssetKeyDefinition assetKeyDefinition = new AssetKeyDefinition(); 
+				
+				assetKeyDefinition.setAssetKey(assetKeyValue.getNodeValue());
+				assetKeyDefinition.setDescription(descriptionValue);
+				assetKeyDefinition.setMaximumSize(new Integer(maximumSizeValue));
+				assetKeyDefinition.setAllowedContentTypes(allowedContentTypesValue);
+				assetKeyDefinition.setImageWidth(imageWidthValue);
+				assetKeyDefinition.setImageHeight(imageHeightValue);
+				
+				System.out.println("Adding assetKeyDefinition " + assetKeyDefinition.getAssetKey());
+				keys.add(assetKeyDefinition);
+			}
+			catch(Exception e)
+			{
+			    e.printStackTrace();
+			}
 		}
+		
+		System.out.println("keys:" + keys.size());
+		
 		return keys;
 	}
 

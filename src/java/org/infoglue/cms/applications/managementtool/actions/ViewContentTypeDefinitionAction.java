@@ -83,6 +83,13 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	private String newAssetKey;
 	private String categoryKey;
 	private String newCategoryKey;
+	
+	private String description = "";
+	private Integer maximumSize;
+	private String allowedContentTypes = "any";
+	private String imageWidth;
+	private String imageHeight;
+	
 
     public ViewContentTypeDefinitionAction()
     {
@@ -628,7 +635,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		try
 		{
 			Document document = createDocumentFromDefinition();
-			updateEnumerationKey(document, ContentTypeDefinitionController.ASSET_KEYS, getAssetKey(), getNewAssetKey());
+			updateAssetEnumerationKey(document, ContentTypeDefinitionController.ASSET_KEYS, getAssetKey(), getNewAssetKey(), this.description, this.maximumSize, this.allowedContentTypes, this.imageWidth, this.imageHeight);
 			saveUpdatedDefinition(document);
 		}
 		catch(Exception e)
@@ -811,6 +818,76 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		return null;
 	}
 
+	/**
+	 * Find an <xs:enumeration> element and update the key value.
+	 * @return The Element if child changes are needed, null if the element is not found
+	 */
+	private Element updateAssetEnumerationKey(Document document, String keyType, String oldKey, String newKey, String description, Integer maximumSize, String allowedContentTypes, String imageWidth, String imageHeight) throws TransformerException
+	{
+	    if(description == null)
+	        description = "Undefined";
+	    if(maximumSize == null)
+	        maximumSize = new Integer(100);
+	    if(allowedContentTypes == null)
+	        allowedContentTypes = "*";
+	    if(imageWidth == null)
+	        imageWidth = "*";
+	    if(imageHeight == null)
+	        imageHeight = "*";
+	    
+	    
+		String attributesXPath = "/xs:schema/xs:simpleType[@name = '" + keyType + "']/xs:restriction/xs:enumeration[@value='" + oldKey + "']";
+		NodeList anl = XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
+		if(anl != null && anl.getLength() > 0)
+		{
+			Element enum = (Element)anl.item(0);
+			enum.setAttribute("value", newKey);
+			
+			Element descriptionElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/description");
+			Element maximumSizeElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/maximumSize");
+			Element allowedContentTypesElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/allowedContentTypes");
+			Element imageWidthElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/imageWidth");
+			Element imageHeightElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/imageHeight");
+
+			if(descriptionElement == null)
+			{
+				Element annotation = document.createElement("xs:annotation");
+				Element appinfo = document.createElement("xs:appinfo");
+				Element params = document.createElement("params");
+	
+				enum.appendChild(annotation);
+				annotation.appendChild(appinfo);
+				appinfo.appendChild(params);
+				
+				descriptionElement = createTextElement(document, "description", getRandomName());
+				maximumSizeElement = createTextElement(document, "maximumSize", maximumSize.toString());
+				allowedContentTypesElement = createTextElement(document, "allowedContentTypes", allowedContentTypes);
+			    imageWidthElement = createTextElement(document, "imageWidth", imageWidth);
+			    imageHeightElement = createTextElement(document, "imageHeight", imageHeight);
+				
+				params.appendChild(descriptionElement);
+				params.appendChild(maximumSizeElement);
+				params.appendChild(allowedContentTypesElement);
+				params.appendChild(imageWidthElement);
+				params.appendChild(imageHeightElement);
+				
+				System.out.println("Added a lot to the document....");
+			}
+			else
+			{
+				setTextElement(descriptionElement, description);
+				setTextElement(maximumSizeElement, maximumSize.toString());
+				setTextElement(allowedContentTypesElement, allowedContentTypes);
+				setTextElement(imageWidthElement, imageWidth);
+				setTextElement(imageHeightElement, imageHeight);
+			}
+			
+			return enum;
+		}
+
+		return null;
+	}
+	
 	/**
 	 * Creates a new text element
 	 */
@@ -1011,4 +1088,48 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		return "ViewListContentTypeDefinition.action";
 	}
 
+    public String getAllowedContentTypes()
+    {
+        return allowedContentTypes;
+    }
+
+    public void setAllowedContentTypes(String assetContentType)
+    {
+        this.allowedContentTypes = assetContentType;
+    }
+    
+    public String getImageHeight()
+    {
+        return imageHeight;
+    }
+    
+    public void setImageHeight(String imageHeight)
+    {
+        this.imageHeight = imageHeight;
+    }
+    
+    public String getImageWidth()
+    {
+        return imageWidth;
+    }
+    
+    public void setImageWidth(String imageWidth)
+    {
+        this.imageWidth = imageWidth;
+    }
+    
+    public Integer getMaximumSize()
+    {
+        return maximumSize;
+    }
+    
+    public void setMaximumSize(Integer maximumSize)
+    {
+        this.maximumSize = maximumSize;
+    }
+    
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
 }
