@@ -1,0 +1,37 @@
+
+<style>
+<!--
+.skin0 {
+position:absolute;
+text-align:left;
+width:200px;
+border:2px solid black;
+background-color:menu;
+font-family:Verdana;
+line-height:20px;
+cursor:default;
+visibility:hidden;
+}
+.skin1 {
+cursor:default;
+font:menutext;
+position:absolute;
+text-align:left;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 10pt;
+width:120px;
+background-color:menu;
+border:1px solid buttonface;
+visibility:hidden;
+border:2px outset buttonhighlight;
+}
+.menuitems {
+padding-left:15px;
+padding-right:10px;
+}
+-->
+</style>
+
+<script type="text/javascript" language="javascript" src="{applicationContext}/script/editOnSight.js"></script>
+
+</head>

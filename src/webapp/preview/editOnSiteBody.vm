@@ -1,0 +1,6 @@
+
+<div id="ie5menu" class="skin0">
+<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:openEditWindow();">Edit</div>
+<hr>
+<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">View Source</div>
+</div>

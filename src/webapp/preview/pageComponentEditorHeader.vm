@@ -1,0 +1,1597 @@
+<script type="text/javascript" src="script/dom-drag.js"></script>
+
+<style>
+<!--
+.skin0 {
+position:absolute;
+z-index:250;
+text-align:left;
+width:300px;
+border:2px solid black;
+background-color:menu;
+font-family:Verdana;
+line-height:20px;
+cursor:default;
+visibility:hidden;
+}
+.skin1 {
+cursor:default;
+font:menutext;
+position:absolute;
+z-index:250;
+text-align:left;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 10pt;
+width:120px;
+background-color:menu;
+border:1px solid buttonface;
+visibility:hidden;
+border:2px outset buttonhighlight;
+}
+.menuitems {
+padding-left:15px;
+padding-right:10px;
+}
+
+td.propertiesheader {	
+	font-family 	 : Verdana; 
+	font-size		 : 12pt;
+	font-weight		 : bold;
+	height			 : 16px;
+	background-color : #E3ECF8;
+	border-style     : solid; 
+	border-width     : 1px;
+	border-color     : black;
+}
+
+td.label {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	font-weight		 : bold;
+	font-color		 : #333333;
+}
+
+td.value {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	font-color		 : #333333;
+}
+
+td.propertylabel {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	font-color		 : #333333;
+	font-weight		 : bold;
+	border-style	 : solid;
+	border-width	 : 1px;	
+	border-color     : #F4F4F4;
+}
+td.propertyvalue {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	font-color		 : #333333;
+	background		 : #FFFFFF;
+	border-style	 : solid;
+	border-width	 : 1px;	
+	border-color     : #C2D0E2;
+}
+
+.emptyslot {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 10pt;
+	font-color		 : #333333;
+}
+.filledslot {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 10pt;
+	font-color		 : #333333;
+}
+.inheritedslot {
+	filter			 : gray;
+}
+input.normaltextfield {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	border-style	 : solid;
+	border-width	 : 1px;	
+	border-color     : #C2D0E2;
+	width            : 300px;
+}
+
+.inheritedOverlay
+{
+ 	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	font-color		 : #333333;
+    position:relative;
+	visibility:visible;
+	z-index:10;
+	width:100%;
+	text-align: center;
+	vertical-align: middle;
+	height:10px;
+	//filter:glow;
+	border-style	 : solid;
+	border-width	 : 1px;	
+	border-color     : #000000;
+}
+.inherited
+{
+    position: relative;
+	atop: -15px;
+	abottom: -15px;
+	aleft: 0px;
+	visibility:visible;
+	z-index:1;
+	width:100%;
+	filter:gray;
+}
+
+
+#palette {
+	aposition:absolute;
+	width:250px;
+	background-color:#F4F4F4;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	border:1px solid #333;
+	z-index:101;
+	right:300px;
+	top:100px;
+	height: 400px;
+	}
+
+#paletteHandle {
+	margin:2px;
+	padding:2px;
+	width:242px;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+#paletteHeader {
+	margin:2px;
+	padding:2px;
+	width:244;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	height: 30px;
+	}
+
+#paletteBody {
+	margin:2px;
+	padding:2px;
+	width:244px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	height: 332px;
+	overflow: auto;
+	}
+
+
+.draggableItem {
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	space: nowrap;
+	}
+
+tr.lightyellow {
+	background-color : #FEF8D0;
+	height 			 : 14pt;
+}
+
+tr.white {
+	background-color : #FFFFFF;
+	height 			 : 14pt;
+}
+
+.smalllabel {
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+.smallwhitelabel {
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	color:white;
+	}
+
+A.white {
+    text-decoration:none;
+    COLOR: white;
+	font-size:10px;
+    }
+A.white:hover {
+	text-decoration:underline;
+	}
+A.white:active {
+	font: bold;
+	}
+
+.boldsmalllabel {
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	font-weight:bold;
+	}
+	
+	
+#pageComponents {
+	position:absolute;
+	width:250px;
+	background-color:#F4F4F4;
+	border:1px solid #333333;
+	z-index:101;
+	right:5px;
+	top:100px;
+	height: 400px;
+	overflow: auto;
+	}
+
+#pageComponentsHandle {
+	margin:2px;
+	padding:2px;
+	width:241px;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+#pageComponentsBody {
+	margin:2px;
+	padding:2px;
+	width:241px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	height: 370px;
+	overflow: auto;
+	}
+
+.componentProperties {
+	position:absolute;
+	width:350px;
+	background-color:#F4F4F4;
+	border:1px solid #333333;
+	z-index:201;
+	right:5px;
+	top:100px;
+	}
+
+.componentPropertiesHandle {
+	margin:2px;
+	padding:2px;
+	width:340px;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+#componentPropertiesBody {
+	margin:2px;
+	padding:2px;
+	width:340px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+	
+.slot {
+	border:0px solid #333333;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+.label {
+	margin:0px;
+	padding:0px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	font-weight:normal;
+	height:12px;
+	}
+
+.clickableLabel {
+	margin:0px;
+	padding:0px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	font-weight:normal;
+	text-decoration:underline;
+	color:blue;
+	height:12px;
+	space: nowrap;
+	}
+-->
+</style>
+
+<style type="text/css">
+<!--
+
+.thistab
+ {
+	font-family:verdana,arial,helvetica;
+	font-size:8pt;
+	font-weight: bold;
+	text-align:center;
+	color: #000000;
+	background:#cccccc;
+	border-top: solid thin white;
+	border-right: solid thin none;
+	border-left: solid thin white;
+	cursor:pointer;
+	visibility:visible;
+	z-index:1;
+	overflow: auto;
+	space: nowrap;
+	padding:0px 4px 0px 4px;
+	amargin:4px;
+	}
+.tab
+ {
+	font-family:verdana,arial,helvetica;
+	font-size:8pt;
+	font-weight: normal;
+	text-align:center;
+	background:#999999;
+	color: #000000;
+	border-top: solid 1px black;
+	border-right: none 1px black;
+	border-left: solid 1px black;
+	border-bottom: solid 1px white;
+	cursor:pointer;
+	visibility:visible;
+	z-index:20
+	overflow: auto;
+	space: nowrap;
+	padding:0px 4px 0px 4px;
+	}
+
+.componentsBackground {
+	border: 0px solid red; 
+	border-right: solid 1px none;
+	border-left: solid thin white;
+	position:absolute; 
+	z-index:2; 
+	width:2000px; 
+	top:20px; 
+	left:0px; 
+	height:30px; 
+	clip:rect(0px 10px 10px 0px); 
+	visibility:visible;
+}	
+.components {
+	text-align: center;
+	background: #CCCCCC;
+	border-left: solid 1px white;
+	border-right: solid 1px white;
+	border-bottom: solid 1px black;
+	aposition:absolute;
+	left:0px;
+	atop:20px;
+	width:100%;
+	height:30px;
+	cursor:pointer;
+	space: nowrap;
+}
+.component {
+	text-align:center;
+	background:#CCCCCC;
+	cursor:pointer;
+	space: nowrap;
+	padding:0px 4px 0px 4px;
+}
+.componentsStatus {
+	font-family:verdana,arial,helvetica;
+	font-size:8pt;
+	font-weight: normal;
+	border-right: 1px solid black;
+	border-left: thin solid white;
+	border-bottom: solid 1px black;
+	border-top: solid thin gray;
+	position:absolute; 
+	z-index:2; 
+	width:100%; 
+	top:60px; 
+	left:0px; 
+	height:16px; 
+	visibility:visible;
+	background:#CCCCCC;
+}
+.componentsStatusText {
+	font-family:verdana,arial,helvetica;
+	font-size:7pt;
+	font-weight: normal;
+}
+-->
+</style>
+
+<script type="text/javascript">
+<!--
+
+var activeMenuId = "";
+var menuskin = "skin1"; // skin0, or skin1
+var display_url = 0; // Show URLs in status bar?
+var editUrl = "";
+
+if (navigator.appName == "Netscape") {
+  document.captureEvents(Event.CLICK);
+}
+
+//document.body.onclick = hidemenuie5();
+
+function getEventPositionX(e) 
+{
+	if (navigator.appName == "Microsoft Internet Explorer")
+	{
+    	mX = event.clientX;
+  	}
+  	else 
+  	{
+    	mX = e.pageX;
+  	}
+  	
+  	return mX;
+}
+
+function getEventPositionY(e) 
+{
+	if (navigator.appName == "Microsoft Internet Explorer")
+	{
+    	mY = event.clientY;
+  	}
+  	else 
+  	{
+    	mY = e.pageY;
+  	}
+  	
+  	return mY;
+}
+
+function getActiveMenuDiv() 
+{
+	return document.getElementById(activeMenuId);
+}
+
+var busy = false;
+var componentId;
+var slotId;
+var insertUrl = "";
+var deleteUrl = "";
+
+function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl) 
+{
+	activeMenuId = "componentMenu";
+
+	componentId = compId;
+	insertUrl = anInsertUrl;
+	deleteUrl = anDeleteUrl;
+	//alert("componentId" + componentId);
+    
+    document.body.onclick = hidemenuie5;
+	getActiveMenuDiv().className = menuskin;
+	
+	clientX = getEventPositionX(event);
+	clientY = getEventPositionY(event);
+	
+	var rightedge = document.body.clientWidth - clientX;
+	var bottomedge = document.body.clientHeight - clientY;
+
+	menuDiv = getActiveMenuDiv();
+	
+	if (rightedge < menuDiv.offsetWidth)
+		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
+	else
+		newLeft = (document.body.scrollLeft + clientX);
+	
+	if (bottomedge < menuDiv.offsetHeight)
+		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
+	else
+		newTop = (document.body.scrollTop + clientY);
+
+	menuDiv.style.left 	= newLeft + "px";
+	menuDiv.style.top 	= newTop + "px";
+	
+	menuDiv.style.visibility = "visible";
+	
+	return false;
+}
+
+
+function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUrl) 
+{
+	activeMenuId = "componentInTreeMenu";
+
+	componentId = compId;
+	insertUrl = anInsertUrl;
+	deleteUrl = anDeleteUrl;
+	//alert("componentId" + componentId);
+    
+    document.body.onclick = hidemenuie5;
+	getActiveMenuDiv().className = menuskin;
+	
+	clientX = getEventPositionX(event);
+	clientY = getEventPositionY(event);
+	
+	var rightedge = document.body.clientWidth - clientX;
+	var bottomedge = document.body.clientHeight - clientY;
+
+	menuDiv = getActiveMenuDiv();
+	
+	if (rightedge < menuDiv.offsetWidth)
+		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
+	else
+		newLeft = (document.body.scrollLeft + clientX);
+	
+	if (bottomedge < menuDiv.offsetHeight)
+		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
+	else
+		newTop = (document.body.scrollTop + clientY);
+
+	menuDiv.style.left 	= newLeft + "px";
+	menuDiv.style.top 	= newTop + "px";
+	
+	menuDiv.style.visibility = "visible";
+	
+	return false;
+}
+
+function showEmptySlotMenu(event, compId, anInsertUrl) 
+{
+	activeMenuId = "emptySlotMenu";
+	
+	slotId = compId;
+	insertUrl = anInsertUrl;
+	//alert("CompId:" + compId);
+    //alert(insertUrl);
+	
+    document.body.onclick = hidemenuie5;
+	getActiveMenuDiv().className = menuskin;
+	
+	clientX = getEventPositionX(event);
+	clientY = getEventPositionY(event);
+	
+	var rightedge = document.body.clientWidth - clientX;
+	var bottomedge = document.body.clientHeight - clientY;
+	
+	menuDiv = getActiveMenuDiv();
+
+	if (rightedge < menuDiv.offsetWidth)
+		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
+	else
+		newLeft = (document.body.scrollLeft + clientX);
+	
+	if (bottomedge < menuDiv.offsetHeight)
+		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
+	else
+		newTop = (document.body.scrollTop + clientY);
+
+	menuDiv.style.left 	= newLeft + "px";
+	menuDiv.style.top 	= newTop + "px";
+
+	menuDiv.style.visibility = "visible";
+
+	return false;
+}
+
+
+function release()
+{
+        //alert("Releasing...");
+        busy = false;
+}
+
+function hidemenuie5() 
+{
+	//alert("Hiding menu");
+	layer = getActiveMenuDiv();
+	if(layer)
+		layer.style.visibility = "hidden";
+}
+
+function highlightie5(event) 
+{
+	var layer = event.srcElement || event.currentTarget || event.target;
+	//alert("layer:" + layer.className);
+	
+	if (layer.className == "menuitems") 
+	{
+		layer.style.backgroundColor = "highlight";
+		layer.style.color = "white";
+		
+		if (display_url)
+			window.status = layer.url;
+   	}
+}
+
+function lowlightie5(event) 
+{
+	var layer=event.srcElement || event.currentTarget || event.target;
+	
+	if (layer.className == "menuitems") 
+	{
+		layer.style.backgroundColor = "";
+		layer.style.color = "black";
+		window.status = "";
+	}
+}
+
+
+// -------------------------------------
+// This part takes care of browser-right-click (disables it).
+// -------------------------------------
+
+
+isIE=document.all;
+isNN=!document.all&&document.getElementById;
+isN4=document.layers;
+
+if (isIE||isNN)
+{
+	document.oncontextmenu=checkV;
+}
+else
+{
+	document.captureEvents(Event.MOUSEDOWN || Event.MOUSEUP);
+	document.onmousedown=checkV;
+}
+
+
+function checkV(e)
+{
+	if (isN4)
+	{
+		if (e.which==2||e.which==3)
+			return false;
+	}
+	else
+		return false;
+}
+
+
+function showDiv(id)
+{
+	//alert("id:" + id)
+	document.getElementById(id).style.visibility = 'visible';
+}
+
+function hideDiv(id)
+{
+	document.getElementById(id).style.visibility = 'hidden';
+}
+
+function toggleDiv(id)
+{
+	var div = document.getElementById(id);
+	if(div && div.style.visibility == 'visible')
+		div.style.visibility = 'hidden';
+	else
+		div.style.visibility = 'visible';
+}
+
+/**
+ * This method submit a form.
+ */
+
+function submitForm(id)
+{
+	document.getElementById(id).submit();
+}
+
+var lastRow = null;
+var lastRowOriginalBgColor = null;
+var selectedRow = null;
+var selectedBgColor = "#FFB62A";
+
+function listRowOn(rowEl)
+{
+	if (lastRow != null)
+	{
+		lastRow.style.backgroundColor = lastRowOriginalBgColor;
+	}
+
+	lastRowOriginalBgColor = rowEl.style.backgroundColor;
+	rowEl.style.backgroundColor = selectedBgColor;
+	lastRow = rowEl;
+}
+
+function listRowOff()
+{
+	if (lastRow != null)
+	{
+		if (lastRow != selectedRow)
+		{
+			lastRow.style.backgroundColor = lastRowOriginalBgColor;
+		}
+	}
+}
+
+
+
+function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate) 
+{
+	//alert("draggedComponentId:" + draggedComponentId);
+	if(draggedComponentId > 0)
+	{
+		//alert("siteNodeId" + siteNodeId);
+		//alert("languageId" + languageId);
+		//alert("contentId" + contentId);
+		//alert("parentComponentId" + parentComponentId);
+		//alert("slotId" + slotId);
+		//alert("specifyBaseTemplate" + specifyBaseTemplate);
+		
+		insertUrl = "${componentEditorUrl}ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "";
+		//alert("insertUrl:" + insertUrl);
+		document.location.href = insertUrl;
+		draggedComponentId = -1;
+	}
+}
+
+	
+//--------------------------------------------
+// Here comes the menu items actions
+//--------------------------------------------
+
+function insertComponent() 
+{
+	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
+	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+	window.open(insertUrl, "Edit", details);
+}
+
+function deleteComponent() 
+{
+	//alert("deleteUrl in deleteComponent:" +  + deleteUrl.substring(0, 50) + '\n' + deleteUrl.substring(50));
+	details = "width=500,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes";
+	document.location.href = deleteUrl;
+}
+
+function showComponent() 
+{
+	//alert("component" + componentId + "Properties");
+	showDiv("component" + componentId + "Properties");
+}
+
+function invokeAction() 
+{
+	//alert("editUrl in invokeAction:" + editUrl);
+	details = "width=500,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes";
+	//window.open(editUrl, "Edit", details);
+}
+
+function viewSource() 
+{
+	window.location = "view-source:" + window.location.href;
+}
+-->
+</script>
+
+
+
+<!-- *********************** -->
+<!-- STUFF FOR DRAG AND DROP -->
+<!-- *********************** -->
+
+	<style>
+      #buffer { 
+      			position:	absolute;
+			  	z-index:	1000;
+			  	height:		1em;
+			  	width:		1em;
+			  	background:	#777777;
+			  	border: 	0px solid black;
+			  	color:		#ffffff;
+			  	visibility:	hidden; 
+			  	top:		0px;
+			  	left:		0px;
+			  }
+
+    </style>
+	
+    <script type="text/javascript">
+    <!--
+    
+      var hit;
+	  var draggedComponentId = -1;
+	  
+      // -- Determine browser
+      var IE  = (document.all)? true: false;
+      var Mac = (navigator.cpuClass && navigator.cpuClass.match(/PPC/))? true: false;
+
+      //-----------------------------------------------------------------
+      // browser-independent routines for determining event position
+      //-----------------------------------------------------------------
+      function getX(e) {
+      	var x = 0;
+        if (IE) {
+          x = e.clientX;
+          if (!Mac) {
+            x += document.documentElement.scrollLeft;
+            x += document.body.scrollLeft;
+		  }
+        } else {
+          x = e.pageX + window.scrollX;
+        }
+        return x
+      }
+
+      function getY(e) {
+        var y = 0;
+        if (IE) {
+          y = e.clientY;
+          if (!Mac) {
+            y += document.documentElement.scrollTop;
+            y += document.body.scrollTop;
+		  }
+        } else {
+          y = e.pageY + window.scrollY;
+        }
+        return y;
+      }
+
+      //-----------------------------------------------------------------
+      // onmousedown handler.  Start drag op
+      //-----------------------------------------------------------------
+      function grabIt(e) {
+
+        // -- event and target element references are browser-specific.  UGH
+        var e      = e? e: window.event;
+        var field  = IE? e.srcElement: e.target;   
+        var target = getRect(field);	// target element position offsets
+		
+		//alert("field:" + field)
+        //alert("field:" + field.id)
+        draggedComponentId = field.id;
+        //alert("draggedComponentId" + draggedComponentId)
+        
+        // -- initialize drag object and store difference between its edges and the mouse
+        drag  = document.getElementById("buffer");
+        var x = getX(e);
+        var y = getY(e);
+        //alert("x:" + x);
+        //alert("y:" + y);
+        
+        //alert("target:" + target.left + ":" + target.top);
+        
+        //alert("drag.dx:" + drag.dx);
+        //alert("drag.dy:" + drag.dy);
+        
+        newXPos = x; // - target.left - 16;
+        newYPos = y; // - target.top;
+        //alert("newXPos" + newXPos);
+        //alert("newYPos" + newYPos);
+        //drag.dx =  x - target.left - 16;
+        //drag.dy = y - target.top;
+        drag.style.left = newXPos + "px";
+        drag.style.top = newYPos + "px";
+        
+        //alert("drag.dx:" + drag.dx);
+        //alert("drag.dy:" + drag.dy);
+        //alert("drag.style.left:" + drag.style.left);
+        //alert("drag.style.top:" + drag.style.top);
+        
+		//alert("field:" + field)
+		
+        // -- deactivate cloaking device
+        with (drag) 
+        {
+          //style.top        = target.top;
+	      //style.left       = target.left;
+	      //style.width      = target.right - target.left;
+          style.visibility = "visible";
+          //innerHTML        = field.innerHTML;
+        }
+
+        // -- Capture mousemove and mouseup events on the page.
+        document.onmousemove = dragIt;
+        //document.onmouseup   = dropIt;
+
+	// -- block all other events
+        if (IE) {
+          e.cancelBubble = true;
+          e.returnValue  = false;
+        } else {
+          e.preventDefault();
+        }
+        return false;
+      }
+
+    //-----------------------------------------------------------------
+    // onmousemove handler
+    //-----------------------------------------------------------------
+    function dragIt(e) 
+    {
+		var e = e? e: window.event;
+	    
+        // -- Move drag element by the same amount the cursor has moved.
+        with (drag) 
+        {
+        	style.left = getX(e) + 1 + "px"; //- dx;
+          	style.top  = getY(e) + 1 + "px"; //- dy;
+        	//style.left = getX(e) - dx;
+          	//style.top  = getY(e) - dy;
+        }
+
+        return false;
+    }
+
+      //-----------------------------------------------------------------
+      // onmouseup handler
+      //-----------------------------------------------------------------
+      function dropIt(e) {
+
+        // -- engage cloaking device
+        drag.style.visibility = "hidden";
+
+        // -- get bounding rectangle for drag buffer
+        var rd = getRect(drag);
+
+        // -- loop over all form elements
+		var divs = document.getElementsByTagName("span"); 
+        for(i = 0; i < divs.length; i++) 
+        {
+
+          // -- if we aren't a drag target, go to the next element
+          var field = divs[i];
+          if (! field.className.match(/dragTarget/)) continue;
+
+  		  // -- is drag buffer over this target?
+          var rt = getRect(field);
+          var boundHorz = (rd.left > rt.left) && (rd.right  < rt.right);
+          var boundVert = (rd.top  > rt.top)  && (rd.bottom < rt.bottom);
+          //alert(field.className);
+          //alert("buffer.left:" + rd.left);
+          //alert("span.left:" + rt.left);
+          //alert("buffer.right:" + rd.right);
+          //alert("span.right:" + rt.right);
+          
+          //alert(boundHorz);
+          //alert(boundVert);
+          
+          if (boundHorz && boundVert) {
+            //alert("Drag is over:" + field.id);
+			field.value += drag.innerHTML + ', ';
+            break;
+          }
+        }
+        
+        // -- IE5/Mac requires this so the drag element doesn't take up full screen width
+        drag.innerHTML = '';
+
+        // -- Stop capturing mousemove & mouseup events.
+        document.onmousemove = null;
+        document.onmouseup   = null;
+      }
+
+
+      function getRect(obj) {
+        var rect = new Object();
+        rect.top = rect.left = 0;
+        var parentObj = obj;
+        while (parentObj != null) {
+          rect.top  += parentObj.offsetTop;
+          rect.left += parentObj.offsetLeft;
+          parentObj = parentObj.offsetParent;
+        }
+        rect.bottom = rect.top  + obj.offsetHeight;
+        rect.right  = rect.left + obj.offsetWidth;
+
+		//if()
+        return rect;
+      }
+
+
+
+      //-----------------------------------------------------------------
+      // onmouseup handler
+      //-----------------------------------------------------------------
+      function dropItem(e) {
+
+        // -- engage cloaking device
+        drag.style.visibility = "hidden";
+		drag.style.left = -50;
+        drag.style.top  = -50;
+          
+        // -- IE5/Mac requires this so the drag element doesn't take up full screen width
+        //drag.innerHTML = '';
+
+        // -- Stop capturing mousemove & mouseup events.
+        document.onmousemove = null;
+        document.onmouseup   = null;
+      }
+	-->
+	
+</script>
+
+
+<script type="text/javascript">
+<!--
+
+	function xGetElementById(e) 
+	{
+		if(typeof(e)!='string') return e;
+		if(document.getElementById) e=document.getElementById(e);
+	  	else if(document.all) e=document.all[e];
+	  	else if(document.layers) e=xLayer(e);
+	  	else e=null;
+	  	return e;
+	}
+	
+	function xName(e) 
+	{
+	  	if (!e) return e;
+	  	else if (e.id && e.id != "") return e.id;
+	  	else if (e.nodeName && e.nodeName != "") return e.nodeName;
+	  	else if (e.tagName && e.tagName != "") return e.tagName;
+	  	else return e;
+	}
+	
+	// Event:
+	function xAddEventListener(e, eventType, eventListener, useCapture) 
+	{
+	  	if(!(e=xGetElementById(e))) return;
+	  	eventType=eventType.toLowerCase();
+	  	if((!xIE4Up && !xOp7) && e==window) 
+	  	{
+	    	if(eventType=='resize') { window.xPCW=xClientWidth(); window.xPCH=xClientHeight(); window.xREL=eventListener; xResizeEvent(); return; }
+			if(eventType=='scroll') { window.xPSL=xScrollLeft(); window.xPST=xScrollTop(); window.xSEL=eventListener; xScrollEvent(); return; }
+	  	}
+	  	
+	  	var eh='e.on'+eventType+'=eventListener';
+	  	if(e.addEventListener) e.addEventListener(eventType,eventListener,useCapture);
+	  	else if(e.attachEvent) e.attachEvent('on'+eventType,eventListener);
+	  	else if(e.captureEvents) {
+	    	if(useCapture||(eventType.indexOf('mousemove')!=-1)) { e.captureEvents(eval('Event.'+eventType.toUpperCase())); }
+	    	eval(eh);
+	  	}
+	  	else eval(eh);
+	}
+		
+		
+	function initializeSlotEventHandler(id, insertUrl, deleteUrl)
+	{
+		//alert("initializeSlotEventHandler:" + id);
+		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl);
+	}
+
+	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl)
+	{
+		this.objName = objName;           // objName is a property of myObject4
+		this.insertUrl = insertUrl;
+		this.deleteUrl = deleteUrl;
+		//alert("eleId:" + eleId);
+		//alert("this.insertUrl:" + this.insertUrl);
+		var ele = xGetElementById(eleId); // ele points to our related Element
+		//alert("ele:" + ele);
+		ele.thisObj = this;              // Add a property to ele which points
+		                                    // to our myObject4 'this'.
+		ele.onclick = function(e)         // onclick is a method of ele not myObject4
+		{   
+		  	//alert("onclick");                              // so 'this' will point to event.currentTarget.
+		    this.thisObj.onClick(e, this);
+		}
+		  
+		ele.oncontextmenu = function(e)         	// onclick is a method of ele not myObject4
+		{ 
+		  	//alert("oncontextmenu");           		// so 'this' will point to event.currentTarget.
+		    this.thisObj.onContextMenu(e, this);
+		    return false;
+		}
+		
+		this.onClick = function(evt, ele) // onClick is a method of myObject4
+		{
+			//alert('emptySlotEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
+		    //assignComponent();
+		    //assignComponent(siteNodeId, languageId, contentId, componentId, slotId, specifyBaseTemplate);
+		    hidemenuie5();
+		    // cancel event bubbling
+		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+		    else if (window.event) {window.event.cancelBubble = true;}
+		}
+		  
+		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
+		{
+			//alert('emptySlotEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
+		    showEmptySlotMenu(evt, ele.id, insertUrl);
+		    // cancel event bubbling
+		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+		    else if (window.event) {window.event.cancelBubble = true;}
+		}
+	}
+	
+	function initializeComponentEventHandler(id, compId, insertUrl, deleteUrl)
+	{
+		//alert("initializeComponentEventHandler" + id + " " + deleteUrl);
+		var object = new componentEventHandler(id, id, compId, insertUrl, deleteUrl);
+	}
+		
+	function componentEventHandler(eleId, objName, objId, insertUrl, deleteUrl)
+	{
+		this.objName = objName;           // objName is a property of myObject4
+		this.objId = objId;
+		this.insertUrl = insertUrl;
+		this.deleteUrl = deleteUrl;
+		//alert("eleId:" + eleId);
+		//alert("this.insertUrl:" + this.insertUrl);
+		//alert("this.deleteUrl:" + this.deleteUrl);
+		var ele = xGetElementById(eleId); // ele points to our related Element
+		//alert("ele:" + ele);
+		ele.thisObj = this;              // Add a property to ele which points
+		                                    // to our myObject4 'this'.
+		ele.onclick = function(e)         // onclick is a method of ele not myObject4
+		{   
+		  	//alert("onclick");                              // so 'this' will point to event.currentTarget.
+		    this.thisObj.onClick(e, this);
+		}
+		  
+		ele.oncontextmenu = function(e)         	// onclick is a method of ele not myObject4
+		{ 
+		  	//alert("oncontextmenu:" + e);           		// so 'this' will point to event.currentTarget.
+		    this.thisObj.onContextMenu(e, this);
+		    return false;
+		}
+		
+		this.onClick = function(evt, ele) // onClick is a method of myObject4
+		{
+			//alert('componentEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
+		    hidemenuie5();
+		    // cancel event bubbling
+		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+		    else if (window.event) {window.event.cancelBubble = true;}
+		}
+		  
+		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
+		{
+			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
+		    showComponentMenu(evt, ele.id, this.objId, insertUrl, deleteUrl);
+		    // cancel event bubbling
+		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+		    else if (window.event) {window.event.cancelBubble = true;}
+		}
+	}
+	
+	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl)
+	{
+		//alert("initializeComponentInTreeEventHandler" + id + " " + deleteUrl);
+		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl);
+	}
+		
+	function componentInTreeEventHandler(eleId, objName, objId, insertUrl, deleteUrl)
+	{
+		this.objName = objName;           // objName is a property of myObject4
+		this.objId = objId;
+		this.insertUrl = insertUrl;
+		this.deleteUrl = deleteUrl;
+		//alert("eleId:" + eleId);
+		//alert("this.insertUrl:" + this.insertUrl);
+		//alert("this.deleteUrl:" + this.deleteUrl);
+		var ele = xGetElementById(eleId); // ele points to our related Element
+		//alert("ele:" + ele);
+		ele.thisObj = this;              // Add a property to ele which points
+		                                    // to our myObject4 'this'.
+		ele.onclick = function(e)         // onclick is a method of ele not myObject4
+		{   
+		  	//alert("onclick");                              // so 'this' will point to event.currentTarget.
+		    this.thisObj.onClick(e, this);
+		}
+		  
+		ele.oncontextmenu = function(e)         	// onclick is a method of ele not myObject4
+		{ 
+		  	//alert("oncontextmenu");           		// so 'this' will point to event.currentTarget.
+		    this.thisObj.onContextMenu(e, this);
+		    return false;
+		}
+		
+		this.onClick = function(evt, ele) // onClick is a method of myObject4
+		{
+			//alert('componentEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
+		    // cancel event bubbling
+		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+		    else if (window.event) {window.event.cancelBubble = true;}
+		}
+		  
+		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
+		{
+			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
+		    showComponentInTreeMenu(evt, ele.id, this.objId, insertUrl, deleteUrl);
+		    // cancel event bubbling
+		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+		    else if (window.event) {window.event.cancelBubble = true;}
+		}
+	}
+
+
+	//var currentGroup = "Navigation";
+	
+	function changeTab(group)
+	{
+		//alert("group" + group);
+		//alert("currentGroup" + currentGroup);
+		
+		document.getElementById(currentGroup + "Tab").style.zIndex = 2;
+		document.getElementById(currentGroup + "Tab").className = "tab";
+		document.getElementById(currentGroup + "ComponentsBg").style.zIndex = 2;
+		
+		document.getElementById(group + "Tab").style.zIndex = 3;
+		document.getElementById(group + "Tab").className = "thistab";
+		document.getElementById(group + "ComponentsBg").style.zIndex = 3;
+
+		currentGroup = group;
+		currentComponentsDiv = currentGroup + "Components";
+	}
+	
+	//The code below is to take care of scroll in tabs
+	
+	function lib_bwcheck(){ //Browsercheck (needed)
+		this.ver=navigator.appVersion
+		this.agent=navigator.userAgent
+		this.dom=document.getElementById?1:0
+		this.opera5=this.agent.indexOf("Opera 5")>-1
+		this.ie5=(this.ver.indexOf("MSIE 5")>-1 && this.dom && !this.opera5)?1:0; 
+		this.ie6=(this.ver.indexOf("MSIE 6")>-1 && this.dom && !this.opera5)?1:0;
+		this.ie4=(document.all && !this.dom && !this.opera5)?1:0;
+		this.ie=this.ie4||this.ie5||this.ie6
+		this.mac=this.agent.indexOf("Mac")>-1
+		this.ns6=(this.dom && parseInt(this.ver) >= 5) ?1:0; 
+		this.ns4=(document.layers && !this.dom)?1:0;
+		this.bw=(this.ie6 || this.ie5 || this.ie4 || this.ns4 || this.ns6 || this.opera5)
+		return this
+	}
+	var bw=new lib_bwcheck()
+	
+	
+	/**************************************************************************
+	Variables to set.
+	***************************************************************************/
+	sMenuheight = 20  //The height of the menu
+	sArrowwidth = 5  //Width of the arrows
+	sScrollspeed = 20 //Scroll speed: (in milliseconds, change this one and the next variable to change the speed)
+	sScrollPx = 8     //Pixels to scroll per timeout.
+	sScrollExtra = 15 //Extra speed to scroll onmousedown (pixels)
+	
+	var scrollHash = new Array();
+	
+	/**************************************************************************
+	Scrolling functions
+	***************************************************************************/
+	var tim = 0
+	var noScroll = true
+	function mLeft(){
+		id = currentComponentsDiv;
+		div = document.getElementById(id);
+		
+		oBg = scrollHash[id + "oBg"]
+		oMenu = scrollHash[id + "oMenu"]
+	
+		pageWidth = (bw.ns4 || bw.ns6 || window.opera)?innerWidth:document.body.clientWidth;
+	
+		if (!noScroll && oMenu.x<0){
+			oMenu.moveBy(sScrollPx,0)
+			tim = setTimeout("mLeft()",sScrollspeed)
+		}
+	}
+	function mRight(){
+		id = currentComponentsDiv;
+		div = document.getElementById(id);
+		
+		oBg = scrollHash[id + "oBg"]
+		oMenu = scrollHash[id + "oMenu"]
+		
+		pageWidth = (bw.ns4 || bw.ns6 || window.opera)?innerWidth:document.body.clientWidth;
+				
+		if (!noScroll && oMenu.x>-(oMenu.scrollWidth-(pageWidth))-sArrowwidth){
+			oMenu.moveBy(-sScrollPx,0)
+			tim = setTimeout("mRight()",sScrollspeed)
+		}
+	}
+	function noMove(){	
+		clearTimeout(tim);
+		noScroll = true;
+		sScrollPx = sScrollPxOriginal;
+	}
+	/**************************************************************************
+	Object part
+	***************************************************************************/
+	function makeObj(obj,nest,menu){
+	    nest = (!nest) ? "":'document.'+nest+'.';
+		this.elm = bw.ns4?eval(nest+"document.layers." +obj):bw.ie4?document.all[obj]:document.getElementById(obj);
+	   	this.css = bw.ns4?this.elm:this.elm.style;
+		this.scrollWidth = bw.ns4?this.css.document.width:this.elm.offsetWidth;
+		this.x = bw.ns4?this.css.left:this.elm.offsetLeft;
+		this.y = bw.ns4?this.css.top:this.elm.offsetTop;
+		this.moveBy = b_moveBy;
+		this.moveIt = b_moveIt;
+		this.clipTo = b_clipTo;
+		return this;
+	}
+	var px = bw.ns4||window.opera?"":"px";
+	function b_moveIt(x,y){
+		if (x!=null){this.x=x; this.css.left=this.x+px;}
+		if (y!=null){this.y=y; this.css.top=this.y+px;}
+	}
+	function b_moveBy(x,y){this.x=this.x+x; this.y=this.y+y; this.css.left=this.x+px; this.css.top=this.y+px;}
+	function b_clipTo(t,r,b,l){
+		if(bw.ns4){this.css.clip.top=t; this.css.clip.right=r; this.css.clip.bottom=b; this.css.clip.left=l;}
+		else this.css.clip="rect("+t+"px "+r+"px "+b+"px "+l+"px)";
+	}
+	/**************************************************************************
+	Object part end
+	***************************************************************************/
+	
+	/**************************************************************************
+	Init function. Set the placements of the objects here.
+	***************************************************************************/
+	var sScrollPxOriginal = sScrollPx;
+	function tabInit(id)
+	{
+	    div = document.getElementById(id);
+		
+		//Width of the menu, Currently set to the width of the document.
+		//If you want the menu to be 500px wide for instance, just 
+		//set the pageWidth=500 in stead.
+		pageWidth = (bw.ns4 || bw.ns6 || window.opera)?innerWidth:document.body.clientWidth;
+		
+		//Making the objects...
+		oBg = new makeObj(id + 'Bg')
+		oMenu = new makeObj(id,id + 'Bg',1)
+		
+		//Storing them for later
+		scrollHash[id + "oBg"] = oBg;
+		scrollHash[id + "oMenu"] = oMenu;
+		
+		//Placing the menucontainer, the layer with links, and the right arrow.
+		oBg.moveIt(0,40) //Main div, holds all the other divs.
+		oMenu.moveIt(0,null)
+		
+		//Setting the width and the visible area of the links.
+		if (!bw.ns4) oBg.css.overflow = "hidden";
+		if (bw.ns6) oMenu.css.position = "relative";
+		//oBg.css.width = pageWidth+px;
+		//oBg.clipTo(0,pageWidth,sMenuheight,0)
+		oBg.css.visibility = "visible";
+	}
+	
+	/**
+	 * This method sets the status text in the list - showing off the full name of the component.
+	 */
+	 
+	function showDetails(name)
+	{
+		statusDiv = document.getElementById("statusText");
+		statusDivText=statusDiv.childNodes.item(0);
+		statusDivText.data = name;
+	} 
+	
+	
+	//*******************************************
+	// This function changes language version
+	//*******************************************
+	
+	function changeLanguage(siteNodeId, languageId, contentId)
+	{
+		//alert("Language:" + languageId.value);
+		//languageId = $language;
+		//alert(document.location.href);
+		//if (confirm('$ui.getString("tool.contenttool.languageVersionChangeWarning")'))
+		//{
+			window.location.href = "ViewPage!renderDecoratedPage.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId.value + "&contentId=" + contentId + "";
+		//}
+		//else
+		//{
+		//	document.editForm.languageId.selectedIndex = originalIndex - 1;
+		//}
+	}
+	
+	//*******************************************
+	// This function changes language version
+	//*******************************************
+	
+	function refreshComponents(currentLocation)
+	{
+		var newLocation = currentLocation + "&refresh=true";
+		//alert("newLocation" + newLocation);
+		document.location.href = newLocation;
+	}
+
+
+	cookie_name = "palettePosition";
+	var position = '0px';
+
+	function setInitialPosition(id)
+	{
+		//alert("id:" + id);
+		if(document.cookie)
+		{
+			index = document.cookie.indexOf(cookie_name);
+			//alert("index:" + index);
+			if (index != -1)
+			{
+				namestart = (document.cookie.indexOf("=", index) + 1);
+				nameend = document.cookie.indexOf(";", index);
+				if (nameend == -1) {nameend = document.cookie.length;}
+				position = document.cookie.substring(namestart, nameend);
+				//alert("position: " + position);
+			}
+		}
+		
+		//alert("position: " + position);
+		
+		//alert("document" + document.location.href)
+		var div = document.getElementById(id);
+		//alert("div" + div)
+		if(div)
+			div.style.top = "" + position;
+		
+		//alert("document" + document.location.href);
+		//alert("apa:" + div.style.top);
+	}
+		 
+	function moveDivDown(id)
+	{
+		position = "500px";
+
+		var div = document.getElementById(id);
+		if(div)
+			div.style.top = position;
+		
+		if(document.cookie != document.cookie){
+			index = document.cookie.indexOf(cookie_name);
+		}
+		else{
+			index = -1;
+		}
+		
+		if (index == -1){
+			document.cookie=cookie_name+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+		}
+		
+	}
+
+	function moveDivUp(id)
+	{
+		position = "0px";
+
+		var div = document.getElementById(id);
+		if(div)
+			div.style.top = position;
+		
+		if(document.cookie != document.cookie){
+			index = document.cookie.indexOf(cookie_name);
+		}
+		else{
+			index = -1;
+		}
+		
+		if (index == -1){
+			document.cookie=cookie_name+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+		}
+		
+	}
+	
+	var groupHash = new Array();
+	//var componentIndex = 0;
+	
+	function moveRight(groupName)
+	{
+		componentIndex = groupHash[groupName + "CurrentIndex"];
+		//alert("componentIndex" + componentIndex);
+		if(!componentIndex)
+		{
+			groupHash[groupName + "CurrentIndex"] = 0;
+			componentIndex = 0;
+		}
+			
+		//alert("groupName: " + groupName);
+		var div = document.getElementById(groupName + "Components");
+		//alert("div: " + div.id);
+		var componentTDs = div.getElementsByTagName("div");
+		//alert("componentTDs:" + componentTDs.length);
+		//alert("componentIndex" + componentTDs.length);
+
+		if(componentIndex < componentTDs.length - 1)
+		{
+			//alert("componentIndex:" + componentIndex);
+			componentIndex = componentIndex + 1;
+		
+			for (var i = 0; i < componentTDs.length - 1; i++) 
+			{ 
+				//alert("Width of this a element is : " + componentTDs[i].style.width + ":" + componentTDs[i].id + "\n"); 
+				if(i < componentIndex)
+				{
+					//componentTDs[i].style.width = "0px";
+					componentTDs[i].style.display = "none";
+				}
+			} 
+		}
+		
+		groupHash[groupName + "CurrentIndex"] = componentIndex;
+	}
+	
+	function moveLeft(groupName)
+	{
+		componentIndex = groupHash[groupName + "CurrentIndex"];
+		//alert("componentIndex" + componentIndex);
+		if(!componentIndex)
+		{
+			groupHash[groupName + "CurrentIndex"] = 0;
+			componentIndex = 0;
+		}
+			
+		if(componentIndex > 0)
+		{
+			componentIndex = componentIndex - 1;
+			//alert("groupName: " + groupName);
+			var div = document.getElementById(groupName + "Components");
+			//alert("div: " + div.id);
+			var componentTDs = div.getElementsByTagName("div");
+			//alert("componentTDs:" + componentTDs.length);
+			//alert("componentIndex" + componentTDs.length);
+		
+			for (var i = 0; i < componentTDs.length - 1; i++) 
+			{ 
+				//alert("Width of this a element is : " + componentTDs[i].style.width + ":" + componentTDs[i].id + "\n"); 
+				//alert("i: " + i);
+				//alert("componentIndex: " + componentIndex);
+				if(i == componentIndex)
+				{
+					//componentTDs[i].style.width = "150px";
+					componentTDs[i].style.display = "block";					
+				}
+			} 
+	
+			//alert("Current:" + eval(groupName + "componentIndexStart"));
+			//alert("Current:" + eval(groupName + "componentIndexMax"));
+		}
+		
+		groupHash[groupName + "CurrentIndex"] = componentIndex;
+	}
+	
+	
+	//
+	// QueryString
+	//
+	
+	function QueryString(key)
+	{
+		var value = null;
+		for (var i=0;i<QueryString.keys.length;i++)
+		{
+			if (QueryString.keys[i]==key)
+			{
+				value = QueryString.values[i];
+				break;
+			}
+		}
+		return value;
+	}
+	
+	QueryString.keys = new Array();
+	QueryString.values = new Array();
+	
+	function QueryString_Parse()
+	{
+		var query = window.location.search.substring(1);
+		var pairs = query.split("&");
+		
+		for (var i=0;i<pairs.length;i++)
+		{
+			var pos = pairs[i].indexOf('=');
+			if (pos >= 0)
+			{
+				var argname = pairs[i].substring(0,pos);
+				var value = pairs[i].substring(pos+1);
+				QueryString.keys[QueryString.keys.length] = argname;
+				QueryString.values[QueryString.values.length] = value;		
+			}
+		}
+	
+	}
+	
+	QueryString_Parse();
+
+-->
+</script>
+
+
+</head>

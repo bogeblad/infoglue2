@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+	<title>Delivery engine status page</title>
+	
+	<style>
+	<!--
+		.header 
+		{
+			font-family : Verdana;
+			font-size 	: 16pt;
+			font-weight : bold;
+		}
+		.label
+		{
+			font-family	:Verdana;
+			font-size	:10pt;
+			font-weight : bold;
+		}
+		.text 
+		{
+			font-family	:Verdana;
+			font-size	:10pt;
+		}
+		.texttrue 
+		{
+			font-family	:Verdana;
+			font-size	:10pt;
+		}
+		.textfalse 
+		{
+			font-family	:Verdana;
+			font-size	:10pt;
+			color  		:red;
+		}
+		.fullymarginalized 
+		{
+			margin-left	: 50;
+			margin-right: 50;
+			margin-top	: 20%;
+		}
+	-->
+	</style>
+
+</head>
+
+<body>
+
+<center>
+
+<table class="fullymarginalized" border="0" cellpadding="2" cellspacing="0">
+  <tr>
+    <td colspan="2" class="header">InfoGlue Delivery Status</td>
+  </tr>
+  <tr>
+    <td colspan="2"><hr/></td>
+  </tr>
+  <tr>
+    <td class="label" bgcolor="gray">Test case:</td>
+    <td class="label" bgcolor="gray">Ok?</td>
+  </tr>
+  <tr>
+    <td class="text">Database connection</td>
+    <td class="text$isDatabaseConnectionOk">$isDatabaseConnectionOk</td>
+  </tr>
+  <tr>
+    <td class="text">Application settings</td>
+    <td class="text$isApplicationSettingsOk">$isApplicationSettingsOk</td>
+  </tr>
+  <tr>
+    <td class="text">Test queries</td>
+    <td class="text$isTestQueriesOk">$isTestQueriesOk</td>
+  </tr>
+  <tr>
+    <td class="text">Disk permissions</td>
+    <td class="text$isDiskPermissionOk">$isDiskPermissionOk</td>
+  </tr>
+  <tr>
+    <td colspan="2"><hr/></td>
+  </tr>
+  <tr>
+    <td colspan="2" class="text" align="center"><a href="ViewApplicationSettings.action">Click here for delivery settings</a></td>
+  </tr>
+</table>
+</center>
+
+</body>
+
+</html>
