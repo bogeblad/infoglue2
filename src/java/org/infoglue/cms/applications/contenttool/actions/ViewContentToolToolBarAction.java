@@ -259,7 +259,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 
 			buttons.add(getSyncTreeButton());
 			
-			buttons.add(new ImageButton("ViewContentProperties.action?contentId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
+			buttons.add(new ImageButton("ViewContentProperties.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
 
 		}
 		catch(Exception e)

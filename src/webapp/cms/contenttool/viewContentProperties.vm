@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginContentTool("tool.contenttool.contentPropertiesHeader" "tool.contenttool.contentPropertiesHeader" "contentId=$contentId" "0" "0" "0")
+
+<div class="fullymarginalized">
+
+<table class="contenttooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
+<form name="editForm" method="POST" action="ViewContentProperties!save.action">
+	<tr>
+		<td>
+			<p>
+				$ui.getString("entity.Content.property.allowedContentTypeNames.label")<br/>
+				#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+					<input type="checkbox" name="allowedContentTypeName" value="$contentTypeDefinitionVO.getName()">$contentTypeDefinitionVO.getName()</input><br/>
+				#end
+			</p>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>
+			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
+			<a href="javascript:saveAndExit(document.editForm, 'ViewRepositoryProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="ViewContent.action?contentId=$contentId"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+		</td>
+	</tr>
+
+<input type="hidden" name="contentId" value="$!contentId">
+</form>
+</table>
+</div>
+
+</body>
+</html>
+
+
