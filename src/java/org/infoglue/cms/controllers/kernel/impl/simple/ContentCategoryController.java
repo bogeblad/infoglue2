@@ -20,13 +20,11 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.1 2004/12/01 23:40:28 frank Exp $
+ * $Id: ContentCategoryController.java,v 1.2 2005/03/14 20:51:58 jed Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Category;
@@ -66,14 +64,14 @@ public class ContentCategoryController extends BaseController
 			.append("WHERE c.category.categoryId = $1 ").toString();
 
 	public static ContentCategoryController getController()
-	{ return instance; }
+	{
+		return instance;
+	}
 
-	private ContentCategoryController()
-	{}
+	private ContentCategoryController() {}
 
 	/**
 	 * Find a ContentCategory by it's identifier.
-	 *
 	 * @param	id The id of the Category to find
 	 * @return	The CategoryVO identified by the provided id
 	 * @throws	SystemException If an error happens
@@ -85,60 +83,54 @@ public class ContentCategoryController extends BaseController
 
 	/**
 	 * Find a List of ContentCategories for the specific attribute and Content Version.
-	 *
 	 * @param	attribute The attribute name of the ContentCategory to find
-	 * @param	id The Content Version id of the ContentCategory to find
+	 * @param	versionId The Content Version id of the ContentCategory to find
 	 * @return	A list of ContentCategoryVO that have the provided content version and attribute
 	 * @throws	SystemException If an error happens
 	 */
-	public List findByContentVersionAttribute(String attribute, Integer id) throws SystemException
+	public List findByContentVersionAttribute(String attribute, Integer versionId) throws SystemException
 	{
 		List params = new ArrayList();
 		params.add(attribute);
-		params.add(id);
+		params.add(versionId);
 		return executeQuery(findByContentVersionAttribute, params);
 	}
 
 	/**
 	 * Find a List of ContentCategories for a Content Version.
-	 *
-	 * @param	id The Content Version id of the ContentCategory to find
+	 * @param	versionId The Content Version id of the ContentCategory to find
 	 * @return	A list of ContentCategoryVO that have the provided content version and attribute
 	 * @throws	SystemException If an error happens
 	 */
-	public List findByContentVersion(Integer id) throws SystemException
+	public List findByContentVersion(Integer versionId) throws SystemException
 	{
 		List params = new ArrayList();
-		params.add(id);
+		params.add(versionId);
 		return executeQuery(findByContentVersion, params);
 	}
 
 	/**
 	 * Find a List of ContentCategories for the specific attribute and Content Version.
-	 *
-	 * @param	id The Category id of the ContentCategory to find
+	 * @param	categoryId The Category id of the ContentCategory to find
 	 * @return	A list of ContentCategoryVO that have the provided category id
 	 * @throws	SystemException If an error happens
 	 */
-	public List findByCategory(Integer id) throws SystemException
+	public List findByCategory(Integer categoryId) throws SystemException
 	{
 		List params = new ArrayList();
-		params.add(id);
+		params.add(categoryId);
 		return executeQuery(findByCategory, params);
 	}
 
 	/**
 	 * Saves a ContentCategoryVO whether it is new or not.
-	 *
 	 * @param	c The ContentCategoryVO to save
 	 * @return	The saved ContentCategoryVO
-	 * @throws	org.infoglue.cms.exception.SystemException If an error happens
+	 * @throws	SystemException If an error happens
 	 */
 	public ContentCategoryVO save(ContentCategoryVO c) throws SystemException
 	{
-		return (c.isUnsaved())
-					? create(c)
-					: (ContentCategoryVO)updateEntity(ContentCategoryImpl.class, c);
+		return c.isUnsaved() ? create(c) : (ContentCategoryVO)updateEntity(ContentCategoryImpl.class, c);
 	}
 
 	/**
@@ -146,22 +138,19 @@ public class ContentCategoryController extends BaseController
 	 */
 	private ContentCategoryVO create(ContentCategoryVO c) throws SystemException
 	{
-		ContentCategory contentCategory = null;
-
 		Database db = beginTransaction();
 
 		try
 		{
-			contentCategory = createWithDatabase(c, db);
+			ContentCategory contentCategory = createWithDatabase(c, db);
 			commitTransaction(db);
+			return contentCategory.getValueObject();
 		}
 		catch(Exception e)
 		{
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
-        return contentCategory.getValueObject();
 	}
 
 	public ContentCategory createWithDatabase(ContentCategoryVO c, Database db) throws SystemException, PersistenceException
@@ -178,12 +167,10 @@ public class ContentCategoryController extends BaseController
 		return contentCategory;
 	}
 
-
 	/**
 	 * Deletes a ContentCategory
-	 *
 	 * @param	id The id of the ContentCategory to delete
-	 * @throws	org.infoglue.cms.exception.SystemException If an error happens
+	 * @throws	SystemException If an error happens
 	 */
 	public void delete(Integer id) throws SystemException
 	{
@@ -192,17 +179,16 @@ public class ContentCategoryController extends BaseController
 
 	/**
 	 * Deletes all ContentCategories for a particular ContentVersion
-	 *
-	 * @param	id The id of the ContentCategory to delete
-	 * @throws	org.infoglue.cms.exception.SystemException If an error happens
+	 * @param	versionId The id of the ContentCategory to delete
+	 * @throws	SystemException If an error happens
 	 */
-	public void deleteByContentVersion(Integer id) throws SystemException
+	public void deleteByContentVersion(Integer versionId) throws SystemException
 	{
 
 		Database db = beginTransaction();
 		try
 		{
-			deleteByContentVersion(id, db);
+			deleteByContentVersion(versionId, db);
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -215,34 +201,27 @@ public class ContentCategoryController extends BaseController
 
 	/**
 	 * Deletes all ContentCategories for a particular ContentVersion using the provided Database
-	 *
-	 * @param	id The id of the ContentCategory to delete
+	 * @param	versionId The id of the ContentCategory to delete
 	 * @param	db The Database instance to use
-	 * @throws	org.infoglue.cms.exception.SystemException If an error happens
+	 * @throws	SystemException If an error happens
 	 */
-	public void deleteByContentVersion(Integer id, Database db) throws SystemException
+	public void deleteByContentVersion(Integer versionId, Database db) throws SystemException
 	{
-		List found = findByContentVersion(id);
-		for (Iterator iter = found.iterator(); iter.hasNext();)
-		{
-			ContentCategoryVO vo = (ContentCategoryVO) iter.next();
-			deleteEntity(ContentCategoryImpl.class, vo.getId(), db);
-		}
+		delete(findByContentVersion(versionId), db);
 	}
 
 	/**
 	 * Deletes all ContentCategories for a particular Category
-	 *
-	 * @param	id The id of the ContentCategory to delete
-	 * @throws	org.infoglue.cms.exception.SystemException If an error happens
+	 * @param	categoryId The id of the ContentCategory to delete
+	 * @throws	SystemException If an error happens
 	 */
-	public void deleteByCategory(Integer id) throws SystemException
+	public void deleteByCategory(Integer categoryId) throws SystemException
 	{
-
 		Database db = beginTransaction();
+
 		try
 		{
-			deleteByCategory(id, db);
+			deleteByCategory(categoryId, db);
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -250,24 +229,29 @@ public class ContentCategoryController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
 	}
 
 	/**
 	 * Deletes all ContentCategories for a particular Category using the provided Database
-	 *
-	 * @param	id The id of the Category to delete
+	 * @param	categoryId The id of the Category to delete
 	 * @param	db The Database instance to use
-	 * @throws	org.infoglue.cms.exception.SystemException If an error happens
+	 * @throws	SystemException If an error happens
 	 */
-	public void deleteByCategory(Integer id, Database db) throws SystemException
+	public void deleteByCategory(Integer categoryId, Database db) throws SystemException
 	{
-		List found = findByCategory(id);
-		for (Iterator iter = found.iterator(); iter.hasNext();)
-		{
-			ContentCategoryVO vo = (ContentCategoryVO) iter.next();
-			deleteEntity(ContentCategoryImpl.class, vo.getId(), db);
-		}
+		delete(findByCategory(categoryId), db);
+	}
+
+	/**
+	 * Deletes a collection of content categories using the given database
+	 * @param contentCategories a collection of ContentCategoryVOs to delete
+	 * @param db the database to be used for the delete
+	 * @throws SystemException if a database error occurs
+	 */
+	private static void delete(Collection contentCategories, Database db) throws SystemException
+	{
+		for (Iterator i = contentCategories.iterator(); i.hasNext();)
+			deleteEntity(ContentCategoryImpl.class, ((ContentCategoryVO)i.next()).getId(), db);
 	}
 
 	/**
