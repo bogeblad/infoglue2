@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: InitializeCreateNews.java,v 1.2 2005/02/23 22:09:49 jed Exp $
+ * $Id: InitializeCreateNews.java,v 1.3 2005/03/09 13:37:09 jed Exp $
  */
 package org.infoglue.cms.applications.workflowtool.functions;
 
@@ -34,21 +34,18 @@ import org.infoglue.cms.util.CmsLogger;
 
 /**
  * THIS IS VERY TEMPORARY SOLUTION FOR ASSESSING WHERE TO PUT THE NEWS ITEMS.
- * @version $Revision: 1.2 $ $Date: 2005/02/23 22:09:49 $
+ * @version $Revision: 1.3 $ $Date: 2005/03/09 13:37:09 $
  */
 public class InitializeCreateNews implements FunctionProvider
 {
 	public void execute(Map transientVars, Map args, PropertySet propertySet)
 	{
 		System.out.println("Now I start by setting some basic parameters like where this content should end up...");
-		Integer repositoryId = null;
-		Integer parentContentId = null;
-		Integer contentTypeDefinitionId = null;
 
 		try
 		{
 			List repositories = RepositoryController.getController().getRepositoryVOList();
-			repositoryId = ((RepositoryVO)repositories.iterator().next()).getId();
+			Integer repositoryId = ((RepositoryVO)repositories.iterator().next()).getId();
 
 			System.out.println("Found repositoryId when trying to assess where to put the news: " + repositoryId);
 
@@ -58,9 +55,9 @@ public class InitializeCreateNews implements FunctionProvider
 			List children = ContentController.getContentController().getContentChildrenVOList(rootContentVO.getId());
 			ContentVO childContentVO = (ContentVO)children.iterator().next();
 			System.out.println("childContentVO: " + childContentVO.getName());
-			parentContentId = childContentVO.getId();
+			Integer parentContentId = childContentVO.getId();
 
-			contentTypeDefinitionId = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Article").getContentTypeDefinitionId();
+			Integer contentTypeDefinitionId = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Article").getContentTypeDefinitionId();
 			System.out.println("contentTypeDefintionId: " + contentTypeDefinitionId);
 
 			System.out.println("parentContentId:" + parentContentId);
