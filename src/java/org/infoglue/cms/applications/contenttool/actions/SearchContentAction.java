@@ -24,13 +24,18 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.util.CmsLogger;
+
+import webwork.action.Action;
 
 import java.util.List;
 
@@ -43,7 +48,7 @@ import java.util.List;
  * @author Mattias Bogeblad
  */
 
-public class SearchContentAction extends WebworkAbstractAction 
+public class SearchContentAction extends InfoGlueAbstractAction 
 {
 
 	private List contentVersionVOList;
@@ -51,11 +56,19 @@ public class SearchContentAction extends WebworkAbstractAction
 	private String searchString;
 	private int maxRows = 0;
 	
+	//This is for advanced search
+	private List principals 			= null;
+	private List availableLanguages 	= null;
+	private List contentTypeDefinitions = null;
+	
+	
 	public void setSearchString(String s)
 	{
 		this.searchString = s.replaceAll("'","");
+		
 		CmsLogger.logInfo(this.searchString);
 	}
+	
 	public String getSearchString()
 	{
 		return this.searchString;	
@@ -68,7 +81,9 @@ public class SearchContentAction extends WebworkAbstractAction
 	
 	public int getMaxRows()
 	{
-		if(maxRows == 0)maxRows=100;
+		if(maxRows == 0)
+		    maxRows=100;
+		
 		return this.maxRows;	
 	}
 
@@ -77,7 +92,7 @@ public class SearchContentAction extends WebworkAbstractAction
 		return this.contentVersionVOList;		
 	}
 	
-	protected String doExecute() throws Exception 
+	public String doExecute() throws Exception 
 	{
 	    CmsLogger.logInfo("Executing doExecute on SearchContentAction..");
 		int maxRows = 100;
@@ -94,9 +109,17 @@ public class SearchContentAction extends WebworkAbstractAction
         return "success";
 	}
 	
-	public SearchContentAction getThis()
+	/**
+	 * This method returns the advanced search interface to the user.
+	 */
+
+	public String doInput() throws Exception 
 	{
-		return this;
+	    this.principals = UserControllerProxy.getController().getAllUsers();
+	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
+	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+	    
+	    return Action.INPUT;
 	}
 	
 	public ContentVO getContentVO(Integer contentId)
@@ -147,4 +170,18 @@ public class SearchContentAction extends WebworkAbstractAction
 		repositoryId = integer;
 	}
 
+    public List getAvailableLanguages()
+    {
+        return availableLanguages;
+    }
+    
+    public List getContentTypeDefinitions()
+    {
+        return contentTypeDefinitions;
+    }
+    
+    public List getPrincipals()
+    {
+        return principals;
+    }
 }

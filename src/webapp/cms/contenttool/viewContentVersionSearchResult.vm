@@ -4,19 +4,142 @@
 
 #beginContentTool("tool.contenttool.searchResultHeader" $ui.getString("tool.contenttool.searchResultHeader") "" "0" "0" "0")
 
+	<script type="text/javascript" language="JavaScript">
+	<!-- 		
+		
+		//-----------------------------------------------
+		// This function reloads the toolbar above the current 
+		// active action so that buttons related to the view 
+		// can be shown and a suitable headline be written.
+		//-----------------------------------------------
+		
+		function submitListForm(entityName)
+		{
+			var listForm = parent.frames["main"].document.listForm;
+			var selectedObjects = getSelectedObjects(listForm, entityName);
+			var selectedTexts = getSelectedTexts(listForm);
+			//alert("selectedObjects:" + selectedObjects);
+			if (selectedObjects == "")
+			{
+				alert('Select one or more versions to replace the string in.');
+			  	return;
+			}
+			else
+			{
+				listForm.message.value = listForm.message.value;
+				//listForm.extraParameters.value = selectedTexts;
+				listForm.yesDestination.value = listForm.yesDestination.value + '?' + selectedObjects;
+				listForm.submit();
+			}
+
+		}
+		
+		
+		//-----------------------------------------------
+		// This function iterates through the list of select-boxes 
+		// and add the selected ones id's to the id-List 
+		//-----------------------------------------------
+
+		function getSelectedObjects(listForm, entityName)
+		{
+			var str = '';
+		
+			var length = listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		if (listForm.sel.checked)
+			    	str += '&' + entityName + 'Id=' + escape(listForm.sel.value);
+		  	}
+		  	else
+		  	{	
+			  	for (i=0; i<length; i++)
+			  	{
+			   		if (listForm.sel[i].checked)
+			    		str += '&' + entityName + 'Id=' + escape(listForm.sel[i].value);
+			 	}
+			}
+					 	
+		 	return str;
+		}
+
+
+		//-----------------------------------------------
+		// This function iterates through the list of select-boxes 
+		// and add the selected ones names to the messagesList 
+		//-----------------------------------------------
+		
+		function getSelectedTexts(listForm)
+		{
+			var str = '';
+
+			var length = listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		if (listForm.sel.checked)
+			    	str += listForm.rowtitle.value + "<br/>";
+		  	}
+		  	else
+		  	{	
+				for (i=0; i<length; i++)
+				{
+					if (listForm.sel[i].checked)
+				    	str += listForm.rowtitle[i].value + "<br/>";
+				}
+			}
+					
+			return str;
+		}
+
+		
+	-->
+	</script>
+	
 <div class="fullymarginalized">
+
+<form method="POST" name="editForm" action="SearchContent.action">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+	<td colspan="7">	
+		#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $searchString "30" "normaltextfield")
+	</td>
+</tr>
+<tr>
+	<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
+</tr>
+<tr>
+	<td colspan="7">	
+		#editTextField3($ui.getString("tool.contenttool.replaceString.label") "tool.contenttool.replaceString.label" "replaceString" $replaceString "30" "normaltextfield")
+	</td>
+</tr>
+<tr>
+	<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
+</tr>
+<tr>
+	<input type="hidden" name="repositoryId" value="$!repositoryId">
+	<td colspan="7">
+		<a href="javascript:submitListForm('contentVersion');"><img src="$ui.getString("images.managementtool.buttons.replaceLong")" border="0"></a>
+		<a href="javascript:clearForm();"><img src="$ui.getString("images.managementtool.buttons.clearLong")" border="0"></a>
+	</td>
+</tr>
+</table>
+</form>
+<br>
+
 <table tableborder=0 border=0 bgcolor=#C7D1B3 width=100% cellpadding="1" cellspacing="0"><tr><td>
-#set($lvConstraint = 0) 
+#set($lvConstraint = -1) 
 <!--lvHead(["Content Version Title","Type","Content Title","Repository Name","Score"] "" "" "" "") -->
-#lvHead([$ui.getString("tool.contenttool.searchResultContentHeader"), $ui.getString("tool.contenttool.searchResultLanguageHeader"), $ui.getString("tool.contenttool.searchResultStateHeader"), $ui.getString("tool.contenttool.searchResultLastModifiedHeader")] "" "" "" "")
+
+#lvHead([$ui.getString("tool.contenttool.searchResultContentHeader"), $ui.getString("tool.contenttool.searchResultLanguageHeader"), $ui.getString("tool.contenttool.searchResultStateHeader"), $ui.getString("tool.contenttool.searchResultLastModifiedHeader")] "tool.contenttool.replace.header" "SearchContent!replace.action" "SearchContent.action" "tool.contenttool.replaceStringInContentVersions.text")
 
 #set($cnt = 0)
 #foreach ($contentVersionVO in $contentVersionVOList)
+	#set( $contentVersionId = $contentVersionVO.id ) 
+	
 	#set( $rowUrl = "ViewContentVersion.action?contentId=$contentVersionVO.contentId&languageId=$contentVersionVO.languageId")
-	#set( $row = ["<a href=$rowUrl>$this.getContentVO($contentVersionVO.contentId).name</a>", "$this.getLanguageVO($contentVersionVO.languageId).name", "$contentVersionVO.stateId", "$contentVersionVO.modifiedDateTime"] )
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$contentVersionVO.id'/> <a href=$rowUrl>$this.getContentVO($contentVersionVO.contentId).name</a>", "$this.getLanguageVO($contentVersionVO.languageId).name", "$contentVersionVO.stateId", "$contentVersionVO.modifiedDateTime"] )
 	#set($cnt = $cnt + 1)
 	
-	#lvAddRow($row $cnt $id)
+	#lvAddRow($row $cnt $contentVersionId)
 #end
 #if($cnt == 0)
 ##	<tr><td>No matches found!</td></tr>

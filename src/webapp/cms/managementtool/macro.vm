@@ -578,6 +578,31 @@
 </table>
 #end
 
+#macro(selectBox $fieldNameKey $fieldName $value $valueList $defaultChoiceNameKey)
+<table>
+	<tr>
+		<td>$ui.getString($fieldNameKey)
+			#if($errors.hasErrors($errorKey))
+				#foreach($errorMessage in $errors.getErrors($errorKey))
+			    	<font color="red"> - $errorMessage</font>
+			    #end
+			#end
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<select name="$fieldName" class="dropbox">
+			
+				<option value="">$ui.getString($defaultChoiceNameKey)</option>
+				<option value="">-----------------------------</option>
+				#foreach($item in $valueList)
+					<option value="$item.id" #if("$item.id" == "$value") selected #end>$item.name</option>
+				#end
+			</select>
+		</td>
+	</tr>
+</table>
+#end
 
 ##**********************************************************
 ## This applet shows the navigationtree                    *

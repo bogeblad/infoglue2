@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.17 2005/02/15 22:00:16 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.18 2005/02/16 21:56:19 mattias Exp $ -->
 <actions>
 
 	<!-- Redirect -->
@@ -598,6 +598,7 @@
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.SearchContentAction" alias="SearchContent">
+		<view name="input">/cms/contenttool/viewContentVersionSearch.vm</view>
 		<view name="success">/cms/contenttool/viewContentVersionSearchResult.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
