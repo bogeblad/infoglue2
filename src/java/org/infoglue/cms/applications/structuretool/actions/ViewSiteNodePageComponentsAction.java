@@ -843,7 +843,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
-		this.getResponse().sendRedirect(url);
+		//this.getResponse().sendRedirect(url);
 	    return NONE; 
 	}
 		    

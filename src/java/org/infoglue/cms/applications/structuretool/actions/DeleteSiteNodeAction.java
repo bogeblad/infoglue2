@@ -23,11 +23,17 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
 
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+
+import webwork.action.Action;
 
 
 /**
@@ -36,7 +42,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
  * @author Mattias Bogeblad
  */
 
-public class DeleteSiteNodeAction extends WebworkAbstractAction
+public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 {
 	private SiteNodeVO siteNodeVO;
 	private Integer siteNodeId;
@@ -44,6 +50,11 @@ public class DeleteSiteNodeAction extends WebworkAbstractAction
 	private Integer changeTypeId;
 	private Integer repositoryId;
     
+	//Used for the relatedPages control
+	private Integer contentId;
+	
+	private List referenceBeanList = new ArrayList();
+
 	
 	public DeleteSiteNodeAction()
 	{
@@ -66,9 +77,26 @@ public class DeleteSiteNodeAction extends WebworkAbstractAction
 			CmsLogger.logInfo("The siteNode must have been a root-siteNode because we could not find a parent.");
 		}
 		
-		SiteNodeControllerProxy.getSiteNodeControllerProxy().acDelete(this.getInfoGluePrincipal(), this.siteNodeVO);
+		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(this.siteNodeVO.getSiteNodeId());
+		if(this.referenceBeanList != null && this.referenceBeanList.size() > 0)
+		{
+		    return "showRelations";
+		}
+	    else
+	    {
+			SiteNodeControllerProxy.getSiteNodeControllerProxy().acDelete(this.getInfoGluePrincipal(), this.siteNodeVO);
+	    	return "success";
+	    }
+	}
+	
+	public String doFixPage() throws Exception 
+	{
+	    return "fixPage";
+	}
 
-		return "success";
+	public String doFixPageHeader() throws Exception 
+	{
+	    return "fixPageHeader";
 	}
 	
 	public void setSiteNodeId(Integer siteNodeId)
@@ -119,5 +147,20 @@ public class DeleteSiteNodeAction extends WebworkAbstractAction
     public void setRepositoryId(Integer repositoryId)
     {
         this.repositoryId = repositoryId;
+    }
+    
+    public Integer getContentId()
+    {
+        return contentId;
+    }
+    
+    public void setContentId(Integer contentId)
+    {
+        this.contentId = contentId;
+    }
+    
+    public List getReferenceBeanList()
+    {
+        return referenceBeanList;
     }
 }

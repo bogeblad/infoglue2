@@ -139,11 +139,11 @@ public class SystemUserController extends BaseController
 		SystemUser systemUser = null;
         OQLQuery oql;
         try
-        {										
+        {					
         	oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1");
         	oql.bind(userName);
         	
-        	QueryResults results = oql.execute();
+        	QueryResults results = oql.execute(Database.ReadOnly);
 			
 			if (results.hasMore()) 
             {

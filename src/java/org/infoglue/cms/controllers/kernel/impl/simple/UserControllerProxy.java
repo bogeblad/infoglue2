@@ -69,8 +69,8 @@ public class UserControllerProxy extends BaseController
 	
 	public AuthorizationModule getAuthorizationModule() throws SystemException
 	{
-		if(authorizationModule == null)
-		{
+		//if(authorizationModule == null)
+	    //{
 			try
 	    	{
 			    CmsLogger.logInfo("InfoGlueAuthenticationFilter.authorizerClass:" + InfoGlueAuthenticationFilter.authorizerClass);
@@ -86,7 +86,7 @@ public class UserControllerProxy extends BaseController
 	    		CmsLogger.logSevere("There was an error initializing the authorizerClass:" + e.getMessage(), e);
 	    		throw new SystemException("There was an error initializing the authorizerClass:" + e.getMessage(), e);
 	    	}
-		}
+	    //}
 	   
 		return authorizationModule;
 	}

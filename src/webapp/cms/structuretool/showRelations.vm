@@ -2,7 +2,7 @@
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginContentTool("tool.contenttool.deleteContent.header" "tool.contenttool.deleteContent.header" "contentId=$contentId&repositoryId=$!repositoryId&isBranch=$isBranch" "null" "null" "null")
+#beginStructureTool("tool.structuretool.deleteSiteNode.header" "tool.structuretool.deleteSiteNode.header" "siteNodeId=$siteNodeId&repositoryId=$!repositoryId&changeTypeId=$changeTypeId" "null" "null" "null")
 
 <script language="JavaScript">
 <!--
@@ -12,24 +12,24 @@
 </script>
 
 <div class="fullymarginalized">
-<form method="POST" name="editForm" action="DeleteContent.action">
+<form method="POST" name="editForm" action="DeleteSiteNode.action">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
 		<td colspan="7" class="label">
-			$ui.getString("tool.contenttool.fixReferencesBeforeDelete.header")
+			$ui.getString("tool.structuretool.fixReferencesBeforeDelete.header")
 		</td>
 	</tr>
 	<tr>
 		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
-	<tr class="darkgreen">
-		<td class="smalllabel" colspan="7" width="100%">$ui.getString("tool.contenttool.siteNodeReferences.header")</td>
+	<tr class="darkapricot">
+		<td class="smalllabel" colspan="7" width="100%">$ui.getString("tool.structuretool.siteNodeReferences.header")</td>
 	</tr>
 	<tr>
-		<td bgcolor="#EEF7DC" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		<td bgcolor="#FEF8D0" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	<tr>
-		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		<td bgcolor="#F0E1B4" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($hasPageReferences = false)
 	#set($isOdd = true)
@@ -37,7 +37,7 @@
 		#if($referenceBean.referencingObject.class.name.indexOf("SiteNode") > -1)
 			#set($hasPageReferences = true)
 			#if($isOdd)
-				#set($class = "class='lightgreen'")
+				#set($class = "class='lightapricot'")
 				#set($isOdd = false)
 			#else
 				#set($class = "class='white'")
@@ -56,21 +56,21 @@
 	#end
 	#if(!$hasPageReferences)
 		<tr $class>
-			<td colspan="7">$ui.getString("tool.contenttool.noPageReferencesFound")</td>		
+			<td colspan="7">$ui.getString("tool.structuretool.noPageReferencesFound")</td>		
 		</tr>	
 	#end
 	
 	<tr>
 		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
-	<tr class="darkgreen">
-		<td class="smalllabel" colspan="7" width="100%">$ui.getString("tool.contenttool.contentVersionReferences.header")</td>
+	<tr class="darkapricot">
+		<td class="smalllabel" colspan="7" width="100%">$ui.getString("tool.structuretool.contentVersionReferences.header")</td>
 	</tr>
 	<tr>
-		<td bgcolor="#EEF7DC" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		<td bgcolor="#FEF8D0" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	<tr>
-		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		<td bgcolor="#F0E1B4" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($hasContentReferences = false)
 	#set($isOdd = true)
@@ -78,7 +78,7 @@
 		#if($referenceBean.referencingObject.class.name.indexOf("Content") > -1)
 			#set($hasContentReferences = true)
 			#if($isOdd)
-				#set($class = "class='lightgreen'")
+				#set($class = "class='lightapricot'")
 				#set($isOdd = false)
 			#else
 				#set($class = "class='white'")
@@ -95,11 +95,11 @@
 	#end
 	#if(!$hasContentReferences)
 		<tr $class>
-			<td colspan="7">$ui.getString("tool.contenttool.noContentReferencesFound")</td>		
+			<td colspan="7">$ui.getString("tool.structuretool.noContentReferencesFound")</td>		
 		</tr>	
 	#end
 		
 </table>
 </div>
 
-#endContentTool()
+#endStructureTool()

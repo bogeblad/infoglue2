@@ -552,7 +552,7 @@ public class ContentVersionController extends BaseController
     		realContentVersionVO = create(contentId, languageId, contentVersionVO, null);
     	}
     	
-    	//registryController.updateContentVersion(contentVersionVO);
+    	registryController.updateContentVersion(contentVersionVO);
     	
     	return (ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
     }        

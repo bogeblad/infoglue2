@@ -48,7 +48,10 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	private Integer parentContentId;
 	private Integer changeTypeId;
 	private Integer repositoryId;
-    
+
+	//Used for the relatedPages control
+	private Integer siteNodeId;
+	
 	private List referenceBeanList = new ArrayList();
 	
 	public DeleteContentAction()
@@ -61,7 +64,7 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 		this.contentVO = contentVO;
 	}
 	
-	protected String doExecute() throws Exception 
+	public String doExecute() throws Exception 
 	{
 		try
 		{
@@ -72,18 +75,28 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 			CmsLogger.logInfo("The content must have been a root-content because we could not find a parent.");
 		}
 		
-		//this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
-		//if(this.referencingObjects != null && this.referencingObjects.size() > 0)
-		//{
-		//    return "showRelations";
-		    //}
-		    //else
-		    //{
-		    ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);
-		    return "success";
-		    //}
-	}
+		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
+		if(this.referenceBeanList != null && this.referenceBeanList.size() > 0)
+		{
+		    return "showRelations";
+		}
+	    else
+	    {
+	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);
+	    	return "success";
+	    }
+	}	
 	
+	public String doFixPage() throws Exception 
+	{
+	    return "fixPage";
+	}
+
+	public String doFixPageHeader() throws Exception 
+	{
+	    return "fixPageHeader";
+	}
+
 	public void setContentId(Integer contentId)
 	{
 		this.contentVO.setContentId(contentId);
@@ -127,5 +140,15 @@ public class DeleteContentAction extends InfoGlueAbstractAction
     public List getReferenceBeanList()
     {
         return referenceBeanList;
+    }
+    
+    public Integer getSiteNodeId()
+    {
+        return siteNodeId;
+    }
+    
+    public void setSiteNodeId(Integer siteNodeId)
+    {
+        this.siteNodeId = siteNodeId;
     }
 }

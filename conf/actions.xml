@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.21 2005/02/21 21:13:13 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.22 2005/02/23 15:20:56 mattias Exp $ -->
 <actions>
 
 	<!-- Redirect -->
@@ -646,6 +646,8 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.DeleteContentAction" alias="DeleteContent">
 		<view name="success">ViewContent.action?stay=true</view>
 		<view name="showRelations">/cms/contenttool/showRelations.vm</view>
+		<view name="fixPage">/cms/contenttool/fixPage.vm</view>
+		<view name="fixPageHeader">/cms/contenttool/fixPageHeader.vm</view>
 		<view name="input">/cms/contenttool/showConstraintException.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
@@ -871,6 +873,9 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.DeleteSiteNodeAction" alias="DeleteSiteNode">
 		<view name="input">/cms/structuretool/showConstraintException.vm</view>
+		<view name="showRelations">/cms/structuretool/showRelations.vm</view>
+		<view name="fixPage">/cms/structuretool/fixPage.vm</view>
+		<view name="fixPageHeader">/cms/structuretool/fixPageHeader.vm</view>
 		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>

@@ -124,8 +124,9 @@
 			#end
 		}
 
-		function onCancel() {
-		    alert("Parent:" + parent.name) 
+		function onCancel() 
+		{
+		    //alert("Parent:" + parent.name) 
 		    parent.onCancel(null);
 			return false;
 		}	

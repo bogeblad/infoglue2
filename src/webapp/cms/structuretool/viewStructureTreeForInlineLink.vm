@@ -191,7 +191,7 @@
 		
 		function onCancel() 
 		{
-            alert("Parent: " + parent.name);
+            //alert("Parent: " + parent.name);
             parent.__dlg_close(null);
 			return false;
 		}

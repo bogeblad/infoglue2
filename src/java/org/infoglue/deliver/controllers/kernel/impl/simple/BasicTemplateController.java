@@ -509,7 +509,7 @@ public class BasicTemplateController implements TemplateController
         
         try
         {
-            infoGluePrincipal = UserControllerProxy.getController().getUser(userName);
+            infoGluePrincipal = UserControllerProxy.getController(this.db).getUser(userName);
         }
         catch(Exception e)
         {
