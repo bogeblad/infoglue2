@@ -214,12 +214,32 @@ WebFXTreeAbstractNode.prototype.blur = function() {
 	document.getElementById(this.id + '-anchor').className = 'selected-inactive';
 }
 
+var ig_expanded_nodes = null;
+
 WebFXTreeAbstractNode.prototype.doExpand = function() {
 	if (webFXTreeHandler.behavior == 'classic') { document.getElementById(this.id + '-icon').src = this.openIcon; }
 	if (this.childNodes.length) {  document.getElementById(this.id + '-cont').style.display = 'block'; }
 	this.open = true;
 	if (webFXTreeConfig.usePersistence)
 		webFXTreeHandler.cookies.setCookie(this.id.substr(18,this.id.length - 18), '1');
+	
+	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
+	if(ig_expanded_nodes == null)	
+		ig_expanded_nodes = webFXTreeHandler.cookies.getCookie("ig_expanded_nodes_cookie");
+	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
+	
+	if(ig_expanded_nodes != null && ig_expanded_nodes != "")
+	{
+		if(ig_expanded_nodes.substring(0, ig_expanded_nodes.indexOf(",")) != "" + this.myId + "" && ig_expanded_nodes.indexOf("," + this.myId + ",") == -1)
+			ig_expanded_nodes += "" + this.myId + ",";
+	}
+	else
+	{ 
+		ig_expanded_nodes = "" + this.parentNode.myId + "," + this.myId + ",";
+	}
+	  
+	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
+	webFXTreeHandler.cookies.setCookie("ig_expanded_nodes_cookie", ig_expanded_nodes);
 }
 
 WebFXTreeAbstractNode.prototype.doCollapse = function() {
@@ -228,6 +248,31 @@ WebFXTreeAbstractNode.prototype.doCollapse = function() {
 	this.open = false;
 	if (webFXTreeConfig.usePersistence)
 		webFXTreeHandler.cookies.setCookie(this.id.substr(18,this.id.length - 18), '0');
+		
+	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
+	if(ig_expanded_nodes == null)	
+		ig_expanded_nodes = webFXTreeHandler.cookies.getCookie("ig_expanded_nodes_cookie");
+	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
+	
+	if(ig_expanded_nodes != null && ig_expanded_nodes != "")
+	{ 
+		index = ig_expanded_nodes.indexOf("," + this.myId + ",");
+		//alert("index:" + index);
+		searchedString = "" + (this.myId).toString() + ",";
+		//alert("searchedString:" + searchedString);
+		//alert("APA:" + searchedString.substring(0).length);
+		searchedStringLength = searchedString.substring(0).length; 
+		//alert("searchedStringLength:" + searchedStringLength);
+		
+		if(ig_expanded_nodes.substring(0, ig_expanded_nodes.indexOf(",")) == "" + this.myId + "")
+			ig_expanded_nodes = "";
+		else if(index > -1)
+			ig_expanded_nodes = ig_expanded_nodes.substring(0, index) + ig_expanded_nodes.substring(index + searchedStringLength);
+	}
+	  
+	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
+	webFXTreeHandler.cookies.setCookie("ig_expanded_nodes_cookie", ig_expanded_nodes);
+	
 }
 
 WebFXTreeAbstractNode.prototype.expandAll = function() {

@@ -179,6 +179,7 @@
 			setSelected("${select}");
 			
 			//path = "152,193,194,195,190,177,178";
+			//path = "1055,1096,1080,1081";
 			path = "" + webFXTreeHandler.cookies.getCookie("ig_expanded_nodes_cookie");
 			//alert("path:" + path);
 			if(path && path != "")
@@ -189,14 +190,14 @@
 				//path = "152,190";
 				var pathArr = path.split(',');
 				
-				setTimeout(function () {
-					expandTreeRec(pathArr, 0);
-					}, 100);
-							
+				expandTreeRec(pathArr, 0);
+				
+				/*			
 				setTimeout(function () {
 					var addedNode = tree.getNodeWithMyId(selected);
 					addedNode.select();
 					}, 3000);
+				*/
 			}			
 		}
 		
@@ -223,19 +224,27 @@
 			
 			var node = tree.getNodeWithMyId(pathArr[level]);
 						
-			if(!node.loading)
+			if(!node.loading && node.parentNode != null)
 			{
 				//alert("Loading child to " + node.text + ":" + node.id + ":" + node.myId + !node.loaded + ":" + !node.loading);
 				if (!node.loaded && !node.loading) {
 					_startLoadXmlTree(node.src, node);
 				}
+				//alert("1");
 				if (webFXTreeHandler.behavior == 'classic') { document.getElementById(node.id + '-icon').src = node.openIcon; }
+				//alert("2");
 				if (node.childNodes.length) {  document.getElementById(node.id + '-cont').style.display = 'block'; }
+				//alert("3");
 				node.open = true;
+				//alert("4:" + node.id);
+				//alert("Node:" + document.getElementById(node.id + '-plus'));
 				document.getElementById(node.id + '-plus').src = node.minusIcon;
+				//alert("5");
 			 	
 			 	//node.expand();
 			}
+			
+			//alert("Ok - lets check the children...");
 			
 			//if(node.loading)
 			//	alert("node.loading:" + node.loading + " node.loaded:" + !node.loaded);
@@ -249,8 +258,8 @@
 				if(level < pathArr.length)
 				{
 					window.setTimeout(function () {
-						expandTreeRec(pathArr, level+1);
-					}, 100);
+						expandTreeRec(pathArr, level);
+					}, 10);
 				}
 			}
 			else
