@@ -296,24 +296,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				    parentElement.insertBefore(element, previuosSibling);
 				}
 			}
-			
-			/*
-			String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
-			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
-			Element previousElement = null;
-			for(int i=0; i < anl.getLength(); i++)
-			{
-				Element element = (Element)anl.item(i);
-				if(element.getAttribute("name").equalsIgnoreCase(this.attributeName) && previousElement != null)
-				{
-					Element parent = (Element)element.getParentNode();
-					parent.removeChild(element);
-					parent.insertBefore(element, previousElement);
-				}
-				previousElement = element;
-			}
-			*/
-			
+						
 			saveUpdatedDefinition(document);
 		}
 		catch(Exception e)
@@ -339,39 +322,19 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		{
 			Document document = createDocumentFromDefinition();
 
-			String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
-			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
-			Element parent = null;
-			Element elementToMove = null;
-			boolean isInserted = false;
-			int position = 0;
-			for(int i=0; i < anl.getLength(); i++)
+			String attributesXPath = "/xs:schema/xs:simpleType[@name = '" + ContentTypeDefinitionController.ASSET_KEYS + "']/xs:restriction/xs:enumeration[@value='" + this.assetKey + "']";
+			NodeList anl = XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
+			if(anl != null && anl.getLength() > 0)
 			{
-				Element element = (Element)anl.item(i);
-				parent = (Element)element.getParentNode();
-
-				if(elementToMove != null)
+				Element element = (Element)anl.item(0);
+				Node parentElement = element.getParentNode();
+				Node nextSibling = element.getNextSibling();
+				if(nextSibling != null)
 				{
-					if(position == 2)
-					{
-						parent.insertBefore(elementToMove, element);
-						isInserted = true;
-						break;
-					}
-					else
-						position++;
-				}
-
-				if(element.getAttribute("name").equalsIgnoreCase(this.attributeName))
-				{
-					elementToMove = element;
-					parent.removeChild(elementToMove);
-					position++;
+			        parentElement.removeChild(nextSibling);
+			        parentElement.insertBefore(nextSibling, element);
 				}
 			}
-
-			if(!isInserted && elementToMove != null)
-				parent.appendChild(elementToMove);
 
 			saveUpdatedDefinition(document);
 		}
