@@ -1,5 +1,5 @@
 /**
- * $Id: WorkflowFacade.java,v 1.1 2004/12/28 15:48:28 jed Exp $
+ * $Id: WorkflowFacade.java,v 1.2 2004/12/28 18:09:56 jed Exp $
  * Created by jed on Dec 28, 2004
  */
 package org.infoglue.cms.util.workflow;
@@ -20,21 +20,24 @@ import com.opensymphony.module.propertyset.PropertySet;
 /**
  * A facade to OSWorkflow that gives us a place to cache workflow data as we need it while interacting with it.
  * This class has kind of a strange interface due to the idiosyncracies of the OSWorkflow, particularly
- * the Workflow interface.  Anyway, the point was to encapsulate the interactions with OSWorkflow and eliminate the
+ * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.1 $ $Date: 2004/12/28 15:48:28 $
+ * @version $Revision: 1.2 $ $Date: 2004/12/28 18:09:56 $
  */
 public class WorkflowFacade
 {
 	/**
 	 * The initial action ID.  It is hard-coded to 0, which implies that the initial action of any workflow nust
-	 * also be 0.  At some point we should find a way around this.
+	 * also be 0.
+	 * TODO: At some point we should find a way around this.
 	 */
 	private static final int INITIAL_ACTION = 0;
 
-	private final InfoGluePrincipal userPrincipal;
+	private static final StepFilter historyStepsFilter = new AllStepFilter();
+
 	private final Workflow workflow;
+	private final StepFilter currentStepsFilter;
 
 	private long workflowId;
 	private WorkflowDescriptor workflowDescriptor;
@@ -45,8 +48,8 @@ public class WorkflowFacade
 	 */
 	public WorkflowFacade(InfoGluePrincipal userPrincipal)
 	{
-		this.userPrincipal = userPrincipal;
 		workflow = new BasicWorkflow(userPrincipal.getName());
+		currentStepsFilter = new OwnerStepFilter(userPrincipal);
 	}
 
 	/**
@@ -210,7 +213,7 @@ public class WorkflowFacade
 	 */
 	public List getCurrentSteps()
 	{
-		return createStepVOs(workflow.getCurrentSteps(workflowId), new OwnerStepFilter(userPrincipal));
+		return createStepVOs(workflow.getCurrentSteps(workflowId), currentStepsFilter);
 	}
 
 	/**
@@ -219,7 +222,7 @@ public class WorkflowFacade
 	 */
 	public List getHistorySteps()
 	{
-		return createStepVOs(workflow.getHistorySteps(workflowId), new AllStepFilter());
+		return createStepVOs(workflow.getHistorySteps(workflowId), historyStepsFilter);
 	}
 
 	/**
