@@ -12,9 +12,9 @@
 </database>
 
 <!--
-<database name="@database.name@" engine="sql-server" >
+<database name="INFOGLUE_CMS" engine="sql-server" >
     <driver class-name="@database.driver.class@" url="@database.url@">
-     	<param name="DatabaseName" value="@database.name@"/>
+     	<param name="DatabaseName" value="INFOGLUE_CMS"/>
         <param name="user" value="@database.user@"/>
         <param name="password" value="@database.password@" />
         <param name="SelectMethod" value="Cursor" />
