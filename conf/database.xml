@@ -1,24 +1,13 @@
 <!DOCTYPE databases PUBLIC "-//EXOLAB/Castor JDO Configuration DTD Version 1.0//EN" "http://castor.exolab.org/jdo-conf.dtd">
 
 <database name="INFOGLUE_CMS" engine="mysql">
-    <driver class-name="@database.driver.class@" url="@database.url@">
-      <param name="user" value="@database.user@"/>
-      <param name="password" value="@database.password@"/>
-      <param name="autoReconnect" value="true"/>
-      <param name="useUnicode" value="@database.use.unicode@"/>
-      <param name="characterEncoding" value="@database.encoding@"/>
-    </driver>
-    <mapping href="classes/mapping.xml"/>
+	<data-source class-name="org.apache.commons.dbcp.BasicDataSource">
+	  <params driver-class-name="@database.driver.class@"
+		  		username="@database.user@"
+		  		password="@database.password@"
+		  		url="@database.url@"
+		  		max-active="@database.maxConnections@"
+		  		connection-properties="useUnicode=@database.use.unicode@;characterEncoding=@database.encoding@"/>
+	</data-source>
+	<mapping href="classes/mapping.xml"/>
 </database>
-
-<!--
-<database name="INFOGLUE_CMS" engine="sql-server" >
-    <driver class-name="@database.driver.class@" url="@database.url@">
-     	<param name="DatabaseName" value="INFOGLUE_CMS"/>
-        <param name="user" value="@database.user@"/>
-        <param name="password" value="@database.password@" />
-        <param name="SelectMethod" value="Cursor" />
-    </driver>
-  <mapping href="classes/mapping.xml" />
-</database>
--->
