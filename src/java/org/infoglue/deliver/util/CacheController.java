@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.util;
 
+//import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.content.impl.simple.*;
@@ -107,6 +108,18 @@ public class CacheController extends Thread
 				boolean clear = false;
 				String cacheName = e.getKey().toString();
 				
+				if(cacheName.equalsIgnoreCase("serviceDefinitionCache") && entity.indexOf("ServiceBinding") > 0)
+				{
+					clear = true;
+				}
+				if(cacheName.equalsIgnoreCase("qualifyerListCache") && (entity.indexOf("Qualifyer") > 0 || entity.indexOf("ServiceBinding") > 0))
+				{
+					clear = true;
+				}
+				if(cacheName.equalsIgnoreCase("availableServiceBindingCache") && entity.indexOf("AvailableServiceBinding") > 0)
+				{	
+					clear = true;
+				}
 				if(cacheName.equalsIgnoreCase("languageCache") && entity.indexOf("Language") > 0)
 				{	
 					clear = true;
@@ -202,6 +215,7 @@ public class CacheController extends Thread
 			clearCache(ContentRelationImpl.class);
 			clearCache(ContentVersionImpl.class);
 			clearCache(DigitalAssetImpl.class);
+			clearCache(SmallAvailableServiceBindingImpl.class);
 			clearCache(AvailableServiceBindingImpl.class);
 			clearCache(ContentTypeDefinitionImpl.class);
 			clearCache(LanguageImpl.class);
@@ -213,6 +227,7 @@ public class CacheController extends Thread
 			clearCache(SystemUserImpl.class);
 			clearCache(QualifyerImpl.class);
 			clearCache(ServiceBindingImpl.class);
+			clearCache(SmallSiteNodeImpl.class);
 			clearCache(SiteNodeImpl.class);
 			clearCache(SiteNodeVersionImpl.class);
 			clearCache(PublicationImpl.class);
@@ -243,13 +258,16 @@ public class CacheController extends Thread
 	}
 	
 	
-	public static synchronized void clearCache(Class[] types, Object[] ids) throws Exception
+	public static synchronized void clearCache(Class type, Object[] ids) throws Exception
 	{
 		Database db = CastorDatabaseService.getDatabase();
 
 		try
 		{
-			db.expireCache(types, ids);
+		    //CacheManager manager = db.getCacheManager();
+		    //manager.expireCache(type, ids);
+		    Class[] types = {type};
+		    db.expireCache(types, ids);
 		}
 		catch(Exception e)
 		{
@@ -269,7 +287,9 @@ public class CacheController extends Thread
 		{
 			Class[] types = {c};
 			Class[] ids = {null};
-			db.expireCache(types, null);
+			//CacheManager manager = db.getCacheManager();
+			//manager.expireCache(types);
+			db.expireCache(types, ids);
 		}
 		catch(Exception e)
 		{

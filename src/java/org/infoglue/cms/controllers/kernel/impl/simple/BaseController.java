@@ -31,6 +31,7 @@ import java.util.Iterator;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryException;
 import org.exolab.castor.jdo.QueryResults;
 
@@ -505,7 +506,7 @@ public abstract class BaseController
 	 * This method fetches one object in read only mode and returns it's value object.
 	 */
 	
-    private static BaseEntityVO getVOWithId(Class arg, Integer id, Database db) throws SystemException, Bug
+    public static BaseEntityVO getVOWithId(Class arg, Integer id, Database db) throws SystemException, Bug
     {
         IBaseEntity vo = null;
         try
@@ -758,9 +759,9 @@ public abstract class BaseController
 	 * @param query The String OQL query
 	 * @param params A List of Objects to bind to the query sequentially
 	 * @return An OQLQuery instance that can be executer
-	 * @throws QueryException
+	 * @throws PersistenceException
 	 */
-	protected static OQLQuery createQuery(Database db, String query, List params) throws QueryException
+	protected static OQLQuery createQuery(Database db, String query, List params) throws PersistenceException
 	{
 		OQLQuery oql = db.getOQLQuery(query);
 		if (params != null)

@@ -32,9 +32,13 @@ import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.util.CacheController;
 
@@ -124,17 +128,18 @@ public class UpdateCacheAction extends WebworkAbstractAction
 			    CmsLogger.logInfo("Updating className with id:" + className + ":" + objectId);
 				if(className != null)
 				{
-				    Class[] types = {Class.forName(className)};
-				    				        
+				    //Class[] types = {Class.forName(className)};
+				    Class type = Class.forName(className);
+				    
 				    if(!isDependsClass && className.equalsIgnoreCase(SystemUserImpl.class.getName()) || className.equalsIgnoreCase(RoleImpl.class.getName()))
 				    {
 				        Object[] ids = {objectId};
-				        CacheController.clearCache(types, ids);
+				        CacheController.clearCache(type, ids);
 					}
 				    else if(!isDependsClass)
 				    {
 				        Object[] ids = {new Integer(objectId)};
-					    CacheController.clearCache(types, ids);
+					    CacheController.clearCache(type, ids);
 				    }
 				    
 					//If it's an contentVersion we should delete all images it might have generated from attributes.
@@ -147,14 +152,26 @@ public class UpdateCacheAction extends WebworkAbstractAction
 					else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 					{
 					    CmsLogger.logInfo("We clear all small contents as well " + objectId);
-						Class[] typesExtra = {SmallContentImpl.class};
+						Class typesExtra = SmallContentImpl.class;
 						Object[] idsExtra = {new Integer(objectId)};
 						CacheController.clearCache(typesExtra, idsExtra);
 
 						CmsLogger.logInfo("We clear all medium contents as well " + objectId);
-						Class[] typesExtraMedium = {MediumContentImpl.class};
+						Class typesExtraMedium = MediumContentImpl.class;
 						Object[] idsExtraMedium = {new Integer(objectId)};
 						CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+					}
+					else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
+					{
+					    Class typesExtra = SmallAvailableServiceBindingImpl.class;
+						Object[] idsExtra = {new Integer(objectId)};
+						CacheController.clearCache(typesExtra, idsExtra);
+					}
+					else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
+					{
+					    Class typesExtra = SmallSiteNodeImpl.class;
+						Object[] idsExtra = {new Integer(objectId)};
+						CacheController.clearCache(typesExtra, idsExtra);
 					}
 					else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
 					{
