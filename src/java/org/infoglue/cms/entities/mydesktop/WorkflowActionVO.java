@@ -75,12 +75,21 @@ public class WorkflowActionVO implements BaseEntityVO
 	}
 
 	/**
-	 * Convenience method to retrn the name of the associated step.
+	 * Convenience method that returns the name of the associated step.
 	 * @return the name of the step that this action is part of.
 	 */
 	public String getStepName()
 	{
 		return (step == null) ? null : step.getName();
+	}
+
+	/**
+	 * Convenience method that returns the owner of the associated step.
+	 * @return the owner of the step that this action is part of.
+	 */
+	public String getStepOwner()
+	{
+		return (step == null) ? null : step.getOwner();
 	}
 
 	public String getName()
