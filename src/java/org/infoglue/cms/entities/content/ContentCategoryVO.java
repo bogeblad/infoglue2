@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: ContentCategoryVO.java,v 1.1 2004/12/01 23:40:07 frank Exp $
+ * $Id: ContentCategoryVO.java,v 1.2 2004/12/13 13:49:50 jed Exp $
  */
 package org.infoglue.cms.entities.content;
 
@@ -34,24 +34,70 @@ import org.infoglue.cms.util.DomainUtils;
  */
 public class ContentCategoryVO extends Persistent
 {
-  	private Integer contentCategoryId;
-  	private String attributeName;
-  	private Integer contentVersionId;
-  	private CategoryVO category = new CategoryVO();
+	private Integer contentCategoryId;
+	private String attributeName;
+	private Integer contentVersionId;
+	private CategoryVO category = new CategoryVO();
 
-	public Integer getId()	{ return getContentCategoryId(); }
+	public ContentCategoryVO() {}
 
-    public Integer getContentCategoryId()		{ return contentCategoryId; }
-    public void setContentCategoryId(Integer i)	{ contentCategoryId = i; }
+	public ContentCategoryVO(String attributeName, Integer contentVersionId, CategoryVO category)
+	{
+		setAttributeName(attributeName);
+		setContentVersionId(contentVersionId);
+		setCategory(category);
+	}
 
-    public String getAttributeName()		{ return attributeName; }
-    public void setAttributeName(String s)	{ attributeName = s; }
+	public ContentCategoryVO(Integer id, String attributeName, Integer contentVersionId, CategoryVO category)
+	{
+		this(attributeName, contentVersionId, category);
+		setContentCategoryId(id);
+	}
 
-    public Integer getContentVersionId()		{ return contentVersionId; }
-    public void setContentVersionId(Integer i)	{ contentVersionId = i; }
+	public Integer getId()
+	{
+		return getContentCategoryId();
+	}
 
-	public CategoryVO getCategory()			{ return category; }
-	public void setCategory(CategoryVO c)	{ category = (c != null)? c : new CategoryVO(); }
+	public Integer getContentCategoryId()
+	{
+		return contentCategoryId;
+	}
+
+	public void setContentCategoryId(Integer i)
+	{
+		contentCategoryId = i;
+	}
+
+	public String getAttributeName()
+	{
+		return attributeName;
+	}
+
+	public void setAttributeName(String s)
+	{
+		attributeName = s;
+	}
+
+	public Integer getContentVersionId()
+	{
+		return contentVersionId;
+	}
+
+	public void setContentVersionId(Integer i)
+	{
+		contentVersionId = i;
+	}
+
+	public CategoryVO getCategory()
+	{
+		return category;
+	}
+
+	public void setCategory(CategoryVO c)
+	{
+		category = (c != null) ? c : new CategoryVO();
+	}
 
 	/**
 	 * Not used
@@ -63,7 +109,7 @@ public class ContentCategoryVO extends Persistent
 
 	public boolean equals(Object o)
 	{
-		if(super.equals(o))
+		if (super.equals(o))
 		{
 			ContentCategoryVO vo = (ContentCategoryVO)o;
 			return DomainUtils.equals(contentCategoryId, vo.contentCategoryId)
@@ -78,8 +124,8 @@ public class ContentCategoryVO extends Persistent
 	{
 		StringBuffer sb = super.toStringBuffer();
 		sb.append(" attributeName=").append(attributeName)
-			.append(" contentVersionId=").append(contentVersionId)
-			.append(" categoryId=").append(category.getId());
+				.append(" contentVersionId=").append(contentVersionId)
+				.append(" categoryId=").append(category.getId());
 		return sb;
 	}
 

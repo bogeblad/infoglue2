@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryVO.java,v 1.1 2004/12/01 23:37:42 frank Exp $
+ * $Id: CategoryVO.java,v 1.2 2004/12/13 13:50:08 jed Exp $
  */
 package org.infoglue.cms.entities.management;
 
@@ -42,29 +42,87 @@ public class CategoryVO extends Persistent
 	private Integer categoryId;
 	private String name;
 	private String description;
-    private boolean active = true;
+	private boolean active = true;
 	private Integer parentId;
 	private List children = new ArrayList();
 
-	public Integer getId()		{ return getCategoryId();}
+	public CategoryVO() {}
 
-	public Integer getCategoryId()		{ return categoryId;}
-	public void setCategoryId(Integer i){ categoryId = i;}
+	public CategoryVO(String name)
+	{
+		setName(name);
+	}
 
-	public String getName()			{ return name; }
-	public void setName(String s)	{ name = s; }
+	public CategoryVO(Integer id, String name)
+	{
+		this(name);
+		setCategoryId(id);
+	}
 
-	public String getDescription()		{ return description; }
-	public void setDescription(String s){ description = s; }
+	public Integer getId()
+	{
+		return getCategoryId();
+	}
 
-	public boolean isActive()			{ return active; }
-	public void setActive(boolean b)	{ active = b; }
+	public Integer getCategoryId()
+	{
+		return categoryId;
+	}
 
-	public Integer getParentId()		{ return parentId; }
-	public void setParentId(Integer i)	{ parentId = i; }
+	public void setCategoryId(Integer i)
+	{
+		categoryId = i;
+	}
 
-	public List getChildren()			{ return children; }
-	public void setChildren(List l)		{ children = l; }
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String s)
+	{
+		name = s;
+	}
+
+	public String getDescription()
+	{
+		return description;
+	}
+
+	public void setDescription(String s)
+	{
+		description = s;
+	}
+
+	public boolean isActive()
+	{
+		return active;
+	}
+
+	public void setActive(boolean b)
+	{
+		active = b;
+	}
+
+	public Integer getParentId()
+	{
+		return parentId;
+	}
+
+	public void setParentId(Integer i)
+	{
+		parentId = i;
+	}
+
+	public List getChildren()
+	{
+		return children;
+	}
+
+	public void setChildren(List l)
+	{
+		children = l;
+	}
 
 	public boolean isRoot()
 	{
@@ -81,7 +139,7 @@ public class CategoryVO extends Persistent
 
 	public boolean equals(Object o)
 	{
-		if(super.equals(o))
+		if (super.equals(o))
 		{
 			CategoryVO category = (CategoryVO)o;
 			return DomainUtils.equals(categoryId, category.categoryId)
@@ -99,10 +157,10 @@ public class CategoryVO extends Persistent
 	{
 		StringBuffer sb = super.toStringBuffer();
 		sb.append(" name=").append(name)
-			.append(" description=").append(description)
-			.append(" active=").append(active)
-			.append(" parentId=").append(parentId)
-			.append(" children.size=").append(children.size());
+				.append(" description=").append(description)
+				.append(" active=").append(active)
+				.append(" parentId=").append(parentId)
+				.append(" children.size=").append(children.size());
 		return sb;
 	}
 }
