@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.2 2004/12/02 00:02:10 frank Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.3 2004/12/29 17:30:23 jed Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool;
 
@@ -80,15 +80,5 @@ public class ViewMyDesktopToolStartPageActionTest extends WorkflowTestCase
 	protected String getWorkflowName()
 	{
 		return "Create News";
-	}
-
-	public static Test suite()
-	{
-		return new TestSuite(ViewMyDesktopToolStartPageActionTest.class);
-	}
-
-	public static void main(String[] args)
-	{
-		TestRunner.run(ViewMyDesktopToolStartPageActionTest.class);
 	}
 }
