@@ -1012,5 +1012,36 @@
 		</field>
 	</class>
 
+	<!--  Mapping for Registry  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.RegistryImpl" identity="registryId" key-generator="IDENTITY">
+	    <description>Registry</description>
+	    <cache-type type="none"/>
+	    <map-to table="cmRegistry"/>
+		<field name="registryId" type="java.lang.Integer">
+	    	<sql name="registryId" type="integer" dirty="check" />
+	    </field>
+	    <field name="entityName" type="java.lang.String">
+	      	<sql name="entityName" type="varchar" dirty="check" />
+	    </field>
+	    <field name="entityId" type="java.lang.String">
+	      	<sql name="entityId" type="varchar" dirty="check" />
+	    </field>
+	    <field name="referenceType" type="java.lang.Integer">
+	      	<sql name="referenceType" type="integer" dirty="check" />
+	    </field>
+	    <field name="referencingEntityName" type="java.lang.String">
+	      	<sql name="referencingEntityName" type="varchar" dirty="check" />
+	    </field>
+	    <field name="referencingEntityId" type="java.lang.String">
+	      	<sql name="referencingEntityId" type="varchar" dirty="check" />
+	    </field>
+	    <field name="referencingEntityCompletingName" type="java.lang.String">
+	      	<sql name="referencingEntityComplName" type="varchar" dirty="check" />
+	    </field>
+	    <field name="referencingEntityCompletingId" type="java.lang.String">
+	      	<sql name="referencingEntityComplId" type="varchar" dirty="check" />
+	    </field>
+    </class>
+    
 </mapping>
 

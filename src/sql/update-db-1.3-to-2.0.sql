@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.4 2005/02/04 17:00:41 jed Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.5 2005/02/22 15:22:55 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -100,6 +100,25 @@ CREATE TABLE cmRolePropertiesDigitalAsset (
 ----------------------------------------------------------------------------------
 
 ALTER TABLE cmRepositoryLanguage ADD COLUMN sortOrder integer default 0 NOT NULL;
+
+----------------------------------------------------------------------------------
+-- Added table for the new registry 
+----------------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS cmRegistry;
+
+CREATE TABLE cmRegistry
+(
+	registryId		            INTEGER(11) unsigned NOT NULL auto_increment,
+	entityName		            VARCHAR(100) NOT NULL,
+	entityId		            VARCHAR(200) NOT NULL,
+	referenceType	            TINYINT(4) NOT NULL,
+	referencingEntityName		VARCHAR(100) NOT NULL,
+	referencingEntityId		    VARCHAR(200) NOT NULL,
+	referencingEntityComplName	VARCHAR(100) NOT NULL,
+	referencingEntityComplId	VARCHAR(200) NOT NULL,
+    PRIMARY KEY (registryId)
+);
 
 ----------------------------------------------------------------------------------
 -- Add indexes to cmContent on parentContentId and contentTypeDefinitionId

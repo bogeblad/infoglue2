@@ -32,20 +32,22 @@
 		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($isOdd = true)
-	#foreach ($referencingSiteNodeVO in $referencingSiteNodes)
-		#if($isOdd)
-			#set($class = "class='lightgreen'")
-			#set($isOdd = false)
-		#else
-			#set($class = "class='white'")
-			#set($isOdd = true)
+	#foreach ($referencingObject in $referencingObjects)
+		#if($referencingObject.class.name.indexOf("SiteNode") > -1)
+			#if($isOdd)
+				#set($class = "class='lightgreen'")
+				#set($isOdd = false)
+			#else
+				#set($class = "class='white'")
+				#set($isOdd = true)
+			#end
+			<tr $class>
+				<td colspan="4"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referencingObject.siteNodeId" target="_blank">AA $referencingObject.id</a></td>
+				<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
+				<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				<td><a href="#"><img src="images/approve.gif" border="0"></a></td>
+			</tr>	
 		#end
-		<tr $class>
-			<td colspan="4"><a href="#" target="_blank">$referencingSiteNodeVO.name</a></td>
-			<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
-			<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
-			<td><a href="#"><img src="images/approve.gif" border="0"></a></td>
-		</tr>	
 	#end
 
 	<tr>
@@ -61,20 +63,22 @@
 		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($isOdd = true)
-	#foreach ($referencingContentVersionVO in $referencingContentVersions)
-		#if($isOdd)
-			#set($class = "class='lightgreen'")
-			#set($isOdd = false)
-		#else
-			#set($class = "class='white'")
-			#set($isOdd = true)
+	#foreach ($referencingObject in $referencingObjects)
+		#if($referencingObject.class.name.indexOf("Content") > -1)
+			#if($isOdd)
+				#set($class = "class='lightgreen'")
+				#set($isOdd = false)
+			#else
+				#set($class = "class='white'")
+				#set($isOdd = true)	
+			#end
+			<tr $class>
+				<td colspan="4"><a href="ViewContentVersion!standalone.action?contentId=$referencingObject.contentId&languageId=$referencingObject.languageId" target="_blank">$referencingObject.id</a></td>
+				<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
+				<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				<td><a href="#"><img src="images/approve.gif" border="0"></a></td>		
+			</tr>	
 		#end
-		<tr $class>
-			<td colspan="4"><a href="#" target="_blank">$referencingContentVersionVO.id</a></td>
-			<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
-			<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
-			<td><a href="#"><img src="images/approve.gif" border="0"></a></td>		
-		</tr>	
 	#end
 
 	<tr>

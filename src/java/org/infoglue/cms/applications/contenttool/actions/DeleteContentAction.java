@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
@@ -40,7 +41,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
  * @author Mattias Bogeblad
  */
 
-public class DeleteContentAction extends WebworkAbstractAction
+public class DeleteContentAction extends InfoGlueAbstractAction
 {
 	private ContentVO contentVO;
 	private Integer contentId;
@@ -48,8 +49,7 @@ public class DeleteContentAction extends WebworkAbstractAction
 	private Integer changeTypeId;
 	private Integer repositoryId;
     
-	private List referencingSiteNodes = new ArrayList();
-	private List referencingContentVersions = new ArrayList();
+	private List referencingObjects = new ArrayList();
 	
 	public DeleteContentAction()
 	{
@@ -72,26 +72,14 @@ public class DeleteContentAction extends WebworkAbstractAction
 			CmsLogger.logInfo("The content must have been a root-content because we could not find a parent.");
 		}
 		
+		
 		ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);
 		
 		return "success";
-		/*
-		SiteNodeVO siteNodeVO = new SiteNodeVO();
-		siteNodeVO.setName("Apa");
-		referencingSiteNodes.add(siteNodeVO);
-		SiteNodeVO siteNodeVO2 = new SiteNodeVO();
-		siteNodeVO2.setName("Bepa");
-		referencingSiteNodes.add(siteNodeVO2);
 		
-		ContentVersionVO contentVersionVO = new ContentVersionVO();
-		contentVersionVO.setContentVersionId(new Integer(1));
-		referencingContentVersions.add(contentVersionVO);
-		ContentVersionVO contentVersionVO2 = new ContentVersionVO();
-		contentVersionVO2.setContentVersionId(new Integer(2));
-		referencingContentVersions.add(contentVersionVO2);
-		
-		return "showRelations";
-		*/
+
+		//this.referencingObjects = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
+		//return "showRelations";
 	}
 	
 	public void setContentId(Integer contentId)
@@ -134,14 +122,8 @@ public class DeleteContentAction extends WebworkAbstractAction
 		return "ViewContent.action?contentId=" + this.contentVO.getId() + "&repositoryId=" + this.contentVO.getRepositoryId();
 	}
 
-	
-    public List getReferencingContentVersions()
+    public List getReferencingObjects()
     {
-        return referencingContentVersions;
-    }
-    
-    public List getReferencingSiteNodes()
-    {
-        return referencingSiteNodes;
+        return referencingObjects;
     }
 }

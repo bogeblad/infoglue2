@@ -175,7 +175,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId) throws Exception
     {
         this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
-		//this.contentVO = ContentController.getContentVOWithId(contentId);
+		    
+        //this.contentVO = ContentController.getContentVOWithId(contentId);
         this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);
         this.availableLanguages = ContentController.getContentController().getRepositoryLanguages(contentId);
         
