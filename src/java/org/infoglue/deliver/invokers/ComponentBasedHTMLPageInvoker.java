@@ -217,6 +217,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			component.setId(id);
 			component.setContentId(contentId);
 			component.setName(name);
+			component.setSlotName(name);
 			component.setParentComponent(parentComponent);
 
 			List propertiesNodeList = child.selectNodes("properties");
@@ -292,40 +293,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
 				String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
 
-				//CmsLogger.logInfo("slotId:" + slotId);
-				
-				//Test
 			  	Slot slot = new Slot();
 			  	slot.setId(slotId);
 
-			  	//Element componentsElement = (Element)componentElement.selectSingleNode("components");
-			  	//writer.write( componentsElement );
-
 			  	List subComponents = getComponents(db, templateController, component, templateController.getSiteNodeId(), slotId);
-				//CmsLogger.logInfo("found " + subComponents.size() + " subcomponents in slot " + slotId);
 			  	slot.setComponents(subComponents);
 
 			  	component.getSlotList().add(slot);
-				//CmsLogger.logInfo("Added slot:" + slotId + " to component " + component.getName());
-				
-				//END Test				
-				/*
-				Map slotComponents = new HashMap();
-				InfoGlueComponent subComponent = getComponent(templateController, component, templateController.getSiteNodeId(), slotId);
-				if(subComponent != null)
-				{
-					//CmsLogger.logInfo("found subcomponent i slot:" + subComponent.getName());
-					slotComponents.put(subComponent.getName(), subComponent);
-				}
-				
-				Map slotMap = new HashMap();
-				slotMap.put("id", slotId);
-				slotMap.put("components", slotComponents);
-				
-				component.getSlots().put(slotId, slotMap);
-				*/
-				
-				offset = slotStopIndex; // + 10;
+
+			  	offset = slotStopIndex; // + 10;
 				slotStartIndex = componentString.indexOf("<ig:slot", offset);
 			}
 			
@@ -350,7 +326,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	protected Map getComponent(Database db, Element element, String componentName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
 	{
-		//CmsLogger.logInfo("Getting component with name:" + componentName);
+		System.out.println("Getting component with name:" + componentName);
 		InfoGlueComponent component = null;
 
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
@@ -358,18 +334,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		Map components = new HashMap();
 		
 		String componentXPath = getComponentXPath(parentComponent) + "/components/component[@name='" + componentName + "']";
-		//CmsLogger.logInfo("componentXPath:" + componentXPath);
-		//String oldComponentXPath = "//component[@name='" + componentName + "']";
-		//CmsLogger.logInfo("oldComponentXPath:" + oldComponentXPath);
-		//String componentXPath = "//component[@name='" + componentName + "']";
-
-		//CmsLogger.logInfo("componentXPath:" + componentXPath);
+		
+		System.out.println("componentXPath:" + componentXPath);
 		List componentNodeList = element.selectNodes(componentXPath);
-		//List oldComponentNodeList = element.selectNodes(oldComponentXPath);
-		//CmsLogger.logInfo("componentNodeList:" + componentNodeList.size());
-		//CmsLogger.logInfo("oldComponentNodeList:" + oldComponentNodeList.size());
 		Iterator componentNodeListIterator = componentNodeList.iterator();
-		//CmsLogger.logInfo("componentNodeList:" + componentNodeList.size());
 		while(componentNodeListIterator.hasNext())
 		{
 			Element child 		= (Element)componentNodeListIterator.next();
@@ -381,6 +349,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			component.setId(id);
 			component.setContentId(contentId);
 			component.setName(name);
+			component.setSlotName(name);
 			component.setParentComponent(parentComponent);
 			////CmsLogger.logInfo("Name:" + name);
 
@@ -506,6 +475,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				
 				String slot = componentString.substring(slotStartIndex, slotStopIndex + 10);
 				String id = slot.substring(slot.indexOf("id") + 4, slot.indexOf("\"", slot.indexOf("id") + 4));
+				System.out.println("slot:" + slot);
+				System.out.println("id:" + id);
 				
 				List subComponents = getInheritedComponents(db, templateController, component, templateController.getSiteNodeId(), id);
 				Iterator subComponentsIterator = subComponents.iterator();
@@ -582,8 +553,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    
 	protected List getInheritedComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
 	{
-		//CmsLogger.logInfo("slotId");
-		//CmsLogger.logInfo("getInheritedComponents with " + component.getName() + ":" + component.getId());
+	    //CmsLogger.logInfo("slotId");
+	    //CmsLogger.logInfo("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
 		
 		List inheritedComponents = new ArrayList();
 		
@@ -609,19 +580,23 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 		}
 		
-		//CmsLogger.logInfo("infoGlueComponent:" + infoGlueComponent);
 		SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
 		
-		//CmsLogger.logInfo("inheritedComponents:" + inheritedComponents);
-		//CmsLogger.logInfo("parentSiteNodeVO:" + parentSiteNodeVO);
+		//System.out.println("inheritedComponents:" + inheritedComponents);
+		//System.out.println("parentSiteNodeVO:" + parentSiteNodeVO);
 		while(inheritedComponents.size() == 0 && parentSiteNodeVO != null)
 		{
+		    //System.out.println("*********************************************");
+		    //System.out.println("*         INHERITING COMPONENTS             *");
+		    //System.out.println("*********************************************");
 			String componentXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
-			//CmsLogger.logInfo("componentXML:" + componentXML);
+			//System.out.println("componentXML:" + componentXML);
+			//System.out.println("id:" + id);
 		
 			Document document = new DOMBuilder().getDocument(componentXML);
 						
 			Map components = getComponent(db, document.getRootElement(), id, templateController, component);
+			System.out.println("components:" + components.size());
 			
 			if(components.containsKey(id))
 			{
@@ -647,10 +622,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 */
 	
 	private String getComponentXPath(InfoGlueComponent infoGlueComponent)
-	{
-	    //component[@name='" + componentName + "'
-	    //CmsLogger.logInfo("getComponentXPath infoGlueComponent:" + infoGlueComponent.getId() + ":" + infoGlueComponent.getName());
-	    
+	{	    
 	    String path = "";
 	    String parentPath = "";
 	    
@@ -663,7 +635,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	        //CmsLogger.logInfo("parentPath:" + parentPath);
 	    }
 	    
-	    path = parentPath + "/components/component[@name='" + infoGlueComponent.getName() + "']";
+	    //System.out.println("infoGlueComponent:" + infoGlueComponent.getSlotName());
+	    path = parentPath + "/components/component[@name='" + infoGlueComponent.getSlotName() + "']";
 	    //CmsLogger.logInfo("returning path:" + path);
 	    
 	    return path;
@@ -827,6 +800,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				component.setId(id);
 				component.setContentId(contentId);
 				component.setName(contentVO.getName());
+				component.setSlotName(name);
 				component.setParentComponent(parentComponent);
 		
 				List propertiesNodeList = componentElement.selectNodes("properties");
@@ -901,6 +875,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						Element componentsElement = (Element)componentElement.selectSingleNode("components");
 						
 						List subComponents = getPageComponents(db, componentsElement, slotId, templateController, component);
+						System.out.println("subComponents:" + subComponents);
 						slot.setComponents(subComponents);
 						
 						component.getSlotList().add(slot);

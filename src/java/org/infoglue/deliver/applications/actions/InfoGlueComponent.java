@@ -30,6 +30,7 @@ public class InfoGlueComponent
 	private Integer id							= null;
 	private Integer contentId 					= null;
 	private String name 	 					= null;
+	private String slotName						= null;
 	private boolean isInherited 				= false;
 	private Map properties     					= new HashMap();
 	private Map tasks     						= new HashMap();
@@ -142,4 +143,13 @@ public class InfoGlueComponent
 		parentComponent = component;
 	}
 
+    public String getSlotName()
+    {
+        return slotName;
+    }
+    
+    public void setSlotName(String slotName)
+    {
+        this.slotName = slotName;
+    }
 }

@@ -374,7 +374,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						InfoGlueComponent subComponent = (InfoGlueComponent)subComponentsIterator.next();
 						if(subComponent != null)
 						{
-							component.getComponents().put(subComponent.getName(), subComponent);
+							component.getComponents().put(subComponent.getSlotName(), subComponent);
 							//CmsLogger.logInfo("Adding subcomponent:" + subComponent.getName() + " to " + component.getName());
 							//CmsLogger.logInfo("");
 							//CmsLogger.logInfo("Is it inherited: " + subComponent.getIsInherited());
@@ -747,7 +747,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		<tr>");
 		sb.append("			<td colspan=\"20\">");
 		sb.append("<img src=\"images/tcross.png\" width=\"19\" height=\"16\"><span id=\"" + component.getId() + "\" class=\"label\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" +  component.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=base', '');</script></td>");
-		//sb.append("<img src=\"images/tcross.png\" width=\"19\" height=\"16\"><span onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"label\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span></td>");
 		sb.append("		</tr>");
 		
 		renderComponentTree(templateController, sb, component, 0, 0, 1);
@@ -825,7 +824,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("</tr>");
 
 		Iterator slotIterator = component.getSlotList().iterator();
-		//CmsLogger.logInfo("Number of slots on " + component.getName() + ":" + component.getSlotList().size());
 		while(slotIterator.hasNext())
 		{
 			Slot slot = (Slot)slotIterator.next();
@@ -879,15 +877,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	private String getComponentPaletteDiv(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
 	{		
-	    if(componentPaletteDiv != null && (templateController.getRequestParameter("refresh") == null || !templateController.getRequestParameter("refresh").equalsIgnoreCase("true")))
+		System.out.println("siteNodeId:" + siteNodeId);
+		System.out.println("siteNodeId2:" + templateController.getSiteNodeId());
+		ContentVO contentVO = templateController.getBoundContent(BasicTemplateController.META_INFO_BINDING_NAME);
+		System.out.println("contentVO:" + contentVO.getName());
+
+		if(componentPaletteDiv != null && (templateController.getRequestParameter("refresh") == null || !templateController.getRequestParameter("refresh").equalsIgnoreCase("true")))
 		{
-			return componentPaletteDiv;
+			return componentPaletteDiv.replaceAll("CreatePageTemplate\\!input.action\\?contentId=.*?'", "CreatePageTemplate!input.action?contentId=" + contentVO.getContentId() + "'");
 		}
 		
 		StringBuffer sb = new StringBuffer();
-	
-		ContentVO contentVO = templateController.getBoundContent(BasicTemplateController.META_INFO_BINDING_NAME);
-		
+			
 		String componentEditorUrl 		= CmsPropertyHandler.getProperty("componentEditorUrl");
 		String componentRendererUrl 	= CmsPropertyHandler.getProperty("componentRendererUrl");
 		String componentRendererAction 	= CmsPropertyHandler.getProperty("componentRendererAction");

@@ -259,7 +259,10 @@ public class ComponentLogic
 			if(bindings.size() > 0)
 			{
 				Integer contentId = new Integer((String)bindings.get(0));
-				attributeValue = templateController.getContentAttribute(contentId, attributeName, disableEditOnSight);
+				if(disableEditOnSight)
+				    attributeValue = templateController.getContentAttribute(contentId, attributeName, disableEditOnSight);
+				else
+				    attributeValue = templateController.getContentAttribute(contentId, attributeName);
 			}
 		}
 
@@ -606,8 +609,6 @@ public class ComponentLogic
 				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), this.templateController.getSiteNodeId()).getValueObject();
 				while(property == null && parentSiteNodeVO != null)
 				{
-				    //CmsLogger.logInfo("parentSiteNodeVO: " + parentSiteNodeVO.getName());
-					
 				    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
 					parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(templateController.getDatabase(), parentSiteNodeVO.getId());
 				}
