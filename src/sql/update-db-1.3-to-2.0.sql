@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.1 2004/12/01 21:28:38 jed Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.2 2004/12/02 12:58:41 frank Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -35,3 +35,33 @@ where invokerClassName = 'org.infoglue.cms.invokers.ComponentBasedHTMLPageInvoke
 update cmSiteNodeTypeDefinition
 set invokerClassName = 'org.infoglue.deliver.invokers.HTMLPageInvoker'
 where invokerClassName = 'org.infoglue.cms.invokers.HTMLPageInvoker';
+
+
+----------------------------------------------------------------------------------
+-- Add table for Category
+----------------------------------------------------------------------------------
+DROP TABLE IF EXISTS cmCategory;
+
+CREATE TABLE cmCategory
+(
+	categoryId		INTEGER(11) unsigned NOT NULL auto_increment,
+	name			VARCHAR(100) NOT NULL,
+	description		TEXT,
+	active			TINYINT(4) NOT NULL default '1',
+	parentId		INTEGER(11),
+	PRIMARY KEY (categoryId)
+);
+
+----------------------------------------------------------------------------------
+-- Add table for ContentCategory
+----------------------------------------------------------------------------------
+DROP TABLE IF EXISTS cmContentCategory;
+
+CREATE TABLE cmContentCategory
+(
+	contentCategoryId	INTEGER(11) unsigned NOT NULL auto_increment,
+	attributeName		VARCHAR(100) NOT NULL,
+	contentVersionId	INTEGER(11),
+	categoryId			INTEGER(11),
+	PRIMARY KEY (contentCategoryId)
+);
