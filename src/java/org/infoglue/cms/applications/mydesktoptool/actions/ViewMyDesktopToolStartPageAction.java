@@ -48,9 +48,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	private List availableWorkflowVOList;
 	private List workflowVOList;
 
-	private WorkflowVO workflow;
-	private String workflowName;
-	private long workflowId;
+	private WorkflowVO workflow = new WorkflowVO();
 	private int actionId;
 
 	public List getWorkflowVOList()
@@ -88,7 +86,12 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	public void setWorkflowName(String name)
 	{
-		workflowName = name;
+		workflow.setName(name);
+	}
+
+	private String getWorkflowName()
+	{
+		return workflow.getName();
 	}
 
 	/**
@@ -106,7 +109,12 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	public void setWorkflowId(long workflowId)
 	{
-		this.workflowId = workflowId;
+		workflow.setWorkflowId(new Long(workflowId));
+	}
+
+	private long getWorkflowId()
+	{
+		return workflow.getIdAsPrimitive();
 	}
 
 	/**
@@ -131,7 +139,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	public String doStartWorkflow() throws SystemException
 	{
-		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), workflowName, actionId);
+		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), getWorkflowName(), actionId);
 		return redirectToView();
 	}
 
@@ -150,11 +158,11 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	public String doInvoke() throws SystemException
 	{
 		CmsLogger.logInfo("****************************************");
-		CmsLogger.logInfo("workflowId:" + workflowId);
+		CmsLogger.logInfo("workflowId:" + getWorkflowId());
 		CmsLogger.logInfo("actionId:" + actionId);
 		CmsLogger.logInfo("****************************************");
 
-		workflow = controller.invokeAction(getInfoGluePrincipal(), ActionContext.getRequest(), workflowId, actionId);
+		workflow = controller.invokeAction(getInfoGluePrincipal(), ActionContext.getRequest(), getWorkflowId(), actionId);
 		return redirectToView();
 	}
 
@@ -225,7 +233,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		else
 			buffer.append('?');
 
-		return buffer.append("workflowId=").append(workflowId).append("&actionId=").append(action.getId())
+		return buffer.append("workflowId=").append(getWorkflowId()).append("&actionId=").append(action.getId())
 				.append("&returnAddress=").append(getReturnAddress()).toString();
 	}
 
