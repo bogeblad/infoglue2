@@ -27,6 +27,7 @@
 			else
 			    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
 	
+			top.document.title = "Content - " + selectBox.options[selectBox.selectedIndex].text + " - InfoGlue CMS";	
 			selectBox.selectedIndex = 0;
 		}
 		
@@ -34,6 +35,7 @@
 		{
 			repositoryId = "$!repositoryId";
 		    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
+		    top.document.title = "Content - $!repositoryName - InfoGlue CMS";
 		}
 
 	</script>

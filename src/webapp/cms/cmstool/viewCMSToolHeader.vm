@@ -22,27 +22,27 @@
 		    if(toolId == 0)
 		    {
 		    	top.frames["toolarea"].location.href = "ViewContentTool.action";
-			    top.document.title = "Content Tool - InfoGlue CMS";
+			    top.document.title = "Content - InfoGlue CMS";
 		    }
 		    else if (toolId == 1)
 			{
 			    top.frames["toolarea"].location.href = "ViewStructureTool.action";
-			    top.document.title = "Structure Tool - InfoGlue CMS";
+			    top.document.title = "Structure - InfoGlue CMS";
 			}
 			else if (toolId == 2)
 			{
 			    top.frames["toolarea"].location.href = "ViewManagementTool.action";
-			    top.document.title = "Management Tool - InfoGlue CMS";
+			    top.document.title = "Management - InfoGlue CMS";
 			}
 			else if (toolId == 3)
 			{
 			    top.frames["toolarea"].location.href = "ViewPublishingTool.action";
-			    top.document.title = "Publishing Tool - InfoGlue CMS";
+			    top.document.title = "Publishing - InfoGlue CMS";
 			}
 			else if (toolId == 4)
 			{
 			    top.frames["toolarea"].location.href = "ViewMyDesktopTool.action";
-			    top.document.title = "MyDesktop Tool - InfoGlue CMS";
+			    top.document.title = "MyDesktop - InfoGlue CMS";
 			}
 		}
 
