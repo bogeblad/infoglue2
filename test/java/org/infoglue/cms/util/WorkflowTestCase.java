@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: WorkflowTestCase.java,v 1.2 2004/12/08 17:45:02 jed Exp $
  */
 package org.infoglue.cms.util;
 
@@ -113,7 +113,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 * Invokes the "Finish Workflow" action
 	 * @throws Exception if an error occurs
 	 */
-	private void finishWorkflow() throws Exception
+	protected void finishWorkflow() throws Exception
 	{
 		invokeAction(new FakeHttpServletRequest(getSession()), FINISH_WORKFLOW);
 		assertWorkflowFinished();
