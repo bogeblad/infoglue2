@@ -29,7 +29,7 @@
 			//alert("selectedObjects:" + selectedObjects);
 			if (selectedObjectsAsDelimitedString == "")
 			{
-				alert('Select one or more versions to replace the string in.');
+				alert('$ui.getString("tool.contenttool.replaceAlertSelectVersions")');
 			  	return;
 			}
 			else
@@ -133,11 +133,24 @@
 			if(div && div.style.display == "none")
 			{
 				div.style.display = "block";
+		
+				if(id == "advancedOptions")
+				{
+					var resultDiv = document.getElementById("resultsLayer");
+					resultDiv.style.top = "350px";
+				}
+					
 			}
 			else
 			{
 				div.style.display = "none";
-			}
+				
+				if(id == "advancedOptions")
+				{
+					var resultDiv = document.getElementById("resultsLayer");
+					resultDiv.style.top = "100px";
+				}
+			}			
 		}
 		
 		function showReplaceDialog()
@@ -150,6 +163,24 @@
 
 			var replaceDiv = document.getElementById("replaceLayer");
 			replaceDiv.style.display = "block";
+			
+			var resultDiv = document.getElementById("resultsLayer");
+			resultDiv.style.top = "150px";
+		}
+		
+		function showSearchDialog()
+		{
+			//var advancedDiv = document.getElementById("advancedOptions");
+			//advancedDiv.style.display = "block";
+
+			var searchDiv = document.getElementById("searchLayer");
+			searchDiv.style.display = "block";
+
+			var replaceDiv = document.getElementById("replaceLayer");
+			replaceDiv.style.display = "none";
+			
+			var resultDiv = document.getElementById("resultsLayer");
+			resultDiv.style.top = "100px";
 		}
 		
 		function resetSearchForm()
@@ -184,7 +215,7 @@
 	#set($advanced = true)
 #end
 
-<div id="searchLayer" class="fullymarginalized" style="display:block;">
+<div id="searchLayer" class="fullymarginalized" style="display:block; position: absolute; top: 0px;">
 
 <form method="POST" name="editForm" action="SearchContent.action">
 <table border="0" cellpadding="0" cellspacing="0">
@@ -192,7 +223,7 @@
 	<td colspan="7">	
 		<p>
 		#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $searchString "30" "normaltextfield") 
-		<a href="javascript:toggleDiv('advancedOptions');">Advanced</a> | <a href="javascript:showReplaceDialog();">Replace</a>
+		<a href="javascript:toggleDiv('advancedOptions');">$ui.getString("tool.contenttool.searchAdvanced")</a> | <a href="javascript:showReplaceDialog();">$ui.getString("tool.contenttool.replace")</a>
 		</p>
 		<div id="advancedOptions" style="#if($advanced == false)display:none;#end">
 		<p>
@@ -206,7 +237,7 @@
 		</p>
 		<p>
 		$ui.getString("tool.contenttool.caseSensitive.label")<br>
-		<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> Yes 
+		<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> $ui.getString("tool.common.yes") 
 		</p>
 		<p>
 		$ui.getString("tool.contenttool.stateSearch.label")<br>
@@ -236,7 +267,7 @@
 
 </div>
 
-<div id="replaceLayer" class="fullymarginalized" style="display: none;">
+<div id="replaceLayer" class="fullymarginalized" style="display: none; position: absolute; top: 0px;">
 
 <form method="POST" name="replaceForm" action="ReplaceContent.action">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -244,6 +275,7 @@
 	<td>	
 		<p>
 		#editTextField3($ui.getString("tool.contenttool.findString.label") "tool.contenttool.findString.label" "searchString" $searchString "30" "normaltextfield")
+		<a href="javascript:showSearchDialog();">$ui.getString("tool.contenttool.backToSearch")</a>
 		</p>
 		<p>
 		#editTextField3($ui.getString("tool.contenttool.replaceString.label") "tool.contenttool.replaceString.label" "replaceString" $replaceString "30" "normaltextfield")
@@ -263,7 +295,12 @@
 </tr>
 <tr>
 	<input type="hidden" name="contentVersionId" value="">
-	<input type="hidden" name="repositoryId" value="$repositoryId">
+	<input type="hidden" name="repositoryId" value="$!repositoryId">
+	<input type="hidden" name="name" value="$!name">
+	<input type="hidden" name="languageId" value="$!languageId">
+	<input type="hidden" name="contentTypeDefinitionId" value="$!contentTypeDefinitionId">
+	<input type="hidden" name="caseSensitive" value="$!caseSensitive">
+	<input type="hidden" name="stateId" value="$!stateId">
 	<td colspan="2">
 		<a href="javascript:submitListForm('contentVersion');"><img src="$ui.getString("images.managementtool.buttons.replaceLong")" border="0"></a>
 		<a href="javascript:resetReplaceForm();"><img src="$ui.getString("images.managementtool.buttons.clearLong")" border="0"></a>
@@ -273,7 +310,7 @@
 </form>
 </div>
 
-<div id="resultsLayer" class="fullymarginalized">
+<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 100px; #else 350px; #end">
 
 <table tableborder=0 border=0 bgcolor=#C7D1B3 width=100% cellpadding="1" cellspacing="0"><tr><td>
 #set($lvConstraint = -1) 

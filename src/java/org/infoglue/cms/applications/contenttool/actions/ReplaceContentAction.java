@@ -47,11 +47,11 @@ import java.util.List;
  * @author Mattias Bogeblad
  */
 
-public class ReplaceContentAction extends InfoGlueAbstractAction 
+public class ReplaceContentAction extends SearchContentAction 
 {
 	//This is for replace
-    private Integer repositoryId	= null;
-    private String searchString		= null;
+    //private Integer repositoryId	= null;
+    //private String searchString		= null;
 	private String replaceString	= null;
 	private String contentVersionId = null;
 		
@@ -64,7 +64,7 @@ public class ReplaceContentAction extends InfoGlueAbstractAction
 	    //System.out.println("contentVersionId.length:" + contentVersionId.length);
 	    System.out.println("contentVersionId:" + this.getRequest().getParameterValues("contentVersionId"));
 	    
-	    SearchController.replaceString(this.searchString, this.replaceString, contentVersionIds, this.getInfoGluePrincipal());
+	    SearchController.replaceString(getSearchString(), this.replaceString, contentVersionIds, this.getInfoGluePrincipal());
 	    
         return "success";
 	}
@@ -79,7 +79,8 @@ public class ReplaceContentAction extends InfoGlueAbstractAction
         if(contentVersionId != null && !contentVersionId.equalsIgnoreCase(""))
             this.contentVersionId = contentVersionId.substring(1);
     }
-	
+
+    /*
 	public void setSearchString(String s)
 	{
     	this.searchString = s.replaceAll("'","");
@@ -89,7 +90,7 @@ public class ReplaceContentAction extends InfoGlueAbstractAction
 	{
 		return this.searchString;	
 	}
-
+	*/
     public String getReplaceString()
     {
         return replaceString;
@@ -99,7 +100,7 @@ public class ReplaceContentAction extends InfoGlueAbstractAction
     {
         this.replaceString = replaceString;
     }
-    
+    /*
     public Integer getRepositoryId()
     {
         return repositoryId;
@@ -109,4 +110,5 @@ public class ReplaceContentAction extends InfoGlueAbstractAction
     {
         this.repositoryId = repositoryId;
     }
+    */
 }
