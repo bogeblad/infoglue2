@@ -90,8 +90,7 @@ public class LanguageVO implements BaseEntityVO
     public void setLanguageCode(java.lang.String languageCode) throws ConstraintException
     {    	
     	ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-    	ValidatorFactory.createStringValidator("Language.languageCode", true, 2, 3).validate(languageCode, ceb); 
- 
+    	ValidatorFactory.createStringValidator("Language.languageCode", true, 2, 6).validate(languageCode, ceb); 
 
  		ceb.throwIfNotEmpty();
         this.languageCode = languageCode;
@@ -110,7 +109,7 @@ public class LanguageVO implements BaseEntityVO
 	{
     	ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
     	if (name != null) ValidatorFactory.createStringValidator("Language.name", true, 4, 20, true, LanguageImpl.class, this.getId(), null).validate(name, ceb);
-    	if (languageCode != null) ValidatorFactory.createStringValidator("Language.languageCode", true, 2, 3, true, LanguageImpl.class, this.getId(), null).validate(languageCode, ceb); 
+    	if (languageCode != null) ValidatorFactory.createStringValidator("Language.languageCode", true, 2, 6, true, LanguageImpl.class, this.getId(), null).validate(languageCode, ceb); 
 		return ceb;
 	}
     
