@@ -22,21 +22,22 @@
 		<td class="biglabel">Right now the repository contains the marked languages</td>
 	</tr>
 	
-	#foreach ($languageVO in $allLanguages)
-	<tr>
-		<td>		
-			#set($checked = "")
-			#foreach ($availableLanguageVO in $availableLanguages)
-				#if($availableLanguageVO.getLanguageId() == $languageVO.getLanguageId())
-					#set($checked = "checked")
-				#end 
-			#end
-			<input type="checkbox" name="languageId" value="$languageVO.getLanguageId()" $checked>$languageVO.getName()
-			
-		</td>
-	</tr>
+	##foreach ($languageVO in $allLanguages)
+	#foreach ($repositoryLanguageVO in $repositoryLanguageVOList)
+		#set($languageVO = $this.getLanguage($repositoryLanguageVO.repositoryLanguageId))
+		<tr>
+			<td>		
+				<input type="checkbox" name="languageId" value="$languageVO.getLanguageId()" checked>$languageVO.getName()				
+			</td>
+		</tr>
 	#end
-	
+	#foreach ($languageVO in $allRemainingLanguageVOList)
+		<tr>
+			<td>		
+				<input type="checkbox" name="languageId" value="$languageVO.getLanguageId()">$languageVO.getName()				
+			</td>
+		</tr>
+	#end
 	<tr>
 		<td>&nbsp;</th>
 	</tr>
