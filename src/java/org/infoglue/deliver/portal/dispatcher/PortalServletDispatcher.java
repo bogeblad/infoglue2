@@ -141,15 +141,15 @@ public class PortalServletDispatcher extends ServletDispatcher {
         }
     }
 
-    public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+    public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException 
+    {
         log.debug("\n*************************************************** infogluePortal service()");
-        System.out.println("------------------------------------------");
         Enumeration enum = req.getParameterNames();
         while(enum.hasMoreElements())
         {
             String name = (String)enum.nextElement();
             Object o = req.getParameter(name);
-            System.out.println(name + "=" + o);
+            //System.out.println(name + "=" + o);
         }
         
         enum = req.getAttributeNames();
@@ -157,9 +157,8 @@ public class PortalServletDispatcher extends ServletDispatcher {
         {
             String name = (String)enum.nextElement();
             Object o = req.getParameter(name);
-            System.out.println(name + "=" + o);
+            //System.out.println(name + "=" + o);
         }
-        System.out.println("------------------------------------------");
         
         // TODO not very nice, or?.
         PortletContainerServices.prepare("pluto");

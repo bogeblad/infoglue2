@@ -24,8 +24,6 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.Access;
-import org.infoglue.cms.entities.management.AccessVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.Repository;
@@ -36,7 +34,6 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.deliver.util.CacheController;
@@ -225,7 +222,9 @@ public class RepositoryController extends BaseController
 		{
 			RepositoryVO repositoryVO = (RepositoryVO)i.next();
 			if(getIsAccessApproved(repositoryVO.getRepositoryId(), infoGluePrincipal))
+			{
 				accessableRepositories.add(repositoryVO);
+			}
 		}
     	
 		return accessableRepositories;
@@ -283,57 +282,6 @@ public class RepositoryController extends BaseController
 	} 
 
 
-	public void updateRepositoryRoles(Integer repositoryId, String[] roleValues)throws Exception
-    {
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		beginTransaction(db);
-
-		try
-		{
-			String entityName = "Repository";			
-			AccessController.getController().delete(entityName, repositoryId.toString(), db);
-			
-			List roleList = new ArrayList();
-			if(roleValues != null)
-			{
-				for (int i=0; i < roleValues.length; i++)
-				{
-					String roleName = roleValues[i];
-					CmsLogger.logInfo("roleName:" + roleName);
-					AccessVO accessVO = new AccessVO();
-					accessVO.setRoleName(roleName);
-					accessVO.setName(entityName);
-					accessVO.setValue(repositoryId.toString());
-					accessVO.setHasReadAccess(new Boolean(true));
-					accessVO.setHasWriteAccess(new Boolean(true));
-					
-					AccessController.getController().create(accessVO, db);
-				}
-			}
-			 			
-			//If any of the validations or setMethods reported an error, we throw them up now before create.
-			ceb.throwIfNotEmpty();
-            
-			commitTransaction(db);
-		}
-		catch(ConstraintException ce)
-		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
-			rollbackTransaction(db);
-			throw ce;
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-    }        
-	 
-	 
-
 	/**
 	 * This method returns true if the user should have access to the repository sent in.
 	 */
@@ -359,52 +307,11 @@ public class RepositoryController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-    
+		
+		System.out.println("hasAccess:" + hasAccess);
+		
 		return hasAccess;
-	}
-    
-	
-	public List getAssignedRoles(Integer repositoryId) throws ConstraintException, SystemException
-	{
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		List assignedInfoGlueRoles = new ArrayList();
-
-		beginTransaction(db);
-
-		try
-		{
-			List accessList = AccessController.getController().getAccessList("Repository", "" + repositoryId, db);
-			Iterator accessListIterator = accessList.iterator();
-			while(accessListIterator.hasNext())
-			{
-				Access access = (Access)accessListIterator.next();
-				InfoGlueRole inforGlueRole = new InfoGlueRole(access.getRoleName(), "not fetched");
-				assignedInfoGlueRoles.add(inforGlueRole);
-			}
-        	
-			//If any of the validations or setMethods reported an error, we throw them up now before create.
-			ceb.throwIfNotEmpty();
-            
-			commitTransaction(db);
-		}
-		catch(ConstraintException ce)
-		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
-			rollbackTransaction(db);
-			throw ce;
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-        
-		return assignedInfoGlueRoles;
-	}
-	
+	}	
     
 	
 	/**
