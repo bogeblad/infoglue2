@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.5 2004/12/29 18:59:58 jed Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.6 2005/01/07 18:23:10 jed Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool;
 
@@ -29,6 +29,10 @@ import org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolStar
 import webwork.action.ActionContext;
 import webwork.action.factory.SessionMap;
 
+/**
+ * Tests ViewMyDesktopToolStartPageAction using the Create News workflow.
+ * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
+ */
 public class ViewMyDesktopToolStartPageActionTest extends WorkflowTestCase
 {
 	private ViewMyDesktopToolStartPageAction action = new ViewMyDesktopToolStartPageAction();
@@ -56,7 +60,7 @@ public class ViewMyDesktopToolStartPageActionTest extends WorkflowTestCase
 		assertFalse("There should be at least 1 current action", action.getWorkflowActionVOList().isEmpty());
 	}
 
-	public void testInvokeCreateNews() throws Exception
+	public void testInvoke() throws Exception
 	{
 		request.setParameter("name", getName());
 		request.setParameter("title", getName());
