@@ -365,9 +365,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 				//TODO - test
 				if(component.getIsInherited())
-				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" style=\"border: dotted 1px #0070FF;\");\">";
+				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" style=\"border: dotted 1px #0070FF; width: 100%;\");\">";
 				else
-				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" style=\"border: dotted 1px #0070FF;\" onmouseup=\"javascript:assignComponent('" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "');\">";
+				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" style=\"border: dotted 1px #0070FF; width: 100%;\" onmouseup=\"javascript:assignComponent('" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "');\">";
 				    
 				List subComponents = getInheritedComponents(templateController, component, templateController.getSiteNodeId(), id);
 
@@ -707,12 +707,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		
 		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">Edit</div>");
-		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\"><nobr>Add component</nobr></div>");
-		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponent();\"><nobr>Delete component</nobr></div>");
+		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">Add&nbsp;component</div>");
+		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponent();\">Delete&nbsp;component</div>");
 		sb.append("<hr>");
 		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponent();\">Properties</div>");
 		sb.append("<hr>");
-		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\"><nobr>View Source</nobr></div>");
+		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">View&nbsp;Source</div>");
 		sb.append("</div>");
 				
 		return sb.toString();

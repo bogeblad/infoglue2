@@ -55,10 +55,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	private String decorateTag(Integer contentId, Integer languageId, String attributeName, String attributeValue)
 	{
 		String editOnSiteUrl = CmsPropertyHandler.getProperty("editOnSiteUrl");
-		//String decoratedAttributeValue = "<a name=\"void\" class=\"void\" oncontextmenu=\"javascript:showmenuie5('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "');\">" + attributeValue + "</a>";
-		//String decoratedAttributeValue = "<span oncontextmenu=\"javascript:showmenuie5('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "');\">" + attributeValue + "</span>";
-		//String decoratedAttributeValue = "<span oncontextmenu=\"javascript:showmenuie5('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "', event);\">" + attributeValue + "</span>";
-		String decoratedAttributeValue = "<span oncontextmenu=\"setEditUrl('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "'); showmenuie5('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "', event);\">" + attributeValue + "</span>";
+		String decoratedAttributeValue = "<span oncontextmenu=\"setEditUrl('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "');\">" + attributeValue + "</span>";
 		return decoratedAttributeValue;
 	}
 	
