@@ -221,8 +221,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			CmsLogger.logWarning("The page delivery took " + elapsedTime + "ms");
 			
 			//CmsLogger.logWarning("Of that is " + contentAttributeTime + "ms from contentAttribute fetching...");
-			CmsLogger.logWarning("and " + contentVersionTime + "ms from contentVersion fetching...");
-			CmsLogger.logWarning("and " + serviceBindingTime + "ms from serviceBinding fetching...");
+			//CmsLogger.logWarning("and " + contentVersionTime + "ms from contentVersion fetching...");
+			//CmsLogger.logWarning("and " + serviceBindingTime + "ms from serviceBinding fetching...");
 			//CmsLogger.logWarning("and " + boundContentTime + "ms from boundContent fetching...");
 			//CmsLogger.logWarning("and " + inheritedServiceBindingTime + "ms from inheritedServiceBindingTime fetching...");
 			//CmsLogger.logWarning("and " + selectMatchingEntitiesTime + "ms from selectMatchingEntities fetching...");
