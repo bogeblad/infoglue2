@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.mydesktoptool.actions;
 
 import java.net.URLEncoder;
 import java.util.*;
+import java.io.*;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
@@ -37,11 +38,9 @@ import webwork.action.ActionContext;
 
 /**
  * This class implements the action class for the startpage in the mydesktop tool.
- * <b>TODO:</b> This class needs to be restructured to take advantage of the fact that we have access to a WorkflowVO
- * containing the current state of the workflow.
  * @author Mattias Bogeblad
+ * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
  */
-
 public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 {
 	private List availableWorkflowVOList;
@@ -108,15 +107,17 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	}
 
 	/**
-	 * Invokes an action in a workflow based on the values of the actionId and workflowId request parameters.  Assumes
-	 * there will be one current action with a view URL; we iterate over the available actions until we find one with
-	 * a view, then redirect to that view.  If there are other actions with different views, hard luck.
+	 * Invokes an action in a workflow based on the values of the actionId and workflowId request parameters and
+	 * redirects to the action's view if one has been defined.
+	 * <b>NOTE:</b> Assumes there will be one current action with a view; we iterate over the available actions until we
+	 * find one with a view, then redirect to that view.  If there are other actions with different views, they will be
+	 * ignored.
 	 * @return NONE if there is an available action with a view and we redirect to the action's view page, otherwise
-	 * returns "successInvoke"
-	 * @throws Exception
-	 * <b>TODO:</b> find a better heuristic for determining which view to go to.
+	 * performs the same operations as doExecute().
+	 * @throws SystemException if an error occurs invoking the action or URL-encoding the action view
+	 * @see #doExecute
 	 */
-	public String doInvoke() throws Exception
+	public String doInvoke() throws SystemException
 	{
 		CmsLogger.logInfo("****************************************");
 		CmsLogger.logInfo("workflowId:" + workflowId);
@@ -126,7 +127,23 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		WorkflowVO workflow = WorkflowController.getController().invokeAction(getInfoGluePrincipal(),
 																									 ActionContext.getRequest(),
 																									 workflowId, actionId);
+		return redirectToView(workflow);
+	}
 
+	/**
+	 * Redirects to view defined for the current action(s) in the given workflow.
+	 * <b>NOTE:</b> Assumes there will be one current action with a view; we iterate over the available actions until we
+	 * find one with a view, then redirect to that view.  If there are other actions with different views, they will be
+	 * ignored.
+	 * @param workflow a WorkflowVO representing a workflow instance
+	 * @return NONE if there is an available action with a view and we redirect to the action's view page, otherwise
+	 * performs the same operations as doExecute().
+	 * @throws SystemException if an error occurs invoking the action or URL-encoding the action view
+	 * @see #doExecute
+	 * <b>TODO:</b> find a better heuristic for determining which view to go to.
+	 */
+	private String redirectToView(WorkflowVO workflow) throws SystemException
+	{
 		for (Iterator i = workflow.getAvailableActions().iterator(); i.hasNext();)
 		{
 			url = getViewUrl((WorkflowActionVO)i.next());
@@ -134,7 +151,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 				return redirect(url);
 		}
 
-		CmsLogger.logInfo("No new action...");
+		CmsLogger.logInfo("No action view, coming back to mydesktop...");
 		return doExecute();
 	}
 
@@ -170,7 +187,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 * @throws SystemException if an error occurs while encoding the URL
 	 * <b>TODO:</b> Simplify this URL; this could be much, much simpler.
 	 */
-	private String getViewUrl(WorkflowActionVO action) throws Exception
+	private String getViewUrl(WorkflowActionVO action) throws SystemException
 	{
 		if (!action.hasView())
 			return "";
@@ -196,15 +213,29 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 * @throws SystemException if an error occurs while encoding the URL
 	 * <b>TODO:</b> there are much simpler and more explicit ways to do this; let's use them
 	 */
-	private String getReturnAddress() throws Exception
+	private String getReturnAddress() throws SystemException
 	{
-		return URLEncoder.encode(getURLBase() + "/ViewMyDesktopToolStartPage!invoke.action", "UTF-8");
+		try
+		{
+			return URLEncoder.encode(getURLBase() + "/ViewMyDesktopToolStartPage!invoke.action", "UTF-8");
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			throw new SystemException(e);
+		}
 	}
 
-	private String redirect(String url) throws Exception
+	private String redirect(String url) throws SystemException
 	{
-		CmsLogger.logInfo("Url in doInvoke:" + url);
-		getResponse().sendRedirect(url);
-		return NONE;
+		try
+		{
+			CmsLogger.logInfo("Url in doInvoke:" + url);
+			getResponse().sendRedirect(url);
+			return NONE;
+		}
+		catch (IOException e)
+		{
+			throw new SystemException(e);
+		}
 	}
 }
