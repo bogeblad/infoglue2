@@ -8,7 +8,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<script type="text/javascript" language="Javascript">
-	<!--
+	<!-- 
 	
 		function changeTool(toolId)
 		{
@@ -20,16 +20,30 @@
 			//alert("top:" + top.frames["toolarea"].name);
 		    //alert("toolId:" + toolId);
 		    if(toolId == 0)
+		    {
 		    	top.frames["toolarea"].location.href = "ViewContentTool.action";
+			    top.document.title = "Content Tool - InfoGlue CMS";
+		    }
 		    else if (toolId == 1)
+			{
 			    top.frames["toolarea"].location.href = "ViewStructureTool.action";
+			    top.document.title = "Structure Tool - InfoGlue CMS";
+			}
 			else if (toolId == 2)
+			{
 			    top.frames["toolarea"].location.href = "ViewManagementTool.action";
+			    top.document.title = "Management Tool - InfoGlue CMS";
+			}
 			else if (toolId == 3)
+			{
 			    top.frames["toolarea"].location.href = "ViewPublishingTool.action";
+			    top.document.title = "Publishing Tool - InfoGlue CMS";
+			}
 			else if (toolId == 4)
+			{
 			    top.frames["toolarea"].location.href = "ViewMyDesktopTool.action";
-			
+			    top.document.title = "MyDesktop Tool - InfoGlue CMS";
+			}
 		}
 
 		function logout()
@@ -40,11 +54,12 @@
 	-->
 	</script>
 	
+	<script language="JavaScript" src="script/hotkeys.js"></script>
 	<script language="JavaScript" src="script/listview.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>
 
-<body onLoad="javascript:changeToolArea($toolId);" class="cmstool">
+<body onLoad="javascript:changeToolArea($toolId);" onkeypress="hotKeys(event);" class="cmstool">
 
 <div style="LEFT:23px; position:absolute; TOP:5px; visibility:visble; z-index:0">
 	<image src="images/logotypeInfoGlue.gif" width="300" height="14">

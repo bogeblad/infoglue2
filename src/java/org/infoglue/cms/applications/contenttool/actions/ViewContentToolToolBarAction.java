@@ -248,8 +248,8 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		
 		try
 		{
-			buttons.add(new ImageButton("CreateContent!input.action?isBranch=false&parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.newContent.header")));	
-			buttons.add(new ImageButton("CreateContent!input.action?isBranch=true&parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newContentFolder"), getLocalizedString(getSession().getLocale(), "tool.contenttool.newContentFolder.header")));	
+			buttons.add(new ImageButton("CreateContent!input.action?isBranch=false&parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newContent"), "tool.contenttool.newContent.header"));	
+			buttons.add(new ImageButton("CreateContent!input.action?isBranch=true&parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newContentFolder"), "tool.contenttool.newContentFolder.header"));	
 			buttons.add(getMoveButton());	
 			buttons.add(getDeleteButton());
 			buttons.add(getPublishButton());
@@ -301,12 +301,12 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 			if(this.contentVersionId != null)
 			{
 				if(!isReadOnly())
-					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'DigitalAsset', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), getLocalizedString(getSession().getLocale(), "tool.contenttool.uploadDigitalAsset.header")));	
+					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'tool.contenttool.uploadDigitalAsset.title', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
 			
-				buttons.add(new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'ContentPreview', 'width=600,height=600,resizable=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.previewContent.header")));	
+				buttons.add(new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'tool.contenttool.previewContent.title', 'width=600,height=600,resizable=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header"));	
 				
 				if(this.siteNodeId != null)
-					buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SiteNode', 'width=800,height=600,resizable=yes,scrollbars=yes,statusbar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), getLocalizedString(getSession().getLocale(), "tool.contenttool.previewSite.header")));			
+					buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'tool.contenttool.previewSite.title', 'width=800,height=600,resizable=yes,scrollbars=yes,statusbar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header"));			
 				
 				if(hasPublishedVersion())
 					buttons.add(getUnpublishButton());
@@ -332,7 +332,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 	{
 		try
 		{
-			return new ImageButton("Confirm.action?header=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.unpublishVersion.header"), "UTF-8") + "&yesDestination=" + URLEncoder.encode(URLEncoder.encode("RequestContentVersionUnpublish.action?entityClass=" + ContentVersion.class.getName() + "&entityId=" + this.lastPublishedContentVersionId + "&typeId=" + EventVO.UNPUBLISH_LATEST + "&repositoryId=" + this.repositoryId + "&name=" + this.name + " - " + this.languageName + "&description=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.unpublishVersion.text"), "UTF-8") + "&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContentVersion.action?title=ContentVersion&contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.unpublishVersion.text") + this.name + "(" + this.languageName + ")", "UTF-8"), getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.unpublishVersion"), getLocalizedString(getSession().getLocale(), "tool.contenttool.unpublishVersion.header"));
+			return new ImageButton("Confirm.action?header=tool.contenttool.unpublishVersion.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("RequestContentVersionUnpublish.action?entityClass=" + ContentVersion.class.getName() + "&entityId=" + this.lastPublishedContentVersionId + "&typeId=" + EventVO.UNPUBLISH_LATEST + "&repositoryId=" + this.repositoryId + "&name=" + this.name + " - " + this.languageName + "&description=tool.contenttool.unpublishVersion.text&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContentVersion.action?title=ContentVersion&contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.unpublishVersion.text", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header");
 		}
 		catch(Exception e){}
 
@@ -345,7 +345,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		{
 			//return new ImageButton("Confirm.action?header=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.header"), "UTF-8") + "&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContent.action?title=Content&contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.text"), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.header"));
 			String url = "Confirm.action?header=tool.contenttool.deleteContent.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContent.action?title=Content&contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.deleteContent.text";
-		    return new ImageButton(url, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.header"));
+		    return new ImageButton(url, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), "tool.contenttool.deleteContent.header");
 		}
 		catch(Exception e){e.printStackTrace();}
 
@@ -354,35 +354,35 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 
 	private ImageButton getMoveButton()
 	{
-		return new ImageButton(true, "javascript:openPopup('ViewContentTree.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'Content', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.moveContent.header"));	
+		return new ImageButton(true, "javascript:openPopup('ViewContentTree.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'tool.contenttool.moveContent.title', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveContent"), "tool.contenttool.moveContent.header");	
 	}
 
 	private ImageButton getSyncTreeButton()
 	{
-		return new ImageButton(true, "javascript:parent.frames['main'].syncWithTree();", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.revealInTree"), getLocalizedString(getSession().getLocale(), "tool.contenttool.revealInTree.header"));	
+		return new ImageButton(true, "javascript:parent.frames['main'].syncWithTree();", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.revealInTree"), "tool.contenttool.revealInTree.header");	
 	}
 
 	private ImageButton getPublishButton()
 	{
-		return new ImageButton("ViewListContentVersion.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.publishContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.publishContent.header"));	
+		return new ImageButton("ViewListContentVersion.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.publishContent"), "tool.contenttool.publishContent.header");	
 	}
 
 	private ImageButton getExecuteTaskButton()
 	{
-		return new ImageButton(true, "javascript:openPopup('ViewExecuteTask.action?contentId=" + this.contentId + "', 'Content', 'width=400,height=600,resizable=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.global.buttons.executeTask"), getLocalizedString(getSession().getLocale(), "tool.common.executeTask.header"));	
+		return new ImageButton(true, "javascript:openPopup('ViewExecuteTask.action?contentId=" + this.contentId + "', 'tool.contenttool.executeTask.title', 'width=400,height=600,resizable=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.global.buttons.executeTask"), "tool.common.executeTask.header");	
 	}
 	
 	private ImageButton getAccessRightsButton() throws Exception
 	{
 		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8");
 		//return new ImageButton("ViewAccessRights.action?name=Content&value=" + this.contentId + "&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "Content Access Rights");
-		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=Content&extraParameters=" + this.contentId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "Content Access Rights");
+		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=Content&extraParameters=" + this.contentId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "tool.contenttool.contentAccessRights.header");
 	}
 
 	private ImageButton getContentVersionAccessRightsButton() throws Exception
 	{
 		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentVersion.action?contentVersionId=" + this.contentVersionId + "&contentId=" + contentId + "&languageId=" + languageId, "UTF-8"), "UTF-8");
-		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=ContentVersion&extraParameters=" + this.contentVersionId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "Content Version Access Rights");
+		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=ContentVersion&extraParameters=" + this.contentVersionId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "tool.contenttool.contentVersionAccessRights.header");
 	}
 
 }
