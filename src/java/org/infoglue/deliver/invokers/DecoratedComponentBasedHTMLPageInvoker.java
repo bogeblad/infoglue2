@@ -167,8 +167,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 		
-		Map context = new HashMap();
-		context.put("templateLogic", this.getTemplateController());
+		//-- moved the creation of a default context into the baseclass
+        // (robert)
+        Map context = getDefaultContext();
+
 		context.put("componentEditorUrl", componentEditorUrl);
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
@@ -308,7 +310,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			timer.printElapsedTime("1");
 			
 			templateController.setComponentLogic(new DecoratedComponentLogic(templateController, component));
-			Map context = new HashMap();
+			Map context = super.getDefaultContext();
 			context.put("templateLogic", templateController);
 			StringWriter cacheString = new StringWriter();
 			PrintWriter cachedStream = new PrintWriter(cacheString);

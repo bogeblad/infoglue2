@@ -103,8 +103,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 		}
 
-		Map context = new HashMap();
-		context.put("templateLogic", this.getTemplateController());
+		// -- moved the creation of a default context into the baseclass
+        // (robert)
+		Map context = getDefaultContext();
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
 		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, pageContent);
@@ -477,7 +478,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			String componentString = getComponentString(templateController, component.getContentId()); 
 			
 			templateController.setComponentLogic(new ComponentLogic(templateController, component));
-			Map context = new HashMap();
+			Map context = getDefaultContext();
 			context.put("templateLogic", templateController);
 			StringWriter cacheString = new StringWriter();
 			PrintWriter cachedStream = new PrintWriter(cacheString);
