@@ -1,5 +1,5 @@
 /**
- * $Id: AllStepFilter.java,v 1.2 2004/12/28 16:10:09 jed Exp $
+ * $Id: AllStepFilter.java,v 1.3 2004/12/28 16:54:33 jed Exp $
  * Created by jed on Dec 28, 2004
  */
 package org.infoglue.cms.util.workflow;
@@ -8,8 +8,8 @@ import com.opensymphony.workflow.spi.Step;
 
 /**
  * No-op filter that allows all steps
- * @author jed
- * @version $Revision: 1.2 $ $Date: 2004/12/28 16:10:09 $
+ * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
+ * @version $Revision: 1.3 $ $Date: 2004/12/28 16:54:33 $
  */
 public class AllStepFilter implements StepFilter
 {

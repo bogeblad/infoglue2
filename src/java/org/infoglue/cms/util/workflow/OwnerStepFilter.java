@@ -1,5 +1,5 @@
 /**
- * $Id: OwnerStepFilter.java,v 1.2 2004/12/28 16:10:09 jed Exp $
+ * $Id: OwnerStepFilter.java,v 1.3 2004/12/28 16:54:26 jed Exp $
  * Created by jed on Dec 28, 2004
  */
 package org.infoglue.cms.util.workflow;
@@ -10,8 +10,8 @@ import com.opensymphony.workflow.spi.Step;
 /**
  * Filters steps according to owner.  If a step has no owner, it is assumed that anyone can view it.
  * An administrator can view all steps regardless of owner.
- * @author jed
- * @version $Revision: 1.2 $ $Date: 2004/12/28 16:10:09 $
+ * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
+ * @version $Revision: 1.3 $ $Date: 2004/12/28 16:54:26 $
  */
 public class OwnerStepFilter implements StepFilter
 {
