@@ -163,6 +163,15 @@
 	</target>
 
 	<!--
+	* Creates a jar file. This can be used to import into another codebase for custom development.
+	-->
+	<target name="jar" depends="compile" description="Creates a Jar file">
+		<jar file="${build}/${ant.project.name}-${project.version}.jar">
+			<fileset dir="${build.classes}"/>
+		</jar>
+	</target>
+
+	<!--
 	* Creates the CMS war file.  Since we deploy an exploded war, the primary
 	* purpose of this target is to organize the files required to deploy.
 	-->
