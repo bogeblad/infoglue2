@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.4 2005/02/23 15:20:56 mattias Exp $
+ * $Id: RegistryController.java,v 1.5 2005/02/24 15:50:31 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -80,6 +80,7 @@ public class RegistryController extends BaseController
 	 * @throws ConstraintException
 	 * @throws SystemException
 	 */
+	
     public RegistryVO create(RegistryVO valueObject, Database db) throws ConstraintException, SystemException, Exception
     {
         Registry registry = new RegistryImpl();
@@ -95,10 +96,24 @@ public class RegistryController extends BaseController
      * @throws ConstraintException
      * @throws SystemException
      */
+    
     public RegistryVO update(RegistryVO valueObject, Database db) throws ConstraintException, SystemException
     {
     	return (RegistryVO) updateEntity(RegistryImpl.class, (BaseEntityVO) valueObject, db);
     }    
+    
+    
+    /**
+     * This method deletes a registry entry
+     * @return registryId
+     * @throws ConstraintException
+     * @throws SystemException
+     */
+    
+    public void delete(Integer registryId) throws ConstraintException, SystemException
+    {
+    	this.deleteEntity(RegistryImpl.class, registryId);
+    }   
     
 	/**
 	 * this method goes through all inline stuff and all relations if ordinary content 
@@ -119,29 +134,7 @@ public class RegistryController extends BaseController
 		{
 			beginTransaction(db);
 		
-		    ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
-		    Content oldContent = oldContentVersion.getOwningContent();
-		    
-		    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
-		    {
-		        System.out.println("It was a meta info so lets check it for other stuff as well");
-			    SiteNodeVersion siteNodeVersion = getSiteNodeVersion(oldContentVersion, db); 
-			    
-			    clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
-			    
-			    getInlineSiteNodes(oldContentVersion, versionValue, db);
-			    getInlineContents(oldContentVersion, versionValue, db);
-			    
-			    getComponents(siteNodeVersion, versionValue, db);
-			    getComponentBindings(siteNodeVersion, versionValue, db);
-		    }
-		    else
-		    {
-		        clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString(), db);
-			    getInlineSiteNodes(oldContentVersion, versionValue, db);
-			    getInlineContents(oldContentVersion, versionValue, db);
-			    
-		    }
+			updateContentVersion(contentVersionVO, db);
 		    
 			commitTransaction(db);
 		}
@@ -151,6 +144,50 @@ public class RegistryController extends BaseController
 			throw new SystemException("An error occurred when we tried to fetch which sitenode uses a metainfo. Reason:" + e.getMessage(), e);			
 		}
 		
+	}
+	
+	
+	/**
+	 * this method goes through all inline stuff and all relations if ordinary content 
+	 * and all components and bindings if a metainfo.
+	 * 
+	 * @param contentVersionVO
+	 * @throws SystemException
+	 * @throws Exception
+	 */
+	
+	public void updateContentVersion(ContentVersionVO contentVersionVO, Database db) throws ConstraintException, SystemException, Exception
+	{
+	    String versionValue = contentVersionVO.getVersionValue();
+	    
+	    ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
+	    Content oldContent = oldContentVersion.getOwningContent();
+	    
+	    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
+	    {
+	        System.out.println("It was a meta info so lets check it for other stuff as well");
+		    SiteNodeVersion siteNodeVersion = getSiteNodeVersionWhichUsesContentVersionAsMetaInfo(oldContentVersion, db); 
+		    if(siteNodeVersion != null)
+		    {
+			    clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
+			    
+			    getComponents(siteNodeVersion, versionValue, db);
+			    getComponentBindings(siteNodeVersion, versionValue, db);
+		    }
+		    
+		    getInlineSiteNodes(oldContentVersion, versionValue, db);
+		    getInlineContents(oldContentVersion, versionValue, db);
+		    getRelationSiteNodes(oldContentVersion, versionValue, db);
+		    getRelationContents(oldContentVersion, versionValue, db);
+	    }
+	    else
+	    {
+	        clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString(), db);
+		    getInlineSiteNodes(oldContentVersion, versionValue, db);
+		    getInlineContents(oldContentVersion, versionValue, db);
+		    getRelationSiteNodes(oldContentVersion, versionValue, db);
+		    getRelationContents(oldContentVersion, versionValue, db);
+	    }		
 	}
 	
 	/**
@@ -221,7 +258,87 @@ public class RegistryController extends BaseController
 	        }
 	    }
 	}
+	
+	
 
+	//<?xml version='1.0' encoding='UTF-8'?><qualifyer entity='Content'><id>1275</id><id>198</id><id>196</id><id>1275</id><id>196</id><id>198</id><id>1275</id></qualifyer>
+	//<?xml version='1.0' encoding='UTF-8'?><qualifyer entity='SiteNode'><id>62</id><id>54</id><id>62</id><id>51</id><id>57</id><id>65</id></qualifyer>
+
+	/**
+	 * This method fetches all inline links from any text.
+	 */
+	
+	public void getRelationSiteNodes(ContentVersion contentVersion, String versionValue, Database db) throws ConstraintException, SystemException, Exception
+	{
+	    Pattern pattern = Pattern.compile("<qualifyer entity='SiteNode'>.*?</qualifyer>");
+	    Matcher matcher = pattern.matcher(versionValue);
+	    while ( matcher.find() ) 
+	    { 
+	        String match = matcher.group();
+	        System.out.println("Adding match to registry after some processing: " + match);
+	        Integer siteNodeId;
+	        
+	        int siteNodeStartIndex = match.indexOf("<id>");
+	        int siteNodeEndIndex = match.indexOf("</id>");
+	        while(siteNodeStartIndex > 0 && siteNodeEndIndex > 0 && siteNodeEndIndex > siteNodeStartIndex)
+	        {
+	            siteNodeId = new Integer(match.substring(siteNodeStartIndex + 4, siteNodeEndIndex));
+	            System.out.println("siteNodeId:" + siteNodeId);
+	            RegistryVO registryVO = new RegistryVO();
+	            registryVO.setEntityId(siteNodeId.toString());
+	            registryVO.setEntityName(SiteNode.class.getName());
+	            registryVO.setReferenceType(RegistryVO.INLINE_SITE_NODE_RELATION);
+	            registryVO.setReferencingEntityId(contentVersion.getContentVersionId().toString());
+	            registryVO.setReferencingEntityName(ContentVersion.class.getName());
+	            registryVO.setReferencingEntityCompletingId(contentVersion.getOwningContent().getContentId().toString());
+	            registryVO.setReferencingEntityCompletingName(Content.class.getName());
+	            
+	            this.create(registryVO, db);
+	            
+	            siteNodeStartIndex = match.indexOf("<id>", siteNodeEndIndex);
+		        siteNodeEndIndex = match.indexOf("</id>", siteNodeStartIndex);
+	        }
+	    }
+	}
+	
+	/**
+	 * This method fetches all inline links from any text.
+	 */
+	
+	public void getRelationContents(ContentVersion contentVersion, String versionValue, Database db) throws ConstraintException, SystemException, Exception
+	{
+	    Pattern pattern = Pattern.compile("<qualifyer entity='Content'>.*?</qualifyer>");
+	    Matcher matcher = pattern.matcher(versionValue);
+	    while ( matcher.find() ) 
+	    { 
+	        String match = matcher.group();
+	        System.out.println("Adding match to registry after some processing: " + match);
+	        Integer contentId;
+	        
+	        int contentStartIndex = match.indexOf("<id>");
+	        int contentEndIndex = match.indexOf("</id>");
+	        while(contentStartIndex > 0 && contentEndIndex > 0 && contentEndIndex > contentStartIndex)
+	        {
+	            contentId = new Integer(match.substring(contentStartIndex + 4, contentEndIndex));
+	            System.out.println("contentId:" + contentId);
+	            
+	            RegistryVO registryVO = new RegistryVO();
+	            registryVO.setEntityId(contentId.toString());
+	            registryVO.setEntityName(Content.class.getName());
+	            registryVO.setReferenceType(RegistryVO.INLINE_CONTENT_RELATION);
+	            registryVO.setReferencingEntityId(contentVersion.getContentVersionId().toString());
+	            registryVO.setReferencingEntityName(ContentVersion.class.getName());
+	            registryVO.setReferencingEntityCompletingId(contentVersion.getOwningContent().getContentId().toString());
+	            registryVO.setReferencingEntityCompletingName(Content.class.getName());
+	            
+	            this.create(registryVO, db);
+	            
+	            contentStartIndex = match.indexOf("<id>", contentEndIndex);
+	            contentEndIndex = match.indexOf("</id>", contentStartIndex);
+	        }
+	    }
+	}
+	                
 	
 	/**
 	 * This method fetches all components and adds entries to the registry.
@@ -516,11 +633,11 @@ public class RegistryController extends BaseController
 	 * Gets siteNodeVersion which uses the metainfo
 	 */
 	
-	public SiteNodeVersion getSiteNodeVersion(ContentVersion contentVersion, Database db) throws SystemException, Exception
+	public SiteNodeVersion getSiteNodeVersionWhichUsesContentVersionAsMetaInfo(ContentVersion contentVersion, Database db) throws SystemException, Exception
 	{
 	    SiteNodeVersion siteNodeVersion = null;
-	    //TODO
-	    OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl snv WHERE snv.serviceBindings.bindingQualifyers.name = $1 AND snv.serviceBindings.bindingQualifyers.value = $2");
+	    OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl snv WHERE snv.serviceBindings.availableServiceBinding.name = $1 AND snv.serviceBindings.bindingQualifyers.name = $2 AND snv.serviceBindings.bindingQualifyers.value = $3");
+	    oql.bind("Meta information");
 		oql.bind("contentId");
 		oql.bind(contentVersion.getOwningContent().getId());
 		
@@ -529,7 +646,7 @@ public class RegistryController extends BaseController
 		while (results.hasMore()) 
         {
 		    siteNodeVersion = (SiteNodeVersion)results.next();
-            System.out.println("siteNodeVersion:" + siteNodeVersion.getId());
+            //System.out.println("siteNodeVersion:" + siteNodeVersion.getId());
         }
     	
 		return siteNodeVersion;		

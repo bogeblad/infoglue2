@@ -341,6 +341,8 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Repository&extraParameters=" + this.repositoryId +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header"));
 		buttons.add(new ImageButton("ViewListRepositoryLanguage.action?repositoryId=" + this.repositoryId +"&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.repositoryLanguages"), "tool.managementtool.repositoryLanguages.header"));
 		
+		buttons.add(new ImageButton(true, "javascript:openPopup('RebuildRegistry!input.action?repositoryId=" + this.repositoryId + "', 'Registry', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.rebuildRegistry"), getLocalizedString(getSession().getLocale(), "tool.managementtool.rebuildRegistry.header")));	
+		
 		return buttons;				
 	}
 

@@ -30,11 +30,13 @@ import org.infoglue.cms.util.validators.*;
 
 public class RegistryVO implements BaseEntityVO
 {
-    public final static Integer INLINE_LINK 			= new Integer(0);
-    public final static Integer INLINE_ASSET 			= new Integer(1);
-    public final static Integer PAGE_COMPONENT 			= new Integer(2);
-    public final static Integer PAGE_COMPONENT_BINDING 	= new Integer(3);
-    public final static Integer PAGE_BINDING 			= new Integer(4);
+    public final static Integer INLINE_LINK 				= new Integer(0);
+    public final static Integer INLINE_ASSET 				= new Integer(1);
+    public final static Integer PAGE_COMPONENT 				= new Integer(2);
+    public final static Integer PAGE_COMPONENT_BINDING 		= new Integer(3);
+    public final static Integer PAGE_BINDING 				= new Integer(4);
+    public final static Integer INLINE_SITE_NODE_RELATION	= new Integer(5);
+    public final static Integer INLINE_CONTENT_RELATION		= new Integer(6);
     
     private Integer registryId;
     private String entityName;

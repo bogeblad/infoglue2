@@ -1210,6 +1210,28 @@ public class ContentController extends BaseController
 	}
  
 	/**
+	 * This method returns the contents belonging to a certain repository.
+	 */
+	
+	public List getRepositoryContents(Integer repositoryId, Database db) throws SystemException, Exception
+	{
+		List contents = new ArrayList();
+		
+		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.repositoryId = $1");
+    	oql.bind(repositoryId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while(results.hasMore()) 
+        {
+        	MediumContentImpl content = (MediumContentImpl)results.next();
+			contents.add(content);
+        }
+		
+		return contents;    	
+	}
+	
+	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.
 	 */

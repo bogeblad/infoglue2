@@ -48,7 +48,8 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	private Integer parentContentId;
 	private Integer changeTypeId;
 	private Integer repositoryId;
-
+	private String[] registryId;
+	
 	//Used for the relatedPages control
 	private Integer siteNodeId;
 	
@@ -66,25 +67,35 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	
 	public String doExecute() throws Exception 
 	{
-		try
-		{
-			this.parentContentId = ContentController.getParentContent(this.contentVO.getContentId()).getContentId();
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logInfo("The content must have been a root-content because we could not find a parent.");
-		}
-		
 		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
 		if(this.referenceBeanList != null && this.referenceBeanList.size() > 0)
 		{
+		    System.out.println("contentId:" + this.contentVO.getContentId());
 		    return "showRelations";
 		}
 	    else
 	    {
-	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);
+	    	try
+			{
+				this.parentContentId = ContentController.getParentContent(this.contentVO.getContentId()).getContentId();
+			}
+			catch(Exception e)
+			{
+				CmsLogger.logInfo("The content must have been a root-content because we could not find a parent.");
+			}
+
+	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
+			
 	    	return "success";
 	    }
+	}	
+	
+	public String doDeleteReference() throws Exception 
+	{
+	    for(int i=0; i<registryId.length; i++)
+	        RegistryController.getController().delete(new Integer(registryId[i]));
+		
+	    return doExecute();
 	}	
 	
 	public String doFixPage() throws Exception 
@@ -115,6 +126,11 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	public Integer getContentId()
 	{
 		return this.parentContentId;
+	}
+	
+	public Integer getOriginalContentId()
+	{
+		return this.contentVO.getContentId();
 	}
 	
 	public Integer getUnrefreshedContentId()
@@ -150,5 +166,15 @@ public class DeleteContentAction extends InfoGlueAbstractAction
     public void setSiteNodeId(Integer siteNodeId)
     {
         this.siteNodeId = siteNodeId;
+    }
+    
+    public String[] getRegistryId()
+    {
+        return registryId;
+    }
+    
+    public void setRegistryId(String[] registryId)
+    {
+        this.registryId = registryId;
     }
 }

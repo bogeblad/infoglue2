@@ -61,7 +61,6 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		ceb.throwIfNotEmpty();
 		
 		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-		//ContentVersionController.update(this.contentId, this.languageId, this.contentVersionVO);
 		this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
 		
 		return "success";

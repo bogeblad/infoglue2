@@ -80,7 +80,7 @@
 	<td class="toolheader"><image src="images/trans.gif" width="10" height="19"></td>
 	<td class="toolheader"><image src="images/$ui.getString("images.contenttool.searchLabel")" width="48" height="19"></td>
 	<td class="toolheader"><input type="text" class="searchfield" name="searchString" value=""></td>
-	<td class="toolheader"><nobr><image src="images/trans.gif" width="5" height="19"><input type="image" src="images/$ui.getString("images.contenttool.ok")" width="31" heigth="19"><image src="images/trans.gif" width="5" height="19"><a href="javascript:openSearchForm();"><img src="$ui.getString("images.contenttool.advanced")" width="62" heigth="19" border="0"></a></nobr></td>
+	<td class="toolheader"><nobr><image src="images/trans.gif" width="5" height="19"><input type="image" src="$ui.getString("images.contenttool.ok")" width="31" heigth="19"><image src="images/trans.gif" width="5" height="19"><a href="javascript:openSearchForm();"><img src="$ui.getString("images.contenttool.advanced")" width="62" heigth="19" border="0"></a></nobr></td>
 	<td class="toolheader" width="70%"><image src="images/trans.gif" width="1" height="1"></td>
 	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
 </tr>

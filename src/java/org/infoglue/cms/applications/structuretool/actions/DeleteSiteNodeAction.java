@@ -49,7 +49,8 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	private Integer parentSiteNodeId;
 	private Integer changeTypeId;
 	private Integer repositoryId;
-    
+	private String[] registryId;
+
 	//Used for the relatedPages control
 	private Integer contentId;
 	
@@ -68,15 +69,6 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	
 	protected String doExecute() throws Exception 
 	{
-		try
-		{
-			this.parentSiteNodeId = SiteNodeController.getParentSiteNode(this.siteNodeVO.getSiteNodeId()).getSiteNodeId();
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logInfo("The siteNode must have been a root-siteNode because we could not find a parent.");
-		}
-		
 		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(this.siteNodeVO.getSiteNodeId());
 		if(this.referenceBeanList != null && this.referenceBeanList.size() > 0)
 		{
@@ -84,10 +76,29 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 		}
 	    else
 	    {
+			try
+			{
+				this.parentSiteNodeId = SiteNodeController.getParentSiteNode(this.siteNodeVO.getSiteNodeId()).getSiteNodeId();
+			}
+			catch(Exception e)
+			{
+				CmsLogger.logInfo("The siteNode must have been a root-siteNode because we could not find a parent.");
+			}
+
 			SiteNodeControllerProxy.getSiteNodeControllerProxy().acDelete(this.getInfoGluePrincipal(), this.siteNodeVO);
-	    	return "success";
+	    	
+			return "success";
 	    }
 	}
+	
+	public String doDeleteReference() throws Exception 
+	{
+	    for(int i=0; i<registryId.length; i++)
+	        RegistryController.getController().delete(new Integer(registryId[i]));
+		
+	    return doExecute();
+	}	
+
 	
 	public String doFixPage() throws Exception 
 	{
@@ -104,6 +115,11 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 		this.siteNodeVO.setSiteNodeId(siteNodeId);
 	}
 
+	public Integer getOriginalSiteNodeId()
+	{
+		return this.siteNodeVO.getSiteNodeId();
+	}
+	
 	public void setParentSiteNodeId(Integer parentSiteNodeId)
 	{
 		this.parentSiteNodeId = parentSiteNodeId;
@@ -162,5 +178,15 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
     public List getReferenceBeanList()
     {
         return referenceBeanList;
+    }
+    
+    public String[] getRegistryId()
+    {
+        return registryId;
+    }
+    
+    public void setRegistryId(String[] registryId)
+    {
+        this.registryId = registryId;
     }
 }
