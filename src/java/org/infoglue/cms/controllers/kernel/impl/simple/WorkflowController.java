@@ -48,7 +48,7 @@ public class WorkflowController extends BaseController
 	private static final WorkflowController controller = new WorkflowController();
 
 	/**
-	 * Factory method
+	 * Returns the WorkflowController singleton
 	 * @return a reference to a WorkflowController
 	 */
 	public static WorkflowController getController()
@@ -64,17 +64,26 @@ public class WorkflowController extends BaseController
 	 * @param workflowName the name of the workflow to create.
 	 * @return a WorkflowVO representing the newly created workflow instance
 	 * @throws SystemException if an error occurs while initiaizing the workflow
+	 * @deprecated use initializeWorkflow() instead; this method relies on a hard-coded initial action ID of 0.
+	 * @see #initializeWorkflow
 	 */
 	public WorkflowVO createWorkflowInstance(InfoGluePrincipal userPrincipal, String workflowName) throws SystemException
 	{
+		return initializeWorkflow(userPrincipal, workflowName, 0);
+	}
+
+	/**
+	 * @param principal the user principal representing the desired user
+	 * @param name the name of the workflow to create.
+	 * @param actionId the ID of the initial action
+	 * @return a WorkflowVO representing the newly created workflow instance
+	 * @throws SystemException if an error occurs while initiaizing the workflow
+	 */
+	public WorkflowVO initializeWorkflow(InfoGluePrincipal principal, String name, int actionId) throws SystemException
+	{
 		try
 		{
-			WorkflowFacade workflow = new WorkflowFacade(userPrincipal);
-			workflow.initialize(workflowName);
-			CmsLogger.logInfo("Workflow initialized....");
-			CmsLogger.logInfo("workflowId:" + workflow.getWorkflowId());
-			CmsLogger.logInfo("name:" + workflow.getName());
-			return workflow.createWorkflowVO();
+			return new WorkflowFacade(principal, name, actionId).createWorkflowVO();
 		}
 		catch (Exception e)
 		{
