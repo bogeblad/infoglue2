@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: InfoGlueTestCase.java,v 1.3 2004/12/27 21:53:34 jed Exp $
+ * $Id: InfoGlueTestCase.java,v 1.4 2005/02/03 17:49:19 frank Exp $
  */
 package org.infoglue.cms.util;
 
@@ -122,7 +122,7 @@ public abstract class InfoGlueTestCase extends TestCase
 	 * Returns the administrator principal
 	 * @return an InfoGluePrincipal representing an administrator
 	 */
-	protected static InfoGluePrincipal getAdminPrincipal()
+	public static InfoGluePrincipal getAdminPrincipal()
 	{
 		return adminPrincipal;
 	}
@@ -131,7 +131,7 @@ public abstract class InfoGlueTestCase extends TestCase
 	 * Returns the cmsUser principal
 	 * @return an InfoGluePrincipal representing a cmsUser
 	 */
-	protected static InfoGluePrincipal getCmsUserPrincipal()
+	public static InfoGluePrincipal getCmsUserPrincipal()
 	{
 		return cmsUserPrincipal;
 	}
@@ -140,7 +140,7 @@ public abstract class InfoGlueTestCase extends TestCase
 	 * Returns the anonymous principal
 	 * @return an InfoGluePrincipal representing an anonymous user
 	 */
-	protected static InfoGluePrincipal getAnonPrincipal()
+	public static InfoGluePrincipal getAnonPrincipal()
 	{
 		return anonPrincipal;
 	}
