@@ -393,6 +393,7 @@
 		<table width="500" cellpadding="0" cellspacing="2" border="0" class="bordered">
 		#foreach($assetKey in $definedAssetKeys)
 			<tr>
+				<td><nobr><a href="ViewContentTypeDefinition!moveAssetKeyUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKey"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAssetKeyDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKey"><img src="images/moveDown.gif" border="0"></a></nobr></td>
 				<td width="90%">$assetKey</td>
 				<td>
 					<nobr>
