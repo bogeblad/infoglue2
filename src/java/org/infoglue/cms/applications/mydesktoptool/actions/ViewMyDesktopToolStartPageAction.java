@@ -132,8 +132,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	public String doStartWorkflow() throws SystemException
 	{
 		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), workflowName, actionId);
-		String url = getViewUrl(workflow.getInitialAction(new Integer(actionId)));
-		return (url.length() > 0) ? redirect(url) : doExecute();
+		return redirectToView();
 	}
 
 	/**
