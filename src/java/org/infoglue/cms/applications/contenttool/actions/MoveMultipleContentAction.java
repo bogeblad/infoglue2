@@ -24,8 +24,10 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -44,10 +46,13 @@ import org.infoglue.cms.util.dom.DOMBuilder;
 public class MoveMultipleContentAction extends InfoGlueAbstractAction
 {
     //Initial params
+    private Integer originalContentId;
     private Integer repositoryId;
     private Integer contentId;
     private Integer parentContentId;
     private List qualifyers = new ArrayList();
+    private boolean errorsOccurred = false;
+	protected List repositories = null;
     
     //Move params
     protected String qualifyerXML = null;
@@ -55,6 +60,7 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
     
     //Tree params
     private Integer changeTypeId;
+    private Integer topContentId;
 
     private ConstraintExceptionBuffer ceb;
    	private ContentVO contentVO;
@@ -128,6 +134,8 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
      
     public String doInput() throws Exception
     {    	
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+
         ContentVO contentVO = ContentController.getContentController().getContentVOWithId(getContentId());
         this.qualifyers.add(contentVO);
         
@@ -136,11 +144,12 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
     
     public String doExecute() throws Exception
     {
-        System.out.println("this.qualifyerXML:" + this.qualifyerXML);
-
         if(this.newParentContentId == null)
+        {
+    		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
             return "chooseDestination";
-            
+        }
+        
         ceb.throwIfNotEmpty();
     	
         try
@@ -153,7 +162,14 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 				while(i.hasNext())
 				{
 				    ContentVO contentVO = (ContentVO)i.next();
-					ContentControllerProxy.getController().acMoveContent(this.getInfoGluePrincipal(), contentVO, this.newParentContentId);
+				    try
+					{
+				        ContentControllerProxy.getController().acMoveContent(this.getInfoGluePrincipal(), contentVO, this.newParentContentId);
+					}
+					catch(Exception e)
+					{
+					    this.errorsOccurred = true;
+					}
 		    	}
 		    }
 		}
@@ -161,7 +177,9 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 		{
 		    e.printStackTrace();
 		}
-				
+		
+		this.topContentId = ContentController.getContentController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName()).getContentId();
+		    
         return "success";
     }
 
@@ -175,6 +193,8 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 			
 			String entity = document.getRootElement().attributeValue("entity");
 			
+			Map addedContents = new HashMap();
+			
 			List children = document.getRootElement().elements();
 			Iterator i = children.iterator();
 			while(i.hasNext())
@@ -183,10 +203,14 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 				String id = child.getStringValue();
 				String path = child.attributeValue("path");
 				
-				ContentVO contentVO = new ContentVO();
-				contentVO.setContentId(new Integer(id)); 
-				contentVO.setName(path);
-				contents.add(contentVO);     	
+				if(!addedContents.containsKey(id))
+				{
+				    ContentVO contentVO = new ContentVO();
+					contentVO.setContentId(new Integer(id)); 
+					contentVO.setName(path);
+					contents.add(contentVO);     
+					addedContents.put(id, contentVO);
+				}    
 			}		        	
 		}
 		catch(Exception e)
@@ -220,5 +244,30 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
     public List getQualifyers()
     {
         return qualifyers;
+    }
+    
+    public Integer getOriginalContentId()
+    {
+        return originalContentId;
+    }
+    
+    public void setOriginalContentId(Integer originalContentId)
+    {
+        this.originalContentId = originalContentId;
+    }
+    
+    public Integer getTopContentId()
+    {
+        return topContentId;
+    }
+    
+    public boolean getErrorsOccurred()
+    {
+        return errorsOccurred;
+    }
+    
+    public List getRepositories()
+    {
+        return repositories;
     }
 }

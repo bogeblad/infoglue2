@@ -57,10 +57,14 @@
 			//if (srcIdLink != null)
 			//	srcIdLink.className = "selected";
 				
-			parent.document.inputForm.entityId.value     = itemId;
-			parent.document.inputForm.repositoryId.value = repoId;
-		 	parent.document.inputForm.path.value         = path;
+			if(itemId)
+				parent.document.inputForm.entityId.value     = itemId;
+			if(repoId)
+				parent.document.inputForm.repositoryId.value = repoId;
+			if(path)
+			 	parent.document.inputForm.path.value         = path;
 		}
+
 		
 		function selectWhenLoaded(parentNode, contentId)
 		{

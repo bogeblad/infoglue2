@@ -4,29 +4,57 @@
 
 <html>
 <head>
-	<title>Choose Contents</title>
+	<title>Contents moved</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
 	<script type="text/javascript" src="script/vector.js"></script>
 	<script type="text/javascript" src="script/qualifyer.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
+
+	<script type="text/javascript">
 	
+		function finish()
+		{
+			contentId = "$contentId";
+		    newParentContentId = "$topContentId";
+		    //newParentContentId = "$newParentContentId";
+			changeTypeId = 3; //3 = Move...
+						
+			url = 'ViewContent.action?stay=true&repositoryId=$!repositoryId&contentId=' + contentId + '&unrefreshedContentId=' + newParentContentId + "&changeTypeId=" + changeTypeId;
+			
+			//alert(newParentContentId);    
+			//if(newParentContentId != "")
+			//{
+			//    if (confirm('Are you sure you want to move the content to the folder you have just selected?'))
+			//	{
+					//alert('Calling:' + url);
+				    self.opener.parent.frames["main"].location.href = url;
+				    window.close();
+			//	}
+			//}
+		    //else
+		    //{
+			//	alert("You must select a target folder for the content.");
+			//}
+		}
+	</script>
+		
 	<script language="JavaScript"> 
-		window.resizeTo(400,600);
+		window.resizeTo(370,600);
 	</script> 
 
 </head>
 
 <body class="contenttooledit" onload="javascript:init();">
 
-<table class="contenttooledit" cellpadding="0" cellspacing="0" border="1">
+<table class="contenttooledit" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td valign="top">
 		
-		<table cellpadding="0" cellspacing="0" border="1">
+		<table cellpadding="0" cellspacing="0" border="0">
 		<tr class="darkgreen">
-			<td class="smalllabel">Finished.</td>
+			<td class="smalllabel">Finished moving contents</td>
 		</tr>
 		<tr>
 			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
@@ -39,11 +67,21 @@
 		</tr>		
 		<tr>
 			<td class="menu">   
-				sssssssssssssss
+				<p>
+					The contents you choosed to move are now located in the new destination.
+				</p>
+				#if($errorsOccurred)
+				<p>
+					Some items could not be moved as there was constraints prohibiting this.
+				</p>
+				#end
 			</td>
 		</tr>	
 		<tr>
 			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td><a href="javascript:finish();"><img src="$ui.getString("images.contenttool.buttons.close")" border="0"></a></td>
 		</tr>
 		</table>
 	</td>	

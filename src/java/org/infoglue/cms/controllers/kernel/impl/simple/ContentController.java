@@ -602,6 +602,7 @@ public class ContentController extends BaseController
             
             oldParentContent.getChildren().remove(content);
             content.setParentContent((ContentImpl)newParentContent);
+            content.setRepository(newParentContent.getRepository());
             newParentContent.getChildren().add(content);
             
             //If any of the validations or setMethods reported an error, we throw them up now before create.
