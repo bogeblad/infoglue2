@@ -60,10 +60,10 @@ import java.util.Date;
 
 public class NodeDeliveryController extends BaseDeliveryController
 {
-	private URLComposer urlComposer = null;
+	public static final String META_INFO_BINDING_NAME 		= "Meta information";
+	public static final String NAV_TITLE_ATTRIBUTE_NAME 	= "NavigationTitle";
 
-    protected static final String META_INFO_BINDING_NAME 				= "Meta information";
-    protected static final String NAV_TITLE_ATTRIBUTE_NAME 		 		= "NavigationTitle";
+	private URLComposer urlComposer = null;
 
 	private static final boolean USE_INHERITANCE = true;
 	private static final boolean DO_NOT_USE_INHERITANCE = false;
