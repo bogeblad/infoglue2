@@ -5,15 +5,15 @@
 * ===============================================================================
 *
 *  Copyright (C)
-* 
+*
 * This program is free software; you can redistribute it and/or modify it under
 * the terms of the GNU General Public License version 2, as published by the
 * Free Software Foundation. See the file LICENSE.html for more information.
-* 
+*
 * This program is distributed in the hope that it will be useful, but WITHOUT
 * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
 * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License along with
 * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -42,7 +42,7 @@ import com.opensymphony.module.propertyset.PropertySet;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.6 $ $Date: 2005/01/04 12:35:25 $
+ * @version $Revision: 1.7 $ $Date: 2005/01/13 17:09:53 $
  */
 public class WorkflowFacade
 {
@@ -280,7 +280,16 @@ public class WorkflowFacade
 	}
 
 	/**
-	 * Returns a list of global actions for a workflow
+	 * Returns a list of initial actions for the workflow
+	 * @return a list of WorkflowActionVOs representing the global actions for the workflow with workflowId
+	 */
+	private List getInitialActions()
+	{
+		return createActionVOs(getWorkflowDescriptor().getInitialActions());
+	}
+
+	/**
+	 * Returns a list of global actions for the workflow
 	 * @return a list of WorkflowActionVOs representing the global actions for the workflow with workflowId
 	 */
 	private List getGlobalActions()
@@ -313,6 +322,7 @@ public class WorkflowFacade
 		WorkflowVO workflowVO = new WorkflowVO(new Long(workflowId), workflow.getWorkflowName(workflowId));
 		workflowVO.setCurrentSteps(getCurrentSteps());
 		workflowVO.setHistorySteps(getHistorySteps());
+		workflowVO.setInitialActions(getInitialActions());
 		workflowVO.setGlobalActions(getGlobalActions());
 
 		return workflowVO;
@@ -342,7 +352,7 @@ public class WorkflowFacade
 		CmsLogger.logInfo("Owner:" + step.getOwner());
 
 		WorkflowStepVO stepVO = new WorkflowStepVO();
-		stepVO.setId(new Integer((int)step.getId()));// Hope it doesn't get too big; we are stuck with an int thanks to BaseEntityVO
+		stepVO.setId(new Integer((int)step.getId()));// Hope it doesn't get too big; we are stuck with int thanks to BaseEntityVO
 		stepVO.setStepId(new Integer(step.getStepId()));
 		stepVO.setWorkflowId(new Long(workflowId));
 		stepVO.setStatus(step.getStatus());
