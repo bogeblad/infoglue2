@@ -317,7 +317,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the SiteNodeVO that is sent in.
 	 */
 
-	public SiteNode getSiteNode(Integer siteNodeId) throws Exception
+	public SiteNode getSiteNode(Integer siteNodeId) throws SystemException
 	{
 		SiteNode siteNode = null;
 
@@ -419,7 +419,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the SiteNodeVO that is the parent to the one sent in.
 	 */
 
-	public SiteNodeVO getParentSiteNode(Integer siteNodeId) throws Exception
+	public SiteNodeVO getParentSiteNode(Integer siteNodeId) throws SystemException
 	{
 		String key = "" + siteNodeId;
 		CmsLogger.logInfo("key getParentSiteNode:" + key);
@@ -610,7 +610,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single content bound.
 	 */
 
-	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException, Exception
+	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException
 	{
 		List contents = getBoundContents(infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, inheritParentBindings);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
@@ -621,7 +621,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single content bound.
 	 */
 
-	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName) throws SystemException, Exception
+	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName) throws SystemException
 	{
 		CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 		CmsLogger.logInfo("availableServiceBindingName:" + availableServiceBindingName);
@@ -634,7 +634,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns a list of contents bound to the named availableServiceBinding.
 	 */
 
-	public List getBoundContents(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException, Exception
+	public List getBoundContents(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException
 	{
 		String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		CmsLogger.logInfo("boundContentsKey:" + boundContentsKey);
@@ -723,7 +723,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The collection of contents are also sorted on given arguments.
 	 */
 
-	public List getBoundFolderContents(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, String availableServiceBindingName, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException, Exception
+	public List getBoundFolderContents(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, String availableServiceBindingName, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException
 	{
 		List folderContents = new ArrayList();
 
@@ -762,7 +762,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The collection of contents are also sorted on given arguments.
 	 */
 
-	public List getBoundFolderContents(InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException, Exception
+	public List getBoundFolderContents(InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException
 	{
 		List folderContents = new ArrayList();
 
@@ -792,7 +792,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single siteNode bound.
 	 */
 
-	public SiteNodeVO getBoundSiteNode(Integer siteNodeId, String availableServiceBindingName) throws SystemException, Exception
+	public SiteNodeVO getBoundSiteNode(Integer siteNodeId, String availableServiceBindingName) throws SystemException
 	{
 		List siteNodes = getBoundSiteNodes(siteNodeId, availableServiceBindingName);
 		return (siteNodes != null && siteNodes.size() > 0) ? (SiteNodeVO)siteNodes.get(0) : null;
@@ -803,7 +803,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single siteNode bound.
 	 */
 
-	public SiteNodeVO getBoundSiteNode(Integer siteNodeId, String availableServiceBindingName, int position) throws SystemException, Exception
+	public SiteNodeVO getBoundSiteNode(Integer siteNodeId, String availableServiceBindingName, int position) throws SystemException
 	{
 		List siteNodes = getBoundSiteNodes(siteNodeId, availableServiceBindingName);
 		return (siteNodes != null && siteNodes.size() > position) ? (SiteNodeVO)siteNodes.get(position) : null;
@@ -815,7 +815,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The concept is to fetch the bound siteNode
 	 */
 
-	public List getBoundSiteNodes(Integer siteNodeId, String availableServiceBindingName) throws SystemException, Exception
+	public List getBoundSiteNodes(Integer siteNodeId, String availableServiceBindingName) throws SystemException
 	{
 		String boundSiteNodesKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		CmsLogger.logInfo("boundSiteNodesKey:" + boundSiteNodesKey);
@@ -899,7 +899,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns a url to the given page. The url is composed of siteNode, language and content
 	 */
 
-	public String getPageUrl(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	public String getPageUrl(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException
 	{
 		String pageUrl = "";
 
@@ -926,7 +926,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	}
 
 
-	public String getPageUrlAfterLanguageChange(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	public String getPageUrlAfterLanguageChange(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException
     {
 		SiteNode siteNode = getSiteNode(siteNodeId);
 		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
@@ -962,7 +962,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	/**
 	 * This method returns a url to the delivery engine
 	 */
-	public String getPageBaseUrl() throws SystemException, Exception
+	public String getPageBaseUrl() throws SystemException
 	{
 		String pageUrl = "";
 
