@@ -41,7 +41,6 @@ public class WorkflowActionVO implements BaseEntityVO
 	private String name;
 	private String view;
 	private boolean autoExecute;
-	private boolean isGlobalAction;
 	private Map metaAttributes;
 
 	public Integer getId()
@@ -92,16 +91,6 @@ public class WorkflowActionVO implements BaseEntityVO
 	public void setAutoExecute(boolean autoExecute)
 	{
 		this.autoExecute = autoExecute;
-	}
-
-	public boolean getIsGlobalAction()
-	{
-		return isGlobalAction;
-	}
-
-	public void setIsGlobalAction(boolean isGlobalAction)
-	{
-		this.isGlobalAction = isGlobalAction;
 	}
 
 	public Map getMetaAttributes()
