@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: clean-workflows.sql,v 1.1 2004/11/29 15:29:10 jed Exp $
+-- $Id: clean-workflows.sql,v 1.2 2005/02/28 18:28:19 jed Exp $
 --
 -- WARNING: This script will blast all data from the OSWorkflow tables.  DO NOT
 -- RUN IT unless you are absolutely sure you want to get rid of all the workflow
@@ -33,7 +33,6 @@ delete from OS_CURRENTSTEP_PREV;
 delete from OS_HISTORYSTEP;
 delete from OS_HISTORYSTEP_PREV;
 delete from OS_PROPERTYENTRY;
-delete from OS_STEPIDS;
 delete from OS_WFENTRY;
 
 set foreign_key_checks=1;
