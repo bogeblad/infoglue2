@@ -15,7 +15,9 @@
 	<property name="build" value="build"/>
 	<property name="build.classes" value="${build}/classes"/>
 	<property name="javadoc" value="${build}/javadoc"/>
-	<property name="war.file" value="${build}/${ant.project.name}.war"/>
+	<property name="war.file.prefix" value="${build}/${ant.project.name}"/>
+	<property name="cms.war.file" value="${war.file.prefix}-cms.war"/>
+	<property name="deliver.war.file" value="${war.file.prefix}-deliver.war"/>
 
 	<property name="test" value="test"/>
 	<property name="test.java" value="${test}/java"/>
@@ -44,6 +46,11 @@
 	<fileset id="jdbc.libs" dir="${lib}/jdbc">
 		<include name="*.jar"/>
 	</fileset>
+
+	<!--
+	* fileset for deliver.properties
+	-->
+	<fileset id="deliver.properties" dir="${conf}" includes="deliver.properties"/>
 
 	<!--
 	* paths
@@ -102,8 +109,13 @@
 				<include name="*.xml"/>
 				<include name="*.dtd"/>
 				<include name="LICENSE.HTML"/>
+				<exclude name="*web.xml"/>
 			</fileset>
 			<filterset refid="project.filters"/>
+			<filterset>
+				<filter token="context.root.deliver" value="${context.root.working}"/>
+				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
+			</filterset>
 		</copy>
 		<copy todir="${build.classes}">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
@@ -117,14 +129,12 @@
 	</target>
 
 	<!--
-	* Creates the war file.  Since we deploy an exploded war, the primary
+	* Creates the CMS war file.  Since we deploy an exploded war, the primary
 	* purpose of this target is to organize the files required to deploy.
 	-->
-	<target name="war" depends="compile" description="Creates the war file">
-		<war warfile="${war.file}" webxml="${webapp}/WEB-INF/web.xml">
-			<fileset dir="${webapp}">
-				<exclude name="WEB-INF/web.xml"/>
-			</fileset>
+	<target name="war-cms" depends="compile" description="Creates the CMS war file">
+		<war warfile="${cms.war.file}" webxml="${conf}/cms-web.xml">
+			<fileset dir="${webapp}"/>
 			<classes dir="${build.classes}"/>
 			<lib refid="build.libs"/>
 			<lib refid="core.libs"/>
@@ -133,12 +143,106 @@
 	</target>
 
 	<!--
-	* Deploys the app by unpacking the war file created by the war target into
-	* the deploy directory.
+	* Creates the deliver war file.  Since we deploy an exploded war, the primary
+	* purpose of this target is to organize the files required to deploy.
 	-->
-	<target name="deploy" depends="war" description="Unpacks war to deploy dir">
-		<unwar src="${war.file}" dest="${deploy.dir}"/>
+	<target name="war-deliver" depends="compile" description="Creates the deliver war file">
+		<war warfile="${deliver.war.file}" webxml="${conf}/deliver-web.xml">
+			<fileset dir="${webapp}"/>
+			<classes dir="${build.classes}"/>
+			<lib refid="build.libs"/>
+			<lib refid="core.libs"/>
+			<lib refid="jdbc.libs"/>
+		</war>
 	</target>
+
+	<!--
+	* Deploys the cms app by unpacking the war file created by the war target into
+	* the CMS deploy directory.
+	-->
+	<target name="deploy-cms" depends="war-cms" description="Unpacks war to deploy dir">
+		<unwar src="${cms.war.file}" dest="${deploy.dir.cms}"/>
+	</target>
+
+	<!--
+	* Deploys the deliver working app by unpacking the war file created by the war target into
+	* the working deploy directory.  By default, the compile target copies deliver.properties
+	* into build/classes using the settings for the working app.
+	-->
+	<target name="deploy-working" depends="war-deliver" description="Unpacks war to working dir">
+		<unwar src="${deliver.war.file}" dest="${deploy.dir.working}"/>
+	</target>
+
+	<!--
+	* Deploys the preview app, replacing deliver.properties with one that
+	* has context.root.deliver and operatingMode.deliver set appropriately.
+	-->
+	<target name="deploy-preview" depends="war-deliver" description="Unpacks war to preview dir">
+		<unwar src="${deliver.war.file}" dest="${deploy.dir.preview}"/>
+		<copy todir="${deploy.dir.preview}/WEB-INF/classes" overwrite="true">
+			<fileset refid="deliver.properties"/>
+			<filterset refid="project.filters"/>
+			<filterset>
+				<filter token="context.root.deliver" value="${context.root.preview}"/>
+				<filter token="operatingMode.deliver" value="${operatingMode.preview}"/>
+			</filterset>
+		</copy>
+	</target>
+
+	<!--
+	* Deploys the deliver live app, replacing deliver.properties with one that
+	* has context.root.deliver and operatingMode.deliver set appropriately.
+	-->
+	<target name="deploy-live" depends="war-deliver" description="Unpacks war to live dir">
+		<unwar src="${deliver.war.file}" dest="${deploy.dir.live}"/>
+		<copy todir="${deploy.dir.live}/WEB-INF/classes" overwrite="true">
+			<fileset refid="deliver.properties"/>
+			<filterset refid="project.filters"/>
+			<filterset>
+				<filter token="context.root.deliver" value="${context.root.live}"/>
+				<filter token="operatingMode.deliver" value="${operatingMode.live}"/>
+			</filterset>
+		</copy>
+	</target>
+
+	<!--
+	* Deploys all the apps: cms, working, preview, and live
+	-->
+	<target name="deploy" depends="deploy-cms,deploy-working,deploy-preview,deploy-live"/>
+
+	<!--
+	* Cleans the CMS deploy dir.
+	-->
+	<target name="server-clean-cms" depends="init">
+		<delete dir="${deploy.dir.cms}"/>
+	</target>
+
+	<!--
+	* Cleans the working deploy dir.
+	-->
+	<target name="server-clean-working" depends="init">
+		<delete dir="${deploy.dir.working}"/>
+	</target>
+
+	<!--
+	* Cleans the preview deploy dir.
+	-->
+	<target name="server-clean-preview" depends="init">
+		<delete dir="${deploy.dir.preview}"/>
+	</target>
+
+	<!--
+	* Cleans the live deploy dir.
+	-->
+	<target name="server-clean-live" depends="init">
+		<delete dir="${deploy.dir.live}"/>
+	</target>
+
+	<!--
+	* Cleans all the deploy directories
+	-->
+	<target name="server-clean"
+			depends="server-clean-cms,server-clean-working,server-clean-preview,server-clean-live"/>
 
 	<!--
 	* Deploys after a complete rebuild
