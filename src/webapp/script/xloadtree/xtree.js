@@ -112,7 +112,7 @@ function WebFXCookie() {
 }
 
 WebFXCookie.prototype.setCookie = function (key, value) {
-	document.cookie = key + "=" + escape(value);
+	document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
 }
 
 WebFXCookie.prototype.getCookie = function (key) {
@@ -223,9 +223,15 @@ WebFXTreeAbstractNode.prototype.doExpand = function() {
 	if (webFXTreeConfig.usePersistence)
 		webFXTreeHandler.cookies.setCookie(this.id.substr(18,this.id.length - 18), '1');
 	
+	/****************************
+	 * Added by Mattias Bogeblad to support InfoGlue state
+	 ****************************/
+	if(!ig_expanded_nodes_cookie || ig_expanded_nodes_cookie == null)
+		alert("There is no ig_expanded_nodes_cookie variable set in the tree-view template.");
+		
 	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
 	if(ig_expanded_nodes == null)	
-		ig_expanded_nodes = webFXTreeHandler.cookies.getCookie("ig_expanded_nodes_cookie");
+		ig_expanded_nodes = webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
 	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
 	
 	if(ig_expanded_nodes != null && ig_expanded_nodes != "")
@@ -239,7 +245,8 @@ WebFXTreeAbstractNode.prototype.doExpand = function() {
 	}
 	  
 	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
-	webFXTreeHandler.cookies.setCookie("ig_expanded_nodes_cookie", ig_expanded_nodes);
+	webFXTreeHandler.cookies.setCookie(ig_expanded_nodes_cookie, ig_expanded_nodes);
+	/********* END Addition *********/
 }
 
 WebFXTreeAbstractNode.prototype.doCollapse = function() {
@@ -248,10 +255,16 @@ WebFXTreeAbstractNode.prototype.doCollapse = function() {
 	this.open = false;
 	if (webFXTreeConfig.usePersistence)
 		webFXTreeHandler.cookies.setCookie(this.id.substr(18,this.id.length - 18), '0');
-		
+	
+	/****************************
+	 * Added by Mattias Bogeblad to support InfoGlue state
+	 ****************************/
+	if(!ig_expanded_nodes_cookie || ig_expanded_nodes_cookie == null)
+		alert("There is no ig_expanded_nodes_cookie variable set in the tree-view template.");
+
 	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
 	if(ig_expanded_nodes == null)	
-		ig_expanded_nodes = webFXTreeHandler.cookies.getCookie("ig_expanded_nodes_cookie");
+		ig_expanded_nodes = webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
 	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
 	
 	if(ig_expanded_nodes != null && ig_expanded_nodes != "")
@@ -271,8 +284,8 @@ WebFXTreeAbstractNode.prototype.doCollapse = function() {
 	}
 	  
 	//alert("ig_expanded_nodes:" + ig_expanded_nodes);
-	webFXTreeHandler.cookies.setCookie("ig_expanded_nodes_cookie", ig_expanded_nodes);
-	
+	webFXTreeHandler.cookies.setCookie(ig_expanded_nodes_cookie, ig_expanded_nodes);
+	/********* END Addition *********/	
 }
 
 WebFXTreeAbstractNode.prototype.expandAll = function() {
