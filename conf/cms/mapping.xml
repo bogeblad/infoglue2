@@ -285,6 +285,50 @@
     </field>
   </class>
 
+<!--  Mapping for SmallSiteNode  -->
+  <class name="org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl" identity="siteNodeId" key-generator="IDENTITY">
+    <description>SmallSiteNode</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmSiteNode"/>
+    <field name="siteNodeId" type="java.lang.Integer">
+      <sql name="siteNodeId" type="integer" dirty="check" />
+    </field>
+    <field name="name" type="java.lang.String">
+      <sql name="name" type="varchar" dirty="check" />
+    </field>
+    <field name="publishDateTime" type="java.util.Date">
+      <sql name="publishDateTime" type="timestamp" dirty="ignore" />
+    </field>
+    <field name="expireDateTime" type="java.util.Date">
+      <sql name="expireDateTime" type="timestamp" dirty="ignore" />
+    </field>
+    <field name="isBranch" type="java.lang.Boolean">
+      <sql name="isBranch" type="integer" dirty="check" />
+    </field>
+    <field name="parentSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
+      <sql name="parentSiteNodeId"/>
+    </field>
+    <!--
+    <field name="childSiteNodes" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl" lazy="true" collection="collection">
+      <sql many-key="parentSiteNodeId"/>
+    </field>
+	<field name="siteNodeVersions" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl" lazy="true" collection="collection">
+      <sql many-key="siteNodeId"/>
+    </field>
+    -->
+    <field name="creator" type="java.lang.String">
+      <sql name="creator" type="varchar" dirty="check" />
+    </field>
+    <!--
+    <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl" lazy="false">
+      <sql name="repositoryId"/>
+    </field>
+    <field name="siteNodeTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl" lazy="false">
+      <sql name="siteNodeTypeDefinitionId"/>
+    </field>
+	-->
+  </class>
+
 
 <!--  Mapping for ServiceBinding  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" identity="serviceBindingId" key-generator="IDENTITY">
@@ -477,7 +521,34 @@
     </field>    
   </class>
   
-
+<!--  Mapping for SmallAvailableServiceBinding  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl" identity="availableServiceBindingId" key-generator="IDENTITY">
+    <description>AvailableServiceBinding</description>
+    <cache-type type="unlimited" capacity="1000"/>
+    <map-to table="cmAvailableServiceBinding"/>
+      <field name="availableServiceBindingId" type="java.lang.Integer">
+      <sql name="availableServiceBindingId" type="integer" dirty="check" />
+    </field>
+        <field name="name" type="java.lang.String">
+      <sql name="name" type="varchar" dirty="check" />
+    </field>
+        <field name="description" type="java.lang.String">
+      <sql name="description" type="varchar" dirty="check" />
+    </field>
+        <field name="visualizationAction" type="java.lang.String">
+      <sql name="visualizationAction" type="varchar" dirty="check" />
+    </field>
+        <field name="isMandatory" type="java.lang.Boolean">
+      <sql name="isMandatory" type="integer" dirty="check" />
+    </field>
+        <field name="isUserEditable" type="java.lang.Boolean">
+      <sql name="isUserEditable" type="integer" dirty="check" />
+    </field>
+        <field name="isInheritable" type="java.lang.Boolean">
+      <sql name="isInheritable" type="integer" dirty="check" />
+    </field>
+  </class>
+  
 <!--  Mapping for InterceptionPoint  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" identity="interceptionPointId" key-generator="IDENTITY">
     <description>InterceptionPoint</description>
