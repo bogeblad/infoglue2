@@ -19,7 +19,7 @@
 -- Place, Suite 330 / Boston, MA 02111-1307 / USA.
 --
 -- ===============================================================================
--- $Id: hibernate-workflow-store-patch.sql,v 1.1 2005/02/23 22:11:59 jed Exp $
+-- $Id: hibernate-workflow-store-patch.sql,v 1.2 2005/02/24 14:40:35 jed Exp $
 --
 -- This script performs the database updates required to switch to the hibernate
 -- workflow store.
@@ -30,7 +30,7 @@
 -- BACK UP YOUR DATABASE BEFORE RUNNING!!!!!!!!!  You have been warned.  As long as
 -- you are careful, you can use the restore-workflow-tables.sql to recover from
 -- errors, but that does not eliminate the need for a database backup prior to running
--- this script.  
+-- this script.
 --
 -- Since we can't anticipate every possible data conversion scenario, we leave
 -- it to you to determine how to convert the data by leaving you with copies of
@@ -73,6 +73,14 @@ set foreign_key_checks=1;
 delete from OS_PROPERTYENTRY where item_key not like 'repository_%_WYSIWYGConfig';
 
 ----------------------------------------------------------------------------------
+-- Drop primary keys on the tables we need to change
+----------------------------------------------------------------------------------
+alter table OS_WFENTRY drop primary key;
+alter table OS_CURRENTSTEP drop primary key;
+alter table OS_HISTORYSTEP drop primary key;
+alter table OS_PROPERTYENTRY drop primary key;
+
+----------------------------------------------------------------------------------
 -- Change primary key columns in OS Workflow tables to auto_increment, so
 -- Hibernate can use the "native" ID generator.
 ----------------------------------------------------------------------------------
@@ -92,7 +100,6 @@ alter table OS_HISTORYSTEP add stepIndex int not null;
 -- table to match what the hibernate property set expects, as defined in the
 -- mapping file.
 ----------------------------------------------------------------------------------
-alter table OS_PROPERTYENTRY drop primary key;
 alter table OS_PROPERTYENTRY change GLOBAL_KEY entity_name varchar(125) not null;
 alter table OS_PROPERTYENTRY add entity_id bigint not null after entity_name;
 alter table OS_PROPERTYENTRY change ITEM_KEY entity_key varchar(255) not null;
