@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.13 2005/02/02 20:57:41 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.14 2005/02/03 10:18:04 mattias Exp $ -->
 <actions>
 
 	<!-- Redirect -->
@@ -602,6 +602,7 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentAction" alias="ViewContent">
 		<view name="success">/cms/contenttool/viewContent.vm</view>
 		<view name="standalone">/cms/contenttool/viewContentStandalone.vm</view>
+		<view name="viewVersion">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
