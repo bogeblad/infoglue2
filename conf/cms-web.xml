@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>	
+	<filter>
+		<filter-name>Set Character Encoding</filter-name>
+		<filter-class>org.infoglue.cms.util.SetCharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>InfoGlue Authentication Filter</filter-name>
+		<filter-class>org.infoglue.cms.security.InfoGlueAuthenticationFilter</filter-class>
+		<!-- HERE COMES THE CAS/JNDI-SETUP -->
+		<!--
+		<init-param>
+      		<param-name>org.infoglue.cms.security.loginUrl</param-name>
+     		<param-value>https://gavin.it.gu.se:8433/cas/login</param-value>
+	    </init-param>
+	    <init-param>
+      		<param-name>org.infoglue.cms.security.invalidLoginUrl</param-name>
+     		<param-value>Login!invalidLogin.action</param-value>
+	    </init-param>
+		<init-param>
+      		<param-name>org.infoglue.cms.security.casValidateUrl</param-name>
+     		<param-value>https://gavin.it.gu.se:8433/cas/serviceValidate</param-value>
+	    </init-param>
+	    <init-param>
+      		<param-name>org.infoglue.cms.security.casServiceUrl</param-name>
+     		<param-value>http://localhost:8080/infoglueCMS2Dev/ViewCMSTool.action</param-value>
+	    </init-param>
+	    <init-param>
+      		<param-name>org.infoglue.cms.security.authenticatorClass</param-name>
+     		<param-value>org.infoglue.cms.security.CASBasicAuthenticationModule</param-value>
+	    </init-param>
+	    <init-param>
+	      <param-name>org.infoglue.cms.security.serverName</param-name>
+    	  <param-value>localhost:8080</param-value>
+    	</init-param> 
+	    <init-param>
+      		<param-name>org.infoglue.cms.security.authorizerClass</param-name>
+     		<param-value>org.infoglue.cms.security.JNDIBasicAuthorizationModule</param-value>
+     		
+     		<param-value>org.infoglue.cms.security.OpenLDAPJNDIBasicAuthorizationModule</param-value>
+	    	
+	    </init-param>
+	    <init-param>
+      		<param-name>org.infoglue.cms.security.extraParametersFile</param-name>
+     		<param-value>JNDIParameters.properties</param-value>
+	    </init-param>
+	    <init-param>
+	    	<param-name>org.infoglue.cms.security.authConstraint</param-name>
+	    	
+     		<param-value>CN=InfoGlue Tool Users,OU=InfoGlueRoles,DC=SprawlAD</param-value>
+	    	
+	    	<param-value>CN=InfoGlue Tool Users,OU=roles,OU=staff,DC=gu,DC=se</param-value>
+	    </init-param>
+	    -->
+		<!-- HERE COMES THE INFOGLUE-SETUP -->
+		<init-param>
+			<param-name>org.infoglue.cms.security.loginUrl</param-name>
+			<param-value>Login.action</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.infoglue.cms.security.invalidLoginUrl</param-name>
+			<param-value>Login!invalidLogin.action</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.infoglue.cms.security.authenticatorClass</param-name>
+			<param-value>org.infoglue.cms.security.InfoGlueBasicAuthenticationModule</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.infoglue.cms.security.authorizerClass</param-name>
+			<param-value>org.infoglue.cms.security.InfoGlueBasicAuthorizationModule</param-value>
+			<!--<param-value>org.infoglue.cms.security.JNDIBasicAuthorizationModule</param-value>-->
+		</init-param>
+		<!--
+		<init-param>
+      		<param-name>org.infoglue.cms.security.extraParametersFile</param-name>
+     		<param-value>JNDIParameters.properties</param-value>
+	    </init-param>
+	    <init-param>
+	    	<param-name>org.infoglue.cms.security.authConstraint</param-name>
+     		<param-value>CN=InfoGlue Tool Users,OU=InfoGlueRoles,DC=SprawlAD</param-value>
+	    	<param-value>CN=InfoGlue Tool Users,OU=roles,OU=staff,DC=gu,DC=se</param-value>
+	    </init-param>
+	    -->
+		<init-param>
+			<param-name>org.infoglue.cms.security.authConstraint</param-name>
+			<param-value>cmsUser</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.infoglue.cms.security.extraParametersFile</param-name>
+			<param-value>InfoGlueAuthorizationParameters.properties</param-value>
+		</init-param>
+	</filter>
+	
+	<!-- Define filter mappings for the defined filters -->
+	<filter-mapping>
+		<filter-name>Set Character Encoding</filter-name>
+		<url-pattern>*.action</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>InfoGlue Authentication Filter</filter-name>
+		<url-pattern>*.action</url-pattern>
+	</filter-mapping>
+
+	<listener>
+		<listener-class>org.infoglue.cms.util.CmsContextListener</listener-class>
+	</listener>
+
+	<!-- Start WebWork -->
+	<servlet>
+		<servlet-name>action</servlet-name>
+		<servlet-class>webwork.dispatcher.ServletDispatcher</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>velocity</servlet-name>
+		<servlet-class>org.infoglue.cms.applications.common.actions.VelocityServlet</servlet-class>
+		<init-param>
+			<param-name>packageNames</param-name>
+			<param-value>org.infoglue.cms.applications,org.infoglue.cms.entities</param-value>
+		</init-param>
+		<load-on-startup/>
+	</servlet>
+	<servlet>
+		<servlet-name>xslt</servlet-name>
+		<servlet-class>webwork.view.xslt.XSLTServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>dispatch</servlet-name>
+		<servlet-class>webwork.dispatcher.ClientServletDispatcher</servlet-class>
+	</servlet>
+	<!-- ************************************* -->
+	<!-- This part is for the tree services    -->
+	<!-- ************************************* -->
+	<servlet>
+		<servlet-name>ContentTreeService</servlet-name>
+		<servlet-class>org.infoglue.cms.treeservice.ContentService</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>SiteNodeTreeService</servlet-name>
+		<servlet-class>org.infoglue.cms.treeservice.SiteNodeService</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ContentTreeService</servlet-name>
+		<url-pattern>/ContentTreeService</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SiteNodeTreeService</servlet-name>
+		<url-pattern>/SiteNodeTreeService</url-pattern>
+	</servlet-mapping>
+	<!-- ************************************* -->
+	<!-- This part is for webworks / velocity  -->
+	<!-- ************************************* -->
+	<servlet-mapping>
+		<servlet-name>action</servlet-name>
+		<url-pattern>*.action</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>velocity</servlet-name>
+		<url-pattern>*.vm</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>xslt</servlet-name>
+		<url-pattern>*.xslt</url-pattern>
+	</servlet-mapping>
+	
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<taglib>
+		<taglib-uri>webwork</taglib-uri>
+		<taglib-location>/WEB-INF/lib/webwork.jar</taglib-location>
+	</taglib>
+	<!-- End WebWork -->
+	<!--
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>CMS Application</web-resource-name>
+			<url-pattern>*.action</url-pattern>
+		</web-resource-collection> 
+		<auth-constraint>
+			<role-name>cmsUser</role-name>
+			<role-name>administrators</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/Login.action</form-login-page>
+			<form-error-page>/Login!invalidLogin.action</form-error-page>
+		</form-login-config>
+	</login-config>
+
+	<security-role>
+    	<role-name>cmsUser</role-name>
+    </security-role>
+    <security-role>
+      <role-name>administrators</role-name>
+    </security-role>
+    
+    -->
+</web-app>
