@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.11 2005/01/19 16:50:38 jed Exp $ -->
+<!-- $Id: actions.xml,v 1.12 2005/01/31 12:29:40 mattias Exp $ -->
 <actions>
 
 	<!-- Redirect -->
@@ -807,17 +807,18 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.CreateDigitalAssetAction" alias="CreateDigitalAsset">
 		<view name="success">/cms/contenttool/viewDigitalAsset.vm</view>
+		<view name="uploadFailed">/cms/contenttool/uploadError.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.UpdateDigitalAssetAction" alias="UpdateDigitalAsset">
 		<view name="success">/cms/contenttool/updateDigitalAsset.vm</view>
+		<view name="uploadFailed">/cms/contenttool/uploadError.vm</view>		
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.DeleteDigitalAssetAction" alias="DeleteDigitalAsset">
  			<view name="success">$returnAddress</view>
             <view name="error">/cms/contenttool/error.vm</view>
     </action>
-
 
 	<!-- SiteNode -->
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewSiteNodeAction" alias="ViewSiteNode">
