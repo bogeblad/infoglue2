@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentDeliveryControllerTest.java,v 1.1 2004/12/02 23:08:46 frank Exp $
+ * $Id: ContentDeliveryControllerTest.java,v 1.2 2005/02/21 15:07:43 frank Exp $
  */
 package org.infoglue.deliver.controllers;
 
@@ -30,14 +30,12 @@ import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.InfoGlueTestCase;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
+import org.exolab.castor.jdo.Database;
 
 /**
  * @author Frank Febbraro (frank@phase2technology.com)
@@ -68,6 +66,8 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 	private List allContentCategories = new ArrayList();
 	private List allCategories = new ArrayList();
 
+	private Database testDatabase;
+
 	protected void setUp() throws Exception
 	{
 		super.setUp();
@@ -89,10 +89,16 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		// This is done here because of the static initializer tried to load properties
 		// and they have not been initialized yet by InfoGlueTestCase.setUp
 		testController = ContentDeliveryController.getContentDeliveryController();
+
+		testDatabase = CastorDatabaseService.getDatabase();
+		testDatabase.begin();
 	}
 
 	protected void tearDown() throws Exception
 	{
+		testDatabase.commit();
+		testDatabase.close();
+
 		for (Iterator i = allContent.iterator(); i.hasNext();)
 			contentStore.delete((ContentVO)i.next());
 		assertRemoved();
@@ -105,7 +111,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 	{
 		testCategory = createContentCategory(testContentVersion.getId(), ATTRIBUTE);
 
-		List found = testController.findContentVersionVOsForCategory(testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
 		assertEquals("Wrong number of Content Versions found", 1, found.size());
 
 		ContentVersionVO foundVersion = (ContentVersionVO)found.get(0);
@@ -119,7 +125,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testContent.setPublishDateTime(changeDate(Calendar.YEAR, 1));
 		contentStore.update(testContent);
 
-		List found = testController.findContentVersionVOsForCategory(testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
 		assertEquals("Wrong number of Content Versions found", 0, found.size());
 	}
 
@@ -130,7 +136,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testContent.setExpireDateTime(changeDate(Calendar.YEAR, -1));
 		contentStore.update(testContent);
 
-		List found = testController.findContentVersionVOsForCategory(testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
 		assertEquals("Wrong number of Content Versions found", 0, found.size());
 	}
 
@@ -141,7 +147,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testContent.setIsProtected(ContentVO.YES);
 		contentStore.update(testContent);
 
-		List found = testController.findContentVersionVOsForCategory(testCategory.getId(), ATTRIBUTE, ADMIN, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ADMIN, SITENODE, LANGUAGE, true);
 		assertEquals("Wrong number of Content Versions found", 1, found.size());
 	}
 
@@ -152,7 +158,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testContent.setIsProtected(ContentVO.YES);
 		contentStore.update(testContent);
 
-		List found = testController.findContentVersionVOsForCategory(testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
 		assertEquals("Wrong number of Content Versions found", 0, found.size());
 	}
 
@@ -163,7 +169,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		ContentVersionVO another = addMoreContent();
 		CategoryVO anotherCategory = createContentCategory(another.getId(), getName());
 
-		List found = testController.findContentVersionVOsForCategory(anotherCategory.getId(), getName(), ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, anotherCategory.getId(), getName(), ANON, SITENODE, LANGUAGE, true);
 		assertEquals("Wrong number of Content Versions found", 1, found.size());
 		assertEquals("Wrong Content Versions found", another.getId(), ((ContentVersionVO)found.get(0)).getId());
 	}
