@@ -308,6 +308,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 			while (it.hasNext())
 			{
 				BaseNode theNode = (BaseNode) it.next();
+				
 				String text = theNode.getTitle();
 				String action = makeAction(theNode);
 		        String type = TYPE_ITEM;
