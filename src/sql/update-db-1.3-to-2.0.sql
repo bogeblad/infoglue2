@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.9 2005/03/18 15:54:55 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.10 2005/03/31 07:54:11 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -140,6 +140,12 @@ INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, descriptio
   (27,'ContentTypeDefinition','ContentTypeDefinition.Read','This point checks access to read/use a content type definition',1);
 INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
   (27, 1);
+INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, description, usesExtraDataForAccessControl) VALUES 
+  (28,'Category','Category.Read','This point checks access to read/use a category',1);
+INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
+  (28, 1);
+
+
   
 CREATE TABLE cmGroup (
   groupName varchar(255) NOT NULL default '',
@@ -152,6 +158,11 @@ CREATE TABLE cmSystemUserGroup (
   groupName varchar(200) NOT NULL default '',
   PRIMARY KEY  (userName,groupName)
 ) TYPE=MyISAM;
+
+
+CREATE TABLE COPY_OF_cmAccessRight SELECT * FROM cmAccessRight;
+
+ALTER TABLE cmAccessRight DROP roleName;
 
 CREATE TABLE cmAccessRightRole (
   accessRightRoleId int(11) NOT NULL auto_increment,
@@ -166,4 +177,3 @@ CREATE TABLE cmAccessRightGroup (
   groupName varchar(150) NOT NULL default '',
   PRIMARY KEY  (accessRightGroupId),
 ) TYPE=MyISAM;
-
