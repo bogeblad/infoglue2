@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.15 2005/02/08 16:57:06 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.16 2005/02/11 13:12:33 mattias Exp $ -->
 <actions>
 
 	<!-- Redirect -->
@@ -844,7 +844,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.UpdateSiteNodeAction" alias="UpdateSiteNode">
 		<view name="input">/cms/structuretool/viewSiteNode.vm</view>
-		<view name="success">ViewSiteNode.action</view>
+		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="saveAndExit">ViewListSiteNode.action</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
@@ -857,13 +857,13 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.DeleteSiteNodeAction" alias="DeleteSiteNode">
 		<view name="input">/cms/structuretool/showConstraintException.vm</view>
-		<view name="success">ViewSiteNode.action</view>
+		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.CreateSiteNodeAction" alias="CreateSiteNode">
 		<view name="input">/cms/structuretool/createSiteNode.vm</view>
-		<view name="success">ViewSiteNode.action</view>
+		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
