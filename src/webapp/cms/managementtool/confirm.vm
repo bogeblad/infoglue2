@@ -36,7 +36,7 @@
 						<tr>
 							<td width=1>&nbsp;</td>
 							<td valign="top" align=left width=1><img src="images/confirmIcon.gif"/></td>
-							<td valign="top" width=100%><br><font face="verdana, tahoma, arial" color="#000000" size=-1>$ui.getString($message)<br><br>$!extraParameters<br/><br/></font></td>
+							<td valign="top" width=100%><br><font face="verdana, tahoma, arial" color="#000000" size=-1>$ui.getString($message)<br><br>#if($extraParameters && $extraParameters != "")$!extraParameters#end<br/><br/></font></td>
 							<td width=3><img src="images/trans.gif" width="1" height="1"></td>
 						</tr>
 						<tr height=100%>
