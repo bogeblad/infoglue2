@@ -153,10 +153,10 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getDatabase(), this.getPrincipal(), this.getSiteNodeId(), this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getDatabase(), this.getPrincipal(), this.getSiteNodeId(), this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 			if(contentVO != null)
 			{
-				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(this.getDatabase(), contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(this.getDatabase(), contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 				attributeValue = decorateTag(contentVO.getContentId(), this.getLanguageId(), attributeName, attributeValue);
 			}
 		}
@@ -251,7 +251,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 			if(contentVO != null)
 			{
 				attributeValue = getParsedContentAttribute(contentVO.getContentId(), attributeName);

@@ -43,6 +43,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 
@@ -121,8 +122,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method return a contentVO
 	 */
 	
-	public ContentVO getContentVO(Database db, Integer contentId) throws SystemException, Exception
+	public ContentVO getContentVO(Database db, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
+		deliveryContext.getUsedContents().add("content:" + contentId);
+
 		ContentVO contentVO = (ContentVO)getVOWithId(SmallContentImpl.class, contentId, db);
 				
 		return contentVO;
@@ -134,7 +137,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * also has the correct state for this delivery-instance.
 	 */
 	
-	public ContentVersionVO getContentVersionVO(Database db, Integer siteNodeId, Integer contentId, Integer languageId, boolean useLanguageFallback) throws SystemException, Exception
+	public ContentVersionVO getContentVersionVO(Database db, Integer siteNodeId, Integer contentId, Integer languageId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		ContentVersionVO contentVersionVO = null;
 		
@@ -142,19 +145,23 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String contentVersionKey = "" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		CmsLogger.logInfo("contentVersionKey:" + contentVersionKey);
 		contentVersionVO = (ContentVersionVO)CacheController.getCachedObject("contentVersionCache", contentVersionKey);
+		
 		if(contentVersionVO != null)
 		{
 			CmsLogger.logInfo("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
 		}
 		else
 		{
-        	ContentVersion contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+        	ContentVersion contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 	
 			if(contentVersion != null)
 				contentVersionVO = contentVersion.getValueObject();
             	        
 			CacheController.cacheObject("contentVersionCache", contentVersionKey, contentVersionVO);
 		}
+		
+		if(contentVersionVO != null)
+		    deliveryContext.getUsedContentVersions().add("contentVersion:" + contentVersionVO.getId());
 		
 		return contentVersionVO;
 	}
@@ -165,12 +172,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * also has the correct state for this delivery-instance.
 	 */
 	
-	private ContentVersion getContentVersion(Integer siteNodeId, Integer contentId, Integer languageId, Database db, boolean useLanguageFallback) throws SystemException, Exception
+	private ContentVersion getContentVersion(Integer siteNodeId, Integer contentId, Integer languageId, Database db, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		ContentVersion contentVersion = null;
 		
 		MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
-		contentVersion = getContentVersion(content, languageId, getOperatingMode());
+		contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext);
 		
 		if(contentVersion == null && useLanguageFallback)
 		{
@@ -179,7 +186,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
 			if(!languageId.equals(masterLanguageId))
 			{
-				contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode());
+				contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode(), deliveryContext);
 			}
 		}
 		
@@ -191,7 +198,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method gets a contentVersion with a state and a language which is active.
 	 */
 	
-	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode) throws Exception
+	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext) throws Exception
 	{
 	    CmsLogger.logInfo("content:" + content.getId());
 	    CmsLogger.logInfo("operatingMode:" + operatingMode);
@@ -215,6 +222,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 		
+		if(contentVersion != null)
+		    deliveryContext.getUsedContentVersions().add("contentVersion:" + contentVersion.getId());
+		
 		return contentVersion;
 	}
 	
@@ -224,7 +234,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
 	 */
 
-	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback;
 		CmsLogger.logInfo("attributeKey:" + attributeKey);
@@ -235,7 +245,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-        	ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback);
+        	ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext);
 			if (contentVersionVO != null) 
 			{
 			    CmsLogger.logInfo("found one:" + contentVersionVO);
@@ -280,8 +290,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * @return A List of ContentVersionVOs matching the Category search, that are considered valid
 	 * @throws SystemException
 	 */
-	public List findContentVersionVOsForCategory(Database db, Integer categoryId, String attributeName, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback) throws SystemException, Exception
+	public List findContentVersionVOsForCategory(Database db, Integer categoryId, String attributeName, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
+	    deliveryContext.getUsedContents().add("selectiveCacheUpdateNonApplicable");
+	    
 		List results = findContentCategories(db, categoryId, attributeName);
 		List versions = findContentVersionsForCategories(results, db);
 
@@ -289,7 +301,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		for (Iterator iter = versions.iterator(); iter.hasNext();)
 		{
 			ContentVersion version = (ContentVersion) iter.next();
-			if(!isValidContentVersion(version, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, db))
+			if(!isValidContentVersion(version, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, db, deliveryContext))
 				iter.remove();
 		}
 
@@ -353,7 +365,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * and is it the most recent ContentVersion for this deployment. If not then we retrieved
 	 * based on categories attached to an old version.
 	 */
-	private boolean isValidContentVersion(ContentVersion version, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, Database db) throws Exception
+	private boolean isValidContentVersion(ContentVersion version, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, Database db, DeliveryContext deliveryContext) throws Exception
 	{
 		//Content content = version.getOwningContent();
 	    Integer contentId = version.getValueObject().getContentId();
@@ -362,10 +374,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    Content content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
 	    //Content content = ContentController.getContentController().getContentWithId(contentId, db);
 	    
-		ContentVersionVO mostRecentVersion = getContentVersionVO(db, siteNodeId, content.getContentId(), languageId, useLanguageFallback);
+		ContentVersionVO mostRecentVersion = getContentVersionVO(db, siteNodeId, content.getContentId(), languageId, useLanguageFallback, deliveryContext);
 		boolean isProperVersion = (mostRecentVersion != null) && (mostRecentVersion.getId().equals(version.getId()));
 
-		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db);
+		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext);
 
 		return isProperVersion && isValidContent;
 	}
@@ -387,11 +399,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method returns all the assetsKeys available in a contentVersion.
 	 */
 
-	public Collection getAssetKeys(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
+	public Collection getAssetKeys(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		Collection assetKeys = new ArrayList();
 		
-		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		if (contentVersion != null) 
         {
         	Collection assets = contentVersion.getDigitalAssets();
@@ -416,7 +428,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * many duplicates.
 	 *  
 	 */
-	private DigitalAsset getLanguageIndependentAsset(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey) throws SystemException, Exception
+	private DigitalAsset getLanguageIndependentAsset(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		DigitalAsset asset = null;
 		// TODO: This method should only return a asset url depending on settings on the actual content in the future
@@ -432,7 +444,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			LanguageVO langVO = (LanguageVO) lit.next();
 			if (langVO.getLanguageId().compareTo(languageId)!=0)
 			{
-				ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, langVO.getLanguageId(), db, false);
+				ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, langVO.getLanguageId(), db, false, deliveryContext);
 				if (contentVersion != null) 
 				{
 					DigitalAsset digitalAsset = 
@@ -449,12 +461,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return asset;			
 	}
 
-	private String getLanguageIndependentAssetUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey) throws SystemException, Exception
+	private String getLanguageIndependentAssetUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
 		
-		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey);
+		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey, deliveryContext);
 		if(digitalAsset != null)
 		{
 			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
@@ -474,12 +486,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	}
 
 
-	private String getLanguageIndependentAssetThumbnailUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, int width, int height) throws SystemException, Exception
+	private String getLanguageIndependentAssetThumbnailUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, int width, int height, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
 		
-		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey);
+		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey, deliveryContext);
 		if(digitalAsset != null)
 		{
 			String fileName = digitalAsset.getAssetFileName();
@@ -506,7 +518,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
 
-	public String getAssetUrl(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
+	public String getAssetUrl(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + useLanguageFallback;
 		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
@@ -520,7 +532,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		String assetUrl = "";
 		
-		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		if (contentVersion != null) 
         {
         	DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
@@ -542,7 +554,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
-				assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, null);
+				assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, null, deliveryContext);
 			}
         }
             		
@@ -559,7 +571,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
 
-	public String getAssetUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
+	public String getAssetUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback;
 		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
@@ -574,8 +586,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
 		
-		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
-		ContentVO contentVO = this.getContentVO(db, contentId);
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
+		ContentVO contentVO = this.getContentVO(db, contentId, deliveryContext);
 		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);	
 		if (contentVersion != null) 
         {
@@ -598,12 +610,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else if(useLanguageFallback)
 			{
-				assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, assetKey);
+				assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, assetKey, deliveryContext);
 			}
 		}				
 		else if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 		{
-	    	contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+	    	contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		    //contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
 	    	
 	    	CmsLogger.logInfo("contentVersion:" + contentVersion);
@@ -628,7 +640,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}
 				else if(useLanguageFallback)
 				{
-					assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, assetKey);
+					assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, assetKey, deliveryContext);
 				}
 			}
 		}
@@ -646,7 +658,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
 
-	public String getAssetThumbnailUrl(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws SystemException, Exception
+	public String getAssetThumbnailUrl(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + useLanguageFallback + "_" + width + "_" + height;
 		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
@@ -660,7 +672,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		String assetUrl = "";
 		
-		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		if (contentVersion != null) 
 		{
 			DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
@@ -684,7 +696,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
-				assetUrl = getLanguageIndependentAssetThumbnailUrl(contentId, languageId, siteNodeId, db, null, width, height);
+				assetUrl = getLanguageIndependentAssetThumbnailUrl(contentId, languageId, siteNodeId, db, null, width, height, deliveryContext);
 			}
 		}
 		
@@ -701,7 +713,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
 
-	public String getAssetThumbnailUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws SystemException, Exception
+	public String getAssetThumbnailUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, int width, int height, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + width + "_" + height;
 		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
@@ -715,7 +727,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		String assetUrl = "";
 		
-		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		if (contentVersion != null) 
 		{
 			DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
@@ -739,7 +751,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
-				assetUrl = getLanguageIndependentAssetThumbnailUrl(contentId, languageId, siteNodeId, db, assetKey, width, height);
+				assetUrl = getLanguageIndependentAssetThumbnailUrl(contentId, languageId, siteNodeId, db, assetKey, width, height, deliveryContext);
 			}
 			
 		}				
@@ -755,23 +767,23 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * getAssetFileSize. Prelimenary, we should rather supply a assetvo to the template. 
 	 */
 	 
-	public Integer getAssetFileSize(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
+	public Integer getAssetFileSize(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{ 
-		return getAssetFileSize(db, contentId, languageId, null, siteNodeId, useLanguageFallback); 
+		return getAssetFileSize(db, contentId, languageId, null, siteNodeId, useLanguageFallback, deliveryContext); 
 	}
 	
-	public Integer getAssetFileSize(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
+	public Integer getAssetFileSize(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		Integer fileSize = null;
 	
-		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		if (contentVersion != null) 
 		{
 			DigitalAsset digitalAsset =
-				(assetKey == null) ? getLatestDigitalAsset(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey); 
+				(assetKey == null) ? getLatestDigitalAsset(contentVersion) : getDigitalAssetWithKey(contentVersion, assetKey); 
 			
 			if(digitalAsset == null)
-				digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey);
+				digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey, deliveryContext);
 				
 			if(digitalAsset != null)
 			{
@@ -788,11 +800,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * an unpacking of a uploaded zip-digitalAsset.
 	 */
 
-	public String getArchiveBaseUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
+	public String getArchiveBaseUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String archiveBaseUrl = null;
 		
-		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		if (contentVersion != null) 
         {
         	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
@@ -819,11 +831,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return archiveBaseUrl;
 	}
 
-	public Vector getArchiveEntries(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
+	public Vector getArchiveEntries(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		Vector entries = null;
 		
-		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback);
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		if (contentVersion != null) 
 		{
 			DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
@@ -945,11 +957,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method returns a sorted list of childContents to a content ordered by the given attribute in the direction given.
 	 */
 
-	public List getChildContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean useLanguageFallback, boolean includeFolders) throws SystemException, Exception
+	public List getChildContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean useLanguageFallback, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		List childContents = new ArrayList();
 	
-		getChildContents(infoGluePrincipal, childContents, contentId, languageId, useLanguageFallback, 0, false, includeFolders, 1, db);
+		getChildContents(infoGluePrincipal, childContents, contentId, languageId, useLanguageFallback, 0, false, includeFolders, 1, db, deliveryContext);
 	
 		return childContents;
 	}
@@ -959,7 +971,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method returns a sorted list of childContents to a content ordered by the given attribute in the direction given.
 	 */
 	
-	public List getSortedChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, Integer contentId, Integer siteNodeId, Database db, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback, boolean includeFolders) throws SystemException, Exception
+	public List getSortedChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, Integer contentId, Integer siteNodeId, Database db, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		
 		String sortedChildContentsKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + searchRecursive + "_" + maximumNumberOfLevels + "_" + sortAttribute + "_" + sortOrder + "_" + useLanguageFallback + "_" + includeFolders;
@@ -974,9 +986,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		List sortedContentVOList = new ArrayList();
 		
-		List unsortedChildren = getChildContents(infoGluePrincipal, languageId, useLanguageFallback, contentId, siteNodeId, searchRecursive, maximumNumberOfLevels, db, includeFolders);
+		List unsortedChildren = getChildContents(infoGluePrincipal, languageId, useLanguageFallback, contentId, siteNodeId, searchRecursive, maximumNumberOfLevels, db, includeFolders, deliveryContext);
 		
-		List sortedContents   = sortContents(db, unsortedChildren, languageId, siteNodeId, sortAttribute, sortOrder, useLanguageFallback, includeFolders);
+		List sortedContents   = sortContents(db, unsortedChildren, languageId, siteNodeId, sortAttribute, sortOrder, useLanguageFallback, includeFolders, deliveryContext);
 
 		Iterator boundContentsIterator = sortedContents.iterator();
 		while(boundContentsIterator.hasNext())
@@ -1013,11 +1025,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * children a folder has.
 	 */
 	
-	private List getChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, boolean useLanguageFallback, Integer contentId, Integer siteNodeId, boolean searchRecursive, Integer maximumNumberOfLevels, Database db, boolean includeFolders) throws SystemException, Exception
+	private List getChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, boolean useLanguageFallback, Integer contentId, Integer siteNodeId, boolean searchRecursive, Integer maximumNumberOfLevels, Database db, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		List contents = new ArrayList();
 		
-		getChildContents(infoGluePrincipal, contents, contentId, languageId, useLanguageFallback, 0, searchRecursive, maximumNumberOfLevels.intValue(), db, includeFolders);
+		getChildContents(infoGluePrincipal, contents, contentId, languageId, useLanguageFallback, 0, searchRecursive, maximumNumberOfLevels.intValue(), db, includeFolders, deliveryContext);
 		
 		return contents;
 	}
@@ -1027,7 +1039,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method recurses into the dept of the content-children and fills the list of contents.
 	 */
 	
-	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, int maximumNumberOfLevels, Database db, boolean includeFolders) throws SystemException, Exception
+	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, int maximumNumberOfLevels, Database db, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		/*
 		OQLQuery oql = db.getOQLQuery("SELECT contentVersion FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl contentVersion WHERE contentVersion.stateId = $1 AND contentVersion.isActive = $2 AND contentVersion.owningContent.parentContent.contentId = $3");
@@ -1053,6 +1065,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		*/
 		
+		deliveryContext.getUsedContents().add("selectiveCacheUpdateNonApplicable");
+
 		OQLQuery oql = db.getOQLQuery("SELECT content FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl content WHERE content.parentContent.contentId = $1 ORDER BY content.contentId");
     	oql.bind(contentId);
     	
@@ -1063,9 +1077,9 @@ public class ContentDeliveryController extends BaseDeliveryController
         	Content content = (Content)results.next();
     
         	if(searchRecursive && currentLevel < maximumNumberOfLevels)
-	        	getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db, includeFolders);
+	        	getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db, includeFolders, deliveryContext);
     
-    		if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db))
+    		if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext))
     			contents.add(content);
         }
 	}
@@ -1074,8 +1088,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method recurses into the dept of the content-children and fills the list of contents.
 	 */
 	
-	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, boolean includeFolders, int maximumNumberOfLevels, Database db) throws SystemException, Exception
+	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, boolean includeFolders, int maximumNumberOfLevels, Database db, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
+		deliveryContext.getUsedContents().add("selectiveCacheUpdateNonApplicable");
+
 		OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl content WHERE content.parentContent.contentId = $1 ORDER BY content.contentId");
 		oql.bind(contentId);
     	
@@ -1086,11 +1102,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 			Content content = (Content)results.next();
     
 			if(searchRecursive && currentLevel < maximumNumberOfLevels)
-				getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, includeFolders, maximumNumberOfLevels, db);
+				getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, includeFolders, maximumNumberOfLevels, db, deliveryContext);
     
-    		if(content.getIsBranch().booleanValue() && includeFolders && isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db))
+    		if(content.getIsBranch().booleanValue() && includeFolders && isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext))
 				contents.add(content);
-    		else if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db))
+    		else if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext))
 				contents.add(content);
 		}
 	}
@@ -1130,12 +1146,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * @throws Exception
 	 */
 
-	public boolean isValidContent(Database db, Integer contentId, Integer languageId, boolean useLanguageFallback, InfoGluePrincipal infoGluePrincipal) throws Exception
+	public boolean isValidContent(Database db, Integer contentId, Integer languageId, boolean useLanguageFallback, InfoGluePrincipal infoGluePrincipal, DeliveryContext deliveryContext) throws Exception
 	{
 	    boolean isValidContent = false;
 		
 		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
-		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db);
+		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext);
 		
 		return isValidContent;					
 	}
@@ -1145,7 +1161,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * @throws Exception
 	 */
 
-	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, Database db) throws Exception
+	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, Database db, DeliveryContext deliveryContext) throws Exception
 	{
 	    boolean isValidContent = false;
 		
@@ -1169,12 +1185,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 		*/
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
-			ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode());
+			ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext);
 			if(contentVersion == null && useLanguageFallBack)
 			{
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getId(), db);
 				if(!masterLanguage.getId().equals(languageId))
-					contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode());
+					contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext);
 			}
 			
 			if(contentVersion != null)
@@ -1252,7 +1268,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method just sorts the list of qualifyers on sortOrder.
 	 */
 	
-	private List sortContents(Database db, Collection contents, Integer languageId, Integer siteNodeId, String sortAttributeName, String sortOrder, boolean useLanguageFallback, boolean includeFolders)
+	private List sortContents(Database db, Collection contents, Integer languageId, Integer siteNodeId, String sortAttributeName, String sortOrder, boolean useLanguageFallback, boolean includeFolders, DeliveryContext deliveryContext)
 	{
 		List sortedContents = new ArrayList();
 
@@ -1301,8 +1317,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 						}
 						else
 						{
-							String contentAttribute       = this.getContentAttribute(db, content.getId(), languageId, sortAttributeName, siteNodeId, useLanguageFallback);
-							String sortedContentAttribute = this.getContentAttribute(db, sortedContent.getId(), languageId, sortAttributeName, siteNodeId, useLanguageFallback);
+							String contentAttribute       = this.getContentAttribute(db, content.getId(), languageId, sortAttributeName, siteNodeId, useLanguageFallback, deliveryContext);
+							String sortedContentAttribute = this.getContentAttribute(db, sortedContent.getId(), languageId, sortAttributeName, siteNodeId, useLanguageFallback, deliveryContext);
 							if(contentAttribute != null && sortedContentAttribute != null && sortOrder.equalsIgnoreCase("asc") && contentAttribute.compareTo(sortedContentAttribute) < 0)
 					    	{
 					    		break;

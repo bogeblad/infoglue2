@@ -195,7 +195,23 @@ public class DigitalAssetController extends BaseController
 				
         return digitalAsset.getValueObject();
    	}
-   	
+
+   	/**
+   	 * This method creates a new digital asset in the database.
+   	 * The asset is send in as an InputStream which castor inserts automatically.
+   	 */
+
+   	public DigitalAsset create(Database db, DigitalAssetVO digitalAssetVO, InputStream is) throws SystemException, Exception
+   	{
+		DigitalAsset digitalAsset = new DigitalAssetImpl();
+		digitalAsset.setValueObject(digitalAssetVO);
+		digitalAsset.setAssetBlob(is);
+
+		db.create(digitalAsset);
+				
+        return digitalAsset;
+   	}
+
    	/**
    	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
    	 * The asset is send in as an InputStream which castor inserts automatically.
@@ -275,6 +291,15 @@ public class DigitalAssetController extends BaseController
    	public static void delete(Integer digitalAssetId) throws ConstraintException, SystemException
    	{
 		deleteEntity(DigitalAssetImpl.class, digitalAssetId);
+   	}
+
+   	/**
+   	 * This method deletes a digital asset in the database.
+   	 */
+
+   	public void delete(Integer digitalAssetId, Database db) throws ConstraintException, SystemException
+   	{
+		deleteEntity(DigitalAssetImpl.class, digitalAssetId, db);
    	}
 
    	/**
@@ -573,6 +598,28 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
+    	
+		return assetUrl;
+    }
+
+	/**
+	 * This method should return a String containing the URL for this digital asset.
+	 */
+
+	public String getDigitalAssetUrl(DigitalAssetVO digitalAssetVO, Database db) throws SystemException, Bug, Exception
+    {
+    	String assetUrl = null;
+
+		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getId(), db);
+					
+		if(digitalAsset != null)
+		{
+			CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
+			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			dumpDigitalAsset(digitalAsset, fileName, filePath);
+			assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+		}			       	
     	
 		return assetUrl;
     }
@@ -988,6 +1035,9 @@ public class DigitalAssetController extends BaseController
 	public static void dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
 		long timer = System.currentTimeMillis();
+
+		System.out.println("fileName:" + fileName);
+	    System.out.println("filePath:" + filePath);
 		
 		File outputFile = new File(filePath + File.separator + fileName);
 		if(outputFile.exists())

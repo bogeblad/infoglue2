@@ -474,7 +474,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-			content = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), this.contentId);
+			content = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), this.contentId, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -494,7 +494,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-			content = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), contentId);
+			content = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), contentId, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -514,7 +514,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-		    contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, this.languageId, true);
+		    contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, this.languageId, true, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -534,7 +534,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-		    contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, languageId, useLanguageFallback);
+		    contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, languageId, useLanguageFallback, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -846,7 +846,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -868,10 +868,10 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 			if(contentVO != null)
 			{
-				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 			}
 		}
 		catch(Exception e)
@@ -893,9 +893,11 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
+		this.deliveryContext.getUsedContents().add("content:" + contentId);
+		
 		try
 		{
-			attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -915,9 +917,11 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
+		this.deliveryContext.getUsedContents().add("content:" + contentId);
+		
 		try
 		{
-		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -984,7 +988,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			if(this.contentId != null)
 			{
-				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 				CmsLogger.logInfo("Found unparsedAttributeValue:" + unparsedAttributeValue);
 				
 				templateLogicContext.put("inlineContentId", this.contentId);
@@ -1026,12 +1030,12 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 			if(contentVO != null)
 			{
 				CmsLogger.logInfo("contentVO:" + contentVO.getContentId());
 		
-				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 				CmsLogger.logInfo("Found unparsedAttributeValue:" + unparsedAttributeValue);
 							
 				templateLogicContext.put("inlineContentId", contentVO.getId());
@@ -1072,7 +1076,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			if(contentId != null)
 			{
-				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 				CmsLogger.logInfo("Found unparsedAttributeValue:" + unparsedAttributeValue);
 				
 				templateLogicContext.put("inlineContentId", contentId);
@@ -1138,8 +1142,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
-			assetKeys = ContentDeliveryController.getContentDeliveryController().getAssetKeys(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
+			assetKeys = ContentDeliveryController.getContentDeliveryController().getAssetKeys(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1159,7 +1163,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			assetKeys = ContentDeliveryController.getContentDeliveryController().getAssetKeys(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			assetKeys = ContentDeliveryController.getContentDeliveryController().getAssetKeys(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1200,7 +1204,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			assetThumbnailUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height);
+			assetThumbnailUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1221,7 +1225,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			assetThumbnailUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height);
+			assetThumbnailUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1243,8 +1247,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1266,8 +1270,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
-			assetThumbnailUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
+			assetThumbnailUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1289,8 +1293,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1325,7 +1329,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1346,7 +1350,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1369,11 +1373,11 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE);		
+			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, this.deliveryContext);		
 			if(contentVOList != null && contentVOList.size() > index)
 			{
 				ContentVO contentVO = (ContentVO)contentVOList.get(index);
-				assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 			}
 		}
 		catch(Exception e)
@@ -1397,8 +1401,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1470,7 +1474,7 @@ public class BasicTemplateController implements TemplateController
 		        inlineContentId = (Integer)this.templateLogicContext.get("inlineContentId");
 		        
 			CmsLogger.logInfo("getInlineAssetUrl:" + inlineContentId + ":" + this.languageId + ":" + assetKey + ":" + this.siteNodeId);
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), inlineContentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), inlineContentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1495,7 +1499,7 @@ public class BasicTemplateController implements TemplateController
 		{	
 		    Integer inlineContentId = contentId;
 			CmsLogger.logInfo("getInlineAssetUrl:" + inlineContentId + ":" + this.languageId + ":" + assetKey + ":" + this.siteNodeId);
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), inlineContentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), inlineContentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1516,7 +1520,7 @@ public class BasicTemplateController implements TemplateController
 		Integer AssetFileSize = null;
 		try
 		{
-			AssetFileSize = ContentDeliveryController.getContentDeliveryController().getAssetFileSize(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			AssetFileSize = ContentDeliveryController.getContentDeliveryController().getAssetFileSize(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1530,7 +1534,7 @@ public class BasicTemplateController implements TemplateController
 		Integer AssetFileSize = null;
 		try
 		{
-			AssetFileSize = ContentDeliveryController.getContentDeliveryController().getAssetFileSize(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			AssetFileSize = ContentDeliveryController.getContentDeliveryController().getAssetFileSize(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1544,11 +1548,11 @@ public class BasicTemplateController implements TemplateController
 		Integer AssetFileSize = null;
 		try
 		{
-			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE);		
+			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, this.deliveryContext);		
 			if(contentVOList != null && contentVOList.size() > index)
 			{
 				ContentVO contentVO = (ContentVO)contentVOList.get(index);
-				AssetFileSize = ContentDeliveryController.getContentDeliveryController().getAssetFileSize(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				AssetFileSize = ContentDeliveryController.getContentDeliveryController().getAssetFileSize(getDatabase(), contentVO.getContentId(), this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 			}
 		}
 		catch(Exception e)
@@ -1563,8 +1567,8 @@ public class BasicTemplateController implements TemplateController
 		Integer AssetFileSize = null;
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
-			AssetFileSize = ContentDeliveryController.getContentDeliveryController().getAssetFileSize(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
+			AssetFileSize = ContentDeliveryController.getContentDeliveryController().getAssetFileSize(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1694,8 +1698,8 @@ public class BasicTemplateController implements TemplateController
 					if(id == null || id.equals(""))
 						id = child.getText();
 		
-					ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), new Integer(id));
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVO.getId(), this.languageId, USE_LANGUAGE_FALLBACK, getPrincipal()))
+					ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), new Integer(id), this.deliveryContext);
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVO.getId(), this.languageId, USE_LANGUAGE_FALLBACK, getPrincipal(), this.deliveryContext))
 						relatedContentVOList.add(contentVO);
 				}				
 			}
@@ -1741,9 +1745,9 @@ public class BasicTemplateController implements TemplateController
 							webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 							webPage.setLanguageId(this.languageId);
 							webPage.setContentId(null);
-							webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-							webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-							webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+							webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+							webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+							webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 							relatedPages.add(webPage);
 						}
 					}
@@ -1846,8 +1850,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getArchiveBaseUrl(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getArchiveBaseUrl(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1869,7 +1873,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			assetUrl = ContentDeliveryController.getContentDeliveryController().getArchiveBaseUrl(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getArchiveBaseUrl(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1885,7 +1889,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			entries = ContentDeliveryController.getContentDeliveryController().getArchiveEntries(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+			entries = ContentDeliveryController.getContentDeliveryController().getArchiveEntries(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1907,11 +1911,11 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE);		
+			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, this.deliveryContext);		
 			if(contentVOList != null && contentVOList.size() > index)
 			{
 				ContentVO contentVO = (ContentVO)contentVOList.get(index);
-				assetUrl = ContentDeliveryController.getContentDeliveryController().getArchiveBaseUrl(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				assetUrl = ContentDeliveryController.getContentDeliveryController().getArchiveBaseUrl(getDatabase(), contentVO.getContentId(), this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 			}
 		}
 		catch(Exception e)
@@ -2071,7 +2075,7 @@ public class BasicTemplateController implements TemplateController
 		String assetUrl = "";
 		try 
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);
 			if(contentVO != null)
 				assetUrl = getContentAttributeAsImageUrl(contentVO.getContentId(),attributeName,canvasWidth,canvasHeight,textStartPosX,textStartPosY,textWidth,textHeight,fontName,fontStyle,fontSize,foregroundColor,backgroundColor);			
 		} 
@@ -2089,7 +2093,7 @@ public class BasicTemplateController implements TemplateController
 		String assetUrl = "";
 		try 
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);
 			if(contentVO != null)
 				assetUrl = getContentAttributeAsImageUrl(contentVO.getContentId(),attributeName,canvasWidth,canvasHeight,textStartPosX,textStartPosY,textWidth,textHeight,fontName,fontStyle,fontSize,foregroundColor,backgroundColor, backgroundImageUrl);			
 		} 
@@ -2123,7 +2127,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-			ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, this.languageId, USE_LANGUAGE_FALLBACK);		
+			ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, this.languageId, USE_LANGUAGE_FALLBACK, this.deliveryContext);		
 			
 			String attribute = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVersionVO, attributeName);
 			
@@ -2342,7 +2346,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName);		
 			if(siteNodeVO != null)
-				pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null);
+				pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2363,7 +2367,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), webpage.getSiteNodeId(), webpage.getLanguageId(), contentId);
+			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), webpage.getSiteNodeId(), webpage.getLanguageId(), contentId, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2429,7 +2433,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 			if(contentVO != null)
 			{
 				contentId = contentVO.getId();
@@ -2471,7 +2475,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			childContents = ContentDeliveryController.getContentDeliveryController().getChildContents(getDatabase(), this.getPrincipal(), contentId, this.languageId, USE_LANGUAGE_FALLBACK, includeFolders);
+			childContents = ContentDeliveryController.getContentDeliveryController().getChildContents(getDatabase(), this.getPrincipal(), contentId, this.languageId, USE_LANGUAGE_FALLBACK, includeFolders, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2492,7 +2496,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 			if(contentVO != null)
 			{
 				contentId = contentVO.getId();
@@ -2513,7 +2517,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		try
 		{
-			return ContentDeliveryController.getContentDeliveryController().findContentVersionVOsForCategory(getDatabase(), categoryId, attributeName, getPrincipal(), siteNodeId, languageId, USE_LANGUAGE_FALLBACK);
+			return ContentDeliveryController.getContentDeliveryController().findContentVersionVOsForCategory(getDatabase(), categoryId, attributeName, getPrincipal(), siteNodeId, languageId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2538,7 +2542,7 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName);		
-			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, contentId);
+			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, contentId, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2563,7 +2567,7 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName, position);		
-			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null);
+			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2589,7 +2593,7 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName, position);		
-			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, contentId);
+			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, contentId, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2611,7 +2615,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, this.contentId);
+			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, this.contentId, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2632,7 +2636,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeId, languageId, contentId);
+			pageUrl = this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeId, languageId, contentId, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2653,7 +2657,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			pagePath = this.nodeDeliveryController.getPagePath(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, this.contentId, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK);
+			pagePath = this.nodeDeliveryController.getPagePath(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, this.contentId, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2696,7 +2700,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(getDatabase(), languageCode);		
 			//pageUrl = this.nodeDeliveryController.getPageUrl(this.siteNodeId, languageVO.getLanguageId(), this.contentId);
-			pageUrl = this.nodeDeliveryController.getPageUrlAfterLanguageChange(getDatabase(), this.getPrincipal(), this.siteNodeId, languageVO.getLanguageId(), this.contentId); 
+			pageUrl = this.nodeDeliveryController.getPageUrlAfterLanguageChange(getDatabase(), this.getPrincipal(), this.siteNodeId, languageVO.getLanguageId(), this.contentId, this.deliveryContext); 
 		}
 		catch(Exception e)
 		{
@@ -2718,7 +2722,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, null, META_INFO_BINDING_NAME, TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, null, META_INFO_BINDING_NAME, TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2743,7 +2747,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName);
 			CmsLogger.logInfo(siteNodeVO.getName());
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2764,7 +2768,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2788,7 +2792,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName, index);
 			CmsLogger.logInfo(siteNodeVO.getName());
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2927,11 +2931,11 @@ public class BasicTemplateController implements TemplateController
 			while(languageIterator.hasNext())
 			{
 				LanguageVO languageVO = (LanguageVO)languageIterator.next();
-				ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, META_INFO_BINDING_NAME);		
+				ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, META_INFO_BINDING_NAME, this.deliveryContext);		
 				ContentVersionVO contentVersionVO = null;
 				if(contentVO != null)
 				{
-					contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), siteNodeId, contentVO.getId(), languageVO.getId(), false);
+					contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), siteNodeId, contentVO.getId(), languageVO.getId(), false, this.deliveryContext);
 				}
 				
 				if(contentVO == null || contentVersionVO == null)		
@@ -2971,9 +2975,9 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
 				}
 				catch(Exception e)
@@ -3012,9 +3016,9 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
 				}
 				catch(Exception e)
@@ -3052,9 +3056,9 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
 				}
 				catch(Exception e)
@@ -3093,9 +3097,9 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
 				}
 				catch(Exception e)
@@ -3141,9 +3145,9 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					boundPages.add(webPage); 
 				}
 				catch(Exception e)
@@ -3189,9 +3193,9 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					boundPages.add(webPage); 
 				}
 				catch(Exception e)
@@ -3237,8 +3241,8 @@ public class BasicTemplateController implements TemplateController
 
 				try
 				{	
-					Integer metaInfoContentId = this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, DO_NOT_USE_INHERITANCE);
-					String navigationTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, DO_NOT_USE_LANGUAGE_FALLBACK);
+					Integer metaInfoContentId = this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, DO_NOT_USE_INHERITANCE, this.deliveryContext);
+					String navigationTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, DO_NOT_USE_LANGUAGE_FALLBACK, this.deliveryContext);
 					if(metaInfoContentId != null && navigationTitle != null && !navigationTitle.equals(""))
 					{
 						WebPage webPage = new WebPage();						
@@ -3247,7 +3251,7 @@ public class BasicTemplateController implements TemplateController
 						webPage.setContentId(null);
 						webPage.setNavigationTitle(navigationTitle);
 						webPage.setMetaInfoContentId(metaInfoContentId);
-						webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+						webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 						boundPages.add(webPage); 
 					}
 				}
@@ -3302,7 +3306,7 @@ public class BasicTemplateController implements TemplateController
 		List boundContents = new ArrayList();
 		try
 		{
-			boundContents = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, structureBindningName, USE_INHERITANCE);	
+			boundContents = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, structureBindningName, USE_INHERITANCE, this.deliveryContext);	
 		}
 		catch(Exception e)
 		{
@@ -3328,7 +3332,7 @@ public class BasicTemplateController implements TemplateController
 		List boundContents = new ArrayList();
 		try
 		{
-			boundContents = this.nodeDeliveryController.getBoundFolderContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, structureBindningName, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, false);	
+			boundContents = this.nodeDeliveryController.getBoundFolderContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, structureBindningName, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, false, this.deliveryContext);	
 		}
 		catch(Exception e)
 		{
@@ -3351,7 +3355,7 @@ public class BasicTemplateController implements TemplateController
 	    List boundContents = new ArrayList();
 		try
 		{
-			boundContents = this.nodeDeliveryController.getBoundFolderContents(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, structureBindningName, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, false);
+			boundContents = this.nodeDeliveryController.getBoundFolderContents(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, structureBindningName, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, false, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -3386,7 +3390,7 @@ public class BasicTemplateController implements TemplateController
 		List childContents = new ArrayList();
 		try
 		{
-			childContents = this.nodeDeliveryController.getBoundFolderContents(getDatabase(), this.getPrincipal(), contentId, this.languageId, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, includeFolders);	
+			childContents = this.nodeDeliveryController.getBoundFolderContents(getDatabase(), this.getPrincipal(), contentId, this.languageId, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, includeFolders, this.deliveryContext);	
 		}
 		catch(Exception e)
 		{
@@ -3521,10 +3525,10 @@ public class BasicTemplateController implements TemplateController
 		{
 			try
 			{
-				ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+				ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 				if(contentVO != null)
 				{
-					String includedTemplate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, "Template", this.siteNodeId, USE_LANGUAGE_FALLBACK);
+					String includedTemplate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, "Template", this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 					CmsLogger.logInfo("Found included template:" + includedTemplate);
 					
 					Map context = new HashMap();
@@ -3818,7 +3822,7 @@ public class BasicTemplateController implements TemplateController
 		boolean ret = false;
 		try 
 		{
-			ret = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, this.languageId, false) != null;
+			ret = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, this.languageId, false, this.deliveryContext) != null;
 		} 
 		catch(Exception e)
 		{

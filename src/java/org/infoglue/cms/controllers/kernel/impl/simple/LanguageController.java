@@ -241,6 +241,14 @@ public class LanguageController extends BaseController
         return ent.getValueObject();
     }     
 
+    public LanguageVO create(Database db, LanguageVO languageVO) throws ConstraintException, SystemException, Exception
+    {
+        Language ent = new LanguageImpl();
+        ent.setValueObject(languageVO);
+        db.create(ent);
+        return ent.getValueObject();
+    }     
+
 	/**
 	 * This method removes a Language from the system and also cleans out all depending repositoryLanguages.
 	 */
@@ -256,13 +264,7 @@ public class LanguageController extends BaseController
 		{
 			beginTransaction(db);
 
-			//If any of the validations or setMethods reported an error, we throw them up now before create.
-			ceb.throwIfNotEmpty();
-    		
-			language = getLanguageWithId(languageVO.getId(), db);
-			RepositoryLanguageController.getController().deleteAllRepositoryLanguageWithLanguage(language, db);    		
-			
-			deleteEntity(LanguageImpl.class, languageVO.getLanguageId(), db);
+			delete(db, languageVO);
 			
 			commitTransaction(db);
 		}
@@ -272,6 +274,18 @@ public class LanguageController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
+    }        
+
+	/**
+	 * This method removes a Language from the system and also cleans out all depending repositoryLanguages.
+	 */
+	
+    public void delete(Database db, LanguageVO languageVO) throws ConstraintException, SystemException
+    {
+		Language language = getLanguageWithId(languageVO.getId(), db);
+		RepositoryLanguageController.getController().deleteAllRepositoryLanguageWithLanguage(language, db);    		
+			
+		deleteEntity(LanguageImpl.class, languageVO.getLanguageId(), db);
     }        
 
 

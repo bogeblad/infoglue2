@@ -29,6 +29,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.mail.*;
 import org.infoglue.cms.util.*;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
@@ -60,10 +61,10 @@ public class MailSender implements InfoGlueInputHandler
 	
 	public void processInput(DatabaseWrapper databaseWrapper, Integer siteNodeId, Integer languageId, Integer contentId, Integer formContentId, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception
 	{
-		String template     = ContentDeliveryController.getContentDeliveryController().getContentAttribute(databaseWrapper.getDatabase(), formContentId, languageId, "MailSender_template", siteNodeId, true);
-		String fromAddress 	= ContentDeliveryController.getContentDeliveryController().getContentAttribute(databaseWrapper.getDatabase(), formContentId, languageId, "MailSender_fromAddress", siteNodeId, true);
-		String toAddress   	= ContentDeliveryController.getContentDeliveryController().getContentAttribute(databaseWrapper.getDatabase(), formContentId, languageId, "MailSender_toAddress", siteNodeId, true);
-		String subject 		= ContentDeliveryController.getContentDeliveryController().getContentAttribute(databaseWrapper.getDatabase(), formContentId, languageId, "MailSender_subject", siteNodeId, true);
+		String template     = ContentDeliveryController.getContentDeliveryController().getContentAttribute(databaseWrapper.getDatabase(), formContentId, languageId, "MailSender_template", siteNodeId, true, DeliveryContext.getDeliveryContext());
+		String fromAddress 	= ContentDeliveryController.getContentDeliveryController().getContentAttribute(databaseWrapper.getDatabase(), formContentId, languageId, "MailSender_fromAddress", siteNodeId, true, DeliveryContext.getDeliveryContext());
+		String toAddress   	= ContentDeliveryController.getContentDeliveryController().getContentAttribute(databaseWrapper.getDatabase(), formContentId, languageId, "MailSender_toAddress", siteNodeId, true, DeliveryContext.getDeliveryContext());
+		String subject 		= ContentDeliveryController.getContentDeliveryController().getContentAttribute(databaseWrapper.getDatabase(), formContentId, languageId, "MailSender_subject", siteNodeId, true, DeliveryContext.getDeliveryContext());
 		String body         = renderMailBody(databaseWrapper, siteNodeId, languageId, contentId, template, parameters, request, infogluePrincipal);
 		
 		//MailServiceFactory.getService().send(fromAddress, toAddress, subject, body);

@@ -182,14 +182,14 @@ public abstract class PageInvoker
 
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")))
 		{
-		    this.pageString = (String)CacheController.getAdvancedCachedObject("pageCache", this.getDeliveryContext().getPageKey());
+		    this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
 			if(this.pageString == null)
 			{
 				invokePage();
 				this.pageString = getPageString();
 				
 				if(!this.getTemplateController().getIsPageCacheDisabled()) //Caching page if not disabled
-					CacheController.advancedCacheObject("pageCache", this.getDeliveryContext().getPageKey(), pageString);
+					CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities());
 			}
 			else
 			{

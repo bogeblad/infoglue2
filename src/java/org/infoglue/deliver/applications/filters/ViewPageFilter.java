@@ -54,6 +54,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
@@ -146,7 +147,7 @@ public class ViewPageFilter implements Filter {
                         infoGluePrincipal,
                         repositoryId,
                         nodeNames,
-                        languageId);
+                        languageId, DeliveryContext.getDeliveryContext());
 
                 end = System.currentTimeMillis();
 

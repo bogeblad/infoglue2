@@ -31,6 +31,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.inputhandlers.InfoGlueInputHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
@@ -98,7 +99,7 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
 				}
 			}
 			
-			String inputHandlerClassName = ContentDeliveryController.getContentDeliveryController().getContentAttribute(dbWrapper.getDatabase(), formContentId, languageId, "InputHandlerClassName", siteNodeId, true);
+			String inputHandlerClassName = ContentDeliveryController.getContentDeliveryController().getContentAttribute(dbWrapper.getDatabase(), formContentId, languageId, "InputHandlerClassName", siteNodeId, true, DeliveryContext.getDeliveryContext());
 
     		CmsLogger.logInfo("Trying to invoke " + inputHandlerClassName);
 	    	Object object =	Class.forName(inputHandlerClassName).newInstance();

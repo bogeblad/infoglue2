@@ -23,6 +23,9 @@
 
 package org.infoglue.deliver.applications.databeans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -72,6 +75,12 @@ public class DeliveryContext
 	private HttpServletRequest httpServletRequest = null;
 	private Session session = null;
 	private WebworkAbstractAction webworkAbstractAction = null;
+	
+	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
+	private List usedContents = new ArrayList();
+	private List usedContentVersions = new ArrayList();
+	private List usedSiteNodes = new ArrayList();
+	private List usedSiteNodeVersions = new ArrayList();
 	
 	//private InfoGluePrincipal infoGluePrincipal = null;
 	
@@ -215,4 +224,59 @@ public class DeliveryContext
 	{
 		this.httpServletResponse = httpServletResponse;
 	}
+	
+    public List getUsedContents()
+    {
+        return usedContents;
+    }
+    
+    public void setUsedContents(List usedContents)
+    {
+        this.usedContents = usedContents;
+    }
+    
+    public List getUsedSiteNodes()
+    {
+        return usedSiteNodes;
+    }
+    
+    public void setUsedSiteNodes(List usedSiteNodes)
+    {
+        this.usedSiteNodes = usedSiteNodes;
+    }
+    
+    public List getUsedContentVersions()
+    {
+        return usedContentVersions;
+    }
+    
+    public void setUsedContentVersions(List usedContentVersions)
+    {
+        this.usedContentVersions = usedContentVersions;
+    }
+    
+    public List getUsedSiteNodeVersions()
+    {
+        return usedSiteNodeVersions;
+    }
+    
+    public void setUsedSiteNodeVersions(List usedSiteNodeVersions)
+    {
+        this.usedSiteNodeVersions = usedSiteNodeVersions;
+    }
+    
+    public String[] getAllUsedEntities()
+    {
+        List list = new ArrayList();
+        list.addAll(this.usedContents);
+        list.addAll(this.usedContentVersions);
+        list.addAll(this.usedSiteNodes);
+        list.addAll(this.usedSiteNodeVersions);
+        Object[] array = list.toArray();
+        String[] groups = new String[array.length];
+        for(int i=0; i<array.length; i++)
+            groups[i] = array[i].toString();
+        
+        return groups;
+    }
 }

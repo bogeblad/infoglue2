@@ -32,6 +32,7 @@ import org.infoglue.cms.entities.publishing.impl.simple.*;
 import org.infoglue.cms.entities.management.impl.simple.*;
 import org.infoglue.cms.entities.workflow.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 
 import com.opensymphony.oscache.base.CacheEntry;
@@ -77,18 +78,24 @@ public class CacheController extends Thread
         return (cacheInstance == null) ? null : cacheInstance.get(key);
     }
 
-	public static void advancedCacheObject(String cacheName, Object key, Object value)
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups)
 	{
 	    //cacheObject(cacheName, key, value);
 	    
 	    if(!caches.containsKey(cacheName))
 		    caches.put(cacheName, new GeneralCacheAdministrator());
-			
+		
+	    System.out.println("Putting pageCache in relation to:");
+	    for(int i=0; i<groups.length; i++)
+	    {
+	        System.out.println("group:" + groups[i]);
+	    }
+	    
 		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
-		cacheAdministrator.putInCache(key.toString(), value);
+		cacheAdministrator.putInCache(key.toString(), value, groups);
 	}	
 	
-	public static Object getAdvancedCachedObject(String cacheName, Object key)
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key)
 	{
 	    //return getCachedObject(cacheName, key);
 	    Object value = null;
@@ -117,7 +124,7 @@ public class CacheController extends Thread
 		}
 	}
 		
-	public static void clearCaches(String entity)
+	public static void clearCaches(String entity, String entityId)
 	{
 		if(entity == null)
 		{	
@@ -141,6 +148,7 @@ public class CacheController extends Thread
 				Map.Entry e = (Map.Entry) i.next();
 				CmsLogger.logInfo("e:" + e.getKey());
 				boolean clear = false;
+				boolean selectiveCacheUpdate = false;
 				String cacheName = e.getKey().toString();
 				
 				if(cacheName.equalsIgnoreCase("serviceDefinitionCache") && entity.indexOf("ServiceBinding") > 0)
@@ -202,6 +210,7 @@ public class CacheController extends Thread
 				if(cacheName.equalsIgnoreCase("pageCache"))
 				{	
 					clear = true;
+					selectiveCacheUpdate = true;
 				}
 				if(cacheName.equalsIgnoreCase("includeCache"))
 				{	
@@ -235,9 +244,35 @@ public class CacheController extends Thread
 					}
 					else
 					{
+					    String useSelectivePageCacheUpdateString = CmsPropertyHandler.getProperty("useSelectivePageCacheUpdate");
+					    boolean useSelectivePageCacheUpdate = false;
+					    if(useSelectivePageCacheUpdateString != null && useSelectivePageCacheUpdateString.equalsIgnoreCase("true"))
+					        useSelectivePageCacheUpdate = true;
+					        
 					    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
-						cacheInstance.flushAll();
-						System.out.println("clearing:" + e.getKey());
+
+					    if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
+					    {
+					    	cacheInstance.flushAll();
+							System.out.println("clearing:" + e.getKey());
+					    }
+					    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
+					    {
+					    	cacheInstance.flushGroup("contentVersion:" + entityId);
+					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							System.out.println("clearing " + e.getKey() + " with group " + "contentVersion:" + entityId);
+					    }
+					    else if(selectiveCacheUpdate && entity.indexOf("Content") > 0 && useSelectivePageCacheUpdate)
+					    {
+					    	cacheInstance.flushGroup("content:" + entityId);
+					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							System.out.println("clearing " + e.getKey() + " with group " + "content:" + entityId);
+					    }
+					    else
+					    {
+							cacheInstance.flushAll();
+							System.out.println("clearing:" + e.getKey());
+					    }
 					}
 				}
 				else
@@ -356,7 +391,7 @@ public class CacheController extends Thread
 			CmsLogger.logWarning("Clearing caches");
 			clearCastorCaches();
 			CmsLogger.logInfo("Castor cache cleared");
-			clearCaches(null);
+			clearCaches(null, null);
 			CmsLogger.logInfo("All other caches cleared");
 			
 			try

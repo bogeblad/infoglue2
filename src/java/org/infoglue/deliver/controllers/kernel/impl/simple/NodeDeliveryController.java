@@ -630,9 +630,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single content bound. 
 	 */
 	
-	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException, Exception
+	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, inheritParentBindings);
+		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, inheritParentBindings, deliveryContext);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
 
@@ -641,11 +641,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single content bound. 
 	 */
 	
-	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName) throws SystemException, Exception
+	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 		CmsLogger.logInfo("availableServiceBindingName:" + availableServiceBindingName);
-		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE);
+		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, deliveryContext);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
 	
@@ -653,7 +653,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single content bound. 
 	 */
 	
-	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName) throws SystemException, Exception
+	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    List contents = null;
 	    
@@ -664,7 +664,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 
         try
         {
-            contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE);
+            contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, deliveryContext);
         
             closeTransaction(db);
 	    }
@@ -683,7 +683,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns a list of contents bound to the named availableServiceBinding.
 	 */
 	
-	public List getBoundContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException, Exception
+	public List getBoundContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		//String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
@@ -727,8 +727,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 						//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
 						//	boundContentVOList.add(candidate);        		
 						Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
-						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, db))
-							boundContentVOList.add(candidate);    
+						
+						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, db, deliveryContext))
+						{
+							deliveryContext.getUsedContents().add("content:" + candidate.getId());
+
+						    boundContentVOList.add(candidate);    
+						}
 					}
 				}
 			}
@@ -747,18 +752,20 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The collection of contents are also sorted on given arguments.
 	 */
 	
-	public List getBoundFolderContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, String availableServiceBindingName, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback, boolean includeFolders) throws SystemException, Exception
+	public List getBoundFolderContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, String availableServiceBindingName, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		List folderContents = new ArrayList();
 		
+		deliveryContext.getUsedContents().add("selectiveCacheUpdateNonApplicable");
+		
     	CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
         
-        ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName);
+        ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, deliveryContext);
         CmsLogger.logInfo("contentVO:" + contentVO);
         
         if(contentVO != null)
         {
-           	folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentVO.getContentId(), siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback, includeFolders);
+           	folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentVO.getContentId(), siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback, includeFolders, deliveryContext);
         }
         
 		return folderContents;
@@ -770,11 +777,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The collection of contents are also sorted on given arguments.
 	 */
 	
-	public List getBoundFolderContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback, boolean includeFolders) throws SystemException, Exception
+	public List getBoundFolderContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		List folderContents = new ArrayList();
 		        
-		folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentId, siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback, includeFolders);
+		folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentId, siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback, includeFolders, deliveryContext);
 		
 		return folderContents;
 	}
@@ -863,7 +870,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns a url to the given page. The url is composed of siteNode, language and content
 	 */
 
-	public String getPageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException
+	public String getPageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
 	{
 		String pageUrl = "";
 		
@@ -884,20 +891,20 @@ public class NodeDeliveryController extends BaseDeliveryController
 			dnsName = siteNode.getRepository().getDnsName();
 			
 		//pageUrl = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
-		pageUrl = urlComposer.composePageUrl(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId); 
+		pageUrl = urlComposer.composePageUrl(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId, deliveryContext); 
 		
 		return pageUrl;
 	}
 
 
-	public String getPageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException
+	public String getPageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
     {
 		SiteNode siteNode = getSiteNode(db, siteNodeId);
 		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
 		
-        return urlComposer.composePageUrlAfterLanguageChange(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId);
+        return urlComposer.composePageUrlAfterLanguageChange(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId, deliveryContext);
     } 
 	
 	/**
@@ -906,17 +913,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * up in the structure until the root is reached. On each node we collect the pageTitle.
 	 */
 
-	public String getPagePath(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String bindingName, String attributeName, boolean useLanguageFallBack) throws SystemException, Exception
+	public String getPagePath(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String bindingName, String attributeName, boolean useLanguageFallBack, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String pagePath = "/";
 		
 		SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
 		if(parentSiteNode != null)
 		{
-			pagePath = getPagePath(db, infoGluePrincipal, parentSiteNode.getId(), languageId, null, bindingName, attributeName, useLanguageFallBack) + "/"; 
+			pagePath = getPagePath(db, infoGluePrincipal, parentSiteNode.getId(), languageId, null, bindingName, attributeName, useLanguageFallBack, deliveryContext) + "/"; 
 		}
 		
-		pagePath += this.getPageNavigationTitle(db, infoGluePrincipal, siteNodeId, languageId, contentId, bindingName, attributeName, useLanguageFallBack);
+		pagePath += this.getPageNavigationTitle(db, infoGluePrincipal, siteNodeId, languageId, contentId, bindingName, attributeName, useLanguageFallBack, deliveryContext);
 		pagePath = pagePath.replaceAll(" ", "_");
 		
 		return pagePath;
@@ -947,26 +954,26 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The title is based on the content sent in firstly, secondly the siteNode. 
 	 * The actual text is fetched from either the content or the metacontent bound to the sitenode. 
 	 */
-	public String getPageNavigationTitle(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String metaBindingName, String attributeName, boolean useLanguageFallback) throws SystemException, Exception
+	public String getPageNavigationTitle(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String metaBindingName, String attributeName, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String navTitle = "";
 		
 		if(contentId == null || contentId.intValue() == -1)
 		{
-			ContentVO content = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, metaBindingName);
+			ContentVO content = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, metaBindingName, deliveryContext);
 			if(content != null)
-				navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), languageId, attributeName, siteNodeId, useLanguageFallback);
+				navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext);
 		}
 		else
 		{
-			navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback);
+			navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext);
 		}
 		
 		return navTitle;
 	}
 
 
-    public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String navigationTitle, Integer parentSiteNodeId, Integer languageId) throws SystemException, Exception
+    public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String navigationTitle, Integer parentSiteNodeId, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         /*
         CmsLogger.logInfo("repositoryId:" + repositoryId);
@@ -1021,7 +1028,7 @@ public class NodeDeliveryController extends BaseDeliveryController
             }
             
             // CmsLogger.logInfo("Site : "+siteNode.getSiteNodeId());
-            ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME);
+            ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME, deliveryContext);
             if(content != null) 
             {
                 //CmsLogger.logInfo("Content "+content.getContentId());
@@ -1030,7 +1037,7 @@ public class NodeDeliveryController extends BaseDeliveryController
                 {
                     LanguageVO language = (LanguageVO) languages.get(i);
                     //CmsLogger.logInfo("Language : "+language.getLanguageCode());
-                    navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true);
+                    navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext);
                     //CmsLogger.logInfo("NavTitle ["+navTitle+"]");
                     if (navTitle != null && navTitle.equals(navigationTitle)) 
                     {
@@ -1043,24 +1050,24 @@ public class NodeDeliveryController extends BaseDeliveryController
         return null;
     }
 
-    public String getPageNavigationPath(Database db, InfoGluePrincipal infogluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+    public String getPageNavigationPath(Database db, InfoGluePrincipal infogluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         String path = "/";
 
         SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
         if (parentSiteNode != null)
         {
-            path = getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null) + "/";
+            path = getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null, deliveryContext) + "/";
         } else {
             return "";
         }
-        path += URLEncoder.encode(this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true), "UTF-8");
+        path += URLEncoder.encode(this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true, deliveryContext), "UTF-8");
      
         return path;
     }
 
 
-    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         Integer siteNodeId = null;
         URIMapperCache uriCache = URIMapperCache.getInstance();
@@ -1079,11 +1086,11 @@ public class NodeDeliveryController extends BaseDeliveryController
         {
             if (i < 0) 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, null, languageId);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, null, languageId, deliveryContext);
             } 
             else 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], siteNodeId, languageId);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], siteNodeId, languageId, deliveryContext);
             }
             
             if (siteNodeId != null)
@@ -1093,7 +1100,7 @@ public class NodeDeliveryController extends BaseDeliveryController
         return siteNodeId;
     }
     
-    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         Integer siteNodeId = null;
 
@@ -1119,11 +1126,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        {
 	            if (i < 0) 
 	            {
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, null, languageId);
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, null, languageId, deliveryContext);
 	            } 
 	            else 
 	            {
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], siteNodeId, languageId);
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], siteNodeId, languageId, deliveryContext);
 	            }
 	            
 	            if (siteNodeId != null)
@@ -1146,9 +1153,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the contentId of the bound metainfo-content to the given page. 
 	 */
 
-	public Integer getMetaInfoContentId(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, String metaBindingName, boolean inheritParentBindings) throws SystemException, Exception
+	public Integer getMetaInfoContentId(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, String metaBindingName, boolean inheritParentBindings, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		ContentVO content = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, true, metaBindingName, inheritParentBindings);
+		ContentVO content = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, true, metaBindingName, inheritParentBindings, deliveryContext);
 		if(content != null)
 			return content.getContentId();
 		

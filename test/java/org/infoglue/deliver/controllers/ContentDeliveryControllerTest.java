@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentDeliveryControllerTest.java,v 1.2 2005/02/21 15:07:43 frank Exp $
+ * $Id: ContentDeliveryControllerTest.java,v 1.3 2005/04/03 20:35:37 mattias Exp $
  */
 package org.infoglue.deliver.controllers;
 
@@ -34,6 +34,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.InfoGlueTestCase;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.exolab.castor.jdo.Database;
 
@@ -111,7 +112,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 	{
 		testCategory = createContentCategory(testContentVersion.getId(), ATTRIBUTE);
 
-		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true, DeliveryContext.getDeliveryContext());
 		assertEquals("Wrong number of Content Versions found", 1, found.size());
 
 		ContentVersionVO foundVersion = (ContentVersionVO)found.get(0);
@@ -125,7 +126,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testContent.setPublishDateTime(changeDate(Calendar.YEAR, 1));
 		contentStore.update(testContent);
 
-		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true, DeliveryContext.getDeliveryContext());
 		assertEquals("Wrong number of Content Versions found", 0, found.size());
 	}
 
@@ -136,7 +137,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testContent.setExpireDateTime(changeDate(Calendar.YEAR, -1));
 		contentStore.update(testContent);
 
-		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true, DeliveryContext.getDeliveryContext());
 		assertEquals("Wrong number of Content Versions found", 0, found.size());
 	}
 
@@ -147,7 +148,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testContent.setIsProtected(ContentVO.YES);
 		contentStore.update(testContent);
 
-		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ADMIN, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ADMIN, SITENODE, LANGUAGE, true, DeliveryContext.getDeliveryContext());
 		assertEquals("Wrong number of Content Versions found", 1, found.size());
 	}
 
@@ -158,7 +159,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testContent.setIsProtected(ContentVO.YES);
 		contentStore.update(testContent);
 
-		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, testCategory.getId(), ATTRIBUTE, ANON, SITENODE, LANGUAGE, true, DeliveryContext.getDeliveryContext());
 		assertEquals("Wrong number of Content Versions found", 0, found.size());
 	}
 
@@ -169,7 +170,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		ContentVersionVO another = addMoreContent();
 		CategoryVO anotherCategory = createContentCategory(another.getId(), getName());
 
-		List found = testController.findContentVersionVOsForCategory(testDatabase, anotherCategory.getId(), getName(), ANON, SITENODE, LANGUAGE, true);
+		List found = testController.findContentVersionVOsForCategory(testDatabase, anotherCategory.getId(), getName(), ANON, SITENODE, LANGUAGE, true, DeliveryContext.getDeliveryContext());
 		assertEquals("Wrong number of Content Versions found", 1, found.size());
 		assertEquals("Wrong Content Versions found", another.getId(), ((ContentVersionVO)found.get(0)).getId());
 	}

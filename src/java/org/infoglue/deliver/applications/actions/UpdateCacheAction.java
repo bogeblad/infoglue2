@@ -99,7 +99,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 			{
 				//Hardcoded some stuff to clear.... not nice. Instead have some register which 
 				//different caches can register to.
-				CacheController.clearCaches(null);
+				CacheController.clearCaches(null, null);
 				
 				CmsLogger.logInfo("Updating all caches as this was a publishing-update");
 				
@@ -124,7 +124,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 				//Hardcoded some stuff to clear.... not nice. Instead have some register which 
 				//different caches can register to.
 
-			    CacheController.clearCaches(className);
+			    CacheController.clearCaches(className, objectId);
 
 			    System.out.println("Updating className with id:" + className + ":" + objectId);
 				if(className != null)
