@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.3 2005/01/10 08:44:12 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.4 2005/02/04 17:00:41 jed Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -61,11 +61,13 @@ CREATE TABLE cmContentCategory
 (
 	contentCategoryId	INTEGER(11) unsigned NOT NULL auto_increment,
 	attributeName		VARCHAR(100) NOT NULL,
-	contentVersionId	INTEGER(11),
-	categoryId			INTEGER(11),
+	contentVersionId	INTEGER(11) NOT NULL,
+	categoryId			INTEGER(11) NOT NULL,
 	PRIMARY KEY (contentCategoryId)
 );
 
+create index attributeName_categoryId on cmContentCategory (attributeName, categoryId);
+create index contentVersionId on cmContentCategory (contentVersionId);
 
 ----------------------------------------------------------------------------------
 -- Add table for UserPropertiesDigitalAsset
@@ -99,4 +101,8 @@ CREATE TABLE cmRolePropertiesDigitalAsset (
 
 ALTER TABLE cmRepositoryLanguage ADD COLUMN sortOrder integer default 0 NOT NULL;
 
-CREATE INDEX contentTypeDefinitionId ON cmContent(contentTypeDefinitionId);
+----------------------------------------------------------------------------------
+-- Add indexes to cmContent on parentContentId and contentTypeDefinitionId
+----------------------------------------------------------------------------------
+CREATE INDEX contentTypeDefinitionId ON cmContent (contentTypeDefinitionId);
+CREATE INDEX parentContentId ON cmContent (parentContentId);
