@@ -959,10 +959,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method returns a sorted list of childContents to a content ordered by the given attribute in the direction given.
 	 */
 	
-	public List getSortedChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, Integer contentId, Integer siteNodeId, Database db, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException, Exception
+	public List getSortedChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, Integer contentId, Integer siteNodeId, Database db, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback, boolean includeFolders) throws SystemException, Exception
 	{
 		
-		String sortedChildContentsKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + searchRecursive + "_" + maximumNumberOfLevels + "_" + sortAttribute + "_" + sortOrder + "_" + useLanguageFallback;
+		String sortedChildContentsKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + searchRecursive + "_" + maximumNumberOfLevels + "_" + sortAttribute + "_" + sortOrder + "_" + useLanguageFallback + "_" + includeFolders;
 		CmsLogger.logInfo("sortedChildContentsKey:" + sortedChildContentsKey);
 		String cacheName = "sortedChildContentsCache";
 		List cachedSortedContentVOList = (List)CacheController.getCachedObject(cacheName, sortedChildContentsKey);
@@ -974,9 +974,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		List sortedContentVOList = new ArrayList();
 		
-		List unsortedChildren = getChildContents(infoGluePrincipal, languageId, useLanguageFallback, contentId, siteNodeId, searchRecursive, maximumNumberOfLevels, db);
-
-		List sortedContents   = sortContents(db, unsortedChildren, languageId, siteNodeId, sortAttribute, sortOrder, useLanguageFallback);
+		List unsortedChildren = getChildContents(infoGluePrincipal, languageId, useLanguageFallback, contentId, siteNodeId, searchRecursive, maximumNumberOfLevels, db, includeFolders);
+		
+		List sortedContents   = sortContents(db, unsortedChildren, languageId, siteNodeId, sortAttribute, sortOrder, useLanguageFallback, includeFolders);
 
 		Iterator boundContentsIterator = sortedContents.iterator();
 		while(boundContentsIterator.hasNext())
@@ -1013,11 +1013,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * children a folder has.
 	 */
 	
-	private List getChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, boolean useLanguageFallback, Integer contentId, Integer siteNodeId, boolean searchRecursive, Integer maximumNumberOfLevels, Database db) throws SystemException, Exception
+	private List getChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, boolean useLanguageFallback, Integer contentId, Integer siteNodeId, boolean searchRecursive, Integer maximumNumberOfLevels, Database db, boolean includeFolders) throws SystemException, Exception
 	{
 		List contents = new ArrayList();
 		
-		getChildContents(infoGluePrincipal, contents, contentId, languageId, useLanguageFallback, 0, searchRecursive, maximumNumberOfLevels.intValue(), db);		
+		getChildContents(infoGluePrincipal, contents, contentId, languageId, useLanguageFallback, 0, searchRecursive, maximumNumberOfLevels.intValue(), db, includeFolders);
 		
 		return contents;
 	}
@@ -1027,7 +1027,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method recurses into the dept of the content-children and fills the list of contents.
 	 */
 	
-	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, int maximumNumberOfLevels, Database db) throws SystemException, Exception
+	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, int maximumNumberOfLevels, Database db, boolean includeFolders) throws SystemException, Exception
 	{
 		/*
 		OQLQuery oql = db.getOQLQuery("SELECT contentVersion FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl contentVersion WHERE contentVersion.stateId = $1 AND contentVersion.isActive = $2 AND contentVersion.owningContent.parentContent.contentId = $3");
@@ -1063,7 +1063,7 @@ public class ContentDeliveryController extends BaseDeliveryController
         	Content content = (Content)results.next();
     
         	if(searchRecursive && currentLevel < maximumNumberOfLevels)
-	        	getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db);
+	        	getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db, includeFolders);
     
     		if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db))
     			contents.add(content);
@@ -1161,10 +1161,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 		    return false;
 		}
-		if(content.getIsBranch().booleanValue())
+		/*
+		if(!includeFolders && content.getIsBranch().booleanValue())
 		{
 			isValidContent = true; 
 		} 
+		*/
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
 			ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode());
@@ -1250,7 +1252,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method just sorts the list of qualifyers on sortOrder.
 	 */
 	
-	private List sortContents(Database db, Collection contents, Integer languageId, Integer siteNodeId, String sortAttributeName, String sortOrder, boolean useLanguageFallback)
+	private List sortContents(Database db, Collection contents, Integer languageId, Integer siteNodeId, String sortAttributeName, String sortOrder, boolean useLanguageFallback, boolean includeFolders)
 	{
 		List sortedContents = new ArrayList();
 
@@ -1260,7 +1262,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			while(iterator.hasNext())
 			{
 				Content content = (Content)iterator.next();
-				if(content.getIsBranch().booleanValue() == false)
+				if(includeFolders || content.getIsBranch().booleanValue() == false)
 				{
 					int index = 0;
 					Iterator sortedListIterator = sortedContents.iterator();

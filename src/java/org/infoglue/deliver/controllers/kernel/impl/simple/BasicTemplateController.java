@@ -136,6 +136,8 @@ public class BasicTemplateController implements TemplateController
 
 	private Database db = null;
 	
+	private boolean threatFoldersAsContents = false;
+	
 	/**
 	 * The constructor for the templateController. It should be used to initialize the 
 	 * templateController for efficient use.
@@ -3266,24 +3268,15 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getBoundFolderContents(String structureBindningName, boolean searchRecursive, String sortAttribute, String sortOrder)
 	{
-		//Checking for a read binding in this request...
-		//if(cachedBindings.containsKey(structureBindningName))
-		//{	
-		//	return (List)cachedBindings.get(structureBindningName);
-		//}
-		
 		List boundContents = new ArrayList();
 		try
 		{
-			boundContents = this.nodeDeliveryController.getBoundFolderContents(this.db, this.getPrincipal(), this.siteNodeId, this.languageId, structureBindningName, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK);	
+			boundContents = this.nodeDeliveryController.getBoundFolderContents(this.db, this.getPrincipal(), this.siteNodeId, this.languageId, structureBindningName, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, false);	
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logSevere("An error occurred trying to get the bound contents:" + e.getMessage(), e);
 		}
-		
-		//Caching bindings
-		//cachedBindings.put(structureBindningName, boundContents);
 		
 		return boundContents;
 	}
@@ -3301,7 +3294,7 @@ public class BasicTemplateController implements TemplateController
 	    List boundContents = new ArrayList();
 		try
 		{
-			boundContents = this.nodeDeliveryController.getBoundFolderContents(this.db, this.getPrincipal(), siteNodeId, this.languageId, structureBindningName, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK);	
+			boundContents = this.nodeDeliveryController.getBoundFolderContents(this.db, this.getPrincipal(), siteNodeId, this.languageId, structureBindningName, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, false);
 		}
 		catch(Exception e)
 		{
@@ -3320,10 +3313,23 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildContents(Integer contentId, boolean searchRecursive, String sortAttribute, String sortOrder)
 	{
+	    return getChildContents(contentId, searchRecursive, sortAttribute, sortOrder, false);
+	}
+
+
+	/**
+	 * The method returns a list of ContentVO-objects that is children to the bound content sent in. 
+	 * The method is great for collection-pages on any site where you want to bind to a folder containing all contents to list.
+	 * You can also state if the method should recurse into subfolders and how the contents should be sorted.
+	 * The recursion only deals with three levels at the moment for performance-reasons. 
+	 */
+	
+	public List getChildContents(Integer contentId, boolean searchRecursive, String sortAttribute, String sortOrder, boolean includeFolders)
+	{
 		List childContents = new ArrayList();
 		try
 		{
-			childContents = this.nodeDeliveryController.getBoundFolderContents(this.db, this.getPrincipal(), contentId, this.languageId, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK);	
+			childContents = this.nodeDeliveryController.getBoundFolderContents(this.db, this.getPrincipal(), contentId, this.languageId, searchRecursive, new Integer(3), sortAttribute, sortOrder, USE_LANGUAGE_FALLBACK, includeFolders);	
 		}
 		catch(Exception e)
 		{
@@ -3333,7 +3339,7 @@ public class BasicTemplateController implements TemplateController
 		return childContents;
 	}
 
-
+	
 	/**
 	 * The method returns the ContentTypeVO-objects of the given contentId. 
 	 */
@@ -4294,4 +4300,14 @@ public class BasicTemplateController implements TemplateController
     {
         this.persistedContext = persistedContext;
     }	
+    
+    public boolean getThreatFoldersAsContents()
+    {
+        return threatFoldersAsContents;
+    }
+    
+    public void setThreatFoldersAsContents(boolean threatFoldersAsContents)
+    {
+        this.threatFoldersAsContents = threatFoldersAsContents;
+    }
 }

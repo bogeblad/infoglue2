@@ -49,13 +49,14 @@ public class ComponentLogic
 	private InfoGlueComponent infoGlueComponent = null;
 	private boolean useInheritance = true;
 	private boolean useEditOnSight = true;
+	private boolean threatFoldersAsContents = false;
 	
  	public ComponentLogic(TemplateController templateController, InfoGlueComponent infoGlueComponent)
  	{
  		this.templateController = templateController;
  		this.infoGlueComponent = infoGlueComponent;
  	}
- 	
+
 	/**
 	 * The method returns a list of ContentVO-objects that is children to the bound content of named binding on the siteNode sent in. 
 	 * The method is great for collection-pages on any site where you want to bind to a folder containing all contents to list.
@@ -64,6 +65,18 @@ public class ComponentLogic
 	 */
 	
 	public List getBoundFolderContents(String propertyName, boolean searchRecursive, String sortAttribute, String sortOrder) throws Exception
+	{
+	    return getBoundFolderContents(propertyName, searchRecursive, sortAttribute, sortOrder, false);
+	}
+
+	/**
+	 * The method returns a list of ContentVO-objects that is children to the bound content of named binding on the siteNode sent in. 
+	 * The method is great for collection-pages on any site where you want to bind to a folder containing all contents to list.
+	 * You can also state if the method should recurse into subfolders and how the contents should be sorted.
+	 * The recursion only deals with three levels at the moment for performance-reasons. 
+	 */
+	
+	public List getBoundFolderContents(String propertyName, boolean searchRecursive, String sortAttribute, String sortOrder, boolean includeFolders) throws Exception
 	{
 		List childContents = new ArrayList();
 		
@@ -77,7 +90,7 @@ public class ComponentLogic
 			if(bindings.size() > 0)
 			{
 				Integer contentId = new Integer((String)bindings.get(0));
-				childContents = this.templateController.getChildContents(contentId, searchRecursive, sortAttribute, sortOrder);
+				childContents = this.templateController.getChildContents(contentId, searchRecursive, sortAttribute, sortOrder, includeFolders);
 			}
 		}
 		
@@ -781,7 +794,7 @@ public class ComponentLogic
 		
 		String pageComponentsString = null;
     	
-		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information");		
+		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information");
 		
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
@@ -857,5 +870,16 @@ public class ComponentLogic
     public void setUseEditOnSight(boolean useEditOnSight)
     {
         this.useEditOnSight = useEditOnSight;
+    }
+    
+    public boolean getThreatFoldersAsContents()
+    {
+        return threatFoldersAsContents;
+    }
+    
+    public void setThreatFoldersAsContents(boolean threatFoldersAsContents)
+    {
+        this.threatFoldersAsContents = threatFoldersAsContents;
+        this.templateController.setThreatFoldersAsContents(threatFoldersAsContents);
     }
 }
