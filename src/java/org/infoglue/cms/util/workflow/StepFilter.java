@@ -1,15 +1,15 @@
 /**
- * $Id: StepFilter.java,v 1.1 2004/12/28 15:48:28 jed Exp $
+ * $Id: StepFilter.java,v 1.2 2004/12/28 22:40:07 jed Exp $
  * Created by jed on Dec 28, 2004
  */
 package org.infoglue.cms.util.workflow;
 
-import com.opensymphony.workflow.spi.Step;
+import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
 
 /**
  * Provides a mechanism for filtering steps in a workflow based on the owner of the step and the current user
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.1 $ $Date: 2004/12/28 15:48:28 $
+ * @version $Revision: 1.2 $ $Date: 2004/12/28 22:40:07 $
  */
 public interface StepFilter
 {
@@ -18,5 +18,5 @@ public interface StepFilter
 	 * @param step a workflow step
 	 * @return true if the step is allowed, otherwise returns false
 	 */
-	boolean isAllowed(Step step);
+	boolean isAllowed(WorkflowStepVO step);
 }
