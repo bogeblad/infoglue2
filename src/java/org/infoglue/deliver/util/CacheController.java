@@ -24,7 +24,6 @@
 package org.infoglue.deliver.util;
 
 import org.exolab.castor.jdo.Database;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.content.impl.simple.*;
 import org.infoglue.cms.entities.structure.impl.simple.*;
@@ -32,6 +31,7 @@ import org.infoglue.cms.entities.publishing.impl.simple.*;
 import org.infoglue.cms.entities.management.impl.simple.*;
 import org.infoglue.cms.entities.workflow.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -217,6 +217,8 @@ public class CacheController extends Thread
 			clearCache(ConsequenceDefinitionImpl.class);
 			clearCache(EventImpl.class);
 			clearCache(WorkflowImpl.class);
+			clearCache(CategoryImpl.class);
+			clearCache(ContentCategoryImpl.class);
 
 			clearCache(InterceptionPointImpl.class);
 			clearCache(InterceptorImpl.class);
