@@ -44,7 +44,7 @@ import net.sf.hibernate.cfg.Configuration;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.11 $ $Date: 2005/02/23 22:07:26 $
+ * @version $Revision: 1.12 $ $Date: 2005/02/28 21:11:08 $
  */
 public class WorkflowFacade
 {
@@ -125,7 +125,7 @@ public class WorkflowFacade
 	/**
 	 * Initializes the workflow, setting workflowId as a side-effect.
 	 * @param name the name of the workflow to initialize
-	 * @throws org.infoglue.cms.exception.SystemException if a workflow error occurs.
+	 * @throws SystemException if a workflow error occurs.
 	 */
 	private void initialize(String name, int initialAction) throws SystemException
 	{
@@ -143,7 +143,7 @@ public class WorkflowFacade
 	 * Performs an action using the given inputs
 	 * @param actionId the ID of the action to perform
 	 * @param inputs a map of inputs to the action
-	 * @throws org.infoglue.cms.exception.SystemException if a workflow error occurs
+	 * @throws SystemException if a workflow error occurs
 	 */
 	public void doAction(int actionId, Map inputs) throws SystemException
 	{
@@ -184,7 +184,7 @@ public class WorkflowFacade
 	/**
 	 * Returns a list of all active workflows.
 	 * @return a list of WorkflowVOs representing all active workflows
-	 * @throws org.infoglue.cms.exception.SystemException if an error occurs finding the active workflows
+	 * @throws SystemException if an error occurs finding the active workflows
 	 */
 	public List getActiveWorkflows() throws SystemException
 	{
@@ -203,7 +203,7 @@ public class WorkflowFacade
 	/**
 	 * Finds all active workflows
 	 * @return A list of workflowIds representing workflows that match the hard-wored query expression.
-	 * @throws org.infoglue.cms.exception.SystemException if a workflow error occurs during the search
+	 * @throws SystemException if a workflow error occurs during the search
 	 */
 	private List findActiveWorkflows() throws SystemException
 	{
