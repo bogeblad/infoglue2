@@ -224,9 +224,13 @@ public abstract class ViewRelationEditorAction extends WebworkAbstractAction
 		boolean isFormDefinitionValid = true;
 		try
 		{
-			Document document = new DOMBuilder().getDocument(this.relationXML);
-		
-			this.qualifyers = parseQualifyersFromXML(this.relationXML);
+		    if(this.relationXML != null && this.relationXML.length() != 0)
+		    {
+		        Document document = new DOMBuilder().getDocument(this.relationXML);
+				this.qualifyers = parseQualifyersFromXML(this.relationXML);
+		    }
+		    else
+		        isFormDefinitionValid = false;
 		}
 		catch(Exception e)
 		{

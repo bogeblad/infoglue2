@@ -34,7 +34,12 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.util.CmsLogger;
 
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This action represents the CreateContent Usecase.
@@ -49,7 +54,7 @@ public class CreateContentAction extends WebworkAbstractAction
    	private ConstraintExceptionBuffer ceb;
    	private ContentVO contentVO;
    	private ContentVO newContentVO;
-  
+   	private String defaultFolderContentTypeName;
   
   	public CreateContentAction()
 	{
@@ -149,6 +154,11 @@ public class CreateContentAction extends WebworkAbstractAction
 		return newContentVO.getContentId();
 	}
 
+    public String getDefaultFolderContentTypeName()
+    {
+        return defaultFolderContentTypeName;
+    }
+
 	/**
 	 * This method fetches the list of ContentTypeDefinitions
 	 */
@@ -191,6 +201,14 @@ public class CreateContentAction extends WebworkAbstractAction
 		Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(parentContentId);
 		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.Create", protectedContentId.toString()))
 			ceb.add(new AccessConstraintException("Content.contentId", "1002"));
+		
+		if(this.getIsBranch().booleanValue())
+		{
+			Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+		    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
+		}
 		
 		ceb.throwIfNotEmpty();
 		

@@ -34,10 +34,31 @@
 		var oldSelected;
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
+			//alert("itemId:" + itemId);
+			//alert("repoId" + repoId);
+			alert("path" + path);
+			
 			// Call parent
 			//parent.htmlTreeItemClick(itemId, repoId);
-			setSelected(itemId, repoId, path);			
+			setSelected(itemId, repoId, path);	
+			//setSelected(itemId);			
 		}
+		
+		/*
+		function setSelected(itemId)
+		{
+			// Graphical stuff
+			if (oldSelected != null)
+				oldSelected.className = "";
+			
+			var srcIdLink =	document.getElementById("link" + itemId);
+			oldSelected = srcIdLink;
+			if (srcIdLink != null)
+				srcIdLink.className = "selected";
+		}
+		*/
+		
+		var oldSelected;
 		
 		function setSelected(itemId, repoId, path)
 		{
@@ -45,7 +66,7 @@
 			if (oldSelected != null)
 				oldSelected.className = "";
 			
-			srcIdLink =	document.getElementById("link" + itemId);
+			var srcIdLink =	document.getElementById("link" + itemId);
 			oldSelected = srcIdLink;
 			if (srcIdLink != null)
 				srcIdLink.className = "selected";
@@ -54,6 +75,7 @@
 			parent.document.inputForm.repositoryId.value = repoId;
 		 	parent.document.inputForm.path.value         = path;
 		}
+		
 		
 		function loaded()
 		{
@@ -66,10 +88,85 @@
 	<script type="text/javascript" src="script/menu/scrollbutton.js"></script>
 	<script type="text/javascript" src="script/menu/menu4.js"></script>
 	
+	#if($treeMode != "classic")
+	<!-- DYNAMIC VERSION SCRIPTS -->
+	<script type="text/javascript" src="script/xloadtree/xtree.js"></script>
+	<script type="text/javascript" src="script/xloadtree/xmlextras.js"></script>
+	<script type="text/javascript" src="script/xloadtree/xloadtree.js"></script>
+	<!-- END -->
+	#end
+	
 </head>
 <body class="contenttooledit" LEFTMARGIN="0" TOPMARGIN="0" onload="parent.notifyExp('${exp}');loaded();">
 <link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-<link rel="stylesheet" type="text/css" href="css/treeview.css" /> 
+
+#if($treeMode=="classic")
+	<link rel="stylesheet" type="text/css" href="css/treeview.css" /> 
+#else
+	
+	<!-- NEW DYNAMIC VERSION -->
+	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
+	<script type="text/javascript">
+	webFXTreeConfig.rootIcon		= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/folder.png";
+	webFXTreeConfig.openRootIcon	= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/openfolder.png";
+	webFXTreeConfig.folderIcon		= "script/xloadtree/images/xp/folder.png";
+	webFXTreeConfig.openFolderIcon	= "script/xloadtree/images/xp/openfolder.png";
+	webFXTreeConfig.fileIcon		= "script/xloadtree/images/xp/file.png";
+	webFXTreeConfig.lMinusIcon		= "script/xloadtree/images/xp/Lminus.png";
+	webFXTreeConfig.lPlusIcon		= "script/xloadtree/images/xp/Lplus.png";
+	webFXTreeConfig.tMinusIcon		= "script/xloadtree/images/xp/Tminus.png";
+	webFXTreeConfig.tPlusIcon		= "script/xloadtree/images/xp/Tplus.png";
+	webFXTreeConfig.iIcon			= "script/xloadtree/images/xp/I.png";
+	webFXTreeConfig.lIcon			= "script/xloadtree/images/xp/L.png";
+	webFXTreeConfig.tIcon			= "script/xloadtree/images/xp/T.png";
+	webFXTreeConfig.showRoot		= true;
+	webFXTreeConfig.loadingText		= "Loading content ...";
+	
+	#set($par = "$!parent")
+	#if( $par != "")
+		#set($par = "&parent=${parent}")
+	#else
+		#set($par = "&parent=$rootNode.Id")
+	#end 
+	
+	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleContentXml.action?showLeafs=${showLeafs}&action=SimpleContentXml.action&createAction=true&repositoryId=$!{repositoryId}$par", "JavaScript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)');");
+	tree.myId = "$rootNode.Id";
+	document.write(tree);
+	var oldSelected = null;
+	function onTreeItemClick(elem, itemId, repoId, path)
+	{
+		//alert("elem:" + elem);
+		//alert("itemId:" + itemId);
+		//alert("repoId:" + repoId);
+		//alert("path:" + path);
+		
+		//if(oldSelected!=null) oldSelected.className="";
+		//elem.className="selected";
+		//oldSelected=elem;
+		htmlTreeItemClick(itemId, repoId, path);
+	}
+	function onTreeItemSelect(elem)
+	{
+		//alert("elem:" + elem);
+		var aid = elem + "-anchor";
+		if (oldSelected != null)
+			oldSelected.className = "";
+		
+		var srcIdLink =	document.getElementById(aid);
+		// alert(srcIdLink.className);
+		oldSelected = srcIdLink;
+		if (srcIdLink != null)
+			srcIdLink.className = "selected";
+
+		// alert(srcIdLink.className);
+		
+	}
+	</script>	
+	<!-- END -->	
+#end
+
+
+#if($treeMode == "classic")
 
 	<!-- HTML Version of the tree: Start --->
 	##
@@ -77,6 +174,8 @@
 	## this is a local macro
 	#set($canDrag = ' ondragstart="startDrag();" ondragend="endDrag();"')
 	#set($imgPath="images/tree/xp/")	
+	
+	#set($parentId = 0)
 	
 	#macro(drawItem $n)
 			####
@@ -139,6 +238,7 @@
 	#drawTreeXP()
 
 	<!-- HTML Version of the tree: End --->	
+#end
 
 
 	<!-- CONTEXT MENU STUFF AGAIN --->	

@@ -97,7 +97,8 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 	protected String makeAction(BaseNode node) throws UnsupportedEncodingException
 	{
 		String action = "javascript:onTreeItemClick(this,";
-		action+="'" + node.getId() + "','" + repositoryId + "','" + URLEncoder.encode(node.getTitle(),ENCODING) + "');";
+		//action+="'" + node.getId() + "','" + repositoryId + "','" + URLEncoder.encode(node.getTitle(),ENCODING) + "');";
+		action+="'" + node.getId() + "','" + repositoryId + "','" + node.getTitle() + "');";
         return action;
 	}
 	

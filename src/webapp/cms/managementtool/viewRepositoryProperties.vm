@@ -10,8 +10,15 @@
 <form name="editForm" method="POST" action="ViewRepositoryProperties!save.action">
 	<tr>
 		<td>
-			<!--<p>#editField("Repository.name" "name" $!name "51")</p>-->
 			<p>#editTextArea("Repository.property.WYSIWYGConfig" "WYSIWYGConfig" $!WYSIWYGConfig "50" "10" "normaltextarea")</p>
+			<p>
+				$ui.getString("entity.Repository.property.defaultFolderContentTypeName.label")<br/>
+				<select class="siteNodetypes" name="defaultFolderContentTypeName">
+				#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+					<option value="$contentTypeDefinitionVO.getName()" #if($defaultFolderContentTypeName == $contentTypeDefinitionVO.getName())selected="1"#end>$contentTypeDefinitionVO.getName()</option>
+				#end
+				</select>				
+			</p>
 		</td>
 	</tr>
 	<tr>

@@ -35,8 +35,13 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.CmsLogger;
 
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ViewContentAction extends WebworkAbstractAction
 {
@@ -45,7 +50,8 @@ public class ViewContentAction extends WebworkAbstractAction
 	private Integer repositoryId         = null;
 	private List availableLanguages      = null;
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
-	
+   	private String defaultFolderContentTypeName;
+
     private ContentVO contentVO;
 
     public ViewContentAction()
@@ -66,6 +72,15 @@ public class ViewContentAction extends WebworkAbstractAction
         
         if(this.repositoryId == null)
             this.repositoryId = this.contentVO.getRepositoryId();
+        
+		if(this.getIsBranch().booleanValue())
+		{
+			Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+		    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
+		}
+
     } 
 
     public String doExecute() throws Exception
@@ -277,5 +292,9 @@ public class ViewContentAction extends WebworkAbstractAction
 	{
 		this.contentVO = contentVO;
 	}
-
+	    
+    public String getDefaultFolderContentTypeName()
+    {
+        return defaultFolderContentTypeName;
+    }
 }

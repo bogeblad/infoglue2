@@ -111,9 +111,9 @@
 		<td colspan="3">
 			$ui.getString("tool.contenttool.newContent.contentType")<br/>
 			<select class="contenttypes" name="contentTypeDefinitionId">
-			#if($isBranch)<option value="">Not defined yet</option>#end
+			##if($isBranch)<option value="">Not defined yet</option>#end
 			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitions)
-				#if($contentTypeDefinitionId == $contentTypeDefinitionVO.contentTypeDefinitionId)
+				#if($isBranch && $defaultFolderContentTypeName == $contentTypeDefinitionVO.getName())
 					<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()" selected="1">$contentTypeDefinitionVO.getName()</option>
 				#else
 					<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()">$contentTypeDefinitionVO.getName()</option>

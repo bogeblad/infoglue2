@@ -23,7 +23,9 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
@@ -45,10 +47,13 @@ import java.util.Map;
 
 public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAction
 { 
-	private RepositoryVO repositoryVO 	= new RepositoryVO();
-	private PropertySet propertySet		= null; 
-	private String WYSIWYGConfig 		= null;
+	private RepositoryVO repositoryVO 			= new RepositoryVO();
+	private PropertySet propertySet				= null; 
+	private List contentTypeDefinitionVOList 	= null;
 	
+	private String WYSIWYGConfig 				= null;
+	private String defaultFolderContentTypeName = null;	
+
 	
     public ViewRepositoryPropertiesAction()
     {
@@ -57,7 +62,8 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
     protected void initialize(Integer repositoryId) throws Exception
     {
         this.repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
-
+        this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.CONTENT);
+            
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
@@ -65,6 +71,8 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    byte[] WYSIWYGConfigBytes = ps.getData("repository_" + this.getRepositoryId() + "_WYSIWYGConfig");
 	    if(WYSIWYGConfigBytes != null)
 	    	this.WYSIWYGConfig = new String(WYSIWYGConfigBytes, "utf-8");
+
+	    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
     } 
 
     /**
@@ -89,6 +97,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
 	    ps.setData("repository_" + this.getRepositoryId() + "_WYSIWYGConfig", WYSIWYGConfig.getBytes("utf-8"));
+	    ps.setString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", defaultFolderContentTypeName);
 	    
     	return "save";
     }
@@ -131,4 +140,19 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	{
 		return propertySet;
 	}
+	
+    public String getDefaultFolderContentTypeName()
+    {
+        return defaultFolderContentTypeName;
+    }
+    
+    public void setDefaultFolderContentTypeName(String defaultFolderContentTypeName)
+    {
+        this.defaultFolderContentTypeName = defaultFolderContentTypeName;
+    }
+    
+    public List getContentTypeDefinitionVOList()
+    {
+        return contentTypeDefinitionVOList;
+    }
 }
