@@ -179,7 +179,7 @@
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" identity="accessRightId" key-generator="IDENTITY">
     <description>AccessRight</description>
     <cache-type type="unlimited" capacity="10000"/>
-    <map-to table="cmAccessRightNew"/>
+    <map-to table="cmAccessRight"/>
     <field name="accessRightId" type="java.lang.Integer">
       <sql name="accessRightId" type="integer" dirty="check" />
     </field>
