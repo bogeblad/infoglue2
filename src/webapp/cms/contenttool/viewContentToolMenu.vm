@@ -235,24 +235,7 @@
 </small>
 </div>
 <div style="RIGHT:2px; position:absolute; BOTTOM:0px; visibility:visible; z-index:0">
-	<script type="text/javascript">
-		function setSize()
-		{
-			size = this.parent.document.getElementById('mainarea').cols;
-			//alert("size:" + size);
-			if(size.indexOf("225") > -1)
-				size = "300,*";
-			else if(size.indexOf("300") > -1)
-				size = "350,*";
-			else if(size.indexOf("350") > -1)
-				size = "400,*";
-			else
-				size = "225,*";
-			
-			this.parent.document.getElementById('mainarea').cols=size;
-		}
-	</script> 
-	<a href="javascript:setSize();"><img src="images/dragCorner.gif" width="12" height="12" border="0" alt="Click to make menu bigger"></a>
+	<a href="javascript:this.parent.increaseSize();" title="$ui.getString("tool.common.increaseMenuSize.text")"><img src="images/dragCorner.gif" width="12" height="12" border="0" alt="$ui.getString("tool.common.increaseMenuSize.text")"></a>
 </div>
 	
 </body>

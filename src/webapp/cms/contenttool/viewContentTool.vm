@@ -6,6 +6,58 @@
 <head>
 	<title>ContentTool</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <script type="text/javascript">
+
+	    cookie_name = "contentMenuWidth";
+		var defaultMenuSize = "225,*";
+	
+		function setInitialPosition()
+		{
+			//alert("Setting initial position...");
+			if(document.cookie)
+			{
+				index = document.cookie.indexOf(cookie_name);
+				//alert("index:" + index);
+				if (index != -1)
+				{
+					namestart = (document.cookie.indexOf("=", index) + 1);
+					nameend = document.cookie.indexOf(";", index);
+					if (nameend == -1) {nameend = document.cookie.length;}
+					defaultMenuSize = document.cookie.substring(namestart, nameend);
+					//alert("defaultMenuSize" + defaultMenuSize);
+				}
+			}
+
+			//alert("defaultMenuSize" + defaultMenuSize)
+			this.document.getElementById('mainarea').cols=defaultMenuSize;
+		}
+		
+		function increaseSize()
+		{
+			size = this.document.getElementById('mainarea').cols;
+			//alert("size:" + size);
+			if(size.indexOf("225") > -1)
+				size = "300,*";
+			else if(size.indexOf("300") > -1)
+				size = "350,*";
+			else if(size.indexOf("350") > -1)
+				size = "400,*";
+			else
+				size = "225,*";
+			
+			this.document.getElementById('mainarea').cols=size;
+			
+			if(document.cookie != document.cookie)
+				index = document.cookie.indexOf(cookie_name);
+			else
+				index = -1;
+			
+			if (index == -1)
+				document.cookie=cookie_name+"="+size+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+		}
+		
+    </script>
 </head>
 
 <frameset rows="40,*" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
@@ -13,7 +65,7 @@
   <frameset id="mainarea" cols="225,*">
     <frame name="menu" marginwidth="0" marginheight="0" scrolling="no" target="main" src="">
 
-	  <frameset rows="57,*">
+	  <frameset rows="57,*" onload="setInitialPosition();">
 		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="ViewContentToolToolBar.action">
 		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="ViewContentToolStartPage.action">
 	  </frameset>
