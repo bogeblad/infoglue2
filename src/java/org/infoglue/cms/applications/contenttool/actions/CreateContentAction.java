@@ -164,8 +164,9 @@ public class CreateContentAction extends WebworkAbstractAction
 	 */
 	
 	public List getContentTypeDefinitions() throws Exception
-	{
-		return ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+	{	
+	    return ContentTypeDefinitionController.getController().getAuthorizedContentTypeDefinitionVOList(this.getInfoGluePrincipal());
+		//return ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 	}      
     
       

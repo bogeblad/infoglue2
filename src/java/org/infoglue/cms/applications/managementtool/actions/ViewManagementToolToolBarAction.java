@@ -499,6 +499,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("Confirm.action?header=Delete%20contentTypeDefinition&yesDestination=" + URLEncoder.encode("DeleteContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListContentTypeDefinition.action?title=ContentTypeDefinitions", "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the contentTypeDefinition " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteContentTypeDefinition"), "Delete ContentTypeDefinition"));
+		buttons.add(getAccessRightsButton());
 		return buttons;				
 	}
 
@@ -517,4 +518,11 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		buttons.add(new ImageButton(true, "javascript:submitListForm('category');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteCategory"), "Delete Category"));
 		return buttons;
 	}
+	
+	private ImageButton getAccessRightsButton() throws Exception
+	{
+		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8"), "UTF-8");
+		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=ContentTypeDefinition&extraParameters=" + this.contentTypeDefinitionId +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header");
+	}
+
 }

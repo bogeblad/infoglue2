@@ -124,6 +124,12 @@
 		   	buttonConfig = { ${buttonConfig} };
 		#end
 		
+		var inlineImageDefaultRepositoryId = null;
+		#set($inlineImageDefaultRepositoryId = $map.get("inlineImageDefaultRepositoryId"))
+		#if($inlineImageDefaultRepositoryId && $inlineImageDefaultRepositoryId != "")
+			var inlineImageDefaultRepositoryId = $inlineImageDefaultRepositoryId;
+		#end
+
 		//alert("enableCSSPlugin:" + $this.enableCSSPlugin);
 		var enableCSSPlugin = $this.enableCSSPlugin;
 		#if($this.enableCSSPlugin)

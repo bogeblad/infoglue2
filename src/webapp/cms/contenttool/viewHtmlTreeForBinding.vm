@@ -215,7 +215,10 @@
 		var node = tree.getNodeWithMyId(nodeId);
 		
 		setTimeout(function () {
-			webFXTreeHandler.toggle(node);
+			if (node.folder) {
+				if (!node.open) { node.expand(); }
+				}			
+			//webFXTreeHandler.toggle(node);
 			}, 100);
 	}
 	

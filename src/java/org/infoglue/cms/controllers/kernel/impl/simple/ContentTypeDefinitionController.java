@@ -30,6 +30,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.DomainUtils;
 
@@ -123,6 +124,56 @@ public class ContentTypeDefinitionController extends BaseController
 		return getAllVOObjects(ContentTypeDefinitionImpl.class, "contentTypeDefinitionId", db);
 	}
 
+	/**
+	 * This method can be used by actions and use-case-controllers that only need to have simple access to the
+	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
+	 */	
+	
+	public List getAuthorizedContentTypeDefinitionVOList(InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Bug
+	{    	
+		List accessableContentTypeDefinitionVOList = new ArrayList();
+    	
+		List allContentTypeDefinitionVOList = this.getContentTypeDefinitionVOList(); 
+		Iterator i = allContentTypeDefinitionVOList.iterator();
+		while(i.hasNext())
+		{
+		    ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)i.next();
+			if(getIsAccessApproved(contentTypeDefinitionVO.getId(), infoGluePrincipal))
+			    accessableContentTypeDefinitionVOList.add(contentTypeDefinitionVO);
+		}
+    	
+		return accessableContentTypeDefinitionVOList;
+	}
+	
+	/**
+	 * This method returns true if the user should have access to the contentTypeDefinition sent in.
+	 */
+    
+	public boolean getIsAccessApproved(Integer contentTypeDefinitionId, InfoGluePrincipal infoGluePrincipal) throws SystemException
+	{
+		CmsLogger.logInfo("getIsAccessApproved for " + contentTypeDefinitionId + " AND " + infoGluePrincipal);
+		boolean hasAccess = false;
+    	
+		Database db = CastorDatabaseService.getDatabase();
+       
+		beginTransaction(db);
+
+		try
+		{ 
+			hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentTypeDefinition.Read", contentTypeDefinitionId.toString());
+		
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+    
+		return hasAccess;
+	}
+	
 	/**
 	 * Returns the Content Type Definition with the given name.
 	 *
