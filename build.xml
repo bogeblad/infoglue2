@@ -53,6 +53,11 @@
 	<fileset id="deliver.properties" dir="${conf}" includes="deliver.properties"/>
 
 	<!--
+	* fileset for the deliver version of mapping.xml.
+	-->
+	<fileset id="deliver.mapping" dir="${conf}/deliver" includes="mapping.xml"/>
+
+	<!--
 	* paths
 	-->
 	<path id="build.classpath">
@@ -94,13 +99,15 @@
 
 	<!--
 	* Compiles Java source files and copies resources to the build output directory
-	* that need to be on the classpath
+	* that need to be on the classpath.  Also copies the Velocity templates required by
+	* the Preview app to the classpath; these are loaded by Java classes that are hard-coded
+	* to expect them here.
 	-->
 	<target name="compile" depends="init">
-		<javac destdir="${build.classes}" classpathref="build.classpath" depend="true">
+		<javac destdir="${build.classes}" classpathref="build.classpath" debug="true" depend="true">
 			<src refid="build.sourcepath"/>
 		</javac>
-		<javac destdir="${test.classes}" classpathref="build.classpath" depend="true">
+		<javac destdir="${test.classes}" classpathref="build.classpath" debug="true" depend="true">
 			<src refid="test.sourcepath"/>
 		</javac>
 		<copy todir="${build.classes}">
@@ -118,6 +125,9 @@
 			</filterset>
 		</copy>
 		<copy todir="${build.classes}">
+			<fileset dir="${conf}/cms" includes="mapping.xml"/>
+		</copy>
+		<copy todir="${build.classes}">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
 		<copy todir="${build.classes}">
@@ -125,6 +135,9 @@
 				<include name="**/*.properties"/>
 				<include name="**/*.xml"/>
 			</fileset>
+		</copy>
+		<copy todir="${build.classes}">
+			<fileset dir="${webapp}" includes="preview/*.vm"/>
 		</copy>
 	</target>
 
@@ -167,20 +180,26 @@
 	<!--
 	* Deploys the deliver working app by unpacking the war file created by the war target into
 	* the working deploy directory.  By default, the compile target copies deliver.properties
-	* into build/classes using the settings for the working app.
+	* into build/classes using the settings for the working app.  Replaces the mapping.xml from
+	* the war with the deliver version.
 	-->
 	<target name="deploy-working" depends="war-deliver" description="Unpacks war to working dir">
 		<unwar src="${deliver.war.file}" dest="${deploy.dir.working}"/>
+		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
+			<fileset refid="deliver.mapping"/>
+		</copy>
 	</target>
 
 	<!--
 	* Deploys the preview app, replacing deliver.properties with one that
 	* has context.root.deliver and operatingMode.deliver set appropriately.
+	* Replaces the mapping.xml from the war with the deliver version.
 	-->
 	<target name="deploy-preview" depends="war-deliver" description="Unpacks war to preview dir">
 		<unwar src="${deliver.war.file}" dest="${deploy.dir.preview}"/>
 		<copy todir="${deploy.dir.preview}/WEB-INF/classes" overwrite="true">
 			<fileset refid="deliver.properties"/>
+			<fileset refid="deliver.mapping"/>
 			<filterset refid="project.filters"/>
 			<filterset>
 				<filter token="context.root.deliver" value="${context.root.preview}"/>
@@ -192,11 +211,13 @@
 	<!--
 	* Deploys the deliver live app, replacing deliver.properties with one that
 	* has context.root.deliver and operatingMode.deliver set appropriately.
+	* Replaces the mapping.xml from the war with the deliver version.
 	-->
 	<target name="deploy-live" depends="war-deliver" description="Unpacks war to live dir">
 		<unwar src="${deliver.war.file}" dest="${deploy.dir.live}"/>
 		<copy todir="${deploy.dir.live}/WEB-INF/classes" overwrite="true">
 			<fileset refid="deliver.properties"/>
+			<fileset refid="deliver.mapping"/>
 			<filterset refid="project.filters"/>
 			<filterset>
 				<filter token="context.root.deliver" value="${context.root.live}"/>
