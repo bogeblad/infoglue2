@@ -34,6 +34,10 @@ import org.infoglue.cms.entities.workflow.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 
+import com.opensymphony.oscache.base.CacheEntry;
+import com.opensymphony.oscache.base.NeedsRefreshException;
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,10 +45,12 @@ import java.util.Iterator;
 
 public class CacheController extends Thread
 { 
-	private static Map cache = new HashMap();
+	private static Map caches = new HashMap();
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
 	private boolean continueRunning = true;
+	
+	private static GeneralCacheAdministrator generalCache = new GeneralCacheAdministrator();
 	
 	public CacheController()
 	{
@@ -58,26 +64,54 @@ public class CacheController extends Thread
 	
 	public static void cacheObject(String cacheName, Object key, Object value)
 	{
-		if(!cache.containsKey(cacheName))
-			cache.put(cacheName, new HashMap());
+		if(!caches.containsKey(cacheName))
+		    caches.put(cacheName, new HashMap());
 			
-		Map cacheInstance = (Map)cache.get(cacheName);
+		Map cacheInstance = (Map)caches.get(cacheName);
 		cacheInstance.put(key, value);
 	}	
 	
 	public static Object getCachedObject(String cacheName, Object key)
 	{
-		Map cacheInstance = (Map)cache.get(cacheName);
-		return (cacheInstance == null) ? null : cacheInstance.get(key);
-	}
+        Map cacheInstance = (Map)caches.get(cacheName);
+        return (cacheInstance == null) ? null : cacheInstance.get(key);
+    }
 
+	public static void advancedCacheObject(String cacheName, Object key, Object value)
+	{
+	    //cacheObject(cacheName, key, value);
+	    
+	    if(!caches.containsKey(cacheName))
+		    caches.put(cacheName, new GeneralCacheAdministrator());
+			
+		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
+		cacheAdministrator.putInCache(key.toString(), value);
+	}	
+	
+	public static Object getAdvancedCachedObject(String cacheName, Object key)
+	{
+	    //return getCachedObject(cacheName, key);
+	    Object value = null;
+	    
+	    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
+	    try 
+	    {
+	        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key.toString(), CacheEntry.INDEFINITE_EXPIRY);
+		} 
+	    catch (NeedsRefreshException nre) 
+	    {
+	        cacheAdministrator.cancelUpdate(key.toString());
+		}
+		 
+		return value;
+	}
 
 	public static void clearCache(String cacheName)
 	{
 		CmsLogger.logInfo("Clearing the cache called " + cacheName);
-		if(cache.containsKey(cacheName))
+		if(caches.containsKey(cacheName))
 		{
-			Map cacheInstance = (Map)cache.get(cacheName);
+			Map cacheInstance = (Map)caches.get(cacheName);
 			cacheInstance.clear();
 			//cache.remove(cacheName);
 		}
@@ -88,8 +122,8 @@ public class CacheController extends Thread
 		if(entity == null)
 		{	
 			CmsLogger.logInfo("Clearing the caches");
-			CmsLogger.logInfo("cache.entrySet().size:" + cache.entrySet().size());
-			for (Iterator i = cache.entrySet().iterator(); i.hasNext(); ) 
+			CmsLogger.logInfo("caches.entrySet().size:" + caches.entrySet().size());
+			for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
 			{
 				Map.Entry e = (Map.Entry) i.next();
 				CmsLogger.logInfo("e:" + e.getKey());
@@ -101,7 +135,8 @@ public class CacheController extends Thread
 		{
 			CmsLogger.logInfo("Clearing some caches");
 			CmsLogger.logInfo("entity:" + entity);
-			for (Iterator i = cache.entrySet().iterator(); i.hasNext(); ) 
+			System.out.println("entity:" + entity);
+			for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
 			{
 				Map.Entry e = (Map.Entry) i.next();
 				CmsLogger.logInfo("e:" + e.getKey());
@@ -176,7 +211,7 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("userCache") && (entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0))
+				if(cacheName.equalsIgnoreCase("userCache") && (entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 				{
 					clear = true;
 				}
@@ -184,7 +219,7 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("sortedChildContentsCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0))
+				if(cacheName.equalsIgnoreCase("sortedChildContentsCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 				{
 					clear = true;
 				}
@@ -192,8 +227,18 @@ public class CacheController extends Thread
 				if(clear)
 				{	
 					CmsLogger.logWarning("clearing:" + e.getKey());
-					Map cacheInstance = (Map)e.getValue();
-					cacheInstance.clear();
+					Object object = e.getValue();
+					if(object instanceof Map)
+					{
+						Map cacheInstance = (Map)e.getValue();
+						cacheInstance.clear();
+					}
+					else
+					{
+					    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
+						cacheInstance.flushAll();
+						System.out.println("clearing:" + e.getKey());
+					}
 				}
 				else
 				{
@@ -222,6 +267,7 @@ public class CacheController extends Thread
 			clearCache(RepositoryImpl.class);
 			clearCache(RepositoryLanguageImpl.class);
 			clearCache(RoleImpl.class);
+			clearCache(GroupImpl.class);
 			clearCache(ServiceDefinitionImpl.class);
 			clearCache(SiteNodeTypeDefinitionImpl.class);
 			clearCache(SystemUserImpl.class);
@@ -241,6 +287,7 @@ public class CacheController extends Thread
 			clearCache(WorkflowImpl.class);
 			clearCache(CategoryImpl.class);
 			clearCache(ContentCategoryImpl.class);
+			clearCache(RegistryImpl.class);
 			
 			clearCache(InterceptionPointImpl.class);
 			clearCache(InterceptorImpl.class);
