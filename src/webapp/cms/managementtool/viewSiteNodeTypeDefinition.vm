@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Site node type definition details" "Site node type definition details" "siteNodeTypeDefinitionId=$siteNodeTypeDefinitionId")
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="UpdateSiteNodeTypeDefinition.action">
+<table>
+	<tr>
+		<td>Name <a href="DeleteSiteNodeTypeDefinition.action?siteNodeTypeDefinitionId=$!siteNodeTypeDefinitionId">Delete</a></td>
+	</tr>
+	<tr>
+		<td>#editField("SiteNodeTypeDefinition.name" "name" $!name "51")</td>
+	</tr>	
+	<tr>
+		<td>#editField("SiteNodeTypeDefinition.description" "description" $!description "51")</td>
+	</tr>		
+	<tr>
+		<td>#editField("SiteNodeTypeDefinition.invokerClassName" "invokerClassName" $!invokerClassName "51")</td>
+	</tr>		
+	<tr>
+		<th colspan="2">&nbsp;</th>
+	</tr>
+	
+	<tr>
+		<td colspan="2">Right now this siteNodeTypeDefinition has the following AvailableServiceBindings</td>
+	</tr>
+	<tr>
+		<th colspan="2" align="left"><b>AvailableServiceBinding Name</b></th>
+	</tr>
+	
+	#foreach ($availableServiceBindingVO in $allAvailableServiceBindings)
+	<tr>
+		<td colspan="2">		
+			#set($checked = "")
+			#foreach ($assignedAvailableServiceBindingVO in $assignedAvailableServiceBindings)
+				#if($assignedAvailableServiceBindingVO.getAvailableServiceBindingId() == $availableServiceBindingVO.getAvailableServiceBindingId())
+					#set($checked = "checked")
+				#end 
+			#end
+			<input type="checkbox" name="availableServiceBindingId" value="$availableServiceBindingVO.getAvailableServiceBindingId()" $checked>$availableServiceBindingVO.getName()
+		</td>
+	</tr>
+	#end
+
+	<tr>
+		<td colspan="2">
+			<input type="hidden" name="siteNodeTypeDefinitionId" value="$!siteNodeTypeDefinitionId">
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<a href="javascript:saveAndExit(document.editForm, 'UpdateSiteNodeTypeDefinition!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="ViewListSiteNodeTypeDefinition.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+
+	</tr>
+	
+</table>
+</div>
+</body>
+</html>

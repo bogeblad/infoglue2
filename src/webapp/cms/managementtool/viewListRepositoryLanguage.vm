@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Available languages on $repository.getName()" "Add / Remove Repository Language" "")
+
+#lvHead(["Language name","Code","Status", "Action"] "" "" "" "")
+
+<form action="RepositoryLanguage!update.action">
+<input type="hidden" name="repositoryId" value="$repository.repositoryId"
+
+#set( $lvConstraint =0 )
+#set($cnt = 0)
+#foreach ($repositoryLanguageVO in $availableLanguages)
+	#set($languageVO = $this.getLanguage($repositoryLanguageVO.repositoryLanguageId))
+	#set($status = $repositoryLanguageVO.isPublished)
+	#if($status == false)
+		#set ($state = "Unpublished")
+		#set ($act = "<a href='RepositoryLanguage.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'>Publish</a>")			
+	#else
+		#set ($state = "Published")
+		#set ($act = "<a href='RepositoryLanguage!unpublish.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'>Unpublish</a>")
+	#end
+	#set ($cb = "<input type='checkbox' name='languageId' value='$languageVO.getLanguageId()' checked ></input>")
+	#set( $row = ["$cb $languageVO.getName()","$languageVO.getLanguageCode()","$state","$act"] )
+	#set($cnt = $cnt + 1)
+	#lvAddRow($row $cnt $languageVO.getLanguageId())
+#end
+
+#foreach ($languageVO in $allRemainingLanguages)
+	#set ($cb = "<input type='checkbox' name='languageId' value='$languageVO.getLanguageId()'>")
+	#set( $row = ["$cb $languageVO.getName()","$languageVO.getLanguageCode()","",""] )
+	#set($cnt = $cnt + 1)
+	#lvAddRow($row $cnt $languageVO.getLanguageId())
+#end
+
+#lvEnd()
+
+<table>
+	<tr>
+		<td>
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<a href="ViewRepositoryOverview.action?repositoryId=$repository.repositoryId"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+
+</body>
+</html>

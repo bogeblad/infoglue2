@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Available service binding details" "Available service binding details" "availableServiceBindingId=$availableServiceBindingId")
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="UpdateAvailableServiceBinding.action">
+<table>
+	<tr>
+		<td>#editField("AvailableServiceBinding.name" "name" $!name "51")</td>
+	</tr>	
+	<tr>
+		<td>#editField("AvailableServiceBinding.description" "description" $!description "51")</td>
+	</tr>			
+	<tr>
+		<td>#editField("AvailableServiceBinding.visualizationAction" "visualizationAction" $!visualizationAction "51")</td>
+	</tr>			
+	<tr>
+		<td>#yesNoDropDown("AvailableServiceBinding.isMandatory" "isMandatory" $isMandatory)</td>
+	</tr>		
+	<tr>
+		<td>#yesNoDropDown("AvailableServiceBinding.isUserEditable" "isUserEditable" $isUserEditable)</td>
+	</tr>		
+	<tr>
+		<td>#yesNoDropDown("AvailableServiceBinding.isInheritable" "isInheritable" $isInheritable)</td>
+	</tr>		
+	
+	<tr>
+		<td colspan="2">Right now the AvailableServiceBinding contains the marked ServiceDefinitions</td>
+	</tr>
+	<tr>
+		<th width="200" align="left"><b>ServiceDefinition Name</b></th>
+	</tr>
+	
+	#foreach ($serviceDefinitionVO in $allServiceDefinitions)
+	<tr>
+		<td width="200">		
+			#set($checked = "")
+			#foreach ($availableServiceDefinitionVO in $availableServiceDefinitions)
+				#if($availableServiceDefinitionVO.getServiceDefinitionId() == $serviceDefinitionVO.getServiceDefinitionId())
+					#set($checked = "checked")
+				#end 
+			#end
+			<input type="checkbox" name="serviceDefinitionId" value="$serviceDefinitionVO.getServiceDefinitionId()" $checked>$serviceDefinitionVO.getName()
+			
+		</td>
+	</tr>
+	#end
+
+	<tr>
+		<th width="200" align="left">&nbsp;</th>
+	</tr>
+		
+	<tr>
+		<input type="hidden" name="availableServiceBindingId" value="$!availableServiceBindingId">
+		<td>
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<a href="javascript:saveAndExit(document.editForm, 'UpdateAvailableServiceBinding!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="ViewListAvailableServiceBinding.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+
+	</tr>
+	
+</table>
+</div>
+</body>
+</html>

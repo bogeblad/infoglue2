@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("InfoGlue Up2Date" "Available updates" "")
+
+<br/>
+<strong>Infoglue AutoUpdate system</strong><br/>
+<br/>
+
+#set($lvConstraint = 0) 
+
+
+Installed updates
+#lvHead(["Title","Description"] "" "" "" "")
+
+
+#set($cnt = 0)
+
+#set($v = $installedUpdates)
+#foreach ($upd in $v)
+	#set($confirmUninstall="JavaScript:ruSure('${upd.getTitle()}','UnInstallUpdateMain.action?updatePackageId=${upd.getPackageId()}');")
+	#set($q='"')
+	#set( $row = ["$upd.getTitle()","<table width=98%><tr><td>$upd.getDescription()</td><td align=right>[<a href=$q${confirmUninstall}$q>Uninstall</a>] &nbsp;&nbsp;</td></tr></table>"] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt 1)
+#end
+
+#lvEnd()
+
+<br/>
+<br/>
+#set($available=$this.getAvailableUpdates())
+<nobr>Available updates ( @ $currentUpdateServer | latest check: $!this.getLatestRefresh() )</nobr>
+#set($lvConstraint = 1) 
+ 
+
+#lvHead(["Title","Description"] "Install update" "InstallUpdateMain.action" "ViewListUp2Date.action?title=Up2Date" "Do you really want to install the update:<br/><br/>")
+##set($cnt = 0)
+#foreach ($upd in $available)
+	#set ( $rurl = "JavaScript:OpenDetails('${upd.getDecodedDetailsUrl()}');")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$upd.getTitle()'/><a title='Click to read more about this update' href=$rurl>$upd.getTitle()</a>","$upd.getDescription()"] )
+	#set($cnt = $cnt + 1)
+	#lvAddRow($row $cnt $upd.getPackageId())
+#end
+
+#lvEnd()
+
+#endManagementTool()
+
+<script language="JavaScript">
+function ruSure(pack, url)
+{
+	question = confirm("Do you want to uninstall package: " + pack);
+	if (question !="0")
+	{
+		document.location = url;
+	}
+}
+
+function InstallPackage(packId)
+{
+	// check the package and call submit
+	// alert("will install: " + packId);
+	var cb=document.getElementById("CB" + packId);
+	cb.checked = true;
+	parent.frames["toolbar"].submitListForm("updatePackage");
+}
+function OpenDetails(uri)
+{
+	window.open(uri,"PackageDetails",
+    "height=700,width=750,status=yes,toolbar=no,menubar=no,location=no,scrollbars=1");
+}
+</script>

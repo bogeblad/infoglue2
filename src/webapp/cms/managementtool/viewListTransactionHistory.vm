@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+#beginManagementTool("Transaction History" "Transaction history" "")
+
+#set($lvConstraint = 0) 
+#lvHead(["Name","User","date/time","type","object id","object name"] "Delete roles" "DeleteRole.action" "ViewListRole.action?title=Roles" "Do you really want to delete the role:<br/><br/>")
+
+#set($cnt = 0)
+#foreach ($transactionHistoryVO in $transactionHistories)
+	#set( $transactionHistoryId = $transactionHistoryVO.getTransactionHistoryId() ) 
+	
+	#set( $row = ["$transactionHistoryVO.getName()","$transactionHistoryVO.getSystemUserName()","$transactionHistoryVO.getTransactionDateTime()","$transactionHistoryVO.getTransactionTypeName()","$transactionHistoryVO.getTransactionObjectId()","$transactionHistoryVO.getTransactionObjectName()"])
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $transactionHistoryId)
+#end
+
+#lvEnd()
+#endManagementTool()

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("InterceptionPoint details" "InterceptionPoint details" "interceptionPointId=$interceptionPointId")
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="UpdateInterceptionPoint.action">
+<table>
+	<tr>
+		<td colspan="2">#editField("InterceptionPoint.category" "category" $!interceptionPointVO.category "50")</td>
+	</tr>		
+	<tr>
+		<td colspan="2">#editField("InterceptionPoint.name" "name" $!interceptionPointVO.name "50")</td>
+	</tr>		
+	<tr>
+		<td colspan="2">#editField("InterceptionPoint.description" "description" $!interceptionPointVO.description "50")</td>
+	</tr>	
+	<tr>
+		<td colspan="2">#selectField("InterceptionPoint.usesExtraDataForAccessControl" "usesExtraDataForAccessControl" $!interceptionPointVO.usesExtraDataForAccessControl [["true", "Yes"], ["false", "No"]])</td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2" class="biglabel">Right now the InterceptionPoint is intercepted by the marked interceptors</td>
+	</tr>
+	#foreach ($interceptor in $allInterceptors)
+	<tr>
+		<td colspan="2">		
+			#set($checked = "")
+			#foreach ($assignedInterceptor in $assignedInterceptors)
+				#if($assignedInterceptor.id == $interceptor.id)
+					#set($checked = "checked")
+				#end 
+			#end
+			<input type="checkbox" name="interceptorId" value="$interceptor.id" $checked>$interceptor.getName()			
+		</td>
+	</tr>
+	#end
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+
+	<tr>
+		<input type="hidden" name="interceptionPointId" value="$!interceptionPointId">
+		<td>
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<a href="javascript:saveAndExit(document.editForm, 'UpdateInterceptionPoint!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="ViewListInterceptionPoint.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+		
+	</tr>	
+</table>
+</form>
+</div>
+</body>
+</html>

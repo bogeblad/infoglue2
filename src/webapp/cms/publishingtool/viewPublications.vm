@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<script Language=JavaScript>
+function showHide(a) 
+{
+	var theDiv=document.getElementById("e"+a);	
+	var theImg=document.getElementById("i"+a);	
+	
+	if(theDiv.style.display == '')
+	{	
+		theImg.src = "images/tree/smallplus.gif";
+		theDiv.style.display ='none';
+	}
+	else
+	{
+		theImg.src = "images/tree/smallminus.gif";
+		theDiv.style.display ='';
+	}
+}
+
+function ruSure(txt, url)
+{
+	question = confirm(txt);
+	if (question !="0")
+	{
+		document.location = url;
+	}
+}
+
+function checkAllBoxes()
+{
+ 	var field = document.listForm.sel;
+ 	for (i = 0; i < field.length; i++)
+		field[i].checked = true;
+}
+
+function uncheckAllBoxes()
+{
+	var field = document.listForm.sel;
+	for (i = 0; i < field.length; i++)
+		field[i].checked = false;
+}
+
+</script>
+
+#macro(PreparePublication $p)
+
+#end
+
+
+
+#beginPublishingTool("Publications - $repositoryVO.getName()" "Publications" "")
+
+
+<table width=100%>
+<tr>
+<td width=50%><img src="images/trans.gif" width="350" height="1"></td><td></td><td width=50%><img src="images/trans.gif" width="350" height="1"></td>
+</tr>
+
+<!--tr><td><img src="images/greydot.gif" height="1" width="100%" border=0></td><td></td><td><img src="images/greydot.gif" height="1" width="100%" border=0></td></tr-->
+
+<tr>
+<td valign="top">
+
+#set($eh = $editions.size())
+#set($vh = $contentToPublish.size() + $siteNodeToPublish.size())
+
+#if($eh > $vh)
+	#set($vh=$eh)
+#end
+
+#set($vh=$vh * 30)
+
+
+<!--   *****  VERSIONS FOR PUBLISHING  *******  -->
+
+<strong>Submitted for publishing</strong><br/><br/>
+
+#set($lvBorder = 0) 
+#set($lvConstraint = -1) 
+##lvHead(["Name (comment)","Modified", "&nbsp;"] "Publish items" "" "" "")
+#lvHead(["Name (comment)","Modified"] "Publish items" "" "" "")
+
+#hiddenField("repositoryId" $repositoryId)
+
+#set($cnt = 0)
+
+
+## EVENTS UP FOR REVIEW
+#foreach ($publicationEvent in $publicationEvents)
+	#set($cId = $publicationEvent.id) 
+	#set($q='"')
+	#set($singleQuote="'")
+	#set($publicationName = $this.escape($publicationEvent.name))
+	#set($deny="JavaScript:ruSure('Do you really want to deny $publicationName','DenyPublicationRequest.action?eventId=$publicationEvent.id&repositoryId=${repositoryId}');")
+	#set($deny="$q$deny$q")
+	#set($denyUrlStart = "<a title='Deny content, $publicationName, and send it back to content provider' href=") 
+	#set($denyUrlEnd="><img src=images/deny.gif border=0></a>")
+	
+	#set($rowUrl = "ViewContent.action?contentId=$contentVO.getContentId()&title=Content%20details")
+
+	#if($publicationEvent.entityClass.indexOf("ContentVersion") > -1)
+		#if($publicationEvent.typeId == 3)
+			#set($icon = "<img src='images/tree/unpublishContentItem.gif' border=0>")
+		#else
+			#set($icon = "<img src='images/tree/contentItem.gif' border=0>")
+		#end
+	#else
+		#if($publicationEvent.typeId == 3)
+			#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
+		#else
+			#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
+		#end	
+	#end
+	
+	#if($publicationEvent.description.length() > 50)
+		#set($description = "${publicationEvent.description.substring(0,50)}...")
+	#else
+		#set($description = "${publicationEvent.description}")
+	#end
+	
+	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))	
+	##set( $row = ["$icon $publicationEvent.name ($description)","$modifiedDate", "$denyUrlStart$deny$denyUrlEnd"] )
+	#set( $row = ["$icon $publicationEvent.name <span title='$publicationEvent.description'>($description)</span>","$modifiedDate"] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $cId)
+#end
+
+
+#if( $cnt==0)
+	<tr><td></td><td>&nbsp;No versions marked for publishing available</td></tr>
+#end
+
+#lvEnd()
+
+#if($cnt > 1)
+<br>
+<a href="javascript:checkAllBoxes();">
+<img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0">
+</a>
+		
+<a href="javascript:uncheckAllBoxes();">
+<img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0">
+</a>
+#end
+
+</td>
+
+<!-- LINE BETWEEN TABLES -->
+<td valign="top">&nbsp; <img src="images/greydot.gif" height="$vh" width="2" border=0 align=left></td>
+
+<td valign="top">
+
+<!--   *****  EDITIONS  *******  -->
+<strong>Previous published editions</strong><br/><br/>
+	
+#set($lvConstraint = 0) 
+#lvHead(["Name","Description", "Date"] "" "" "" "")
+
+		<form name="listFormPublication" action="Confirm.action" method="POST">
+			<input type="hidden" name="header" value="Unpublish edition"/>
+			<input type="hidden" name="yesDestination" value="DeleteEdition!checkForModifiedVersions.action?repositoryId=$repositoryId"/>
+			<input type="hidden" name="noDestination" value="ViewPublications.action?repositoryId=$repositoryId"/>
+			<input type="hidden" name="message" value="You are about to unpublish this edition<br>"/>
+
+	#hiddenField("repositoryId" $repositoryId)
+
+
+## Start on odd but dont reset cnt, for rowid´s sake
+#set( $chk = $cnt % 2)
+#if($chk==1)
+	#set($cnt = $cnt + 1)
+#end
+#set($newcnt = $cnt)
+
+#foreach ($publicationVO in $editions)
+	#set($cnt = $cnt + 1)
+	#set( $cId = $publicationVO.getId() ) 
+	
+	#set( $rowUrl = "")
+	
+	#if ($cnt > $newcnt + 1)
+		#set( $chkbox = "<input type='checkbox' disabled='1'/>")
+	#else
+		#set( $chkbox = "<input type='checkbox' id='sel' name='sel' value='$cId' onClick=CheckUncheck('r${cnt}',this); /><input type='hidden' name='rowtitle' value='$publicationVO.getName()'/>")
+	#end	
+	
+	#set( $row = "<a onclick=showHide('$publicationVO.getPublicationId()');><img id='i$publicationVO.getPublicationId()' src='images/tree/smallplus.gif' border=0></a><a href=JavaScript:showHide('$publicationVO.getPublicationId()');>$publicationVO.getName()</a>")
+
+	#set( $row = "$row <div id='e$publicationVO.getPublicationId()' style='display:none;'>")
+	
+	## PUBLICATION_DETAILS
+	#set( $versions = $this.getPublicationDetails($cId) )
+	#foreach ($publicationEvent in $versions)
+		
+		#if($publicationEvent.entityClass.indexOf("ContentVersion") > -1)
+			#if($publicationEvent.typeId == 3)
+				#set($icon = "<img src='images/tree/unpublishContentItem.gif' border=0>")
+			#else
+				#set($icon = "<img src='images/tree/contentItem.gif' border=0>")
+			#end
+		#else
+			#if($publicationEvent.typeId == 3)
+				#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
+			#else
+				#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
+			#end	
+		#end
+					
+		#if($velocityCount != $versions.size() || $versionssn.size() > 0)
+			#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space3.gif'>  $icon")
+			#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space1.gif'> <img src='images/tree/space0.gif'>")
+		#else
+			#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space2.gif'> $icon")			
+			#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space0.gif'> <img src='images/tree/space0.gif'>")
+		#end
+		
+		#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))			
+		#set( $row = "$row$tree $publicationEvent.name ($publicationEvent.description) $newLine <font color=669999><small>modified: $modifiedDate </small></font> <br>")
+	#end
+
+	#set( $row = "$row </div>")
+
+	#set($modifiedDate = $formatter.formatDate($publicationVO.getPublicationDateTime(), "yyyy-MM-dd HH:mm"))	
+	#set( $roww = ["$chkbox $row","$publicationVO.getDescription()", "$modifiedDate"] )
+	
+	#lvAddRow($roww $cnt $cId)
+#end
+
+#if( $cnt==0)
+	<tr><td></td><td>&nbsp;No editions available</td></tr>
+#end
+
+#lvEnd()
+</form>
+
+
+</td>
+</tr>
+
+</table>
+
+
+#endPublishingTool()

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Site node type definitions" "Site node type definitions" "")
+
+#set($lvConstraint = 1) 
+#lvHead(["Name","Description","Invoker class name"] "Delete roles" "DeleteSiteNodeTypeDefinition.action" "ViewListSiteNodeTypeDefinition.action?title=SiteNodeTypeDefinitions" "Do you really want to delete the SiteNodeTypeDefinition:<br/><br/>")
+
+#set($cnt = 0)
+#foreach ($siteNodeTypeDefinitionVO in $siteNodeTypeDefinitions)
+	#set( $siteNodeTypeDefinitionId = $siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId() ) 
+	
+	#set( $rowUrl = "ViewSiteNodeTypeDefinition.action?siteNodeTypeDefinitionId=$siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId()&title=Site%20node%20type%20definition%20details")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$siteNodeTypeDefinitionVO.getName()'/> <a href=$rowUrl>$siteNodeTypeDefinitionVO.getName()</a>","$siteNodeTypeDefinitionVO.getDescription()","$siteNodeTypeDefinitionVO.getInvokerClassName()"] )
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $siteNodeTypeDefinitionId)
+#end
+
+#lvEnd()
+#endManagementTool()

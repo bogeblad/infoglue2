@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>Menus</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<script type="text/javascript" language="JavaScript">
+	<!-- 
+		var exp;
+		function treeView()
+		{
+			#if($tree == "applet")
+				return document.getElementById("CMSTree");
+			#else
+				return document.getElementById("itreeFrame");
+			#end
+		}
+
+		function htmlTreeItemClick(itemId, repoId, path)
+		{
+			// alert("treeclick");
+			parent.frames['main'].location.href="ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
+		}
+	
+		function reloadMain()
+		{
+			resize();
+			//alert('Setting the main area');
+			parent.frames[3].location.href = "ViewStructureToolStartPage.action?repositoryId=$repositoryId";
+		}
+		
+		function loadMainArea(siteNodeId, repositoryId, path)
+		{
+		    //alert("siteNodeId:" + siteNodeId);
+		    parent.frames[3].location.href = "ViewSiteNode.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
+		}
+	    
+	    function refreshNode(nodeId, changeTypeId, addedNodeId)
+		{
+			//alert("Refreshing tree...");
+			#if($tree == "applet")			
+				treeView().refreshTreeNode(nodeId, changeTypeId, addedNodeId);
+			#else
+				if (changeTypeId == 4)
+					frames['itreeFrame'].location.reload();
+				else
+					frames['itreeFrame'].location.href="ViewStructureHtmlTree.action?exp=" + exp + "&repositoryId=${repositoryId}" + "&akey=/" + nodeId + "/&select=" + addedNodeId;
+			#end
+			
+		}
+	    
+	   	function notifyIsLoaded()
+	    {
+	    	document.getElementById('treeDiv').style.left = '2px';
+	    	document.getElementById('treeDiv').style.right = '2px';
+	    }
+
+	    function notifyExp(v)
+	    {
+	    	exp=v;
+	    }
+
+	   	function resize() 
+	    {
+
+		    var w_newWidth,w_newHeight;
+		    var w_maxWidth=1600, w_maxHeight=1200;
+		
+			if (window.innerWidth || window.innerHeight){ 
+				w_newWidth = window.innerWidth; 
+				w_newHeight = window.innerHeight; 
+			} 
+			//IE Mozilla 
+			if (document.body.clientWidth || document.body.clientHeight){ 
+				w_newWidth = document.body.clientWidth; 
+				w_newHeight = document.body.clientHeight - 10; 
+			}
+			
+ 		    if (w_newWidth>w_maxWidth)
+			    w_newWidth=w_maxWidth;
+			
+			if (w_newHeight>w_maxHeight)
+			    w_newHeight=w_maxHeight;
+			
+			if (w_newHeight < 1) //For firebird cases
+			    w_newHeight=window.innerHeight - 10;
+			    
+			//alert("w_newWidth:" + w_newWidth);
+			//alert("w_newHeight:" + w_newHeight);
+			try 
+			{
+				document.getElementById("loadingDiv").style.visibility = "hidden";
+				treeView().setSize(w_newWidth - 10,w_newHeight - 50);
+				treeView().style.visibility = "visible";
+			}
+			catch(e)
+			{
+			}
+					
+			//window.scroll(0,0);
+			// alert(treeView().width)
+			treeView().width  = w_newWidth - 10;
+			treeView().height = w_newHeight - 50;
+
+        }
+
+		window.onResize = resize;
+		window.onLoad   = resize;
+	-->
+	</script>
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+</head>
+
+<body class="structuretool" onload="javascript:reloadMain();" onResize="javascript:resize();">
+
+<div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:0px; height:100%; visibility:visble; z-index:0">
+<table class="siteNodetool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td valign="top" width="100%" height="100%"></td>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>
+</div>
+
+<!-- This div is the tree before it's loaded.... -->
+<div style="LEFT:2px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visble; z-index:0">
+<table class="structuretool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+<tr>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td valign="top" width="100%">
+		
+		<table cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td class="menu"><img src="images/trans.gif" height="15"></td>
+		</tr>
+		<tr>
+			<td class="menu" width="100%" height="100%">
+				#if($repositoryId > -1)
+					Loading...	
+				#else
+					Either the system contains no repositories or you do not have access to any of them. Contact your administrator if you have questions.
+				#end
+			</td>
+		</tr>	
+		</table>
+	</td>	
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>
+</div>
+
+
+<div id="treeDiv" style="LEFT:-500px; RIGHT:500px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visible; z-index:0">
+<table class="structuretool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+<tr>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td valign="top" width="100%">
+		
+		<table cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td class="menu"><img src="images/trans.gif" height="15"></td>
+		</tr>
+		<tr>
+			<td class="menu">    
+					#if($tree == "applet")
+						#showJavaTree("220" "550" "240" "225" "180" "SiteNode" $repositoryId "false")
+					#else
+						<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree.action?repositoryId=${repositoryId}" width="220" height="550" align="baseline"></IFRAME>
+					#end					
+			</td>
+		</tr>	
+		
+		</table>
+	
+	</td>	
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>
+</div>
+
+
+#treeSelector("Structure")
+
+<div style="RIGHT:2px; position:absolute; BOTTOM:-2px; visibility:visble; z-index:0">
+	<image src="images/dragCorner.gif" width="12" height="12"></td>
+</div>
+
+
+</body>
+</html>

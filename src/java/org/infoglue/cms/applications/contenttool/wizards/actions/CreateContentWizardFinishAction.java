@@ -1,0 +1,195 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
+
+package org.infoglue.cms.applications.contenttool.wizards.actions;
+
+import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.applications.common.VisualFormatter;
+
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+
+
+/**
+ * This action represents the last step in the create content wizard. It creates the content and does all other neccessairy steps
+ * defined by the requestor.
+ */
+
+public class CreateContentWizardFinishAction extends CreateContentWizardAbstractAction
+{
+	private ConstraintExceptionBuffer ceb 		= null;
+	private String returnAddress 				= "CreateContentWizardFinish.action";
+	private String refreshAddress 				= null;
+	private Integer contentId					= null;	
+	
+	public CreateContentWizardFinishAction()
+	{
+		this.ceb = new ConstraintExceptionBuffer();			
+	}
+	
+	
+	public String doExecute() throws Exception
+	{
+		CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
+		
+		if(createContentWizardInfoBean.getParentContentId() == null)
+		{
+			return "stateLocation"; 
+		} 
+		
+		createContentWizardInfoBean.getContent().setCreator(this.getInfoGluePrincipal().getName());
+		this.ceb = createContentWizardInfoBean.getContent().getValueObject().validate();
+		
+		if(!this.ceb.isEmpty())
+		{
+			return "inputContent";
+		}
+		
+		if(createContentWizardInfoBean.getContentVersions().size() == 0)
+		{
+			return "inputContentVersions";
+		}
+		//ceb.throwIfNotEmpty();
+    			
+    	System.out.println("About to create everything....");	
+    	ContentVO contentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), createContentWizardInfoBean);
+		this.contentId = contentVO.getContentId();
+		
+		String returnAddress = createContentWizardInfoBean.getReturnAddress();
+		System.out.println("returnAddress:" + returnAddress);
+		returnAddress = returnAddress.replaceAll("#entityId", this.contentId.toString());
+		System.out.println("returnAddress:" + returnAddress);
+		
+		this.invalidateCreateContentWizardInfoBean();
+		
+		this.getResponse().sendRedirect(returnAddress);
+		
+		return NONE;
+	}
+	
+	public void setParentContentId(Integer parentContentId)
+	{
+		getCreateContentWizardInfoBean().setParentContentId(parentContentId);
+	}
+
+	public Integer getParentContentId()
+	{
+		return getCreateContentWizardInfoBean().getParentContentId();
+	}
+
+	public void setRepositoryId(Integer repositoryId)
+	{
+		getCreateContentWizardInfoBean().setRepositoryId(repositoryId);
+	}
+
+	public Integer getRepositoryId() 
+	{
+		return getCreateContentWizardInfoBean().getRepositoryId();
+	}
+
+	public void setContentTypeDefinitionId(Integer contentTypeDefinitionId)
+	{
+		getCreateContentWizardInfoBean().setContentTypeDefinitionId(contentTypeDefinitionId);
+	}
+
+	public Integer getContentTypeDefinitionId()
+	{
+		return getCreateContentWizardInfoBean().getContentTypeDefinitionId();
+	}	
+	
+	public java.lang.String getName()
+	{
+		return getCreateContentWizardInfoBean().getContent().getName();
+	}
+
+	public String getPublishDateTime()
+	{    		
+		return new VisualFormatter().formatDate(getCreateContentWizardInfoBean().getContent().getPublishDateTime(), "yyyy-MM-dd HH:mm");
+	}
+        
+	public String getExpireDateTime()
+	{
+		return new VisualFormatter().formatDate(getCreateContentWizardInfoBean().getContent().getExpireDateTime(), "yyyy-MM-dd HH:mm");
+	}
+
+	public Boolean getIsBranch()
+	{
+		return getCreateContentWizardInfoBean().getContent().getIsBranch();
+	}    
+            
+	public void setName(String name)
+	{
+		getCreateContentWizardInfoBean().getContent().setName(name);
+	}
+    	
+	public void setPublishDateTime(String publishDateTime)
+	{
+		getCreateContentWizardInfoBean().getContent().setPublishDateTime(new VisualFormatter().parseDate(publishDateTime, "yyyy-MM-dd HH:mm"));
+	}
+
+	public void setExpireDateTime(String expireDateTime)
+	{
+		getCreateContentWizardInfoBean().getContent().setExpireDateTime(new VisualFormatter().parseDate(expireDateTime, "yyyy-MM-dd HH:mm"));
+	}
+ 
+	public void setIsBranch(Boolean isBranch)
+	{
+		getCreateContentWizardInfoBean().getContent().setIsBranch(isBranch);
+	}
+
+	public ContentVO getContentVO()
+	{
+		return getCreateContentWizardInfoBean().getContent().getValueObject();
+	}
+
+	public void setContentVO(ContentVO contentVO)
+	{
+		getCreateContentWizardInfoBean().getContent().setValueObject(contentVO);
+	}
+
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
+	
+	public String getReturnAddress()
+	{
+		return returnAddress;
+	}
+
+	public void setRefreshAddress(String refreshAddress)
+	{
+		getCreateContentWizardInfoBean().setReturnAddress(refreshAddress);
+	}
+	
+	public String getRefreshAddress()
+	{
+		return getCreateContentWizardInfoBean().getReturnAddress();
+	}
+
+	public Integer getContentId()
+	{
+		return this.contentId;
+	}
+
+}

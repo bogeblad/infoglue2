@@ -1,0 +1,24 @@
+<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor JDO Configuration DTD Version 1.0//EN" "http://castor.exolab.org/jdo-conf.dtd">
+
+<database name="INFOGLUE_CMS" engine="mysql">
+    <driver class-name="@database.driver.class@" url="@database.url@">
+      <param name="user" value="@database.user@"/>
+      <param name="password" value="@database.password@"/>
+      <param name="autoReconnect" value="true"/>
+      <param name="useUnicode" value="true"/>
+      <param name="characterEncoding" value="UTF-8"/>
+    </driver>
+    <mapping href="classes/mapping.xml"/>
+</database>
+
+<!--
+<database name="@database.name@" engine="sql-server" >
+    <driver class-name="@database.driver.class@" url="@database.url@">
+     	<param name="DatabaseName" value="@database.name@"/>
+        <param name="user" value="@database.user@"/>
+        <param name="password" value="@database.password@" />
+        <param name="SelectMethod" value="Cursor" />
+    </driver>
+  <mapping href="classes/mapping.xml" />
+</database>
+-->

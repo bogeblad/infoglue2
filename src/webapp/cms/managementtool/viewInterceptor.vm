@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Interceptor details" "Interceptor details" "interceptorId=$interceptorId")
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="UpdateInterceptor.action">
+<table>
+	<tr>
+		<td colspan="2">#editField("Interceptor.name" "name" $!interceptorVO.name "50")</td>
+	</tr>		
+	<tr>
+		<td colspan="2">#editField("Interceptor.description" "description" $!interceptorVO.description "50")</td>
+	</tr>	
+	<tr>
+		<td colspan="2">#editField("Interceptor.className" "className" $!interceptorVO.className "50")</td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2" class="biglabel">Right now the Interceptor is intercepted by the marked interceptors</td>
+	</tr>
+	#foreach ($interceptionPoint in $allInterceptionPoints)
+	<tr>
+		<td colspan="2">		
+			#set($checked = "")
+			#foreach ($assignedInterceptionPoint in $assignedInterceptionPoints)
+				#if($assignedInterceptionPoint.id == $interceptionPoint.id)
+					#set($checked = "checked")
+				#end 
+			#end
+			<input type="checkbox" name="interceptionPointId" value="$interceptionPoint.id" $checked>$interceptionPoint.getName()			
+		</td>
+	</tr>
+	#end
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+
+	<tr>
+		<input type="hidden" name="interceptorId" value="$!interceptorId">
+		<td>
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<a href="javascript:saveAndExit(document.editForm, 'UpdateInterceptor!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="ViewListInterceptor.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+		
+	</tr>	
+</table>
+</div>
+</body>
+</html>

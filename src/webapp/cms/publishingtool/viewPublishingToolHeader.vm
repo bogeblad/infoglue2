@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>Header</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<script type="text/javascript" language="Javascript">
+
+		function showWorking()
+		{
+			var p = parent.frames["toolbar"].document.getElementById("progress");
+			p.style.visibility = "visible";
+			// alert("saving");
+		}
+		function reloadMenu(selectBox)
+		{
+			repositoryId = selectBox.value;
+			if(repositoryId != "")
+			{
+				showWorking();
+				//alert("top:" + top);
+			    parent.frames[2].location.href = "ViewPublications.action?repositoryId=" + repositoryId;
+	   			selectBox.value = "beg";		    
+			}
+		}
+
+	</script>
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+</head>
+
+<body class="publishingtool">
+
+<table border="0" class="publishingtool" cellspacing="0" cellpadding="0" width="100%" height="100%">
+<form name="selectbox" method="POST" action="">
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="7"><image src="images/trans.gif" width="1" height="10"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></a>
+	<td class="toolheader"><image src="images/$ui.getString("images.publishingtool.repositoryLabel")" width="70" height="19"></td> 
+	<td>
+  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:reloadMenu(this);">
+		    #if ($repositories.size() > 1)
+		    	<option value="beg" selected>$ui.getString("tool.publishingtool.chooseRepositoryLabel")</option>
+		    #end
+		    <!--option value="0">All repositories</option--> <!-- not yet -->
+		    #foreach ($repositoryVO in $repositories)
+		    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+		    #end
+		</select>
+	</td>
+	<td class="toolheader"><image src="images/trans.gif" width="10" height="19"></td>
+	<td class="toolheader"><image src="images/trans.gif" width="48" height="19"></td>
+	<td class="toolheader" width="80%"><image src="images/trans.gif" width="1" height="1"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></a>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="7"><image src="images/trans.gif" width="1" height="10"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</form>
+</table>
+
+<!--div style="LEFT:0px; position:absolute; TOP:39px; visibility:visble; z-index:0">
+<table cellpadding="0" cellspacing="0" border="0" width="100%" height="1">
+<tr>
+	<td bgcolor="#999999" width="100%"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>	
+</div-->
+
+</body>
+
+</html>

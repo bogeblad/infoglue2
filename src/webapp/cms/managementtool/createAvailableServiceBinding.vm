@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Create new available service binding" "New available service binding" "")
+
+<div class="fullymarginalized">
+
+<form method="POST" action="CreateAvailableServiceBinding.action">
+<table>
+	<tr>
+		<td>#editField("AvailableServiceBinding.name" "name" $!name "51")</td>
+	</tr>	
+	<tr>
+		<td>#editField("AvailableServiceBinding.description" "description" $!description "51")</td>
+	</tr>		
+	<tr>
+		<td>#editField("AvailableServiceBinding.visualizationAction" "visualizationAction" $!visualizationAction "51")</td>
+	</tr>			
+	<tr>
+		<td>#yesNoDropDown("AvailableServiceBinding.isMandatory" "isMandatory" true)</td>
+	</tr>		
+	<tr>
+		<td>#yesNoDropDown("AvailableServiceBinding.isUserEditable" "isUserEditable" true)</td>
+	</tr>		
+	<tr>
+		<td>#yesNoDropDown("AvailableServiceBinding.isInheritable" "isInheritable" true)</td>
+	</tr>		
+	
+	<tr>
+		<input type="hidden" name="action" value="save">
+		<td>
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<a href="ViewListAvailableServiceBinding.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+
+	</tr>
+
+</table>
+</div>
+</body>
+</html>

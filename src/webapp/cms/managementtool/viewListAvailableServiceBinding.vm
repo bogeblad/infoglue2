@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Available service binding" "Available service bindings" "")
+
+#set($lvConstraint = 1) 
+#lvHead(["Name","Description","Is mandatory","isUserEditable","isInheritable"] "Delete available service binding" "DeleteAvailableServiceBinding.action" "ViewListAvailableServiceBinding.action?title=AvailableServiceBindings" "Do you really want to delete the available service binding:<br/><br/>")
+
+#set($cnt = 0)
+#foreach ($availableServiceBindingVO in $availableServiceBindings)
+	#if($availableServiceBindingVO.getIsMandatory())
+		#set( $mandatory = "Yes" )		
+	#else
+		#set( $mandatory = "No" )			
+	#end
+	#if($availableServiceBindingVO.getIsUserEditable())
+		#set( $editable = "Yes" )
+	#else
+		#set( $editable = "No" )
+	#end
+	#if($availableServiceBindingVO.getIsInheritable())
+		#set( $inheritable = "Yes" )
+	#else
+		#set( $inheritable = "No" )
+	#end
+
+	
+	
+	
+	#set( $availableServiceBindingId = $availableServiceBindingVO.getAvailableServiceBindingId() ) 
+
+	#set( $rowUrl = "ViewAvailableServiceBinding.action?availableServiceBindingId=$availableServiceBindingVO.getAvailableServiceBindingId()&title=Available%20service%20binding%20details")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$availableServiceBindingVO.getName()'/> <a href=$rowUrl>$availableServiceBindingVO.getName()</a>","$availableServiceBindingVO.getDescription()",$mandatory,$editable,$inheritable] )
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $availableServiceBindingId)
+#end
+
+#lvEnd()
+#endManagementTool()

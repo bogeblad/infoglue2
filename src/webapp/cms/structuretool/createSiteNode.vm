@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+#if($isBranch)
+	#beginStructureTool("Create new folder" "New folder" "" "0" "0" "0")
+#else
+	#beginStructureTool("Create new siteNode" "New siteNode" "" "0" "0" "0")
+#end
+-->
+
+#beginStructureTool("Create new siteNode" "New siteNode" "" "0" "0" "0")
+
+
+<div class="fullymarginalized">
+<form name="editForm" method="POST" action="CreateSiteNode.action">
+<table>
+	<tr>
+		<td colspan="3">#editTextField("SiteNode.name" "name" $!name "30" "normaltextfield" "")</td>
+	</tr>
+	<tr>
+		<td colspan="4">#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "readonly")
+	</tr>		
+	<tr>
+		<td colspan="4">#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "readonly")</td>
+	</tr>		
+	##if(!$!isBranch)
+	<tr>
+		<td colspan="3">
+			SiteNode type<br/>
+			<select class="siteNodetypes" name="siteNodeTypeDefinitionId">
+			#foreach ($siteNodeTypeDefinitionVO in $siteNodeTypeDefinitions)
+				<option value="$siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId()">$siteNodeTypeDefinitionVO.getName()</option>
+			#end
+			</select>
+		</td>
+	</tr>
+	##end	
+	<tr>
+		<td colspan="3">&nbsp;</td>
+	</tr>		
+	<tr>
+		<input type="hidden" name="isBranch" value="$!isBranch">
+		<input type="hidden" name="parentSiteNodeId" value="$!parentSiteNodeId">
+		<input type="hidden" name="repositoryId" value="$!repositoryId">
+		<input type="hidden" name="unrefreshedSiteNodeId" value="$!parentSiteNodeId">
+		<input type="hidden" name="changeTypeId" value="2">
+		<td>
+			<input type="image" img src="$ui.getString("images.structuretool.buttons.save")" width="50" height="25" border="0">
+			<a href="ViewSiteNode.action?siteNodeId=$!parentSiteNodeId"><img border="0" src="$ui.getString("images.structuretool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+	</tr>
+
+</table>
+</div>
+
+<script language="JavaScript">
+<!--
+document.editForm.name.focus();
+//-->
+</script>
+
+#endStructureTool()

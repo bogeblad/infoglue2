@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>$ui.getString("tool.managementtool.exportRepository.header")</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+</head>
+
+<body class="managementtooledit">
+
+<div class="fullymarginalized">
+
+<table width="300">
+	<tr>
+		<td class="biglabel">
+			$ui.getString("tool.managementtool.exportRepository.headerFinished")
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			$ui.getString("tool.managementtool.exportRepository.finishedText")<br/><br/>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<a href="$fileUrl">$fileName</a><br/><br/>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<a href="javascript:window.close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+		</td>
+	</tr>
+
+	</form>	
+</table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,220 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
+
+package org.infoglue.deliver.invokers;
+
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.util.CacheController;
+import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.CmsPropertyHandler;
+
+/**
+ * @author Mattias Bogeblad
+ *
+ * This interface defines what a Invoker of a page have to be able to do.
+ * The invokers are used to deliver a page to the user in a certain fashion.
+ *
+ */
+
+public abstract class PageInvoker
+{
+	private HttpServletRequest request				= null;
+	private HttpServletResponse response 			= null;
+	private TemplateController templateController	= null;
+	private DeliveryContext deliveryContext 		= null;
+
+	private String pageString	 					= null;
+
+	/*public PageInvoker()
+	{
+	}
+	*/
+
+	/**
+	 * The default constructor for PageInvokers.
+	 * @param request
+	 * @param response
+	 * @param templateController
+	 * @param deliveryContext
+	 */
+
+	public PageInvoker(HttpServletRequest request, HttpServletResponse response, TemplateController templateController, DeliveryContext deliveryContext)
+	{
+		this.request = request;
+		this.response = response;
+		this.templateController = templateController;
+		this.deliveryContext = deliveryContext;
+	}
+
+	/**
+	 * This is the method that will deliver the page to the user. It can have special
+	 * handling of all sorts to enable all sorts of handlers. An example of uses might be to
+	 * be to implement a WAP-version of page delivery where you have to set certain headers in the response
+	 * or a redirect page which just redirects you to another page.
+	 */
+
+	public abstract void invokePage() throws SystemException, Exception;
+
+
+	/**
+	 * This method is used to send the page out to the browser or other device.
+	 * Override this if you need to set other headers or do other specialized things.
+	 */
+
+	public void deliverPage() throws Exception
+	{
+		CmsLogger.logInfo("C PageKey:" + this.getDeliveryContext().getPageKey());
+
+		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(this.getTemplateController().getLanguageId());
+		CmsLogger.logInfo("languageVO:" + languageVO);
+		String contentType = this.getTemplateController().getPageContentType();
+		//CmsLogger.logWarning("contentType:" + contentType);
+		//if(!languageVO.getCharset().equalsIgnoreCase("utf-8"))
+		//{
+			this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
+			CmsLogger.logInfo("contentType:" + contentType + "; charset=" + languageVO.getCharset());
+		//}
+		//else
+		//{
+		//	this.getResponse().setContentType(contentType);
+		//	CmsLogger.logWarning("contentType:" + contentType);
+		//}
+
+
+		String isPageCacheOn = CmsPropertyHandler.getProperty("isPageCacheOn");
+		CmsLogger.logInfo("isPageCacheOn:" + isPageCacheOn);
+		String refresh = this.getRequest().getParameter("refresh");
+
+		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")))
+		{
+			this.pageString = (String)CacheController.getCachedObject("pageCache", this.getDeliveryContext().getPageKey());
+			if(this.pageString == null)
+			{
+				invokePage();
+				this.pageString = getPageString();
+
+				if(!this.getTemplateController().getIsPageCacheDisabled()) //Caching page if not disabled
+					CacheController.cacheObject("pageCache", this.getDeliveryContext().getPageKey(), pageString);
+			}
+			else
+			{
+				CmsLogger.logInfo("There was a cached copy..."); // + pageString);
+			}
+
+			//Caching the pagePath
+			this.getDeliveryContext().setPagePath((String)CacheController.getCachedObject("pagePathCache", this.getDeliveryContext().getPageKey()));
+			if(this.getDeliveryContext().getPagePath() == null)
+			{
+				this.getDeliveryContext().setPagePath(this.getTemplateController().getCurrentPagePath());
+
+				if(!this.getTemplateController().getIsPageCacheDisabled()) //Caching page path if not disabled
+					CacheController.cacheObject("pagePathCache", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getPagePath());
+			}
+
+		}
+		else
+		{
+			invokePage();
+			this.pageString = getPageString();
+
+			this.getDeliveryContext().setPagePath(this.templateController.getCurrentPagePath());
+		}
+
+		//if(!languageVO.getCharset().equalsIgnoreCase("utf-8"))
+		//{
+			//CmsLogger.logInfo("Encoding resulting html to " + languageVO.getCharset());
+			//pageString = new String(pageString.getBytes(languageVO.getCharset()), "UTF-8");
+		//}
+
+		/*
+		FileHelper.writeUTF8ToFileSpecial(new File("/usr/local/tomcat/logs/utf8special.txt"), pageString, false);
+		FileHelper.writeToFile(new File("/usr/local/tomcat/logs/normal.txt"), pageString, false);
+		FileHelper.writeToFile(new File("/usr/local/tomcat/logs/normal2.txt"), pageString.getBytes("UTF-8"));
+		*/
+
+		//FileHelper.writeUTF8ToFileSpecial(new File("c:/temp/" + this.getDeliveryContext().getSiteNodeId() + "utf8special.txt"), pageString, false);
+		//FileHelper.writeToFile(new File("c:/temp/" + this.getDeliveryContext().getSiteNodeId() + "normal.txt"), pageString, false);
+		//FileHelper.writeToFile(new File("c:/temp/" + this.getDeliveryContext().getSiteNodeId() + "normal2.txt"), pageString.getBytes("UTF-8"));
+
+		//DataOutputStream out = new DataOutputStream(this.getResponse().getOutputStream());
+		//out.writeBytes(pageString);
+
+		//ServletOutputStream out = this.getResponse().getOutputStream();
+		//out.write(pageString.getBytes("UTF-8"));
+		PrintWriter out = this.getResponse().getWriter();
+		out.println(pageString);
+		out.flush();
+		out.close();
+	}
+
+
+
+	/**
+	 * This method is used to allow pagecaching on a general level.
+	 */
+
+	public void cachePage()
+	{
+
+	}
+
+	public final DeliveryContext getDeliveryContext()
+	{
+		return deliveryContext;
+	}
+
+	public final HttpServletRequest getRequest()
+	{
+		return request;
+	}
+
+	public final HttpServletResponse getResponse()
+	{
+		return response;
+	}
+
+	public final TemplateController getTemplateController()
+	{
+		return templateController;
+	}
+
+	public String getPageString()
+	{
+		return pageString;
+	}
+
+	public void setPageString(String string)
+	{
+		pageString = string;
+	}
+
+}

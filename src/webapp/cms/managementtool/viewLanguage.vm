@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Language details" "Language details" "languageId=$languageId")
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="UpdateLanguage.action">
+<table>
+	<tr>
+		<td colspan="2">#editField("Language.name" "name" $!name "10")</td>
+	</tr>		
+	<tr>
+		<td colspan="2">#editField("Language.languageCode" "languageCode" $!languageCode "10")</td>
+	</tr>
+	<tr>
+		<td colspan="2">#editField("Language.charset" "charset" $!charset "10")</td>
+	</tr>
+	<tr>
+		<input type="hidden" name="languageId" value="$!languageId">
+		<td>
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0">
+			<a href="ViewListLanguage.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a></td>
+		</td>
+	</tr>
+	
+</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<SCRIPT LANGUAGE="JavaScript">
+function reloadMenu()
+		{
+			menuFrame = parent.header;
+			menuFrame.location.reload();
+		}
+</SCRIPT>
+
+#beginManagementTool("Available repositories" "Repositories" "")
+
+#set($lvConstraint = 1) 
+#lvHead(["Name","Description", "Dns Name"] "Delete repositories" "DeleteRepository.action" "ViewListRepository.action?title=Repositories" "Do you really want to delete the repositories listed below? This action will delete all information and structure contained in that repository so don't do it unless you are absolutely sure.<br/><br/>")
+
+#set($cnt = 0)
+#foreach ($repositoryVO in $repositories)
+	#set( $repositoryId = $repositoryVO.getRepositoryId() ) 
+	
+	#set( $rowUrl = "ViewRepository.action?repositoryId=$repositoryVO.getRepositoryId()&title=Repository%20details")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$repositoryVO.getName()'/> <a href=$rowUrl>$repositoryVO.getName()</a>","$repositoryVO.getDescription()","$repositoryVO.getDnsName()"])
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $repositoryId)
+#end
+#lvEnd()
+<script>reloadMenu()</script>
+#endManagementTool()

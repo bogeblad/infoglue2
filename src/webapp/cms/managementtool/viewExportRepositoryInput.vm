@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>$ui.getString("tool.managementtool.exportRepository.header")</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+	
+	<script language="JavaScript">
+	<!--
+		
+		/**
+		 * This method submits the form and shows a wait-dialog.
+		 */
+		 
+		function submitForm()
+		{
+			moveDiv("savingLayer", "20px", "20px");
+			resizeDiv("savingLayer", "350px", "150px");
+			showDiv("savingLayer");
+			document.editForm.submit();
+		}
+
+		
+	-->
+	</script>
+	
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+</head>
+
+<body class="managementtooledit">
+
+<div class="fullymarginalized">
+
+<div id="savingLayer" class="infobackground">
+	<div class="infoheader">Exporting repository</div>
+	<div class="infobody">
+		<br>Exporting repository - please wait!<br><br>
+		<img src="images/progressbar.gif">
+	</div>
+</div>
+
+<form name="editForm" method="POST" action="ExportRepository.action">
+<input type="hidden" name="repositoryId" value="$!repositoryId">
+<table width="300">
+	<tr>
+		<td class="biglabel">
+			$ui.getString("tool.managementtool.exportRepository.header")
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			$ui.getString("tool.managementtool.exportRepository.introduction")<br/><br/>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+			<a href="javascript:window.close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+		</td>
+	</tr>
+
+	</form>	
+</table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginMyDesktopTool($ui.getString("tool.mydesktoptool.welcomeHeader") "Welcome to your desktop" "")
+
+<script type="text/javascript">
+<!--
+	function invokeWorkflowView(workflowId, actionId, view)
+	{
+		//alert("workflowId:" + workflowId);
+		//alert("actionId:" + actionId);
+		//alert("view:" + view);
+		//document.location.href="ViewMyDesktopToolStartPage!invoke.action?workflowId=" + workflowId + "&actionId=" + actionId;
+		var url = "";
+
+		if(view.indexOf("?") > -1)
+			url="" + view + "&workflowId=" + workflowId + "&actionId=" + actionId + "&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action";
+		else
+			url="" + view + "?workflowId=" + workflowId + "&actionId=" + actionId + "&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action";
+		//alert(url);
+
+		document.location.href=url;
+	}
+-->
+</script>
+
+#set($currentWorkflowVOList = $workflowVOList)
+#set($availableWorkflows = $availableWorkflowVOList)
+
+#foreach($workflowVO in $currentWorkflowVOList)
+<div id="activeWorkflow${workflowVO.workflowId}DetailsProperties" class="propertiesDiv" style="left:30px; top:100px; visibility:hidden; z-index:10">
+	<div id="activeWorkflow${workflowVO.workflowId}DetailsPropertiesHandle" class="propertiesDivHandle">
+	<table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
+	<tr>
+		<td align="left" class="smallwhitelabel">${workflowVO.name} - workflow #$workflowVO.id</td>
+		<td align="right"><a href="javascript:hideDiv('activeWorkflow${workflowVO.workflowId}DetailsProperties');" class="white">close</a></td>
+	</tr>
+	</table>
+	</div>
+	<div id="activeWorkflow${workflowVO.workflowId}DetailsPropertiesBody" class="propertiesDivBody">
+		<table border="0" cellpadding="4" cellspacing="0" width="100%">
+		#foreach($workflowStepVO in $workflowVO.steps)
+		<tr style="background-color: #if(!$workflowStepVO.finishDate)white #else gray#end;">
+			<td>$workflowStepVO.name</td>
+			<td>#if($workflowStepVO.owner)$workflowStepVO.owner#else Not specified#end</td>
+			<td>#if($workflowStepVO.caller)$workflowStepVO.caller#else Not specified#end</td>
+			<td>$workflowStepVO.status</td>
+			<td>#if(!$workflowStepVO.startDate)Not started#else$formatter.formatDate($workflowStepVO.startDate, "yyyy-MM-dd")#end</td>
+			<td>#if(!$workflowStepVO.finishDate)Not completed#else$formatter.formatDate($workflowStepVO.finishDate, "yyyy-MM-dd")#end</td>
+		</tr>
+		#end
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var theHandle = document.getElementById("activeWorkflow${workflowVO.workflowId}DetailsPropertiesHandle");
+	var theRoot   = document.getElementById("activeWorkflow${workflowVO.workflowId}DetailsProperties");
+	Drag.init(theHandle, theRoot);
+	//alert("width:" + getWindowWidth());
+	//alert("height" + getWindowHeight());
+ 	theRoot.style.left = (getWindowWidth() / 2 - 400) + "px";
+ 	theRoot.style.top = "100px";
+</script>
+#end
+
+
+#foreach($workflowVO in $availableWorkflows)
+<div id="availableWorkflow${workflowVO.name}DetailsProperties" class="propertiesDiv" style="left:50px; top:100px; visibility:hidden; z-index:10">
+	<div id="availableWorkflow${workflowVO.name}DetailsPropertiesHandle" class="propertiesDivHandle">
+	<table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
+	<tr>
+		<td align="left" class="smallwhitelabel">${workflowVO.name}</td>
+		<td align="right"><a href="javascript:hideDiv('availableWorkflow${workflowVO.name}DetailsProperties');" class="white">close</a></td>
+	</tr>
+	</table>
+	</div>
+	<div id="availableWorkflow${workflowVO.workflowId}DetailsPropertiesBody" class="propertiesDivBody">
+		<table border="0" cellpadding="4" cellspacing="0" width="100%">
+		#foreach($workflowStepVO in $workflowVO.declaredSteps)
+		<tr style="background-color: white;">
+			<td>$workflowStepVO.name</td>
+			<td>#if($workflowStepVO.owner)$workflowStepVO.owner#else Not specified#end</td>
+		</tr>
+		#foreach($workflowActionVO in $workflowStepVO.actions)
+		<tr style="background-color: #eeeeee;">
+			<td style="padding-left: 20px; font-size:10px;">$workflowActionVO.name</td>
+			<td style="padding-left: 20px; font-size:10px;"><!--$workflowActionVO.view--></td>
+		</tr>
+		#end
+		#end
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var theHandle = document.getElementById("availableWorkflow${workflowVO.name}DetailsPropertiesHandle");
+	var theRoot   = document.getElementById("availableWorkflow${workflowVO.name}DetailsProperties");
+	Drag.init(theHandle, theRoot);
+	//alert("width:" + getWindowWidth());
+	//alert("height" + getWindowHeight());
+ 	theRoot.style.left = (getWindowWidth() / 2 - 400) + "px";
+ 	theRoot.style.top = "100px";
+</script>
+#end
+
+
+<div id="workflows" style="position:absolute; left:20px; top:20px; width:350px; height:200px; z-index:1">
+	<table tableborder="0" border="0" bgcolor="#666666" width="70%" cellpadding="1" cellspacing="0">
+	<tr>
+		<td>
+			#set($lvConstraint = 0)
+			#lvHead(["Ongoing&nbsp;workflows", "Action"] "" "" "" "")
+			#set($cnt = 0)
+			#set($quote = '"')
+			#foreach ($workflowVO in $currentWorkflowVOList)
+				#set($action = "")
+				#foreach ($workflowActionVO in $workflowVO.globalActions)
+					#set($iconUrl = $workflowActionVO.metaAttributes.get("icon"))
+					#if($workflowActionVO.isGlobalAction)
+						#set($viewGlobalAction = $workflowActionVO.getView())
+		  			    #if($viewGlobalAction == "")
+		  			    	#set($viewGlobalAction = "ViewMyDesktopToolStartPage!invoke.action")
+						#end
+
+						#set($viewGlobalAction = "$quote$viewGlobalAction$quote")
+
+						#set($action = "$!action <a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $viewGlobalAction);'><img src='$iconUrl' border='0' width='15' height='15' alt='$workflowActionVO.getName()'/></a>")
+					#end
+				#end
+
+				#set($view = "$quote$workflowVO.getView()$quote")
+				#set($row = ["<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'>$workflowVO.getName()</a>", "$!action"])
+				#set($cnt = $cnt + 1)
+				#lvAddRow($row $cnt "$workflowVO.getWorkflowId()")
+			#end
+
+			#if($cnt == 0)
+				#set($row = ["There are no active workflows", ""])
+				#lvAddRow($row $cnt "")
+			#end
+
+			#lvEnd()
+
+		</td>
+	</tr>
+	</table>
+	<br>
+	<table tableborder="0" border="0" bgcolor="#666666" width="70%" cellpadding="1" cellspacing="0">
+	<tr>
+		<td>
+			#set($lvConstraint = 0)
+			#lvHead(["Available&nbsp;workflows", "Action"] "" "" "" "")
+			#set($cnt = 0)
+			#set($quote = '"')
+			#foreach ($availableWorkflowVO in $availableWorkflows)
+				#set($view = "$quote$availableWorkflowVO.getView()$quote")
+				#set($row = ["<a href='javascript:showDiv(${quote}availableWorkflow${availableWorkflowVO.name}DetailsProperties${quote});'>$availableWorkflowVO.getName()</a>", "<a href='CreateWorkflowInstance.action?name=$formatter.encode($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
+				#set($cnt = $cnt + 1)
+				#lvAddRow($row $cnt "$availableWorkflowVO.getWorkflowId()")
+			#end
+
+			#if($cnt == 0)
+				#set($row = ["There are no workflows available", ""])
+				#lvAddRow($row $cnt "")
+			#end
+
+			#lvEnd()
+
+		</td>
+	</tr>
+	</table>
+</div>
+
+<div id="tasks" style="position:absolute; left:300px; top:20px; width:700px; height:200px; z-index:2">
+	<table tableborder="0" border="0" bgcolor="#666666" width="70%" cellpadding="1" cellspacing="0">
+	<tr>
+		<td>
+			#set($lvConstraint = 0)
+			#lvHead(["Incoming task"] "" "" "" "")
+			#set($cnt = 0)
+			#set($quote = '"')
+			#foreach ($workflowActionVO in $workflowActionVOList)
+				#if(!$workflowActionVO.isGlobalAction)
+					#set($view = $workflowActionVO.getView())
+	  			    #if($view == "")
+	  			    	#set($view = "ViewMyDesktopToolStartPage!invoke.action")
+					#end
+					#set($view = "$quote$view$quote")
+					##set($row = ["<a STYLE='cursor:hand;' onclick='invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
+					#set($row = ["<a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
+					#set($cnt = $cnt + 1)
+					#lvAddRow($row $cnt "$workflowActionVO.getId()")
+				#end
+			#end
+
+			#if($cnt == 0)
+				#set($row = ["You have no tasks at the moment"])
+				#lvAddRow($row $cnt "")
+			#end
+
+			#lvEnd()
+
+		</td>
+	</tr>
+	</table>
+</div>
+
+</body>
+</html>

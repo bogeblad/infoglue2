@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Available interceptors" "Interceptors" "")
+
+#set($lvConstraint = 1) 
+#lvHead(["Name","Description", "ClassName"] "Delete interceptors" "DeleteInterceptor.action" "ViewListInterceptor.action?title=Interceptors" "Do you really want to delete the interceptor:<br/><br/>")
+
+#set($cnt = 0)
+#foreach ($interceptorVO in $interceptorVOList)
+	#set( $interceptorId = $interceptorVO.getId() )
+	
+	#set( $rowUrl = "ViewInterceptor.action?interceptorId=$interceptorId&title=Interceptor%20details")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$interceptorVO.getName()'/> <a href=$rowUrl>$interceptorVO.getName()</a>","$interceptorVO.getDescription()", "$interceptorVO.getClassName()"] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $interceptorId)
+#end
+
+#lvEnd()
+#endManagementTool()

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Create new system user" "New system user" "")
+
+<form method="POST" action="CreateSystemUser.action">
+<div class="fullymarginalized">
+<table>
+	<tr>
+		<td>#editField("SystemUser.firstName" "firstName" $!firstName "51")</td><td>#editField("SystemUser.lastName" "lastName" $!lastName "51")</td>
+	</tr>	
+	<tr>
+		<td>#editField("SystemUser.userName" "userName" $!userName "51")</td><td>#editField("SystemUser.password" "password" $!password "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("SystemUser.email" "email" $!email "51")</td><td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td><td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<a href="ViewListSystemUser.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+	</tr>
+</table>
+</div>
+</form>
+
+</body>
+</html>

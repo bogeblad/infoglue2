@@ -1,0 +1,879 @@
+####################################
+##          CMS STUFF 	   	       #
+####################################
+
+#macro(workingDiv)
+<div id="working" style="border: 1px solid black; left: 30%; top: 30%; z-index: 10; visibility: hidden; position:absolute; width:300px; height:115px; z-index:1; padding:10px; BACKGROUND-COLOR: buttonface;">
+	<div style="LEFT: 0px; WIDTH: 100%; text-align: center;">
+		<FONT face="Verdana" size="-1" color="#006699"><STRONG>System is working</STRONG></FONT>
+		<hr width="80%" SIZE="2">
+	</div>
+	<div style="width: 100%; text-align: center;"><IMG alt="" src="images/workinganim.gif"></DIV>
+</div>
+#end
+
+
+##**************************************************
+## This is the header for all managementtool pages *
+##**************************************************
+
+#macro(beginManagementTool $title $toolbarKey $arguments)
+
+<html>
+<head>
+	<title>$title</title>
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<script language="JavaScript" src="script/listview.js"></script>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body class="managementtooledit" onload="javascript:refreshManagementToolBar('$toolbarKey', '$arguments');">
+#workingDiv()
+<div class="listmarginalized">
+<!--div class="fullymarginalized"-->
+#set( $lvColor = "blue")
+
+#end
+
+
+##**************************************************
+## This is the header for all contenttool pages    *
+##**************************************************
+
+#macro(beginContentTool $title $toolbarKey $arguments $unrefreshedContentId $changeTypeId $addedContentId)
+
+<html>
+<head>
+	<title>$title</title>
+	
+	<script type="text/javascript">
+	   _editor_url = "applications/HTMLArea/";
+	   _editor_lang = "en";
+	</script>
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<script type="text/javascript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/calendar1.js"></script>
+	<script type="text/javascript" src="script/editor.js"></script>
+	<script type="text/javascript" src="applications/HTMLArea/InfoGlueHTMLArea.js"></script>
+	<script type="text/javascript" src="applications/HTMLArea/htmlarea.js"></script>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+</head>
+
+<body class="contenttooledit" onload="javascript:refreshContentToolBar('$title', '$toolbarKey', '$arguments', $unrefreshedContentId, $changeTypeId, $addedContentId);">
+#set( $lvColor = "green")
+
+#end
+
+##**************************************************
+## This is the header for all structuretool pages    *
+##**************************************************
+
+#macro(beginStructureTool $title $toolbarKey $arguments $unrefreshedNodeId $changeTypeId $addedNodeId)
+
+<html>
+<head>
+	<title>$title</title>
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<script language="JavaScript" src="script/listview.js"></script>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body class="structuretooledit" onload="javascript:refreshStructureToolBar('$toolbarKey', '$arguments', '$unrefreshedNodeId', '$changeTypeId', '$addedNodeId');">
+
+#end
+
+##**************************************************
+## This is the header for all publishingtool pages *
+##**************************************************
+
+#macro(beginPublishingTool $title $toolbarKey $arguments)
+
+<html>
+<head>
+	<title>$title</title>
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<script language="JavaScript" src="script/listview.js"></script>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body class="publishingtooledit" onload="javascript:refreshPublishingToolBar('$title', '$toolbarKey', '$arguments');">
+<div class="fullymarginalized">
+#set( $lvColor = "brown")
+
+#end
+
+
+##**************************************************
+## This is the header for all mydesktoptool pages *
+##**************************************************
+
+#macro(beginMyDesktopTool $title $toolbarKey $arguments)
+
+<html>
+<head>
+	<title>$title</title>
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script language="JavaScript" src="script/infogluecommons.js"></script>
+	<script language="JavaScript" src="script/dom-drag.js"></script>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body class="mydesktoptooledit" onload="javascript:refreshMyDesktopToolBar('$title', '$toolbarKey', '$arguments');">
+<div class="fullymarginalized">
+#set( $lvColor = "yellow")
+
+#end
+
+
+##**************************************************
+## This is the footer for all managementtool pages *
+##**************************************************
+
+#macro(endManagementTool)
+</div>
+</body>
+</html>
+#end
+
+
+##**************************************************
+## This is the footer for all contenttool pages    *
+##**************************************************
+
+#macro(endContentTool)
+</body>
+</html>
+#end
+
+
+##**************************************************
+## This is the footer for all structuretool pages *
+##**************************************************
+
+#macro(endStructureTool)
+</body>
+</html>
+#end
+
+##**************************************************
+## This is the footer for all publishingtool pages *
+##**************************************************
+
+#macro(endPublishingTool)
+</div>
+</body>
+</html>
+#end
+
+##**************************************************
+## This is the header for all list-pages in the    *
+## management tool                                 *
+##**************************************************
+
+#macro(lvHead $headers $header $yesDestination $noDestination $message)
+
+#if ($lvBorder == 1)
+	<table tableborder=0 border=0 bgcolor=666666 width="100%" cellpadding="1" cellspacing="0"><tr><td>
+#end
+
+#set($lvChkBoxName = "sel")
+
+<div class="listmarginalized">
+	<script Language=JavaScript>
+		function downHeader(id)
+		{
+			return; // No functionallity in release 1.0
+			var top=document.getElementById("t" + id);	
+			var bot=document.getElementById("b" + id);	
+			var lft=document.getElementById("lleft");	
+
+			var arrow=document.getElementById("a" + id);	
+			if(arrow.src.indexOf("images/listarrowdown.gif") != -1)
+				arrow.src="images/listarrowrdown.gif";
+			else
+				arrow.src="images/listarrowrup.gif";
+			
+			top.className = "dark";
+			bot.className = "white";
+
+			if (id == 1)
+			{
+				lft.className = "dark";
+			}
+			else
+			{
+				id--;
+				top=document.getElementById("t" + id);	
+				bot=document.getElementById("b" + id);	
+				top.className = "dark";
+				bot.className = "white";
+				
+			}
+						
+		}
+
+		function upHeader(id)
+		{
+			return; // No functionallity in release 1.0
+			var top=document.getElementById("t" + id);	
+			var bot=document.getElementById("b" + id);	
+			var lft=document.getElementById("lleft");	
+
+			var arrow=document.getElementById("a" + id);	
+			if(arrow.src.indexOf("images/listarrowrdown.gif") != -1)
+				arrow.src="images/listarrowup.gif";
+			else
+				arrow.src="images/listarrowdown.gif";
+
+			bot.className = "dark";
+			top.className = "white";
+
+			if (id == 1)
+			{
+				lft.className = "white";
+			}
+			else
+			{
+				id--;
+				top=document.getElementById("t" + id);	
+				bot=document.getElementById("b" + id);	
+				top.className = "white";
+				bot.className = "dark";
+				
+			}
+
+
+		}
+	</script>
+	
+	#set( $span = $headers.size() * 2 )
+	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+
+	## Inget formulär om inget kan selectas
+	#if($lvConstraint != 0)
+		<form name="listForm" action="Confirm.action" method="POST">
+			<input type="hidden" name="header" value="$header"/>
+			<input type="hidden" name="yesDestination" value="$yesDestination"/>
+			<input type="hidden" name="noDestination" value="$noDestination"/>
+			<input type="hidden" name="message" value="$message"/>
+	#end
+	
+		<tr>
+			#foreach( $x in [0..$span] )
+			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			#end
+		</tr>
+
+		<tr class="dark$lvColor" valign="center">
+
+			<td id='lleft' class="white" width=1><img src="images/trans.gif" width="1" height="1"></td>
+			#set( $hcnt=0 )			
+			#foreach( $header in $headers )
+				#set( $hcnt=$hcnt + 1 )			
+				<td class="listheader" STYLE="cursor:hand;" onMouseDown="downHeader($hcnt);" onMouseUp="upHeader($hcnt);" onMouseOut="upHeader($hcnt);">
+					<!--img id="a$hcnt" align=right valign=middle src='images/listarrowdown.gif'/--><!-- No sorting in release 1.0 -->
+					<div class="minormarginalized">$header</div>	
+				</td>
+				#if ($velocityCount != $headers.size())
+					#set( $hcnt=$hcnt + 1 )			
+					<td class="dark$lvColor" width=2><img src="images/listsplit.gif" width="2" /></td>
+				#end
+			#end
+
+			<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1"></td>
+
+		</tr>
+
+		<tr>
+			#foreach( $x in [0..$span] )
+			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			#end
+		</tr>
+		
+#end
+
+##**************************************************
+## COPY This is the header for all list-pages in the    *
+## management tool                                 *
+##**************************************************
+
+#macro(oldlvHead $headers $header $yesDestination $noDestination $message)
+	#set( $span = $headers.size() * 2 - 1 )
+	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+
+	## Inget formulär om inget kan selectas
+	#if($lvConstraint != 0)
+		<form name="listForm" action="Confirm.action" method="POST">
+			<input type="hidden" name="header" value="$header"/>
+			<input type="hidden" name="yesDestination" value="$yesDestination"/>
+			<input type="hidden" name="noDestination" value="$noDestination"/>
+			<input type="hidden" name="message" value="$message"/>
+	#end
+	
+		<tr class="dark$lvColor">
+			#foreach( $header in $headers )
+				<td class="smalllabel"><div class="minormarginalized">$header</div></td>
+				#if ($velocityCount != $headers.size())
+					<td class="lightblue"><img src="images/trans.gif" width="1" height="1"></td>
+				#end
+			#end
+		</tr>
+		<tr class="light$lvColor">
+			<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr class="dark$lvColor">
+			<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+#end
+
+
+##**************************************************
+## This is the row in a list-pages in the          *
+## management tool                                 *
+##**************************************************
+
+#macro(lvAddRow $row $cnt $objectId)
+	## set $lvConstraint to -1, 0 or 1
+	##		-1: unlimited number of items can be selected
+	##		0: no items can be selected (no checkboxes visible)
+	##		1: one item can be selected
+	#*
+	#set( $loccnt = 0)
+	#set( $isOdd = $cnt % 2)
+	#if($isOdd==0)
+		#if($class=="class='white'")
+			#set($class = "class='light$lvColor'")
+		#else
+			#set($class = "class='white'")
+		#end
+	#end	
+	*#
+	#set( $loccnt = 0)
+	#set( $isOdd = $cnt % 2)
+	#if($isOdd==0)
+		#set($class = "class='light$lvColor'")
+	#else
+		#set($class = "class='white'")
+	#end	
+
+	
+	<tr id="r$cnt" $class  onMouseOver='listRowHiLight(this);' onMouseOut='listRowUnHiLight(this);'>
+
+		<td></td>
+		
+		#foreach( $item in $row )
+			<td valign='middle'>
+				<div class="minormarginalized">	
+					#if($loccnt==0)
+						<nobr>
+						#if($lvConstraint==-1)
+							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" onClick="CheckUncheck('r$cnt',this);"/>
+						#end	
+						#if($lvConstraint==1)
+							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" onClick="CheckUncheckSingle('r$cnt',this);"/>
+						#end
+						 $item
+						</nobr>						
+						#set( $loccnt = 1 )
+					#else
+						$item
+					#end
+				</div>
+			</td>
+			#if ($velocityCount != $row.size())
+				<td></td>
+			#end
+		#end
+
+		<td></td>
+
+	</tr>
+#end
+
+
+##**************************************************
+## This is the end for all lists in the            *
+## management tool                                 *
+##**************************************************
+
+#macro(lvEnd)
+	#if($lvConstraint!=0)
+		</form>
+	#end
+	</table>
+	
+	</div>
+	
+	#if($lvBorder==1)
+		</td></tr></table>
+	#end
+	
+#end
+
+
+##**************************************************
+## Usecase specific macros						   *
+##**************************************************
+
+#macro(inlineroles $rolelist)
+#foreach($roleVO in $rolelist)#if($velocityCount > 1), #end<a title="$roleVO.name">$roleVO.name</a>#end 
+#end
+
+#macro(inlineusers $userlist)
+	#foreach ( $u in $userlist )
+		<a title="$u.toString()"> 
+			$u.getUserName()
+		</a>
+	#end 
+#end
+
+
+##**************************************************
+## INPUT FIELD MACROS   						   *
+##**************************************************
+
+#macro(editTextField $fieldNameKey $fieldName $fieldValue $length $className)
+  #editTextField3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $className)
+#end
+
+#macro(editTextField3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $className)
+  $fieldNameLabel 
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font> 
+    #end
+  #end
+  <br/>
+  <input type="text" class="$className" name="$fieldName" value="$!fieldValue" size="$length" onChange="JavaScript:setDirty();"/>
+#end
+
+#macro(editTextField $fieldNameKey $fieldName $fieldValue $length $className $isReadOnly)
+  #editTextField4($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $className $isReadOnly)
+#end
+
+#macro(editTextField4 $fieldNameLabel $errorKey $fieldName $fieldValue $length $className $isReadOnly)
+  $fieldNameLabel 
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font> 
+    #end
+  #end
+  <br/>
+  <input type="text" $isReadOnly class="$className" name="$fieldName" value="$!fieldValue" size="$length" onChange="JavaScript:setDirty();"/>
+#end
+
+
+#macro(editTextArea $fieldNameKey $fieldName $fieldValue $cols $rows $className)
+  #editTextArea3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $cols $rows $className)
+#end
+
+#macro(editTextArea3 $fieldNameLabel $errorKey $fieldName $fieldValue $cols $rows $className)
+  $fieldNameLabel 
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font> 
+    #end
+  #end
+  <br/>
+  <textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea>
+#end
+
+##**************************************************************
+## Returns true if value is equal							   *
+##**************************************************************
+#macro(checkSelected $value $currentValue)
+#if($currentValue.equalsIgnoreCase($value))
+ selected="1"
+#end
+#end
+
+##**************************************************************
+## Returns true if value is equal							   *
+##**************************************************************
+#macro(checkChecked $value $currentValue)
+#if("$value" != "")
+#if($currentValue.indexOf($value) > -1)
+ checked="1"
+#end
+#end
+#end
+
+##**************************************************************
+## DATE INPUTS												   *
+##**************************************************************
+
+#macro(editDateField $fieldNameKey $fieldName $fieldValue $length $className $url $readOnly)
+  #editDateField4($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $className $url $readOnly)
+#end
+
+#macro(editDateField4 $fieldNameLabel $errorKey $fieldName $fieldValue $length $className $url $readOnly)
+  $fieldNameLabel 
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font>
+    #end
+  #end
+  <br/>
+  <input type="text" $readOnly class="$className" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar" onclick="javascript:openDatePopup(event, '$url', 'Calendar');"><img src="images/calendar.gif" border="0"></a>
+#end
+
+
+
+
+#macro(yesNoDropDown $fieldNameKey $fieldName $value)
+<table>
+	<tr>
+		<td>$ui.getString("entity.${fieldNameKey}.label")</td>
+	</tr>
+	<tr>
+		<td>
+			<select name="$fieldName" class="yesNoDropBox">
+				#if($value)
+					<option value="true" selected>Yes</option>
+					<option value="false">No</option>
+				#else
+					<option value="true">Yes</option>
+					<option value="false" selected>No</option>
+				#end
+			</select>
+		</td>
+	</tr>
+</table>
+#end
+
+#macro(selectField $fieldNameKey $fieldName $value $valuePairArray)
+<table>
+	<tr>
+		<td>$ui.getString("entity.${fieldNameKey}.label")
+			#if($errors.hasErrors($errorKey))
+				#foreach($errorMessage in $errors.getErrors($errorKey))
+			    	<font color="red"> - $errorMessage</font> 
+			    #end
+			#end
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<select name="$fieldName" class="dropbox">
+				#foreach($valuePair in $valuePairArray)
+					<option value="$valuePair.get(0)" #if("$valuePair.get(0)" == "$value") selected #end>$valuePair.get(1)</option>				
+				#end
+			</select>
+		</td>
+	</tr>
+</table>
+#end
+
+
+##**********************************************************
+## This applet shows the navigationtree                    *
+##**********************************************************
+
+#macro(showJavaTree $width $height $bgColorR $bgColorG $bgColorB $entityName $repositoryId $hideLeafs)
+#if($browserBean.isIE())
+  <OBJECT id="CMSTree" name="CMSTree" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
+	width="$width" height="$height" align="baseline"
+ 	codebase="http://java.sun.com/products/plugin/autodl/jinstall-1_4-windows-i586.cab#Version=1,4,0,0">
+ 	<PARAM NAME="code" VALUE="org.infoglue.cms.plugins.opentree.OpenTree.class">
+	<PARAM NAME="codebase" VALUE="applications/OpenTree">
+ 	<PARAM NAME="type" VALUE="application/x-java-applet;version=1.4">
+	<PARAM NAME="MAYSCRIPT" VALUE="true">
+	<PARAM NAME="scriptable" VALUE="true">
+	<PARAM NAME="bgColorR" value="$bgColorR">
+	<PARAM NAME="bgColorG" value="$bgColorG">
+	<PARAM NAME="bgColorB" value="$bgColorB">
+	<PARAM NAME="entityName" value="$entityName">
+	<PARAM NAME="repositoryId" value="$repositoryId">
+	<PARAM NAME="hideLeafs" value="$hideLeafs">
+
+	<COMMENT>
+        <EMBED id="CMSTree" type="application/x-java-applet;version=1.4"
+        	width="$width"
+           	height="$height" 
+           	align="baseline" 
+           	code="org.infoglue.cms.plugins.opentree.OpenTree.class" 
+           	codebase="applications/OpenTree"
+           	pluginspage="http://java.sun.com/products/plugin/index.html#download"
+           	MAYSCRIPT=true
+           	scriptable=true
+           	bgColorR="$bgColorR"
+           	bgColorG="$bgColorG"
+           	bgColorB="$bgColorB"
+           	entityName="$entityName"
+           	repositoryId="$repositoryId"
+           	hideLeafs="$hideLeafs">
+            <NOEMBED>
+                No Java 2 SDK, Standard Edition v 1.4 support for APPLET!!
+            </NOEMBED>
+        </EMBED>
+    </COMMENT>
+  </OBJECT>
+#else
+  <APPLET name="CMSTree" code="org.infoglue.cms.plugins.opentree.OpenTree.class" codebase="applications/OpenTree" align="baseline" width="${width}" height="$height" mayscript>
+	<PARAM NAME="bgColorR" value="$bgColorR">
+	<PARAM NAME="bgColorG" value="$bgColorG">
+	<PARAM NAME="bgColorB" value="$bgColorB">
+	<PARAM NAME="entityName" value="$entityName">
+	<PARAM NAME="repositoryId" value="$repositoryId">
+	<PARAM NAME="hideLeafs" value="$hideLeafs">
+    No JDK 1.4 support for APPLET!!
+  </APPLET>
+#end
+#end
+
+
+##**********************************************************
+## This applet shows the template editor                   *
+##**********************************************************
+
+#macro(showTemplateEditor $width $height $attributeName $deliveryBaseUrl)
+#if($browserBean.isIE())
+  <OBJECT name="${attributeName}InfoGlueCodeEditor" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
+	width="${width}" height="${height}" align="baseline"
+ 	codebase="http://java.sun.com/products/plugin/autodl/jinstall-1_4-windows-i586.cab#Version=1,4,0,0">
+ 	<PARAM NAME="code" VALUE="org.infoglue.cms.plugins.codeeditor.InfoGlueCodeEditorApplet.class">
+	<PARAM NAME="codebase" VALUE="applications/InfoGlueCodeEditor">
+ 	<PARAM NAME="type" VALUE="application/x-java-applet;version=1.4">
+	<PARAM NAME="MAYSCRIPT" VALUE="true">
+	<PARAM NAME="attributeId" value="${attributeName}">
+	<PARAM NAME="deliverySettingsUrl" value="${deliveryBaseUrl}/ViewApplicationSettings!getTemplateLogicMethods.action">
+
+	<COMMENT>
+        <EMBED name="${attribute.name}InfoGlueCodeEditor" id="${attributeName}InfoGlueCodeEditor" type="application/x-java-applet;version=1.4"
+        	width="$width"
+           	height="$height" 
+           	align="baseline" 
+           	code="org.infoglue.cms.plugins.codeeditor.InfoGlueCodeEditorApplet.class" 
+           	codebase="applications/InfoGlueCodeEditor"
+           	pluginspage="http://java.sun.com/products/plugin/index.html#download"
+           	MAYSCRIPT=true
+           	scriptable=true
+           	attributeId="${attributeName}"
+           	deliverySettingsUrl="${deliveryBaseUrl}/ViewApplicationSettings!getTemplateLogicMethods.action">
+            <NOEMBED>
+	        	No JDK 1.4 support for APPLET!!
+	        	<script type="text/javascript">
+	        		noJava = true;
+	        	</script>
+            </NOEMBED>
+        </EMBED>
+    </COMMENT>
+  </OBJECT>
+#else
+  <APPLET name="${attributeName}InfoGlueCodeEditor" code="org.infoglue.cms.plugins.codeeditor.InfoGlueCodeEditorApplet.class" codebase="applications/InfoGlueCodeEditor" align="baseline" width="${width}" height="$height" mayscript>
+	<PARAM NAME="attributeId" value="${attributeName}">
+	<PARAM NAME="deliverySettingsUrl" value="${deliveryBaseUrl}/ViewApplicationSettings!getTemplateLogicMethods.action">
+    No JDK 1.4 support for APPLET!!
+	<script type="text/javascript">
+		noJava = true;
+	</script>
+  </APPLET>
+#end
+#end
+
+##**************************************************
+## OTHER - PLEASE CLEAN UP						   *
+##**************************************************
+#macro(treeSelectorVersions $tooltarget)
+
+#if($showVersions == "yes")
+	#set($vLink ="| <a style='color: #666666' target='header' href='View${tooltarget}ToolHeader.action?showVersions=no&tree=html&repositoryId=${repositoryId}&exp=${exp}'>hide cv</a>")
+#else
+	#set($vLink ="| <a style='color: #666666' target='header' href='View${tooltarget}ToolHeader.action?showVersions=yes&tree=html&repositoryId=${repositoryId}&exp=${exp}'>show cv</a>")
+#end
+
+<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:14px; visibility:visble; z-index:0">
+<hr size="1" noshade>
+<small><font color="#666666">treeStyle: <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=applet&repositoryId=${repositoryId}">applet</a> | <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=html&repositoryId=${repositoryId}">html</a> $vLink </small></font>
+</div>
+
+#end
+
+#macro(treeSelector $tooltarget)
+
+<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:14px; visibility:visble; z-index:0">
+<hr size="1" noshade>
+<small><font color="#666666" face="Verdana">$ui.getString("tool.common.treestyleLabel"): <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=applet&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleApplet")</a> | <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=html&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleHTML")</a></font></small>
+</div>
+
+#end
+
+#macro(treeSelectorCell $tooltarget)
+<table cellpadding="0" cellspacing="0" width="100%">
+<tr>
+	<td align="left" colspan="3">
+		<hr size="1" noshade>
+	</td>
+</tr>
+<tr>
+	<td><img src="images/trans.gif" width="10" height="1"></td>
+	<td align="left">
+		<small><font color="#666666" face="Verdana">$ui.getString("tool.common.treestyleLabel"): <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=applet&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleApplet")</a> | <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=html&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleHTML")</a></font></small>
+		<br><br>
+	</td>
+	<td><img src="images/trans.gif" width="10" height="1"></td>
+</tr>
+</table>
+#end
+
+
+#macro(head $titleKey)
+<head>
+  <link rel="stylesheet" type="text/css" href="css/cms.css"/>
+  <title>$ui.getString($titleKey)</title>
+</head>
+#end
+
+
+#macro(title $titleKey)
+<p class="title">$ui.getString($titleKey)</p>
+#end
+
+
+#macro(localizedFieldName $key)
+  $ui.getString("entity.${key}.label")
+#end
+
+
+#macro(viewFieldsHead $fieldNameKeys $counter) 
+<tr>
+  #foreach($fieldNameKey in $fieldNameKeys)
+  <td class="data-head-center">
+    #localizedFieldName($fieldNameKey)
+  </td>
+  #end
+  #if($counter > 0) 
+    #foreach($dummy in [1..$counter])
+      <td class="data-head-center">&nbsp;</td>
+    #end
+  #end
+</tr>
+#end
+
+
+#macro(textarea $fieldNameLabel $errorKey $fieldName $fieldValue $rows $cols)
+  $fieldNameLabel 
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font><br/>
+    #end
+  #end
+  <textarea name="$fieldName" cols="$cols" rows="$rows">$!fieldValue</textarea>
+#end
+
+#macro(editField3 $fieldNameLabel $errorKey $fieldName $fieldValue $length)
+  $fieldNameLabel 
+  	#if($rule.required)
+  		&nbsp;<font color="red">* </font>
+  	#end
+
+  #if($errors.hasErrors($errorKey))
+  
+	  	 #set( $MIN=$rule.getValidRange().getLowerLimit() )
+	  	 #set( $MAX=$rule.getValidRange().getUpperLimit() )
+	  	
+	    #foreach($errorMessage in $errors.getErrors($errorKey))
+	    <font color="red"> - $errorMessage </font>
+	    #end
+    
+  #end
+  <br/>
+  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/>
+#end
+
+
+#macro(editField2 $fieldNameLabel $fieldName $fieldValue)
+  #editField3($fieldNameLabel "" $fieldName $fieldValue)
+#end
+
+#macro(editField $fieldNameKey $fieldName $fieldValue $length)
+
+  #set($rule=$this.getRule("$fieldNameKey")) 
+  ## $rule
+  #editField3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length)
+  
+#end
+
+#macro(editReadOnlyField $fieldNameKey $fieldName $fieldValue $length $readonly)
+  $ui.getString("entity.${fieldNameKey}.label") 
+  <br/>
+  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length" $readonly/>
+#end
+
+#macro(editTextAreaOld $fieldNameKey $fieldName $fieldValue $rows $cols)
+  #textarea($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $rows $cols)
+#end
+
+#macro(hiddenField $fieldName $fieldValue)
+  <input type="hidden" name="$fieldName" value="$!fieldValue"/>
+  #if($errors.hasErrors($errorKey))
+  <td class="data-cell-left-error">
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    $errorMessage<br/>
+    #end
+  </td>
+  #elseif($errors.hasErrors())
+  <td class="data-cell-left-error">&nbsp;</td>
+  #end
+#end
+
+#macro(editInputField $fieldNameLabel $fieldName $fieldValue $typeDefinition)
+<tr>
+  <td class="data-head-left">$fieldNameLabel</td>
+  <td class="data-cell-right">
+  #if($typeDefinition.value.indexOf("freetext") > -1)
+    <input type="text" name="$fieldName" value="$!fieldValue" size="30"/>
+  #else
+  	#foreach($fieldDefinition in $typeDefinition.getFields())
+    	<input type="radio" name="$fieldName" value="$fieldDefinition.id">$fieldDefinition.label</input>  
+  	#end
+  #end
+  </td>
+  #if($errors.hasErrors($errorKey))
+  <td class="data-cell-left-error">
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    $errorMessage<br/>
+    #end
+  </td>
+  #elseif($errors.hasErrors())
+  <td class="data-cell-left-error">&nbsp;</td>
+  #end
+</tr>
+#end
+
+
+#macro(viewField2 $fieldName $fieldValue)
+<tr>
+  <td class="data-head-left">$fieldName</td>
+  <td class="data-cell-right">$fieldValue</td>
+</tr>
+#end
+
+
+#macro(viewField $fieldNameKey $fieldValue)
+  #viewField2($ui.getString("entity.${fieldNameKey}.label") $fieldValue)
+#end
+
+#macro(submitButton)
+<tr>
+  <td class="data-cell-right" colspan="2"><input type="image" src="/images/submit.gif"/></td>
+  #if($errors.hasErrors())
+  <td class="data-cell-left-error">&nbsp;</td>
+  #end
+</tr>
+#end
+

@@ -1,0 +1,191 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
+
+package org.infoglue.cms.applications.contenttool.wizards.actions;
+
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * This action represents the create content step in the wizards.
+ */
+
+public class CreateContentWizardInputContentAction extends InfoGlueAbstractAction
+{
+	private String[] allowedContentTypeDefinitionId;
+	private List contentTypeDefinitionVOList = new ArrayList();
+	private String returnAddress;
+	private ContentVO contentVO;
+	private Integer contentTypeDefinitionId;
+	private ConstraintExceptionBuffer ceb;
+
+
+	public CreateContentWizardInputContentAction()
+	{
+		this(new ContentVO());
+	}
+	
+	public CreateContentWizardInputContentAction(ContentVO contentVO)
+	{
+		this.contentVO = contentVO;
+		this.ceb = new ConstraintExceptionBuffer();			
+	}	
+
+	private void initialiaze() throws Exception
+	{
+		if(allowedContentTypeDefinitionId == null)
+		{
+			this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		}
+		else
+		{
+			for(int i=0; i < allowedContentTypeDefinitionId.length; i++)
+			{
+				String allowedContentTypeDefinitionIdString = allowedContentTypeDefinitionId[i];
+				System.out.println("allowedContentTypeDefinitionIdString:" + allowedContentTypeDefinitionIdString);
+				this.contentTypeDefinitionVOList.add(ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(new Integer(allowedContentTypeDefinitionIdString)));
+			}
+		}		
+	}
+	
+	/**
+	 * This method presents the user with the initial input screen for creating a content.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	 
+	public String doInput() throws Exception
+	{
+		initialiaze();
+		return "input";
+	}
+
+	/**
+	 * This method validates the input and handles any deviations.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	 
+	public String doExecute() throws Exception
+	{
+		this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
+
+		ceb = this.contentVO.validate();
+	
+		if(!ceb.isEmpty())
+			initialiaze();
+	
+		ceb.throwIfNotEmpty();
+
+		return "success";
+	}
+
+	/**
+	 * This method fetches the list of ContentTypeDefinitions
+	 */
+	
+	public List getContentTypeDefinitions() throws Exception
+	{
+		return this.contentTypeDefinitionVOList;
+	}      
+
+	public java.lang.String getName()
+	{
+		return this.contentVO.getName();
+	}
+
+	public void setName(String name)
+	{
+		this.contentVO.setName(name);
+	}
+
+	public String getPublishDateTime()
+	{    		
+		return new VisualFormatter().formatDate(this.contentVO.getPublishDateTime(), "yyyy-MM-dd HH:mm");
+	}
+
+	public void setPublishDateTime(String publishDateTime)
+	{
+		this.contentVO.setPublishDateTime(new VisualFormatter().parseDate(publishDateTime, "yyyy-MM-dd HH:mm"));
+	}
+        
+	public String getExpireDateTime()
+	{
+		return new VisualFormatter().formatDate(this.contentVO.getExpireDateTime(), "yyyy-MM-dd HH:mm");
+	}
+
+	public void setExpireDateTime(String expireDateTime)
+	{
+		this.contentVO.setExpireDateTime(new VisualFormatter().parseDate(expireDateTime, "yyyy-MM-dd HH:mm"));
+	}
+
+	public long getPublishDateTimeAsLong()
+	{    		
+		return this.contentVO.getPublishDateTime().getTime();
+	}
+        
+	public long getExpireDateTimeAsLong()
+	{
+		return this.contentVO.getExpireDateTime().getTime();
+	}
+    
+	public Boolean getIsBranch()
+	{
+		return this.contentVO.getIsBranch();
+	}    
+
+	public void setIsBranch(Boolean isBranch)
+	{
+		this.contentVO.setIsBranch(isBranch);
+	}
+            
+	public Integer getContentTypeDefinitionId()
+	{
+		return this.contentTypeDefinitionId;
+	}
+
+	public void setContentTypeDefinitionId(Integer contentTypeDefinitionId)
+	{
+		this.contentTypeDefinitionId = contentTypeDefinitionId;
+	}
+
+	public String getReturnAddress()
+	{
+		return returnAddress;
+	}
+
+	public void setReturnAddress(String string)
+	{
+		returnAddress = string;
+	}
+
+}

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#if($tree == "applet")
+	#set($preferedTree="ViewStructureToolMenu.action?tree=applet&")
+#else
+	#set($preferedTree="ViewStructureToolMenu.action?tree=html&exp=${exp}&")
+#end
+
+<html>
+<head>
+	<title>Header</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<script type="text/javascript" language="Javascript">
+
+		function reloadMenu(selectBox)
+		{
+			//alert("top:" + top);
+		    repositoryId = selectBox.value;
+		    
+			var agt=navigator.userAgent.toLowerCase();
+	   	    if(agt.indexOf("safari")!=-1)
+		    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId;
+			else
+			    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
+	
+			selectBox.selectedIndex = 0;
+		}
+		
+		function loadMenu()
+		{
+			repositoryId = "$repositoryId";
+		    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
+		}
+
+	</script>
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+</head>
+
+<body class="structuretool" onload="javascript:loadMenu();">
+
+<table border="0" class="structuretool" cellspacing="0" cellpadding="0" width="100%" height="100%">
+<form name="selectbox" method="POST" action="">
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="7"><image src="images/trans.gif" width="1" height="10"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></a>
+	<td class="toolheader"><image src="images/$ui.getString("images.structuretool.repositoryLabel")" width="70" height="19"></td> 
+	<td>
+  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:reloadMenu(this);">
+		    #if ($repositories.size() > 1)
+		    	<option value="">$ui.getString("tool.structuretool.chooseRepositoryLabel")</option>
+		    #end
+		    #foreach ($repositoryVO in $repositories)
+		    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+		    #end
+		</select>
+	</td>
+	<td class="toolheader"><image src="images/trans.gif" width="100" height="19"></td>
+	<td class="toolheader">&nbsp;</td>
+	<td class="toolheader">&nbsp;</td>
+	<td class="toolheader">&nbsp;</td>
+	<td class="toolheader" width="70%"><image src="images/trans.gif" width="1" height="1"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></a>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="7"><image src="images/trans.gif" width="1" height="10"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</form>
+</table>
+
+<div style="LEFT:0px; position:absolute; TOP:39px; visibility:visble; z-index:0">
+<table cellpadding="0" cellspacing="0" border="0" width="100%" height="1">
+<tr>
+	<td bgcolor="#999999" width="100%"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>	
+</div>
+
+</body>
+
+</html>

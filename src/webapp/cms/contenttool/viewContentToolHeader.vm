@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#if($tree == "applet")
+	#set($preferedTree="ViewContentToolMenu.action?tree=applet&")
+#else
+	#set($preferedTree="ViewContentToolMenu.action?tree=html&exp=${exp}&")
+#end
+
+<html>
+<head>
+	<title>Header</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<script type="text/javascript" language="Javascript">
+
+		function reloadMenu(selectBox)
+		{
+			//alert("top:" + top);
+		    repositoryId = selectBox.value;
+		    document.searchForm.repositoryId.value = repositoryId;
+			
+			var agt=navigator.userAgent.toLowerCase();
+		    if(agt.indexOf("safari")!=-1)
+		    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId;
+			else
+			    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
+	
+			selectBox.selectedIndex = 0;
+		}
+		
+		function loadMenu()
+		{
+			repositoryId = "$!repositoryId";
+		    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
+		}
+
+	</script>
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+</head>
+
+<body class="contenttool" onload="javascript:loadMenu();">
+
+<table border="0" class="contenttool" cellspacing="0" cellpadding="0">
+<form name="selectbox" method="POST" action="">
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="7"><image src="images/trans.gif" width="1" height="10"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td class="toolheader"><image src="images/$ui.getString("images.contenttool.repositoryLabel")" width="70" height="19"></td> 
+	<td>
+  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:reloadMenu(this);" class="contenttool">
+		    #if ($repositories.size() > 1)
+		    	<option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+		    #end
+		    #foreach ($repositoryVO in $repositories)
+		    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+		    #end
+		</select>
+	</td>
+</form>
+<form name="searchForm" method="POST" action="SearchContent.action" target="main">
+<input type="hidden" name="repositoryId" value="$!repositoryId">
+	<td class="toolheader"><image src="images/trans.gif" width="10" height="19"></td>
+	<td class="toolheader"><image src="images/$ui.getString("images.contenttool.searchLabel")" width="48" height="19"></td>
+	<td class="toolheader"><input type="text" class="searchfield" name="searchString" value=""></td>
+	<td class="toolheader"><nobr><image src="images/trans.gif" width="5" height="19"><input type="image" src="images/$ui.getString("images.contenttool.ok")" width="31" heigth="19"></nobr></td>
+	<td class="toolheader" width="70%"><image src="images/trans.gif" width="1" height="1"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="7"><image src="images/trans.gif" width="1" height="10"></td>
+	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</form>
+</table>
+
+
+<div style="LEFT:0px; position:absolute; TOP:39px; visibility:visble; z-index:0">
+<table cellpadding="0" cellspacing="0" border="0" width="100%" height="1">
+<tr>
+	<td bgcolor="#999999" width="100%"><image src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>	
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+.infobackground {
+	position:absolute;
+	visibility:hidden;
+	display:none;
+	width:250px;
+	background-color:#F4F4F4;
+	border:1px solid #333333;
+	z-index:1;
+	align: center;
+	valign: middle;
+	left:250px;
+	top:250px;
+	height:50px;
+	}
+		
+.infoheader {
+	margin:2px;
+	padding:2px;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+.infobody {
+	margin:2px;
+	padding:2px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	overflow: auto;
+	height:100%;
+	text-align: center;
+	}
+	
+	
+.propertiesDiv {
+	position:absolute;
+	width:700px;
+	background-color:#F4F4F4;
+	border:1px solid #333333;
+	z-index:201;
+	left:10px;
+	top:100px;
+	}
+
+.propertiesDivHandle {
+	margin:2px;
+	padding:2px;
+	width:690px;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+	
+A.white {
+    text-decoration:none;
+    COLOR: white;
+	font-size:10px;
+    }
+A.white:hover {
+	text-decoration:underline;
+	}
+A.white:active {
+	font: bold;
+	}

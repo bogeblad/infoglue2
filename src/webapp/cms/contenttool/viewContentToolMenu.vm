@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ 
+<html>
+<head>
+	<title>Menus</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<script type="text/javascript" language="JavaScript">
+	<!-- 
+		
+		var exp;
+		var treeIsLoaded = false;
+		
+		function treeView()
+		{
+			try 
+			{ 
+			#if($tree == "applet" && $browserBean.isIE())
+				return document.getElementById("CMSTree");
+			#elseif($tree == "applet")
+				return document.applets[0];
+			#else
+				return document.getElementById("itreeFrame");
+			#end
+ 		 	}
+			catch(er) 
+			{
+				alert("Error:" + er);
+			} 
+		}
+		
+		function htmlTreeItemClick(itemId, repoId, path)
+		{
+			parent.frames['main'].location.href="ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
+		}
+		   
+		function reloadMain()
+		{
+			if(treeIsLoaded)
+			{
+				//alert('reloadMain');
+				//Resizing the applet..
+				resize();
+			}
+			
+			//alert('Setting the main area');
+			parent.frames[3].location.href = "ViewContentToolStartPage.action?repositoryId=$!repositoryId";
+		}
+		
+		function loadMainArea(contentId, repositoryId, path)
+		{
+		    //alert("contentId:" + contentId);
+		    parent.frames[3].location.href = "ViewContent.action?contentId=" + contentId + "&repositoryId=" + repositoryId;
+		}
+	    
+	    function refreshContent(contentId, changeTypeId, addedContentId)
+		{
+			//alert("TreeView: " + treeView());
+			#if($tree == "applet")
+				treeView().refreshTreeNode(parseInt(contentId), parseInt(changeTypeId), parseInt(addedContentId));
+			#else
+				frames['itreeFrame'].refreshTreeNode(parseInt(contentId), parseInt(changeTypeId), parseInt(addedContentId));
+			#end
+		}
+	    
+	    function notifyIsLoaded()
+	    {
+	    	//alert("Tree was loaded - notifyIsLoaded");
+	    	treeIsLoaded = true;
+	    	document.getElementById('treeDiv').style.left = '2px';
+	    	document.getElementById('treeDiv').style.right = '2px';
+	    }
+	    
+	    function notifyExp(v)
+	    {
+	    	exp=v;
+	    }
+	    
+	    function resize() 
+	    {
+	    	//alert("resize");
+	    	var w_newWidth,w_newHeight;
+		    var w_maxWidth=1600, w_maxHeight=1200;
+
+			if (window.innerWidth || window.innerHeight){ 
+				w_newWidth = window.innerWidth; 
+				w_newHeight = window.innerHeight; 
+			} 
+			//IE Mozilla 
+			if (document.body.clientWidth || document.body.clientHeight){ 
+				w_newWidth = document.body.clientWidth; 
+				w_newHeight = document.body.clientHeight - 10; 
+			} 
+			
+ 		    if (w_newWidth>w_maxWidth)
+			    w_newWidth=w_maxWidth;
+			
+			if (w_newHeight>w_maxHeight)
+			    w_newHeight=w_maxHeight;
+
+			if (w_newHeight < 1) //For firebird cases
+			    w_newHeight=window.innerHeight - 10;
+			
+			//alert("w_newWidth:" + w_newWidth);
+			//alert("w_newHeight:" + w_newHeight);
+			try 
+			{
+				document.getElementById("loadingDiv").style.visibility = "hidden";
+				treeView().setSize(w_newWidth - 10,w_newHeight - 50);
+				treeView().style.visibility = "visible";
+			}
+			catch(e)
+			{
+			}
+			
+			//window.scroll(0,0);
+        	treeView().width  = w_newWidth - 10;
+			treeView().height = w_newHeight - 50;
+		}
+
+		window.onResize = resize;
+		window.onLoad   = resize;
+		
+	-->
+	</script>
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+</head>
+
+<body class="contenttool" onload="javascript:reloadMain();" onresize="javascript:resize();">
+
+<div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:0px; height:100%; visibility:visible; z-index:0">
+<table class="contenttool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+<tr>
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+	<td valign="top" width="100%" height="100%"></td>
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>
+</div>
+
+<!-- This div is the tree before its loaded.... -->
+<div id="loadingDiv" style="LEFT:2px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visible; z-index:0">
+<table class="contenttool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+<tr>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+	<td valign="top" width="100%">
+		
+		<table cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td class="menu"><img src="images/trans.gif" height="15"></td>
+		</tr>
+		<tr>
+			<td class="menu" width="100%" height="100%">    
+				#if($repositoryId > -1)
+					Loading...	
+				#else
+					Either the system contains no repositories or you do not have access to any of them. Contact your administrator if you have questions.
+				#end
+			</td>
+		</tr>	
+		</table>
+	</td>	
+	<td bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>
+</div>
+
+
+<!-- This div is the tree which is moved to the correct location after its loaded -->
+<div id="treeDiv" style="left:-500px; right:500px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visible; z-index:0">
+<table class="contenttool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+<tr>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+	<td valign="top" width="100%">
+		
+		<table cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td class="menu"><img src="images/trans.gif" height="15"></td>
+		</tr>
+		<tr>
+			<td class="menu" width="100%" height="100%">   
+				#if($tree == "applet")
+					#showJavaTree("220" "550" "199" "209" "179" "Content" $repositoryId "false")
+				#else
+					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree.action?repositoryId=${repositoryId}" width="220" height="550" align="bottom"></IFRAME>
+				#end
+				
+											
+			</td>
+		</tr>	
+		
+		</table>
+	
+	</td>	
+	<td bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+</tr>
+</table>
+</div>
+
+#treeSelector("Content")
+
+<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:2px; visibility:visble; z-index:0">
+<small>
+	<font color="#666666" face="Verdana">Versions: 
+	#if ($showVersions == "yes")
+		<a style="color: #666666" target="header" href="ViewContentToolHeader.action?repositoryId=$repositoryId&showVersions=no&exp=$exp">Hide versions</a>
+	#else
+		<a style="color: #666666" target="header" href="ViewContentToolHeader.action?repositoryId=$repositoryId&showVersions=yes&exp=$exp">Show versions</a>
+	#end
+	</font>
+</small>
+</div>
+
+<div style="RIGHT:2px; position:absolute; BOTTOM:-2px; visibility:visible; z-index:0">
+	<img src="images/dragCorner.gif" width="12" height="12">
+</div>
+	
+</body>
+</html>

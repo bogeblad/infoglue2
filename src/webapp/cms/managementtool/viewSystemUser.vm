@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("User $firstName $lastName" "User details" "userName=$formatter.encodeURI($userName)")
+
+<SCRIPT type="text/javascript" SRC="script/OptionTransfer.js"></SCRIPT>
+
+<SCRIPT LANGUAGE="JavaScript">
+
+	var opt = new OptionTransfer("unassignedRoleNameList","roleName");
+	opt.setAutoSort(true);
+	opt.setDelimiter(",");
+	opt.saveRemovedLeftOptions("removedLeft");
+	opt.saveRemovedRightOptions("removedRight");
+	opt.saveAddedLeftOptions("addedLeft");
+	opt.saveAddedRightOptions("addedRight");
+	opt.saveNewLeftOptions("newLeft");
+	opt.saveNewRightOptions("newRight");
+	
+	function markNearestOption()
+	{
+		var searchField = document.getElementById("searchField");
+		var list        = document.getElementById("unassignedRoleNameList");
+		//alert("list:" + list);
+		
+	  	sNode = list.options;
+	  	for(i=0;i<sNode.length;i++)
+		{
+			currentNode = sNode[i];
+			//alert("currentNode:" + currentNode.text);
+			//alert("searchField:" + searchField.value);
+			//alert("index:" + currentNode.text.indexOf(searchField.value));
+			if(currentNode.text.toLowerCase().indexOf(searchField.value.toLowerCase()) > -1)
+			{
+				list.selectedIndex = i;
+			  	break;		
+			}
+	  	}
+	}
+	
+	function save(form)
+	{
+		var list = document.getElementById("roleName");
+		
+	  	sNode = list.options;
+	  	for(i=0;i<sNode.length;i++)
+		{
+			currentNode = sNode[i];
+			//alert("CurrentNode:" + currentNode);
+			//alert("currentNode:" + currentNode.name);
+			//alert("CurrentNode:" + currentNode.selected);
+			currentNode.selected = true;
+		}
+		form.submit();
+	}
+
+	function saveAndExit(form)
+	{
+		form.action = "UpdateSystemUser!saveAndExit.action";
+		save(form);
+	}
+
+</SCRIPT>
+#if($supportsUpdate == false)
+	#set($readonly = "disabled")
+#else
+	#set($readonly = "")
+#end
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="UpdateSystemUser.action">
+<table>
+	<tr>
+		<td>#editReadOnlyField("SystemUser.firstName" "firstName" $!firstName "51" $readonly)</td><td>#editReadOnlyField("SystemUser.lastName" "lastName" $!lastName "51" $readonly)</td>
+	</tr>	
+	
+	<tr>
+		<td>#editReadOnlyField("SystemUser.userName" "newUserName" $!userName "51" "disabled")</td><td>#editReadOnlyField("SystemUser.password" "password" "********" "20" "disabled")<img src="images/trans.gif" width="10" height="1"><a href="UpdateSystemUser!changePassword.action?userName=$formatter.encodeURI($userName)">Send me a new password<a></td>
+	</tr>
+
+	<tr>
+		<td>#editReadOnlyField("SystemUser.email" "email" $!email "51" $readonly)</td><td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	
+	<tr>
+		<td colspan="2" class="biglabel">Manage the roles this user should be part of below</td>
+	</tr>
+	<tr>
+	  <td colspan="2">
+		<table width="50%" border="0">
+		  <tr>
+		    <td>State a name or choose from list:<br>
+		        <input type="text" id="searchField" name="searchField" style="width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();">
+		      </td>
+		    <td>&nbsp;</td>
+		    <td valign="bottom">Current Roles</td>
+		  </tr>
+		  <tr>
+		    <td>
+		    	<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="width:200px; border: solid 1px #C2D0E2;">
+		          	#foreach ($roleVO in $allRoles)
+						#set($checked = "")
+						#foreach ($assignedRoleVO in $assignedRoles)
+							#if($assignedRoleVO.name == $roleVO.name)
+								#set($checked = "checked")
+							#end 
+						#end
+						
+						#if($checked == "")
+							<option value="$roleVO.name">$roleVO.name</option>
+						#end
+					#end
+		        </select>
+		    </td>
+		    <td align="center">
+		        <INPUT TYPE="button" NAME="right" VALUE="&gt;&gt;" ONCLICK="opt.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="right" VALUE="All &gt;&gt;" ONCLICK="opt.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="left" VALUE="&lt;&lt;" ONCLICK="opt.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="left" VALUE="All &lt;&lt;" ONCLICK="opt.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
+		    </td>
+		    <td>
+		      	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt.transferLeft()" style="width:200px; border: solid 1px #C2D0E2;">
+		        	#foreach ($assignedRoleVO in $assignedRoles)
+						<option value="$assignedRoleVO.name">$assignedRoleVO.name</option>
+					#end
+			    </select>
+		    </td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="biglabel">Base role properties on content type definition</td>
+	</tr>
+	<tr>
+		<td>	
+			<select name="contentTypeDefinitionId">
+				<option value="">Choose type</option>
+			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+				#set($selected = "")
+				#foreach ($assignedContentTypeDefinitionVO in $assignedContentTypeDefinitionVOList)
+					#if($assignedContentTypeDefinitionVO.id == $contentTypeDefinitionVO.id)
+						#set($selected = "selected")
+					#end 
+				#end
+				<option value="$contentTypeDefinitionVO.id" $selected>$contentTypeDefinitionVO.getName()</option>
+			#end
+			</select>
+		</td>
+	</tr>
+	
+	#if($supportsUpdate)
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>	
+		<input type="hidden" name="userName" value="$!userName">
+		<td>
+			<a href="javascript:save(document.editForm);"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0" onClick='showWorking();'></a>
+			<a href="javascript:saveAndExit(document.editForm);"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0" onClick='JavaScript:showWorking();'></a>
+			<a href="ViewListSystemUser.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+	</tr>
+	#end
+</table>
+</form>
+</div>
+
+#if($supportsUpdate)
+<script type="text/javascript">
+	//alert("Initializing form..");
+	opt.init(document.editForm);
+</script>
+#end
+
+</body>
+</html>

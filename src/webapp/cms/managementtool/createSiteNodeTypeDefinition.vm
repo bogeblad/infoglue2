@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Create new site node type definition" "New site node type definition" "")
+
+<div class="fullymarginalized">
+<form method="POST" action="CreateSiteNodeTypeDefinition.action">
+<table>
+	<tr>
+		<td>#editField("SiteNodeTypeDefinition.name" "name" $!name "51")</td>
+	</tr>	
+	<tr>
+		<td>#editField("SiteNodeTypeDefinition.description" "description" $!description "51")</td>
+	</tr>		
+	<tr>
+		<td>#editField("SiteNodeTypeDefinition.invokerClassName" "invokerClassName" $!invokerClassName "51")</td>
+	</tr>		
+	
+	<tr>
+		<td colspan="2"><table><td><input type="submit" name="action" value="&nbsp;&nbsp;Save&nbsp;&nbsp;"></td><td width="40">&nbsp;&nbsp;</td>
+	</tr>
+
+</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginContentTool($ui.getString("tool.contenttool.contentDetailsHeader") "Submit for publish" "" "0" "0" "0")
+
+<script language="JavaScript">
+<!--
+		function checkMarkedVersions()
+		{
+			var listForm = document.listForm;
+			var lengthsel = null;
+			var lengthsit = null;
+			var ret = 0;
+			if (listForm.sel != null)
+				lengthsel = listForm.sel.length;
+			if (listForm.sit != null)
+				lengthsit = listForm.sit.length;
+
+			if (lengthsel == null && listForm.sel != null)
+		  	{
+		  		if (listForm.sel.checked)
+			    	ret++;
+		  	}
+			else
+			{
+			  	for (i=0; i<lengthsel; i++)
+			   		if (listForm.sel[i].checked)
+			    		ret++;
+			}
+			    		
+			if (lengthsit == null && listForm.sit != null)
+		  	{
+		  		if (listForm.sit.checked)
+			    	ret++;
+		  	}
+		  	else
+		  	{
+			  	for (i=0; i<lengthsit; i++)
+			   		if (listForm.sit[i].checked)
+			    		ret++;
+			}
+		    		
+			return ret;
+		}
+		
+		function checkAll()
+		{
+		 	var field = document.listForm.sel;
+		 	for (i = 0; i < field.length; i++)
+				field[i].checked = true ;
+		}
+		
+		function uncheckAll()
+		{
+			var field = document.listForm.sel;
+			for (i = 0; i < field.length; i++)
+				field[i].checked = false ;
+		}
+		
+		function submitToPublish()
+		{
+			var listForm = document.listForm;
+			var commentElm = document.getElementById("xversionComment");
+			if (checkMarkedVersions() == 0)
+			{
+				alert('Select one or more versions to publish');
+			  	return;
+			}
+			else
+			{
+				listForm.action = "ChangeMultiContentStatePublish.action"
+				listForm.versionComment.value = commentElm.value;
+				listForm.submit();
+			}
+		}
+-->
+</script>
+
+#set($versions = $contentVersions)
+
+<div class="fullymarginalized">
+
+<table width="95%" border="0">
+<tr>
+	<td>
+		<table width="300" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td colspan="3" class="biglabel">$ui.getString("tool.contenttool.stateChangeComment")</td>
+			</tr>		
+			<tr>
+				<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+			</tr>
+			<tr>
+				<td colspan="3">#editTextArea("ContentVersion.versionComment" "xversionComment" $!versionComment "10" "10" "normaltextarea")</td>
+			</tr>		
+		</table>
+	</td>
+	<td align="right" valign="top">
+		<br><br><br>
+		
+		<a href="javascript:submitToPublish();">
+		<img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
+		</a><br>
+		
+		<a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId">
+		<img src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25" border="0">
+		</a><br><br>
+		
+		#if($versions.size() > 1)
+			<a href="javascript:checkAll();">
+			<img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0">
+			</a><br>
+			
+			<a href="javascript:uncheckAll();">
+			<img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0">
+			</a><br>
+		#end
+	</td>
+</tr>
+<tr>
+	<td colspan="2">
+		<br/><br/>
+		The marked contentversions will be submitted for publishing.<br><br>
+	</td>
+</tr>
+<tr>
+	<td colspan="2">
+
+#set($lvBorder = 0) 
+#set($lvConstraint = -1) 
+#lvHead(["Name", "Language", "Owner"] "Publish items" "" "" "")
+
+#hiddenField("contentId" $contentId)
+#hiddenField("versionComment" $!versionComment)
+
+#set($cnt = 0)
+#foreach($cv in $versions)
+
+	#set( $row = ["$cv.getContentVersionId() - $cv.getContentName()","$cv.getLanguageName()", ""] )
+	#set($cnt = $cnt + 1)
+	#lvAddRow($row $cnt $cv.getContentVersionId())
+
+#end
+
+
+
+#lvEnd()
+</td>
+</tr>
+</table>
+	
+</div>
+
+#endContentTool()
+

@@ -1,0 +1,473 @@
+2004-05-31 20:44:54,948 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 400, column 8]
+2004-05-31 20:44:54,948 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 402, column 8]
+2004-05-31 20:44:54,948 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 409, column 8]
+2004-05-31 20:44:54,948 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 415, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 370, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 376, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 382, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 388, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 394, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 400, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 402, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 409, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 415, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 370, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 376, column 8]
+2004-05-31 20:44:54,958 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 402, column 8]
+2004-05-31 20:44:54,978 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 370, column 8]
+2004-05-31 20:44:54,978 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/contenttool/viewContentVersionStandalone.vm [line 376, column 8]
+2004-05-31 20:44:56,380 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 17, column 9]
+2004-05-31 20:44:56,380 - Left side ($event.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 18, column 29]
+2004-05-31 20:44:56,380 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 29, column 9]
+2004-05-31 20:44:56,380 - Left side ($siteNodeEvent.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 30, column 37]
+2004-05-31 20:44:56,380 - Left side ($siteNodeEvent.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 39, column 41]
+2004-05-31 20:45:00,837 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewListComponents.vm [line 16,column 39] : $componentId is not a valid reference.
+2004-05-31 20:45:00,837 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewListComponents.vm [line 18,column 26] : $slotId is not a valid reference.
+2004-05-31 20:45:00,837 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewListComponents.vm [line 18,column 35] : $slotId is not a valid reference.
+2004-05-31 20:45:00,837 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewListComponents.vm [line 20,column 129] : $componentId is not a valid reference.
+2004-05-31 20:45:00,837 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewListComponents.vm [line 20,column 177] : $slotId is not a valid reference.
+2004-05-31 20:48:19,943 - SimpleLog4JLogSystem initialized using logfile 'c:\projects\InfoGlue\infoglueCMSAuth\webapps\velocity.log'
+2004-05-31 20:48:19,943 - ************************************************************** 
+2004-05-31 20:48:19,943 - Starting Jakarta Velocity v1.3.1-rc2
+2004-05-31 20:48:19,943 - RuntimeInstance initializing.
+2004-05-31 20:48:19,943 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2004-05-31 20:48:19,943 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogSystem
+2004-05-31 20:48:19,943 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogSystem or necessary supporting classes in classpath. Exception : java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+2004-05-31 20:48:19,943 - Trying to use logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2004-05-31 20:48:19,943 - Using logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2004-05-31 20:48:19,953 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2004-05-31 20:48:19,953 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:48:19,953 - FileResourceLoader : initialization starting.
+2004-05-31 20:48:19,953 - FileResourceLoader : adding path 'c:\projects\InfoGlue\infoglueCMSAuth\webapps\'
+2004-05-31 20:48:19,953 - FileResourceLoader : initialization complete.
+2004-05-31 20:48:19,953 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 20:48:19,953 - ClasspathResourceLoader : initialization starting.
+2004-05-31 20:48:19,953 - ClasspathResourceLoader : initialization complete.
+2004-05-31 20:48:19,963 - ResourceCache : initialized. (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2004-05-31 20:48:19,963 - Default ResourceManager initialization complete.
+2004-05-31 20:48:19,963 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2004-05-31 20:48:19,963 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2004-05-31 20:48:19,973 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2004-05-31 20:48:19,973 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2004-05-31 20:48:19,973 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2004-05-31 20:48:20,053 - Created: 20 parsers.
+2004-05-31 20:48:20,053 - Velocimacro : initialization starting.
+2004-05-31 20:48:20,053 - Velocimacro : adding VMs from VM library template : resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,073 - Velocimacro : added new VM : #workingDiv( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,093 - Velocimacro : added new VM : #beginManagementTool( title toolbarKey arguments ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,103 - Velocimacro : added new VM : #beginContentTool( title toolbarKey arguments unrefreshedContentId changeTypeId addedContentId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,103 - Velocimacro : added new VM : #beginStructureTool( title toolbarKey arguments unrefreshedNodeId changeTypeId addedNodeId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,103 - Velocimacro : added new VM : #beginPublishingTool( title toolbarKey arguments ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,103 - Velocimacro : added new VM : #endManagementTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,103 - Velocimacro : added new VM : #endContentTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,103 - Velocimacro : added new VM : #endStructureTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,113 - Velocimacro : added new VM : #endPublishingTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,153 - Velocimacro : added new VM : #lvHead( headers header yesDestination noDestination message ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,153 - Velocimacro : added new VM : #oldlvHead( headers header yesDestination noDestination message ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,163 - Velocimacro : added new VM : #lvAddRow( row cnt objectId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,163 - Velocimacro : added new VM : #lvEnd( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,163 - Velocimacro : added new VM : #inlineroles( rolelist ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,163 - Velocimacro : added new VM : #inlineusers( userlist ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,163 - Velocimacro : added new VM : #editTextField( fieldNameKey fieldName fieldValue length className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,173 - Velocimacro : added new VM : #editTextField3( fieldNameLabel errorKey fieldName fieldValue length className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,173 - Velocimacro : added new VM : #editTextField( fieldNameKey fieldName fieldValue length className isReadOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,173 - Velocimacro : added new VM : #editTextField4( fieldNameLabel errorKey fieldName fieldValue length className isReadOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,183 - Velocimacro : added new VM : #editTextArea( fieldNameKey fieldName fieldValue cols rows className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,183 - Velocimacro : added new VM : #editTextArea3( fieldNameLabel errorKey fieldName fieldValue cols rows className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,183 - Velocimacro : added new VM : #checkSelected( value currentValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,183 - Velocimacro : added new VM : #checkChecked( value currentValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,193 - Velocimacro : added new VM : #editDateField( fieldNameKey fieldName fieldValue length className url readOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,193 - Velocimacro : added new VM : #editDateField4( fieldNameLabel errorKey fieldName fieldValue length className url readOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,193 - Velocimacro : added new VM : #yesNoDropDown( fieldNameKey fieldName value ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,193 - Velocimacro : added new VM : #selectField( fieldNameKey fieldName value valuePairArray ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,204 - Velocimacro : added new VM : #showJavaTree( width height bgColorR bgColorG bgColorB entityName repositoryId hideLeafs ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,214 - Velocimacro : added new VM : #treeSelectorVersions( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,214 - Velocimacro : added new VM : #treeSelector( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,214 - Velocimacro : added new VM : #treeSelectorCell( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,214 - Velocimacro : added new VM : #head( titleKey ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,214 - Velocimacro : added new VM : #title( titleKey ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,214 - Velocimacro : added new VM : #localizedFieldName( key ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,214 - Velocimacro : added new VM : #viewFieldsHead( fieldNameKeys counter ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,224 - Velocimacro : added new VM : #textarea( fieldNameLabel errorKey fieldName fieldValue rows cols ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,224 - Velocimacro : added new VM : #editField3( fieldNameLabel errorKey fieldName fieldValue length ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,224 - Velocimacro : added new VM : #editField2( fieldNameLabel fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,224 - Velocimacro : added new VM : #editField( fieldNameKey fieldName fieldValue length ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,224 - Velocimacro : added new VM : #editTextAreaOld( fieldNameKey fieldName fieldValue rows cols ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,224 - Velocimacro : added new VM : #hiddenField( fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,234 - Velocimacro : added new VM : #editInputField( fieldNameLabel fieldName fieldValue typeDefinition ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,234 - Velocimacro : added new VM : #viewField2( fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,234 - Velocimacro : added new VM : #viewField( fieldNameKey fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,234 - Velocimacro : added new VM : #submitButton( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 20:48:20,264 - VM #editTextField3: error : too few arguments to macro. Wanted 6 got 0
+2004-05-31 20:48:20,264 - VM #editTextField4: error : too few arguments to macro. Wanted 7 got 0
+2004-05-31 20:48:20,264 - VM #editTextArea3: error : too few arguments to macro. Wanted 7 got 0
+2004-05-31 20:48:20,264 - VM #editDateField4: error : too few arguments to macro. Wanted 8 got 0
+2004-05-31 20:48:20,274 - VM #editField3: error : too few arguments to macro. Wanted 5 got 4
+2004-05-31 20:48:20,294 - ResourceManager : found resources/templates/managementtool/macro.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 20:48:20,294 - Velocimacro :  VM library template macro registration complete.
+2004-05-31 20:48:20,294 - Velocimacro : adding VMs from VM library template : resources/templates/managementtool/treeview.vm
+2004-05-31 20:48:20,304 - Velocimacro : added new VM : #drawItem( n ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 20:48:20,304 - Velocimacro : added new VM : #drawItemSimple( n ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 20:48:20,304 - Velocimacro : added new VM : #drawTree( style ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 20:48:20,304 - Velocimacro : added new VM : #drawTreeXP( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 20:48:20,304 - Velocimacro : added new VM : #drawTreeExplorer( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 20:48:20,304 - Velocimacro : added new VM : #drawTreeSimple( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 20:48:20,314 - VM #drawTree: error : too few arguments to macro. Wanted 1 got 0
+2004-05-31 20:48:20,314 - ResourceManager : found resources/templates/managementtool/treeview.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 20:48:20,314 - Velocimacro :  VM library template macro registration complete.
+2004-05-31 20:48:20,314 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2004-05-31 20:48:20,314 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2004-05-31 20:48:20,314 - Velocimacro : allowInlineLocal = true : VMs defined inline will be local to their defining template only.
+2004-05-31 20:48:20,314 - Velocimacro : messages on  : VM system will output logging messages
+2004-05-31 20:48:20,314 - Velocimacro : autoload off  : VM system will not automatically reload global library macros
+2004-05-31 20:48:20,314 - Velocimacro : initialization complete.
+2004-05-31 20:48:20,314 - Velocity successfully started.
+2004-05-31 20:52:53,617 - ResourceManager : found /WEB-INF/classes/resources/templates/managementtool/login.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:58,514 - ResourceManager : found /WEB-INF/classes/resources/templates/cmstool/viewCMSTool.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:58,754 - ResourceManager : found /WEB-INF/classes/resources/templates/cmstool/viewCMSToolHeader.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:58,824 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentTool.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:59,014 - ResourceManager : found /WEB-INF/classes/resources/templates/cmstool/viewCMSToolFooter.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:59,185 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentToolToolBar.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:59,315 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentToolHeader.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:59,415 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentToolStartPage.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:59,415 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewContentToolStartPage.vm [line 18,column 50] : $rootContentId is not a valid reference.
+2004-05-31 20:52:59,806 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentToolMenu.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:52:59,856 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewContentToolStartPage.vm [line 18,column 50] : $rootContentId is not a valid reference.
+2004-05-31 20:53:01,077 - Velocimacro : added new VM : #drawItem( n ) : source = /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm
+2004-05-31 20:53:01,077 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:53:01,107 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm [line 54,column 38] : ${select} is not a valid reference.
+2004-05-31 20:53:03,791 - ResourceManager : found /WEB-INF/classes/resources/templates/structuretool/viewStructureTool.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:53:04,372 - ResourceManager : found /WEB-INF/classes/resources/templates/structuretool/viewStructureToolToolBar.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:53:04,452 - ResourceManager : found /WEB-INF/classes/resources/templates/structuretool/viewStructureToolStartPage.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:53:04,462 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewStructureToolStartPage.vm [line 19,column 51] : $rootSiteNodeId is not a valid reference.
+2004-05-31 20:53:04,582 - ResourceManager : found /WEB-INF/classes/resources/templates/structuretool/viewStructureToolHeader.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:53:04,582 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewStructureToolHeader.vm [line 1,column 44] : ${exp} is not a valid reference.
+2004-05-31 20:53:04,703 - ResourceManager : found /WEB-INF/classes/resources/templates/structuretool/viewStructureToolMenu.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:53:04,943 - Velocimacro : added new VM : #drawItem( n ) : source = /WEB-INF/classes/resources/templates/structuretool/viewHtmlTree.vm
+2004-05-31 20:53:04,953 - ResourceManager : found /WEB-INF/classes/resources/templates/structuretool/viewHtmlTree.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:53:04,963 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewHtmlTree.vm [line 33,column 46] : ${select} is not a valid reference.
+2004-05-31 20:53:04,963 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewHtmlTree.vm [line 1,column 41] : ${showLeafs} is not a valid reference.
+2004-05-31 20:53:07,557 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewHtmlTree.vm [line 33,column 46] : ${select} is not a valid reference.
+2004-05-31 20:53:07,557 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewHtmlTree.vm [line 1,column 41] : ${showLeafs} is not a valid reference.
+2004-05-31 20:53:08,678 - ResourceManager : found /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 20:53:08,718 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 17, column 9]
+2004-05-31 20:53:08,718 - Left side ($event.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 18, column 29]
+2004-05-31 20:53:08,728 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 29, column 9]
+2004-05-31 20:53:08,728 - Left side ($siteNodeEvent.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 30, column 37]
+2004-05-31 20:53:08,728 - Left side ($siteNodeEvent.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 39, column 41]
+2004-05-31 20:53:48,696 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 17, column 9]
+2004-05-31 20:53:48,696 - Left side ($event.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 18, column 29]
+2004-05-31 20:53:48,706 - RHS of #set statement is null. Context will not be modified. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 29, column 9]
+2004-05-31 20:53:48,706 - Left side ($siteNodeEvent.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 30, column 37]
+2004-05-31 20:53:48,706 - Left side ($siteNodeEvent.typeId) of '==' operation has null value. If a reference, it may not be in the context. Operation not possible. /WEB-INF/classes/resources/templates/structuretool/viewSiteNode.vm [line 39, column 41]
+2004-05-31 20:53:48,956 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/structuretool/viewHtmlTree.vm [line 1,column 41] : ${showLeafs} is not a valid reference.
+2004-05-31 20:59:06,723 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewContentToolStartPage.vm [line 18,column 50] : $rootContentId is not a valid reference.
+2004-05-31 20:59:07,594 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm [line 54,column 38] : ${select} is not a valid reference.
+2004-05-31 20:59:07,745 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewContentToolStartPage.vm [line 18,column 50] : $rootContentId is not a valid reference.
+2004-05-31 20:59:08,255 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm [line 54,column 38] : ${select} is not a valid reference.
+2004-05-31 21:00:14,020 - SimpleLog4JLogSystem initialized using logfile 'c:\projects\InfoGlue\infoglueCMSAuth\webapps\velocity.log'
+2004-05-31 21:00:14,020 - ************************************************************** 
+2004-05-31 21:00:14,020 - Starting Jakarta Velocity v1.3.1-rc2
+2004-05-31 21:00:14,020 - RuntimeInstance initializing.
+2004-05-31 21:00:14,020 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2004-05-31 21:00:14,020 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogSystem
+2004-05-31 21:00:14,020 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogSystem or necessary supporting classes in classpath. Exception : java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+2004-05-31 21:00:14,020 - Trying to use logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2004-05-31 21:00:14,020 - Using logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2004-05-31 21:00:14,030 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2004-05-31 21:00:14,030 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:14,030 - FileResourceLoader : initialization starting.
+2004-05-31 21:00:14,030 - FileResourceLoader : adding path 'c:\projects\InfoGlue\infoglueCMSAuth\webapps\'
+2004-05-31 21:00:14,030 - FileResourceLoader : initialization complete.
+2004-05-31 21:00:14,040 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:00:14,040 - ClasspathResourceLoader : initialization starting.
+2004-05-31 21:00:14,040 - ClasspathResourceLoader : initialization complete.
+2004-05-31 21:00:14,040 - ResourceCache : initialized. (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2004-05-31 21:00:14,040 - Default ResourceManager initialization complete.
+2004-05-31 21:00:14,040 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2004-05-31 21:00:14,040 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2004-05-31 21:00:14,050 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2004-05-31 21:00:14,050 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2004-05-31 21:00:14,050 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2004-05-31 21:00:14,140 - Created: 20 parsers.
+2004-05-31 21:00:14,140 - Velocimacro : initialization starting.
+2004-05-31 21:00:14,140 - Velocimacro : adding VMs from VM library template : resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,160 - Velocimacro : added new VM : #workingDiv( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,180 - Velocimacro : added new VM : #beginManagementTool( title toolbarKey arguments ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,190 - Velocimacro : added new VM : #beginContentTool( title toolbarKey arguments unrefreshedContentId changeTypeId addedContentId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,190 - Velocimacro : added new VM : #beginStructureTool( title toolbarKey arguments unrefreshedNodeId changeTypeId addedNodeId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,190 - Velocimacro : added new VM : #beginPublishingTool( title toolbarKey arguments ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,190 - Velocimacro : added new VM : #endManagementTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,190 - Velocimacro : added new VM : #endContentTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,190 - Velocimacro : added new VM : #endStructureTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,200 - Velocimacro : added new VM : #endPublishingTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,240 - Velocimacro : added new VM : #lvHead( headers header yesDestination noDestination message ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,240 - Velocimacro : added new VM : #oldlvHead( headers header yesDestination noDestination message ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,250 - Velocimacro : added new VM : #lvAddRow( row cnt objectId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,250 - Velocimacro : added new VM : #lvEnd( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,250 - Velocimacro : added new VM : #inlineroles( rolelist ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,250 - Velocimacro : added new VM : #inlineusers( userlist ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,250 - Velocimacro : added new VM : #editTextField( fieldNameKey fieldName fieldValue length className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,260 - Velocimacro : added new VM : #editTextField3( fieldNameLabel errorKey fieldName fieldValue length className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,260 - Velocimacro : added new VM : #editTextField( fieldNameKey fieldName fieldValue length className isReadOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,260 - Velocimacro : added new VM : #editTextField4( fieldNameLabel errorKey fieldName fieldValue length className isReadOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,270 - Velocimacro : added new VM : #editTextArea( fieldNameKey fieldName fieldValue cols rows className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,270 - Velocimacro : added new VM : #editTextArea3( fieldNameLabel errorKey fieldName fieldValue cols rows className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,270 - Velocimacro : added new VM : #checkSelected( value currentValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,280 - Velocimacro : added new VM : #checkChecked( value currentValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,280 - Velocimacro : added new VM : #editDateField( fieldNameKey fieldName fieldValue length className url readOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,280 - Velocimacro : added new VM : #editDateField4( fieldNameLabel errorKey fieldName fieldValue length className url readOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,280 - Velocimacro : added new VM : #yesNoDropDown( fieldNameKey fieldName value ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,280 - Velocimacro : added new VM : #selectField( fieldNameKey fieldName value valuePairArray ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,290 - Velocimacro : added new VM : #showJavaTree( width height bgColorR bgColorG bgColorB entityName repositoryId hideLeafs ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,300 - Velocimacro : added new VM : #treeSelectorVersions( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,300 - Velocimacro : added new VM : #treeSelector( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,300 - Velocimacro : added new VM : #treeSelectorCell( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,300 - Velocimacro : added new VM : #head( titleKey ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,300 - Velocimacro : added new VM : #title( titleKey ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,300 - Velocimacro : added new VM : #localizedFieldName( key ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,310 - Velocimacro : added new VM : #viewFieldsHead( fieldNameKeys counter ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,310 - Velocimacro : added new VM : #textarea( fieldNameLabel errorKey fieldName fieldValue rows cols ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,310 - Velocimacro : added new VM : #editField3( fieldNameLabel errorKey fieldName fieldValue length ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,310 - Velocimacro : added new VM : #editField2( fieldNameLabel fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,310 - Velocimacro : added new VM : #editField( fieldNameKey fieldName fieldValue length ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,310 - Velocimacro : added new VM : #editTextAreaOld( fieldNameKey fieldName fieldValue rows cols ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,310 - Velocimacro : added new VM : #hiddenField( fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,320 - Velocimacro : added new VM : #editInputField( fieldNameLabel fieldName fieldValue typeDefinition ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,320 - Velocimacro : added new VM : #viewField2( fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,320 - Velocimacro : added new VM : #viewField( fieldNameKey fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,320 - Velocimacro : added new VM : #submitButton( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:00:14,350 - VM #editTextField3: error : too few arguments to macro. Wanted 6 got 0
+2004-05-31 21:00:14,350 - VM #editTextField4: error : too few arguments to macro. Wanted 7 got 0
+2004-05-31 21:00:14,350 - VM #editTextArea3: error : too few arguments to macro. Wanted 7 got 0
+2004-05-31 21:00:14,350 - VM #editDateField4: error : too few arguments to macro. Wanted 8 got 0
+2004-05-31 21:00:14,370 - VM #editField3: error : too few arguments to macro. Wanted 5 got 4
+2004-05-31 21:00:14,380 - ResourceManager : found resources/templates/managementtool/macro.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:00:14,380 - Velocimacro :  VM library template macro registration complete.
+2004-05-31 21:00:14,380 - Velocimacro : adding VMs from VM library template : resources/templates/managementtool/treeview.vm
+2004-05-31 21:00:14,390 - Velocimacro : added new VM : #drawItem( n ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:00:14,390 - Velocimacro : added new VM : #drawItemSimple( n ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:00:14,410 - Velocimacro : added new VM : #drawTree( style ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:00:14,410 - Velocimacro : added new VM : #drawTreeXP( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:00:14,410 - Velocimacro : added new VM : #drawTreeExplorer( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:00:14,410 - Velocimacro : added new VM : #drawTreeSimple( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:00:14,410 - VM #drawTree: error : too few arguments to macro. Wanted 1 got 0
+2004-05-31 21:00:14,420 - ResourceManager : found resources/templates/managementtool/treeview.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:00:14,420 - Velocimacro :  VM library template macro registration complete.
+2004-05-31 21:00:14,420 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2004-05-31 21:00:14,420 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2004-05-31 21:00:14,420 - Velocimacro : allowInlineLocal = true : VMs defined inline will be local to their defining template only.
+2004-05-31 21:00:14,420 - Velocimacro : messages on  : VM system will output logging messages
+2004-05-31 21:00:14,420 - Velocimacro : autoload off  : VM system will not automatically reload global library macros
+2004-05-31 21:00:14,420 - Velocimacro : initialization complete.
+2004-05-31 21:00:14,420 - Velocity successfully started.
+2004-05-31 21:00:29,082 - ResourceManager : found /WEB-INF/classes/resources/templates/managementtool/login.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:29,082 - ResourceManager : found /WEB-INF/classes/resources/templates/managementtool/login.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:34,489 - ResourceManager : found /WEB-INF/classes/resources/templates/cmstool/viewCMSTool.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:34,640 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentTool.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:34,660 - ResourceManager : found /WEB-INF/classes/resources/templates/cmstool/viewCMSToolHeader.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:34,760 - ResourceManager : found /WEB-INF/classes/resources/templates/cmstool/viewCMSToolFooter.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:34,920 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentToolToolBar.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:35,070 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentToolHeader.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:35,080 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentToolStartPage.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:35,090 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewContentToolStartPage.vm [line 18,column 50] : $rootContentId is not a valid reference.
+2004-05-31 21:00:35,311 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewContentToolMenu.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:35,621 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewContentToolStartPage.vm [line 18,column 50] : $rootContentId is not a valid reference.
+2004-05-31 21:00:36,743 - Velocimacro : added new VM : #drawItem( n ) : source = /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm
+2004-05-31 21:00:36,753 - Velocimacro : added new VM : #drawItem( n ) : source = /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm
+2004-05-31 21:00:36,753 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:36,753 - ResourceManager : found /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:00:36,763 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm [line 54,column 38] : ${select} is not a valid reference.
+2004-05-31 21:00:36,763 - org.apache.velocity.runtime.exception.ReferenceException: reference : template = /WEB-INF/classes/resources/templates/contenttool/viewHtmlTree.vm [line 54,column 38] : ${select} is not a valid reference.
+2004-05-31 21:01:29,999 - SimpleLog4JLogSystem initialized using logfile 'c:\projects\InfoGlue\infoglueCMSAuth\webapps\velocity.log'
+2004-05-31 21:01:29,999 - ************************************************************** 
+2004-05-31 21:01:29,999 - Starting Jakarta Velocity v1.3.1-rc2
+2004-05-31 21:01:29,999 - RuntimeInstance initializing.
+2004-05-31 21:01:29,999 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2004-05-31 21:01:29,999 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogSystem
+2004-05-31 21:01:29,999 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogSystem or necessary supporting classes in classpath. Exception : java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+2004-05-31 21:01:29,999 - Trying to use logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2004-05-31 21:01:29,999 - Using logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2004-05-31 21:01:30,009 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2004-05-31 21:01:30,009 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:01:30,009 - FileResourceLoader : initialization starting.
+2004-05-31 21:01:30,009 - FileResourceLoader : adding path 'c:\projects\InfoGlue\infoglueCMSAuth\webapps\'
+2004-05-31 21:01:30,009 - FileResourceLoader : initialization complete.
+2004-05-31 21:01:30,009 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:01:30,009 - ClasspathResourceLoader : initialization starting.
+2004-05-31 21:01:30,019 - ClasspathResourceLoader : initialization complete.
+2004-05-31 21:01:30,019 - ResourceCache : initialized. (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2004-05-31 21:01:30,019 - Default ResourceManager initialization complete.
+2004-05-31 21:01:30,019 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2004-05-31 21:01:30,019 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2004-05-31 21:01:30,029 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2004-05-31 21:01:30,029 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2004-05-31 21:01:30,029 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2004-05-31 21:01:30,109 - Created: 20 parsers.
+2004-05-31 21:01:30,109 - Velocimacro : initialization starting.
+2004-05-31 21:01:30,109 - Velocimacro : adding VMs from VM library template : resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,139 - Velocimacro : added new VM : #workingDiv( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,159 - Velocimacro : added new VM : #beginManagementTool( title toolbarKey arguments ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,179 - Velocimacro : added new VM : #beginContentTool( title toolbarKey arguments unrefreshedContentId changeTypeId addedContentId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,179 - Velocimacro : added new VM : #beginStructureTool( title toolbarKey arguments unrefreshedNodeId changeTypeId addedNodeId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,179 - Velocimacro : added new VM : #beginPublishingTool( title toolbarKey arguments ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,179 - Velocimacro : added new VM : #endManagementTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,179 - Velocimacro : added new VM : #endContentTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,179 - Velocimacro : added new VM : #endStructureTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,189 - Velocimacro : added new VM : #endPublishingTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,230 - Velocimacro : added new VM : #lvHead( headers header yesDestination noDestination message ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,230 - Velocimacro : added new VM : #oldlvHead( headers header yesDestination noDestination message ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,240 - Velocimacro : added new VM : #lvAddRow( row cnt objectId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,240 - Velocimacro : added new VM : #lvEnd( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,240 - Velocimacro : added new VM : #inlineroles( rolelist ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,240 - Velocimacro : added new VM : #inlineusers( userlist ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,240 - Velocimacro : added new VM : #editTextField( fieldNameKey fieldName fieldValue length className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,250 - Velocimacro : added new VM : #editTextField3( fieldNameLabel errorKey fieldName fieldValue length className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,250 - Velocimacro : added new VM : #editTextField( fieldNameKey fieldName fieldValue length className isReadOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,250 - Velocimacro : added new VM : #editTextField4( fieldNameLabel errorKey fieldName fieldValue length className isReadOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,260 - Velocimacro : added new VM : #editTextArea( fieldNameKey fieldName fieldValue cols rows className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,270 - Velocimacro : added new VM : #editTextArea3( fieldNameLabel errorKey fieldName fieldValue cols rows className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,270 - Velocimacro : added new VM : #checkSelected( value currentValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,270 - Velocimacro : added new VM : #checkChecked( value currentValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,270 - Velocimacro : added new VM : #editDateField( fieldNameKey fieldName fieldValue length className url readOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,280 - Velocimacro : added new VM : #editDateField4( fieldNameLabel errorKey fieldName fieldValue length className url readOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,280 - Velocimacro : added new VM : #yesNoDropDown( fieldNameKey fieldName value ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,280 - Velocimacro : added new VM : #selectField( fieldNameKey fieldName value valuePairArray ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,280 - Velocimacro : added new VM : #showJavaTree( width height bgColorR bgColorG bgColorB entityName repositoryId hideLeafs ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,290 - Velocimacro : added new VM : #treeSelectorVersions( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,290 - Velocimacro : added new VM : #treeSelector( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #treeSelectorCell( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #head( titleKey ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #title( titleKey ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #localizedFieldName( key ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #viewFieldsHead( fieldNameKeys counter ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #textarea( fieldNameLabel errorKey fieldName fieldValue rows cols ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #editField3( fieldNameLabel errorKey fieldName fieldValue length ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #editField2( fieldNameLabel fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #editField( fieldNameKey fieldName fieldValue length ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,300 - Velocimacro : added new VM : #editTextAreaOld( fieldNameKey fieldName fieldValue rows cols ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,310 - Velocimacro : added new VM : #hiddenField( fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,310 - Velocimacro : added new VM : #editInputField( fieldNameLabel fieldName fieldValue typeDefinition ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,310 - Velocimacro : added new VM : #viewField2( fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,310 - Velocimacro : added new VM : #viewField( fieldNameKey fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,320 - Velocimacro : added new VM : #submitButton( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:30,340 - VM #editTextField3: error : too few arguments to macro. Wanted 6 got 0
+2004-05-31 21:01:30,340 - VM #editTextField4: error : too few arguments to macro. Wanted 7 got 0
+2004-05-31 21:01:30,340 - VM #editTextArea3: error : too few arguments to macro. Wanted 7 got 0
+2004-05-31 21:01:30,350 - VM #editDateField4: error : too few arguments to macro. Wanted 8 got 0
+2004-05-31 21:01:30,360 - VM #editField3: error : too few arguments to macro. Wanted 5 got 4
+2004-05-31 21:01:30,370 - ResourceManager : found resources/templates/managementtool/macro.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:01:30,380 - Velocimacro :  VM library template macro registration complete.
+2004-05-31 21:01:30,380 - Velocimacro : adding VMs from VM library template : resources/templates/managementtool/treeview.vm
+2004-05-31 21:01:30,380 - Velocimacro : added new VM : #drawItem( n ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:01:30,380 - Velocimacro : added new VM : #drawItemSimple( n ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:01:30,380 - Velocimacro : added new VM : #drawTree( style ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:01:30,390 - Velocimacro : added new VM : #drawTreeXP( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:01:30,390 - Velocimacro : added new VM : #drawTreeExplorer( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:01:30,390 - Velocimacro : added new VM : #drawTreeSimple( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:01:30,390 - VM #drawTree: error : too few arguments to macro. Wanted 1 got 0
+2004-05-31 21:01:30,400 - ResourceManager : found resources/templates/managementtool/treeview.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:01:30,400 - Velocimacro :  VM library template macro registration complete.
+2004-05-31 21:01:30,400 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2004-05-31 21:01:30,400 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2004-05-31 21:01:30,400 - Velocimacro : allowInlineLocal = true : VMs defined inline will be local to their defining template only.
+2004-05-31 21:01:30,400 - Velocimacro : messages on  : VM system will output logging messages
+2004-05-31 21:01:30,400 - Velocimacro : autoload off  : VM system will not automatically reload global library macros
+2004-05-31 21:01:30,400 - Velocimacro : initialization complete.
+2004-05-31 21:01:30,400 - Velocity successfully started.
+2004-05-31 21:01:59,852 - SimpleLog4JLogSystem initialized using logfile 'c:\projects\InfoGlue\infoglueCMSAuth\webapps\velocity.log'
+2004-05-31 21:01:59,852 - ************************************************************** 
+2004-05-31 21:01:59,852 - Starting Jakarta Velocity v1.3.1-rc2
+2004-05-31 21:01:59,852 - RuntimeInstance initializing.
+2004-05-31 21:01:59,852 - Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+2004-05-31 21:01:59,852 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogSystem
+2004-05-31 21:01:59,852 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogSystem or necessary supporting classes in classpath. Exception : java.lang.NoClassDefFoundError: org/apache/log/format/Formatter
+2004-05-31 21:01:59,852 - Trying to use logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2004-05-31 21:01:59,852 - Using logger class org.apache.velocity.runtime.log.SimpleLog4JLogSystem
+2004-05-31 21:01:59,862 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2004-05-31 21:01:59,862 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2004-05-31 21:01:59,862 - FileResourceLoader : initialization starting.
+2004-05-31 21:01:59,862 - FileResourceLoader : adding path 'c:\projects\InfoGlue\infoglueCMSAuth\webapps\'
+2004-05-31 21:01:59,862 - FileResourceLoader : initialization complete.
+2004-05-31 21:01:59,872 - Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:01:59,872 - ClasspathResourceLoader : initialization starting.
+2004-05-31 21:01:59,872 - ClasspathResourceLoader : initialization complete.
+2004-05-31 21:01:59,872 - ResourceCache : initialized. (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2004-05-31 21:01:59,872 - Default ResourceManager initialization complete.
+2004-05-31 21:01:59,872 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2004-05-31 21:01:59,872 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2004-05-31 21:01:59,882 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2004-05-31 21:01:59,882 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2004-05-31 21:01:59,892 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2004-05-31 21:01:59,952 - Created: 20 parsers.
+2004-05-31 21:01:59,952 - Velocimacro : initialization starting.
+2004-05-31 21:01:59,952 - Velocimacro : adding VMs from VM library template : resources/templates/managementtool/macro.vm
+2004-05-31 21:01:59,972 - Velocimacro : added new VM : #workingDiv( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:01:59,992 - Velocimacro : added new VM : #beginManagementTool( title toolbarKey arguments ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,002 - Velocimacro : added new VM : #beginContentTool( title toolbarKey arguments unrefreshedContentId changeTypeId addedContentId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,002 - Velocimacro : added new VM : #beginStructureTool( title toolbarKey arguments unrefreshedNodeId changeTypeId addedNodeId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,002 - Velocimacro : added new VM : #beginPublishingTool( title toolbarKey arguments ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,002 - Velocimacro : added new VM : #endManagementTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,002 - Velocimacro : added new VM : #endContentTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,002 - Velocimacro : added new VM : #endStructureTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,012 - Velocimacro : added new VM : #endPublishingTool( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,052 - Velocimacro : added new VM : #lvHead( headers header yesDestination noDestination message ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,052 - Velocimacro : added new VM : #oldlvHead( headers header yesDestination noDestination message ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,062 - Velocimacro : added new VM : #lvAddRow( row cnt objectId ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,062 - Velocimacro : added new VM : #lvEnd( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,062 - Velocimacro : added new VM : #inlineroles( rolelist ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,062 - Velocimacro : added new VM : #inlineusers( userlist ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,062 - Velocimacro : added new VM : #editTextField( fieldNameKey fieldName fieldValue length className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,072 - Velocimacro : added new VM : #editTextField3( fieldNameLabel errorKey fieldName fieldValue length className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,072 - Velocimacro : added new VM : #editTextField( fieldNameKey fieldName fieldValue length className isReadOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,072 - Velocimacro : added new VM : #editTextField4( fieldNameLabel errorKey fieldName fieldValue length className isReadOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,082 - Velocimacro : added new VM : #editTextArea( fieldNameKey fieldName fieldValue cols rows className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,082 - Velocimacro : added new VM : #editTextArea3( fieldNameLabel errorKey fieldName fieldValue cols rows className ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,082 - Velocimacro : added new VM : #checkSelected( value currentValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,082 - Velocimacro : added new VM : #checkChecked( value currentValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,092 - Velocimacro : added new VM : #editDateField( fieldNameKey fieldName fieldValue length className url readOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,092 - Velocimacro : added new VM : #editDateField4( fieldNameLabel errorKey fieldName fieldValue length className url readOnly ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,092 - Velocimacro : added new VM : #yesNoDropDown( fieldNameKey fieldName value ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,092 - Velocimacro : added new VM : #selectField( fieldNameKey fieldName value valuePairArray ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,102 - Velocimacro : added new VM : #showJavaTree( width height bgColorR bgColorG bgColorB entityName repositoryId hideLeafs ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,112 - Velocimacro : added new VM : #treeSelectorVersions( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,112 - Velocimacro : added new VM : #treeSelector( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,112 - Velocimacro : added new VM : #treeSelectorCell( tooltarget ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,112 - Velocimacro : added new VM : #head( titleKey ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,112 - Velocimacro : added new VM : #title( titleKey ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,112 - Velocimacro : added new VM : #localizedFieldName( key ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,122 - Velocimacro : added new VM : #viewFieldsHead( fieldNameKeys counter ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,122 - Velocimacro : added new VM : #textarea( fieldNameLabel errorKey fieldName fieldValue rows cols ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,122 - Velocimacro : added new VM : #editField3( fieldNameLabel errorKey fieldName fieldValue length ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,122 - Velocimacro : added new VM : #editField2( fieldNameLabel fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,122 - Velocimacro : added new VM : #editField( fieldNameKey fieldName fieldValue length ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,122 - Velocimacro : added new VM : #editTextAreaOld( fieldNameKey fieldName fieldValue rows cols ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,122 - Velocimacro : added new VM : #hiddenField( fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,133 - Velocimacro : added new VM : #editInputField( fieldNameLabel fieldName fieldValue typeDefinition ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,133 - Velocimacro : added new VM : #viewField2( fieldName fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,133 - Velocimacro : added new VM : #viewField( fieldNameKey fieldValue ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,133 - Velocimacro : added new VM : #submitButton( ) : source = resources/templates/managementtool/macro.vm
+2004-05-31 21:02:00,163 - VM #editTextField3: error : too few arguments to macro. Wanted 6 got 0
+2004-05-31 21:02:00,163 - VM #editTextField4: error : too few arguments to macro. Wanted 7 got 0
+2004-05-31 21:02:00,163 - VM #editTextArea3: error : too few arguments to macro. Wanted 7 got 0
+2004-05-31 21:02:00,163 - VM #editDateField4: error : too few arguments to macro. Wanted 8 got 0
+2004-05-31 21:02:00,183 - VM #editField3: error : too few arguments to macro. Wanted 5 got 4
+2004-05-31 21:02:00,193 - ResourceManager : found resources/templates/managementtool/macro.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:02:00,193 - Velocimacro :  VM library template macro registration complete.
+2004-05-31 21:02:00,193 - Velocimacro : adding VMs from VM library template : resources/templates/managementtool/treeview.vm
+2004-05-31 21:02:00,203 - Velocimacro : added new VM : #drawItem( n ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:02:00,203 - Velocimacro : added new VM : #drawItemSimple( n ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:02:00,203 - Velocimacro : added new VM : #drawTree( style ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:02:00,203 - Velocimacro : added new VM : #drawTreeXP( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:02:00,213 - Velocimacro : added new VM : #drawTreeExplorer( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:02:00,213 - Velocimacro : added new VM : #drawTreeSimple( ) : source = resources/templates/managementtool/treeview.vm
+2004-05-31 21:02:00,213 - VM #drawTree: error : too few arguments to macro. Wanted 1 got 0
+2004-05-31 21:02:00,243 - ResourceManager : found resources/templates/managementtool/treeview.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2004-05-31 21:02:00,243 - Velocimacro :  VM library template macro registration complete.
+2004-05-31 21:02:00,243 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2004-05-31 21:02:00,243 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2004-05-31 21:02:00,243 - Velocimacro : allowInlineLocal = true : VMs defined inline will be local to their defining template only.
+2004-05-31 21:02:00,243 - Velocimacro : messages on  : VM system will output logging messages
+2004-05-31 21:02:00,243 - Velocimacro : autoload off  : VM system will not automatically reload global library macros
+2004-05-31 21:02:00,243 - Velocimacro : initialization complete.
+2004-05-31 21:02:00,243 - Velocity successfully started.

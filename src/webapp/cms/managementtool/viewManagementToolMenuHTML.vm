@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<META HTTP-EQUIV="expires" CONTENT="-1" />		
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Menus</title>
+
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/treeview.css" /> 
+
+	<script type="text/javascript" language="JavaScript">
+	<!-- 
+		function reloadMain()
+		{
+			#if($repositoryId == 0)
+				parent.frames[3].location.href = "ViewManagementToolStartPage.action";
+			#else
+				parent.frames[3].location.href = "ViewRepositoryOverview.action?repositoryId=" + $repositoryId;
+			#end
+		}
+
+	-->
+	</script>
+
+</head>
+<body class="managementtool" onload="reloadMain();">
+<div style="LEFT:10px; RIGHT:10px; position:absolute; TOP:10px; BOTTOM:6px; height:100%; visibility:visble; z-index:0">
+	
+	<!-- HTML Version of the tree: Start --->
+	##
+	## drawItem procedure (called from tree renderer for every item in the list, [se #parse below] )
+	## this is a local macro
+	#set($canDrag = ' ondragstart="startDrag();" ondragend="endDrag();"')
+	#set($imgPath="images/tree/xp/")	
+	#if($repositoryId == 0)
+		#set($rootTitle="All Repositories")
+	#else
+		#set($rootTitle="${name}")
+	#end
+	
+	#macro(drawItem $n)
+			####
+			## Draw the item icon Container or not? 
+			
+			#if ($n.isContainer())
+			
+				#if ($n.isRoot())
+					#set($nodeTitle="$rootTitle")
+					<img  class="tree-icon" src="images/tree/managementRoot.gif">
+				#else
+					#set($nodeTitle="${n.getTitle()}")				
+					<img class="tree-icon" src="${imgPath}emptyfolder$preOCImg$postImg" />
+				#end
+				
+			#else
+				<img class="tree-icon" src="${imgPath}item$postImg"  />
+			#end
+			
+			####
+			## Draw item link			
+			<a target="main" href="${n.getAction()}">${nodeTitle}</a>
+			
+	#end
+	
+	#*
+		include and parse tree functionality
+		Expect the nodes to be found in $nodes
+		This draws the entire tree
+	*#
+
+	#* Set custom arguments to send to page *#	
+	#set($myTreeArgs = "&repositoryId=$repositoryId")
+	
+	#* Explorer style rendering, draw your own folder icons in drawItem *#
+	#drawTreeXP()
+
+	<!-- HTML Version of the tree: End --->	
+
+</div>
+
+<div style="RIGHT:2px; position:absolute; BOTTOM:-2px; visibility:visble; z-index:0">
+	<image src="images/dragCorner.gif" width="12" height="12"></td>
+</div>
+
+</body>
+</html>

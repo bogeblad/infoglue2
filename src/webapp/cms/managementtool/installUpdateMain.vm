@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("InfoGlue Up2Date" "Installing update" "")
+
+<table cellpadding=10 width=100%><tr><td>
+
+<br/>
+<strong>Infoglue up2date system </strong><br/>
+Please wait...<br/>
+Installing update: <b> ${updatePackageId} </b> 
+
+
+<IFRAME FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 width="100%" src="InstallUpdate.action?updatePackageId=${updatePackageId}">
+</IFRAME>
+
+</td></tr></table>
+
+
+#endManagementTool()

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Repository Detail" "Repository Detail" "")
+<div class="fullymarginalized">
+<body class="managementtool">
+	<table cellpadding="0" cellspacing="0" border="0" width="100%" height="30">
+		<tr>
+			<td class="actionheader">Repository name:&nbsp;<a href="ViewRepository.action?repositoryId=$repositoryId">$name</a></td>
+		</tr>
+		<tr class="lightblue">
+			<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td>
+				Description: $description
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Dns address: $dnsName
+			</td>
+		</tr>
+	</table>
+	<table width="100%">
+		<tr class="lightblue">
+			<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td class="actionheader">
+				The following languages are assigned to this site:
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table>
+					#foreach ($availableLanguageVO in $availableLanguages)
+						<tr><td><li>$availableLanguageVO.getName() ($availableLanguageVO.getLanguageCode())</td></tr>
+					#end
+				</table>
+			</td>
+		</tr>
+		<tr class="lightblue">
+			<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+	</table>
+	<table width="100%">	
+		<tr>
+			<td class="actionheader">
+				The following roles has access to this site:
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table>
+					#foreach ($roleVO in $roles)
+						<tr><td><li>$roleVO.getName()</td></tr>
+					#end
+				</table>
+
+			</td>
+		</tr>
+		</table>
+		<table>
+		<tr>
+			<th width="200" align="left">&nbsp;</th>
+		</tr>
+		<tr>
+			<td>
+				<table>
+					<td width="200" align="left"><a href="ViewRepository!localView.action?repositoryId=$repositoryId">Edit site</a></td>
+					<td width="200" align="left"><!--<a href="ViewRepository.action?repositoryId=$repositoryId">Preview site</a>--></td>									
+				</table>
+			</td>	
+		</tr>
+		<!--
+		<tr>
+			<td>
+				<table>
+					<td width="200" align="left"><a href="ViewRepository!exportRepository.action?repositoryId=$repositoryId">Export site</a></td>
+					<td width="200" align="left"><a href="ViewRepository.action?repositoryId=$repositoryId">Preview site</a></td>									
+				</table>
+			</td>	
+		</tr>
+		-->
+	</table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+#macro(createContent $parentContentId $name $contentTypeDefinitionId $repositoryId $isBranch)
+
+  #set($newContentVO = $contentController.getNewVO())
+  $newContentVO.setName($name)
+  $newContentVO.setIsBranch($isBranch)
+  $newContentVO.setCreatorName("$infoGluePrincipal.name")
+  
+  $scriptLogic.logInfo("File:", $scriptLogic.database)
+  $scriptLogic.logInfo("File:", $parentContentId)
+  $scriptLogic.logInfo("File:", $contentTypeDefinitionId)
+  $scriptLogic.logInfo("File:", $repositoryId)
+  $scriptLogic.logInfo("File:", $newContentVO)
+
+  #set($newContent = $contentController.create($scriptLogic.database, $parentContentId, $contentTypeDefinitionId, $repositoryId, $newContentVO))
+  $scriptLogic.logInfo("content created:", $newContent)
+
+#end
+
+
+#macro(createFolders $parentContentId $numberOfContentsOnEachLevel $numberOfLevels $currentLevel)
+  
+  $scriptLogic.logInfo("***********************************")
+  $scriptLogic.logInfo("numberOfContentsOnEachLevel:", $numberOfContentsOnEachLevel)
+  $scriptLogic.logInfo("numberOfLevels:", $numberOfLevels)
+  $scriptLogic.logInfo("currentLevel:", $currentLevelname)	
+  $scriptLogic.logInfo("***********************************")
+  
+  #foreach($levelIndex in [1..$numberOfContentsOnEachLevel])
+    #set($name = "Mattias test $levelIndex")
+    #set($isFolder = true)
+  	
+    $scriptLogic.logInfo("Name:", $name)
+    $scriptLogic.logInfo("ContentTypeDefinitionName:", $contentTypeDefinitionName)
+	
+    #createContent($parentContentId $name $contentTypeDefinitionId $repositoryId $isFolder)
+    $scriptLogic.logInfo("Content created:", $newContent.contentId)
+    
+    #set($currentLevel = $currentLevel + 1)
+    #if($currentLevel == $numberOfLevels)
+      #createFolders($newContent.contentId $numberOfContentsOnEachLevel $numberOfLevels $currentLevel)
+    #end
+  #end  
+
+#end
+
+$scriptLogic.logInfo("***********************************")
+$scriptLogic.logInfo("**  Running task Create Content  **")
+$scriptLogic.logInfo("***********************************")
+
+#set($infoGluePrincipal = $scriptLogic.getInfoGluePrincipal())
+$scriptLogic.logInfo("$infoGluePrincipal:", $infoGluePrincipal)
+
+#set($parentContentId = $scriptLogic.getInteger($scriptLogic.request.getParameter("contentId")))
+$scriptLogic.logInfo("ParentContentId:", $parentContentId)
+#set($numberOfContentsOnEachLevel = $scriptLogic.getInteger($scriptLogic.request.getParameter("numberOfContentsOnEachLevel")))
+$scriptLogic.logInfo("numberOfContentsOnEachLevel:", $numberOfContentsOnEachLevel)
+#set($numberOfLevels = $scriptLogic.getInteger($scriptLogic.request.getParameter("numberOfLevels")))
+$scriptLogic.logInfo("numberOfLevels:", $numberOfLevels)
+
+#set($contentTypeDefinitionController = $scriptLogic.getObjectWithName("org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController"))
+#set($contentTypeDefinitionName = "Article")
+#foreach($contentTypeDefinition in $contentTypeDefinitionController.contentTypeDefinitionVOList)
+  #if($contentTypeDefinition.name == "$contentTypeDefinitionName")
+    #set($contentTypeDefinitionId = $contentTypeDefinition.id)
+  #end
+#end
+
+
+#set($contentController = $scriptLogic.getContentController())
+#set($parentContent = $contentController.getContentWithId($parentContentId, $scriptLogic.database))  
+#set($repositoryId = $parentContent.repository.id)
+
+#createFolders($parentContentId $numberOfContentsOnEachLevel $numberOfLevels 1)
+
+#*
+#foreach($levelIndex in [1..$numberOfLevels])
+  #set($name = "Mattias test $levelIndex")
+
+  #set($isFolder = true)
+  	
+  $scriptLogic.logInfo("Name:", $name)
+  $scriptLogic.logInfo("ContentTypeDefinitionName:", $contentTypeDefinitionName)
+	
+  #createContent($parentContentId $name $contentTypeDefinitionId $repositoryId $isFolder)
+  $scriptLogic.logInfo("Content created:", $newContent.contentId)
+
+
+  #foreach($contentVersionElement in $contentElement.elements("contentVersion"))
+	  #set($languageId = $contentVersionElement.attribute("languageId").getValue())
+	  $scriptLogic.logInfo("LanguageId:", $languageId)
+	
+	  #set($newContentVersionVO = $scriptLogic.getObjectWithName("org.infoglue.cms.entities.content.ContentVersionVO"))
+	  #set($date = $scriptLogic.getObjectWithName("java.util.Date"))
+	  $newContentVersionVO.setLanguageId($languageId)
+	  $newContentVersionVO.setStateId(0)
+	  $newContentVersionVO.setModifiedDateTime($date)
+	  $newContentVersionVO.setVersionComment("Imported")
+  	  #set($versionValue = $domBuilder.encodeString($contentVersionElement.elements().get(0).asXML(), "UTF-8"))
+	  $newContentVersionVO.setVersionValue("<?xml version='1.0' encoding='UTF-8'?>$versionValue")
+
+	  $scriptLogic.logInfo("Adding version as follows", $newContent.contentId)
+	  $scriptLogic.logInfo("languageId", $languageId)
+	  $scriptLogic.logInfo("languageId", $languageId.class.name)
+	  $scriptLogic.logInfo("remoteUser", $remoteUser)
+	  $scriptLogic.logInfo("newContentVersionVO", $newContentVersionVO)
+	  $scriptLogic.logInfo("database", $scriptLogic.database)
+	
+	  $scriptLogic.logInfo("version", $newContentVersionVO.versionValue)
+	  
+	  #set($newContentVersion = $scriptLogic.getContentVersionController().create($newContent.contentId, $scriptLogic.getInteger($languageId), "$remoteUser", $newContentVersionVO, null, $scriptLogic.database))
+	
+	  $scriptLogic.logInfo("ContentVersion created:", $newContentVersion.contentVersionId)
+  #end
+
+#end
+*#
+
+$scriptLogic.logInfo("Creation finished")

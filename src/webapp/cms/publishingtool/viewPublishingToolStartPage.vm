@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginPublishingTool($ui.getString("tool.publishingtool.welcomeHeader") "Welcome to the publishing tool, select one repository to work with" "")
+
+<!--div class="fullymarginalized"-->
+<script type="text/javascript" language="Javascript">
+
+		function reloadMenu(id)
+		{
+			menuFrame = parent.header;
+			theDoc = menuFrame.document;
+			theFrame = parent.menu;
+   			
+   			theDoc.selectbox.repositoryId.value = id;
+		    	document.location.href = "ViewPublications.action?repositoryId=" + id;
+		}
+
+	</script>
+	<!--link rel="stylesheet" type="text/css" href="css/cms.css" /--> 
+
+<table tableborder=0 border=0 bgcolor=666666 width=70% cellpadding="1" cellspacing="0"><tr><td>
+
+#set($lvConstraint = 0) 
+#lvHead(["Repository name","Description"] "" "" "" "")
+#set($cnt = 0)
+
+#foreach ($repositoryVO in $repositories)
+	#set($row = ["<a STYLE='cursor:hand;' onclick='reloadMenu($repositoryVO.getId())'>$repositoryVO.getName() </a>", "$repositoryVO.getDescription()"])
+	#set($cnt = $cnt + 1)
+	#lvAddRow($row $cnt "$repositoryVO.getId()")
+#end
+
+#lvEnd()
+
+</td></tr></table>	
+
+
+</body>
+</html>

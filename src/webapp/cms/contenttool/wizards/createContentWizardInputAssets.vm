@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>Upload attachment</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+	
+	<script language="JavaScript">
+		<!--
+		
+		/**
+		 * This method submits the form and shows a uploading-dialog.
+		 */
+		 
+		function submitForm()
+		{
+			if(document.getElementById("tt").value != "")
+			{
+				moveDiv("savingLayer", "20px", "20px");
+				resizeDiv("savingLayer", "350px", "150px");
+				showDiv("savingLayer");
+				document.editForm.submit();
+			}
+			else
+			{
+				alert("$ui.getString("tool.contenttool.fileUpload.assetKeyMissing")");
+			}
+		}
+		
+		/**
+		 * This method closes the dialog and reloads the content version
+		 */
+		 
+		function reloadAndClose()
+		{
+			window.opener.parent.frames["main"].location.reload();
+			//document.editForm.submit();
+			window.close();
+		}
+		
+		//*******************************************
+		//This method refreshes the caller
+		//*******************************************
+	
+		function refreshCaller()
+		{
+			if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
+				window.opener.parent.frames['main'].location.reload();
+			else
+				window.opener.location.reload();	
+	
+			window.close();
+		}
+	
+		function ddClick()
+		{
+			// Show / hide list
+			var list = document.getElementById("dd");
+			
+			if (list.style.visibility == "hidden")
+			{
+				list.style.visibility = "";
+			}
+			else
+			{
+				list.style.visibility = "hidden";
+			}
+		}
+		function ddListClick()
+		{
+			// Show / hide list
+			var tt = document.getElementById("tt");
+			var list = document.getElementById("dd");
+			var val = list.options[list.selectedIndex].value
+			tt.value=val;
+			list.style.visibility = "hidden";
+		}
+		function ddHide()
+		{
+			var list = document.getElementById("dd");
+			list.style.visibility = "hidden";
+		}
+		
+		-->
+	</script>
+	
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+</head>
+
+<body class="contenttooledit">
+
+<div class="fullymarginalized">
+
+<div id="savingLayer" class="infobackground">
+	<div class="infoheader">Saving changes</div>
+	<div class="infobody">
+		<br>Uploading file - please wait!<br><br>
+		<img src="images/progressbar.gif">
+	</div>
+</div>
+
+<form enctype="multipart/form-data" name="editForm" method="POST" action="CreateContentWizardInputAssets.action">
+<input type="hidden" name="languageId" value="$!languageId">
+<input type="hidden" name="uploadedFilesCounter" value="$!uploadedFilesCounter">
+<table width="300">
+	<tr>
+		<td class="biglabel">
+			#if($uploadedFilesCounter == 0)
+				$ui.getString("tool.contenttool.fileUpload.fileUploadHeader")
+			#else
+				$ui.getString("tool.contenttool.fileUpload.fileUploadedSoFarLabel"): $uploadedFilesCounter
+			#end
+		</td>
+	</tr>		
+	#if($mandatoryAssetKey)
+	<tr>
+		<td class="smalllabel">
+			The current information type requires an asset called "$mandatoryAssetKey". Please upload it now.
+			<input type="hidden" name="digitalAssetKey" id="tt" value="$mandatoryAssetKey"></td>
+		</td>
+	</tr>
+	#else
+	<tr>
+		<td>
+			$ui.getString("tool.contenttool.fileUpload.fileUploadKeyLabel")
+			<br/>
+			<div id="comboBox">
+				<table border="0" cellspacing="0" style="border-collapse: collapse;" bordercolor="#808080" id="cboBoxTable">
+			    <tr>
+			      <td width="10" style="border: solid 1px #000000;">
+			  		<input type="text" name="digitalAssetKey" id="tt" asize="20" onfocus="ddHide();" style="width: 200px; border: 1px solid #FFFFFF;"></td>
+			      	<td onClick="ddClick();" style="border: solid 1px #000000;">
+			      	<img border="0" src="images/combodown.gif" width="15" height="20"></td>
+			    </tr>
+			  	</table>
+			  	<select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 222px; height: 80px; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
+						#foreach($key in $definedAssetKeys)
+							<option style="width: 200px;" value="${key}">${key}</option>
+						#end
+			  	</select>  
+			  </div>
+		</td>
+	</tr>
+	#end		
+	<tr>
+		<td>
+			$ui.getString("tool.contenttool.fileUpload.fileUploadFileLabel")<br/>
+			<input size="30" style="width: 200px;" type="FILE" name="file1"><p>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+			<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+		</td>
+	</tr>
+
+	</form>	
+</table>
+</div>
+
+</body>
+</html>

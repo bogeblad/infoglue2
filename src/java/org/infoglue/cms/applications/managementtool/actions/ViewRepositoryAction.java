@@ -1,0 +1,126 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
+
+package org.infoglue.cms.applications.managementtool.actions;
+
+import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+
+import java.util.List;
+
+/**
+ * This class implements the action class for viewRepository.
+ * The use-case lets the user see all information about a specific site/repository.
+ * 
+ * @author Mattias Bogeblad  
+ */
+
+public class ViewRepositoryAction extends WebworkAbstractAction
+{ 
+
+    private RepositoryVO repositoryVO;
+    private List availableLanguageVOList;
+    private List languageVOList;
+
+    public ViewRepositoryAction()
+    {
+        this(new RepositoryVO());
+    }
+    
+    public ViewRepositoryAction(RepositoryVO repositoryVO)
+    {
+        this.repositoryVO = repositoryVO;
+    }
+    
+    protected void initialize(Integer repositoryId) throws Exception
+    {
+        repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+        availableLanguageVOList = LanguageController.getController().getLanguageVOList(repositoryId);
+        languageVOList = LanguageController.getController().getLanguageVOList();
+    } 
+
+    /**
+     * The main method that fetches the Value-object for this use-case
+     */
+    
+    public String doExecute() throws Exception
+    {
+        this.initialize(getRepositoryId());
+
+        return "success";
+    }
+
+    /**
+     * The main method that fetches the Value-object for this use-case
+     */
+    
+    public String doLocalView() throws Exception
+    {
+        this.initialize(getRepositoryId());
+
+        return "successLocal";
+    }
+          
+    public java.lang.Integer getRepositoryId()
+    {
+        return this.repositoryVO.getRepositoryId();
+    }
+        
+    public void setRepositoryId(java.lang.Integer repositoryId) throws Exception
+    {
+        this.repositoryVO.setRepositoryId(repositoryId);
+    }
+
+    public java.lang.String getName()
+    {
+        return this.repositoryVO.getName();
+    }
+
+    public java.lang.String getDescription()
+    {
+        return this.repositoryVO.getDescription();
+    }
+
+    public java.lang.String getDnsName()
+    {
+        return this.repositoryVO.getDnsName();
+    }
+	        
+    public List getAvailableLanguages()
+    {
+    	return this.availableLanguageVOList;
+    }
+
+    public List getAllLanguages()
+    {    	
+    	return this.languageVOList;
+    }
+    
+    /*
+    public List getRoles()throws Exception{
+   		return (List) RepositoryController.getRepositoryRoleVOList(this.getRepositoryId()); 		
+    }
+   	*/
+}

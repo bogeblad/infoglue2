@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>CMS Administrative utilities 1.3</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<script language="JavaScript"> 
+	
+	if(window.name.indexOf("CMS") == -1)
+	{
+		/*url = window.location;
+		details = "toolbar=no,status=yes,scrollbars=no,location=no,menubar=no,directories=no,resizable=yes,width=1000,height=740,left=5,top=5";
+		newWin=window.open(url, "CMS", details);
+		newWin.focus();
+		window.close();*/
+	}
+	
+</script> 
+
+<frameset rows="58,*,30" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
+  <frame name="header" marginwidth="0" marginheight="0" scrolling="no" noresize target="header" src="ViewCMSToolHeader.action?toolId=0">
+
+	<frameset cols="4,*,4" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
+	  <frame name="leftmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="leftmargin" src="cmsToolBackground.html">
+	  <frame name="toolarea" marginwidth="0" marginheight="0" scrolling="no" noresize src="ViewContentTool.action">
+	  <frame name="rightmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="rightmargin" src="cmsToolBackground.html">
+	</frameset>
+  <frame name="footer" marginwidth="0" marginheight="0" scrolling="no" noresize target="footer" src="ViewCMSToolFooter.action">
+</frameset>
+
+</html>

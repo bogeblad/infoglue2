@@ -1,0 +1,38 @@
+<html> 
+<head> 
+<script type="text/javascript" src="../popup.js"></script> 
+<script type="text/javascript" src="popup.js"></script> 
+<script type="text/javascript" src="popups/popup.js"></script> 
+<script type="text/javascript" src="../popups/popup.js"></script> 
+<script> 
+/*here we have the param wich is set with dialog.js*/ 
+param = opener.Dialog._arguments; 
+
+function Init() { 
+/*reset the size of popup & place in the middle of the screen*/ 
+__dlg_init(); 
+window.resizeTo(240, 182); 
+/*now do something with your vars*/ 
+document.getElementById('tester').value = param.test; 
+} 
+/* return functions */ 
+function onCancel() { 
+__dlg_close(null); 
+return false; 
+}; 
+
+function onOk(){ 
+var param = new Object(); 
+param.test = document.getElementById('tester').value; 
+__dlg_close(param); 
+return false; 
+} 
+
+</script> 
+</head> 
+<body onload="Init();";> 
+<input type="text" id="tester" /> 
+<button type="button" name="ok" onclick="return onOk();">OK</button> 
+<button type="button" name="cancel" onclick="return onCancel();">Cancel</button> 
+</body> 
+</html> 

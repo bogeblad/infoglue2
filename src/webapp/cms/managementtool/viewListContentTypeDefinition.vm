@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Content type definitions" "Content type definitions" "")
+
+#set($lvConstraint = 1) 
+#lvHead(["Name"] "Delete repositories" "DeleteContentTypeDefinition.action" "ViewListContentTypeDefinition.action?title=ContentTypeDefinitions" "Do you really want to delete the contentTypeDefinitions:<br/><br/>")
+
+#set($cnt = 0)
+#foreach ($contentTypeDefinitionVO in $contentTypeDefinitions)
+	#set( $contentTypeDefinitionId = $contentTypeDefinitionVO.getContentTypeDefinitionId() ) 
+	
+	#set( $rowUrl = "ViewContentTypeDefinition!useEditor.action?contentTypeDefinitionId=$contentTypeDefinitionVO.getContentTypeDefinitionId()&title=ContentTypeDefinition%20details")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$contentTypeDefinitionVO.getName()'/> <a href=$rowUrl>$contentTypeDefinitionVO.getName()</a>"])
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $contentTypeDefinitionId)
+#end
+#lvEnd()
+
+#endManagementTool()

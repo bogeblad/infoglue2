@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Create new Interceptor" "New Interceptor" "")
+
+<div class="fullymarginalized">
+<form method="POST" action="CreateInterceptor.action">
+<table>
+	<tr>
+		<td>#editField("Interceptor.name" "name" $!name "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("Interceptor.description" "description" $!description "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("Interceptor.className" "className" $!className "51")</td>
+	</tr>	
+	<tr>	
+		<td>
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<a href="ViewListInterceptionPoint.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+	</tr>
+</table>
+</div>
+</body>
+</html>

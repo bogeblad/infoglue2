@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#if($colorScheme == "ManagementTool")
+	#beginManagementTool("Access Rights - $interceptionPointCategory" "Access Rights" "null")
+#elseif($colorScheme == "StructureTool")
+	#beginStructureTool("Access Rights - $interceptionPointCategory" "Access Rights" "null" "null" "null" "null")
+#elseif($colorScheme == "PublishingTool")
+	#beginPublishingTool("Access Rights - $interceptionPointCategory" "Access Rights" "null" "null" "null" "null")
+#else
+	#beginContentTool("Access Rights - $interceptionPointCategory" "Access Rights" "null" "null" "null" "null")
+#end
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="UpdateAccessRights.action">
+<input type="hidden" name="interceptionPointCategory" value="$interceptionPointCategory">
+<input type="hidden" name="parameters" value="$extraParameters">
+<input type="hidden" name="returnAddress" value="$returnAddress">
+
+<table border="0" width="95%" cellpadding="0" cellspacing="0">
+	<tr class="darkgreen">
+		<td class="smalllabel">Role</td>
+		<td><img src="images/trans.gif" width="20" height="1"></td>
+		#set($colspan = 1)
+		#foreach($interceptionPointVO in $interceptionPointVOList)
+			#set($dotIndex = $interceptionPointVO.name.indexOf(".") + 1)
+			<td align="center" class="smalllabel">$interceptionPointVO.name.substring($dotIndex)</td>
+			<td><img src="images/trans.gif" width="20" height="1"></td>
+			#set($colspan = $colspan + 3)
+		#end
+	</tr>
+	
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="$colspan" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#C7D1B3" colspan="$colspan" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	
+	#set($roleIndex = 0)
+	#foreach ($role in $roleList)
+		<tr>
+			<td>
+				$role.name
+				<input type="hidden" name="${roleIndex}_roleName" value="$role.name">
+			</td>
+			<td></td>
+			#set($interceptionPointIndex = 0)
+			#foreach($interceptionPointVO in $interceptionPointVOList)
+				<td align="center">
+					#set($checked = "")
+					#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
+						#set($checked = "checked")
+					#end 
+					
+					<input type="hidden" name="${role.name}_${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
+					<input type="checkbox" name="${role.name}_${interceptionPointVO.id}_hasAccess" value="true" $checked>
+				</td>
+				<td></td>
+				#set($interceptionPointIndex = $interceptionPointIndex + 1)
+			#end
+		</tr>
+		#set($roleIndex = $roleIndex + 1)
+	#end
+	
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>	
+		<input type="hidden" name="extranetUserId" value="$!extranetUserId">
+		<td colspan="$interceptionPointIndex">
+			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<!--<a href="javascript:saveAndExit(document.editForm, 'UpdateAccessRights!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>-->
+			<a href="$returnAddress"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+	</tr>			
+	
+</table>
+</form>
+</div>
+</body>
+</html>

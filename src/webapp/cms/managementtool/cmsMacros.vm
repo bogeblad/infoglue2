@@ -1,0 +1,328 @@
+#macro(head $titleKey)
+<head>
+  <link rel="stylesheet" type="text/css" href="css/cms.css"/>
+  <title>$ui.getString($titleKey)</title>
+</head>
+#end
+
+
+#macro(title $titleKey)
+<p class="title">$ui.getString($titleKey)</p>
+#end
+
+
+#macro(localizedFieldName $key)
+  $ui.getString("entity.${key}.label")
+#end
+
+
+#macro(viewFieldsHead $fieldNameKeys $counter) 
+<tr>
+  #foreach($fieldNameKey in $fieldNameKeys)
+  <td class="data-head-center">
+    #localizedFieldName($fieldNameKey)
+  </td>
+  #end
+  #if($counter > 0) 
+    #foreach($dummy in [1..$counter])
+      <td class="data-head-center">&nbsp;</td>
+    #end
+  #end
+</tr>
+#end
+
+
+#macro(textarea $fieldNameLabel $errorKey $fieldName $fieldValue $rows $cols)
+  $fieldNameLabel 
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font><br/>
+    #end
+  #end
+  <textarea name="$fieldName" cols="$cols" rows="$rows">$!fieldValue</textarea>
+#end
+
+
+#macro(editField3 $fieldNameLabel $errorKey $fieldName $fieldValue $length)
+  $fieldNameLabel 
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font>
+    #end
+  #end
+  <br/>
+  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/>
+#end
+
+
+#macro(editField2 $fieldNameLabel $fieldName $fieldValue)
+  #editField3($fieldNameLabel "" $fieldName $fieldValue)
+#end
+
+#macro(editField $fieldNameKey $fieldName $fieldValue $length)
+  #editField3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length)
+#end
+
+#macro(editTextArea $fieldNameKey $fieldName $fieldValue $rows $cols)
+  #textarea($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $rows $cols)
+#end
+
+#macro(hiddenField $fieldName $fieldValue)
+  <input type="hidden" name="$fieldName" value="$!fieldValue"/>
+  #if($errors.hasErrors($errorKey))
+  <td class="data-cell-left-error">
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    $errorMessage<br/>
+    #end
+  </td>
+  #elseif($errors.hasErrors())
+  <td class="data-cell-left-error">&nbsp;</td>
+  #end
+#end
+
+#macro(editInputField $fieldNameLabel $fieldName $fieldValue $typeDefinition)
+<tr>
+  <td class="data-head-left">$fieldNameLabel</td>
+  <td class="data-cell-right">
+  #if($typeDefinition.value.indexOf("freetext") > -1)
+    <input type="text" name="$fieldName" value="$!fieldValue" size="30"/>
+  #else
+  	#foreach($fieldDefinition in $typeDefinition.getFields())
+    	<input type="radio" name="$fieldName" value="$fieldDefinition.id">$fieldDefinition.label</input>  
+  	#end
+  #end
+  </td>
+  #if($errors.hasErrors($errorKey))
+  <td class="data-cell-left-error">
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    $errorMessage<br/>
+    #end
+  </td>
+  #elseif($errors.hasErrors())
+  <td class="data-cell-left-error">&nbsp;</td>
+  #end
+</tr>
+#end
+
+
+#macro(viewField2 $fieldName $fieldValue)
+<tr>
+  <td class="data-head-left">$fieldName</td>
+  <td class="data-cell-right">$fieldValue</td>
+</tr>
+#end
+
+
+#macro(viewField $fieldNameKey $fieldValue)
+  #viewField2($ui.getString("entity.${fieldNameKey}.label") $fieldValue)
+#end
+
+
+#macro(submitButton)
+<tr>
+  <td class="data-cell-right" colspan="2"><input type="image" src="/images/submit.gif"/></td>
+  #if($errors.hasErrors())
+  <td class="data-cell-left-error">&nbsp;</td>
+  #end
+</tr>
+#end
+
+
+####################################
+##          CMS STUFF 	   	       #
+####################################
+
+#macro(confirmmultiselect $header $yesDestination $noDestination $message)
+<table border="0" width="0%" height="0%">
+<form name="confirm" action="Confirm.action">
+<input type="hidden" name="header" value="$header">	
+<input type="hidden" name="yesDestination" value="$yesDestination">	
+<input type="hidden" name="noDestination" value="$noDestination">	
+<input type="hidden" name="message" value="$message">
+</form>
+<td><a href="JavaScript:DeleteObjects();">Delete Objects</a></td>
+</table>
+#end
+
+#macro(confirm $header $yesDestination $noDestination $message)
+<table border="0" width="0%" height="0%">
+<form name="confirm" action="Confirm.action">
+<input type="hidden" name="header" value="$header">	
+<input type="hidden" name="yesDestination" value="$yesDestination">	
+<input type="hidden" name="noDestination" value="$noDestination">	
+<input type="hidden" name="message" value="$message">
+<td><input name="confirmsubmit" type="image" src="images/garbageCan.gif" width="18" height="16" border="0"></td>	
+</form>
+</table>
+#end
+
+
+ 
+#* 
+	SS Experimenterar
+*#
+
+#macro(beginManagementTool $title $toolbarKey $arguments)
+<html>
+<head>
+	<title>$title</title>
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<script language="JavaScript" src="script/listview.js"></script>
+</head>
+
+<body class="managementtooledit" onload="javascript:refreshToolBar('$toolbarKey', '$arguments');">
+#end
+
+#macro(endManagementTool)
+</body>
+</html>
+#end
+
+#macro(tooltitle $title)
+<!- Show the title of this tool -->
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+	<tr class="darkblue">
+		<td class="actionheader"><div class="leftmarginalized">$title</div></td>
+	</tr>
+	<tr class="lightblue">
+		<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr class="darkblue">
+		<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+</table>
+#end
+
+#macro(listviewheadmultiselect $headers)
+	#set( $span = $headers.size() * 2 - 1 )
+	<div class="fullymarginalized">
+	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+	
+	<tr class="darkblue">
+
+		#foreach( $header in $headers )
+			<td class="smalllabel"><div class="minormarginalized">$header</div></td>
+			#if ($velocityCount != $headers.size())
+				<td class="lightblue"><img src="images/trans.gif" width="1" height="1"></td>
+			#end
+		#end
+
+	</tr>
+	
+	<tr class="lightblue">
+		<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr class="darkblue">
+		<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+
+	## Start the form
+	<form name=objList>	
+
+#end 
+
+#macro(listviewhead $headers $header $yesDestination $noDestination $message)
+	#set( $span = $headers.size() * 2 - 1 )
+	<div class="fullymarginalized">
+	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+	<form name="listForm" action="Confirm.action" method="POST">
+
+	<input type="hidden" name="header" value="$header"/>
+	<input type="hidden" name="yesDestination" value="$yesDestination"/>
+	<input type="hidden" name="noDestination" value="$noDestination"/>
+	<input type="hidden" name="message" value="$message"/>
+
+	<tr class="darkblue">
+
+		#foreach( $header in $headers )
+			<td class="smalllabel"><div class="minormarginalized">$header</div></td>
+			#if ($velocityCount != $headers.size())
+				<td class="lightblue" width="1"><img src="images/trans.gif" width="1" height="1"></td>
+			#end
+		#end
+
+	</tr>
+	<tr class="lightblue">
+		<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr class="darkblue">
+		<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+#end
+
+#macro(listviewrow $row $cnt)
+
+	#set( $isOdd = $cnt % 2)
+	#if($isOdd==0)
+		#set($class = "class='lightblue'")
+	#else
+		#set($class = "class='white'")
+	#end	
+
+	<tr $class  onMouseOver='listRowOn(this);'>
+		#foreach( $item in $row )
+			<td valign='middle'><div class="minormarginalized">$item</div></td>
+			#if ($velocityCount != $row.size())
+				<td width="1"></td>
+			#end
+		#end
+	</tr>
+
+#end
+
+#macro(listviewrowmultiselect $row $cnt $objectId)
+
+	#set( $loccnt = 0)
+	#set( $isOdd = $cnt % 2)
+	#if($isOdd==0)
+		#set($class = "class='lightblue'")
+	#else
+		#set($class = "class='white'")
+	#end	
+
+	<tr id="r$objectId" $class  onMouseOver='listRowOn(this);'>
+		#foreach( $item in $row )
+			<td valign='middle'>
+				<div class="minormarginalized">	
+					#if($loccnt==0)
+						<input type=checkbox name="sel" value="$objectId" onClick="CheckUncheck('r$objectId',this);"/>
+						#set( $loccnt = 1 )
+					#end
+					$item
+				</div>
+			</td>
+			#if ($velocityCount != $row.size())
+				<td></td>
+			#end
+		#end
+	</tr>
+
+#end
+
+#macro(listviewendmultiselect)
+	</form>
+	</table>
+#end
+#macro(listviewend)
+	</form>
+	</table>
+#end
+
+
+## Usecase specific macros
+#macro(inlineroles $rolelist)
+	#foreach ( $roleVO in $rolelist )
+		$roleVO.getName()
+	#end 
+#end
+#macro(inlineusers $userlist)
+	#foreach ( $u in $userlist )
+		$u.getUserName()
+	#end 
+#end
+
+
+
+
+
+

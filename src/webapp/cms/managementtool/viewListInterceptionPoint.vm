@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("Available intercetionPoints" "InterceptionPoints" "")
+
+#set($lvConstraint = 1) 
+#lvHead(["Name", "Category", "Description", "usesExtraDataForAccessControl"] "Delete interceptionPoint" "DeleteInterceptionPoint.action" "ViewListInterceptionPoint.action?title=InterceptionPoints" "Do you really want to delete the interceptionPoint:<br/><br/>")
+
+#set($cnt = 0)
+#foreach ($interceptionPointVO in $interceptionPointVOList)
+	#set( $interceptionPointId = $interceptionPointVO.getId() )
+	
+	#set( $rowUrl = "ViewInterceptionPoint.action?interceptionPointId=$interceptionPointId&title=InterceptionPoint%20details")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$interceptionPointVO.getName()'/> <a href=$rowUrl>$interceptionPointVO.getName()</a>", "$interceptionPointVO.getCategory()", "$interceptionPointVO.getDescription()", "$interceptionPointVO.getUsesExtraDataForAccessControl()"] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $interceptionPointId)
+#end
+
+#lvEnd()
+#endManagementTool()

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="infoglue" default="clean-deploy" basedir=".">
+
+	<property file="build.properties"/>
+	<property name="project.fullname" value="InfoGlue content management system"/>
+
+	<property name="src" value="src"/>
+	<property name="src.java" value="${src}/java"/>
+	<property name="lib" value="lib"/>
+	<property name="conf" value="conf"/>
+
+	<property name="webapp" value="${src}/webapp"/>
+
+	<property name="build" value="build"/>
+	<property name="build.classes" value="${build}/classes"/>
+	<property name="javadoc" value="${build}/javadoc"/>
+	<property name="war.file" value="${build}/${ant.project.name}.war"/>
+
+	<property name="test" value="test"/>
+	<property name="test.java" value="${test}/java"/>
+	<property name="test.classes" value="${build}/test-classes"/>
+
+	<property name="year" value="2003"/>
+
+	<!--
+	* The master filterset, created from build.properties
+	-->
+	<filterset id="project.filters">
+		<filtersfile file="build.properties"/>
+	</filterset>
+
+	<!--
+	* lib filesets
+	-->
+	<fileset id="build.libs" dir="${lib}/build">
+		<include name="**/*.jar"/>
+	</fileset>
+
+	<fileset id="core.libs" dir="${lib}/core">
+		<include name="**/*.jar"/>
+	</fileset>
+
+	<fileset id="jdbc.libs" dir="${lib}/jdbc">
+		<include name="*.jar"/>
+	</fileset>
+
+	<!--
+	* paths
+	-->
+	<path id="build.classpath">
+		<pathelement location="${build.classes}"/>
+		<fileset refid="build.libs"/>
+	</path>
+
+	<path id="test.classpath">
+		<pathelement location="${test.classes}"/>
+		<path refid="build.classpath"/>
+		<fileset refid="core.libs"/>
+		<fileset refid="jdbc.libs"/>
+	</path>
+
+	<path id="build.sourcepath">
+		<pathelement location="${src.java}/"/>
+	</path>
+
+	<path id="test.sourcepath">
+		<pathelement location="${test.java}"/>
+	</path>
+
+	<!--
+	* Initializes the build
+	-->
+	<target name="init">
+		<tstamp/>
+		<mkdir dir="${build}"/>
+		<mkdir dir="${build.classes}"/>
+		<mkdir dir="${test.classes}"/>
+	</target>
+
+	<!--
+	* Removes the output directory
+	-->
+	<target name="clean">
+		<delete dir="${build}" quiet="true"/>
+	</target>
+
+	<!--
+	* Compiles Java source files and copies resources to the build output directory
+	* that need to be on the classpath
+	-->
+	<target name="compile" depends="init">
+		<javac destdir="${build.classes}" classpathref="build.classpath" depend="true">
+			<src refid="build.sourcepath"/>
+		</javac>
+		<copy todir="${build.classes}">
+			<fileset dir="${conf}">
+				<include name="*.properties"/>
+				<include name="*.xml"/>
+				<include name="*.dtd"/>
+				<include name="LICENSE.HTML"/>
+			</fileset>
+			<filterset refid="project.filters"/>
+		</copy>
+		<copy todir="${build.classes}">
+			<fileset dir="${src}" includes="workflows/*.xml"/>
+		</copy>
+	</target>
+
+	<!--
+	* Creates the war file.  Since we deploy an exploded war, the primary
+	* purpose of this target is to organize the files required to deploy.
+	-->
+	<target name="war" depends="compile" description="Creates the war file">
+		<war warfile="${war.file}" webxml="${webapp}/WEB-INF/web.xml">
+			<fileset dir="${webapp}">
+				<exclude name="WEB-INF/web.xml"/>
+			</fileset>
+			<classes dir="${build.classes}"/>
+			<lib refid="build.libs"/>
+			<lib refid="core.libs"/>
+			<lib refid="jdbc.libs"/>
+		</war>
+	</target>
+
+	<!--
+	* Deploys the app by unpacking the war file created by the war target into
+	* the deploy directory.
+	-->
+	<target name="deploy" depends="war" description="Unpacks war to deploy dir">
+		<unwar src="${war.file}" dest="${deploy.dir}"/>
+	</target>
+
+	<!--
+	* Deploys after a complete rebuild
+	-->
+	<target name="clean-deploy" depends="clean,deploy"/>
+
+	<!--
+	* Generates API documentation; includes test code as well.
+	-->
+	<target name="javadoc" depends="test-compile" >
+		<javadoc destdir="${javadoc}" packagenames="org.*" author="true" version="true"
+					windowtitle="${project.fullname} API - ${project.version}"
+					doctitle="${project.fullname} - ${project.version}"
+					bottom="Copyright &#169; ${year} InfoGlue.org All Rights Reserved.">
+			<sourcepath refid="build.sourcepath"/>
+			<sourcepath refid="test.sourcepath"/>
+			<classpath refid="build.classpath"/>
+			<classpath refid="test.classpath"/>
+		</javadoc>
+	</target>
+
+	<!--
+	* Compiles test classes
+	-->
+	<target name="test-compile" depends="compile">
+		<javac destdir="${test.classes}" classpathref="test.classpath" depend="true">
+			<src refid="test.sourcepath"/>
+		</javac>
+	</target>
+
+	<!--
+	* Runs all the tests.  Requires junit.jar to be in the Ant lib
+	* directory, otherwise the JUnit task will not be able to find the
+	* JUnit classes.
+	-->
+	<target name="all-tests" depends="test-compile">
+		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
+			<classpath refid="test.classpath"/>
+			<sysproperty key="webapp" value="${basedir}/${webapp}"/>
+			<formatter type="plain"/>
+			<batchtest>
+				<fileset dir="${test.java}">
+					<exclude name="**/Abstract*.java"/>
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<!--
+	* Runs a particular test using the text test runner.  Requires
+	* junit.jar to be in the Ant lib directory, otherwise the JUnit task
+	* will not be able to find the JUnit classes.
+	-->
+	<target name="test" depends="test-compile">
+		<fail unless="test.class">Property test.class was not set. Usage: ant -Dtest.class=package.to.some.TestClass test</fail>
+		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
+			<classpath refid="test.classpath"/>
+			<sysproperty key="webapp" value="${basedir}/${webapp}"/>
+			<formatter type="plain"/>
+			<test name="${test.class}"/>
+		</junit>
+	</target>
+
+	<!--
+	* Runs a particular test using the Swing test runner.  Requires
+	* junit.jar to be in the Ant lib directory, otherwise the JUnit task
+	* will not be able to find the JUnit classes.
+	-->
+	<target name="test-swing" depends="test-compile">
+		<fail unless="test.class">Property test.class was not set. Usage: ant -Dtest.class=package.to.some.TestClass</fail>
+		<java classname="${test.class}" classpathref="test.classpath" fork="true">
+			<jvmarg line="-enableassertions"/>
+		</java>
+	</target>
+</project>
