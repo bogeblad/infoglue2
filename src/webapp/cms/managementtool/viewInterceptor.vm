@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Interceptor details" "Interceptor details" "interceptorId=$interceptorId")
+#beginManagementTool("tool.managementtool.viewInterceptor.header" "tool.managementtool.viewInterceptor.header" "interceptorId=$interceptorId")
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateInterceptor.action">

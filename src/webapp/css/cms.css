@@ -226,11 +226,19 @@ td.smalllabel {
 }
 td.actionheader {	
 	font-family 	 : Verdana; 
-	font-size		 : 10pt;
+	font-size		 : 8pt;
 	font-weight		 : bold;
 	height			 : 22px;
+	padding-left	 : 5px;
 }
-
+td.titleField {	
+	font-family 	 : Verdana; 
+	font-size		 : 10pt;
+	font-weight		 : bold;
+	height			 : 18px;
+	padding-left	 : 10px;
+	aborder: 1px solid red;
+}
 td.propertiesheader {	
 	font-family 	 : Verdana; 
 	font-size		 : 12pt;
@@ -390,11 +398,18 @@ div.minormarginalized {
 	margin-right	 : 5px;
 }
 
-div.fullymarginalized {
+adiv.fullymarginalized {
 	margin-left		 : 15px;
 	margin-right     : 15px;
 	margin-top		 : 15px;
 	width 			 : 100%;	
+}
+
+div.fullymarginalized {
+	padding-left	 : 15px;
+	padding-right    : 15px;
+	padding-top		 : 15px;
+	awidth 			 : 100%;	
 }
 
 div.listmarginalized {

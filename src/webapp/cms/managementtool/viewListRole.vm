@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Available roles" "Roles" "")
+#beginManagementTool("tool.managementtool.viewRoleList.header" "tool.managementtool.viewRoleList.header" "")
 
 #set($lvConstraint = 1) 
 #lvHead(["Name","Description"] "Delete roles" "DeleteRole.action" "ViewListRole.action?title=Roles" "Do you really want to delete the role:<br/><br/>")

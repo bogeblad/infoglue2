@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Repository details" "Repository details" "repositoryId=$repositoryId&name=$name")
+#beginManagementTool("tool.managementtool.viewRepository.header" "tool.managementtool.viewRepository.header" "repositoryId=$repositoryId&name=$name")
 
 <div class="fullymarginalized">
 

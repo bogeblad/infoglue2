@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Available service binding details" "Available service binding details" "availableServiceBindingId=$availableServiceBindingId")
+#beginManagementTool("tool.managementtool.viewAvailableServiceBinding.header" "tool.managementtool.viewAvailableServiceBinding.header" "availableServiceBindingId=$availableServiceBindingId")
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateAvailableServiceBinding.action">

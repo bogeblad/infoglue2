@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Available service definitions" "Service definitions" "")
+#beginManagementTool("tool.managementtool.viewServiceDefinitionList.header" "tool.managementtool.viewServiceDefinitionList.header" "")
 
 #set($lvConstraint = 1) 
 #lvHead(["Name","Description","Classname"] "Delete service definition" "DeleteServiceDefinition.action" "ViewListServiceDefinition.action?title=ServiceDefinitions" "Do you really want to delete the service definition:<br/><br/>")

@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Create new system user" "New system user" "")
+#beginManagementTool("tool.managementtool.createSystemUser.header" "tool.managementtool.createSystemUser.header" "")
 
 <form method="POST" action="CreateSystemUser.action">
 <div class="fullymarginalized">

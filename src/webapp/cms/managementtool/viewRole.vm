@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Role details" "Role details" "roleName=$formatter.encodeURI($roleName)")
+#beginManagementTool("tool.managementtool.viewRole.header" "tool.managementtool.viewRole.header" "roleName=$formatter.encodeURI($roleName)")
 ##beginManagementTool("Role details" "Role details" "roleName=$roleName")
 
 <SCRIPT type="text/javascript" SRC="script/OptionTransfer.js"></SCRIPT>

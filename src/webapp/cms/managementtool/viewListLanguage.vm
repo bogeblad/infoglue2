@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Available languages" "Languages" "")
+#beginManagementTool("tool.managementtool.viewLanguageList.header" "tool.managementtool.viewLanguageList.header" "")
 
 #set($lvConstraint = 1) 
 #lvHead(["Name","Language code","Charset"] "Delete language" "DeleteLanguage.action" "ViewListLanguage.action?title=Languages" "Do you really want to delete the language:<br/><br/>")

@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("InfoGlue Up2Date" "Available updates" "")
+#beginManagementTool("tool.managementtool.viewUp2DateList.header" "tool.managementtool.viewUp2DateList.header" "")
 
 <br/>
 <strong>Infoglue AutoUpdate system</strong><br/>

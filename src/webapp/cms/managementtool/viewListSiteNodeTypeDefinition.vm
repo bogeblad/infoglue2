@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Site node type definitions" "Site node type definitions" "")
+#beginManagementTool("tool.managementtool.viewSiteNodeTypeDefinitionList.header" "tool.managementtool.viewSiteNodeTypeDefinitionList.header" "")
 
 #set($lvConstraint = 1) 
 #lvHead(["Name","Description","Invoker class name"] "Delete roles" "DeleteSiteNodeTypeDefinition.action" "ViewListSiteNodeTypeDefinition.action?title=SiteNodeTypeDefinitions" "Do you really want to delete the SiteNodeTypeDefinition:<br/><br/>")

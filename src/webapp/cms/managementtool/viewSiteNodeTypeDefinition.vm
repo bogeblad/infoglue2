@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Site node type definition details" "Site node type definition details" "siteNodeTypeDefinitionId=$siteNodeTypeDefinitionId")
+#beginManagementTool("tool.managementtool.viewSiteNodeTypeDefinition.header" "tool.managementtool.viewSiteNodeTypeDefinition.header" "siteNodeTypeDefinitionId=$siteNodeTypeDefinitionId")
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateSiteNodeTypeDefinition.action">

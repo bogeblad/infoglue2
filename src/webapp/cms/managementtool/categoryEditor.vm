@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#set($title = "Edit Category")
+#set($title = "tool.managementtool.editCategory.header")
 #if($model.unsaved)
-	#set($title = "Create Category")
+	#set($title = "tool.managementtool.createCategory.header")
 #end
 
 ## Last parameter will become a parameter to ViewManagementToolToolBarAction

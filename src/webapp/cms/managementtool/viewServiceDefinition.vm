@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Service definition details" "Service definition details" "serviceDefinitionId=$serviceDefinitionId")
+#beginManagementTool("tool.managementtool.viewServiceDefinition.header" "tool.managementtool.viewServiceDefinition.header" "serviceDefinitionId=$serviceDefinitionId")
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateServiceDefinition.action">

@@ -17,11 +17,11 @@
 ## This is the header for all managementtool pages *
 ##**************************************************
 
-#macro(beginManagementTool $title $toolbarKey $arguments)
+#macro(beginManagementTool $titleKey $toolbarKey $arguments)
 
 <html>
 <head>
-	<title>$title</title>
+	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />

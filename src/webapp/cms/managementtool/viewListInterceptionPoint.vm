@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Available intercetionPoints" "InterceptionPoints" "")
+#beginManagementTool("tool.managementtool.viewInterceptionPointList.header" "tool.managementtool.viewInterceptionPointList.header" "")
 
 #set($lvConstraint = 1) 
 #lvHead(["Name", "Category", "Description", "usesExtraDataForAccessControl"] "Delete interceptionPoint" "DeleteInterceptionPoint.action" "ViewListInterceptionPoint.action?title=InterceptionPoints" "Do you really want to delete the interceptionPoint:<br/><br/>")

@@ -9,7 +9,7 @@ function reloadMenu()
 		}
 </SCRIPT>
 
-#beginManagementTool("Available repositories" "Repositories" "")
+#beginManagementTool("tool.managementtool.repositoryList.header" "tool.managementtool.repositoryList.header" "")
 
 #set($lvConstraint = 1) 
 #lvHead(["Name","Description", "Dns Name"] "Delete repositories" "DeleteRepository.action" "ViewListRepository.action?title=Repositories" "Do you really want to delete the repositories listed below? This action will delete all information and structure contained in that repository so don't do it unless you are absolutely sure.<br/><br/>")

@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("Available users" "System users" "")
+#beginManagementTool("tool.managementtool.viewSystemUserList.header" "tool.managementtool.viewSystemUserList.header" "")
 
 <div id="filterDiv" style="position:relative; visibility: visible; aheight: 1px; overflow:hidden; margin: 0px 10px 0px 10px;">
 <form method="POST" name="filterForm" action="ViewListSystemUser.action">
