@@ -35,16 +35,19 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.deliver.util.*;
-import org.infoglue.deliver.util.webservices.WebServiceHelper;
+import org.infoglue.deliver.applications.databeans.WebPage;
+import org.infoglue.deliver.util.BrowserBean;
+import org.infoglue.deliver.util.MathHelper;
+import org.infoglue.deliver.util.ObjectConverter;
 import org.infoglue.deliver.util.charts.ChartHelper;
-import org.infoglue.deliver.util.graphics.*;
+import org.infoglue.deliver.util.graphics.ColorHelper;
+import org.infoglue.deliver.util.graphics.FontHelper;
+import org.infoglue.deliver.util.webservices.WebServiceHelper;
 
 /**
  * @author Mattias Bogeblad
@@ -856,6 +859,14 @@ public interface TemplateController
      */
     public abstract List getChildContents(Integer contentId,
             boolean searchRecursive, String sortAttribute, String sortOrder);
+
+	/**
+	 * Finds a list of ContentVersionVOs that are related to the provided category under the given attribute name.
+	 * @param categoryId The id of the Category
+	 * @param attributeName The ContentTypeDefinition attribute name of the Category relationship.
+	 * @return A list of relevant CategoryVersionVOs
+	 */
+	public abstract List getContentVersionsByCategory(Integer categoryId, String attributeName);
 
     /**
      * The method returns the ContentTypeVO-objects of the given contentId.
