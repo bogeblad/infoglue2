@@ -82,7 +82,7 @@
 	<td valign="top" class="borderedCell">
 		<table align="center" border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td colspan="2" style="border-bottom: 1px solid #000000;"><img src="images/loginHeader.jpg" width="210" height="38"></td>
+			<td colspan="2" style="border-bottom: 1px solid #000000;" background="images/loginHeader.jpg" width="210" height="38"><img src="images/trans.gif" width="210" height="38"></td>
 		</tr>	
 		<tr>
 			<td colspan="2"><img src="images/trans.gif" width="1" height="30"></td>
