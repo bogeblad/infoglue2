@@ -191,14 +191,14 @@ public class ContentControllerProxy extends ContentController
 	 * This method updates a content after first checking that the user has rights to edit it.
 	 */
 
-	public ContentVO acUpdate(InfoGluePrincipal infogluePrincipal, ContentVO contentVO) throws ConstraintException, SystemException, Bug, Exception
+	public ContentVO acUpdate(InfoGluePrincipal infogluePrincipal, ContentVO contentVO, Integer contentTypeDefinitionId) throws ConstraintException, SystemException, Bug, Exception
 	{
 		Map hashMap = new HashMap();
 		hashMap.put("contentId", contentVO.getId());
     	
 		intercept(hashMap, "Content.Write", infogluePrincipal);
 
-		return update(contentVO);
+		return update(contentVO, contentTypeDefinitionId);
 	}   
 	
 	/**

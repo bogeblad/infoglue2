@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -22,10 +22,9 @@
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
-
+ 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.persist.spi.CallbackInterceptor;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
 
@@ -34,21 +33,26 @@ import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImp
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
+import org.infoglue.deliver.util.CacheController;
 
 
 /**
  * CMSJDOCallback.java
- * Created on 2002-okt-09
- * @author Stefan Sik, ss@frovi.com
+ * Created on 2002-okt-09 
+ * @author Stefan Sik, ss@frovi.com 
  * ss
- *
+ * 
  */
 public class CmsJDOCallback implements CallbackInterceptor
 {
@@ -72,17 +76,17 @@ public class CmsJDOCallback implements CallbackInterceptor
     {
 		//System.out.println("storing...:" + object + ":" + modified);
         // ( (Persistent) object ).jdoStore( modified );
-
+   		
    		//CmsLogger.logInfo("Should we store -------------->" + object + ":" + modified);
     	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && modified)
 	    {
 	        //System.out.println("Actually stored it:" + object + ":" + modified);
 	    	CmsLogger.logInfo("Actually stored it:" + object + ":" + modified);
-
+    	    
 			String userName = "SYSTEM";
 	    	NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
 	    	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-
+	    
 			if(object.getClass().getName().equals(RepositoryImpl.class.getName()))
 			{
 				CacheController.clearCache("repositoryCache");
@@ -112,16 +116,41 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(ContentImpl.class.getName()))
 			{
 				CacheController.clearCache("childContentCache");
+				clearCache(SmallContentImpl.class);
+				clearCache(MediumContentImpl.class);
+			}
+			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
+			{
+				CacheController.clearCache("masterLanguageCache");
+				CacheController.clearCache("repositoryLanguageListCache");
 			}
 			else if(object.getClass().getName().equals(DigitalAssetImpl.class.getName()))
 			{
 				//System.out.println("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
 			}
-
     	}
     }
 
+	private synchronized void clearCache(Class c) throws Exception
+	{
+		Database db = CastorDatabaseService.getDatabase();
+
+		try
+		{
+			Class[] types = {c};
+			Class[] ids = {null};
+			db.expireCache(types, null);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			BaseDeliveryController.closeDatabase(db);			
+		}
+	}
 
     public void creating( Object object, Database db )
         throws Exception
@@ -135,10 +164,10 @@ public class CmsJDOCallback implements CallbackInterceptor
         // ( (Persistent) object ).jdoAfterCreate();
 
 		// Write to trans-log
-
-    	//String className = object.getClass().getName();
+    	
+    	//String className = object.getClass().getName();		
 		//if (CmsSystem.getTransactionHistoryEntityClassName().indexOf(className) == -1)
-		//	CmsSystem.transactionLogEntry("CMSJDOCallback:" + object.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(object), object.toString());
+		//	CmsSystem.transactionLogEntry("CMSJDOCallback:" + object.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(object), object.toString());        
 		//System.out.println("created...:" + object);
     	CmsLogger.logInfo("created..........................." + object);
     	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
@@ -146,7 +175,7 @@ public class CmsJDOCallback implements CallbackInterceptor
     	    String userName = "SYSTEM";
     	    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_CREATE, getObjectIdentity(object), object.toString());
     	    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-
+    	    
 			if(object.getClass().getName().equals(RepositoryImpl.class.getName()))
 			{
 				CacheController.clearCache("repositoryCache");
@@ -176,7 +205,15 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(ContentImpl.class.getName()))
 			{
 				CacheController.clearCache("childContentCache");
+				clearCache(SmallContentImpl.class);
+				clearCache(MediumContentImpl.class);
 			}
+			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
+			{
+				CacheController.clearCache("masterLanguageCache");
+				CacheController.clearCache("repositoryLanguageListCache");
+			}
+
 			//System.out.println("created end...:" + object);
     	}
     }
@@ -193,13 +230,13 @@ public class CmsJDOCallback implements CallbackInterceptor
     {
 		//System.out.println("removed...:" + object);
         // ( (Persistent) object ).jdoAfterRemove();
-
+        
        	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
        	    String userName = "SYSTEM";
 		    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_DELETE, getObjectIdentity(object), object.toString());
 		    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-
+       	    
 			if(object.getClass().getName().equals(RepositoryImpl.class.getName()))
 			{
 				CacheController.clearCache("repositoryCache");
@@ -229,6 +266,13 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(ContentImpl.class.getName()))
 			{
 				CacheController.clearCache("childContentCache");
+				clearCache(SmallContentImpl.class);
+				clearCache(MediumContentImpl.class);
+			}
+			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
+			{
+				CacheController.clearCache("masterLanguageCache");
+				CacheController.clearCache("repositoryLanguageListCache");
 			}
 			else if(object.getClass().getName().equals(DigitalAssetImpl.class.getName()))
 			{
@@ -244,7 +288,7 @@ public class CmsJDOCallback implements CallbackInterceptor
     {
         //System.out.println("releasing...:" + object + ":" + committed);
         // ( (Persistent) object ).jdoTransient();
-
+        
         /*
         System.out.println("releasing...:" + object + ":" + committed);
 	    if(DigitalAssetImpl.class.getName().equals(object.getClass().getName()) && committed)
@@ -264,10 +308,10 @@ public class CmsJDOCallback implements CallbackInterceptor
     {
         //System.out.println("updated...:" + object);
         // ( (Persistent) object ).jdoUpdate();
-
+    	
     	//String className = object.getClass().getName();
 		//if (CmsSystem.getTransactionHistoryEntityClassName().indexOf(className) == -1)
-		//	CmsSystem.transactionLogEntry("CMSJDOCallback:" + object.getClass().getName(), CmsSystem.TRANS_UPDATE, getEntityId(object), object.toString());
+		//	CmsSystem.transactionLogEntry("CMSJDOCallback:" + object.getClass().getName(), CmsSystem.TRANS_UPDATE, getEntityId(object), object.toString());   
 
 //		CmsLogger.logInfo("updated..........................." + object);
 /*
@@ -284,8 +328,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 	private Integer getEntityId(Object entity) throws Bug
 	{
 		Integer entityId = new Integer(-1);
-
-		try
+		
+		try 
 		{
 			entityId = ((IBaseEntity) entity).getId();
 		}
@@ -294,15 +338,15 @@ public class CmsJDOCallback implements CallbackInterceptor
 			e.printStackTrace();
 			throw new Bug("Unable to retrieve object id");
 		}
-
+		
 		return entityId;
 	}
 
 	private Object getObjectIdentity(Object entity) throws Bug
 	{
 		Object objectIdentity = new Integer(-1);
-
-		try
+		
+		try 
 		{
 			objectIdentity = ((IBaseEntity) entity).getIdAsObject();
 		}
@@ -311,7 +355,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			e.printStackTrace();
 			throw new Bug("Unable to retrieve object identity");
 		}
-
+		
 		return objectIdentity;
 	}
 

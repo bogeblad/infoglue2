@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -33,6 +33,7 @@ import org.infoglue.cms.entities.workflow.*;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
 
 import java.util.Collection;
@@ -43,47 +44,47 @@ import java.util.List;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
 
-public class ContentStateController extends BaseController
+public class ContentStateController extends BaseController 
 {
 	public static final ContentCategoryController contentCategoryController = ContentCategoryController.getController();
-
+	
 	public static final int OVERIDE_WORKING = 1;
-	public static final int LEAVE_WORKING = 2;
-
+	public static final int LEAVE_WORKING   = 2;
+	
 	/**
 	 * This method handles versioning and state-control of content.
 	 * Se inline documentation for further explainations.
 	 */
-
-	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment,
-														  InfoGluePrincipal infoGluePrincipal, Integer contentId)
-			throws SystemException
-	{
-		Database db = CastorDatabaseService.getDatabase();
-
-		ContentVersion newContentVersion = null;
-
-		beginTransaction(db);
+	
+    public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer contentId) throws ConstraintException, SystemException
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		
+		ContentVersion newContentVersion = null; 
+		
+        beginTransaction(db);
 		try
 		{
 			newContentVersion = changeState(oldContentVersionId, stateId, versionComment, infoGluePrincipal, contentId, db);
-			commitTransaction(db);
-		}
-		catch (Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
+        	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }    	    	
+    	
+    	return newContentVersion;
+    }        
 
-		return newContentVersion;
-	}
 
 	/**
 	 * This method handles versioning and state-control of content.
 	 * Se inline documentation for further explainations.
 	 */
-
+	
 	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db) throws SystemException
 	{
 		ContentVersion newContentVersion = null;
@@ -107,7 +108,7 @@ public class ContentStateController extends BaseController
 				newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
-				copyDigitalAssets(oldContentVersion, newContentVersion);
+				copyDigitalAssets(oldContentVersion, newContentVersion, db);
 				copyAccessRights(oldContentVersion, newContentVersion, db);
 				copyContentCategories(oldContentVersion, newContentVersion, db);
 			}
@@ -128,7 +129,7 @@ public class ContentStateController extends BaseController
 				newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
-				copyDigitalAssets(oldContentVersion, newContentVersion);
+				copyDigitalAssets(oldContentVersion, newContentVersion, db);
 				copyAccessRights(oldContentVersion, newContentVersion, db);
 				copyContentCategories(oldContentVersion, newContentVersion, db);
 
@@ -165,39 +166,39 @@ public class ContentStateController extends BaseController
 	 * This method assigns the same digital assets the old content-version has.
 	 * It's ofcourse important that noone deletes the digital asset itself for then it's lost to everyone.
 	 */
-
-	private static void copyDigitalAssets(ContentVersion originalContentVersion, ContentVersion newContentVersion)
+	
+	private static void copyDigitalAssets(ContentVersion originalContentVersion, ContentVersion newContentVersion, Database db) throws ConstraintException, SystemException, Exception
 	{
-		Collection digitalAssets = originalContentVersion.getDigitalAssets();
+		Collection digitalAssets = originalContentVersion.getDigitalAssets();	
 		newContentVersion.setDigitalAssets(digitalAssets);
-	}
+	}	
 
 	/**
 	 * This method assigns the same access rights as the old content-version has.
 	 */
-
+	
 	private static void copyAccessRights(ContentVersion originalContentVersion, ContentVersion newContentVersion, Database db) throws ConstraintException, SystemException, Exception
 	{
 		List interceptionPointList = InterceptionPointController.getController().getInterceptionPointList("ContentVersion", db);
 		CmsLogger.logInfo("interceptionPointList:" + interceptionPointList.size());
 		Iterator interceptionPointListIterator = interceptionPointList.iterator();
-		while (interceptionPointListIterator.hasNext())
+		while(interceptionPointListIterator.hasNext())
 		{
 			InterceptionPoint interceptionPoint = (InterceptionPoint)interceptionPointListIterator.next();
 			List accessRightList = AccessRightController.getController().getAccessRightListForEntity(interceptionPoint.getId(), originalContentVersion.getId().toString(), db);
 			CmsLogger.logInfo("accessRightList:" + accessRightList.size());
 			Iterator accessRightListIterator = accessRightList.iterator();
-			while (accessRightListIterator.hasNext())
+			while(accessRightListIterator.hasNext())
 			{
 				AccessRight accessRight = (AccessRight)accessRightListIterator.next();
 				CmsLogger.logInfo("accessRight:" + accessRight.getId());
-
+				
 				AccessRightVO copiedAccessRight = accessRight.getValueObject().createCopy(); //.getValueObject();
 				copiedAccessRight.setParameters(newContentVersion.getId().toString());
 				AccessRightController.getController().create(copiedAccessRight, interceptionPoint, db);
 			}
 		}
-	}
+	}	
 
 	/**
 	 * Makes copies of the ContentCategories for the old ContentVersion so the new ContentVersion
@@ -229,4 +230,4 @@ public class ContentStateController extends BaseController
 	}
 
 }
-
+ 
