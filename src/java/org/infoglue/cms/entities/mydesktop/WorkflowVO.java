@@ -123,23 +123,6 @@ public class WorkflowVO implements BaseEntityVO
 		historySteps = (steps == null) ? new ArrayList() : steps;
 	}
 
-	public List getSteps()
-	{
-		List steps = new ArrayList();
-		steps.addAll(currentSteps);
-		steps.addAll(historySteps);
-		return steps;
-	}
-
-	public List getAvailableActions()
-	{
-		List availableActions = new ArrayList();
-		for (Iterator i = currentSteps.iterator(); i.hasNext();)
-			availableActions.addAll(((WorkflowStepVO)i.next()).getActions());
-
-		return availableActions;
-	}
-
 	public List getGlobalActions()
 	{
 		return globalActions;
@@ -150,9 +133,54 @@ public class WorkflowVO implements BaseEntityVO
 		globalActions = (actions == null) ? new ArrayList() : actions;
 	}
 
+	/**
+	 * Returns the current and history steps
+	 * @return a list of WorkflowStepVOs representing all current and history steps for this workflow
+	 */
+	public List getSteps()
+	{
+		List steps = new ArrayList();
+		steps.addAll(currentSteps);
+		steps.addAll(historySteps);
+		return steps;
+	}
+
+	/**
+	 * Returns the available actions, i.e., the actions associated with the current steps.
+	 * @return a list of WorkflowActionVOs representing the available actions in this workflow.
+	 */
+	public List getAvailableActions()
+	{
+		return getActions(currentSteps);
+	}
+
+	/**
+	 * Returns the actions associated with the current steps allowed by the given step filter
+	 * @param filter a step filter that allows the desired steps to pass through
+	 * @return a list of WorkflowActionVOs representing the actions associated with the current steps allowed by filter
+	 * @see #getCurrentSteps(StepFilter)
+	 */
+	public List getAvailableActions(StepFilter filter)
+	{
+		return getActions(getCurrentSteps(filter));
+	}
+
+	/**
+	 * Returns all the actions associated with the given list of steps
+	 * @param steps a list of WorkflowStepVOs
+	 * @return a list of WorkflowActionVOs containing all actions for steps
+	 */
+	private static List getActions(List steps)
+	{
+		List availableActions = new ArrayList();
+		for (Iterator i = steps.iterator(); i.hasNext();)
+			availableActions.addAll(((WorkflowStepVO)i.next()).getActions());
+
+		return availableActions;
+	}
+
 	public ConstraintExceptionBuffer validate()
 	{
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-		return ceb;
+		return new ConstraintExceptionBuffer();
 	}
 }
