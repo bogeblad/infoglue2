@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 
@@ -43,7 +44,7 @@ public interface InfoGlueInputHandler
 	 * This is the method that is invoked.
 	 */
 	
-	public void processInput(Integer siteNodeId, Integer languageId, Integer contentId, Integer formContentId, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception;
+	public void processInput(Database db, Integer siteNodeId, Integer languageId, Integer contentId, Integer formContentId, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception;
 	
 	
 }

@@ -169,19 +169,8 @@ public class SystemUserController extends BaseController
 		try 
 		{
 			beginTransaction(db);
-								
-			OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1 AND u.password = $2");
-			oql.bind(userName);
-			oql.bind(password);
-        	
-			QueryResults results = oql.execute(Database.ReadOnly);
 			
-			if (results.hasMore()) 
-			{
-				SystemUser systemUser = (SystemUser)results.next();
-				systemUserVO = systemUser.getValueObject();
-				CmsLogger.logInfo("found one:" + systemUserVO.getFirstName());
-			}
+			systemUserVO = getSystemUserVO(db, userName, password);
 
 			commitTransaction(db);
 		} 
@@ -192,6 +181,26 @@ public class SystemUserController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 		
+		return systemUserVO;		
+	}	
+
+	public SystemUserVO getSystemUserVO(Database db, String userName, String password)  throws SystemException, Exception
+	{
+		SystemUserVO systemUserVO = null;
+		
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1 AND u.password = $2");
+		oql.bind(userName);
+		oql.bind(password);
+    	
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+		{
+			SystemUser systemUser = (SystemUser)results.next();
+			systemUserVO = systemUser.getValueObject();
+			CmsLogger.logInfo("found one:" + systemUserVO.getFirstName());
+		}
+
 		return systemUserVO;		
 	}	
 

@@ -125,7 +125,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 
 			    CacheController.clearCaches(className);
 
-			    CmsLogger.logInfo("Updating className with id:" + className + ":" + objectId);
+			    System.out.println("Updating className with id:" + className + ":" + objectId);
 				if(className != null)
 				{
 				    //Class[] types = {Class.forName(className)};

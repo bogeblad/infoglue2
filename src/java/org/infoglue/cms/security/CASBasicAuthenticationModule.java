@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.util.CmsLogger;
 
 import edu.yale.its.tp.cas.client.ProxyTicketValidator;
@@ -367,4 +368,12 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 		this.casAuthorizedProxy = casAuthorizedProxy;
 	}
 
+    public Object getTransactionObject()
+    {
+        return null;
+    }
+
+    public void setTransactionObject(Object transactionObject)
+    {
+    }
 }

@@ -53,7 +53,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 public class InfoGlueBasicAuthorizationModule extends BaseController implements AuthorizationModule
 {
 	private Properties extraProperties = null;
-
+	private Database transactionObject 	= null;
+	
 	/**
 	 * Gets is the implementing class can update as well as read 
 	 */
@@ -102,13 +103,37 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		{	
 			List roles = new ArrayList();
 			
-			Database db = CastorDatabaseService.getDatabase();
-
-			try 
+			if(transactionObject == null)
 			{
-				beginTransaction(db);
-				
-				SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+				Database db = CastorDatabaseService.getDatabase();
+	
+				try 
+				{
+					beginTransaction(db);
+					
+					SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+					Iterator roleListIterator = systemUser.getRoles().iterator();
+					while(roleListIterator.hasNext())
+					{
+						Role role = (Role)roleListIterator.next();
+						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
+						roles.add(infoGlueRole);
+					}
+	
+					infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, isAdministrator);
+					
+					commitTransaction(db);
+				} 
+				catch (Exception e) 
+				{
+					CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+					rollbackTransaction(db);
+					throw new SystemException(e.getMessage());
+				}
+			}
+			else
+			{
+			    SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, transactionObject);
 				Iterator roleListIterator = systemUser.getRoles().iterator();
 				while(roleListIterator.hasNext())
 				{
@@ -118,14 +143,6 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				}
 
 				infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, isAdministrator);
-				
-				commitTransaction(db);
-			} 
-			catch (Exception e) 
-			{
-				CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
-				rollbackTransaction(db);
-				throw new SystemException(e.getMessage());
 			}
 		}
 		
@@ -319,6 +336,16 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	{
 		this.extraProperties = extraProperties;
 	}
+	
+    public Object getTransactionObject()
+    {
+        return this.transactionObject;
+    }
+
+    public void setTransactionObject(Object transactionObject)
+    {
+        this.transactionObject = (Database)transactionObject; 
+    }
 
 	public BaseEntityVO getNewVO()
 	{

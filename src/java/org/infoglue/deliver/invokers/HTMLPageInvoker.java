@@ -47,10 +47,15 @@ import javax.servlet.http.HttpServletResponse;
 
 public class HTMLPageInvoker extends PageInvoker
 {
-			
-	public HTMLPageInvoker(HttpServletRequest request, HttpServletResponse response, TemplateController templateController, DeliveryContext deliveryContext)
+    
+    /**
+	 * This method should return an instance of the class that should be used for page editing inside the tools or in working. 
+	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
+	 */
+	
+	public PageInvoker getDecoratedPageInvoker() throws SystemException
 	{
-		super(request, response, templateController, deliveryContext);
+	    return this;
 	}
 
 	/**
@@ -94,7 +99,7 @@ public class HTMLPageInvoker extends PageInvoker
 		try
 		{
 			CmsLogger.logInfo("DeliveryContext:" + this.getDeliveryContext().toString());
-			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()).getBoundContent(this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Template");		
+			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()).getBoundContent(this.getTemplateController().getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Template");		
 
 			CmsLogger.logInfo("contentVO:" + contentVO);
 

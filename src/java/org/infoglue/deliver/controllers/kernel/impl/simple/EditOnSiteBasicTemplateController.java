@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
@@ -43,9 +44,9 @@ import javax.servlet.http.HttpServletRequest;
 
 public class EditOnSiteBasicTemplateController extends BasicTemplateController
 {
-    public EditOnSiteBasicTemplateController(InfoGluePrincipal infoGluePrincipal)
+    public EditOnSiteBasicTemplateController(Database db, InfoGluePrincipal infoGluePrincipal)
     {
-        super(infoGluePrincipal);
+        super(db, infoGluePrincipal);
     }
     
 	/**
@@ -151,10 +152,10 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getPrincipal(), this.getSiteNodeId(), this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getDatabase(), this.getPrincipal(), this.getSiteNodeId(), this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
 			if(contentVO != null)
 			{
-				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
+				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(this.getDatabase(), contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK);
 				attributeValue = decorateTag(contentVO.getContentId(), this.getLanguageId(), attributeName, attributeValue);
 			}
 		}
@@ -249,7 +250,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		
 		try
 		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
+			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName);		
 			if(contentVO != null)
 			{
 				attributeValue = getParsedContentAttribute(contentVO.getContentId(), attributeName);
@@ -436,7 +437,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	public TemplateController getTemplateController(Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
 		TemplateController templateController = null;
-		templateController = new EditOnSiteBasicTemplateController(infoGluePrincipal);
+		templateController = new EditOnSiteBasicTemplateController(this.getDatabase(), infoGluePrincipal);
 		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
 		templateController.setHttpRequest(request);	
 		templateController.setBrowserBean(this.browserBean);

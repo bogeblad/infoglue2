@@ -37,7 +37,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
@@ -47,6 +50,7 @@ import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
@@ -58,7 +62,7 @@ import org.infoglue.deliver.util.BrowserBean;
  * @since InfoglueCMS 1.2.0
  * 
  */
-public class TextToImageEditorAction extends WebworkAbstractAction
+public class TextToImageEditorAction extends InfoGlueAbstractAction
 {
     private Integer languageId = null;
     private Integer contentId = null;
@@ -141,64 +145,80 @@ public class TextToImageEditorAction extends WebworkAbstractAction
     
     protected String doExecute() throws Exception
     {
-        if(siteNodeId==null)
-            siteNodeId = SiteNodeController.getController().getRootSiteNodeVO(repositoryId).getId();
-        
-        if(languageId==null)
-            languageId = LanguageController.getController().getMasterLanguage(repositoryId).getId();
-        
-        if(contentId==null)
-            contentId = new Integer(-1);
+        Database db = CastorDatabaseService.getDatabase();
+		
+		beginTransaction(db);
 
-        initialize(siteNodeId);
-        
-        /* An editor to simplify textToImage statements in templates
-         * This class generates visually a getTextAsImageUrl(..)
-         * Use BasicTemplateController.renderString(template)
-         */
-        
-        /*
-         * Setup font lists
-         */
-        
-        Font allFonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-        for(int i = 0;i<allFonts.length;i++)
-        {
-            fonts.add(allFonts[i]);
-        }
-        
-        String[] fontNamesList = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        for(int i = 0;i<fontNamesList.length;i++)
-            fontNames.add(fontNamesList[i]);
-        
-        
-        StringBuffer t  = new StringBuffer();
-        t.append("$templateLogic.getStringAsImageUrl(");
-        t.append(qc(text));
-        t.append(c(canvasWidth));
-        t.append(c(canvasHeight));
-        t.append(c(textStartPosX));
-        t.append(c(textStartPosY));
-        t.append(c(textWidth));
-        t.append(c(textHeight));
-        t.append(qc(fontName));
-        t.append(c(fontStyle));
-        t.append(c(fontSize));
-        t.append(qc(foregroundColor));
-        t.append(q(backgroundColor));
-        t.append(")");
+		try
+		{
+	        if(siteNodeId==null)
+	            siteNodeId = SiteNodeController.getController().getRootSiteNodeVO(repositoryId).getId();
+	        
+	        if(languageId==null)
+	            languageId = LanguageController.getController().getMasterLanguage(repositoryId).getId();
+	        
+	        if(contentId==null)
+	            contentId = new Integer(-1);
+	
+	        initialize(siteNodeId);
+	        
+	        /* An editor to simplify textToImage statements in templates
+	         * This class generates visually a getTextAsImageUrl(..)
+	         * Use BasicTemplateController.renderString(template)
+	         */
+	        
+	        /*
+	         * Setup font lists
+	         */
+	        
+	        Font allFonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+	        for(int i = 0;i<allFonts.length;i++)
+	        {
+	            fonts.add(allFonts[i]);
+	        }
+	        
+	        String[] fontNamesList = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+	        for(int i = 0;i<fontNamesList.length;i++)
+	            fontNames.add(fontNamesList[i]);
+	        
+	        
+	        StringBuffer t  = new StringBuffer();
+	        t.append("$templateLogic.getStringAsImageUrl(");
+	        t.append(qc(text));
+	        t.append(c(canvasWidth));
+	        t.append(c(canvasHeight));
+	        t.append(c(textStartPosX));
+	        t.append(c(textStartPosY));
+	        t.append(c(textWidth));
+	        t.append(c(textHeight));
+	        t.append(qc(fontName));
+	        t.append(c(fontStyle));
+	        t.append(c(fontSize));
+	        t.append(qc(foregroundColor));
+	        t.append(q(backgroundColor));
+	        t.append(")");
+	
+	        
+	        BasicTemplateController templateController = getTemplateController(db, siteNodeId, languageId, contentId);
+	        generatedImage = templateController.renderString(t.toString());
+	        generatedCommand = t.toString();
+	        
+	    	
+	        closeTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
 
-        
-        BasicTemplateController templateController = getTemplateController(siteNodeId, languageId, contentId);
-        generatedImage = templateController.renderString(t.toString());
-        generatedCommand = t.toString();
-        
         return "success";
     }
 
-    public BasicTemplateController getTemplateController(Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+    public BasicTemplateController getTemplateController(Database db, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
-        BasicTemplateController templateController = new BasicTemplateController(this.getInfoGluePrincipal());
+        BasicTemplateController templateController = new BasicTemplateController(db, this.getInfoGluePrincipal());
 		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
 		templateController.setHttpRequest(getRequest());	
 		templateController.setBrowserBean(new BrowserBean());

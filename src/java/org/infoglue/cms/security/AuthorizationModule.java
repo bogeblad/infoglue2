@@ -154,4 +154,8 @@ public interface AuthorizationModule
 	public Properties getExtraProperties();
 
 	public void setExtraProperties(Properties properties);
+	
+	public void setTransactionObject(Object transactionObject);
+	
+	public Object getTransactionObject();
 }

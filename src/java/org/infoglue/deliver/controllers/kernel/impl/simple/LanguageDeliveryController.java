@@ -32,8 +32,6 @@ import java.util.Locale;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
@@ -45,7 +43,6 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsLogger;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
 
 
@@ -74,7 +71,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * This method return a LanguageVO
 	 */
 	
-	public LanguageVO getLanguageVO(Integer languageId) throws SystemException, Exception
+	public LanguageVO getLanguageVO(Database db, Integer languageId) throws SystemException, Exception
 	{
 		String key = "" + languageId;
 		CmsLogger.logInfo("key:" + key);
@@ -85,27 +82,12 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-			Database db = CastorDatabaseService.getDatabase();
-	
-			beginTransaction(db);
-	
-			try
-			{
-				Language language = (Language)getObjectWithId(LanguageImpl.class, languageId, db);
-					
-				if(language != null)
-					languageVO = language.getValueObject();
-	            
-				CacheController.cacheObject("languageCache", key, languageVO);
+			Language language = (Language)getObjectWithId(LanguageImpl.class, languageId, db);
 				
-				closeTransaction(db);
-			}
-			catch(Exception e)
-			{
-				CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-				throw new SystemException(e.getMessage());
-			}
+			if(language != null)
+				languageVO = language.getValueObject();
+            
+			CacheController.cacheObject("languageCache", key, languageVO);				
 		}
 				
 		return languageVO;
@@ -120,31 +102,20 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * @throws Exception
 	 */
 
-	public List getAvailableLanguagesForRepository(Integer repositoryId) throws SystemException, Exception
+	public List getAvailableLanguagesForRepository(Database db, Integer repositoryId) throws SystemException, Exception
     {
         List list = new ArrayList();
-        Database db = CastorDatabaseService.getDatabase();
-        beginTransaction(db);
-        try 
-		{
-            Repository repository = (Repository) getObjectWithId(RepositoryImpl.class, repositoryId, db);
-            if (repository != null) 
+
+        Repository repository = (Repository) getObjectWithId(RepositoryImpl.class, repositoryId, db);
+        if (repository != null) 
+        {
+            for (Iterator i = repository.getRepositoryLanguages().iterator();i.hasNext();) 
             {
-                for (Iterator i = repository.getRepositoryLanguages().iterator();i.hasNext();) 
-                {
-                    RepositoryLanguage repositoryLanguage = (RepositoryLanguage) i.next();
-                    Language language = repositoryLanguage.getLanguage();
-                    if (language != null)
-                        list.add(language.getValueObject());
-                }
+                RepositoryLanguage repositoryLanguage = (RepositoryLanguage) i.next();
+                Language language = repositoryLanguage.getLanguage();
+                if (language != null)
+                    list.add(language.getValueObject());
             }
-            closeTransaction(db);
-        } 
-        catch (Exception e) 
-		{
-            CmsLogger.logSevere("Unable to fetch repository languages", e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
         }
         
         return list;
@@ -154,51 +125,32 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * This method returns the languages assigned to a respository. 
 	 */
 	
-	public List getAvailableLanguages(Integer siteNodeId) throws SystemException, Exception
+	public List getAvailableLanguages(Database db, Integer siteNodeId) throws SystemException, Exception
 	{ 
-		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
         List languageVOList = new ArrayList();
 
-        beginTransaction(db);
-
-        try
-        {
-			SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+        SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 			
-			if(siteNode != null)
+		if(siteNode != null)
+		{
+			Repository repository = siteNode.getRepository();
+     		if(repository != null)
 			{
-				Repository repository = siteNode.getRepository();
-         		if(repository != null)
-				{
-         			Collection repositoryLanguages = repository.getRepositoryLanguages();
-         			Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
-         			while(repositoryLanguagesIterator.hasNext())
-         			{
-         				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguagesIterator.next();
-         				Language language = repositoryLanguage.getLanguage();
-         				if(language != null)
-         				{
-         					CmsLogger.logInfo("Adding " + language.getName() + " to the list of available languages");
-	         				languageVOList.add(language.getValueObject());
-         				}
-         			}
-				}
+     			Collection repositoryLanguages = repository.getRepositoryLanguages();
+     			Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
+     			while(repositoryLanguagesIterator.hasNext())
+     			{
+     				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguagesIterator.next();
+     				Language language = repositoryLanguage.getLanguage();
+     				if(language != null)
+     				{
+     					CmsLogger.logInfo("Adding " + language.getName() + " to the list of available languages");
+         				languageVOList.add(language.getValueObject());
+     				}
+     			}
 			}
-			
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
-            
-            closeTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-
+		}
+	
         return languageVOList;	
 	}
 
@@ -208,39 +160,20 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
 	 */
 	
-	public LanguageVO getMasterLanguage(String repositoryName) throws SystemException, Exception
+	public LanguageVO getMasterLanguage(Database db, String repositoryName) throws SystemException, Exception
 	{ 
-		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
         Language language = null;
 
-        beginTransaction(db);
-
-        try
+     	OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.name = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
+		oql.bind(repositoryName);
+		
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
         {
-         	OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.name = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
-			oql.bind(repositoryName);
-			
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-            {
-            	language = (Language)results.next();
-            }
+        	language = (Language)results.next();
+        }
             
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
-
-            closeTransaction(db);            
-        }
-        catch(Exception e)
-        {
-		    CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-
         return (language == null) ? null : language.getValueObject();	
 	}
 	
@@ -250,7 +183,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
 	 */
 	
-	public LanguageVO getMasterLanguageForRepository(Integer repositoryId) throws SystemException, Exception
+	public LanguageVO getMasterLanguageForRepository(Database db, Integer repositoryId) throws SystemException, Exception
 	{ 
 		String languageKey = "" + repositoryId;
 		CmsLogger.logInfo("languageKey in getMasterLanguageForRepository:" + languageKey);
@@ -261,37 +194,18 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-		    Database db = CastorDatabaseService.getDatabase();
-			ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-	
-			beginTransaction(db);
-	
-			try
+			OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.repositoryId = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
+			oql.bind(repositoryId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
 			{
-				OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.repositoryId = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
-				oql.bind(repositoryId);
-				
-				QueryResults results = oql.execute(Database.ReadOnly);
-				
-				if (results.hasMore()) 
-				{
-					Language language = (Language)results.next();
-					languageVO = language.getValueObject();
-				}
-				
-				CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
-
-				//If any of the validations or setMethods reported an error, we throw them up now before create. 
-				ceb.throwIfNotEmpty();
-	            
-				closeTransaction(db);
+				Language language = (Language)results.next();
+				languageVO = language.getValueObject();
 			}
-			catch(Exception e)
-			{
-				CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-				throw new SystemException(e.getMessage());
-			}
+			
+			CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
 		}
 
 		return languageVO;	
@@ -338,7 +252,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
 	 */
 	
-	public LanguageVO getMasterLanguageForSiteNode(Integer siteNodeId) throws SystemException, Exception
+	public LanguageVO getMasterLanguageForSiteNode(Database db, Integer siteNodeId) throws SystemException, Exception
 	{ 
 	    String languageKey = "siteNodeId_" + siteNodeId;
 		CmsLogger.logInfo("languageKey in getMasterLanguageForSiteNode:" + languageKey);
@@ -349,40 +263,21 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-		    Database db = CastorDatabaseService.getDatabase();
-		    ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		    beginTransaction(db);
-
-	        try
-	        {
-				SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-				Integer repositoryId = siteNode.getRepository().getRepositoryId();
-	         	
-				OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.repositoryId = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
-				oql.bind(repositoryId);
-				
-	        	QueryResults results = oql.execute(Database.ReadOnly);
-				
-				if (results.hasMore()) 
-	            {
-					Language language = (Language)results.next();
-					languageVO = language.getValueObject();
-	            }
-				
-				CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
-				
-	            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-	            ceb.throwIfNotEmpty();
-	            
-	            closeTransaction(db);
-	        }
-	        catch(Exception e)
-	        {
-	            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-	            throw new SystemException(e.getMessage());
-	        }
+			SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+			Integer repositoryId = siteNode.getRepository().getRepositoryId();
+         	
+			OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.repositoryId = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
+			oql.bind(repositoryId);
+			
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+            {
+				Language language = (Language)results.next();
+				languageVO = language.getValueObject();
+            }
+			
+			CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
 		}
 		
         return languageVO;	
@@ -393,7 +288,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * This method returns language with the languageCode sent in. 
 	 */
 	
-	public Locale getLocaleWithId(Integer languageId)
+	public Locale getLocaleWithId(Database db, Integer languageId)
 	{
 		Locale locale = Locale.getDefault();
 		
@@ -401,8 +296,8 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		{
 			try 
 			{
-				Language language = LanguageController.getController().getLanguageWithId(languageId);
-				locale = new Locale(language.getLanguageCode());
+				LanguageVO languageVO = getLanguageVO(db, languageId);
+				locale = new Locale(languageVO.getLanguageCode());
 			} 
 			catch (Exception e) 
 			{
@@ -418,7 +313,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * This method returns language with the languageCode sent in. 
 	 */
 	
-	public LanguageVO getLanguageWithCode(String languageCode) throws SystemException, Exception
+	public LanguageVO getLanguageWithCode(Database db, String languageCode) throws SystemException, Exception
 	{ 
 		String key = "" + languageCode;
 		CmsLogger.logInfo("key:" + key);
@@ -429,39 +324,20 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-			Database db = CastorDatabaseService.getDatabase();
-	        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+			Language language = null;
 	
-	        Language language = null;
-	
-	        beginTransaction(db);
-	
-	        try
-	        {
-	         	OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.languageCode = $1");
-				oql.bind(languageCode);
-				
-	        	QueryResults results = oql.execute(Database.ReadOnly);
-				
-				if (results.hasMore()) 
-	            {
-	            	language = (Language)results.next();
-					languageVO = language.getValueObject();
-		        }
-	            
-				CacheController.cacheObject("languageCache", key, languageVO);
-				
-	            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-	            ceb.throwIfNotEmpty();
-	         
-	            closeTransaction(db);  
+			OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.languageCode = $1");
+			oql.bind(languageCode);
+			
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+            {
+            	language = (Language)results.next();
+				languageVO = language.getValueObject();
 	        }
-	        catch(Exception e)
-	        {
-				CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-	            throw new SystemException(e.getMessage());
-	        }
+            
+			CacheController.cacheObject("languageCache", key, languageVO);
 		}
 		
         return languageVO;	
@@ -472,57 +348,38 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 * This method returns language with the languageCode sent in if it is allowed/supported in the current repository. 
 	 */
 	
-	public LanguageVO getLanguageIfRepositorySupportsIt(String languageCodes, Integer siteNodeId) throws SystemException, Exception
+	public LanguageVO getLanguageIfRepositorySupportsIt(Database db, String languageCodes, Integer siteNodeId) throws SystemException, Exception
 	{
 		if (languageCodes == null) return null;
 		int index = Integer.MAX_VALUE;
 		int currentIndex = 0;
 		CmsLogger.logInfo("Coming in with languageCodes:" + languageCodes);
 		
-		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
         Language language = null;
 
-        beginTransaction(db);
-
-        try
-        {
-        	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-			Repository repository = siteNode.getRepository();
-			if(repository != null)
+    	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+		Repository repository = siteNode.getRepository();
+		if(repository != null)
+		{
+			Collection languages = repository.getRepositoryLanguages();
+			Iterator languageIterator = languages.iterator();
+			while(languageIterator.hasNext())
 			{
-				Collection languages = repository.getRepositoryLanguages();
-				Iterator languageIterator = languages.iterator();
-				while(languageIterator.hasNext())
+				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
+				Language currentLanguage = repositoryLanguage.getLanguage();
+				CmsLogger.logInfo("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
+				currentIndex = languageCodes.toLowerCase().indexOf(currentLanguage.getLanguageCode().toLowerCase());
+				if( currentIndex > -1 && currentIndex < index)
 				{
-					RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
-					Language currentLanguage = repositoryLanguage.getLanguage();
-					CmsLogger.logInfo("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
-					currentIndex = languageCodes.toLowerCase().indexOf(currentLanguage.getLanguageCode().toLowerCase());
-					if( currentIndex > -1 && currentIndex < index)
-					{
-						index = currentIndex;
-						CmsLogger.logInfo("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
-						language = currentLanguage;
-						if (index==0) break; // Continue and try to find a better candidate unless index is 0 (first prio)
-					}
+					index = currentIndex;
+					CmsLogger.logInfo("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
+					language = currentLanguage;
+					if (index==0) break; // Continue and try to find a better candidate unless index is 0 (first prio)
 				}
 			}
-            
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
-         
-            closeTransaction(db); 
-        }
-        catch(Exception e)
-        {
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+		}
 
-        return (language == null) ? null : language.getValueObject();	
+		return (language == null) ? null : language.getValueObject();	
 	}
 
 	/**

@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * This class handles all interaction with Languages and persistence of them.
@@ -72,6 +73,29 @@ public class LanguageController extends BaseController
 		return (LanguageVO)getVOWithId(LanguageImpl.class, languageId);
 	} 
 
+	/**
+	 * This method returns language with the languageCode sent in. 
+	 */
+	
+	public Locale getLocaleWithId(Integer languageId)
+	{
+		Locale locale = Locale.getDefault();
+		
+		if (languageId != null)
+		{
+			try 
+			{
+				LanguageVO languageVO = getLanguageVOWithId(languageId);
+				locale = new Locale(languageVO.getLanguageCode());
+			} 
+			catch (Exception e) 
+			{
+				CmsLogger.logSevere("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
+			}	
+		}
+		
+		return locale; 
+	}
 
 	/**
 	 * Returns the LanguageVO with the given name.

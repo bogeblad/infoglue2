@@ -23,6 +23,8 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
@@ -131,7 +133,11 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 	
 	public String doGetPageNavigationTitle() throws Exception
 	{
-		try 
+    	Database db = CastorDatabaseService.getDatabase();
+		
+		beginTransaction(db);
+
+		try
 		{
 		    Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			if(principal == null)
@@ -143,10 +149,6 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 				    arguments.put("j_password", "anonymous");
 				    
 				    principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
-					//if(principal != null)
-					//{
-					    //this.getHttpSession().setAttribute("infogluePrincipal", principal);
-					//}
 				}
 				catch(Exception e) 
 				{
@@ -156,13 +158,16 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 			
 			this.nodeDeliveryController		   		= NodeDeliveryController.getNodeDeliveryController(getSiteNodeId(), getLanguageId(), getContentId());
 			this.integrationDeliveryController 		= IntegrationDeliveryController.getIntegrationDeliveryController(getSiteNodeId(), getLanguageId(), getContentId());
-			TemplateController templateController 	= getTemplateController(getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)principal);
+			TemplateController templateController 	= getTemplateController(db, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)principal);
 			this.navigationTitle = templateController.getPageNavTitle(this.getSiteNodeId());
 
+	        closeTransaction(db);
 		}
-		catch (Throwable e) 
+		catch(Exception e)
 		{
-			CmsLogger.logWarning("Error:" + e);
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
 		}
 
 		return "navigationTitle";

@@ -151,7 +151,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 		}
 		finally
 		{
-			BaseDeliveryController.closeDatabase(db);			
+			db.close();			
 		}
 	}
 

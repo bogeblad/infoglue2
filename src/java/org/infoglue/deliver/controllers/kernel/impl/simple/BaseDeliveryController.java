@@ -32,16 +32,13 @@ import java.util.List;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryException;
 import org.exolab.castor.jdo.QueryResults;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsLogger;
-import org.infoglue.deliver.applications.actions.ViewPageAction;
 
 /**
  * BaseDeliveryController.java
@@ -182,36 +179,11 @@ public abstract class BaseDeliveryController
 	 * @return A list of the query results as Impls
 	 * @throws SystemException If an error occurs
 	 */
-	protected static List executeQuery(String query) throws SystemException
+	protected static List executeQuery(Database db, String query) throws SystemException, Exception
 	{
-		return executeQuery(query, Collections.EMPTY_LIST);
+		return executeQuery(db, query, Collections.EMPTY_LIST);
 	}
 	
-	/**
-	 * Executes a Query, also binds the provided parameters
-	 *
- 	 * @param query An OQL Query
-	 * @param params A List of paramters
-	 * @return A list of the query results as Castor Impl
-	 * @throws SystemException If an error occurs
-	 */
-	protected static List executeQuery(String query, List params) throws SystemException
-	{
-		Database db = beginTransaction();
-	
-		try
-		{
-			List results = executeQuery(db, query, params);
-			closeTransaction(db);
-			return results;
-		}
-		catch (Exception e)
-		{
-			CmsLogger.logSevere("Error executing " + query, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage(), e);
-		}
-	}
 
 	/**
 	 * Executes a Query, also binds the provided parameters
@@ -279,30 +251,16 @@ public abstract class BaseDeliveryController
 		return resultVOList;
 	}
 
-	//--------------------------------------------------------------------------
-	// Database/Transaction specific operations
-	//--------------------------------------------------------------------------
 	/**
-	 * Creates a new database and starts a transaction
-	 * @return A reference to a castor database with a new transaction
-	 * @throws SystemException if a database error occurs.
+	 * Begins a transaction on the named database
 	 */
-	public static Database beginTransaction() throws SystemException
-	{
-		Database db = CastorDatabaseService.getDatabase();
-		beginTransaction(db);
-		return db;
-	}
-
-
-	/**
-	 * Begins a transaction on the supplied database
-	 */
+         
 	public static void beginTransaction(Database db) throws SystemException
 	{
 		try
 		{
 			db.begin();
+			System.out.println("Opening a new Transaction...");
 		}
 		catch(Exception e)
 		{
@@ -310,7 +268,6 @@ public abstract class BaseDeliveryController
 			throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
 		}
 	}
-       
 	
 	/**
 	 * Rollbacks a transaction on the named database
@@ -318,19 +275,21 @@ public abstract class BaseDeliveryController
      
 	public static void closeTransaction(Database db) throws SystemException
 	{
-	    rollbackTransaction(db);
-	    //commitTransaction(db);
+	    System.out.println("closeTransaction a transaction and closing it...");
+	    //rollbackTransaction(db);
+	    commitTransaction(db);
 	}
-
-	
+       
 	/**
 	 * Ends a transaction on the named database
 	 */
-    private static void commitTransaction(Database db) throws SystemException
+     
+	public static void commitTransaction(Database db) throws SystemException
 	{
 		try
 		{
-		    db.commit();
+		    System.out.println("Committing a transaction and closing it...");
+			db.commit();
 			db.close();
 		}
 		catch(Exception e)
@@ -339,7 +298,7 @@ public abstract class BaseDeliveryController
 			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
 		}
 	}
-	
+ 
  
 	/**
 	 * Rollbacks a transaction on the named database
@@ -347,17 +306,20 @@ public abstract class BaseDeliveryController
      
 	public static void rollbackTransaction(Database db) throws SystemException
 	{
+	    System.out.println("Rollback a transaction...");
+
 		try
 		{
 			if (db.isActive())
 			{
-			    db.rollback();
+				db.rollback();
 				db.close();
 			}
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logInfo("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+			//throw new SystemException("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage(), e);    
 		}
 	}
 
@@ -369,6 +331,8 @@ public abstract class BaseDeliveryController
 	{
 		try
 		{
+		    System.out.println("Closing database...");
+
 			db.close();
 		}
 		catch(Exception e)
@@ -377,4 +341,5 @@ public abstract class BaseDeliveryController
 			throw new SystemException("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
 		}
 	}
+
 }

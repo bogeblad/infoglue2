@@ -887,6 +887,7 @@ public abstract class BaseController
     {
         try
         {
+            //System.out.println("Opening a new Transaction in cms...");
             db.begin();
         }
         catch(Exception e)
@@ -904,6 +905,8 @@ public abstract class BaseController
     {
         try
         {
+            //System.out.println("Closing a transaction in cms...");
+
             db.commit();
 			db.close();
         }
@@ -923,6 +926,8 @@ public abstract class BaseController
     {
         try
         {
+            //System.out.println("rollbackTransaction a transaction in cms...");
+
         	if (db.isActive())
         	{
 	            db.rollback();

@@ -26,8 +26,6 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 import org.infoglue.cms.entities.management.*;
 import org.infoglue.cms.util.*;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.util.CacheController;
 

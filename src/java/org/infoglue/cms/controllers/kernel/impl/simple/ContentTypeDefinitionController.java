@@ -315,6 +315,7 @@ public class ContentTypeDefinitionController extends BaseController
 		return getEnumValues(nodes);
 	}
 
+
 	/**
 	 * This method fetches any predefined categoryKeys from a xml-string representing a contentTypeDefinition.
 	 */

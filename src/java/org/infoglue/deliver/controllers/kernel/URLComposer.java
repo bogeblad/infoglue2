@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.controllers.kernel;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicURLComposer;
@@ -51,9 +52,9 @@ public abstract class URLComposer
 
     public abstract String composeDigitalAssetUrl(String dnsName, String filename);
 
-    public abstract String composePageUrl(InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId);
+    public abstract String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId);
 
-    public abstract String composePageUrlAfterLanguageChange(InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId);
+    public abstract String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId);
 
     public abstract String composePageBaseUrl(String dnsName);
 

@@ -25,7 +25,6 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.management.*;
 import org.infoglue.cms.util.*;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.util.CacheController;
 
@@ -62,39 +61,20 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	 * This method returns the master repository.
 	 */
 	
-	public RepositoryVO getMasterRepository() throws SystemException, Exception
+	public RepositoryVO getMasterRepository(Database db) throws SystemException, Exception
 	{
 		RepositoryVO repositoryVO = (RepositoryVO)CacheController.getCachedObject("masterRepository", "masterRepository");
 		if(repositoryVO != null)
 			return repositoryVO;
 		
-		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-        beginTransaction(db);
-
-        try
+     	OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r ORDER BY r.repositoryId");
+		
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
         {
-         	OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r ORDER BY r.repositoryId");
-			
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-            {
-            	Repository repository = (Repository)results.next();
-            	repositoryVO = repository.getValueObject();
-            }
-            
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
-
-            closeTransaction(db);         
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
+        	Repository repository = (Repository)results.next();
+        	repositoryVO = repository.getValueObject();
         }
 
 		if(repositoryVO != null)
@@ -104,38 +84,24 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	}
 	
 
-	public RepositoryVO getRepositoryFromServerName(String serverName, String portNumber) throws SystemException, Exception
+	public RepositoryVO getRepositoryFromServerName(Database db, String serverName, String portNumber) throws SystemException, Exception
     {
-        Database db = CastorDatabaseService.getDatabase();
-        beginTransaction(db);
-        try 
-		{
-            OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE is_defined(r.dnsName)");
-            QueryResults results = oql.execute(Database.ReadOnly);
-            while (results.hasMore()) 
+        OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE is_defined(r.dnsName)");
+        QueryResults results = oql.execute(Database.ReadOnly);
+        while (results.hasMore()) 
+        {
+            Repository repository = (Repository) results.next();
+            CmsLogger.logInfo("repository:" + repository.getDnsName());
+            String[] dnsNames = splitStrings(repository.getDnsName());
+            CmsLogger.logInfo("dnsNames:" + dnsNames);
+            for (int i=0;i<dnsNames.length;i++) 
             {
-                Repository repository = (Repository) results.next();
-                CmsLogger.logInfo("repository:" + repository.getDnsName());
-                String[] dnsNames = splitStrings(repository.getDnsName());
-                CmsLogger.logInfo("dnsNames:" + dnsNames);
-                for (int i=0;i<dnsNames.length;i++) 
+            	CmsLogger.logInfo("dnsNames[i]:" + dnsNames[i]);
+                if((dnsNames[i].indexOf(":") == -1 && dnsNames[i].indexOf(serverName) != -1) || dnsNames[i].indexOf(serverName + ":" + portNumber) != -1) 
                 {
-                	CmsLogger.logInfo("dnsNames[i]:" + dnsNames[i]);
-                    if((dnsNames[i].indexOf(":") == -1 && dnsNames[i].indexOf(serverName) != -1) || dnsNames[i].indexOf(serverName + ":" + portNumber) != -1) 
-                    {
-                        closeTransaction(db);
-                        return repository.getValueObject();
-                    }
+                    return repository.getValueObject();
                 }
             }
-            
-            closeTransaction(db);
-        } 
-        catch (Exception e) 
-		{
-            CmsLogger.logSevere("An error occured - Unable to map server-name to repository",e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
         }
         
         return null;
@@ -158,38 +124,19 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	 * This method returns all the repositories.
 	 */
 	
-	public List getRepositoryVOList() throws SystemException, Exception
+	public List getRepositoryVOList(Database db) throws SystemException, Exception
 	{
 		List repositoryVOList = new ArrayList();
 		
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		beginTransaction(db);
-
-		try
+		OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r ORDER BY r.repositoryId");
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
 		{
-			OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r ORDER BY r.repositoryId");
-			
-			QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-			{
-				Repository repository = (Repository)results.next();
-				RepositoryVO repositoryVO = repository.getValueObject();
-				repositoryVOList.add(repositoryVO);
-			}
-            
-			//If any of the validations or setMethods reported an error, we throw them up now before create. 
-			ceb.throwIfNotEmpty();
-
-			closeTransaction(db);
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
+			Repository repository = (Repository)results.next();
+			RepositoryVO repositoryVO = repository.getValueObject();
+			repositoryVOList.add(repositoryVO);
 		}
 
 		return repositoryVOList;	

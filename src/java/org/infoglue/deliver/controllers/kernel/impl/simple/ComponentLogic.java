@@ -318,7 +318,7 @@ public class ComponentLogic
 	{
 		String propertyValue = "";
 
-		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getLanguageId());
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), templateController.getLanguageId());
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
@@ -603,13 +603,13 @@ public class ComponentLogic
 			{
 				NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
 			
-				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(this.templateController.getSiteNodeId()).getValueObject();
+				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), this.templateController.getSiteNodeId()).getValueObject();
 				while(property == null && parentSiteNodeVO != null)
 				{
 				    //CmsLogger.logInfo("parentSiteNodeVO: " + parentSiteNodeVO.getName());
 					
 				    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
-					parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(parentSiteNodeVO.getId());
+					parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(templateController.getDatabase(), parentSiteNodeVO.getId());
 				}
 			}
 			catch(Exception e)
@@ -682,7 +682,7 @@ public class ComponentLogic
 				{
 				    value = propertyElement.getAttribute("path");
 
-				    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(languageId);
+				    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
 
 				    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
 					    value = propertyElement.getAttribute("path_" + locale.getLanguage());
@@ -761,7 +761,7 @@ public class ComponentLogic
 	{
 		String value = "Undefined";
 		
-		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(languageId);
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
@@ -801,12 +801,12 @@ public class ComponentLogic
 		
 		String pageComponentsString = null;
     	
-		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information");		
+		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information");		
 		
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
 		
-		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(siteNodeId).getId();
+		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();
 		pageComponentsString = templateController.getContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);
 		
 		if(pageComponentsString == null)

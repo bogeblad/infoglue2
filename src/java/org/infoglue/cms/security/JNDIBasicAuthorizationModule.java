@@ -780,5 +780,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		this.extraProperties = properties;
 	}
 
+    public void setTransactionObject(Object transactionObject)
+    {
+    }
+
+    public Object getTransactionObject()
+    {
+        return null;
+    }
+
 
 }

@@ -46,12 +46,15 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
@@ -76,11 +79,8 @@ public class ViewPageFilter implements Filter {
         uriCache = new URIMapperCache();
     }
 
-    public void doFilter(
-        ServletRequest servletRequest,
-        ServletResponse servletResponse,
-        FilterChain filterChain)
-        throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException 
+    {
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if (enableNiceURI == null)
             enableNiceURI = "false";
@@ -92,9 +92,21 @@ public class ViewPageFilter implements Filter {
         validateCmsProperties(httpRequest);
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
 
-        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) {
-            Integer repositoryId = getRepositoryId(httpRequest, httpSession);
-            Integer languageId = getLanguageId(httpRequest, httpSession, repositoryId);
+        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
+        {
+            Integer repositoryId = null;
+            Integer languageId = null;
+
+            try
+            {
+                repositoryId = getRepositoryId(httpRequest, httpSession);
+                languageId = getLanguageId(httpRequest, httpSession, repositoryId);
+            }
+            catch(Exception e)
+            {
+                throw new ServletException("An error occurred when looking for page:" + e.getMessage());
+            }
+            
             Integer siteNodeId = null;
             String[] nodeNames = splitString(requestURI, "/");
             //System.out.println("RepositoryId.: "+repositoryId);
@@ -177,9 +189,10 @@ public class ViewPageFilter implements Filter {
         }
     }
 
-    private Integer getRepositoryId(HttpServletRequest request, HttpSession session)
-        throws ServletException {
-        if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) {
+    private Integer getRepositoryId(HttpServletRequest request, HttpSession session) throws ServletException, Exception 
+    {
+        if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) 
+        {
             System.out.println("Fetching repositoryId from session");
             return (Integer) session.getAttribute(FilterConstants.REPOSITORY_ID);
         }
@@ -190,30 +203,48 @@ public class ViewPageFilter implements Filter {
         System.out.println("serverName:" + serverName);
 
         RepositoryVO repository = null;
-        try {
-            repository =
-                RepositoryDeliveryController
-                    .getRepositoryDeliveryController()
-                    .getRepositoryFromServerName(
-                    serverName,
-                    portNumber);
-            System.out.println("repository:" + repository);
-        } catch (Exception e) {
-            CmsLogger.logInfo("Failed to map servername " + serverName + " to a repository");
-            System.out.println("Failed to map servername " + serverName + " to a repository");
-        }
+        
+        Database db = CastorDatabaseService.getDatabase();
+		
+        BaseDeliveryController.beginTransaction(db);
 
-        if (repository == null) {
-            try {
-                repository =
-                    RepositoryDeliveryController
-                        .getRepositoryDeliveryController()
-                        .getMasterRepository();
-                System.out.println("masterRepository:" + repository);
-            } catch (Exception e1) {
-                CmsLogger.logSevere("Failed to lookup master repository");
+        try
+        {
+    		try 
+            {
+                repository = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryFromServerName(db, serverName, portNumber);
+                System.out.println("repository:" + repository);
+            } 
+            catch (Exception e) 
+            {
+                CmsLogger.logInfo("Failed to map servername " + serverName + " to a repository");
+                System.out.println("Failed to map servername " + serverName + " to a repository");
             }
+
+            if (repository == null) 
+            {
+                try 
+                {
+                    BaseDeliveryController.beginTransaction(db);
+
+                    repository = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db);
+                    System.out.println("masterRepository:" + repository);
+                    
+                    BaseDeliveryController.closeTransaction(db);
+                } 
+                catch (Exception e1) 
+                {
+                    CmsLogger.logSevere("Failed to lookup master repository");
+                }
+            }
+
+            BaseDeliveryController.closeTransaction(db);
         }
+        catch (Exception e1) 
+        {
+            CmsLogger.logSevere("Failed to lookup master repository");
+            BaseDeliveryController.rollbackTransaction(db);
+        }       
 
         if (repository == null)
             throw new ServletException("Unable to find a repository for server-name " + serverName);
@@ -222,19 +253,18 @@ public class ViewPageFilter implements Filter {
         return repository.getRepositoryId();
     }
 
-    private Integer getLanguageId(
-        HttpServletRequest request,
-        HttpSession session,
-        Integer repositoryId)
-        throws ServletException {
+    private Integer getLanguageId(HttpServletRequest request, HttpSession session, Integer repositoryId) throws ServletException, Exception 
+    {
         Integer languageId = null;
-        if (request.getParameter("languageId") != null) {
+        if (request.getParameter("languageId") != null) 
+        {
             System.out.println("Language is explicitely given in request");
-            try {
+            try 
+            {
                 languageId = Integer.valueOf(request.getParameter("languageId"));
                 session.setAttribute(FilterConstants.LANGUAGE_ID, languageId);
-            } catch (NumberFormatException e) {
-            }
+            } 
+            catch (NumberFormatException e) {}
         }
 
         if (languageId != null)
@@ -247,32 +277,48 @@ public class ViewPageFilter implements Filter {
 
         System.out.println("Looking for languageId for repository " + repositoryId);
         Locale requestLocale = request.getLocale();
-        try {
-            List availableLanguagesForRepository =
-                LanguageDeliveryController
-                    .getLanguageDeliveryController()
-                    .getAvailableLanguagesForRepository(
-                    repositoryId);
-            if (requestLocale != null) {
-                for (int i = 0; i < availableLanguagesForRepository.size(); i++) {
-                    LanguageVO language = (LanguageVO) availableLanguagesForRepository.get(i);
-                    System.out.println("language:" + language.getLanguageCode());
-                    System.out.println("browserLanguage:" + requestLocale.getLanguage());
-                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage())) {
-                        languageId = language.getLanguageId();
-                    }
-                }
-            }
-            if (languageId == null && availableLanguagesForRepository.size() > 0) {
-                languageId = ((LanguageVO) availableLanguagesForRepository.get(0)).getLanguageId();
-            }
-        } catch (Exception e) {
-            CmsLogger.logSevere(
-                "Failed to fetch available languages for repository " + repositoryId);
+        
+        Database db = CastorDatabaseService.getDatabase();
+		
+        BaseDeliveryController.beginTransaction(db);
+
+        try
+        {
+	        try 
+	        {
+	            List availableLanguagesForRepository = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, repositoryId);
+	
+	            if (requestLocale != null) 
+	            {
+	                for (int i = 0; i < availableLanguagesForRepository.size(); i++) 
+	                {
+	                    LanguageVO language = (LanguageVO) availableLanguagesForRepository.get(i);
+	                    System.out.println("language:" + language.getLanguageCode());
+	                    System.out.println("browserLanguage:" + requestLocale.getLanguage());
+	                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage())) {
+	                        languageId = language.getLanguageId();
+	                    }
+	                }
+	            }
+	            if (languageId == null && availableLanguagesForRepository.size() > 0) {
+	                languageId = ((LanguageVO) availableLanguagesForRepository.get(0)).getLanguageId();
+	            }
+	        } 
+	        catch (Exception e) 
+	        {
+	            CmsLogger.logSevere("Failed to fetch available languages for repository " + repositoryId);
+	        }
+	        
+	        BaseDeliveryController.closeTransaction(db);
         }
+        catch (Exception e1) 
+        {
+            CmsLogger.logSevere("Failed to lookup master repository");
+            BaseDeliveryController.rollbackTransaction(db);
+        }         
+	        
         if (languageId == null)
-            throw new ServletException(
-                "Unable to determine language for repository " + repositoryId);
+            throw new ServletException("Unable to determine language for repository " + repositoryId);
 
         session.setAttribute(FilterConstants.LANGUAGE_ID, languageId);
         return languageId;

@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsLogger;
@@ -50,6 +51,7 @@ import org.infoglue.deliver.util.CacheController;
 
 public abstract class PageInvoker
 {	
+    protected Database db							= null;
 	private HttpServletRequest request				= null;
 	private HttpServletResponse response 			= null;
 	private TemplateController templateController	= null;
@@ -69,7 +71,7 @@ public abstract class PageInvoker
 	 * @param templateController
 	 * @param deliveryContext
 	 */
-
+	/*
 	public PageInvoker(HttpServletRequest request, HttpServletResponse response, TemplateController templateController, DeliveryContext deliveryContext)
 	{
 		this.request = request;
@@ -78,7 +80,32 @@ public abstract class PageInvoker
 		this.deliveryContext = deliveryContext;
 		this.templateController.setDeliveryContext(this.deliveryContext);
 	}
+	*/
 	
+	/**
+	 * This method should return an instance of the class that should be used for page editing inside the tools or in working. 
+	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
+	 */
+	
+	public abstract PageInvoker getDecoratedPageInvoker() throws SystemException;
+	
+	/**
+	 * The default initializer for PageInvokers. 
+	 * @param request
+	 * @param response
+	 * @param templateController
+	 * @param deliveryContext
+	 */
+
+	public void setParameters(Database db, HttpServletRequest request, HttpServletResponse response, TemplateController templateController, DeliveryContext deliveryContext)
+	{
+	    this.db = db;
+		this.request = request;
+		this.response = response;
+		this.templateController = templateController;
+		this.deliveryContext = deliveryContext;
+		this.templateController.setDeliveryContext(this.deliveryContext);
+	}
 	/**
 	 * This is the method that will deliver the page to the user. It can have special
 	 * handling of all sorts to enable all sorts of handlers. An example of uses might be to
@@ -98,7 +125,7 @@ public abstract class PageInvoker
 	{
 		CmsLogger.logInfo("C PageKey:" + this.getDeliveryContext().getPageKey());
 		
-		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(this.getTemplateController().getLanguageId());
+		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(this.db, this.getTemplateController().getLanguageId());
 		CmsLogger.logInfo("languageVO:" + languageVO);
 		String contentType = this.getTemplateController().getPageContentType();
 		//CmsLogger.logWarning("contentType:" + contentType);

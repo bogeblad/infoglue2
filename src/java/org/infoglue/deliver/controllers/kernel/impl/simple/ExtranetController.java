@@ -31,18 +31,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
+
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
@@ -89,6 +88,54 @@ public class ExtranetController extends BaseDeliveryController
 	 * infoglue extranet user. 
 	 */
 	
+	public Principal getAuthenticatedPrincipal(Database db, Map request) throws Exception
+	{		
+		Principal principal = null;
+		
+		try
+		{
+		    String authenticatorClass 	= InfoGlueAuthenticationFilter.authenticatorClass;
+		    String authorizerClass 	  	= InfoGlueAuthenticationFilter.authorizerClass;
+		    String invalidLoginUrl 		= InfoGlueAuthenticationFilter.invalidLoginUrl;
+		    String loginUrl 			= InfoGlueAuthenticationFilter.loginUrl;
+		    String serverName 			= InfoGlueAuthenticationFilter.serverName;
+		    Properties extraProperties 	= InfoGlueAuthenticationFilter.extraProperties;
+		    String casRenew 			= InfoGlueAuthenticationFilter.casRenew;
+		    String casServiceUrl 		= InfoGlueAuthenticationFilter.casServiceUrl;
+		    String casValidateUrl 		= InfoGlueAuthenticationFilter.casValidateUrl;
+		    
+		    AuthenticationModule authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
+			authenticationModule.setAuthenticatorClass(authenticatorClass);
+			authenticationModule.setAuthorizerClass(authorizerClass);
+			authenticationModule.setInvalidLoginUrl(invalidLoginUrl);
+			authenticationModule.setLoginUrl(loginUrl);
+			authenticationModule.setServerName(serverName);
+			authenticationModule.setExtraProperties(extraProperties);
+			authenticationModule.setCasRenew(casRenew);
+			authenticationModule.setCasServiceUrl(casServiceUrl);
+			authenticationModule.setCasValidateUrl(casValidateUrl);
+			authenticationModule.setTransactionObject(db);
+			
+			String authenticatedUserName = authenticationModule.authenticateUser(request);
+			CmsLogger.logInfo("authenticatedUserName:" + authenticatedUserName);
+			principal = UserControllerProxy.getController(db).getUser(authenticatedUserName);
+			CmsLogger.logInfo("principal:" + principal);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			throw new SystemException("The login process failed: " + e.getMessage(), e);
+		}
+		
+		return principal;
+	}
+	
+	
+	/**
+	 * This method autenticates a user. It takes a username and checks first that it is defined as a
+	 * infoglue extranet user. 
+	 */
+	
 	public Principal getAuthenticatedPrincipal(Map request) throws Exception
 	{		
 		Principal principal = null;
@@ -115,6 +162,7 @@ public class ExtranetController extends BaseDeliveryController
 			authenticationModule.setCasRenew(casRenew);
 			authenticationModule.setCasServiceUrl(casServiceUrl);
 			authenticationModule.setCasValidateUrl(casValidateUrl);
+			authenticationModule.setTransactionObject(null);
 			
 			String authenticatedUserName = authenticationModule.authenticateUser(request);
 			CmsLogger.logInfo("authenticatedUserName:" + authenticatedUserName);
@@ -129,7 +177,6 @@ public class ExtranetController extends BaseDeliveryController
 		
 		return principal;
 	}
-	
 	/**
 	 * This method checks if a user has access to an entity. It takes name and id of the entity. 
 	 */
@@ -236,108 +283,92 @@ public class ExtranetController extends BaseDeliveryController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
+	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
 	{
 		String value = "";
 		
 		if(infoGluePrincipal == null || propertyName == null)
 			return null;
 		
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		beginTransaction(db);
-
-		try
+		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
+		//CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
+		Iterator userPropertiesListIterator = userPropertiesList.iterator();
+		while(userPropertiesListIterator.hasNext())
 		{
-			Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
-			//CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
-			Iterator userPropertiesListIterator = userPropertiesList.iterator();
-			while(userPropertiesListIterator.hasNext())
+			UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
+			//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
+			//CmsLogger.logInfo("propertyName:" + propertyName);
+
+			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId) && userProperties.getValue() != null && propertyName != null)
 			{
-				UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
-				//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
-				//CmsLogger.logInfo("propertyName:" + propertyName);
+				String propertyXML = userProperties.getValue();
+				DOMBuilder domBuilder = new DOMBuilder();
+				Document document = domBuilder.getDocument(propertyXML);
 	
-				if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId) && userProperties.getValue() != null && propertyName != null)
+				Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
+				if(node != null)
 				{
-					String propertyXML = userProperties.getValue();
-					DOMBuilder domBuilder = new DOMBuilder();
-					Document document = domBuilder.getDocument(propertyXML);
-		
-					Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
-					if(node != null)
-					{
-						//CmsLogger.logInfo("node:" + node.asXML());
-						value = node.getStringValue();
-						//CmsLogger.logInfo("value:" + value);
-						CmsLogger.logInfo("Getting value: " + value);
-						if(value != null && escapeSpecialCharacters)
-							value = new VisualFormatter().escapeHTML(value);
-						break;
-					}
+					//CmsLogger.logInfo("node:" + node.asXML());
+					value = node.getStringValue();
+					//CmsLogger.logInfo("value:" + value);
+					CmsLogger.logInfo("Getting value: " + value);
+					if(value != null && escapeSpecialCharacters)
+						value = new VisualFormatter().escapeHTML(value);
+					break;
 				}
 			}
-			
-			if(value.equals(""))
-			{	
-				//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
-				List roles = infoGluePrincipal.getRoles();
-				//CmsLogger.logInfo("roles:" + roles.size());
-				Iterator rolesIterator = roles.iterator();
-				while(rolesIterator.hasNext())
+		}
+		
+		if(value.equals(""))
+		{	
+			//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
+			List roles = infoGluePrincipal.getRoles();
+			//CmsLogger.logInfo("roles:" + roles.size());
+			Iterator rolesIterator = roles.iterator();
+			while(rolesIterator.hasNext())
+			{
+				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+				//CmsLogger.logInfo("role:" + role.getName());
+				
+				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
+				//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
+				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
+				while(rolePropertiesListIterator.hasNext())
 				{
-					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-					//CmsLogger.logInfo("role:" + role.getName());
+					RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
+					//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
+					//CmsLogger.logInfo("propertyName:" + propertyName);
 					
-					Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
-					//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
-					Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
-					while(rolePropertiesListIterator.hasNext())
+					if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId) && roleProperties.getValue() != null && propertyName != null)
 					{
-						RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
-						//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
-						//CmsLogger.logInfo("propertyName:" + propertyName);
+						String propertyXML = roleProperties.getValue();
+						DOMBuilder domBuilder = new DOMBuilder();
+						Document document = domBuilder.getDocument(propertyXML);
 						
-						if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId) && roleProperties.getValue() != null && propertyName != null)
+						Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
+						if(node != null)
 						{
-							String propertyXML = roleProperties.getValue();
-							DOMBuilder domBuilder = new DOMBuilder();
-							Document document = domBuilder.getDocument(propertyXML);
-							
-							Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
-							if(node != null)
-							{
-								//CmsLogger.logInfo("node:" + node.asXML());
-								value = node.getStringValue();
-								//CmsLogger.logInfo("value:" + value);
-								CmsLogger.logInfo("Getting value: " + value);
-								if(value != null && escapeSpecialCharacters)
-									value = new VisualFormatter().escapeHTML(value);
-								break;
-							}
+							//CmsLogger.logInfo("node:" + node.asXML());
+							value = node.getStringValue();
+							//CmsLogger.logInfo("value:" + value);
+							CmsLogger.logInfo("Getting value: " + value);
+							if(value != null && escapeSpecialCharacters)
+								value = new VisualFormatter().escapeHTML(value);
+							break;
 						}
 					}
-										
 				}
-				
-				if(value.equals("") && useLanguageFallback)
-				{
-					LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(siteNodeId);
-					if(!masterLanguageVO.getLanguageId().equals(languageId))
-						return getPrincipalPropertyValue(infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters);
-				}
+									
 			}
 			
-			closeTransaction(db);
+			if(value.equals("") && useLanguageFallback)
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+				if(!masterLanguageVO.getLanguageId().equals(languageId))
+					return getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters);
+			}
 		}
-		catch(Exception e)
-		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
-		}
-		
+					
 		return value;
 	}	
 	
@@ -349,105 +380,89 @@ public class ExtranetController extends BaseDeliveryController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalAssetUrl(InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws Exception
+	public String getPrincipalAssetUrl(Database db, InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws Exception
 	{
 		String assetUrl = "";
 		
 		if(infoGluePrincipal == null || assetKey == null)
 			return null;
-		
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
-		beginTransaction(db);
-
-		try
+		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
+		CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
+		Iterator userPropertiesListIterator = userPropertiesList.iterator();
+		while(userPropertiesListIterator.hasNext())
 		{
-			Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
-			CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
-			Iterator userPropertiesListIterator = userPropertiesList.iterator();
-			while(userPropertiesListIterator.hasNext())
+			UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
+			//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
+			//CmsLogger.logInfo("propertyName:" + propertyName);
+			CmsLogger.logInfo("userProperties:" + userProperties.getValue());
+			CmsLogger.logInfo("assetKey:" + assetKey);
+
+			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId))
 			{
-				UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
-				//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
-				//CmsLogger.logInfo("propertyName:" + propertyName);
-				CmsLogger.logInfo("userProperties:" + userProperties.getValue());
-				CmsLogger.logInfo("assetKey:" + assetKey);
-	
-				if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId))
-				{
-				    Collection assets = userProperties.getDigitalAssets();
-				    CmsLogger.logInfo("assets:" + assets.size());
-				    Iterator assetsIterator = assets.iterator();
-				    while(assetsIterator.hasNext())
-				    {
-				        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
-				        CmsLogger.logInfo("digitalAsset:" + digitalAsset.getAssetKey());
-				        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
-				        {
-				            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-				            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
-				            CmsLogger.logInfo("assetUrl:" + assetUrl);
-				            break;
-				        }
-				    }
-				}
+			    Collection assets = userProperties.getDigitalAssets();
+			    CmsLogger.logInfo("assets:" + assets.size());
+			    Iterator assetsIterator = assets.iterator();
+			    while(assetsIterator.hasNext())
+			    {
+			        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
+			        CmsLogger.logInfo("digitalAsset:" + digitalAsset.getAssetKey());
+			        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
+			        {
+			            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+			            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
+			            CmsLogger.logInfo("assetUrl:" + assetUrl);
+			            break;
+			        }
+			    }
 			}
-			
-			if(assetUrl.equals(""))
-			{	
-				//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
-				List roles = infoGluePrincipal.getRoles();
-				//CmsLogger.logInfo("roles:" + roles.size());
-				Iterator rolesIterator = roles.iterator();
-				while(rolesIterator.hasNext())
-				{
-					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-					//CmsLogger.logInfo("role:" + role.getName());
-					
-					Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
-					//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
-					Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
-					while(rolePropertiesListIterator.hasNext())
-					{
-						RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
-						//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
-						//CmsLogger.logInfo("propertyName:" + propertyName);
-						
-						if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId))
-						{
-						    Collection assets = roleProperties.getDigitalAssets();
-						    Iterator assetsIterator = assets.iterator();
-						    while(assetsIterator.hasNext())
-						    {
-						        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
-						        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
-						        {
-						            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-						            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
-						            break;
-						        }
-						    }
-						}
-					}
-										
-				}
-				
-				if(assetUrl.equals("") && useLanguageFallback)
-				{
-					LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(siteNodeId);
-					if(!masterLanguageVO.getLanguageId().equals(languageId))
-						return getPrincipalAssetUrl(infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback);
-				}
-			}
-			
-			closeTransaction(db);
 		}
-		catch(Exception e)
-		{
-			CmsLogger.logWarning("An error occurred trying to get the assetUrl for " + assetKey + " from infoGluePrincipal:" + e.getMessage(), e);
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred trying to get the assetUrl for " + assetKey + " from infoGluePrincipal:" + e.getMessage(), e);
+		
+		if(assetUrl.equals(""))
+		{	
+			//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
+			List roles = infoGluePrincipal.getRoles();
+			//CmsLogger.logInfo("roles:" + roles.size());
+			Iterator rolesIterator = roles.iterator();
+			while(rolesIterator.hasNext())
+			{
+				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+				//CmsLogger.logInfo("role:" + role.getName());
+				
+				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
+				//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
+				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
+				while(rolePropertiesListIterator.hasNext())
+				{
+					RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
+					//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
+					//CmsLogger.logInfo("propertyName:" + propertyName);
+					
+					if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId))
+					{
+					    Collection assets = roleProperties.getDigitalAssets();
+					    Iterator assetsIterator = assets.iterator();
+					    while(assetsIterator.hasNext())
+					    {
+					        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
+					        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
+					        {
+					            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
+					            break;
+					        }
+					    }
+					}
+				}
+									
+			}
+			
+			if(assetUrl.equals("") && useLanguageFallback)
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+				if(!masterLanguageVO.getLanguageId().equals(languageId))
+					return getPrincipalAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback);
+			}
 		}
 		
 		return assetUrl;
@@ -460,100 +475,84 @@ public class ExtranetController extends BaseDeliveryController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalThumbnailAssetUrl(InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws Exception
+	public String getPrincipalThumbnailAssetUrl(Database db, InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws Exception
 	{
 		String assetUrl = "";
 		
 		if(infoGluePrincipal == null || assetKey == null)
 			return null;
 		
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		beginTransaction(db);
-
-		try
+		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
+		//CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
+		Iterator userPropertiesListIterator = userPropertiesList.iterator();
+		while(userPropertiesListIterator.hasNext())
 		{
-			Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
-			//CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
-			Iterator userPropertiesListIterator = userPropertiesList.iterator();
-			while(userPropertiesListIterator.hasNext())
+			UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
+			//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
+			//CmsLogger.logInfo("propertyName:" + propertyName);
+
+			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId))
 			{
-				UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
-				//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
-				//CmsLogger.logInfo("propertyName:" + propertyName);
-	
-				if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId))
-				{
-				    Collection assets = userProperties.getDigitalAssets();
-				    Iterator assetsIterator = assets.iterator();
-				    while(assetsIterator.hasNext())
-				    {
-				        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
-				        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
-				        {
-				            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-				            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height);
-				            break;
-				        }
-				    }
-				}
+			    Collection assets = userProperties.getDigitalAssets();
+			    Iterator assetsIterator = assets.iterator();
+			    while(assetsIterator.hasNext())
+			    {
+			        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
+			        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
+			        {
+			            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+			            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height);
+			            break;
+			        }
+			    }
 			}
-			
-			if(assetUrl.equals(""))
-			{	
-				//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
-				List roles = infoGluePrincipal.getRoles();
-				//CmsLogger.logInfo("roles:" + roles.size());
-				Iterator rolesIterator = roles.iterator();
-				while(rolesIterator.hasNext())
-				{
-					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-					//CmsLogger.logInfo("role:" + role.getName());
-					
-					Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
-					//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
-					Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
-					while(rolePropertiesListIterator.hasNext())
-					{
-						RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
-						//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
-						//CmsLogger.logInfo("propertyName:" + propertyName);
-						
-						if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId))
-						{
-						    Collection assets = roleProperties.getDigitalAssets();
-						    Iterator assetsIterator = assets.iterator();
-						    while(assetsIterator.hasNext())
-						    {
-						        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
-						        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
-						        {
-						            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-						            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height);
-						            break;
-						        }
-						    }
-						}
-					}
-										
-				}
-				
-				if(assetUrl.equals("") && useLanguageFallback)
-				{
-					LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(siteNodeId);
-					if(!masterLanguageVO.getLanguageId().equals(languageId))
-						return getPrincipalThumbnailAssetUrl(infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, width, height);
-				}
-			}
-			
-			closeTransaction(db);
 		}
-		catch(Exception e)
-		{
-			CmsLogger.logWarning("An error occurred trying to get the assetUrl for " + assetKey + " from infoGluePrincipal:" + e.getMessage(), e);
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred trying to get the assetUrl for " + assetKey + " from infoGluePrincipal:" + e.getMessage(), e);
+		
+		if(assetUrl.equals(""))
+		{	
+			//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
+			List roles = infoGluePrincipal.getRoles();
+			//CmsLogger.logInfo("roles:" + roles.size());
+			Iterator rolesIterator = roles.iterator();
+			while(rolesIterator.hasNext())
+			{
+				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+				//CmsLogger.logInfo("role:" + role.getName());
+				
+				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
+				//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
+				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
+				while(rolePropertiesListIterator.hasNext())
+				{
+					RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
+					//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
+					//CmsLogger.logInfo("propertyName:" + propertyName);
+					
+					if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId))
+					{
+					    Collection assets = roleProperties.getDigitalAssets();
+					    Iterator assetsIterator = assets.iterator();
+					    while(assetsIterator.hasNext())
+					    {
+					        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
+					        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
+					        {
+					            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height);
+					            break;
+					        }
+					    }
+					}
+				}
+									
+			}
+			
+			if(assetUrl.equals("") && useLanguageFallback)
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+				if(!masterLanguageVO.getLanguageId().equals(languageId))
+					return getPrincipalThumbnailAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, width, height);
+			}
 		}
 		
 		return assetUrl;
@@ -566,11 +565,11 @@ public class ExtranetController extends BaseDeliveryController
 	 * group-properties as well. The value in question is a map - name-value.
 	 */
 	
-	public Map getPrincipalPropertyHashValues(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
+	public Map getPrincipalPropertyHashValues(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
 	{
 		Properties properties = new Properties();
 		
-		String attributeValue = getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters);
+		String attributeValue = getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters);
 		
 		ByteArrayInputStream is = new ByteArrayInputStream(attributeValue.getBytes("UTF-8"));
 

@@ -1,39 +1,35 @@
 /* ===============================================================================
- *
- * Part of the InfoGlue Content Management Platform (www.infoglue.org)
- *
- * ===============================================================================
- *
- *  Copyright (C)
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 2, as published by the
- * Free Software Foundation. See the file LICENSE.html for more information.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
- * Place, Suite 330 / Boston, MA 02111-1307 / USA.
- *
- * ===============================================================================
- */
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+* 
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+* 
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
 
 package org.infoglue.deliver.invokers;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentBinding;
@@ -42,8 +38,8 @@ import org.infoglue.deliver.applications.databeans.ComponentTask;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DecoratedComponentLogic;
-import org.infoglue.deliver.controllers.kernel.impl.simple.EditOnSiteBasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
@@ -67,24 +63,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
+import org.exolab.castor.jdo.Database;
 
 /**
- * @author Mattias Bogeblad
- *
- * This class delivers a normal html page by using the component-based method but also decorates it
- * so it can be used by the structure tool to manage the page components.
- */
+* @author Mattias Bogeblad
+*
+* This class delivers a normal html page by using the component-based method but also decorates it
+* so it can be used by the structure tool to manage the page components.
+*/
 
 public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPageInvoker
 {
 	private String propertiesDivs 	= "";
 	private String tasksDivs 		= "";
 	
-	public DecoratedComponentBasedHTMLPageInvoker(HttpServletRequest request, HttpServletResponse response, TemplateController templateController, DeliveryContext deliveryContext)
-	{
-		super(request, response, templateController, deliveryContext);
-	}
-
 	/**
 	 * This is the method that will render the page. It uses the new component based structure. 
 	 */ 
@@ -101,10 +93,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		timer.printElapsedTime("Initialized controllers");
 		
-		Integer repositoryId = nodeDeliveryController.getSiteNode(this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
-		//CmsLogger.logInfo("this.getDeliveryContext().getContentId():" + this.getDeliveryContext().getContentId());
-		String componentXML = getPageComponentsString(this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
-		//CmsLogger.logInfo("componentXML:" + componentXML);
+		Integer repositoryId = nodeDeliveryController.getSiteNode(this.db, this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
+		String componentXML = getPageComponentsString(this.db, this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		
 		timer.printElapsedTime("After getPageComponentsString");
 		
@@ -129,17 +119,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    
 			decoratorTimer.printElapsedTime("After reading document");
 			
-			//decoratorTimer.printElapsedTime("After getting components");
-			
-			List pageComponents = getPageComponents(document.getRootElement(), "base", this.getTemplateController(), null);
+			List pageComponents = getPageComponents(db, document.getRootElement(), "base", this.getTemplateController(), null);
 
-			//CmsLogger.logInfo("**********************pageComponents*****************************");
-		
-			//printComponentHierarchy(pageComponents, 0);
-			
-			//CmsLogger.logInfo("**********************pageComponents*****************************");
-		
-			
 			InfoGlueComponent baseComponent = null;
 			if(pageComponents.size() > 0)
 			{
@@ -154,7 +135,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			}
 			else
 			{
-				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information");
+				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(this.db, this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information");
 				
 				decoratorTimer.printElapsedTime("After metaInfoContentVO");
 				
@@ -176,8 +157,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 		
 		//-- moved the creation of a default context into the baseclass
-        // (robert)
-        Map context = getDefaultContext();
+       // (robert)
+       Map context = getDefaultContext();
 
 		context.put("componentEditorUrl", componentEditorUrl);
 		StringWriter cacheString = new StringWriter();
@@ -187,7 +168,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		this.setPageString(cacheString.toString());
 		
 		timer.printElapsedTime("End invokePage");
-		
 	}
 	
 	 /**
@@ -298,7 +278,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		return decoratedTemplate;
 	}
 
-    
+   
 	private String decorateComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId/*, Integer metainfoContentId*/) throws Exception
 	{
 		String decoratedComponent = "";
@@ -379,7 +359,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				else
 				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" style=\"border: dotted 1px #0070FF; width: 100%;\" onmouseup=\"javascript:assignComponent('" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "');\">";
 				    
-				List subComponents = getInheritedComponents(templateController, component, templateController.getSiteNodeId(), id);
+				List subComponents = getInheritedComponents(this.db, templateController, component, templateController.getSiteNodeId(), id);
 
 				timer.printElapsedTime("4");
 	
@@ -514,7 +494,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		timer.printElapsedTime("getComponentPropertiesDiv: 1");
 		
-		List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(siteNodeId);
+		List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(this.db, siteNodeId);
 		timer.printElapsedTime("getComponentPropertiesDiv: 2");
 
 		Iterator languageIterator = languages.iterator();
@@ -1088,42 +1068,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		argumentList.add(argument);
 		arguments.put("arguments", argumentList);
 		
-		return ContentController.getContentController().getContentVOList(arguments);
+		return ContentController.getContentController().getContentVOList(arguments, this.db);
 	}
 	
-	/**
-	 * This method fetches an url to the asset for the component.
-	 */
-	
-	public String getDigitalAssetUrl(Integer contentId, String key) throws Exception
-	{
-		String imageHref = null;
-		try
-		{
-			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(ContentController.getContentController().getContentVOWithId(contentId).getRepositoryId());
-			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguage.getId());
-			List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
-			Iterator i = digitalAssets.iterator();
-			while(i.hasNext())
-			{
-				DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
-				if(digitalAssetVO.getAssetKey().equals(key))
-				{
-					imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetVO.getId()); 
-					break;
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
-			imageHref = e.getMessage();
-		}
-		
-		return imageHref;
-	}
-
-
 	/**
 	 * This method fetches the pageComponent structure as a document.
 	 */
@@ -1137,7 +1084,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			return cachedComponentPropertiesDocument;
 		
 		org.w3c.dom.Document componentPropertiesDocument = null;
-    	
+   	
 		try
 		{
 			String xml = this.getComponentPropertiesString(templateController, siteNodeId, languageId, contentId);
@@ -1161,7 +1108,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	/**
 	 * This method fetches the template-string.
 	 */
-    
+   
 	private String getComponentPropertiesString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
 		String cacheName 	= "componentEditorCache";
@@ -1171,10 +1118,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			return cachedComponentPropertiesString;
 			
 		String componentPropertiesString = null;
-    	
+   	
 		try
 		{
-		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(siteNodeId).getId();
+		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.db, siteNodeId).getId();
 		    //CmsLogger.logInfo("masterLanguageId:" + masterLanguageId);
 		    componentPropertiesString = templateController.getContentAttribute(contentId, masterLanguageId, "ComponentProperties", true);
 
@@ -1206,7 +1153,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			return cachedComponentTasksDocument;
 		
 		org.w3c.dom.Document componentTasksDocument = null;
-    	
+   	
 		try
 		{
 			String xml = this.getComponentTasksString(templateController, siteNodeId, languageId, contentId);
@@ -1229,7 +1176,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	/**
 	 * This method fetches the tasks for a certain component.
 	 */
-    
+   
 	private String getComponentTasksString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
 		String cacheName 	= "componentEditorCache";
@@ -1239,10 +1186,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			return cachedComponentTasksString;
 			
 		String componentTasksString = null;
-    	
+   	
 		try
 		{
-		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(siteNodeId).getId();
+		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.db, siteNodeId).getId();
 		    componentTasksString = templateController.getContentAttribute(contentId, masterLanguageId, "ComponentTasks", true);
 
 			if(componentTasksString == null)
@@ -1410,7 +1357,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		Integer languageId = new Integer(this.getRequest().getParameter("languageId"));
 		Integer contentId  = new Integer(-1);
 		
-		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(languageId);
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, languageId);
 		
 		timer.printElapsedTime("AAA1");
 		
@@ -1428,7 +1375,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		*/
-		org.w3c.dom.Document document = getPageComponentsDocument(this.getTemplateController(), siteNodeId, languageId, contentId);
+		org.w3c.dom.Document document = getPageComponentsDocument(this.db, this.getTemplateController(), siteNodeId, languageId, contentId);
 		
 		timer.printElapsedTime("AAA3");
 
@@ -1474,7 +1421,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		boolean USE_LANGUAGE_FALLBACK        			= true;
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 
-		String componentXML = getPageComponentsString(this.getTemplateController(), siteNodeId, languageId, contentId);			
+		String componentXML = getPageComponentsString(this.db, this.getTemplateController(), siteNodeId, languageId, contentId);			
 		////CmsLogger.logInfo("componentXML:" + componentXML);
 
 		org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -1496,7 +1443,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			if(entityClass.equalsIgnoreCase("Content"))
 			{
-				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
+				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(new Integer(entityId), db);
 				ComponentBinding componentBinding = new ComponentBinding();
 				componentBinding.setId(new Integer(id));
 				componentBinding.setComponentId(componentId);

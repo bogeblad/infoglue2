@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -56,7 +57,8 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 	private String casValidateUrl		= null;
 	private String casAuthorizedProxy 	= null;
 	private Properties extraProperties 	= null;
-
+	private Database transactionObject 	= null;
+	
 	/**
 	 * This method handles all of the logic for checking how to handle a login.
 	 */
@@ -191,9 +193,17 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 		//CmsLogger.logInfo("password:" + password);
 		boolean isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
 		
-		if(isAdministrator || SystemUserController.getController().getSystemUserVO(userName, password) != null)
-			isAuthenticated = true;
-		
+		if(this.transactionObject != null)
+		{
+			if(isAdministrator || SystemUserController.getController().getSystemUserVO(this.transactionObject, userName, password) != null)
+				isAuthenticated = true;
+		}
+		else
+		{
+			if(isAdministrator || SystemUserController.getController().getSystemUserVO(userName, password) != null)
+				isAuthenticated = true;		    
+		}
+
 		return isAuthenticated;
 	}
 
@@ -298,4 +308,14 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 	{
 		this.casAuthorizedProxy = casAuthorizedProxy;
 	}
+
+    public Object getTransactionObject()
+    {
+        return this.transactionObject;
+    }
+
+    public void setTransactionObject(Object transactionObject)
+    {
+        this.transactionObject = (Database)transactionObject; 
+    }
 }

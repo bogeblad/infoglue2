@@ -26,7 +26,9 @@ package org.infoglue.cms.applications.common.actions;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
@@ -95,7 +97,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		{
 		    InfoGluePrincipal infoGluePrincipal = this.getInfoGluePrincipal();
 		    LanguageVO languageVO = (LanguageVO)LanguageController.getController().getLanguageVOList().get(0);
-		    value = ExtranetController.getController().getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageVO.getId(), null, false, escapeSpecialCharacters);
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageVO.getId(), null, false, escapeSpecialCharacters);
 		}
 		catch(Exception e)
 		{
@@ -119,7 +121,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		{
 		    InfoGluePrincipal infoGluePrincipal = this.getInfoGluePrincipal();
 		    LanguageVO languageVO = (LanguageVO)LanguageController.getController().getLanguageVOList().get(0);
-			value = ExtranetController.getController().getPrincipalPropertyHashValues(infoGluePrincipal, propertyName, languageVO.getId(), null, false, escapeSpecialCharacters);
+			value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyHashValues(infoGluePrincipal, propertyName, languageVO.getId(), null, false, escapeSpecialCharacters);
 		}
 		catch(Exception e)
 		{
@@ -200,5 +202,94 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     {
         return CmsPropertyHandler.getProperty("componentRendererAction");
     }
+    
+    
+	//--------------------------------------------------------------------------
+	// Database/Transaction specific operations
+	//--------------------------------------------------------------------------
+
+	/**
+	 * Begins a transaction on the supplied database
+	 */
+	
+	public void beginTransaction(Database db) throws SystemException
+	{
+		try
+		{
+			db.begin();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
+		}
+	}
+       
+	/**
+	 * Rollbacks a transaction on the named database
+	 */
+     
+	public void closeTransaction(Database db) throws SystemException
+	{
+	    //rollbackTransaction(db);
+	    commitTransaction(db);
+	}
+
+	
+	/**
+	 * Ends a transaction on the named database
+	 */
+	
+    private void commitTransaction(Database db) throws SystemException
+	{
+		try
+		{
+		    db.commit();
+			db.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+		}
+	}
+	
+ 
+	/**
+	 * Rollbacks a transaction on the named database
+	 */
+     
+	public void rollbackTransaction(Database db) throws SystemException
+	{
+		try
+		{
+			if (db.isActive())
+			{
+			    db.rollback();
+				db.close();
+			}
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logInfo("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+		}
+	}
+
+	/**
+	 * Close the database
+	 */
+     
+	public void closeDatabase(Database db) throws SystemException
+	{
+		try
+		{
+			db.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
+		}
+	}
 }
 

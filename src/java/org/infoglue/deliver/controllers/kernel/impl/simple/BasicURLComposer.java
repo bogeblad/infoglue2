@@ -23,12 +23,11 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.filters.FilterConstants;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
-
-import java.net.URLEncoder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -84,7 +83,7 @@ public class BasicURLComposer extends URLComposer
         return assetUrl;
     }
 
-    public String composePageUrl(InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId)
+    public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId)
     {
     	String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
@@ -97,7 +96,7 @@ public class BasicURLComposer extends URLComposer
 	        sb.append(CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT));
 	        try 
 			{
-	            sb.append(NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getPageNavigationPath(infoGluePrincipal, siteNodeId, languageId, contentId));
+	            sb.append(NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getPageNavigationPath(db, infoGluePrincipal, siteNodeId, languageId, contentId));
 	            if (contentId != null && contentId.intValue() != -1)
 	                sb.append("?contentId=").append(String.valueOf(contentId));
 	     
@@ -128,9 +127,9 @@ public class BasicURLComposer extends URLComposer
         }
     }
 
-    public String composePageUrlAfterLanguageChange(InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId)
+    public String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId)
     {
-        String pageUrl = composePageUrl(infoGluePrincipal, dnsName, siteNodeId, languageId, contentId);
+        String pageUrl = composePageUrl(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId);
 
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))

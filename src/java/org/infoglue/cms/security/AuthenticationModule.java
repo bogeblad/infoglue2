@@ -82,5 +82,9 @@ public interface AuthenticationModule
 	public String getCasAuthorizedProxy();
 
 	public void setCasAuthorizedProxy(String casAuthorizedProxy);
-	
+
+	public Object getTransactionObject();
+
+	public void setTransactionObject(Object transactionObject);
+
 }

@@ -53,7 +53,7 @@ public class VelocityTemplateProcessor
 	public void renderTemplate(Map params, PrintWriter pw, String templateAsString) throws Exception 
 	{
 		Timer timer = new Timer();
-	    timer.setActive(false);
+	    //timer.setActive(false);
 		
 	    if(templateAsString.indexOf("<%") > -1)
 	    {

@@ -35,6 +35,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
 import org.infoglue.cms.entities.content.ContentVO;
@@ -58,6 +59,11 @@ import org.infoglue.deliver.util.webservices.WebServiceHelper;
  */
 public interface TemplateController
 {
+    /**
+     * Sets the transaction the controller should work within. This is to limit the number of connections we use. 
+     */
+    public abstract Database getDatabase();
+    
     /** 
      * Add objects to be used in subsequent parsing
      * like getParsedContentAttribute, include, etc 

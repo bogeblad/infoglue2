@@ -660,7 +660,7 @@ public class ContentController extends BaseController
 	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
 	 */
 	
-    public List getContentVOList(HashMap argumentHashMap, Database db) throws SystemException, Bug
+    public List getContentVOList(HashMap argumentHashMap, Database db) throws SystemException, Exception
     {
     	List contents = null;
     	
@@ -685,7 +685,7 @@ public class ContentController extends BaseController
     	{
 			List arguments = (List)argumentHashMap.get("arguments");
 			CmsLogger.logInfo("Arguments:" + arguments.size());   		
-			contents = getContentVOListByContentTypeNames(arguments);
+			contents = getContentVOListByContentTypeNames(arguments, db);
     	}
         return contents;
     }
@@ -736,6 +736,36 @@ public class ContentController extends BaseController
 		return contents;    	
 	}
 	
+	
+	/**
+	 * The input is a list of hashmaps.
+	 */
+	
+	protected List getContentVOListByContentTypeNames(List arguments, Database db) throws SystemException, Exception
+	{
+		List contents = new ArrayList();
+
+		Iterator i = arguments.iterator();
+    	while(i.hasNext())
+    	{
+	        HashMap argument = (HashMap)i.next();
+    		String contentTypeDefinitionName = (String)argument.get("contentTypeDefinitionName");
+			//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, ctd.contentTypeDefinitionId, r.repositoryId FROM cmContent c, cmContentTypeDefinition ctd, cmRepository r where c.repositoryId = r.repositoryId AND c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+			//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT contentId, name FROM cmContent c, cmContentTypeDefinition ctd WHERE c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.ContentImpl");
+    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.contentTypeDefinition.name = $1");
+        	oql.bind(contentTypeDefinitionName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while(results.hasMore()) 
+            {
+            	MediumContentImpl content = (MediumContentImpl)results.next();
+				contents.add(content.getValueObject());
+            }
+	   	}
+    	
+		return contents;    	
+	}
 
 	/**
 	 * The input is a list of hashmaps.

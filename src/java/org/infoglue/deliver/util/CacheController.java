@@ -275,13 +275,13 @@ public class CacheController extends Thread
 		}
 		finally
 		{
-			BaseDeliveryController.closeDatabase(db);			
+			db.close();			
 		}
 	}
 	
 	private static synchronized void clearCache(Class c) throws Exception
 	{
-		Database db = CastorDatabaseService.getDatabase();
+	    Database db = CastorDatabaseService.getDatabase();
 
 		try
 		{
@@ -297,7 +297,7 @@ public class CacheController extends Thread
 		}
 		finally
 		{
-			BaseDeliveryController.closeDatabase(db);			
+			db.close();			
 		}
 	}
 	

@@ -24,6 +24,7 @@
  
 package org.infoglue.deliver.applications.inputhandlers;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.mail.*;
 import org.infoglue.cms.util.*;
@@ -56,13 +57,13 @@ public class MailSender implements InfoGlueInputHandler
 	 * This is the method that is invoked by the calling action.
 	 */
 	
-	public void processInput(Integer siteNodeId, Integer languageId, Integer contentId, Integer formContentId, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception
+	public void processInput(Database db, Integer siteNodeId, Integer languageId, Integer contentId, Integer formContentId, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception
 	{
-		String template     = ContentDeliveryController.getContentDeliveryController().getContentAttribute(formContentId, languageId, "MailSender_template", siteNodeId, true);
-		String fromAddress 	= ContentDeliveryController.getContentDeliveryController().getContentAttribute(formContentId, languageId, "MailSender_fromAddress", siteNodeId, true);
-		String toAddress   	= ContentDeliveryController.getContentDeliveryController().getContentAttribute(formContentId, languageId, "MailSender_toAddress", siteNodeId, true);
-		String subject 		= ContentDeliveryController.getContentDeliveryController().getContentAttribute(formContentId, languageId, "MailSender_subject", siteNodeId, true);
-		String body         = renderMailBody(siteNodeId, languageId, contentId, template, parameters, request, infogluePrincipal);
+		String template     = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, formContentId, languageId, "MailSender_template", siteNodeId, true);
+		String fromAddress 	= ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, formContentId, languageId, "MailSender_fromAddress", siteNodeId, true);
+		String toAddress   	= ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, formContentId, languageId, "MailSender_toAddress", siteNodeId, true);
+		String subject 		= ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, formContentId, languageId, "MailSender_subject", siteNodeId, true);
+		String body         = renderMailBody(db, siteNodeId, languageId, contentId, template, parameters, request, infogluePrincipal);
 		
 		MailServiceFactory.getService().send(fromAddress, toAddress, subject, body);
 	}
@@ -73,9 +74,9 @@ public class MailSender implements InfoGlueInputHandler
 	 * This method creates a mail from a velocity-template.
 	 */
 	
-	private String renderMailBody(Integer siteNodeId, Integer languageId, Integer contentId, String template, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception
+	private String renderMailBody(Database db, Integer siteNodeId, Integer languageId, Integer contentId, String template, HashMap parameters, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception
 	{
-		parameters.put("templateLogic", getTemplateController(siteNodeId, languageId, contentId, request, infogluePrincipal));
+		parameters.put("templateLogic", getTemplateController(db, siteNodeId, languageId, contentId, request, infogluePrincipal));
 		
 		StringWriter tempString = new StringWriter();
 		PrintWriter pw = new PrintWriter(tempString);
@@ -91,12 +92,12 @@ public class MailSender implements InfoGlueInputHandler
 	 * normal site-delivery version.
 	 */
 	
-	public TemplateController getTemplateController(Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception
+	public TemplateController getTemplateController(Database db, Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request, InfoGluePrincipal infogluePrincipal) throws Exception
 	{
     	NodeDeliveryController nodeDeliveryController				= NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		
-		TemplateController templateController = new BasicTemplateController(infogluePrincipal);
+		TemplateController templateController = new BasicTemplateController(db, infogluePrincipal);
 		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
 		templateController.setHttpRequest(request);	
 		templateController.setDeliveryControllers(nodeDeliveryController, null, integrationDeliveryController);	

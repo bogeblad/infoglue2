@@ -28,7 +28,6 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.Qualifyer;
-import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
@@ -41,17 +40,14 @@ import org.infoglue.cms.services.*;
 import org.infoglue.cms.util.*;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.ServiceBindingController;
 
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.applications.filters.URIMapperCache;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
-import org.infoglue.deliver.util.Timer;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -138,27 +134,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method gets the appropriate siteNodeVersion
 	 */
 
-	public SiteNodeVersionVO getActiveSiteNodeVersionVO(Integer siteNodeId) throws Exception
+	public SiteNodeVersionVO getActiveSiteNodeVersionVO(Database db, Integer siteNodeId) throws Exception
 	{
 		SiteNodeVersionVO siteNodeVersionVO = null;
 		
-		Database db = CastorDatabaseService.getDatabase();
-		beginTransaction(db);
-	   
-		try
-		{
-			SiteNodeVersion siteNodeVersion = getActiveSiteNodeVersion(siteNodeId, db);
-    		if(siteNodeVersion != null)
-				siteNodeVersionVO = siteNodeVersion.getValueObject();
-    		
-    		closeTransaction(db);
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
+		SiteNodeVersion siteNodeVersion = getActiveSiteNodeVersion(siteNodeId, db);
+		if(siteNodeVersion != null)
+			siteNodeVersionVO = siteNodeVersion.getValueObject();
 		
 		return siteNodeVersionVO;
 	}
@@ -397,26 +379,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the SiteNodeVO that is sent in.
 	 */
 	
-	public SiteNode getSiteNode(Integer siteNodeId) throws SystemException
+	public SiteNode getSiteNode(Database db, Integer siteNodeId) throws SystemException
 	{
 		SiteNode siteNode = null;
 		 
-		Database db = CastorDatabaseService.getDatabase();
-	    beginTransaction(db);
-			   
-		try
-        {
-			siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-            		
-			closeTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-		  
+		siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+
 		return siteNode;
 	}
 
@@ -424,7 +392,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the latest sitenodeVersion there is for the given siteNode.
 	 */
 	
-	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Exception
+	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		String key = "" + siteNodeId;
 		CmsLogger.logInfo("key:" + key);
@@ -435,25 +403,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-			Database db = CastorDatabaseService.getDatabase();
-			beginTransaction(db);
-		   
-			try
-			{
-				SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(siteNodeId, db);
-				if(siteNodeVersion != null)
-					siteNodeVersionVO = siteNodeVersion.getValueObject();
-				
-				CacheController.cacheObject("latestSiteNodeVersionCache", key, siteNodeVersionVO);
-				
-				closeTransaction(db);
-			}
-			catch(Exception e)
-			{
-				CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-				throw new SystemException(e.getMessage());
-			}
+			SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(siteNodeId, db);
+			if(siteNodeVersion != null)
+				siteNodeVersionVO = siteNodeVersion.getValueObject();
+			
+			CacheController.cacheObject("latestSiteNodeVersionCache", key, siteNodeVersionVO);
 		}
 				
 		return siteNodeVersionVO;
@@ -499,7 +453,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the SiteNodeVO that is the parent to the one sent in.
 	 */
 	
-	public SiteNodeVO getParentSiteNode(Integer siteNodeId) throws SystemException
+	public SiteNodeVO getParentSiteNode(Database db, Integer siteNodeId) throws SystemException
 	{
 		String key = "" + siteNodeId;
 		CmsLogger.logInfo("key getParentSiteNode:" + key);
@@ -512,28 +466,14 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			CmsLogger.logInfo("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
 			
-			Database db = CastorDatabaseService.getDatabase();
-		    beginTransaction(db);
-				   
-			try
-	        {
-				SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
-	            SiteNode parentSiteNode = siteNode.getParentSiteNode();
-	            if(parentSiteNode != null)		
-					parentSiteNodeVO = parentSiteNode.getValueObject();
-	            		
-				CmsLogger.logInfo("Caching parentSiteNodeVO:" + parentSiteNodeVO);
-				
-				CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
-				
-				closeTransaction(db);
-	        }
-	        catch(Exception e)
-	        {
-	            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-	            throw new SystemException(e.getMessage());
-	        }
+			SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
+            SiteNode parentSiteNode = siteNode.getParentSiteNode();
+            if(parentSiteNode != null)		
+				parentSiteNodeVO = parentSiteNode.getValueObject();
+            		
+			CmsLogger.logInfo("Caching parentSiteNodeVO:" + parentSiteNodeVO);
+			
+			CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
 		}
 		
 		return parentSiteNodeVO;
@@ -545,13 +485,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This is essential to turn off when you have a dynamic page like an external application or searchresult.
 	 */
 	
-	public boolean getIsPageCacheDisabled(Integer siteNodeId)
+	public boolean getIsPageCacheDisabled(Database db, Integer siteNodeId)
 	{
 		boolean isPageCacheDisabled = false;
 		
 		try
 		{
-			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(siteNodeId);
+			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
 			if(latestSiteNodeVersionVO.getDisablePageCache() != null)
 			{	
 				if(latestSiteNodeVersionVO.getDisablePageCache().intValue() == NO.intValue())
@@ -560,9 +500,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 					isPageCacheDisabled = true;
 				else if(latestSiteNodeVersionVO.getDisablePageCache().intValue() == INHERITED.intValue())
 				{
-					SiteNodeVO parentSiteNode = this.getParentSiteNode(siteNodeId);
+					SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
 					if(parentSiteNode != null)
-						isPageCacheDisabled = getIsPageCacheDisabled(parentSiteNode.getSiteNodeId()); 
+						isPageCacheDisabled = getIsPageCacheDisabled(db, parentSiteNode.getSiteNodeId()); 
 				}
 			}
 
@@ -579,7 +519,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns true if the if the page in question (ie sitenode) has editOnSight disabled.
 	 */
 	
-	public boolean getIsEditOnSightDisabled(Integer siteNodeId)
+	public boolean getIsEditOnSightDisabled(Database db, Integer siteNodeId)
 	{
 		CmsLogger.logInfo("getIsEditOnSightDisabled:" + siteNodeId);
 		
@@ -587,7 +527,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		try
 		{
-			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(siteNodeId);
+			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getDisableEditOnSight() != null)
 			{	
 				if(latestSiteNodeVersionVO.getDisableEditOnSight().intValue() == NO.intValue())
@@ -596,9 +536,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 					isEditOnSightDisabled = true;
 				else if(latestSiteNodeVersionVO.getDisableEditOnSight().intValue() == INHERITED.intValue())
 				{
-					SiteNodeVO parentSiteNode = this.getParentSiteNode(siteNodeId);
+					SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
 					if(parentSiteNode != null)
-						isEditOnSightDisabled = getIsEditOnSightDisabled(parentSiteNode.getSiteNodeId()); 
+						isEditOnSightDisabled = getIsEditOnSightDisabled(db, parentSiteNode.getSiteNodeId()); 
 				}
 			}
 
@@ -618,13 +558,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This is essential to turn off when you have a dynamic page like an external application or searchresult.
 	 */
 	
-	public boolean getIsPageProtected(Integer siteNodeId)
+	public boolean getIsPageProtected(Database db, Integer siteNodeId)
 	{
 		boolean isPageProtected = false;
 		
 		try
 		{
-			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(siteNodeId);
+			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getIsProtected() != null)
 			{	
 				if(latestSiteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
@@ -633,9 +573,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 					isPageProtected = true;
 				else if(latestSiteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
 				{
-					SiteNodeVO parentSiteNode = this.getParentSiteNode(siteNodeId);
+					SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
 					if(parentSiteNode != null)
-						isPageProtected = getIsPageProtected(parentSiteNode.getSiteNodeId()); 
+						isPageProtected = getIsPageProtected(db, parentSiteNode.getSiteNodeId()); 
 				}
 			}
 
@@ -653,13 +593,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the id of the siteNodeVersion that is protected if any.
 	 */
 	
-	public Integer getProtectedSiteNodeVersionId(Integer siteNodeId)
+	public Integer getProtectedSiteNodeVersionId(Database db, Integer siteNodeId)
 	{
 		Integer protectedSiteNodeVersionId = null;
 		
 		try
 		{
-			SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(siteNodeId);
+			SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
 			CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 			CmsLogger.logInfo("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
 			if(siteNodeVersionVO != null && siteNodeVersionVO.getIsProtected() != null)
@@ -670,9 +610,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
 				else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
 				{
-					SiteNodeVO parentSiteNode = this.getParentSiteNode(siteNodeId);
+					SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
 					if(parentSiteNode != null)
-						protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(parentSiteNode.getSiteNodeId()); 
+						protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(db, parentSiteNode.getSiteNodeId()); 
 				}
 			}
 
@@ -690,9 +630,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single content bound. 
 	 */
 	
-	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException, Exception
+	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException, Exception
 	{
-		List contents = getBoundContents(infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, inheritParentBindings);
+		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, inheritParentBindings);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
 
@@ -701,20 +641,49 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single content bound. 
 	 */
 	
-	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName) throws SystemException
+	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName) throws SystemException, Exception
 	{
 		CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 		CmsLogger.logInfo("availableServiceBindingName:" + availableServiceBindingName);
-		List contents = getBoundContents(infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE);
+		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
 	
+	/**
+	 * This method return a single content bound. 
+	 */
+	
+	public ContentVO getBoundContent(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName) throws SystemException, Exception
+	{
+	    List contents = null;
+	    
+	    Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		beginTransaction(db);
+
+        try
+        {
+            contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE);
+        
+            closeTransaction(db);
+	    }
+	    catch(Exception e)
+	    {
+	        CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+	        throw new SystemException(e.getMessage());
+	    }
+
+        return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
+	}
+
 
 	/**
 	 * This method returns a list of contents bound to the named availableServiceBinding.
 	 */
 	
-	public List getBoundContents(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException
+	public List getBoundContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException, Exception
 	{
 		String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		//String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
@@ -729,80 +698,39 @@ public class NodeDeliveryController extends BaseDeliveryController
 		    boundContentVOList = new ArrayList();
 			
 			CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
-			Database db = CastorDatabaseService.getDatabase();
-			ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
-			beginTransaction(db);
-			
-			try
+		    AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
+        
+		    List qualifyerList = new ArrayList();
+	    	ServiceDefinitionVO serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, siteNodeId, availableServiceBindingVO, db, inheritParentBindings);
+			if(serviceDefinitionVO != null)
 			{
-			    AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
-            	
-				//If serviceBinding on this node is null we check if there are parent-binding we could use.
-				/*
-			    ServiceBindingVO serviceBindingVO = getInheritedServiceBinding(siteNodeId, availableServiceBindingVO, db, inheritParentBindings);
-			
-				if(serviceBindingVO != null)
+				String serviceClassName = serviceDefinitionVO.getClassName();
+				BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
+    		 
+				HashMap arguments = new HashMap();
+				arguments.put("method", "selectContentListOnIdList");
+        		
+				arguments.put("arguments", qualifyerList);
+				
+				List contents = service.selectMatchingEntities(arguments, db);
+				
+				CmsLogger.logInfo("Found bound contents:" + contents.size());	        		
+				if(contents != null)
 				{
-					ServiceBinding serviceBinding = ServiceBindingController.getController().getServiceBindingWithId(serviceBindingVO.getId(), db);
-
-					ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
-				*/
-			    	List qualifyerList = new ArrayList();
-			    	ServiceDefinitionVO serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, siteNodeId, availableServiceBindingVO, db, inheritParentBindings);
-					if(serviceDefinitionVO != null)
+					Iterator i = contents.iterator();
+					while(i.hasNext())
 					{
-						String serviceClassName = serviceDefinitionVO.getClassName();
-						BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
-	        		 
-						HashMap arguments = new HashMap();
-						arguments.put("method", "selectContentListOnIdList");
-	            		
-						/*
-						List qualifyerList = new ArrayList();
-						Collection qualifyers = serviceBinding.getBindingQualifyers();
-						
-						qualifyers = sortQualifyers(qualifyers);
-						
-						Iterator iterator = qualifyers.iterator();
-						while(iterator.hasNext())
-						{
-							Qualifyer qualifyer = (Qualifyer)iterator.next();
-							HashMap argument = new HashMap();
-							argument.put(qualifyer.getName(), qualifyer.getValue());
-							qualifyerList.add(argument);
-						}
-						*/
-						arguments.put("arguments", qualifyerList);
-						
-						List contents = service.selectMatchingEntities(arguments, db);
-						
-						CmsLogger.logInfo("Found bound contents:" + contents.size());	        		
-						if(contents != null)
-						{
-							Iterator i = contents.iterator();
-							while(i.hasNext())
-							{
-								ContentVO candidate = (ContentVO)i.next();
-								CmsLogger.logInfo("candidate:" + candidate.getName());
-								//Checking to see that now is between the contents publish and expire-date. 
-								//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
-								//	boundContentVOList.add(candidate);        		
-								Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
-								if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, db))
-									boundContentVOList.add(candidate);    
-							}
-						}
+						ContentVO candidate = (ContentVO)i.next();
+						CmsLogger.logInfo("candidate:" + candidate.getName());
+						//Checking to see that now is between the contents publish and expire-date. 
+						//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
+						//	boundContentVOList.add(candidate);        		
+						Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
+						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, db))
+							boundContentVOList.add(candidate);    
 					}
-				//}
-
-				closeTransaction(db);
-			}
-			catch(Exception e)
-			{
-				CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-				throw new SystemException(e.getMessage());
+				}
 			}
 			
 			CacheController.cacheObject("boundContentCache", boundContentsKey, boundContentVOList);
@@ -819,34 +747,18 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The collection of contents are also sorted on given arguments.
 	 */
 	
-	public List getBoundFolderContents(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, String availableServiceBindingName, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException
+	public List getBoundFolderContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, String availableServiceBindingName, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		List folderContents = new ArrayList();
 		
     	CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
         
-        ContentVO contentVO = getBoundContent(infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName);
+        ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName);
         CmsLogger.logInfo("contentVO:" + contentVO);
         
         if(contentVO != null)
         {
-	        Database db = CastorDatabaseService.getDatabase();
-	        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-	
-			beginTransaction(db);
-	
-	        try
-	        {
-	           	folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentVO.getContentId(), siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback);
-				
-	           	closeTransaction(db);
-	        }
-	        catch(Exception e)
-	        {
-	            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-	            throw new SystemException(e.getMessage());
-	        }
+           	folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentVO.getContentId(), siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback);
         }
         
 		return folderContents;
@@ -858,27 +770,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The collection of contents are also sorted on given arguments.
 	 */
 	
-	public List getBoundFolderContents(InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException
+	public List getBoundFolderContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId, Integer languageId, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		List folderContents = new ArrayList();
 		        
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		beginTransaction(db);
-
-		try
-		{
-			folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentId, siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback);
-	        	       	        
-			closeTransaction(db);
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
+		folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentId, siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback);
 		
 		return folderContents;
 	}
@@ -888,9 +784,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single siteNode bound. 
 	 */
 	
-	public SiteNodeVO getBoundSiteNode(Integer siteNodeId, String availableServiceBindingName) throws SystemException
+	public SiteNodeVO getBoundSiteNode(Database db, Integer siteNodeId, String availableServiceBindingName) throws SystemException, Exception
 	{
-		List siteNodes = getBoundSiteNodes(siteNodeId, availableServiceBindingName);
+		List siteNodes = getBoundSiteNodes(db, siteNodeId, availableServiceBindingName);
 		return (siteNodes != null && siteNodes.size() > 0) ? (SiteNodeVO)siteNodes.get(0) : null;
 	}
 	
@@ -899,9 +795,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method return a single siteNode bound. 
 	 */
 	
-	public SiteNodeVO getBoundSiteNode(Integer siteNodeId, String availableServiceBindingName, int position) throws SystemException
+	public SiteNodeVO getBoundSiteNode(Database db, Integer siteNodeId, String availableServiceBindingName, int position) throws SystemException, Exception
 	{
-		List siteNodes = getBoundSiteNodes(siteNodeId, availableServiceBindingName);
+		List siteNodes = getBoundSiteNodes(db, siteNodeId, availableServiceBindingName);
 		return (siteNodes != null && siteNodes.size() > position) ? (SiteNodeVO)siteNodes.get(position) : null;
 	}
 
@@ -911,7 +807,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The concept is to fetch the bound siteNode
 	 */
 	
-	public List getBoundSiteNodes(Integer siteNodeId, String availableServiceBindingName) throws SystemException
+	public List getBoundSiteNodes(Database db, Integer siteNodeId, String availableServiceBindingName) throws SystemException, Exception
 	{
 		String boundSiteNodesKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		CmsLogger.logInfo("boundSiteNodesKey:" + boundSiteNodesKey);
@@ -924,75 +820,37 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			boundSiteNodeVOList = new ArrayList();
 
-			CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
-			Database db = CastorDatabaseService.getDatabase();
-			ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		    AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
 
-			beginTransaction(db);
-
-			try
+		    List qualifyerList = new ArrayList();
+	    	ServiceDefinitionVO serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, siteNodeId, availableServiceBindingVO, db, USE_INHERITANCE);
+			
+		    if(serviceDefinitionVO != null)
 			{
-			    AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
-			    /*
-				ServiceBindingVO serviceBindingVO = getInheritedServiceBinding(siteNodeId, availableServiceBindingVO, db, USE_INHERITANCE);
-				
-				if(serviceBindingVO != null)
+				String serviceClassName = serviceDefinitionVO.getClassName();
+				BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
+    		 	
+				HashMap arguments = new HashMap();
+				arguments.put("method", "selectSiteNodeListOnIdList");
+        	
+				arguments.put("arguments", qualifyerList);
+    		
+				List siteNodes = service.selectMatchingEntities(arguments, db);
+    		
+				CmsLogger.logInfo("Found bound siteNodes:" + siteNodes.size());
+				if(siteNodes != null)
 				{
-				    ServiceBinding serviceBinding = ServiceBindingController.getController().getServiceBindingWithId(serviceBindingVO.getId(), db);
-
-				    ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
-				    */
-				    List qualifyerList = new ArrayList();
-			    	ServiceDefinitionVO serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, siteNodeId, availableServiceBindingVO, db, USE_INHERITANCE);
-					
-				    if(serviceDefinitionVO != null)
+					Iterator i = siteNodes.iterator();
+					while(i.hasNext())
 					{
-						String serviceClassName = serviceDefinitionVO.getClassName();
-						BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
-	        		 	
-						HashMap arguments = new HashMap();
-						arguments.put("method", "selectSiteNodeListOnIdList");
-	            		
-						/*
-						List qualifyerList = new ArrayList();
-						List qualifyers = getBindingQualifyers(serviceBinding.getServiceBindingId(), db);
-						Iterator iterator = qualifyers.iterator();
-						while(iterator.hasNext())
-						{
-							Qualifyer qualifyer = (Qualifyer)iterator.next();
-							HashMap argument = new HashMap();
-							argument.put(qualifyer.getName(), qualifyer.getValue());
-							qualifyerList.add(argument);
-						}
-						*/
-						arguments.put("arguments", qualifyerList);
-	        		
-						List siteNodes = service.selectMatchingEntities(arguments, db);
-	        		
-						CmsLogger.logInfo("Found bound siteNodes:" + siteNodes.size());
-						if(siteNodes != null)
-						{
-							Iterator i = siteNodes.iterator();
-							while(i.hasNext())
-							{
-								SiteNodeVO candidate = (SiteNodeVO)i.next();
-								//Checking to see that now is between the contents publish and expire-date. 
-								if(isValidSiteNode(candidate.getId()))
-									boundSiteNodeVOList.add(candidate);
-							}
-						}
+						SiteNodeVO candidate = (SiteNodeVO)i.next();
+						//Checking to see that now is between the contents publish and expire-date. 
+						if(isValidSiteNode(db, candidate.getId()))
+							boundSiteNodeVOList.add(candidate);
 					}
-				//}
-	       	        
-				closeTransaction(db);
+				}
 			}
-			catch(Exception e)
-			{
-				CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-				throw new SystemException(e.getMessage());
-			}
-							
+	       	        						
 			CacheController.cacheObject("boundSiteNodeCache", boundSiteNodesKey, boundSiteNodeVOList);
 		}
 		
@@ -1005,7 +863,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns a url to the given page. The url is composed of siteNode, language and content
 	 */
 
-	public String getPageUrl(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException
+	public String getPageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException
 	{
 		String pageUrl = "";
 		
@@ -1020,26 +878,26 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
 		
-		SiteNode siteNode = getSiteNode(siteNodeId);
+		SiteNode siteNode = getSiteNode(db, siteNodeId);
 		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
 			
 		//pageUrl = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
-		pageUrl = urlComposer.composePageUrl(infoGluePrincipal, dnsName, siteNodeId, languageId, contentId); 
+		pageUrl = urlComposer.composePageUrl(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId); 
 		
 		return pageUrl;
 	}
 
 
-	public String getPageUrlAfterLanguageChange(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException
+	public String getPageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException
     {
-		SiteNode siteNode = getSiteNode(siteNodeId);
+		SiteNode siteNode = getSiteNode(db, siteNodeId);
 		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
 		
-        return urlComposer.composePageUrlAfterLanguageChange(infoGluePrincipal, dnsName, siteNodeId, languageId, contentId);
+        return urlComposer.composePageUrlAfterLanguageChange(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId);
     } 
 	
 	/**
@@ -1048,17 +906,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * up in the structure until the root is reached. On each node we collect the pageTitle.
 	 */
 
-	public String getPagePath(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String bindingName, String attributeName, boolean useLanguageFallBack) throws SystemException, Exception
+	public String getPagePath(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String bindingName, String attributeName, boolean useLanguageFallBack) throws SystemException, Exception
 	{
 		String pagePath = "/";
 		
-		SiteNodeVO parentSiteNode = this.getParentSiteNode(siteNodeId);
+		SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
 		if(parentSiteNode != null)
 		{
-			pagePath = getPagePath(infoGluePrincipal, parentSiteNode.getId(), languageId, null, bindingName, attributeName, useLanguageFallBack) + "/"; 
+			pagePath = getPagePath(db, infoGluePrincipal, parentSiteNode.getId(), languageId, null, bindingName, attributeName, useLanguageFallBack) + "/"; 
 		}
 		
-		pagePath += this.getPageNavigationTitle(infoGluePrincipal, siteNodeId, languageId, contentId, bindingName, attributeName, useLanguageFallBack);
+		pagePath += this.getPageNavigationTitle(db, infoGluePrincipal, siteNodeId, languageId, contentId, bindingName, attributeName, useLanguageFallBack);
 		pagePath = pagePath.replaceAll(" ", "_");
 		
 		return pagePath;
@@ -1068,11 +926,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	/**
 	 * This method returns a url to the delivery engine
 	 */
-	public String getPageBaseUrl() throws SystemException
+	public String getPageBaseUrl(Database db) throws SystemException
 	{
 		String pageUrl = "";
 		
-		SiteNode siteNode = this.getSiteNode(this.siteNodeId);
+		SiteNode siteNode = this.getSiteNode(db, this.siteNodeId);
 		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
@@ -1089,26 +947,26 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The title is based on the content sent in firstly, secondly the siteNode. 
 	 * The actual text is fetched from either the content or the metacontent bound to the sitenode. 
 	 */
-	public String getPageNavigationTitle(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String metaBindingName, String attributeName, boolean useLanguageFallback) throws SystemException, Exception
+	public String getPageNavigationTitle(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String metaBindingName, String attributeName, boolean useLanguageFallback) throws SystemException, Exception
 	{
 		String navTitle = "";
 		
 		if(contentId == null || contentId.intValue() == -1)
 		{
-			ContentVO content = getBoundContent(infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, metaBindingName);
+			ContentVO content = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, metaBindingName);
 			if(content != null)
-				navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(content.getContentId(), languageId, attributeName, siteNodeId, useLanguageFallback);
+				navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), languageId, attributeName, siteNodeId, useLanguageFallback);
 		}
 		else
 		{
-			navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(contentId, languageId, attributeName, siteNodeId, useLanguageFallback);
+			navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback);
 		}
 		
 		return navTitle;
 	}
 
 
-    public Integer getSiteNodeId(InfoGluePrincipal infogluePrincipal, Integer repositoryId, String navigationTitle, Integer parentSiteNodeId, Integer languageId) throws SystemException, Exception
+    public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String navigationTitle, Integer parentSiteNodeId, Integer languageId) throws SystemException, Exception
     {
         /*
         CmsLogger.logInfo("repositoryId:" + repositoryId);
@@ -1119,14 +977,14 @@ public class NodeDeliveryController extends BaseDeliveryController
     	
         if (repositoryId == null || repositoryId.intValue() == -1) 
         {
-            repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository().getRepositoryId();
+            repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
             CmsLogger.logInfo("RepositoryId not specifed - Resolved master repository to "+repositoryId);
         }
         
         if (repositoryId == null)
             throw new SystemException("No repository given and unable to resolve master repository");
 
-        List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(repositoryId);
+        List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, repositoryId);
 
         List bindings = new ArrayList();
         StringBuffer sb = new StringBuffer(256);
@@ -1146,72 +1004,63 @@ public class NodeDeliveryController extends BaseDeliveryController
         sb.append("and s.repository.repositoryId = $").append((bindings.size()+1)).append(" ");
         bindings.add(repositoryId);
 
-        Database db = CastorDatabaseService.getDatabase();
-        beginTransaction(db);
-        try {
-            CmsLogger.logInfo("OQL ["+sb.toString()+"]");
-            OQLQuery oql = db.getOQLQuery( sb.toString() );
-            for (int i=0;i<bindings.size();i++) {
-                oql.bind(bindings.get(i));
+        CmsLogger.logInfo("OQL ["+sb.toString()+"]");
+        OQLQuery oql = db.getOQLQuery( sb.toString() );
+        for (int i=0;i<bindings.size();i++) 
+        {
+            oql.bind(bindings.get(i));
+        }
+        
+        QueryResults results = oql.execute();
+        while (results.hasMore()) 
+        {
+            SiteNode siteNode = (SiteNode) results.next();
+            if (navigationTitle == null || navigationTitle.length() == 0) 
+            {
+                return siteNode.getSiteNodeId();
             }
-            QueryResults results = oql.execute();
-            while (results.hasMore()) {
-                SiteNode siteNode = (SiteNode) results.next();
-                if (navigationTitle == null || navigationTitle.length() == 0) {
-                    closeTransaction(db);
-                    return siteNode.getSiteNodeId();
-                }
-                // CmsLogger.logInfo("Site : "+siteNode.getSiteNodeId());
-               ContentVO content = getBoundContent(infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME);
-                if(content != null) {
-                    //CmsLogger.logInfo("Content "+content.getContentId());
-                    String navTitle = null;
-                    for (int i=0;i<languages.size();i++) {
-                        LanguageVO language = (LanguageVO) languages.get(i);
-                        //CmsLogger.logInfo("Language : "+language.getLanguageCode());
-                        navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(content.getContentId(),
-                                                                                                                language.getLanguageId(),
-                                                                                                                NAV_TITLE_ATTRIBUTE_NAME,
-                                                                                                                siteNode.getSiteNodeId(),
-                                                                                                               true);
-                        //CmsLogger.logInfo("NavTitle ["+navTitle+"]");
-                        if (navTitle != null && navTitle.equals(navigationTitle)) {
-                            closeTransaction(db);
-                            return siteNode.getSiteNodeId();
-                       }
+            
+            // CmsLogger.logInfo("Site : "+siteNode.getSiteNodeId());
+            ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME);
+            if(content != null) 
+            {
+                //CmsLogger.logInfo("Content "+content.getContentId());
+                String navTitle = null;
+                for (int i=0;i<languages.size();i++) 
+                {
+                    LanguageVO language = (LanguageVO) languages.get(i);
+                    //CmsLogger.logInfo("Language : "+language.getLanguageCode());
+                    navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true);
+                    //CmsLogger.logInfo("NavTitle ["+navTitle+"]");
+                    if (navTitle != null && navTitle.equals(navigationTitle)) 
+                    {
+                        return siteNode.getSiteNodeId();
                     }
                 }
             }
-            closeTransaction(db);
         }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+
         return null;
     }
 
-    public String getPageNavigationPath(InfoGluePrincipal infogluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+    public String getPageNavigationPath(Database db, InfoGluePrincipal infogluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
     {
         String path = "/";
 
-        SiteNodeVO parentSiteNode = this.getParentSiteNode(siteNodeId);
+        SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
         if (parentSiteNode != null)
         {
-            path = getPageNavigationPath(infogluePrincipal, parentSiteNode.getId(), languageId, null) + "/";
+            path = getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null) + "/";
         } else {
             return "";
         }
-        path += URLEncoder.encode(this.getPageNavigationTitle(infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true), "UTF-8");
+        path += URLEncoder.encode(this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true), "UTF-8");
      
         return path;
     }
 
 
-    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId) throws SystemException, Exception
     {
         Integer siteNodeId = null;
         URIMapperCache uriCache = URIMapperCache.getInstance();
@@ -1230,11 +1079,11 @@ public class NodeDeliveryController extends BaseDeliveryController
         {
             if (i < 0) 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(infogluePrincipal, repositoryId, null, null, languageId);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, null, languageId);
             } 
             else 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(infogluePrincipal, repositoryId, path[i], siteNodeId, languageId);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], siteNodeId, languageId);
             }
             
             if (siteNodeId != null)
@@ -1243,15 +1092,63 @@ public class NodeDeliveryController extends BaseDeliveryController
 
         return siteNodeId;
     }
+    
+    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId) throws SystemException, Exception
+    {
+        Integer siteNodeId = null;
 
+        Database db = CastorDatabaseService.getDatabase();
+		
+		beginTransaction(db);
+
+		try
+		{
+	        URIMapperCache uriCache = URIMapperCache.getInstance();
+	
+	        int idx = path.length;
+	        while (idx >= 0) 
+	        {
+	        	//CmsLogger.logInfo("Looking for cache nodeName at index "+idx);
+	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, idx);
+	            if (siteNodeId != null)
+	                break;
+	            idx = idx - 1;
+	        }
+	        //CmsLogger.logInfo("Idx = "+idx);
+	        for (int i = idx;i < path.length; i++) 
+	        {
+	            if (i < 0) 
+	            {
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, null, languageId);
+	            } 
+	            else 
+	            {
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], siteNodeId, languageId);
+	            }
+	            
+	            if (siteNodeId != null)
+	                uriCache.addCachedSiteNodeId(repositoryId, path, i+1, siteNodeId);
+	        }
+	     
+	        closeTransaction(db);
+	    }
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+        return siteNodeId;
+    }
 	
 	/**
 	 * This method returns the contentId of the bound metainfo-content to the given page. 
 	 */
 
-	public Integer getMetaInfoContentId(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, String metaBindingName, boolean inheritParentBindings) throws SystemException, Exception
+	public Integer getMetaInfoContentId(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, String metaBindingName, boolean inheritParentBindings) throws SystemException, Exception
 	{
-		ContentVO content = getBoundContent(infoGluePrincipal, siteNodeId, languageId, true, metaBindingName, inheritParentBindings);
+		ContentVO content = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, true, metaBindingName, inheritParentBindings);
 		if(content != null)
 			return content.getContentId();
 		
@@ -1265,45 +1162,26 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * If the repositoryName is null we fetch the name of the master repository.
 	 */
 	
-	public static SiteNodeVO getRootSiteNode(String repositoryName) throws SystemException, Exception
+	public static SiteNodeVO getRootSiteNode(Database db, String repositoryName) throws SystemException, Exception
 	{
 		if(repositoryName == null)
 		{
-			repositoryName = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository().getName();
+			repositoryName = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getName();
 			CmsLogger.logInfo("Fetched name of master repository as none were given:" + repositoryName);
 		}
 		 
-	    Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
         SiteNode siteNode = null;
 
-        beginTransaction(db);
-
-        try
+        CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryName);
+		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.name = $1");
+		oql.bind(repositoryName);
+		
+    	QueryResults results = oql.execute();
+		
+		if (results.hasMore()) 
         {
-            CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryName);
-			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.name = $1");
-			oql.bind(repositoryName);
-			
-        	QueryResults results = oql.execute();
-			
-			if (results.hasMore()) 
-            {
-            	siteNode = (SiteNode)results.next();
-				CmsLogger.logInfo("The root node was found:" + siteNode.getName());
-            }
-            
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
-
-            closeTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
+        	siteNode = (SiteNode)results.next();
+			CmsLogger.logInfo("The root node was found:" + siteNode.getName());
         }
         
 		CmsLogger.logInfo("siteNode:" + siteNode);
@@ -1317,45 +1195,26 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * If the repositoryName is null we fetch the name of the master repository.
 	 */
 	
-	public static SiteNodeVO getRootSiteNode(Integer repositoryId) throws SystemException, Exception
+	public static SiteNodeVO getRootSiteNode(Database db, Integer repositoryId) throws SystemException, Exception
 	{
 		if(repositoryId == null)
 		{
-			repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository().getRepositoryId();
+			repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
 			CmsLogger.logInfo("Fetched name of master repository as none were given:" + repositoryId);
 		}
 		 
-	    Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
         SiteNode siteNode = null;
 
-        beginTransaction(db);
-
-        try
+        CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryId);
+		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.id = $1");
+		oql.bind(repositoryId);
+		
+    	QueryResults results = oql.execute();
+		
+		if (results.hasMore()) 
         {
-            CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryId);
-			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.id = $1");
-			oql.bind(repositoryId);
-			
-        	QueryResults results = oql.execute();
-			
-			if (results.hasMore()) 
-            {
-            	siteNode = (SiteNode)results.next();
-				CmsLogger.logInfo("The root node was found:" + siteNode.getName());
-            }
-            
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
-
-            closeTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
+        	siteNode = (SiteNode)results.next();
+			CmsLogger.logInfo("The root node was found:" + siteNode.getName());
         }
         
 		CmsLogger.logInfo("siteNode:" + siteNode);
@@ -1369,41 +1228,25 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the list of siteNodeVO which is children to this one.
 	 */
 	
-	public List getChildSiteNodes(Integer siteNodeId) throws SystemException, Exception
+	public List getChildSiteNodes(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		if(siteNodeId == null)
 		{
 			return null;
 		}
 		 
-	    Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
         List siteNodeVOList = new ArrayList();
 
-        beginTransaction(db);
-
-        try
+        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1");
+		oql.bind(siteNodeId);
+		
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
         {
-            OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1");
-			oql.bind(siteNodeId);
-			
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			while (results.hasMore()) 
-            {
-            	SiteNode siteNode = (SiteNode)results.next();
-				siteNodeVOList.add(siteNode.getValueObject());
-			}
-            
-			closeTransaction(db);
-        }
-        catch(Exception e)
-        {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+        	SiteNode siteNode = (SiteNode)results.next();
+			siteNodeVOList.add(siteNode.getValueObject());
+		}
         
 		return siteNodeVOList;	
 	}
@@ -1451,28 +1294,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * @throws Exception
 	 */
 	
-	public boolean isValidSiteNode(Integer siteNodeId) throws Exception
+	public boolean isValidSiteNode(Database db, Integer siteNodeId) throws Exception
 	{
 		boolean isValidSiteNode = false;
 		
-		Database db =  CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		beginTransaction(db);
-
-		try
-		{
-			SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db); 
-			isValidSiteNode = isValidSiteNode(siteNode, db);
-			
-			closeTransaction(db);
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
+		SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db); 
+		isValidSiteNode = isValidSiteNode(siteNode, db);
     			
 		return isValidSiteNode;					
 	}

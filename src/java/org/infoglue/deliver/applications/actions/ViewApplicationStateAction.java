@@ -23,7 +23,10 @@
 
 package org.infoglue.deliver.applications.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.io.*;
@@ -40,7 +43,7 @@ import java.io.File;
  * @author Mattias Bogeblad
  */
 
-public class ViewApplicationStateAction extends WebworkAbstractAction 
+public class ViewApplicationStateAction extends InfoGlueAbstractAction 
 {
 	private boolean databaseConnectionOk 	= false;
 	private boolean applicationSettingsOk 	= false;
@@ -64,21 +67,23 @@ public class ViewApplicationStateAction extends WebworkAbstractAction
          
     public String doExecute() throws Exception
     {
+        Database db = CastorDatabaseService.getDatabase();
+		
+		beginTransaction(db);
+
 		try
 		{
-			DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(100020));
-
-			List repositoryVOList = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOList();
+			List repositoryVOList = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOList(db);
 			CmsLogger.logInfo("Number of repositories:" + repositoryVOList.size());
 			this.databaseConnectionOk = true;
+
+	        closeTransaction(db);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
-		}
-		catch(Throwable t)
-		{
-			t.printStackTrace();
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
 		}
 		
 		this.applicationSettingsOk 	= true;

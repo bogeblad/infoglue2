@@ -27,6 +27,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -45,10 +46,21 @@ import org.infoglue.cms.util.CmsLogger;
 public class UserControllerProxy extends BaseController 
 {
 	private static AuthorizationModule authorizationModule = null;
+	private Database transactionObject = null;
+	
+	public UserControllerProxy(Database transactionObject)
+	{
+	    this.transactionObject = transactionObject;
+	}
 	
 	public static UserControllerProxy getController()
 	{
-		return new UserControllerProxy();
+		return new UserControllerProxy(null);
+	}	
+	
+	public static UserControllerProxy getController(Database transactionObject)
+	{
+	    return new UserControllerProxy(transactionObject);
 	}
 	
 	/**
@@ -65,6 +77,7 @@ public class UserControllerProxy extends BaseController
 				authorizationModule = (AuthorizationModule)Class.forName(InfoGlueAuthenticationFilter.authorizerClass).newInstance();
 				CmsLogger.logInfo("authorizationModule:" + authorizationModule);
 				authorizationModule.setExtraProperties(InfoGlueAuthenticationFilter.extraProperties);
+				authorizationModule.setTransactionObject(this.transactionObject);
 				CmsLogger.logInfo("InfoGlueAuthenticationFilter.extraProperties:" + InfoGlueAuthenticationFilter.extraProperties);
 	    	}
 	    	catch(Exception e)

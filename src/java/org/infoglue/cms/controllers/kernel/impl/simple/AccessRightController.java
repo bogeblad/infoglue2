@@ -81,6 +81,11 @@ public class AccessRightController extends BaseController
 		return getAllVOObjects(AccessRightImpl.class, "accessRightId");
 	}
 
+	public List getAccessRightVOList(Database db) throws SystemException, Bug
+	{
+		return this.getAllVOObjects(AccessRightImpl.class, "accessRightId", db);
+	}
+
 	public List getAccessRightVOList(Integer interceptionPointId, String parameters, String roleName) throws SystemException, Bug
 	{
 		List accessRightVOList = null;
@@ -91,11 +96,7 @@ public class AccessRightController extends BaseController
 		{
 			beginTransaction(db);
 			
-			InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(interceptionPointId);
-			if(interceptionPointVO.getUsesExtraDataForAccessControl().booleanValue())
-				accessRightVOList = toVOList(getAccessRightList(interceptionPointId, parameters, roleName, db));
-			else
-				accessRightVOList = toVOList(getAccessRightList(interceptionPointId, roleName, db));
+			accessRightVOList = getAccessRightVOList(db, interceptionPointId, parameters, roleName);
 
 			CmsLogger.logInfo("accessRightVOList:" + accessRightVOList.size());
 			
@@ -107,6 +108,21 @@ public class AccessRightController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
+		
+		return accessRightVOList;	
+	}
+
+	public List getAccessRightVOList(Database db, Integer interceptionPointId, String parameters, String roleName) throws SystemException, Bug
+	{
+		List accessRightVOList = null;
+		
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(interceptionPointId);
+		if(interceptionPointVO.getUsesExtraDataForAccessControl().booleanValue())
+			accessRightVOList = toVOList(getAccessRightList(interceptionPointId, parameters, roleName, db));
+		else
+			accessRightVOList = toVOList(getAccessRightList(interceptionPointId, roleName, db));
+
+		CmsLogger.logInfo("accessRightVOList:" + accessRightVOList.size());
 		
 		return accessRightVOList;	
 	}
@@ -488,7 +504,7 @@ public class AccessRightController extends BaseController
 		List cachedAccessRightsVOList = (List)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedAccessRightsVOList == null)
 		{
-		    cachedAccessRightsVOList = this.getAccessRightVOList();
+		    cachedAccessRightsVOList = this.getAccessRightVOList(db);
 		    CacheController.cacheObject("authorizationCache", key, cachedAccessRightsVOList);
 		}
 		
