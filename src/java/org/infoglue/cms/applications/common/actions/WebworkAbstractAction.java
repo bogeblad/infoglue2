@@ -146,7 +146,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         } 
         catch(Throwable e) 
         {
-            CmsLogger.logSevere("Throwable " + e);
+            CmsLogger.logSevere("Throwable " + e, new Exception(e));
             final Bug bug = new Bug("Uncaught exception!", e);
             setError(bug, bug.getCause());
             return ERROR;
