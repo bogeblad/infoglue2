@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -31,51 +31,49 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.publishing.EditionBrowser;
 import org.infoglue.cms.exception.SystemException;
 
 /**
- * ViewPublicationsAction.java
- * Created on 2002-okt-01 
- * @author Stefan Sik, ss@frovi.com 
- * ss
- * 
+ * This returns a list of all events to be published or denied,
+ * and a page of previously published editions.
+ *
+ * @author Stefan Sik, ss@frovi.com
+ * @author Frank Febbraro, frank@phase2technology.com
  */
-public class ViewPublicationsAction extends WebworkAbstractAction 
+public class ViewPublicationsAction extends WebworkAbstractAction
 {
+	private int startIndex = 0;
 	private Integer repositoryId;
-	
 	private RepositoryVO repositoryVO;
 	private List publicationEvents;
-	private List editions;
+	private EditionBrowser editionBrowser;
+
+	public int getStartIndex()			{ return startIndex; }
+	public void setStartIndex(int i)	{ startIndex = i; }
+
+	public Integer getRepositoryId()				{ return repositoryId; }
+	public void setRepositoryId(Integer i)			{ repositoryId = i; }
+
+	public RepositoryVO getRepositoryVO()			{ return repositoryVO; }
+	public List getPublicationEvents()				{ return publicationEvents; }
+
+	public EditionBrowser getEditionBrowser()		{ return editionBrowser; }
+	public void setEditionBrowser(EditionBrowser b)	{ editionBrowser = b; }
 
 	public ViewPublicationsAction getThis()
 	{
 		return this;
 	}
 
-
-	/**
-	 * This default method fetched all old publications and also 
-	 * all events lined up which has to do with publishing.
-	 */
-	
 	protected String doExecute() throws Exception
 	{
-		repositoryVO      = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
-		publicationEvents = PublicationController.getPublicationEvents(repositoryId);
-		editions          = PublicationController.getEditions(repositoryId);
+		repositoryVO		= RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+		publicationEvents	= PublicationController.getPublicationEvents(repositoryId);
+		editionBrowser		= PublicationController.getEditionPage(repositoryId, startIndex);
 		return SUCCESS;
 	}
 
-	/** 
-	 * Returns the list of events that are up for review.
-	 */
-	
-	public List getPublicationEvents()
-	{
-		return publicationEvents;
-	}
-	
 	public static List getPublicationDetails(Integer publicationId) throws SystemException
 	{
 		return PublicationController.getPublicationDetailVOList(publicationId);
@@ -92,54 +90,8 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 	}
 
 	/**
-	 * Returns the repositoryId.
-	 * @return java.lang.Integer
-	 */
-	public java.lang.Integer getRepositoryId()
-	{
-		return repositoryId;
-	}
-
-	/**
-	 * Sets the repositoryId.
-	 * @param repositoryId The repositoryId to set
-	 */
-	public void setRepositoryId(java.lang.Integer repositoryId)
-	{
-		this.repositoryId = repositoryId;
-	}
-
-	/**
-	 * Returns the editions.
-	 * @return List
-	 */
-	public List getEditions()
-	{
-		return editions;
-	}
-
-	/**
-	 * Sets the editions.
-	 * @param editions The editions to set
-	 */
-	public void setEditions(List editions)
-	{
-		this.editions = editions;
-	}
-
-	/**
-	 * Returns the repositoryVO.
-	 * @return RepositoryVO
-	 */
-	public RepositoryVO getRepositoryVO()
-	{
-		return repositoryVO;
-	}
-
-	/**
 	 * Escapes the string
 	 */
-	
 	public String escape(String string)
 	{
 		return string.replace('\'', '´');
