@@ -1,27 +1,67 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
-   <appender name="FileAppender" class="org.apache.log4j.RollingFileAppender">
-      <param name="File" value="generator.log"/>
-      <layout class="org.apache.log4j.PatternLayout">
-           <param name="ConversionPattern" 
-                            value="[%x (%c{1})] %m%n"/>
-      </layout>
-   </appender> 
-   
-   
-   <appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
-      <layout class="org.apache.log4j.PatternLayout">
-           <param name="ConversionPattern" 
-                            value="[%x (%c{1})] %m%n"/>
-      </layout>
-   </appender> 
 
-   <category name="webwork">
-      <appender-ref ref="FileAppender"/>
-      <appender-ref ref="ConsoleAppender"/>
-   </category>
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out"/>
+		<param name="Threshold" value="DEBUG"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
+		</layout>
+	</appender>
+
+	<!-- File appender with rollover
+	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="infoglue.log"/>
+		<param name="MaxFileSize" value="1MB"/>
+		<param name="MaxBackupIndex" value="2"/>
+		<param name="Threshold" value="DEBUG"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
+		</layout>
+	</appender>
+	-->
+
+	<!-- Appender Chainsaw GUI Log viewer
+	<appender name="CHAINSAW" class="org.apache.log4j.net.SocketAppender">
+		<param name="remoteHost" value="localhost"/>
+		<param name="port" value="4445"/>
+		<param name="locationInfo" value="true"/>
+	</appender>
+	-->
+
+	<!-- ==================================	-->
+	<!-- Use categories to control logging  -->
+	<!-- down to the package or class level	-->
+	<!-- ==================================	-->
+	<category name="org.infoglue.cms">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.infoglue.deliver">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.exolab.castor">
+		<priority value="ERROR"/>
+	</category>
+
+	<category name="webwork">
+		<priority value="WARN"/>
+	</category>
+
+	<!-- For builds xdoclet is noisy and I'm not interested -->
+	<category name="xdoclet">
+		<priority value="FATAL"/>
+	</category>
+
+	<!-- Anyhing not caught by the above categories will be caught here -->
+	<root>
+		<priority value="WARN"/>
+		<appender-ref ref="CONSOLE"/>
+	</root>
+
 </log4j:configuration>
 
 
