@@ -47,7 +47,7 @@
 				<td><img src="images/tree/structureRoot.gif"></td>
 				<td colspan="3" width="100%"><a href="DeleteContent!fixPage.action?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a> #if($referenceBean.registryVOList.size() > 1)- $referenceBean.registryVOList.size() $ui.getString("tool.structuretool.referencesFound")#end</td>
 				<!--<td colspan="4"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a></td>-->
-				<td><a href="DeleteReference.action?xxxx"><img src="images/delete.gif" border="0"></a></td>
+				<td nowrap="1"><a href="DeleteReference.action?xxxx"><img src="images/delete.gif" border="0"></a><img src="images/trans.gif" border="0" width="5" height="5"></td>
 				<!--<td><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>-->
 				<td><a href="DeleteContent!fixPage.action?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
 				<td><a href="#"><img src="images/approve.gif" border="0"></a></td>
@@ -87,8 +87,8 @@
 			<tr $class>
 				<td><img src="images/tree/contentRoot.gif"></td>
 				<td colspan="3" width="100%"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingObject.contentId&languageId=$referenceBean.referencingObject.languageId" target="_blank">$referenceBean.name</a> #if($referenceBean.registryVOList.size() > 1)- $referenceBean.registryVOList.size() $ui.getString("tool.structuretool.referencesFound")#end</td>
-				<td><a href="#"><img src="images/delete.gif" border="0"></a></td>
-				<td><a href="#" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				<td nowrap="1"><a href="#"><img src="images/delete.gif" border="0"></a><img src="images/trans.gif" border="0" width="5" height="5"></td>
+				<td><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingObject.contentId&languageId=$referenceBean.referencingObject.languageId" target="_blank"><img src="images/edit.gif" border="0"></a></td>
 				<td><a href="#"><img src="images/approve.gif" border="0"></a></td>		
 			</tr>	
 		#end
