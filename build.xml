@@ -163,11 +163,15 @@
 	</target>
 
 	<!--
-	* Creates a jar file. This can be used to import into another codebase for custom development.
+	* Creates jar files containing InfoGlue classes and test classes. These can be
+	* imported into another codebase for custom development.
 	-->
-	<target name="jar" depends="compile" description="Creates a Jar file">
+	<target name="jar" depends="compile" description="Creates a jar file">
 		<jar file="${build}/${ant.project.name}-${project.version}.jar">
 			<fileset dir="${build.classes}"/>
+		</jar>
+		<jar file="${build}/${ant.project.name}-${project.version}-test.jar">
+			<fileset dir="${test.classes}"/>
 		</jar>
 	</target>
 
