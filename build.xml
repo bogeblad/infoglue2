@@ -102,6 +102,19 @@
 	* that need to be on the classpath.  Also copies the Velocity templates required by
 	* the Preview app to the classpath; these are loaded by Java classes that are hard-coded
 	* to expect them here.
+	*
+	* I have enabled depend for jikes.  This means that files that are dependencies of a file
+	* whose target is out of date will be recompiled, thus sparing you the headache of a
+	* NoSuchMethodError or similar run time "surprise" as a result of the dependencies not being recompiled.
+	* I strongly encourage everyone to use jikes to compile. It is far superior to the "modern"
+	* compiler ant uses by default, not only because it does dependency checking, but it also
+	* warns you about various bad coding practices that the modern compiler allows, e.g., '$'
+	* in identifiers.  It is also more strict about checking that all classes referenced by a
+	* file are in the classpath somewhere.
+	*
+	* Note that the modern compiler does not support the depend option, and it will issue a
+	* warning to this effect.  Check out the documentation for the javac task in the Ant manual
+	* for more info.
 	-->
 	<target name="compile" depends="init">
 		<javac destdir="${build.classes}" classpathref="build.classpath" debug="true" depend="true">
