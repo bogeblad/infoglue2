@@ -60,10 +60,15 @@
 	<!-- Start WebWork -->
 	<servlet>
         <servlet-name>action</servlet-name>
-        <servlet-class>org.infoglue.deliver.portal.dispatcher.PortalServletDispatcher</servlet-class>
+        <servlet-class>@actionDispatcher@</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 	<!--
+	<servlet>
+        <servlet-name>action</servlet-name>
+        <servlet-class>org.infoglue.deliver.portal.dispatcher.PortalServletDispatcher</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 	<servlet>
 		<servlet-name>action</servlet-name>
 		<servlet-class>webwork.dispatcher.ServletDispatcher</servlet-class>
