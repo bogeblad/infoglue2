@@ -28,9 +28,11 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.Qualifyer;
+import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.management.*;
@@ -39,11 +41,13 @@ import org.infoglue.cms.services.*;
 import org.infoglue.cms.util.*;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServiceBindingController;
 
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.applications.filters.URIMapperCache;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
@@ -121,7 +125,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			operatingMode = new Integer(CmsPropertyHandler.getProperty("operatingMode"));
-			CmsLogger.logInfo("Operating mode is:" + operatingMode);
+			//CmsLogger.logInfo("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
 		{
@@ -196,46 +200,65 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method checks if there is a serviceBinding with the name on this or any parent node.
 	 */
 	
-	private ServiceBinding getInheritedServiceBinding(Integer siteNodeId, String availableServiceBindingName, Database db, boolean inheritParentBindings) throws SystemException, Exception
+	public ServiceDefinitionVO getInheritedServiceDefinition(List qualifyerList, Integer siteNodeId, AvailableServiceBindingVO availableServiceBindingVO, Database db, boolean inheritParentBindings) throws SystemException, Exception
 	{
-		CmsLogger.logInfo("Trying to find binding " + availableServiceBindingName + " on siteNodeId:" + siteNodeId);
-		ServiceBinding serviceBinding = null;
+		CmsLogger.logInfo("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
+		ServiceDefinitionVO serviceDefinitionVO = null;
 		
-		SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+		//SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+		SiteNode siteNode = (SiteNode)this.getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		CmsLogger.logInfo("Loaded siteNode " + siteNode.getName());
-		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		CmsLogger.logInfo("Loaded versions " + siteNodeVersions.size());
-		SiteNodeVersion siteNodeVersion = null;
 		
-		Iterator versionIterator = siteNodeVersions.iterator();
-		while(versionIterator.hasNext())
+		//serviceDefinitionVO = getServiceDefinitionVO(siteNode, availableServiceBindingVO, db);
+		serviceDefinitionVO = getServiceDefinitionVO(qualifyerList, siteNode, availableServiceBindingVO, db);
+			
+		if(serviceDefinitionVO == null)
 		{
-			SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-			CmsLogger.logInfo("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
-			if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
-			{
-				if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNodeId.intValue())
-				{
-					if(siteNodeVersion == null || siteNodeVersion.getSiteNodeVersionId().intValue() < siteNodeVersionCandidate.getId().intValue())
-					{
-						siteNodeVersion = siteNodeVersionCandidate;
-					}
-				}
-			}
+			//We check if the available service definition state that this is a inheritable binding            	
+			//AvailableServiceBinding availableServiceBinding = getAvailableServiceBindingRecursive(siteNodeVersion.getOwningSiteNode(), availableServiceBindingName, inheritParentBindings);
+			if(availableServiceBindingVO != null && availableServiceBindingVO.getIsInheritable().booleanValue() && inheritParentBindings)
+        	{
+            	CmsLogger.logInfo("No binding found - lets try the parent.");
+            	SiteNode parent = siteNode.getParentSiteNode();
+            	if(parent != null)
+            	    serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, parent.getSiteNodeId(), availableServiceBindingVO, db, inheritParentBindings);
+        	}
 		}
+		return serviceDefinitionVO;
+	}
+	
+	private ServiceDefinitionVO getServiceDefinitionVO(List qualifyerList, SiteNode siteNode, AvailableServiceBindingVO availableServiceBindingVO, Database db) throws Exception
+	{
+	    ServiceDefinitionVO serviceDefinitionVO = null;
+	    //ServiceBinding serviceBinding = null;
 		
-		/*
-		//If there was no siteNodeVersion and we do preview - lets accept published versions as well.
-		if(siteNodeVersion == null && getOperatingMode().intValue() == SiteNodeVersionVO.PUBLISH_STATE.intValue()) 
+	    String key = "" + siteNode.getSiteNodeId() + "_" + availableServiceBindingVO.getId();
+		CmsLogger.logInfo("key:" + key);
+		Object object = CacheController.getCachedObject("serviceDefinitionCache", key);
+		Object object2 = CacheController.getCachedObject("qualifyerListCache", key);
+		if(object != null && object2 != null)
 		{
-			CmsLogger.logInfo("As it runs in preview-mode(2) and there was no such version we check for a published version as well");
-			versionIterator = siteNodeVersions.iterator();
+			CmsLogger.logInfo("There was an cached ServiceDefinitionVO:" + object);
+			if(object instanceof ServiceDefinitionVO)
+			    serviceDefinitionVO = (ServiceDefinitionVO)object;
+			if(object2 instanceof List)
+			    qualifyerList.addAll((List)object2);
+		}
+		else
+		{
+			//System.out.println("Found no item with key:" + key); 
+			
+		    /*
+			Collection siteNodeVersions = siteNode.getSiteNodeVersions();
+			SiteNodeVersion siteNodeVersion = null;
+			
+			Iterator versionIterator = siteNodeVersions.iterator();
 			while(versionIterator.hasNext())
 			{
 				SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-				if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())
+				if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
 				{
-					if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNodeId.intValue())
+					if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNode.getId().intValue())
 					{
 						if(siteNodeVersion == null || siteNodeVersion.getSiteNodeVersionId().intValue() < siteNodeVersionCandidate.getId().intValue())
 						{
@@ -244,42 +267,95 @@ public class NodeDeliveryController extends BaseDeliveryController
 					}
 				}
 			}
+			
+			ServiceBinding serviceBinding = null;
+			
+			if(siteNodeVersion != null)
+			{
+			    Timer timer2 = new Timer();
+
+				Collection serviceBindings = siteNodeVersion.getServiceBindings();
+				Iterator serviceBindingIterator = serviceBindings.iterator();
+				while(serviceBindingIterator.hasNext())
+				{
+					ServiceBinding serviceBindingCandidate = (ServiceBinding)serviceBindingIterator.next();
+					if(serviceBindingCandidate.getAvailableServiceBinding().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
+					//if(serviceBindingCandidate.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
+					{
+						serviceBinding = serviceBindingCandidate;
+						break;
+					}
+				}
+			}
+			
+			if (serviceBinding != null) 
+	        {
+		        serviceBindingVO = serviceBinding.getValueObject();
+		        object = serviceBindingVO;
+	        }
+			else
+			    object = new NullObject();
+			*/
+			
+		    OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.siteNodeVersion.owningSiteNode = $1 AND sb.availableServiceBinding = $2 AND sb.siteNodeVersion.isActive = $3 AND sb.siteNodeVersion.stateId = $4 order by sb.siteNodeVersion.siteNodeVersionId DESC");
+			oql.bind(siteNode);
+			oql.bind(availableServiceBindingVO.getId());
+			oql.bind(new Boolean(true));
+			oql.bind(getOperatingMode());
+			
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+	        {
+			    ServiceBinding serviceBinding = (ServiceBinding)results.next();
+		        //serviceBindingVO = serviceBinding.getValueObject();
+		        serviceDefinitionVO = serviceBinding.getServiceDefinition().getValueObject();
+		        Collection qualifyers = serviceBinding.getBindingQualifyers();
+				
+				qualifyers = sortQualifyers(qualifyers);
+				
+				Iterator iterator = qualifyers.iterator();
+				while(iterator.hasNext())
+				{
+					Qualifyer qualifyer = (Qualifyer)iterator.next();
+					HashMap argument = new HashMap();
+					argument.put(qualifyer.getName(), qualifyer.getValue());
+					qualifyerList.add(argument);
+				}
+		        
+		        object = serviceDefinitionVO;
+		        object2 = qualifyerList;
+	        }
+			else
+			{
+			    object = new NullObject();
+		    	object2 = new NullObject();
+			}
+			
+
+			//System.out.println("caching with key:" + key); 
+			CacheController.cacheObject("serviceDefinitionCache", key, object);
+			CacheController.cacheObject("qualifyerListCache", key, object2);
+
+		}
+			
+			
+		/*
+	    Collection serviceBindings = siteNodeVersion.getServiceBindings();
+		Iterator serviceBindingIterator = serviceBindings.iterator();
+		while(serviceBindingIterator.hasNext())
+		{
+			ServiceBinding serviceBindingCandidate = (ServiceBinding)serviceBindingIterator.next();
+			//CmsLogger.logWarning("siteNodeVersion " + siteNodeVersion.getId());
+			if(serviceBindingCandidate.getAvailableServiceBinding().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
+			//if(serviceBindingCandidate.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
+			{
+				serviceBinding = serviceBindingCandidate;
+			}
 		}
 		*/
 		
-		if(siteNodeVersion != null)
-		{
-			CmsLogger.logInfo("siteNodeVersion " + siteNodeVersion.getId());		
-			Collection serviceBindings = siteNodeVersion.getServiceBindings();
-			Iterator serviceBindingIterator = serviceBindings.iterator();
-			while(serviceBindingIterator.hasNext())
-			{
-				ServiceBinding serviceBindingCandidate = (ServiceBinding)serviceBindingIterator.next();
-				if(serviceBindingCandidate.getAvailableServiceBinding().getName().equalsIgnoreCase(availableServiceBindingName))
-				{
-					serviceBinding = serviceBindingCandidate;
-				}
-			}
-
-			if(serviceBinding == null)
-			{
-				//We check if the available service definition state that this is a inheritable binding            	
-				AvailableServiceBinding availableServiceBinding = getAvailableServiceBindingRecursive(siteNodeVersion.getOwningSiteNode(), availableServiceBindingName, inheritParentBindings);
-            	if(availableServiceBinding != null && availableServiceBinding.getIsInheritable().booleanValue() && inheritParentBindings)
-            	{
-	            	CmsLogger.logInfo("No binding found - lets try the parent.");
-	            	SiteNode parent = siteNode.getParentSiteNode();
-	            	if(parent != null)
-		            	serviceBinding = getInheritedServiceBinding(parent.getSiteNodeId(), availableServiceBindingName, db, inheritParentBindings);
-            	}
-			}
-		}
-		else
-		{
-			throw new SystemException("There were no siteNodeVersion available matching the mode of the deliver engine.");
-		}
-				
-		return serviceBinding;
+		return serviceDefinitionVO;
 	}
 	
 	/**
@@ -640,7 +716,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public List getBoundContents(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings) throws SystemException
 	{
-		String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
+		String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
+		//String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		CmsLogger.logInfo("boundContentsKey:" + boundContentsKey);
 		List boundContentVOList = (List)CacheController.getCachedObject("boundContentCache", boundContentsKey);
 		if(boundContentVOList != null)
@@ -659,20 +736,29 @@ public class NodeDeliveryController extends BaseDeliveryController
 			
 			try
 			{
+			    AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
+            	
 				//If serviceBinding on this node is null we check if there are parent-binding we could use.
-				ServiceBinding serviceBinding = getInheritedServiceBinding(siteNodeId, availableServiceBindingName, db, inheritParentBindings);
+				/*
+			    ServiceBindingVO serviceBindingVO = getInheritedServiceBinding(siteNodeId, availableServiceBindingVO, db, inheritParentBindings);
 			
-				if(serviceBinding != null)
+				if(serviceBindingVO != null)
 				{
+					ServiceBinding serviceBinding = ServiceBindingController.getController().getServiceBindingWithId(serviceBindingVO.getId(), db);
+
 					ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
-					if(serviceDefinition != null)
+				*/
+			    	List qualifyerList = new ArrayList();
+			    	ServiceDefinitionVO serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, siteNodeId, availableServiceBindingVO, db, inheritParentBindings);
+					if(serviceDefinitionVO != null)
 					{
-						String serviceClassName = serviceDefinition.getClassName();
+						String serviceClassName = serviceDefinitionVO.getClassName();
 						BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
 	        		 
 						HashMap arguments = new HashMap();
 						arguments.put("method", "selectContentListOnIdList");
 	            		
+						/*
 						List qualifyerList = new ArrayList();
 						Collection qualifyers = serviceBinding.getBindingQualifyers();
 						
@@ -686,9 +772,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 							argument.put(qualifyer.getName(), qualifyer.getValue());
 							qualifyerList.add(argument);
 						}
+						*/
 						arguments.put("arguments", qualifyerList);
 						
-						List contents = service.selectMatchingEntities(arguments);
+						List contents = service.selectMatchingEntities(arguments, db);
 						
 						CmsLogger.logInfo("Found bound contents:" + contents.size());	        		
 						if(contents != null)
@@ -707,7 +794,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 							}
 						}
 					}
-				}
+				//}
 
 				closeTransaction(db);
 			}
@@ -725,6 +812,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 	}
 
+	
 
 	/**
 	 * This method returns a list of children to the bound content with the named availableServiceBindingName.
@@ -844,19 +932,28 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 			try
 			{
-				ServiceBinding serviceBinding = getInheritedServiceBinding(siteNodeId, availableServiceBindingName, db, USE_INHERITANCE);
-	        	
-				if(serviceBinding != null)
+			    AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
+			    /*
+				ServiceBindingVO serviceBindingVO = getInheritedServiceBinding(siteNodeId, availableServiceBindingVO, db, USE_INHERITANCE);
+				
+				if(serviceBindingVO != null)
 				{
-					ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
-					if(serviceDefinition != null)
+				    ServiceBinding serviceBinding = ServiceBindingController.getController().getServiceBindingWithId(serviceBindingVO.getId(), db);
+
+				    ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
+				    */
+				    List qualifyerList = new ArrayList();
+			    	ServiceDefinitionVO serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, siteNodeId, availableServiceBindingVO, db, USE_INHERITANCE);
+					
+				    if(serviceDefinitionVO != null)
 					{
-						String serviceClassName = serviceDefinition.getClassName();
+						String serviceClassName = serviceDefinitionVO.getClassName();
 						BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
 	        		 	
 						HashMap arguments = new HashMap();
 						arguments.put("method", "selectSiteNodeListOnIdList");
 	            		
+						/*
 						List qualifyerList = new ArrayList();
 						List qualifyers = getBindingQualifyers(serviceBinding.getServiceBindingId(), db);
 						Iterator iterator = qualifyers.iterator();
@@ -867,9 +964,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 							argument.put(qualifyer.getName(), qualifyer.getValue());
 							qualifyerList.add(argument);
 						}
+						*/
 						arguments.put("arguments", qualifyerList);
 	        		
-						List siteNodes = service.selectMatchingEntities(arguments);
+						List siteNodes = service.selectMatchingEntities(arguments, db);
 	        		
 						CmsLogger.logInfo("Found bound siteNodes:" + siteNodes.size());
 						if(siteNodes != null)
@@ -884,7 +982,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 							}
 						}
 					}
-				}
+				//}
 	       	        
 				closeTransaction(db);
 			}
