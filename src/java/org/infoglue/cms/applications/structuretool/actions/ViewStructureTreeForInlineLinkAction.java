@@ -24,7 +24,10 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import java.util.List;
@@ -33,7 +36,7 @@ import java.util.List;
  * This action shows the Content-tree when binding stuff.
  */ 
 
-public class ViewStructureTreeForInlineLinkAction extends WebworkAbstractAction
+public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 {
     private Integer repositoryId;
     private ConstraintExceptionBuffer ceb;
@@ -111,4 +114,29 @@ public class ViewStructureTreeForInlineLinkAction extends WebworkAbstractAction
 	{
 		this.oldSiteNodeId = oldSiteNodeId;
 	}
+	
+	public String getExpansion(Integer oldSiteNodeId)
+	{
+	    String expansion = "/";
+	    
+	    if(oldSiteNodeId == null)
+	        return "";
+	    
+	    try
+	    {
+	        SiteNodeVO parentSiteNodeVO = SiteNodeController.getController().getParentSiteNode(oldSiteNodeId);
+		    while(parentSiteNodeVO != null)
+		    {
+		        expansion += parentSiteNodeVO.getId() + "/";
+		        parentSiteNodeVO = SiteNodeController.getController().getParentSiteNode(parentSiteNodeVO.getId());
+		    }
+	    }
+	    catch(Exception e)
+	    {
+	        CmsLogger.logWarning("Expansion not possible:" + e.getMessage(), e);
+	    }
+	    
+	    return expansion;
+	}
+	
 }

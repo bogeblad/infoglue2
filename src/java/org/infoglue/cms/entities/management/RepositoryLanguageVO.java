@@ -32,6 +32,7 @@ public class RepositoryLanguageVO  implements BaseEntityVO
 
     private java.lang.Integer repositoryLanguageId;
     private java.lang.Boolean isPublished;
+    private java.lang.Integer sortOrder = new Integer(0);
     private Integer repositoryId;
     private Integer languageId;
      
@@ -91,5 +92,14 @@ public class RepositoryLanguageVO  implements BaseEntityVO
 		repositoryId = integer;
 	}
 
+    public java.lang.Integer getSortOrder()
+    {
+        return sortOrder;
+    }
+    
+    public void setSortOrder(java.lang.Integer order)
+    {
+        this.sortOrder = order;
+    }
 }
         

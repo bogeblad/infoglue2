@@ -80,6 +80,25 @@ public class FileHelper
 		
 	}   
 	
+	//TODO - this is not right.
+	public synchronized static void writeUTF8(File file, String text, boolean isAppend) throws Exception
+	{
+		FileOutputStream fos = new FileOutputStream(file, isAppend);
+		Writer out = new OutputStreamWriter(fos, "UTF-8");
+		out.write(text);
+		out.flush();
+		out.close();
+	}   
+	
+	
+	public synchronized static void writeUTF8ToFile(File file, String text, boolean isAppend) throws Exception
+	{
+        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF8"));
+        out.write(text);
+        out.flush();
+        out.close();
+	}
+	
 	/**
 	 * Writes the file to the hard disk. If the file doesn't exist a new file is created.
 	 * @author Mattias Bogeblad
@@ -95,12 +114,11 @@ public class FileHelper
  
 	public synchronized static String readUTF8FromFile(File file) throws Exception
 	{
-		FileInputStream fis = new FileInputStream(file);
-		InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-
+	    BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
+	    String str = in.readLine();
+	    
 		StringBuffer sb = new StringBuffer();
 		
-		Reader in = new BufferedReader(isr);
 		int ch;
 		while ((ch = in.read()) > -1) {
 			sb.append((char)ch);

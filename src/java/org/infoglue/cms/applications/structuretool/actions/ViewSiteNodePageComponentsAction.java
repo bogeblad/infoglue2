@@ -52,6 +52,9 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 {
+	public static final String CATEGORY_TREE = "showCategoryTree";
+	public static final String CATEGORY_TREE_MULTIPLE = "showCategoryTreeForMultipleBinding";
+
 	private Integer repositoryId = null;
 	private Integer siteNodeId = null;
 	private Integer languageId = null;

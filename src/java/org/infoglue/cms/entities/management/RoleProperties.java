@@ -53,4 +53,8 @@ public interface RoleProperties extends IBaseEntity
     
     public void setValue(String value);
             
+    public java.util.Collection getDigitalAssets();
+    
+    public void setDigitalAssets(java.util.Collection digitalAssets);    
+
 }

@@ -39,6 +39,8 @@ public class DigitalAssetImpl implements DigitalAsset
     private DigitalAssetVO valueObject = new DigitalAssetVO();
 	private byte[] assetBytes = null;
 	private java.util.Collection contentVersions;
+	private java.util.Collection userProperties;
+	private java.util.Collection roleProperties;
 	private java.io.InputStream assetBlob;
 	    
     /**
@@ -149,6 +151,27 @@ public class DigitalAssetImpl implements DigitalAsset
     {
         this.contentVersions = contentVersions;
     }
+    
+    public java.util.Collection getUserProperties()
+    {
+        return this.userProperties;
+    }
+    
+    public void setUserProperties(java.util.Collection userProperties)
+    {
+        this.userProperties = userProperties;
+    }
+
+    public java.util.Collection getRoleProperties()
+    {
+        return this.roleProperties;
+    }
+    
+    public void setRoleProperties(java.util.Collection roleProperties)
+    {
+        this.roleProperties = roleProperties;
+    }
+
     
     public void setAssetBlob(java.io.InputStream assetBlob)
     {

@@ -56,10 +56,18 @@ public interface DigitalAsset extends IBaseEntity
     public java.lang.Integer getAssetFileSize();
     
     public void setAssetFileSize(java.lang.Integer assetFileSize);
-        
+ 
     public java.util.Collection getContentVersions();
     
     public void setContentVersions(java.util.Collection contentVersions);
+
+    public java.util.Collection getUserProperties();
+    
+    public void setUserProperties(java.util.Collection userPropertiess);
+
+    public java.util.Collection getRoleProperties();
+    
+    public void setRoleProperties(java.util.Collection rolePropertiess);
 
     public void setAssetBlob(java.io.InputStream blob);
 

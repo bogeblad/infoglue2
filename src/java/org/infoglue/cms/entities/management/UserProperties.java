@@ -52,5 +52,10 @@ public interface UserProperties extends IBaseEntity
     public java.lang.String getValue();
     
     public void setValue(java.lang.String value);
+    
+    public java.util.Collection getDigitalAssets();
+    
+    public void setDigitalAssets(java.util.Collection digitalAssets);    
+
             
 }

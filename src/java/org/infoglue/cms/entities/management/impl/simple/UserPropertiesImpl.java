@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.entities.management.impl.simple;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.UserProperties;
@@ -34,6 +37,7 @@ public class UserPropertiesImpl implements UserProperties
 	private UserPropertiesVO valueObject = new UserPropertiesVO();
 	private ContentTypeDefinition contentTypeDefinition;
 	private Language language;
+	private Collection digitalAssets;
 	 
 	public Integer getId()
 	{
@@ -125,4 +129,14 @@ public class UserPropertiesImpl implements UserProperties
 
 		this.language = language;
 	}
+	
+    public Collection getDigitalAssets()
+    {
+        return digitalAssets;
+    }
+    
+    public void setDigitalAssets(Collection digitalAssets)
+    {
+        this.digitalAssets = digitalAssets;
+    }
 }        

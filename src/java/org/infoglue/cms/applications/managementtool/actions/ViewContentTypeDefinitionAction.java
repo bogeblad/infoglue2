@@ -33,6 +33,7 @@ import org.infoglue.cms.exception.*;
 
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.CategoryAttribute;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 
 import java.util.List;
@@ -56,7 +57,7 @@ import org.xml.sax.SAXException;
  * @author Mattias Bogeblad
  */
 
-public class ViewContentTypeDefinitionAction extends WebworkAbstractAction
+public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 {
 	public static final String USE_EDITOR = "useEditor";
 

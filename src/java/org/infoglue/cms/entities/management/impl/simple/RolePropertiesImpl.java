@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.entities.management.impl.simple;
 
+import java.util.Collection;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.RoleProperties;
@@ -34,7 +36,8 @@ public class RolePropertiesImpl implements RoleProperties
 	private RolePropertiesVO valueObject = new RolePropertiesVO();
 	private ContentTypeDefinition contentTypeDefinition;
 	private Language language;
-	 
+	private Collection digitalAssets;
+	
 	public Integer getId()
 	{
 		return this.getRolePropertiesId();
@@ -125,4 +128,14 @@ public class RolePropertiesImpl implements RoleProperties
 
 		this.language = language;
 	}
+	
+    public Collection getDigitalAssets()
+    {
+        return digitalAssets;
+    }
+    
+    public void setDigitalAssets(Collection digitalAssets)
+    {
+        this.digitalAssets = digitalAssets;
+    }
 }        

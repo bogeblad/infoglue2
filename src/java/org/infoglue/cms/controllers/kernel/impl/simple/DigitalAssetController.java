@@ -118,6 +118,82 @@ public class DigitalAssetController extends BaseController
         return digitalAsset.getValueObject();
    	}
 
+   	/**
+   	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
+   	 * The asset is send in as an InputStream which castor inserts automatically.
+   	 */
+
+   	public static DigitalAssetVO create(DigitalAssetVO digitalAssetVO, InputStream is, String entity, Integer entityId) throws ConstraintException, SystemException
+   	{
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		DigitalAsset digitalAsset = null;
+		
+		beginTransaction(db);
+		
+		try
+		{
+		    if(entity.equalsIgnoreCase("ContentVersion"))
+		    {
+				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(entityId, db);
+				Collection contentVersions = new ArrayList();
+				contentVersions.add(contentVersion);
+				CmsLogger.logInfo("Added contentVersion:" + contentVersion.getId());
+	   		
+				digitalAsset = new DigitalAssetImpl();
+				digitalAsset.setValueObject(digitalAssetVO);
+				digitalAsset.setAssetBlob(is);
+				digitalAsset.setContentVersions(contentVersions);
+
+				db.create(digitalAsset);
+	        
+				contentVersion.getDigitalAssets().add(digitalAsset);		        
+		    }
+		    else if(entity.equalsIgnoreCase("UserProperties"))
+		    {
+				UserProperties userProperties = UserPropertiesController.getController().getUserPropertiesWithId(entityId, db);
+				Collection userPropertiesList = new ArrayList();
+				userPropertiesList.add(userProperties);
+				CmsLogger.logInfo("Added userProperties:" + userProperties.getId());
+	   		
+				digitalAsset = new DigitalAssetImpl();
+				digitalAsset.setValueObject(digitalAssetVO);
+				digitalAsset.setAssetBlob(is);
+				digitalAsset.setUserProperties(userPropertiesList);
+				
+				db.create(digitalAsset);
+	        
+				userProperties.getDigitalAssets().add(digitalAsset);		        
+		    }
+		    else if(entity.equalsIgnoreCase("RoleProperties"))
+		    {
+		        RoleProperties roleProperties = RolePropertiesController.getController().getRolePropertiesWithId(entityId, db);
+				Collection rolePropertiesList = new ArrayList();
+				rolePropertiesList.add(roleProperties);
+				CmsLogger.logInfo("Added roleProperties:" + roleProperties.getId());
+	   		
+				digitalAsset = new DigitalAssetImpl();
+				digitalAsset.setValueObject(digitalAssetVO);
+				digitalAsset.setAssetBlob(is);
+				digitalAsset.setRoleProperties(rolePropertiesList);
+				
+				db.create(digitalAsset);
+	        
+				roleProperties.getDigitalAssets().add(digitalAsset);		        		        
+		    }
+		
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}		
+				
+        return digitalAsset.getValueObject();
+   	}
    	
    	/**
    	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.

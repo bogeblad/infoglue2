@@ -95,6 +95,16 @@ public class RepositoryLanguageImpl implements RepositoryLanguage
         this.valueObject.setIsPublished(isPublished);
     }
           
+    public java.lang.Integer getSortOrder()
+    {
+        return this.valueObject.getSortOrder();
+    }
+    
+    public void setSortOrder(java.lang.Integer sortOrder) throws ConstraintException
+    {
+        this.valueObject.setSortOrder(sortOrder);
+    }
+
     public org.infoglue.cms.entities.management.Repository getRepository()
     {
         return this.repository;

@@ -40,7 +40,11 @@ public interface RepositoryLanguage extends IBaseEntity
     public java.lang.Boolean getIsPublished();
     
     public void setIsPublished(java.lang.Boolean isPublished) throws ConstraintException;
-        
+
+    public java.lang.Integer getSortOrder();
+    
+    public void setSortOrder(java.lang.Integer sortOrder) throws ConstraintException;
+
     public org.infoglue.cms.entities.management.Language getLanguage();
     
     public void setLanguage(org.infoglue.cms.entities.management.Language language);

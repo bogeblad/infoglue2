@@ -5,15 +5,15 @@
  * ===============================================================================
  *
  *  Copyright (C)
- *
+ * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
  * Free Software Foundation. See the file LICENSE.html for more information.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
@@ -37,43 +37,43 @@ public class ContentVersionVO implements BaseEntityVO
 	public static final Integer PUBLISHED_STATE = new Integer(3);
 	public static final Integer UNPUBLISH_STATE = new Integer(4);
 	public static final Integer UNPUBLISHED_STATE = new Integer(5);
-
+	
 	private Integer contentVersionId;
     private Integer stateId				= new Integer(0);
     private Date modifiedDateTime		= new Date();
     private String versionComment		= "Saved";
     private Boolean isCheckedOut		= new Boolean(false);
    	private Boolean isActive			= new Boolean(true);
-
+	
 	private Integer languageId					 = null;
 	private String languageName 				 = "";
    	private Integer contentId					 = null;
     private String contentName 					 = "";
     private Integer contentTypeDefinitionId		 = null;
     private String versionModifier				 = null;
-	private String versionValue   	 = "";
-
+	private String versionValue   	 			 = "";
+	    
     public java.lang.Integer getContentVersionId()
     {
         return this.contentVersionId;
     }
-
+                
     public void setContentVersionId(java.lang.Integer contentVersionId)
     {
         this.contentVersionId = contentVersionId;
     }
-
+  
     public Integer getContentId()
     {
         return this.contentId;
     }
-
+                
     public void setContentId(Integer contentId)
     {
         this.contentId = contentId;
     }
-
-	public Integer getContentTypeDefinitionId()
+    
+    public Integer getContentTypeDefinitionId()
 	{
 		return contentTypeDefinitionId;
 	}
@@ -82,62 +82,62 @@ public class ContentVersionVO implements BaseEntityVO
 	{
 		contentTypeDefinitionId = id;
 	}
-
+	
     public Integer getStateId()
     {
         return this.stateId;
     }
-
+                
     public void setStateId(Integer stateId)
     {
         this.stateId = stateId;
     }
-
+    
     public String getVersionValue()
     {
         return this.versionValue;
     }
-
+                
     public void setVersionValue(String versionValue)
     {
     	this.versionValue = versionValue;
     }
-
+    
     public Date getModifiedDateTime()
     {
         return this.modifiedDateTime;
     }
-
+                
     public void setModifiedDateTime(Date modifiedDateTime)
     {
         this.modifiedDateTime = modifiedDateTime;
     }
-
+    
     public String getVersionComment()
     {
         return this.versionComment;
     }
-
+                
     public void setVersionComment(String versionComment)
     {
         this.versionComment = versionComment;
     }
-
+    
     public Boolean getIsCheckedOut()
     {
         return this.isCheckedOut;
     }
-
+                
     public void setIsCheckedOut(Boolean isCheckedOut)
     {
         this.isCheckedOut = isCheckedOut;
     }
-
+    
    	public Boolean getIsActive()
     {
     	return this.isActive;
 	}
-
+    
     public void setIsActive(Boolean isActive)
 	{
 		this.isActive = isActive;
@@ -146,20 +146,20 @@ public class ContentVersionVO implements BaseEntityVO
     /**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#getId()
 	 */
-	public Integer getId()
+	public Integer getId() 
 	{
 		return getContentVersionId();
 	}
-
+	
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#validate()
 	 */
-	public ConstraintExceptionBuffer validate()
-	{
+	public ConstraintExceptionBuffer validate() 
+	{ 
 		return null;
 	}
 
-
+        
 	public Integer getLanguageId()
 	{
 		return languageId;
@@ -169,6 +169,7 @@ public class ContentVersionVO implements BaseEntityVO
 	{
 		this.languageId = languageId;
 	}
+
 
 	public String getVersionModifier()
 	{
@@ -184,7 +185,7 @@ public class ContentVersionVO implements BaseEntityVO
 	public ContentVersionVO getCopy()
 	{
 		ContentVersionVO copy = new ContentVersionVO();
-
+		
 		copy.setContentId(new Integer(this.contentId.intValue()));
 		copy.setContentTypeDefinitionId(new Integer(this.contentTypeDefinitionId.intValue()));
 		copy.setIsActive(new Boolean(this.isActive.booleanValue()));
@@ -195,23 +196,27 @@ public class ContentVersionVO implements BaseEntityVO
 		copy.setStateId(new Integer(this.stateId.intValue()));
 		copy.setVersionComment(new String(this.versionComment));
 		copy.setVersionValue(new String(this.versionValue));
-
-		return copy;
+		
+		return copy;		
 	}
 
-	public String getContentName() {
+	public String getContentName() 
+	{
 		return contentName;
 	}
 
-	public void setContentName(String string) {
+	public void setContentName(String string) 
+	{
 		contentName = string;
 	}
 
-	public String getLanguageName() {
+	public String getLanguageName() 
+	{
 		return languageName;
 	}
 
-	public void setLanguageName(String string) {
+	public void setLanguageName(String string) 
+	{
 		languageName = string;
 	}
 
@@ -232,4 +237,4 @@ public class ContentVersionVO implements BaseEntityVO
 		return sb.toString();
 	}
 }
-
+        
