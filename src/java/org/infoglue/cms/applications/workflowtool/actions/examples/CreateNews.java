@@ -102,6 +102,10 @@ public class CreateNews implements CustomWorkflowAction
 	    Integer contentTypeDefinitionId = new Integer(ps.getString("contentTypeDefinitionId"));
 	    Integer repositoryId 			= new Integer(ps.getString("repositoryId"));
 	    
+	    Integer languageId = new Integer(1);
+	    if(ps.getString("languageId") != null && !ps.getString("languageId").equalsIgnoreCase(""))
+	        languageId = new Integer(ps.getString("languageId"));
+	    
 	    String name 			= ps.getString("name");
 	    String title 			= ps.getString("title");
 	    String navigationTitle 	= ps.getString("navigationTitle");
@@ -157,7 +161,7 @@ public class CreateNews implements CustomWorkflowAction
             newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
             newContentVersionVO.setVersionValue(versionValue);
 
-            Language language = LanguageController.getController().getLanguageWithId(new Integer(1), db);
+            Language language = LanguageController.getController().getLanguageWithId(languageId, db);
             ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(newContent, language, newContentVersionVO, null, db);
             
             db.commit();
