@@ -42,7 +42,7 @@ public class CastorDatabaseService //extends DatabaseService
             //jdo.setLogWriter(new Logger( System.out ).setPrefix( "INFOGLUE_CMS" ));
             jdo.setDatabaseName("INFOGLUE_CMS");
             jdo.setConfiguration(CastorDatabaseService.class.getResource("/database.xml").toString());
-            //jdo.setClassLoader(CastorDatabaseService.class.getClassLoader());
+            jdo.setClassLoader(CastorDatabaseService.class.getClassLoader());
             jdo.setCallbackInterceptor(new CmsJDOCallback());
         }
         catch(Exception e)
