@@ -123,6 +123,15 @@ public class Session
 		return (InfoGluePrincipal)sessionDelegate.get(IG_PRINCIPAL);
 	}
 
+	/**
+	 * Sets the InfoGlue principal associated with the current user and session.
+	 * TODO: Update InfoGlueAuthenticationFilter to use this Session Object
+	 */
+	public void setInfoGluePrincipal(InfoGluePrincipal p)
+	{
+		sessionDelegate.put(IG_PRINCIPAL, p);
+	}
+
 
 	public String toString()
 	{
