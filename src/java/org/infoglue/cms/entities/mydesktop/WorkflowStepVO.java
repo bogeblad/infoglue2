@@ -147,11 +147,27 @@ public class WorkflowStepVO implements BaseEntityVO
 		this.actions = (actions == null) ? new ArrayList() : actions;
 	}
 
-	public ConstraintExceptionBuffer validate()
+	/**
+	 * Indicates whether this step has an owner
+	 * @return true if owner is not null and owner.length() > 0, otherwise returns false
+	 */
+	public boolean hasOwner()
 	{
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		return ceb;
+		return owner != null && owner.length() > 0;
 	}
 
+	/**
+	 * Indicates whether this step is owned by the given user.
+	 * @param user a user
+	 * @return true if user matches owner, otherwise returns false.
+	 */
+	public boolean isOwner(String user)
+	{
+		return (owner == null) ? owner == user : owner.equalsIgnoreCase(user);
+	}
+
+	public ConstraintExceptionBuffer validate()
+	{
+		return new ConstraintExceptionBuffer();
+	}
 }
