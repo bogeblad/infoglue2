@@ -83,11 +83,16 @@
 			}
 		   	qualifyerXML += "</qualifyer>";
 			
-			var url = "ViewSiteNodePageComponents!addComponentPropertyBindingWithQualifyer.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&qualifyerXML=" + escape(qualifyerXML) + "&path=" + escape(path) + "&componentId=$componentId&propertyName=$propertyName";
+			//var url = "ViewSiteNodePageComponents!addComponentPropertyBindingWithQualifyer.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&qualifyerXML=" + escape(qualifyerXML) + "&path=" + escape(path) + "&componentId=$componentId&propertyName=$propertyName";
 		    //alert('Calling:' + url);
-			self.opener.location.href = url;
-		    window.close();
+			//self.opener.location.href = url;
+		    //window.close();
 		    //document.inputForm.submit();
+		    document.submitForm.target = self.opener.name;
+		    document.submitForm.path.value = path;
+		    document.submitForm.qualifyerXML.value = qualifyerXML;
+		    document.submitForm.submit();
+		    window.close();
 		}
 
 		function qdrop(obj)
@@ -529,6 +534,16 @@
 	</td>
 </tr>
 </table>
+
+<form name="submitForm" method="POST" action="ViewSiteNodePageComponents!addComponentPropertyBindingWithQualifyer.action" TARGET="">
+	<input type="hidden" name="siteNodeId" value="$siteNodeId">
+	<input type="hidden" name="languageId" value="$languageId">
+	<input type="hidden" name="contentId" value="$contentId">
+	<input type="hidden" name="componentId" value="$componentId">
+	<input type="hidden" name="propertyName" value="$propertyName">
+	<input type="hidden" name="path" value="">
+	<input type="hidden" name="qualifyerXML" value="">
+</form>
 
 <div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:5px; visibility:visble; z-index:0">
 <hr size=1 noshade>
