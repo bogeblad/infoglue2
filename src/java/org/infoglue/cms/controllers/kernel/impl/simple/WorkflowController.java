@@ -543,7 +543,8 @@ public class WorkflowController extends BaseController
 			CmsLogger.logInfo("Owner:" + step.getOwner());
 
 			WorkflowStepVO stepVO = new WorkflowStepVO();
-			stepVO.setStepId(new Long(step.getId()));
+			stepVO.setId(new Integer((int)step.getId()));// Hope it doesn't get too big; we are stuck with an int thanks to BaseEntityVO
+			stepVO.setStepId(new Integer(step.getStepId()));
 			stepVO.setWorkflowId(new Long(workflowId));
 			stepVO.setStatus(step.getStatus());
 			stepVO.setStartDate(step.getStartDate());
@@ -568,7 +569,7 @@ public class WorkflowController extends BaseController
 		private WorkflowStepVO createStepVO(StepDescriptor stepDescriptor)
 		{
 			WorkflowStepVO step = new WorkflowStepVO();
-			step.setStepId(new Long(stepDescriptor.getId()));
+			step.setStepId(new Integer(stepDescriptor.getId()));
 			step.setName(stepDescriptor.getName());
 			step.setStatus("Not started");
 			step.setActions(getAllActions(stepDescriptor));
