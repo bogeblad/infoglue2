@@ -340,27 +340,41 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
 		String componentXML   = getPageComponentsString(siteNodeId, languageId, contentId);			
 		//CmsLogger.logInfo("componentXML:" + componentXML);
+		//System.out.println("componentXML:" + componentXML);
 		
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentXPath = "//component[@id=" + this.componentId + "]";
-		System.out.println("componentXPath:" + componentXPath);
+		//System.out.println("componentXPath:" + componentXPath);
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-		System.out.println("nodeList:" + anl.getLength());
+		//System.out.println("nodeList:" + anl.getLength());
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
+			String name = component.getAttribute("name");
+			//System.out.println("Name1:" + name);
 			//CmsLogger.logInfo(XMLHelper.serializeDom(component, new StringBuffer()));
-			System.out.println("YES - now only add the new component...");		
+			//System.out.println("YES - now only add the new component...");		
 			Node parentNode = component.getParentNode();
 			//System.out.println("Before: " + XMLHelper.serializeDom(parentNode, new StringBuffer()));
-			System.out.println("parentNode:" + parentNode);
+			//System.out.println("parentNode:" + parentNode + ":" + ((Element)parentNode).getAttribute("id"));
 			
 			boolean hasChanged = false;
 			
 			if(this.direction.intValue() == 0) //Up
 			{
-				Node previousNode = component.getPreviousSibling();
-				System.out.println("previousNode:" + previousNode);
+			    Node previousNode = component.getPreviousSibling();
+				Element element = ((Element)previousNode);
+				//System.out.println("Name:" + element.getAttribute("name"));
+				while(element != null && !element.getAttribute("name").equalsIgnoreCase(name))
+			    {
+			        previousNode = previousNode.getPreviousSibling();
+					element = ((Element)previousNode);
+					//System.out.println("Name:" + element.getAttribute("name"));
+			    }
+				
+				//System.out.println("Name finally:" + element.getAttribute("name"));
+				//System.out.println("previousNode:" + previousNode + ":" + element.getAttribute("name"));
+				//System.out.println("previousNode: " + XMLHelper.serializeDom(previousNode, new StringBuffer()));
 				if(previousNode != null)
 				{
 					parentNode.removeChild(component);
@@ -370,15 +384,30 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			}
 			else if(this.direction.intValue() == 1) //Down
 			{
-				Node nextNode = component.getNextSibling();
+			    Node nextNode = component.getNextSibling();
+			    Element element = ((Element)nextNode);
+				//System.out.println("Name:" + element.getAttribute("name"));
+				while(element != null && !element.getAttribute("name").equalsIgnoreCase(name))
+			    {
+				    nextNode = nextNode.getNextSibling();
+					element = ((Element)nextNode);
+					//System.out.println("Name:" + element.getAttribute("name"));
+			    }
+				
 				if(nextNode != null)
 				    nextNode = nextNode.getNextSibling();
 				
-				System.out.println("nextNode:" + nextNode);
+				//System.out.println("nextNode:" + nextNode);
 				if(nextNode != null)
 				{
 					parentNode.removeChild(component);
 				    parentNode.insertBefore(component, nextNode);
+				    hasChanged = true;
+				}
+				else
+				{
+				    parentNode.removeChild(component);
+				    parentNode.appendChild(component);
 				    hasChanged = true;
 				}
 			}		
