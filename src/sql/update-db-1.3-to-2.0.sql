@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.7 2005/03/14 09:23:41 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.8 2005/03/16 16:29:16 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -132,3 +132,23 @@ CREATE INDEX parentContentId ON cmContent (parentContentId);
 -- Add indexes to cmPublicationDetail on publicationId (parent)
 ----------------------------------------------------------------------------------
 CREATE INDEX publicationId ON cmPublicationDetail (publicationId);
+
+----------------------------------------------------------------------------------
+-- Add new interception point for content type definitions                      --
+----------------------------------------------------------------------------------
+INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, description, usesExtraDataForAccessControl) VALUES 
+  (27,'ContentTypeDefinition','ContentTypeDefinition.Read','This point checks access to read/use a content type definition',1);
+INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
+  (27, 1);
+  
+CREATE TABLE cmGroup (
+  groupName varchar(255) NOT NULL default '',
+  description text NOT NULL,
+  PRIMARY KEY  (groupName)
+) TYPE=MyISAM;
+
+CREATE TABLE cmSystemUserGroup (
+  userName varchar(200) NOT NULL default '',
+  groupName varchar(200) NOT NULL default '',
+  PRIMARY KEY  (userName,groupName)
+) TYPE=MyISAM;

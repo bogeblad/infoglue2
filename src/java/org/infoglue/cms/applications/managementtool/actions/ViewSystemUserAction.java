@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
@@ -41,6 +42,8 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
 	private InfoGluePrincipal infoGluePrincipal;
 	private List roles;
 	private List assignedRoleVOList;
+	private List groups;
+	private List assignedGroupVOList;
 	private List contentTypeDefinitionVOList;   
 	private List assignedContentTypeDefinitionVOList; 	
 	
@@ -50,6 +53,8 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
 		this.infoGluePrincipal				= UserControllerProxy.getController().getUser(userName);
 		this.assignedRoleVOList 			= infoGluePrincipal.getRoles();
 		this.roles 							= RoleControllerProxy.getController().getAllRoles();
+		this.assignedGroupVOList 			= infoGluePrincipal.getGroups();
+		this.groups 						= GroupControllerProxy.getController().getAllGroups();
 		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_USER_PROPERTIES);
 		this.assignedContentTypeDefinitionVOList 	= UserPropertiesController.getController().getContentTypeDefinitionVOList(userName);  
@@ -72,6 +77,15 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
 		return this.roles;
 	}        
 
+	public List getAssignedGroups() throws Exception
+	{
+		return this.assignedGroupVOList;
+	}        
+
+	public List getAllGroups() throws Exception
+	{
+		return this.groups;
+	}        
     
 	public List getContentTypeDefinitionVOList()
 	{

@@ -1,0 +1,179 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
+
+
+package org.infoglue.cms.controllers.kernel.impl.simple;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.GroupVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.AuthorizationModule;
+import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
+import org.infoglue.cms.security.InfoGlueGroup;
+
+/**
+ * @author Mattias Bogeblad
+ * 
+ * This class acts as the proxy for getting the right groups.
+ */
+
+public class GroupControllerProxy extends BaseController 
+{
+	private static AuthorizationModule authorizationModule = null;
+
+	public static GroupControllerProxy getController()
+	{
+		return new GroupControllerProxy();
+	}
+	
+	/**
+	 * This method instantiates the AuthorizationModule.
+	 */
+	
+	public AuthorizationModule getAuthorizationModule()
+	{
+		if(authorizationModule == null)
+		{
+			try
+			{
+				authorizationModule = (AuthorizationModule)Class.forName(InfoGlueAuthenticationFilter.authorizerClass).newInstance();
+				authorizationModule.setExtraProperties(InfoGlueAuthenticationFilter.extraProperties);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	   
+		return authorizationModule;
+	}
+
+	/**
+	 * This method return whether the module in question supports updates to the values.
+	 */
+	
+	public boolean getSupportUpdate() throws ConstraintException, SystemException, Exception
+	{
+		return getAuthorizationModule().getSupportUpdate();
+	}
+
+	/**
+	 * This method return whether the module in question supports deletes of users.
+	 */
+	
+	public boolean getSupportDelete() throws ConstraintException, SystemException, Exception
+	{
+		return getAuthorizationModule().getSupportDelete();
+	}
+
+	/**
+	 * This method return whether the module in question supports creation of new users.
+	 */
+	
+	public boolean getSupportCreate() throws ConstraintException, SystemException, Exception
+	{
+		return getAuthorizationModule().getSupportCreate();
+	}
+
+	/**
+	 * This method returns a specific content-object
+	 */
+	
+    public List getAllGroups() throws ConstraintException, SystemException, Exception
+    {
+    	List groups = new ArrayList();
+    	
+		groups = getAuthorizationModule().getGroups();
+    	
+    	return groups;
+    }
+
+	/**
+	 * This method returns a certain group
+	 */
+	
+	public InfoGlueGroup getGroup(String groupName) throws ConstraintException, SystemException, Exception
+	{
+		InfoGlueGroup infoGlueGroup = null;
+    	
+		infoGlueGroup = getAuthorizationModule().getAuthorizedInfoGlueGroup(groupName);
+    	
+		return infoGlueGroup;
+	}
+
+	/**
+	 * This method returns a list of InfoGlue Principals which are part of this group
+	 */
+	
+	public List getInfoGluePrincipals(String groupName) throws ConstraintException, SystemException, Exception
+	{
+		List infoGluePrincipals = new ArrayList();
+    	
+		infoGluePrincipals = getAuthorizationModule().getGroupUsers(groupName);
+    	
+		return infoGluePrincipals;
+	}
+    
+    
+	/**
+	 * This method creates a new group
+	 */
+	
+	public InfoGlueGroup createGroup(GroupVO groupVO) throws ConstraintException, SystemException, Exception
+	{
+		InfoGlueGroup infoGlueGroup = null;
+    	
+		getAuthorizationModule().createInfoGlueGroup(groupVO);
+    	
+		return getGroup(groupVO.getGroupName());
+	}
+
+	/**
+	 * This method updates an existing group
+	 */
+	
+	public void updateGroup(GroupVO groupVO, String[] userNames) throws ConstraintException, SystemException, Exception
+	{
+		getAuthorizationModule().updateInfoGlueGroup(groupVO, userNames);
+	}
+
+	/**
+	 * This method deletes an existing user
+	 */
+	
+	public void deleteGroup(String groupName) throws ConstraintException, SystemException, Exception
+	{
+		getAuthorizationModule().deleteInfoGlueGroup(groupName);
+		AccessRightController.getController().delete(groupName);
+	}
+	
+	public BaseEntityVO getNewVO()
+	{
+		return null;
+	}
+ 
+}

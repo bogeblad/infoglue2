@@ -34,6 +34,7 @@ import org.infoglue.cms.exception.*;
 public class SystemUserImpl implements SystemUser
 {
 	private java.util.Collection roles = new ArrayList();
+	private java.util.Collection groups = new ArrayList();
     private SystemUserVO valueObject = new SystemUserVO();
      
     public SystemUserVO getValueObject()
@@ -134,4 +135,14 @@ public class SystemUserImpl implements SystemUser
     {
         this.roles = roles;
     }
-  }        
+    
+    public java.util.Collection getGroups()
+    {
+        return groups;
+    }
+    
+    public void setGroups(java.util.Collection groups)
+    {
+        this.groups = groups;
+    }
+}        

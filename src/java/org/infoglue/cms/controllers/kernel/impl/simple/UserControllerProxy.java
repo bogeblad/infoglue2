@@ -175,9 +175,9 @@ public class UserControllerProxy extends BaseController
 	 * This method updates an existing user
 	 */
 	
-	public void updateUser(SystemUserVO systemUserVO, String[] roleNames) throws ConstraintException, SystemException, Exception
+	public void updateUser(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException, Exception
 	{
-		getAuthorizationModule().updateInfoGluePrincipal(systemUserVO, roleNames);
+		getAuthorizationModule().updateInfoGluePrincipal(systemUserVO, roleNames, groupNames);
 	}
 
 	/**

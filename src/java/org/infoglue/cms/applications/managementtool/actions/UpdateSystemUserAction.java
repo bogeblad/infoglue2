@@ -66,10 +66,11 @@ public class UpdateSystemUserAction extends ViewSystemUserAction //WebworkAbstra
     	ceb = this.systemUserVO.validate();
     	ceb.throwIfNotEmpty();		
 	
-		String[] values = getRequest().getParameterValues("roleName");
+		String[] roles = getRequest().getParameterValues("roleName");
+		String[] groups = getRequest().getParameterValues("groupName");
 		String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
 		
-		UserControllerProxy.getController().updateUser(this.systemUserVO, values);
+		UserControllerProxy.getController().updateUser(this.systemUserVO, roles, groups);
 		if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
 			UserPropertiesController.getController().updateContentTypeDefinitions(this.getUserName(), contentTypeDefinitionIds);
 		

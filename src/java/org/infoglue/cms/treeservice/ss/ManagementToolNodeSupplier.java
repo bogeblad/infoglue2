@@ -76,6 +76,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			r.add(new ManagementNodeImpl(cnt++, "Repositories", "ViewListRepository.action?title=Repositories"));
 			r.add(new ManagementNodeImpl(cnt++, "SystemUsers", "ViewListSystemUser.action?title=SystemUsers"));
 			r.add(new ManagementNodeImpl(cnt++, "Roles", "ViewListRole.action?title=Roles"));
+			r.add(new ManagementNodeImpl(cnt++, "Groups", "ViewListGroup.action?title=Groups"));
 			//r.add(new ManagementNodeImpl(cnt++, "ExtranetUsers", "ViewListExtranetUser.action?title=ExtranetUsers"));
 			//ManagementNodeImpl extranetRolesNode = new ManagementNodeImpl(cnt++, "ExtranetRoles", "ViewListExtranetRole.action?title=ExtranetRoles");
 			//extranetRolesNode.setChildren(true);

@@ -18,7 +18,7 @@
 	opt.saveNewLeftOptions("newLeft");
 	opt.saveNewRightOptions("newRight");
 	
-	function markNearestOption()
+	function markRoleNearestOption()
 	{
 		var searchField = document.getElementById("searchField");
 		var list        = document.getElementById("unassignedRoleNameList");
@@ -39,19 +39,54 @@
 	  	}
 	}
 	
-	function save(form)
+	var opt = new OptionTransfer("unassignedGroupNameList","groupName");
+	opt.setAutoSort(true);
+	opt.setDelimiter(",");
+	opt.saveRemovedLeftOptions("removedLeft");
+	opt.saveRemovedRightOptions("removedRight");
+	opt.saveAddedLeftOptions("addedLeft");
+	opt.saveAddedRightOptions("addedRight");
+	opt.saveNewLeftOptions("newLeft");
+	opt.saveNewRightOptions("newRight");
+	
+	function markGroupNearestOption()
 	{
-		var list = document.getElementById("roleName");
+		var searchField = document.getElementById("groupSearchField");
+		var list        = document.getElementById("unassignedGroupNameList");
+		//alert("list:" + list);
 		
 	  	sNode = list.options;
 	  	for(i=0;i<sNode.length;i++)
 		{
 			currentNode = sNode[i];
-			//alert("CurrentNode:" + currentNode);
-			//alert("currentNode:" + currentNode.name);
-			//alert("CurrentNode:" + currentNode.selected);
+			if(currentNode.text.toLowerCase().indexOf(searchField.value.toLowerCase()) > -1)
+			{
+				list.selectedIndex = i;
+			  	break;		
+			}
+	  	}
+	}
+	
+	function save(form)
+	{
+		var roleList = document.getElementById("roleName");
+		
+	  	rolesNode = roleList.options;
+	  	for(i=0;i<rolesNode.length;i++)
+		{
+			currentNode = rolesNode[i];
 			currentNode.selected = true;
 		}
+		
+		var groupList = document.getElementById("groupName");
+		
+	  	groupsNode = groupList.options;
+	  	for(i=0;i<groupsNode.length;i++)
+		{
+			currentNode = groupsNode[i];
+			currentNode.selected = true;
+		}
+
 		form.submit();
 	}
 
@@ -96,7 +131,7 @@
 		<table width="50%" border="0">
 		  <tr>
 		    <td>State a name or choose from list:<br>
-		        <input type="text" id="searchField" name="searchField" style="width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();">
+		        <input type="text" id="searchField" name="searchField" style="width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markRolesNearestOption();" onchange="javascript:markRolesNearestOption();">
 		      </td>
 		    <td>&nbsp;</td>
 		    <td valign="bottom">Current Roles</td>
@@ -119,10 +154,10 @@
 		        </select>
 		    </td>
 		    <td align="center">
-		        <INPUT TYPE="button" NAME="right" VALUE="&gt;&gt;" ONCLICK="opt.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="right" VALUE="All &gt;&gt;" ONCLICK="opt.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="left" VALUE="&lt;&lt;" ONCLICK="opt.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="left" VALUE="All &lt;&lt;" ONCLICK="opt.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
+		        <INPUT TYPE="button" NAME="roleRight" VALUE="&gt;&gt;" ONCLICK="opt.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleRight" VALUE="All &gt;&gt;" ONCLICK="opt.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleLeft" VALUE="&lt;&lt;" ONCLICK="opt.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleLeft" VALUE="All &lt;&lt;" ONCLICK="opt.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
 		    </td>
 		    <td>
 		      	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt.transferLeft()" style="width:200px; border: solid 1px #C2D0E2;">
@@ -138,6 +173,58 @@
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
+	
+	<tr>
+		<td colspan="2" class="biglabel">Manage the groups this user should be part of below</td>
+	</tr>
+	<tr>
+	  <td colspan="2">
+		<table width="50%" border="0">
+		  <tr>
+		    <td>State a name or choose from list:<br>
+		        <input type="text" id="searchField" name="searchField" style="width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markGroupsNearestOption();" onchange="javascript:markGroupsNearestOption();">
+		      </td>
+		    <td>&nbsp;</td>
+		    <td valign="bottom">Current Groups</td>
+		  </tr>
+		  <tr>
+		    <td>
+		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="width:200px; border: solid 1px #C2D0E2;">
+		          	#foreach ($groupVO in $allGroups)
+						#set($checked = "")
+						#foreach ($assignedGroupVO in $assignedGroups)
+							#if($assignedGroupVO.name == $groupVO.name)
+								#set($checked = "checked")
+							#end 
+						#end
+						
+						#if($checked == "")
+							<option value="$groupVO.name">$groupVO.name</option>
+						#end
+					#end
+		        </select>
+		    </td>
+		    <td align="center">
+		        <INPUT TYPE="button" NAME="groupRight" VALUE="&gt;&gt;" ONCLICK="opt.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupRight" VALUE="All &gt;&gt;" ONCLICK="opt.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupLeft" VALUE="&lt;&lt;" ONCLICK="opt.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupLeft" VALUE="All &lt;&lt;" ONCLICK="opt.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
+		    </td>
+		    <td>
+		      	<SELECT $readonly id="groupName" name="groupName" multiple size="10" onDblClick="opt.transferLeft()" style="width:200px; border: solid 1px #C2D0E2;">
+		        	#foreach ($assignedGroupVO in $assignedGroups)
+						<option value="$assignedGroupVO.name">$assignedGroupVO.name</option>
+					#end
+			    </select>
+		    </td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+
 	<tr>
 		<td class="biglabel">Base role properties on content type definition</td>
 	</tr>

@@ -100,14 +100,15 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		final boolean isAdministrator = userName.equalsIgnoreCase(administratorUserName) ? true : false;
 		if(isAdministrator)
 		{
-			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), isAdministrator);
+			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator);
 		}
 		else
 		{	
 			Map userAttributes = getUserAttributes(userName);
 			List roles = getRoles(userName);
+			List groups = getGroups(userName);
 			
-			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, isAdministrator);
+			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator);
 		}
 		
 		return infogluePrincipal;
@@ -598,7 +599,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					}
 				}
 				
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, groups, false);
 				users.add(infoGluePrincipal);
 				
 			} 

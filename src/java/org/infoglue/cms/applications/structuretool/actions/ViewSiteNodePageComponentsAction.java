@@ -248,7 +248,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			
 			//CmsLogger.logInfo("templateContentVO:" + templateContentVO);
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(templateContentVO.getId(), languageId);
-			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", componentXML, new InfoGluePrincipal("ComponentEditor", "none", "none", "none", new ArrayList(), true));
+			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", componentXML, new InfoGluePrincipal("ComponentEditor", "none", "none", "none", new ArrayList(), new ArrayList(), true));
 		}
 		else
 		{

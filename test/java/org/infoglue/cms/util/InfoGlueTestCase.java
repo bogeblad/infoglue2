@@ -20,10 +20,11 @@
  *
  * ===============================================================================
  *
- * $Id: InfoGlueTestCase.java,v 1.4 2005/02/03 17:49:19 frank Exp $
+ * $Id: InfoGlueTestCase.java,v 1.5 2005/03/16 16:29:17 mattias Exp $
  */
 package org.infoglue.cms.util;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.Collections;
@@ -52,11 +53,11 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 public abstract class InfoGlueTestCase extends TestCase
 {
 	private static final InfoGluePrincipal adminPrincipal = new InfoGluePrincipal("test-admin", "first", "last",
-																				  "email", createRole("administrators"), true);
+																				  "email", createRole("administrators"), new ArrayList(), true);
 	private static final InfoGluePrincipal cmsUserPrincipal = new InfoGluePrincipal("test-user", "first", "last",
-																					"email", createRole("cmsUser"), false);
+																					"email", createRole("cmsUser"), new ArrayList(), false);
 	private static final InfoGluePrincipal anonPrincipal = new InfoGluePrincipal("anonymous", "first", "last",
-																				 "email", createRole("anonymous"), false);
+																				 "email", createRole("anonymous"), new ArrayList(), false);
 
 	private static boolean initialized = false;
 

@@ -26,6 +26,7 @@ package org.infoglue.cms.security;
 import java.util.List;
 import java.util.Properties;
 
+import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.Bug;
@@ -70,6 +71,12 @@ public interface AuthorizationModule
 	public InfoGlueRole getAuthorizedInfoGlueRole(String roleName) throws Exception;
 
 	/**
+	 * Gets an InfoGlueGroup 
+	 */
+	
+	public InfoGlueGroup getAuthorizedInfoGlueGroup(String groupName) throws Exception;
+
+	/**
 	 * This method is used to fetch a users roles.  
 	 */
 
@@ -82,17 +89,36 @@ public interface AuthorizationModule
 	public List getRoles() throws Exception;
 
 	/**
+	 * This method is used to fetch all available groups.  
+	 */
+
+	public List getGroups() throws Exception;
+
+	/**
 	 * This method is used to fetch all users.  
 	 */
 
 	public List getUsers() throws Exception;
 
 	/**
-	 * This method is used to fetch all users part of the named group.  
+	 * This method is used to fetch all users part of the named role.
+	 * @deprecated
 	 */
 
 	public List getUsers(String roleName) throws Exception;
 	
+	/**
+	 * This method is used to fetch all users part of the named role.  
+	 */
+
+	public List getRoleUsers(String roleName) throws Exception;
+
+	/**
+	 * This method is used to fetch all users part of the named group.  
+	 */
+
+	public List getGroupUsers(String groupName) throws Exception;
+
 	/**
 	 * This method is used to get a filtered list of all users.
 	 * @param firstName
@@ -117,7 +143,7 @@ public interface AuthorizationModule
 	 * This method is used to update an existing user.  
 	 */
 
-	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String[] roleNames) throws Exception;
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws Exception;
 
 	/**
 	 * This method is used to send out a newpassword to an existing users.  
@@ -156,6 +182,24 @@ public interface AuthorizationModule
 
 	public void deleteInfoGlueRole(String roleName) throws Exception;
 
+
+	/**
+	 * This method is used to create a new group.  
+	 */
+
+	public void createInfoGlueGroup(GroupVO groupVO) throws Exception;
+
+	/**
+	 * This method is used to update an existing group.  
+	 */
+
+	public void updateInfoGlueGroup(GroupVO roleVO, String[] userNames) throws Exception;
+
+	/**
+	 * This method is used to delete an existing group.  
+	 */
+
+	public void deleteInfoGlueGroup(String groupName) throws Exception;
 
 	public Properties getExtraProperties();
 

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.viewGroup.header" "tool.managementtool.viewGroup.header" "groupName=$formatter.encodeURI($groupName)")
+##beginManagementTool("Group details" "Group details" "groupName=$groupName")
+
+<SCRIPT type="text/javascript" SRC="script/OptionTransfer.js"></SCRIPT>
+
+<SCRIPT LANGUAGE="JavaScript">
+
+	var opt = new OptionTransfer("unassignedUserNameList","userName");
+	opt.setAutoSort(true);
+	opt.setDelimiter(",");
+	opt.saveRemovedLeftOptions("removedLeft");
+	opt.saveRemovedRightOptions("removedRight");
+	opt.saveAddedLeftOptions("addedLeft");
+	opt.saveAddedRightOptions("addedRight");
+	opt.saveNewLeftOptions("newLeft");
+	opt.saveNewRightOptions("newRight");
+	
+	function markNearestOption()
+	{
+		var searchField = document.getElementById("searchField");
+		var list        = document.getElementById("unassignedUserNameList");
+		//alert("list:" + list);
+		
+	  	sNode = list.options;
+	  	for(i=0;i<sNode.length;i++)
+		{
+			currentNode = sNode[i];
+			//alert("currentNode:" + currentNode.text);
+			//alert("searchField:" + searchField.value);
+			//alert("index:" + currentNode.text.indexOf(searchField.value));
+			if(currentNode.text.toLowerCase().indexOf(searchField.value.toLowerCase()) > -1)
+			{
+				list.selectedIndex = i;
+			  	break;		
+			}
+	  	}
+	}
+	
+	function save(form)
+	{
+		var list = document.getElementById("userName");
+		
+	  	sNode = list.options;
+	  	for(i=0;i<sNode.length;i++)
+		{
+			currentNode = sNode[i];
+			//alert("CurrentNode:" + currentNode);
+			//alert("currentNode:" + currentNode.name);
+			//alert("CurrentNode:" + currentNode.selected);
+			currentNode.selected = true;
+		}
+		form.submit();
+	}
+
+</SCRIPT>
+
+#if($supportsUpdate == false)
+	#set($readonly = "disabled")
+#else
+	#set($readonly = "")
+#end
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="UpdateGroup.action">
+<input type="hidden" name="groupName" value="$!groupName">
+<table>
+	<tr>
+		<td>#editReadOnlyField("Group.name" "newUserName" $!groupName "51" "disabled")</td>
+	</tr>	
+		
+	<tr>
+		<td width="400">#editTextArea("Group.description" "description" $!description "50" "5" "normaltextarea")</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	
+	<tr>
+		<td class="biglabel">Manage the members in this group below</td>
+	</tr>
+	<tr>
+	  <td>
+		<table width="100%" border="0">
+		  <tr>
+		    <td>State a name or choose from list:<br>
+		        <input type="text" id="searchField" name="searchField" style="width:200px;"/ onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();">
+		      </td>
+		    <td>&nbsp;</td>
+		    <td valign="bottom">Current Members</td>
+		  </tr>
+		  <tr>
+		    <td>
+		    	<SELECT $readonly id="unassignedUserNameList" NAME="unassignedUserNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="width:200px;">
+		          	#foreach ($infoGluePrincipal in $allInfoGluePrincipals)
+						#set($checked = "")
+						#foreach ($assignedInfoGluePrincipal in $assignedInfoGluePrincipals)
+							#if($assignedInfoGluePrincipal.getName() == $infoGluePrincipal.getName())
+								#set($checked = "checked")
+							#end 
+						#end
+						
+						#if($checked == "")
+							<option value="$infoGluePrincipal.name">$infoGluePrincipal.name</option>
+						#end
+					#end
+		        </select>
+		    </td>
+		    <td align="center">
+		        <INPUT TYPE="button" NAME="right" VALUE="&gt;&gt;" ONCLICK="opt.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="right" VALUE="All &gt;&gt;" ONCLICK="opt.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="left" VALUE="&lt;&lt;" ONCLICK="opt.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="left" VALUE="All &lt;&lt;" ONCLICK="opt.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
+		    </td>
+		    <td>
+		      	<SELECT $readonly id="userName" name="userName" multiple size="10" onDblClick="opt.transferLeft()" style="width:200px;">
+		        	#foreach ($assignedInfoGluePrincipal in $assignedInfoGluePrincipals)
+						<option value="$assignedInfoGluePrincipal.name">$assignedInfoGluePrincipal.name</option>
+					#end
+			    </select>
+		    </td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="biglabel">Base group properties on content type definition</td>
+	</tr>
+	<tr>
+		<td>	
+			<select name="contentTypeDefinitionId">
+				<option value="">Choose type</option>
+			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+				#set($selected = "")
+				#foreach ($assignedContentTypeDefinitionVO in $assignedContentTypeDefinitionVOList)
+					#if($assignedContentTypeDefinitionVO.id == $contentTypeDefinitionVO.id)
+						#set($selected = "selected")
+					#end 
+				#end
+				<option value="$contentTypeDefinitionVO.id" $selected>$contentTypeDefinitionVO.getName()</option>
+			#end
+			</select>
+		</td>
+	</tr>
+	#if($supportsUpdate)
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>
+			<a href="javascript:save(document.editForm);"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0" onClick='JavaScript:showWorking();'></a>
+			<a href="javascript:saveAndExit(document.editForm, 'UpdateGroup!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="ViewListGroup.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+		</td>
+	</tr>
+	#end
+</table>
+
+</form>
+</div>
+
+<script type="text/javascript">
+	//alert("Initializing form..");
+	opt.init(document.editForm);
+</script>
+
+</body>
+</html>

@@ -23,36 +23,22 @@
 
 package org.infoglue.cms.security;
 
-import java.security.Principal;
-import java.util.Iterator;
-import java.util.List;
-
 
 /**
- * This class represents an generic InfoGluePrincipal in InfoGlue. It is used to identify a user no matter what source it was defined in.
+ * This class represents an generic Group in InfoGlue. It is used to identify a group no matter what source it was defined in.
  * 
  * @author Mattias Bogeblad
  */
 
-public class InfoGluePrincipal implements Principal 
+public class InfoGlueGroup 
 {
 	private final String name;
-	private final String firstName;
-	private final String lastName;
-	private final String email;
-	private final List roles;
-	private final List groups;
-	private final boolean isAdministrator;
+	private final String description;
 	
-	public InfoGluePrincipal(String name, String firstName, String lastName, String email, List roles, List groups, boolean isAdministrator)
+	public InfoGlueGroup(String name, String description)
 	{
 		this.name = name;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.roles = roles;
-		this.groups = groups;
-		this.isAdministrator = isAdministrator;
+		this.description = description;
 	}
 
 	public String getName()
@@ -60,47 +46,14 @@ public class InfoGluePrincipal implements Principal
 		return name;
 	}
 
-	public String getFirstName() 
+	public String getDescription()
 	{
-		return firstName;
-	}
-	
-	public String getLastName() 
-	{
-		return lastName;
-	}
-
-	public String getEmail()
-	{
-		return email;
-	}
-
-	public List getRoles()
-	{
-		return roles;
-	}
-	
-    public List getGroups()
-    {
-        return groups;
-    }
-
-	public boolean getIsAdministrator()
-	{
-		return isAdministrator;
+		return description;
 	}
 	
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("InfoGluePrincipal: " + name + ":" + email + ":" + isAdministrator + '\n');
-		for(Iterator i=roles.iterator(); i.hasNext();)
-		{ 
-			InfoGlueRole role = (InfoGlueRole)i.next();
-			sb.append("" + role.getName() + ",");
-		}
-		sb.append("]");
-		
-		return sb.toString();
+		return "InfoGlueGroup: " + name;
 	}
 
 	public boolean equals(Object obj)
@@ -109,10 +62,10 @@ public class InfoGluePrincipal implements Principal
 			return false;
 		if (obj == this)
 			return true;
-		if (!(obj instanceof InfoGluePrincipal))
+		if (!(obj instanceof InfoGlueGroup))
 			return false;
 		
-		InfoGluePrincipal another = (InfoGluePrincipal)obj;
+		InfoGlueGroup another = (InfoGlueGroup)obj;
 		return name.equals(another.getName());
 	}
 

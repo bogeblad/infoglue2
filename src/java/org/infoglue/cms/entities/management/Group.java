@@ -23,41 +23,29 @@
 
 package org.infoglue.cms.entities.management;
 
+import java.util.Collection;
+
 import org.infoglue.cms.entities.kernel.IBaseEntity;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.ConstraintException;
 
-public interface SystemUser extends IBaseEntity
+public interface Group extends IBaseEntity
 {
-    public SystemUserVO getValueObject();
+ 	public Integer getId();
+        
+    public GroupVO getValueObject();
     
-    public void setValueObject(SystemUserVO valueObject);
+    public void setValueObject(GroupVO valueObject);
 
-    public java.lang.String getUserName();
-    
-    public void setUserName(java.lang.String userName) throws ConstraintException;
-    
-    public java.lang.String getPassword();
-    
-    public void setPassword(java.lang.String password) throws ConstraintException;
-    
-    public java.lang.String getFirstName();
-    
-    public void setFirstName(java.lang.String firstName) throws ConstraintException;
-    
-    public java.lang.String getLastName();
-    
-    public void setLastName(java.lang.String lastName) throws ConstraintException;
-    
-    public java.lang.String getEmail();
-    
-    public void setEmail(java.lang.String email) throws ConstraintException;
-    
-    public java.util.Collection getRoles();
-    
-    public void setRoles(java.util.Collection roles);
+    public String getGroupName();
 
-    public java.util.Collection getGroups();
+    public String getDescription();
     
-    public void setGroups(java.util.Collection groups);
+    public void setGroupName(String groupName) throws ConstraintException;
 
+    public void setDescription(String description) throws ConstraintException;
+    
+    public Collection getSystemUsers();
+    
+    public void setSystemUsers(java.util.Collection systemUsers);
+        
 }

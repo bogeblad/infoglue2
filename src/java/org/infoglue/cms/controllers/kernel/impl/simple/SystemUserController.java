@@ -24,6 +24,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.SystemUser;
@@ -375,7 +376,7 @@ public class SystemUserController extends BaseController
     }        
 
 
-    public SystemUserVO update(SystemUserVO systemUserVO, String[] roleNames) throws ConstraintException, SystemException
+    public SystemUserVO update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -400,6 +401,18 @@ public class SystemUserController extends BaseController
 					role.getSystemUsers().add(systemUser);
 	            }
 			}
+   			
+   			systemUser.getGroups().clear();
+			
+   			if(groupNames != null)
+			{
+				for (int i=0; i < groupNames.length; i++)
+	            {
+				    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
+	            	systemUser.getGroups().add(group);
+	            	group.getSystemUsers().add(systemUser);
+	            }
+			}
 			
 			systemUserVO.setPassword(systemUser.getPassword());
 			systemUser.setValueObject(systemUserVO);
@@ -421,7 +434,6 @@ public class SystemUserController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
 
         return systemUser.getValueObject();
     }        
