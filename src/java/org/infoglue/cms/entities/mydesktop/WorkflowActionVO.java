@@ -19,6 +19,7 @@
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
 *
 * ===============================================================================
+* $Id: WorkflowActionVO.java,v 1.7 2005/01/18 16:32:12 jed Exp $
 */
 
 package org.infoglue.cms.entities.mydesktop;
@@ -26,7 +27,7 @@ package org.infoglue.cms.entities.mydesktop;
 import java.util.Map;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.*;
 
 /**
  * This is the general action description object. Can be used by any workflow engine hopefully.
@@ -51,6 +52,13 @@ public class WorkflowActionVO implements BaseEntityVO
 		setId(id);
 	}
 
+	public WorkflowActionVO(Integer id, Long workflowId, String name)
+	{
+		this(id);
+		setWorkflowId(workflowId);
+		setName(name);
+	}
+
 	public Integer getId()
 	{
 		return this.id;
@@ -59,6 +67,11 @@ public class WorkflowActionVO implements BaseEntityVO
 	public void setId(Integer id)
 	{
 		this.id = id;
+	}
+
+	public int getIdAsPrimitive()
+	{
+		return (id == null) ? 0 : id.intValue();
 	}
 
 	public Long getWorkflowId()
