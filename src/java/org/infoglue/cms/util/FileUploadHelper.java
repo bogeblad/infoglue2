@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.util;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -59,8 +60,10 @@ public class FileUploadHelper
 					{
 						String contentType    = mpr.getContentType(name);
 						String fileSystemName = mpr.getFilesystemName(name);
-					
+						
 						String fileName = "Import_" + System.currentTimeMillis() + fileSystemName;
+						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+						
 						String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 						fileSystemName =  filePath + File.separator + fileName;
 		            	

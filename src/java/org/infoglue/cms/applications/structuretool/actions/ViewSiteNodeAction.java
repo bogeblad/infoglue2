@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -124,15 +125,26 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     			if(availableServiceBindingVO != null)
     			    metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
     			
-    			List boundContents = ContentController.getBoundContents(metaInfoAvailableServiceBindingId); 			
-    			if(boundContents.size() > 0)
+    			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId());
+    			Iterator serviceBindingIterator = serviceBindings.iterator();
+    			while(serviceBindingIterator.hasNext())
     			{
-    				ContentVO contentVO = (ContentVO)boundContents.get(0);
-    				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
-    				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-    					isMetaInfoInWorkingState = true;
+    				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
+    				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+    				{
+    					List boundContents = ContentController.getBoundContents(serviceBindingVO.getServiceBindingId()); 			
+    					if(boundContents.size() > 0)
+    	    			{
+    	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
+    	    				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
+    	    				if(contentVersionVO != null && contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+    	    					isMetaInfoInWorkingState = true;
+
+    	    				break;
+    	    			}                					
+    				}
     			}
-                
+
     			if(isMetaInfoInWorkingState)
     			{
     			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1";

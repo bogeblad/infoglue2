@@ -31,6 +31,7 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
 
@@ -148,6 +149,8 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 	            	
 	            	file = mpr.getFile(name);
 					String fileName = fileSystemName;
+					fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+					
 					String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
 	            	String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 	            	fileSystemName = filePath + File.separator + tempFileName;

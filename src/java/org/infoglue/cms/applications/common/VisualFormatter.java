@@ -365,6 +365,32 @@ public class VisualFormatter
 		return sb.toString();
 	}
 	
+	public final String replaceNonAscii(String s, char character)
+	{
+		if(s == null)
+			return null;
+			
+		StringBuffer sb = new StringBuffer();
+		int n = s.length();
+		for (int i = 0; i < n; i++) 
+		{
+			char c = s.charAt(i);
+			System.out.println("c:" + c);
+			if(c < 128 && c > 32)
+			{
+			    if(Character.isLetterOrDigit(c) ||  c == '-' || c == '_' || c == '.')
+			        sb.append(c);
+			    else
+			        sb.append(character);
+			}
+			else
+			{
+			    sb.append(character);
+			}
+		}
+		return sb.toString();
+	}
+	
 	/**
 	 * This method converts all non-standard characters to html-equivalents.
 	 */

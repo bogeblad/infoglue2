@@ -376,9 +376,6 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 				{
 					DigitalAsset digitalAsset = (DigitalAsset)digitalAssetsIterator.next();
 					
-					//((DigitalAssetImpl)digitalAsset).dumpAsset(digitalAsset.getAssetFileName() + "_bytes");
-					//((DigitalAssetImpl)digitalAsset).dumpAssetFromBlob(digitalAsset.getAssetFileName() + "_blob");
-					
 					List initialContentVersions = new ArrayList();
 					initialContentVersions.add(contentVersion);
 					digitalAsset.setContentVersions(initialContentVersions);

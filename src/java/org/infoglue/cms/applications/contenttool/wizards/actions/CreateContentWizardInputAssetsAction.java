@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.wizards.actions;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -109,6 +110,8 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					File file = mpr.getFile(name);
 					String fileName = digitalAssetKey + "_" + System.currentTimeMillis() + "_" + fileSystemName;
 					String tempFileName = "tmp_" + fileName;
+					tempFileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+					
 					//String filePath = file.getParentFile().getPath();
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 					fileSystemName = filePath + File.separator + tempFileName;

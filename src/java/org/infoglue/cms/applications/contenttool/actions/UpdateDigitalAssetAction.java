@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -99,6 +100,8 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 						String fileSystemName = mpr.getFilesystemName(name);
 					
 						String fileName = fileSystemName;
+						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+
 						String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
 						//String filePath = file.getParentFile().getPath();
 		            	String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");

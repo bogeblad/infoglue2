@@ -28,6 +28,7 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -151,6 +152,9 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		            	file = mpr.getFile(name);
 		            	//String fileName = this.contentVersionId + "_" + System.currentTimeMillis() + "_" + fileSystemName;
 						String fileName = fileSystemName;
+						
+						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+						
 						String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
 		            	//String filePath = file.getParentFile().getPath();
 		            	String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
