@@ -192,6 +192,7 @@ public class ContentController extends BaseController
             if(parentContentId != null)
             {
             	parentContent = getContentWithId(parentContentId, db);
+            	
             	if(repositoryId == null)
 					repositoryId = parentContent.getRepository().getRepositoryId();	
             }
@@ -211,7 +212,10 @@ public class ContentController extends BaseController
 			
 			//Now we add the content to the knowledge of the related entities.
 			if(parentContent != null)
+			{
 				parentContent.getChildren().add(content);
+				parentContent.setIsBranch(new Boolean(true));
+			}
 			
 			//repository.getContents().add(content);			
         }
