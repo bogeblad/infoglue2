@@ -1,5 +1,4 @@
 <workflows>
   <workflow name="Create User" type="resource" location="workflows/createUser.xml"/>
   <workflow name="Create News" type="resource" location="workflows/createNews.xml"/>
-  <!--<workflow name="Create News Velocity" type="resource" location="workflows/createNewsVelocity.xml"/>-->
 </workflows>
