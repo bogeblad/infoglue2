@@ -5,7 +5,7 @@
 	<meta name="lastModified">Tue Sep 07 12:08:35 CEST 2004</meta>
 	<meta name="generator">OSWOrkflow Designer</meta>
 	<initial-actions>
-		<action id="0" name="Start Workflow" view="ViewMyDesktopToolStartPage!invoke.action">
+		<action id="0" name="Start Workflow">
 			<pre-functions>
 				<function name="beanshell function" type="beanshell">
 					<arg name="script">
@@ -187,16 +187,6 @@
 				</action>
 			</actions>
 		</step>
-		<step id="3" name="Finish Registration">
-			<!--
-			<actions>
-			  <action id="6" name="Finish registration" view="ViewMyDesktopToolStartPage!invoke.action">
-				 <results>
-					<unconditional-result id="7" old-status="Finished" status="Finished"/>
-				 </results>
-			  </action>
-			</actions>
-			-->
-		</step>
+		<step id="3" name="Finish Registration"/>
 	</steps>
 </workflow>
