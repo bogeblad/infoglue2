@@ -137,6 +137,7 @@
 				if(id == "advancedOptions")
 				{
 					var resultDiv = document.getElementById("resultsLayer");
+					document.getElementById("advancedEnabled").value = "true";
 					resultDiv.style.top = "350px";
 				}
 					
@@ -148,6 +149,7 @@
 				if(id == "advancedOptions")
 				{
 					var resultDiv = document.getElementById("resultsLayer");
+					document.getElementById("advancedEnabled").value = "false";
 					resultDiv.style.top = "100px";
 				}
 			}			
@@ -196,33 +198,63 @@
 		
 		function checkAllBoxes()
 		{
-		 	var field = document.listForm.sel;
-		 	for (i = 0; i < field.length; i++)
-				field[i].checked = true;
+			var length = document.listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		document.listForm.sel.checked = true;
+		  		rowId = document.listForm.sel.getAttribute("rowId");
+				listRowMarked(document.getElementById(rowId));
+		  	}
+		  	else
+		  	{	
+			 	var field = document.listForm.sel;
+			 	for (i = 0; i < field.length; i++)
+				{
+					field[i].checked = true;
+					rowId = field[i].getAttribute("rowId");
+					//alert("rowId:" + rowId);
+					listRowMarked(document.getElementById(rowId));
+				}
+			}
 		}
 		
 		function uncheckAllBoxes()
 		{
-			var field = document.listForm.sel;
-			for (i = 0; i < field.length; i++)
-				field[i].checked = false;
+			var length = document.listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		document.listForm.sel.checked = false;
+		  		rowId = document.listForm.sel.getAttribute("rowId");
+				listRowUnMarked(document.getElementById(rowId));
+		  	}
+		  	else
+		  	{	
+			 	var field = document.listForm.sel;
+			 	for (i = 0; i < field.length; i++)
+			 	{
+					field[i].checked = false;
+					rowId = field[i].getAttribute("rowId");
+					listRowUnMarked(document.getElementById(rowId));
+				}
+			}
 		}
 	-->
 	</script>
 	
 #set($advanced = false)
-#if(($name && $name != "") || $languageId || $contentTypeDefinitionId || $caseSensitive == 1 || $stateId)
+#if(($name && $name != "") || $languageId || $contentTypeDefinitionId || $caseSensitive == 1 || $stateId || $advancedEnabled)
 	#set($advanced = true)
 #end
 
 <div id="searchLayer" class="fullymarginalized" style="display:block; position: absolute; top: 0px;">
 
 <form method="POST" name="editForm" action="SearchContent.action">
+<input type="hidden" id="advancedEnabled" name="advancedEnabled" value="$advancedEnabled">
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td colspan="7">	
 		<p>
-		#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $searchString "30" "normaltextfield") 
+		#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $formatter.escapeHTML($searchString) "30" "normaltextfield") 
 		<a href="javascript:toggleDiv('advancedOptions');">$ui.getString("tool.contenttool.searchAdvanced")</a> | <a href="javascript:showReplaceDialog();">$ui.getString("tool.contenttool.replace")</a>
 		</p>
 		<div id="advancedOptions" style="#if($advanced == false)display:none;#end">

@@ -60,6 +60,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private Integer caseSensitive;
 	private Integer inverseSearch;
 	private Integer stateId;
+	private boolean advancedEnabled = false;
 	
 	private int maxRows = 0;
 	
@@ -74,9 +75,8 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	
 	public void setSearchString(String s)
 	{
-		this.searchString = s.replaceAll("'","");
-		
-		CmsLogger.logInfo(this.searchString);
+	    this.searchString = s;
+		//this.searchString = s.replaceAll("'","");
 	}
 	
 	public String getSearchString()
@@ -289,5 +289,15 @@ public class SearchContentAction extends InfoGlueAbstractAction
     public void setStateId(Integer stateId)
     {
         this.stateId = stateId;
+    }
+    
+    public boolean isAdvancedEnabled()
+    {
+        return advancedEnabled;
+    }
+    
+    public void setAdvancedEnabled(boolean advancedEnabled)
+    {
+        this.advancedEnabled = advancedEnabled;
     }
 }
