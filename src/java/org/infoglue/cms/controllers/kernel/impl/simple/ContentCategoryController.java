@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.3 2005/03/14 21:08:12 jed Exp $
+ * $Id: ContentCategoryController.java,v 1.4 2005/03/14 21:41:47 jed Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -146,7 +146,7 @@ public class ContentCategoryController extends BaseController
 			commitTransaction(db);
 			return contentCategory.getValueObject();
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
@@ -219,6 +219,34 @@ public class ContentCategoryController extends BaseController
 		delete(findByCategory(categoryId), db);
 	}
 
+	/**
+	 * Deletes all content categories with a specific attribute for a specific content version within a single transaction
+	 * @param attribute the desired attribute
+	 * @param versionId the ID of the desired content version
+	 * @throws SystemException if a database error occurs
+	 */
+	public void deleteByContentVersionAttribute(String attribute, Integer versionId) throws SystemException
+	{
+		delete(findByContentVersionAttribute(attribute, versionId));
+	}
+
+	/**
+	 * Deletes all content categories with a specific attribute for a specific content version using the given database
+	 * @param attribute the desired attribute
+	 * @param versionId the ID of the desired content version
+	 * @param db the database defining the transaction context for this delete
+	 * @throws SystemException if a database error occurs
+	 */
+	public void deleteByContentVersionAttribute(String attribute, Integer versionId, Database db) throws SystemException
+	{
+		delete(findByContentVersionAttribute(attribute, versionId), db);
+	}
+
+	/**
+	 * Deletes a collection of content categories within a single transaction
+	 * @param contentCategories a collection of ContentCategoryVOs to delete
+	 * @throws SystemException if a database error occurs
+	 */
 	private static void delete(Collection contentCategories) throws SystemException
 	{
 		Database db = beginTransaction();
