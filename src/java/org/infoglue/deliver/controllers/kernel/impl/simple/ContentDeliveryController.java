@@ -45,6 +45,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
+import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 
@@ -123,7 +124,7 @@ public class ContentDeliveryController extends BaseDeliveryController
         	//Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
 			contentVO = (ContentVO)getVOWithId(SmallContentImpl.class, contentId, db);
 				
-			commitTransaction(db);
+			closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -167,7 +168,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				if(contentVersion != null)
 					contentVersionVO = contentVersion.getValueObject();
 	            
-				commitTransaction(db);
+				closeTransaction(db);
 	        }
 	        catch(Exception e)
 	        {
@@ -265,7 +266,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback) throws SystemException, Exception
 	{
-		String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback;
+	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback;
 		CmsLogger.logInfo("attributeKey:" + attributeKey);
 		String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
 		if(attribute != null)
@@ -299,7 +300,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	            }
 	            */
 	            
-				commitTransaction(db);
+				closeTransaction(db);
 	            
 				//CmsLogger.logInfo("attribute:" + attribute);
 				CacheController.cacheObject("contentAttributeCache", attributeKey, attribute);
@@ -335,7 +336,7 @@ public class ContentDeliveryController extends BaseDeliveryController
         {
            	attribute = getAttributeValue(contentVersionVO, attributeName);		
             
-			commitTransaction(db);
+           	closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -380,7 +381,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					iter.remove();
 			}
 
-			commitTransaction(db);
+			closeTransaction(db);
 			return toVOList(versions);
 		}
 		catch(Exception e)
@@ -496,7 +497,7 @@ public class ContentDeliveryController extends BaseDeliveryController
             	}
             }
             
-			commitTransaction(db);
+			closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -654,7 +655,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}
             }
             
-			commitTransaction(db);
+			closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -756,7 +757,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}
 			}
 			
-			commitTransaction(db);
+			closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -827,7 +828,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}
 			}
             
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -899,7 +900,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				
 			}				
             
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -948,7 +949,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}								
 			}				
             
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -1000,7 +1001,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}
             }				
             
-			commitTransaction(db);
+			closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -1038,7 +1039,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}
 			}				
             
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -1167,7 +1168,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			getChildContents(infoGluePrincipal, childContents, contentId, languageId, useLanguageFallback, 0, false, includeFolders, 1, db);
         	       	        
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -1235,7 +1236,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
 			contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();       
 			
-			commitTransaction(db);
+			closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -1386,7 +1387,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
 			isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db);
 			
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -1472,7 +1473,7 @@ public class ContentDeliveryController extends BaseDeliveryController
         	Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
     	    protectedContentId = getProtectedContentId(content);
         	
-			commitTransaction(db);
+    	    closeTransaction(db);
         }
         catch(Exception e)
         {

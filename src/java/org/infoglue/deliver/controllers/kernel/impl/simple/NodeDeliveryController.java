@@ -23,7 +23,9 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.SiteNode;
@@ -40,10 +42,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.filters.URIMapperCache;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -143,7 +147,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     		if(siteNodeVersion != null)
 				siteNodeVersionVO = siteNodeVersion.getValueObject();
     		
-			commitTransaction(db);
+    		closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -328,7 +332,7 @@ public class NodeDeliveryController extends BaseDeliveryController
         {
 			siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
             		
-			commitTransaction(db);
+			closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -366,7 +370,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				
 				CacheController.cacheObject("latestSiteNodeVersionCache", key, siteNodeVersionVO);
 				
-				commitTransaction(db);
+				closeTransaction(db);
 			}
 			catch(Exception e)
 			{
@@ -446,7 +450,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				
 				CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
 				
-				commitTransaction(db);
+				closeTransaction(db);
 	        }
 	        catch(Exception e)
 	        {
@@ -645,18 +649,19 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-			boundContentVOList = new ArrayList();
+		    boundContentVOList = new ArrayList();
+			
 			CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
 			Database db = CastorDatabaseService.getDatabase();
 			ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
 			beginTransaction(db);
-		
+			
 			try
 			{
 				//If serviceBinding on this node is null we check if there are parent-binding we could use.
 				ServiceBinding serviceBinding = getInheritedServiceBinding(siteNodeId, availableServiceBindingName, db, inheritParentBindings);
-	        
+			
 				if(serviceBinding != null)
 				{
 					ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
@@ -670,9 +675,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	            		
 						List qualifyerList = new ArrayList();
 						Collection qualifyers = serviceBinding.getBindingQualifyers();
-
+						
 						qualifyers = sortQualifyers(qualifyers);
-
+						
 						Iterator iterator = qualifyers.iterator();
 						while(iterator.hasNext())
 						{
@@ -682,9 +687,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 							qualifyerList.add(argument);
 						}
 						arguments.put("arguments", qualifyerList);
-	        		
+						
 						List contents = service.selectMatchingEntities(arguments);
-	        		
+						
 						CmsLogger.logInfo("Found bound contents:" + contents.size());	        		
 						if(contents != null)
 						{
@@ -694,14 +699,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 								ContentVO candidate = (ContentVO)i.next();
 								CmsLogger.logInfo("candidate:" + candidate.getName());
 								//Checking to see that now is between the contents publish and expire-date. 
-								if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
-									boundContentVOList.add(candidate);        		
+								//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
+								//	boundContentVOList.add(candidate);        		
+								Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
+								if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, db))
+									boundContentVOList.add(candidate);    
 							}
 						}
 					}
 				}
-	       	  
-				commitTransaction(db);
+
+				closeTransaction(db);
 			}
 			catch(Exception e)
 			{
@@ -709,7 +717,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				rollbackTransaction(db);
 				throw new SystemException(e.getMessage());
 			}
-							
+			
 			CacheController.cacheObject("boundContentCache", boundContentsKey, boundContentVOList);
 		}
 		
@@ -743,7 +751,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        {
 	           	folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentVO.getContentId(), siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback);
 				
-				commitTransaction(db);
+	           	closeTransaction(db);
 	        }
 	        catch(Exception e)
 	        {
@@ -775,7 +783,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			folderContents = ContentDeliveryController.getContentDeliveryController().getSortedChildContents(infoGluePrincipal, languageId, contentId, siteNodeId, db, searchRecursive, maximumNumberOfLevels, sortAttribute, sortOrder, useLanguageFallback);
 	        	       	        
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -878,7 +886,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 					}
 				}
 	       	        
-				commitTransaction(db);
+				closeTransaction(db);
 			}
 			catch(Exception e)
 			{
@@ -1052,7 +1060,7 @@ public class NodeDeliveryController extends BaseDeliveryController
             while (results.hasMore()) {
                 SiteNode siteNode = (SiteNode) results.next();
                 if (navigationTitle == null || navigationTitle.length() == 0) {
-                	commitTransaction(db);
+                    closeTransaction(db);
                     return siteNode.getSiteNodeId();
                 }
                 // CmsLogger.logInfo("Site : "+siteNode.getSiteNodeId());
@@ -1070,19 +1078,19 @@ public class NodeDeliveryController extends BaseDeliveryController
                                                                                                                true);
                         //CmsLogger.logInfo("NavTitle ["+navTitle+"]");
                         if (navTitle != null && navTitle.equals(navigationTitle)) {
-                        	commitTransaction(db);
+                            closeTransaction(db);
                             return siteNode.getSiteNodeId();
                        }
                     }
                 }
             }
-	    commitTransaction(db);
+            closeTransaction(db);
         }
         catch(Exception e)
         {
             e.printStackTrace();
             CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
-	    rollbackTransaction(db);
+            rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
         return null;
@@ -1191,7 +1199,7 @@ public class NodeDeliveryController extends BaseDeliveryController
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
 
-			commitTransaction(db);
+            closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -1243,7 +1251,7 @@ public class NodeDeliveryController extends BaseDeliveryController
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
 
-			commitTransaction(db);
+            closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -1290,7 +1298,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				siteNodeVOList.add(siteNode.getValueObject());
 			}
             
-			commitTransaction(db);
+			closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -1359,7 +1367,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db); 
 			isValidSiteNode = isValidSiteNode(siteNode, db);
 			
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{

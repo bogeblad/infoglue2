@@ -40,6 +40,7 @@ import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.applications.actions.ViewPageAction;
 
 /**
  * BaseDeliveryController.java
@@ -200,7 +201,7 @@ public abstract class BaseDeliveryController
 		try
 		{
 			List results = executeQuery(db, query, params);
-			commitTransaction(db);
+			closeTransaction(db);
 			return results;
 		}
 		catch (Exception e)
@@ -309,15 +310,26 @@ public abstract class BaseDeliveryController
 		}
 	}
        
+	
+	/**
+	 * Rollbacks a transaction on the named database
+	 */
+     
+	public static void closeTransaction(Database db) throws SystemException
+	{
+	    rollbackTransaction(db);
+	    //commitTransaction(db);
+	}
+
+	
 	/**
 	 * Ends a transaction on the named database
 	 */
-     
-	public static void commitTransaction(Database db) throws SystemException
+    private static void commitTransaction(Database db) throws SystemException
 	{
 		try
 		{
-			db.commit();
+		    db.commit();
 			db.close();
 		}
 		catch(Exception e)
@@ -326,7 +338,7 @@ public abstract class BaseDeliveryController
 			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
 		}
 	}
- 
+	
  
 	/**
 	 * Rollbacks a transaction on the named database
@@ -338,14 +350,13 @@ public abstract class BaseDeliveryController
 		{
 			if (db.isActive())
 			{
-				db.rollback();
+			    db.rollback();
 				db.close();
 			}
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logInfo("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
-			//throw new SystemException("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage(), e);    
 		}
 	}
 

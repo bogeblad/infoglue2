@@ -98,7 +98,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	            
 				CacheController.cacheObject("languageCache", key, languageVO);
 				
-				commitTransaction(db);
+				closeTransaction(db);
 			}
 			catch(Exception e)
 			{
@@ -138,7 +138,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
                         list.add(language.getValueObject());
                 }
             }
-            commitTransaction(db);
+            closeTransaction(db);
         } 
         catch (Exception e) 
 		{
@@ -190,7 +190,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
             
-			commitTransaction(db);
+            closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -232,7 +232,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
 
-			commitTransaction(db);            
+            closeTransaction(db);            
         }
         catch(Exception e)
         {
@@ -287,7 +287,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			//If any of the validations or setMethods reported an error, we throw them up now before create. 
 			ceb.throwIfNotEmpty();
             
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -380,7 +380,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
             
-			commitTransaction(db);
+            closeTransaction(db);
         }
         catch(Exception e)
         {
@@ -458,7 +458,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	            //If any of the validations or setMethods reported an error, we throw them up now before create. 
 	            ceb.throwIfNotEmpty();
 	         
-				commitTransaction(db);  
+	            closeTransaction(db);  
 	        }
 	        catch(Exception e)
 	        {
@@ -517,7 +517,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
          
-			commitTransaction(db); 
+            closeTransaction(db); 
         }
         catch(Exception e)
         {

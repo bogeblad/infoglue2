@@ -83,7 +83,8 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
 				CmsLogger.logInfo("Found availableServiceBinding:" + availableServiceBindingVO.getName());
         	}
             
-			commitTransaction(db);
+			rollbackTransaction(db);
+			//commitTransaction(db);
         }
         catch(Exception e)
         {

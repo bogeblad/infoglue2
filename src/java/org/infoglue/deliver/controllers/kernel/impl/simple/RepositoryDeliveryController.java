@@ -88,7 +88,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
 
-			commitTransaction(db);         
+            closeTransaction(db);         
         }
         catch(Exception e)
         {
@@ -123,13 +123,13 @@ public class RepositoryDeliveryController extends BaseDeliveryController
                 	CmsLogger.logInfo("dnsNames[i]:" + dnsNames[i]);
                     if((dnsNames[i].indexOf(":") == -1 && dnsNames[i].indexOf(serverName) != -1) || dnsNames[i].indexOf(serverName + ":" + portNumber) != -1) 
                     {
-                    	commitTransaction(db);
+                        closeTransaction(db);
                         return repository.getValueObject();
                     }
                 }
             }
             
-            commitTransaction(db);
+            closeTransaction(db);
         } 
         catch (Exception e) 
 		{
@@ -183,7 +183,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 			//If any of the validations or setMethods reported an error, we throw them up now before create. 
 			ceb.throwIfNotEmpty();
 
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{

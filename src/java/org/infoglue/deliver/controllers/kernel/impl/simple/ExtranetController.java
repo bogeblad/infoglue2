@@ -329,7 +329,7 @@ public class ExtranetController extends BaseDeliveryController
 				}
 			}
 			
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -441,7 +441,7 @@ public class ExtranetController extends BaseDeliveryController
 				}
 			}
 			
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
@@ -547,7 +547,7 @@ public class ExtranetController extends BaseDeliveryController
 				}
 			}
 			
-			commitTransaction(db);
+			closeTransaction(db);
 		}
 		catch(Exception e)
 		{
