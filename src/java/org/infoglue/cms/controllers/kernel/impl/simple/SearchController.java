@@ -33,8 +33,10 @@ import java.io.*;
 
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
 
@@ -43,6 +45,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -108,7 +111,7 @@ public class SearchController extends BaseController
 	}
 
 	
-   	public static List getContentVersions(Integer repositoryId, String searchString, int maxRows)throws SystemException, Bug
+   	public static List getContentVersions(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
    	{
 		List matchingContents = new ArrayList();
 
@@ -117,12 +120,63 @@ public class SearchController extends BaseController
 		try
 		{
 			beginTransaction(db);
-
+			/*
 			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 AND cv.owningContent.repository.repositoryId = $3 ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc");
 			oql.bind(new Boolean(true));
 			oql.bind("%" + searchString + "%");
 			oql.bind(repositoryId);
-	        	
+	        */
+			
+			String extraArguments = "";
+			String inverse = "";
+			
+			int index = 4;
+			List arguments = new ArrayList();
+			
+		    System.out.println("name:" + name);
+		    System.out.println("languageId:" + languageId);
+		    System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
+		    System.out.println("caseSensitive:" + caseSensitive);
+		    System.out.println("stateId:" + stateId);
+			
+			if(name != null && !name.equalsIgnoreCase(""))
+			{
+			    extraArguments += " AND cv.versionModifier = $" + index;
+			    arguments.add(name);
+				index++;
+			}
+			if(languageId != null)
+			{
+			    extraArguments += " AND cv.language = $" + index;
+			    arguments.add(languageId);
+				index++;
+			}
+			if(contentTypeDefinitionId != null)
+			{
+			    extraArguments += " AND cv.owningContent.contentTypeDefinition = $" + index;
+			    arguments.add(contentTypeDefinitionId);
+				index++;
+			}
+			if(stateId != null)
+			{
+			    extraArguments += " AND cv.stateId = $" + index;
+			    arguments.add(stateId);
+				index++;
+			}
+			    
+			String sql = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 AND cv.owningContent.repository.repositoryId = $3 " + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
+			System.out.println("sql:" + sql);
+			OQLQuery oql = db.getOQLQuery(sql);
+			oql.bind(new Boolean(true));
+			oql.bind("%" + searchString + "%");
+			oql.bind(repositoryId);
+	        
+			Iterator iterator = arguments.iterator();
+			while(iterator.hasNext())
+			{
+			    oql.bind(iterator.next());
+			}
+			
 			QueryResults results = oql.execute(Database.ReadOnly);
 			
 			Integer previousContentId  = new Integer(-1);
@@ -134,10 +188,14 @@ public class SearchController extends BaseController
 				CmsLogger.logInfo("Found a version matching " + searchString + ":" + contentVersion.getId() + "=" + contentVersion.getOwningContent().getName());
 				if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
 				{
-					matchingContents.add(contentVersion.getValueObject());
-					previousContentId = contentVersion.getOwningContent().getId();
-					previousLanguageId = contentVersion.getLanguage().getId();
-					currentCount++;
+				    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
+					if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue() && (caseSensitive == null || contentVersion.getVersionValue().indexOf(searchString) > -1))
+					{
+					    matchingContents.add(contentVersion.getValueObject());
+					    previousContentId = contentVersion.getOwningContent().getId();
+					    previousLanguageId = contentVersion.getLanguage().getId();
+					    currentCount++;
+					}
 				}
 			}
 
@@ -150,6 +208,47 @@ public class SearchController extends BaseController
 		}
 		
 		return matchingContents;
+		
+   	}
+   	
+   	public static int replaceString(String searchString, String replaceString, String[] contentVersionIds, InfoGluePrincipal infoGluePrincipal)throws SystemException, Bug
+   	{
+		int replacements = 0;
+		
+   	    ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		Database db = CastorDatabaseService.getDatabase();
+		try
+		{
+			beginTransaction(db);
+
+			for(int i=0; i<contentVersionIds.length; i++)
+			{
+			    String contentVersionId = contentVersionIds[i];
+			    System.out.println("contentVersionId:" + contentVersionId);
+			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(contentVersionIds[i]), db);
+			    if(contentVersion.getStateId().intValue() != ContentVersionVO.WORKING_STATE.intValue())
+			    {
+			        contentVersion = ContentStateController.changeState(contentVersion.getId(), ContentVersionVO.WORKING_STATE, "Automatic by the replace function", infoGluePrincipal, null);
+			        System.out.println("Setting the version to working before replacing string...");
+			    }
+			    
+			    String value = contentVersion.getVersionValue();
+			    value = value.replaceAll(searchString, replaceString);
+			    
+			    contentVersion.setVersionValue(value);
+
+			    replacements++;
+			}
+			
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to fetch a list of users in this role. Reason:" + e.getMessage(), e);			
+		}
+		
+		return replacements;
 		
    	}
    	

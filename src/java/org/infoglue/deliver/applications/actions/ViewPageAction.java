@@ -275,7 +275,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		CmsLogger.logInfo("************************************************");
 		CmsLogger.logInfo("* ViewPageAction was called....                *");
 		CmsLogger.logInfo("************************************************");
-    	
+		
 		Database db = CastorDatabaseService.getDatabase();
 		
 		beginTransaction(db);

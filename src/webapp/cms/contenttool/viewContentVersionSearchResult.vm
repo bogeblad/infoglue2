@@ -15,21 +15,31 @@
 		
 		function submitListForm(entityName)
 		{
-			var listForm = parent.frames["main"].document.listForm;
+			//var searchString = document.editForm.searchString.value;
+			//var replaceString = document.editForm.replaceString.value;
+			
+			var listForm = document.listForm;
+			var selectedObjectsAsDelimitedString = getSelectedObjectsAsDelimitedString(listForm, entityName);
+				
+			/*
+			
 			var selectedObjects = getSelectedObjects(listForm, entityName);
 			var selectedTexts = getSelectedTexts(listForm);
+			*/
 			//alert("selectedObjects:" + selectedObjects);
-			if (selectedObjects == "")
+			if (selectedObjectsAsDelimitedString == "")
 			{
 				alert('Select one or more versions to replace the string in.');
 			  	return;
 			}
 			else
 			{
-				listForm.message.value = listForm.message.value;
+				document.replaceForm.contentVersionId.value = selectedObjectsAsDelimitedString;
+				//listForm.message.value = listForm.message.value;
 				//listForm.extraParameters.value = selectedTexts;
-				listForm.yesDestination.value = listForm.yesDestination.value + '?' + selectedObjects;
-				listForm.submit();
+				//listForm.yesDestination.value = listForm.yesDestination.value + '?searchString=' + searchString + '&replaceString=' + replaceString + selectedObjects; //
+				//listForm.submit();
+				document.replaceForm.submit();
 			}
 
 		}
@@ -56,6 +66,33 @@
 			  	{
 			   		if (listForm.sel[i].checked)
 			    		str += '&' + entityName + 'Id=' + escape(listForm.sel[i].value);
+			 	}
+			}
+					 	
+		 	return str;
+		}
+		
+		//-----------------------------------------------
+		// This function iterates through the list of select-boxes 
+		// and add the selected ones id's to the id-List 
+		//-----------------------------------------------
+
+		function getSelectedObjectsAsDelimitedString(listForm, entityName)
+		{
+			var str = '';
+		
+			var length = listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		if (listForm.sel.checked)
+			    	str += ',' + escape(listForm.sel.value);
+		  	}
+		  	else
+		  	{	
+			  	for (i=0; i<length; i++)
+			  	{
+			   		if (listForm.sel[i].checked)
+			    		str += ',' + escape(listForm.sel[i].value);
 			 	}
 			}
 					 	
@@ -90,46 +127,154 @@
 			return str;
 		}
 
+		function toggleDiv(id)
+		{
+			var div = document.getElementById(id);
+			if(div && div.style.display == "none")
+			{
+				div.style.display = "block";
+			}
+			else
+			{
+				div.style.display = "none";
+			}
+		}
 		
+		function showReplaceDialog()
+		{
+			var searchDiv = document.getElementById("searchLayer");
+			searchDiv.style.display = "none";
+
+			var replaceDiv = document.getElementById("replaceLayer");
+			replaceDiv.style.display = "block";
+		}
+		
+		function resetSearchForm()
+		{
+			document.editForm.searchString.value = "";
+		}
+
+		function resetReplaceForm()
+		{
+			document.replaceForm.searchString.value = "";
+			document.replaceForm.replaceString.value = "";
+		}
+		
+		function checkAllBoxes()
+		{
+		 	var field = document.listForm.sel;
+		 	for (i = 0; i < field.length; i++)
+				field[i].checked = true;
+		}
+		
+		function uncheckAllBoxes()
+		{
+			var field = document.listForm.sel;
+			for (i = 0; i < field.length; i++)
+				field[i].checked = false;
+		}
 	-->
 	</script>
 	
-<div class="fullymarginalized">
+#set($advanced = false)
+#if(($name && $name != "") || $languageId || $contentTypeDefinitionId || $caseSensitive == 1 || $stateId != 0)
+	#set($advanced = true)
+#end
+
+<div id="searchLayer" class="fullymarginalized" style="display:block;">
 
 <form method="POST" name="editForm" action="SearchContent.action">
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td colspan="7">	
-		#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $searchString "30" "normaltextfield")
+		<p>
+		#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $searchString "30" "normaltextfield") 
+		<a href="javascript:toggleDiv('advancedOptions');">Advanced</a> | <a href="javascript:showReplaceDialog();">Replace</a>
+		</p>
+		<div id="advancedOptions" style="#if($advanced == false)display:none;#end">
+		<p>
+		#selectBox("tool.contenttool.modifierFilter.label" "name" $name $principals "tool.contenttool.filterShowAll.label")
+		</p>
+		<p>
+		#selectBox("tool.contenttool.languageFilter.label" "languageId" $languageId $availableLanguages "tool.contenttool.filterShowAll.label")
+		</p>
+		<p>
+		#selectBox("tool.contenttool.contentTypeFilter.label" "contentTypeDefinitionId" $contentTypeDefinitionId $contentTypeDefinitions "tool.contenttool.filterShowAll.label")
+		</p>
+		<p>
+		$ui.getString("tool.contenttool.caseSensitive.label")<br>
+		<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> Yes 
+		</p>
+		<p>
+		$ui.getString("tool.contenttool.stateSearch.label")<br>
+		<select class="dropbox" name="stateId">
+			<option value="0" #checkSelected("0" "$stateId")>$ui.getString("tool.contenttool.state.working")</option>
+			<!--
+			<option value="1" #checkSelected("1" "$stateId")>$ui.getString("tool.contenttool.state.final")</option>
+			-->				
+			<option value="2" #checkSelected("2" "$stateId")>$ui.getString("tool.contenttool.state.publish")</option>
+			<option value="3" #checkSelected("3" "$stateId")>$ui.getString("tool.contenttool.state.published")</option>
+		</select>
+		</p>
+		</div>
 	</td>
-</tr>
-<tr>
-	<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
-</tr>
-<tr>
-	<td colspan="7">	
-		#editTextField3($ui.getString("tool.contenttool.replaceString.label") "tool.contenttool.replaceString.label" "replaceString" $replaceString "30" "normaltextfield")
-	</td>
-</tr>
-<tr>
-	<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 </tr>
 <tr>
 	<input type="hidden" name="repositoryId" value="$!repositoryId">
 	<td colspan="7">
-		<a href="javascript:submitListForm('contentVersion');"><img src="$ui.getString("images.managementtool.buttons.replaceLong")" border="0"></a>
-		<a href="javascript:clearForm();"><img src="$ui.getString("images.managementtool.buttons.clearLong")" border="0"></a>
+		<input type="image" src="$ui.getString("images.managementtool.buttons.searchLong")">
+		<a href="javascript:resetSearchForm();"><img src="$ui.getString("images.managementtool.buttons.clearLong")" border="0"></a>
 	</td>
 </tr>
 </table>
 </form>
-<br>
+
+</div>
+
+<div id="replaceLayer" class="fullymarginalized" style="display: none;">
+
+<form method="POST" name="replaceForm" action="ReplaceContent.action">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+	<td>	
+		<p>
+		#editTextField3($ui.getString("tool.contenttool.findString.label") "tool.contenttool.findString.label" "searchString" $searchString "30" "normaltextfield")
+		</p>
+		<p>
+		#editTextField3($ui.getString("tool.contenttool.replaceString.label") "tool.contenttool.replaceString.label" "replaceString" $replaceString "30" "normaltextfield")
+		</p>
+	</td>
+	<td align="right">
+		<p>
+		<a href="javascript:checkAllBoxes();"><img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0"></a>
+		</p>
+		<p>		
+		<a href="javascript:uncheckAllBoxes();"><img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0"></a>
+		</p>
+	</td>	
+</tr>
+<tr>
+	<td colspan="2"><img src="images/trans.gif" height="10" width="1"></td>
+</tr>
+<tr>
+	<input type="hidden" name="contentVersionId" value="">
+	<input type="hidden" name="repositoryId" value="$repositoryId">
+	<td colspan="2">
+		<a href="javascript:submitListForm('contentVersion');"><img src="$ui.getString("images.managementtool.buttons.replaceLong")" border="0"></a>
+		<a href="javascript:resetReplaceForm();"><img src="$ui.getString("images.managementtool.buttons.clearLong")" border="0"></a>
+	</td>
+</tr>
+</table>
+</form>
+</div>
+
+<div id="resultsLayer" class="fullymarginalized">
 
 <table tableborder=0 border=0 bgcolor=#C7D1B3 width=100% cellpadding="1" cellspacing="0"><tr><td>
 #set($lvConstraint = -1) 
 <!--lvHead(["Content Version Title","Type","Content Title","Repository Name","Score"] "" "" "" "") -->
 
-#lvHead([$ui.getString("tool.contenttool.searchResultContentHeader"), $ui.getString("tool.contenttool.searchResultLanguageHeader"), $ui.getString("tool.contenttool.searchResultStateHeader"), $ui.getString("tool.contenttool.searchResultLastModifiedHeader")] "tool.contenttool.replace.header" "SearchContent!replace.action" "SearchContent.action" "tool.contenttool.replaceStringInContentVersions.text")
+#lvHead([$ui.getString("tool.contenttool.searchResultContentHeader"), $ui.getString("tool.contenttool.searchResultLanguageHeader"), $ui.getString("tool.contenttool.searchResultStateHeader"), $ui.getString("tool.contenttool.searchResultLastModifiedHeader")] "tool.contenttool.replace.header" "ReplaceContent.action" "SearchContent.action" "tool.contenttool.replaceStringInContentVersions.text")
 
 #set($cnt = 0)
 #foreach ($contentVersionVO in $contentVersionVOList)

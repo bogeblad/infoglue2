@@ -54,6 +54,13 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private List contentVersionVOList;
 	private Integer repositoryId;
 	private String searchString;
+	private String name;
+	private Integer languageId;
+	private Integer contentTypeDefinitionId;
+	private Integer caseSensitive;
+	private Integer inverseSearch;
+	private Integer stateId;
+	
 	private int maxRows = 0;
 	
 	//This is for advanced search
@@ -61,6 +68,9 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private List availableLanguages 	= null;
 	private List contentTypeDefinitions = null;
 	
+	//This is for replace
+	private String replaceString		= null;
+	//private String[] contentVersionId  	= null;
 	
 	public void setSearchString(String s)
 	{
@@ -104,8 +114,13 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		{
 		}
 		
-		contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows);
-	    CmsLogger.logInfo("Finished executing doExecute on SearchContentAction..");
+		contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+	    
+	    this.principals = UserControllerProxy.getController().getAllUsers();
+	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
+	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+
+		CmsLogger.logInfo("Finished executing doExecute on SearchContentAction..");
         return "success";
 	}
 	
@@ -121,6 +136,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	    
 	    return Action.INPUT;
 	}
+	
 	
 	public ContentVO getContentVO(Integer contentId)
 	{
@@ -183,5 +199,86 @@ public class SearchContentAction extends InfoGlueAbstractAction
     public List getPrincipals()
     {
         return principals;
+    }
+ 
+   /* 
+    public String[] getContentVersionId()
+    {
+        return contentVersionId;
+    }
+    
+    public void setContentVersionIds(String[] contentVersionId)
+    {
+        this.contentVersionId = contentVersionId;
+    }
+    */
+    public String getReplaceString()
+    {
+        return replaceString;
+    }
+    
+    public void setReplaceString(String replaceString)
+    {
+        this.replaceString = replaceString;
+    }
+    
+    public Integer getCaseSensitive()
+    {
+        return caseSensitive;
+    }
+    
+    public void setCaseSensitive(Integer caseSensitive)
+    {
+        this.caseSensitive = caseSensitive;
+    }
+    
+    public Integer getContentTypeDefinitionId()
+    {
+        return contentTypeDefinitionId;
+    }
+    
+    public void setContentTypeDefinitionId(Integer contentTypeDefinitionId)
+    {
+        this.contentTypeDefinitionId = contentTypeDefinitionId;
+    }
+    
+    public Integer getInverseSearch()
+    {
+        return inverseSearch;
+    }
+    
+    public void setInverseSearch(Integer inverseSearch)
+    {
+        this.inverseSearch = inverseSearch;
+    }
+    
+    public Integer getLanguageId()
+    {
+        return languageId;
+    }
+    
+    public void setLanguageId(Integer languageId)
+    {
+        this.languageId = languageId;
+    }
+    
+    public String getName()
+    {
+        return name;
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+    
+    public Integer getStateId()
+    {
+        return stateId;
+    }
+    
+    public void setStateId(Integer stateId)
+    {
+        this.stateId = stateId;
     }
 }
