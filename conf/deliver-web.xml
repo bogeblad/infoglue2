@@ -4,7 +4,7 @@
 
 	<filter>
         <filter-name>ViewPageFilter</filter-name>
-        <filter-class>org.infoglue.cms.applications.deliver.filters.ViewPageFilter</filter-class>
+        <filter-class>org.infoglue.deliver.applications.filters.ViewPageFilter</filter-class>
         <init-param>
             <param-name>RepositoryName</param-name>
             <param-value>localhost</param-value>
