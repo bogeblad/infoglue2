@@ -98,6 +98,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 	{
 		String action = "javascript:onTreeItemClick(this,";
 		//action+="'" + node.getId() + "','" + repositoryId + "','" + URLEncoder.encode(node.getTitle(),ENCODING) + "');";
+		//action+="'" + node.getId() + "','" + repositoryId + "','" + new VisualFormatter().escapeForAdvancedJavascripts(node.getTitle()) + "');";
 		action+="'" + node.getId() + "','" + repositoryId + "','" + new VisualFormatter().escapeForAdvancedJavascripts(node.getTitle()) + "');";
         //System.out.println("action:" + action);
 		return action;

@@ -124,6 +124,25 @@ public class ViewStructureToolHeaderAction extends WebworkAbstractAction
 	}
 
 	/**
+	 * Returns the repositoryName.
+	 * @return String
+	 */
+	public String getRepositoryName() 
+	{
+	    String repositoryName = "";
+		try
+    	{
+		    Integer repositoryId = this.getRepositoryId();
+		    repositoryName = RepositoryController.getController().getRepositoryVOWithId(repositoryId).getName();
+    	}
+    	catch(Exception e)
+    	{
+    	}
+    	
+		return repositoryName;
+	}
+
+	/**
 	 * Returns the tree.
 	 * @return String
 	 */

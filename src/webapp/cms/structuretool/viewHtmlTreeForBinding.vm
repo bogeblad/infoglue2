@@ -38,7 +38,7 @@
 		{
 			setSelected("${select}");
 			
-			path = "" + webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
+			path = webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
 			//alert("path:" + path);
 			if(path && path != "")
 			{
@@ -60,7 +60,10 @@
 		function expandTreeRec(pathArr, level)
 		{			
 			var node = tree.getNodeWithMyId(pathArr[level]);
-						
+			
+			if(node == null)
+				return;
+			
 			if(!node.loading && node.parentNode != null)
 			{
 				//alert("Loading child to " + node.text + ":" + node.id + ":" + node.myId + !node.loaded + ":" + !node.loading);
@@ -152,6 +155,16 @@
 		// elem.className="selected";
 		// oldSelected=elem;
 		htmlTreeItemClick(itemId, repoId, path);
+		
+		elementString = elem.toString();
+		startIndex = elementString.indexOf("(") + 1;
+		endIndex = elementString.indexOf(")");
+		nodeId = elementString.substring(startIndex, endIndex);
+		var node = tree.getNodeWithMyId(nodeId);
+		
+		setTimeout(function () {
+			webFXTreeHandler.toggle(node);
+			}, 100);
 	}
 	function onTreeItemSelect(elem)
 	{

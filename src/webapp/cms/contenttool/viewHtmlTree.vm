@@ -180,7 +180,7 @@
 		{
 			setSelected("${select}");
 			
-			path = "" + webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
+			path = webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
 			//alert("path:" + path);
 			if(path && path != "")
 			{
@@ -205,6 +205,9 @@
 		function expandTreeRec(pathArr, level)
 		{			
 			var node = tree.getNodeWithMyId(pathArr[level]);
+			
+			if(node == null)
+				return;
 						
 			if(!node.loading && node.parentNode != null)
 			{
@@ -295,13 +298,25 @@
 	tree.myId = "$rootNode.Id";
 	document.write(tree);
 	var oldSelected = null;
+	
 	function onTreeItemClick(elem, itemId, repoId, path)
 	{
 		//if(oldSelected!=null) oldSelected.className="";
 		//elem.className="selected";
 		//oldSelected=elem;
 		parent.htmlTreeItemClick(itemId, repoId, path);
+
+		elementString = elem.toString();
+		startIndex = elementString.indexOf("(") + 1;
+		endIndex = elementString.indexOf(")");
+		nodeId = elementString.substring(startIndex, endIndex);
+		var node = tree.getNodeWithMyId(nodeId);
+		
+		setTimeout(function () {
+			webFXTreeHandler.toggle(node);
+			}, 100);
 	}
+	
 	function onTreeItemSelect(elem)
 	{
 		var aid = elem + "-anchor";
