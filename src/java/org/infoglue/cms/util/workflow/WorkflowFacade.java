@@ -1,5 +1,5 @@
 /**
- * $Id: WorkflowFacade.java,v 1.4 2004/12/31 01:54:11 jed Exp $
+ * $Id: WorkflowFacade.java,v 1.5 2005/01/04 01:39:26 jed Exp $
  * Created by jed on Dec 28, 2004
  */
 package org.infoglue.cms.util.workflow;
@@ -23,7 +23,7 @@ import com.opensymphony.module.propertyset.PropertySet;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.4 $ $Date: 2004/12/31 01:54:11 $
+ * @version $Revision: 1.5 $ $Date: 2005/01/04 01:39:26 $
  */
 public class WorkflowFacade
 {
@@ -270,16 +270,6 @@ public class WorkflowFacade
 	}
 
 	/**
-	 * Returns all actions in a stepDescriptor.
-	 * @param stepDescriptor the desired stepDescriptor
-	 * @return a list of all actions in stepDescriptor.
-	 */
-	private List getActions(StepDescriptor stepDescriptor)
-	{
-		return createActionVOs(stepDescriptor.getActions());
-	}
-
-	/**
 	 * Creates a list of WorkflowActionVOs from a list of action descriptors
 	 * @param actionDescriptors a list of ActionDescriptors
 	 * @return a list of WorkflowActionVOs representing actionDescriptors
@@ -301,9 +291,7 @@ public class WorkflowFacade
 	 */
 	public WorkflowVO createWorkflowVO()
 	{
-		WorkflowVO workflowVO = new WorkflowVO();
-		workflowVO.setWorkflowId(new Long(workflowId));
-		workflowVO.setName(workflow.getWorkflowName(workflowId));
+		WorkflowVO workflowVO = new WorkflowVO(new Long(workflowId), workflow.getWorkflowName(workflowId));
 		workflowVO.setCurrentSteps(getCurrentSteps());
 		workflowVO.setHistorySteps(getHistorySteps());
 		workflowVO.setGlobalActions(getGlobalActions());
@@ -319,9 +307,7 @@ public class WorkflowFacade
 	 */
 	private WorkflowVO createWorkflowVO(String name)
 	{
-		WorkflowVO workflowVO = new WorkflowVO();
-		workflowVO.setWorkflowId(null);
-		workflowVO.setName(name);
+		WorkflowVO workflowVO = new WorkflowVO(null, name);
 		workflowVO.setDeclaredSteps(getDeclaredSteps(workflow.getWorkflowDescriptor(name)));
 		return workflowVO;
 	}
@@ -349,7 +335,7 @@ public class WorkflowFacade
 		StepDescriptor stepDescriptor = getWorkflowDescriptor().getStep(step.getStepId());
 		stepVO.setName(stepDescriptor.getName());
 		for (Iterator i = stepDescriptor.getActions().iterator(); i.hasNext();)
-			stepVO.getActions().add(createActionVO((ActionDescriptor)i.next()));
+			stepVO.addAction(createActionVO((ActionDescriptor)i.next()));
 
 		return stepVO;
 	}
@@ -366,7 +352,10 @@ public class WorkflowFacade
 		step.setStepId(new Integer(stepDescriptor.getId()));
 		step.setName(stepDescriptor.getName());
 		step.setStatus("Not started");
-		step.setActions(getActions(stepDescriptor));
+
+		for (Iterator i = stepDescriptor.getActions().iterator(); i.hasNext();)
+			step.addAction(createActionVO((ActionDescriptor)i.next()));
+
 		return step;
 	}
 
