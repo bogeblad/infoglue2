@@ -42,6 +42,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.cms.util.sorters.PageComparator;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
@@ -3011,6 +3012,48 @@ public class BasicTemplateController implements TemplateController
 		return childPages;
 	}
 
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, String sortAttribute, String sortOrder)
+	{
+		List childPages = new ArrayList();
+		try
+		{
+			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(this.db, siteNodeId);
+			Collections.sort(childNodeVOList, new PageComparator(sortAttribute, sortOrder, this));
+			Iterator i = childNodeVOList.iterator();
+			while(i.hasNext())
+			{
+				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
+				try
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+					webPage.setLanguageId(this.languageId);
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					childPages.add(webPage);
+				}
+				catch(Exception e)
+				{
+				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred trying to get the page childPages:" + e.getMessage(), e);
+		}
+		
+		return childPages;
+	}
+	
+	
 	/**
 	 * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
 	 * The method is great for navigation-purposes on any site. 

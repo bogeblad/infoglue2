@@ -47,6 +47,8 @@ public class ComponentLogic
 {
 	private TemplateController templateController = null;
 	private InfoGlueComponent infoGlueComponent = null;
+	private boolean useInheritance = true;
+	private boolean useEditOnSight = true;
 	
  	public ComponentLogic(TemplateController templateController, InfoGlueComponent infoGlueComponent)
  	{
@@ -68,7 +70,7 @@ public class ComponentLogic
 		//Map property = this.getComponentProperty(propertyName);
 		//if(property != null)
 		//{
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -88,8 +90,8 @@ public class ComponentLogic
 	 */
 	public List getBoundCategoryContents(String categoryAttribute, String typeAttribute) throws Exception
 	{
-		Map categoryComponent = getInheritedComponentProperty(infoGlueComponent, categoryAttribute, true);
-		Map attributeComponent = getInheritedComponentProperty(infoGlueComponent, typeAttribute, true);
+		Map categoryComponent = getInheritedComponentProperty(infoGlueComponent, categoryAttribute, this.useInheritance);
+		Map attributeComponent = getInheritedComponentProperty(infoGlueComponent, typeAttribute, this.useInheritance);
 		if(categoryComponent != null && attributeComponent != null)
 		{
 			String attr = (String)attributeComponent.get("path");
@@ -113,7 +115,7 @@ public class ComponentLogic
 	{
 		String assetUrl = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -132,7 +134,7 @@ public class ComponentLogic
 	{
 		String assetUrl = "";
 		 		
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -147,7 +149,7 @@ public class ComponentLogic
 
 	public String getAssetThumbnailUrl(String propertyName, int width, int height) throws Exception
 	{
-	    return getAssetThumbnailUrl(propertyName, width, height, true);
+	    return getAssetThumbnailUrl(propertyName, width, height, this.useInheritance);
 	}
 	
 	public String getAssetThumbnailUrl(String propertyName, int width, int height, boolean useInheritance) throws Exception
@@ -169,7 +171,7 @@ public class ComponentLogic
 
  	public String getAssetThumbnailUrl(String propertyName, String assetKey, int width, int height) throws Exception
  	{
- 	   return getAssetThumbnailUrl(propertyName, assetKey, width, height, true);
+ 	   return getAssetThumbnailUrl(propertyName, assetKey, width, height, this.useInheritance);
  	}
  	
 	public String getAssetThumbnailUrl(String propertyName, String assetKey, int width, int height, boolean useInheritance) throws Exception
@@ -219,12 +221,12 @@ public class ComponentLogic
 	
 	public String getContentAttribute(String propertyName, String attributeName)
 	{
-	    return getContentAttribute(propertyName, attributeName, false, true);
+	    return getContentAttribute(propertyName, attributeName, !this.useEditOnSight, this.useInheritance);
 	}
 
 	public String getContentAttribute(String propertyName, String attributeName, boolean disableEditOnSight)
 	{
-	    return getContentAttribute(propertyName, attributeName, disableEditOnSight, true);
+	    return getContentAttribute(propertyName, attributeName, disableEditOnSight, this.useInheritance);
 	}
 
 	/*
@@ -273,7 +275,7 @@ public class ComponentLogic
 	{
 		String attributeValue = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -292,7 +294,7 @@ public class ComponentLogic
 	{
 		List formAttributes = new ArrayList();
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -314,7 +316,7 @@ public class ComponentLogic
 
 	public String getPropertyValue(String propertyName, boolean useLangaugeFallback)
 	{
-		return getPropertyValue(propertyName, useLangaugeFallback, true);
+		return getPropertyValue(propertyName, useLangaugeFallback, this.useInheritance);
 	}
 
 	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance)
@@ -367,7 +369,7 @@ public class ComponentLogic
 
 	public List getBoundContents(String propertyName)
 	{
-	    return getBoundContents(propertyName, true);
+	    return getBoundContents(propertyName, this.useInheritance);
 	}
 	
 	public List getBoundContents(String propertyName, boolean useInheritance)
@@ -391,7 +393,7 @@ public class ComponentLogic
 	
 	public List getBoundPages(String propertyName)
 	{
-	    return getBoundPages(propertyName, true);
+	    return getBoundPages(propertyName, this.useInheritance);
 	}
 	
 	/**
@@ -444,7 +446,7 @@ public class ComponentLogic
 
 	public String getPageUrl(String propertyName) throws Exception
 	{
-	    return getPageUrl(propertyName, true);
+	    return getPageUrl(propertyName, this.useInheritance);
 	}
 
 	public String getPageUrl(String propertyName, boolean useInheritance) throws Exception
@@ -476,7 +478,7 @@ public class ComponentLogic
 
 	public String getPageUrl(String propertyName, Integer contentId)
 	{
-	    return getPageUrl(propertyName, contentId, true);
+	    return getPageUrl(propertyName, contentId, this.useInheritance);
 	}
 	
 	public String getPageUrl(String propertyName, Integer contentId, boolean useInheritance)
@@ -501,7 +503,7 @@ public class ComponentLogic
 	{
 		String pageUrl = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, true);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -521,40 +523,17 @@ public class ComponentLogic
 
 	public Map getInheritedComponentProperty(InfoGlueComponent component, String propertyName, boolean useInheritance)
 	{
-		try
+	    try
 		{
 			Map property1 = getComponentProperty(propertyName, useInheritance);
 			if(property1 != null)
 				return property1;
 				
-			/*
-			CmsLogger.logInfo("");
-			CmsLogger.logInfo("propertyName: " + propertyName);
-			CmsLogger.logInfo("component: " + component.getId() + ":" + component.getName());
-			Iterator iterator = component.getProperties().keySet().iterator();
-			while(iterator.hasNext())
-			{
-				String key = (String)iterator.next();
-				CmsLogger.logInfo("Key: " + key);
-				CmsLogger.logInfo("Value: " + component.getProperties().get(key));
-			}
-			*/
-			
 			Map property = (Map)component.getProperties().get(propertyName);
 			InfoGlueComponent parentComponent = component.getParentComponent();
 			//CmsLogger.logInfo("parentComponent: " + parentComponent);
 			while(property == null && parentComponent != null)
 			{
-				/*
-				CmsLogger.logInfo("parentComponent: " + parentComponent.getId() + ":" + parentComponent.getName());
-				iterator = parentComponent.getProperties().keySet().iterator();
-				while(iterator.hasNext())
-				{
-					String key = (String)iterator.next();
-					CmsLogger.logInfo("Key: " + key);
-					CmsLogger.logInfo("Value: " + parentComponent.getProperties().get(key));
-				}
-				*/
 				property = (Map)parentComponent.getProperties().get(propertyName);
 				parentComponent = parentComponent.getParentComponent();
 			}
@@ -860,4 +839,23 @@ public class ComponentLogic
 		return infoGlueComponent;
 	}
 
+    public boolean getUseInheritance()
+    {
+        return useInheritance;
+    }
+    
+    public void setUseInheritance(boolean useInheritance)
+    {
+        this.useInheritance = useInheritance;
+    }
+    
+    public boolean getUseEditOnSight()
+    {
+        return useEditOnSight;
+    }
+    
+    public void setUseEditOnSight(boolean useEditOnSight)
+    {
+        this.useEditOnSight = useEditOnSight;
+    }
 }
