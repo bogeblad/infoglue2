@@ -23,13 +23,19 @@
 	</tr>
 	<tr>
 		<td colspan="3">
+			##allowedContentTypeNames: $allowedContentTypeNames<br>
+			##defaultContentTypeName: $defaultContentTypeName<br>
 			$ui.getString("tool.contenttool.newContent.contentType")<br/>
 			<select class="contenttypes" name="contentTypeDefinitionId">
 			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitions)
 				#if($isBranch && $defaultFolderContentTypeName == $contentTypeDefinitionVO.getName())
 					<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()" selected="1">$contentTypeDefinitionVO.getName()</option>
 				#else
-					<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()">$contentTypeDefinitionVO.getName()</option>				
+					#if($defaultContentTypeName == $contentTypeDefinitionVO.getName())
+						<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()" selected="1">$contentTypeDefinitionVO.getName()</option>				
+					#elseif(!$allowedContentTypeNames || $allowedContentTypeNames.indexOf("$contentTypeDefinitionVO.getName(),") > -1)
+						<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()">$contentTypeDefinitionVO.getName()</option>				
+					#end
 				#end
 			#end
 			</select>

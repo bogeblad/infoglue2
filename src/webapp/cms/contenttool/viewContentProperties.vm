@@ -8,27 +8,34 @@
 
 <table class="contenttooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
 <form name="editForm" method="POST" action="ViewContentProperties!save.action">
-	<tr>
-		<td>
-			<p>
-				$ui.getString("entity.Content.property.allowedContentTypeNames.label")<br/>
-				#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
-					<input type="checkbox" name="allowedContentTypeName" value="$contentTypeDefinitionVO.getName()">$contentTypeDefinitionVO.getName()</input><br/>
-				#end
-			</p>
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>
-			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
-			<a href="javascript:saveAndExit(document.editForm, 'ViewRepositoryProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="ViewContent.action?contentId=$contentId"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
-		</td>
-	</tr>
-
+<tr>
+	<td>
+		<p>
+			$ui.getString("entity.Content.property.defaultContentTypeName.label")<br/>
+			<select name="defaultContentTypeName">
+			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+				<option value="$contentTypeDefinitionVO.getName()" #if($defaultContentTypeName == $contentTypeDefinitionVO.getName())selected="1"#end>$contentTypeDefinitionVO.getName()</option>
+			#end
+			</select>
+		</p>
+		<p>
+			$ui.getString("entity.Content.property.allowedContentTypeNames.label")<br/>
+			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+				<input type="checkbox" name="allowedContentTypeName" value="$contentTypeDefinitionVO.getName()" #if($allowedContentTypeNames.indexOf("$contentTypeDefinitionVO.getName(),") > -1)checked="1"#end>$contentTypeDefinitionVO.getName()</input><br/>
+			#end
+		</p>
+	</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>
+		<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
+		<a href="javascript:saveAndExit(document.editForm, 'ViewRepositoryProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+		<a href="ViewContent.action?contentId=$contentId"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+	</td>
+</tr>
 <input type="hidden" name="contentId" value="$!contentId">
 </form>
 </table>

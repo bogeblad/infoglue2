@@ -55,6 +55,8 @@ public class CreateContentAction extends WebworkAbstractAction
    	private ContentVO contentVO;
    	private ContentVO newContentVO;
    	private String defaultFolderContentTypeName;
+   	private String allowedContentTypeNames;
+   	private String defaultContentTypeName;
   
   	public CreateContentAction()
 	{
@@ -203,12 +205,18 @@ public class CreateContentAction extends WebworkAbstractAction
 		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.Create", protectedContentId.toString()))
 			ceb.add(new AccessConstraintException("Content.contentId", "1002"));
 		
+		Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
 		if(this.getIsBranch().booleanValue())
 		{
-			Map args = new HashMap();
-		    args.put("globalKey", "infoglue");
-		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 		    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
+		}
+		else
+		{
+		    this.allowedContentTypeNames = ps.getString("content_" + this.parentContentId + "_allowedContentTypeNames");
+		    this.defaultContentTypeName = ps.getString("content_" + this.parentContentId + "_defaultContentTypeName");
 		}
 		
 		ceb.throwIfNotEmpty();
@@ -216,4 +224,13 @@ public class CreateContentAction extends WebworkAbstractAction
 		return "input";
     }
         
+    public String getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+    
+    public String getDefaultContentTypeName()
+    {
+        return defaultContentTypeName;
+    }
 }

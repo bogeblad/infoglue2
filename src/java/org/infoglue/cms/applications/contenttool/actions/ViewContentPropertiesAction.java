@@ -51,8 +51,8 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 	private PropertySet propertySet				= null; 
 	private List contentTypeDefinitionVOList 	= null;
 	
-	private String WYSIWYGConfig 				= null;
-	private String defaultFolderContentTypeName = null;	
+	private String allowedContentTypeNames 		= null;
+	private String defaultContentTypeName 		= null;	
 
 	
     public ViewContentPropertiesAction()
@@ -67,12 +67,11 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-	    
-	    byte[] WYSIWYGConfigBytes = ps.getData("content_" + this.getContentId() + "_WYSIWYGConfig");
-	    if(WYSIWYGConfigBytes != null)
-	    	this.WYSIWYGConfig = new String(WYSIWYGConfigBytes, "utf-8");
 
-	    this.defaultFolderContentTypeName = ps.getString("content_" + this.getContentId() + "_defaultFolderContentTypeName");
+	    this.allowedContentTypeNames 	= ps.getString("content_" + this.getContentId() + "_allowedContentTypeNames");
+	    this.defaultContentTypeName		= ps.getString("content_" + this.getContentId() + "_defaultContentTypeName");
+	    System.out.println("allowedContentTypeNames:" + allowedContentTypeNames);
+	    System.out.println("defaultContentTypeName:" + defaultContentTypeName);
     } 
 
     /**
@@ -92,12 +91,22 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
     
     public String doSave() throws Exception
     {
+        String allowedContentTypeNames = "";
+        String[] allowedContentTypeNameArray = getRequest().getParameterValues("allowedContentTypeName");
+        System.out.println("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
+        for(int i=0; i<allowedContentTypeNameArray.length; i++)
+        {
+            allowedContentTypeNames += allowedContentTypeNameArray[i] + ","; 
+        }
+        
     	Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
-	    ps.setData("content_" + this.getContentId() + "_WYSIWYGConfig", WYSIWYGConfig.getBytes("utf-8"));
-	    ps.setString("content_" + this.getContentId() + "_defaultFolderContentTypeName", defaultFolderContentTypeName);
+	    if(allowedContentTypeNames != null)
+	        ps.setString("content_" + this.getContentId() + "_allowedContentTypeNames", allowedContentTypeNames);
+	    if(defaultContentTypeName != null)
+	        ps.setString("content_" + this.getContentId() + "_defaultContentTypeName", defaultContentTypeName);
 	    
     	return "save";
     }
@@ -125,34 +134,24 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 	{
 		return contentVO;
 	}
-	
-	public String getWYSIWYGConfig() 
-	{
-		return WYSIWYGConfig;
-	}
-	
-	public void setWYSIWYGConfig(String config) 
-	{
-		WYSIWYGConfig = config;
-	}
-	
-	public PropertySet getPropertySet() 
-	{
-		return propertySet;
-	}
-	
-    public String getDefaultFolderContentTypeName()
-    {
-        return defaultFolderContentTypeName;
-    }
-    
-    public void setDefaultFolderContentTypeName(String defaultFolderContentTypeName)
-    {
-        this.defaultFolderContentTypeName = defaultFolderContentTypeName;
-    }
     
     public List getContentTypeDefinitionVOList()
     {
         return contentTypeDefinitionVOList;
+    }
+    
+    public String getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+
+    public String getDefaultContentTypeName()
+    {
+        return defaultContentTypeName;
+    }
+    
+    public void setDefaultContentTypeName(String defaultContentTypeName)
+    {
+        this.defaultContentTypeName = defaultContentTypeName;
     }
 }
