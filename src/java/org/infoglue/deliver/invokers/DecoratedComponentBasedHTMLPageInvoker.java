@@ -23,13 +23,6 @@
 
 package org.infoglue.deliver.invokers;
 
-import org.infoglue.deliver.applications.actions.InfoGlueComponent;
-import org.infoglue.deliver.applications.databeans.ComponentBinding;
-import org.infoglue.deliver.applications.databeans.ComponentProperty;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.databeans.Slot;
-import org.infoglue.deliver.controllers.kernel.impl.simple.*;
-import org.infoglue.deliver.util.*;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
@@ -42,6 +35,16 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.io.FileHelper;
+import org.infoglue.deliver.applications.actions.InfoGlueComponent;
+import org.infoglue.deliver.applications.databeans.ComponentBinding;
+import org.infoglue.deliver.applications.databeans.ComponentProperty;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.Slot;
+import org.infoglue.deliver.controllers.kernel.impl.simple.*;
+import org.infoglue.deliver.util.Timer;
+import org.infoglue.deliver.util.VelocityTemplateProcessor;
+import org.infoglue.deliver.util.CacheController;
+
 import org.w3c.dom.NodeList;
 
 import java.io.*;
@@ -440,9 +443,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 	private String getComponentPropertiesDiv(Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, org.w3c.dom.Document document/*String componentPropertiesString*/) throws Exception
 	{
-		//CmsLogger.logInfo("***************************************************************");
-		//CmsLogger.logInfo("componentId:" + componentId);
-
 		StringBuffer sb = new StringBuffer();
 		Timer timer = new Timer();
 		timer.setActive(false);
@@ -532,6 +532,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
 						else
 							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+					}
+					else if(componentProperty.getEntityClass().equalsIgnoreCase("Category"))
+					{
+						if(componentProperty.getIsMultipleBinding())
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showCategoryTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+						else
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showCategoryTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
 					}
 				}
 
@@ -790,7 +797,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentRendererAction 	= CmsPropertyHandler.getProperty("componentRendererAction");
 
 		sb.append("<div id=\"buffer\" style=\"top: 0px; left: 0px; z-index:1000;\"><img src=\"images/componentDraggedIcon.gif\"></div>");
-
 		sb.append("<div id=\"palette\" style=\"right:5px; top:200px;\">");
 		sb.append("		<div id=\"paletteHandle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Component palette</td><td align=\"right\"><a href=\"javascript:hideDiv('palette');\" class=\"white\">close</a></td></tr></table></div>");
 		sb.append("		<div id=\"paletteHeader\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\">");
