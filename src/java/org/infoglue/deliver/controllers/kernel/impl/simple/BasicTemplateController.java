@@ -1672,17 +1672,24 @@ public class BasicTemplateController implements TemplateController
 					if(id == null || id.equals(""))
 						id = child.getText();
 		
-					SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNode(this.db, new Integer(id)).getValueObject();
-					if(this.nodeDeliveryController.isValidSiteNode(this.db, siteNodeVO.getId()))
+					try
 					{
-						WebPage webPage = new WebPage();						
-						webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-						webPage.setLanguageId(this.languageId);
-						webPage.setContentId(null);
-						webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-						webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-						webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
-						relatedPages.add(webPage);
+						SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNode(this.db, new Integer(id)).getValueObject();
+						if(this.nodeDeliveryController.isValidSiteNode(this.db, siteNodeVO.getId()))
+						{
+							WebPage webPage = new WebPage();						
+							webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+							webPage.setLanguageId(this.languageId);
+							webPage.setContentId(null);
+							webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
+							webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
+							webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+							relatedPages.add(webPage);
+						}
+					}
+					catch(Exception e)
+					{
+					    CmsLogger.logInfo("An error occurred when looking up one of the related Pages FromXML:" + e.getMessage(), e);
 					}
 				}	
 			}
@@ -2898,14 +2905,21 @@ public class BasicTemplateController implements TemplateController
 			while(i.hasNext())
 			{
 				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				WebPage webPage = new WebPage();						
-				webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-				webPage.setLanguageId(this.languageId);
-				webPage.setContentId(null);
-				webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-				webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-				webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
-				childPages.add(webPage);
+				try
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+					webPage.setLanguageId(this.languageId);
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					childPages.add(webPage);
+				}
+				catch(Exception e)
+				{
+				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				}
 			}
 		}
 		catch(Exception e)
@@ -2932,14 +2946,21 @@ public class BasicTemplateController implements TemplateController
 			while(i.hasNext())
 			{
 				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				WebPage webPage = new WebPage();						
-				webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-				webPage.setLanguageId(this.languageId);
-				webPage.setContentId(null);
-				webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-				webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-				webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
-				childPages.add(webPage);
+				try
+				{
+				    WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+					webPage.setLanguageId(this.languageId);
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					childPages.add(webPage);
+				}
+				catch(Exception e)
+				{
+				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				}
 			}
 		}
 		catch(Exception e)
@@ -2965,14 +2986,21 @@ public class BasicTemplateController implements TemplateController
 			while(i.hasNext())
 			{
 				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				WebPage webPage = new WebPage();						
-				webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-				webPage.setLanguageId(this.languageId);
-				webPage.setContentId(null);
-				webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-				webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-				webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
-				childPages.add(webPage);
+				try
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+					webPage.setLanguageId(this.languageId);
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					childPages.add(webPage);
+				}
+				catch(Exception e)
+				{
+				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				}
 			}
 		}
 		catch(Exception e)
@@ -3005,14 +3033,21 @@ public class BasicTemplateController implements TemplateController
 			while(i.hasNext())
 			{
 				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				WebPage webPage = new WebPage();						
-				webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-				webPage.setLanguageId(this.languageId);
-				webPage.setContentId(null);
-				webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-				webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-				webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
-				boundPages.add(webPage); 
+				try
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+					webPage.setLanguageId(this.languageId);
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					boundPages.add(webPage); 
+				}
+				catch(Exception e)
+				{
+				    CmsLogger.logInfo("An error occurred when looking up one of the bound pages:" + e.getMessage(), e);
+				}
 			}
 		}
 		catch(Exception e)
@@ -3046,14 +3081,21 @@ public class BasicTemplateController implements TemplateController
 			while(i.hasNext())
 			{
 				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				WebPage webPage = new WebPage();						
-				webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-				webPage.setLanguageId(this.languageId);
-				webPage.setContentId(null);
-				webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
-				webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
-				webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
-				boundPages.add(webPage); 
+				try
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+					webPage.setLanguageId(this.languageId);
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+					boundPages.add(webPage); 
+				}
+				catch(Exception e)
+				{
+				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				}
 			}
 		}
 		catch(Exception e)
@@ -3090,19 +3132,26 @@ public class BasicTemplateController implements TemplateController
 			while(i.hasNext())
 			{
 				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				
-				Integer metaInfoContentId = this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, DO_NOT_USE_INHERITANCE);
-				String navigationTitle = this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, DO_NOT_USE_LANGUAGE_FALLBACK);
-				if(metaInfoContentId != null && navigationTitle != null && !navigationTitle.equals(""))
+
+				try
+				{	
+					Integer metaInfoContentId = this.nodeDeliveryController.getMetaInfoContentId(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, DO_NOT_USE_INHERITANCE);
+					String navigationTitle = this.nodeDeliveryController.getPageNavigationTitle(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, DO_NOT_USE_LANGUAGE_FALLBACK);
+					if(metaInfoContentId != null && navigationTitle != null && !navigationTitle.equals(""))
+					{
+						WebPage webPage = new WebPage();						
+					    webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+						webPage.setLanguageId(this.languageId);
+						webPage.setContentId(null);
+						webPage.setNavigationTitle(navigationTitle);
+						webPage.setMetaInfoContentId(metaInfoContentId);
+						webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
+						boundPages.add(webPage); 
+					}
+				}
+				catch(Exception e)
 				{
-					WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-					webPage.setLanguageId(this.languageId);
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(navigationTitle);
-					webPage.setMetaInfoContentId(metaInfoContentId);
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(this.db, this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null));
-					boundPages.add(webPage); 
+				    CmsLogger.logInfo("An error occurred when looking up one of the getLocalizedBoundPages:" + e.getMessage(), e);
 				}
 			}
 		}
