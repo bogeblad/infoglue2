@@ -174,7 +174,7 @@
 	<tr>
 		<td>
 			#set($lvConstraint = 0)
-			#lvHead(["Incoming task"] "" "" "" "")
+			#lvHead(["Step", "Action"] "" "" "" "")
 			#set($cnt = 0)
 			#set($quote = '"')
 			#foreach ($workflowActionVO in $this.getWorkflowActionVOList($webwork.bean('org.infoglue.cms.util.workflow.OwnerStepFilter')))
@@ -183,14 +183,13 @@
 					#set($view = "ViewMyDesktopToolStartPage!invoke.action")
 				#end
 				#set($view = "$quote$view$quote")
-				##set($row = ["<a STYLE='cursor:hand;' onclick='invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
-				#set($row = ["<a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
+				#set($row = [$workflowActionVO.stepName, "<a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $view);'>$workflowActionVO.getName()</a>"])
 				#set($cnt = $cnt + 1)
 				#lvAddRow($row $cnt "$workflowActionVO.getId()")
 			#end
 
 			#if($cnt == 0)
-				#set($row = ["You have no tasks at the moment"])
+				#set($row = ["You have no tasks at the moment", ""])
 				#lvAddRow($row $cnt "")
 			#end
 
