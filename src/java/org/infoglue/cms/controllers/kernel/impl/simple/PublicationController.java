@@ -77,7 +77,7 @@ public class PublicationController extends BaseController
 	/**
 	 * This method returns a list of earlier editions for this site.
 	 */
-	public static List getEditions(Integer repositoryId) throws SystemException
+	public static List getAllEditions(Integer repositoryId) throws SystemException
 	{
     	Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
@@ -112,7 +112,7 @@ public class PublicationController extends BaseController
 	 */
 	public static EditionBrowser getEditionPage(Integer repositoryId, int startIndex) throws SystemException
 	{
-		int pageSize = new Integer(CmsPropertyHandler.getProperty("publication.page.size")).intValue();
+		int pageSize = new Integer(CmsPropertyHandler.getProperty("edition.pageSize")).intValue();
 
     	Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
@@ -122,10 +122,10 @@ public class PublicationController extends BaseController
 			oql.bind(repositoryId);
         	QueryResults results = oql.execute(Database.ReadOnly);
 
-			EditionBrowser browser = new EditionBrowser(results.size(), pageSize, startIndex);
-
 			List allEditions = Collections.list(results);
-			List page = allEditions.subList(startIndex, startIndex+pageSize);
+			List page = allEditions.subList(startIndex, Math.min(startIndex+pageSize, allEditions.size()));
+
+			EditionBrowser browser = new EditionBrowser(allEditions.size(), pageSize, startIndex);
 
 			List editionVOs = new ArrayList();
 			for (Iterator iter = page.iterator(); iter.hasNext();)
@@ -135,7 +135,7 @@ public class PublicationController extends BaseController
 				pubVO.setPublicationDetails(toVOList(pub.getPublicationDetails()));
 				editionVOs.add(pubVO);
 			}
-			
+
 			browser.setEditions(editionVOs);
 
             commitTransaction(db);
