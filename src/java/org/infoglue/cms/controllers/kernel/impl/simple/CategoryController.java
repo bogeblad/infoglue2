@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.1 2004/12/01 23:40:42 frank Exp $
+ * $Id: CategoryController.java,v 1.2 2005/03/31 09:06:57 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -28,10 +28,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsLogger;
 
 /**
  * The CategoryController manages all actions related to persistence
@@ -160,6 +163,39 @@ public class CategoryController extends BaseController
 		return roots;
 	}
 
+	
+	/**
+	 * Finds all authorized categories parent id, recursively until no children are found.
+	 *
+	 * @return A list of children nodes, with thier children populated
+	 */
+	public List getAuthorizedActiveChildren(Integer parentId, InfoGluePrincipal infogluePrincipal) throws SystemException
+	{
+		List children = findActiveByParent(parentId);
+		for (Iterator iter = children.iterator(); iter.hasNext();)
+		{
+			CategoryVO child = (CategoryVO) iter.next();
+			if(!getIsAccessApproved(child.getCategoryId(), infogluePrincipal))
+			{
+			    iter.remove();
+			    System.out.println("Removed " + child.getName());
+			}
+			
+			List subChildren = findAllActiveChildren(child.getId());
+			Iterator subChildrenIterator = subChildren.iterator();
+			while(subChildrenIterator.hasNext())
+			{
+			    CategoryVO subChild = (CategoryVO) subChildrenIterator.next();
+			    if(getIsAccessApproved(subChild.getCategoryId(), infogluePrincipal))
+				{
+				    child.getChildren().add(subChild);
+				    System.out.println("Added " + subChild.getName());
+				}
+			}
+		}
+		return children;
+	}
+	
 	/**
 	 * Finds all children for a given parent id, recursively until no children are found.
 	 *
@@ -247,5 +283,35 @@ public class CategoryController extends BaseController
 	public BaseEntityVO getNewVO()
 	{
 		return new CategoryVO();
+	}
+	
+	
+	/**
+	 * This method returns true if the user should have access to the contentTypeDefinition sent in.
+	 */
+    
+	public boolean getIsAccessApproved(Integer categoryId, InfoGluePrincipal infoGluePrincipal) throws SystemException
+	{
+		CmsLogger.logInfo("getIsAccessApproved for " + categoryId + " AND " + infoGluePrincipal);
+		boolean hasAccess = false;
+    	
+		Database db = CastorDatabaseService.getDatabase();
+       
+		beginTransaction(db);
+
+		try
+		{ 
+			hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Category.Read", categoryId.toString());
+		
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+    
+		return hasAccess;
 	}
 }

@@ -564,13 +564,20 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		List buttons = new ArrayList();
 		this.name = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentTypeDefinitionId).getName();
 		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteContentTypeDefinition.header&yesDestination=" + URLEncoder.encode("DeleteContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListContentTypeDefinition.action?title=ContentTypeDefinitions", "UTF-8") + "&message=tool.managementtool.deleteContentTypeDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteContentTypeDefinition"), "tool.managementtool.deleteContentTypeDefinition.header"));
-		buttons.add(getAccessRightsButton());
+		
+		String protectCategories = CmsPropertyHandler.getProperty("protectCategories");
+		if(protectCategories != null && protectCategories.equalsIgnoreCase("true"))
+		{
+			String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8"), "UTF-8");
+			buttons.add(getAccessRightsButton("ContentTypeDefinition", this.contentTypeDefinitionId.toString(), returnAddress));
+		}
+		
 		return buttons;				
 	}
 
 	private List getCategoryButtons() throws Exception
 	{
-		String url = "CategoryManagement!new.action";
+	    String url = "CategoryManagement!new.action";
 		if(getCategoryId() != null)
 			url += "?model/parentId=" + getCategoryId();
 
@@ -581,13 +588,16 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 			buttons.add(new ImageButton(true, "javascript:openPopup('CategoryManagement!displayTreeForMove.action?categoryId=" + getCategoryId() + "', 'Category', 'width=400,height=600,resizable=no,status=yes');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.moveCategory"), "Move Category"));
 
 		buttons.add(new ImageButton(true, "javascript:submitListForm('category');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteCategory"), "Delete Category"));
+		
+		String returnAddress = URLEncoder.encode(URLEncoder.encode("CategoryManagement!edit.action?categoryId=" + getCategoryId() + "&title=Category%20Details", "UTF-8"), "UTF-8");
+		buttons.add(getAccessRightsButton("Category", getCategoryId().toString(), returnAddress));
+
 		return buttons;
 	}
 	
-	private ImageButton getAccessRightsButton() throws Exception
+	private ImageButton getAccessRightsButton(String interceptionPointCategory, String extraParameter, String returnAddress) throws Exception
 	{
-		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8"), "UTF-8");
-		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=ContentTypeDefinition&extraParameters=" + this.contentTypeDefinitionId +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header");
+		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=" + interceptionPointCategory + "&extraParameters=" + extraParameter +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header");
 	}
 
 }

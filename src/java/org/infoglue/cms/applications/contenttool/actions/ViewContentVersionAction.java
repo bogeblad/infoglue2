@@ -861,8 +861,12 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public List getAvailableCategories(Integer categoryId)
 	{
 		try
-		{
-			return categoryController.findAllActiveChildren(categoryId);
+		{	
+		    String protectCategories = CmsPropertyHandler.getProperty("protectCategories");
+		    if(protectCategories != null && protectCategories.equalsIgnoreCase("true"))
+		        return categoryController.getAuthorizedActiveChildren(categoryId, this.getInfoGluePrincipal());
+			else
+			    return categoryController.findAllActiveChildren(categoryId);
 		}
 		catch(Exception e)
 		{
