@@ -30,12 +30,13 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
-import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+
+import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
@@ -47,6 +48,9 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 {
+	public static final String CATEGORY_TREE = "showCategoryTree";
+	public static final String CATEGORY_TREE_MULTIPLE = "showCategoryTreeForMultipleBinding";
+
 	private Integer repositoryId = null;
 	private Integer siteNodeId = null;
 	private Integer languageId = null;
@@ -172,6 +176,27 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 		initializeTreeView("ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action");
 		return "showStructureTreeForMultipleBinding";
 	}
+
+	/**
+	 * This method shows the user a list of Categories.
+	 */
+	public String doShowCategoryTree() throws Exception
+	{
+		initialize();
+		initializeTreeView("ViewSiteNodePageComponents!showCategoryTree.action");
+		return CATEGORY_TREE;
+	}
+
+	/**
+	 * This method shows the user a list of Categories to chose multiple.
+	 */
+	public String doShowCategoryTreeForMultipleBinding() throws Exception
+	{
+		initialize();
+		initializeTreeView("ViewSiteNodePageComponents!showCategoryTreeForMultipleBinding.action");
+		return CATEGORY_TREE_MULTIPLE;
+	}
+
 
 	public List getRepositories()
 	{
