@@ -117,8 +117,16 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		else
 		{
-			Document document = new DOMBuilder().getDocument(componentXML);
-			
+		    Document document = null;
+		    try
+		    {
+		        document = new DOMBuilder().getDocument(componentXML);
+		    }
+		    catch(Exception e)
+		    {
+		        throw new SystemException("There was a problem parsing the component structure on the page. Could be invalid XML in the ComponentStructure attribute. Message:" + e.getMessage(), e);
+		    }
+		    
 			decoratorTimer.printElapsedTime("After reading document");
 			
 			//decoratorTimer.printElapsedTime("After getting components");
