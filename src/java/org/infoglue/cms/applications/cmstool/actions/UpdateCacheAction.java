@@ -82,7 +82,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 			
 			if(className != null)
 			{
-				Class[] types = {Class.forName(className)};
+				Class types = Class.forName(className);
 				Object[] ids = {new Integer(objectId)};
 				
 				CacheController.clearCache(types, ids);
@@ -100,7 +100,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 				if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 				{
 					CmsLogger.logInfo("We update SmallContentImpl as well");
-					CacheController.clearCache(new Class[]{SmallContentImpl.class}, new Object[]{new Integer(objectId)});
+					CacheController.clearCache(SmallContentImpl.class, new Object[]{new Integer(objectId)});
 				}
 				
 				if(Class.forName(className).getClass().getName().equals(RepositoryImpl.class.getName()))

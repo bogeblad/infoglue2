@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
  
+//import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.persist.spi.CallbackInterceptor;
 import org.infoglue.cms.util.ChangeNotificationController;
@@ -140,7 +141,9 @@ public class CmsJDOCallback implements CallbackInterceptor
 		{
 			Class[] types = {c};
 			Class[] ids = {null};
-			db.expireCache(types, null);
+			//CacheManager manager = db.getCacheManager();
+			//manager.expireCache(types);
+			db.expireCache(types, ids);
 		}
 		catch(Exception e)
 		{
