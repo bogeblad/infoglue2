@@ -66,6 +66,7 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	private String slotId		= null;
 	private String specifyBaseTemplate = null;
 	private String url			= null;
+	private Integer direction 	= null;
 	
 	LanguageVO masterLanguageVO = null;
 	
@@ -305,6 +306,107 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
 	}
 
 
+	/**
+	 * This method moves the component up a step if possible within the same slot. 
+	 */
+    
+	public String doMoveComponent() throws Exception
+	{
+		System.out.println("************************************************************");
+		System.out.println("* MOVING COMPONENT UP                                        *");
+		System.out.println("************************************************************");
+		System.out.println("siteNodeId:" + this.siteNodeId);
+		System.out.println("languageId:" + this.languageId);
+		System.out.println("contentId:" + this.contentId);
+		System.out.println("queryString:" + this.getRequest().getQueryString());
+		System.out.println("parentComponentId:" + this.parentComponentId);
+		System.out.println("componentId:" + this.componentId);
+		System.out.println("slotId:" + this.slotId);
+		System.out.println("specifyBaseTemplate:" + this.specifyBaseTemplate);
+		System.out.println("direction:" + this.direction);
+
+		initialize();
+			
+		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
+		TemplateController templateController 						= getTemplateController(nodeDeliveryController, integrationDeliveryController, siteNodeId, languageId, contentId, getRequest());
+	
+		boolean USE_LANGUAGE_FALLBACK        			= true;
+		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
+		
+		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
+		String componentXML   = getPageComponentsString(templateController, siteNodeId, languageId, contentId);			
+		//CmsLogger.logInfo("componentXML:" + componentXML);
+		
+		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+		String componentXPath = "//component[@id=" + this.componentId + "]";
+		System.out.println("componentXPath:" + componentXPath);
+		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+		System.out.println("nodeList:" + anl.getLength());
+		if(anl.getLength() > 0)
+		{
+			Element component = (Element)anl.item(0);
+			//CmsLogger.logInfo(XMLHelper.serializeDom(component, new StringBuffer()));
+			System.out.println("YES - now only add the new component...");		
+			Node parentNode = component.getParentNode();
+			//System.out.println("Before: " + XMLHelper.serializeDom(parentNode, new StringBuffer()));
+			System.out.println("parentNode:" + parentNode);
+			
+			boolean hasChanged = false;
+			
+			if(this.direction.intValue() == 0) //Up
+			{
+				Node previousNode = component.getPreviousSibling();
+				System.out.println("previousNode:" + previousNode);
+				if(previousNode != null)
+				{
+					parentNode.removeChild(component);
+				    parentNode.insertBefore(component, previousNode);
+				    hasChanged = true;
+				}
+			}
+			else if(this.direction.intValue() == 1) //Down
+			{
+				Node nextNode = component.getNextSibling();
+				if(nextNode != null)
+				    nextNode = nextNode.getNextSibling();
+				
+				System.out.println("nextNode:" + nextNode);
+				if(nextNode != null)
+				{
+					parentNode.removeChild(component);
+				    parentNode.insertBefore(component, nextNode);
+				    hasChanged = true;
+				}
+			}		
+			
+			if(hasChanged)
+			{
+				//System.out.println("Added: " + XMLHelper.serializeDom(parentNode, new StringBuffer()));
+				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
+				//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
+				
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+				LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
+				
+				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, masterLanguage.getId(), true, "Meta information");
+				//ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(siteNodeId, "Meta information");		
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId());
+				//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
+				ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
+			}
+		}
+				
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId;
+		//this.getResponse().sendRedirect(url);		
+		
+		this.url = this.getResponse().encodeURL(url);
+		this.getResponse().sendRedirect(url);
+	    return NONE; 
+	}
+	
+
+	
 	/**
 	 * This method updates the given properties with new values. 
 	 */
@@ -1263,5 +1365,15 @@ public class ViewSiteNodePageComponentsAction extends WebworkAbstractAction
     public void setSortProperty(String sortProperty)
     {
         this.sortProperty = sortProperty;
+    }
+    
+    public Integer getDirection()
+    {
+        return direction;
+    }
+    
+    public void setDirection(Integer direction)
+    {
+        this.direction = direction;
     }
 }

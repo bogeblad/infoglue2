@@ -1,3 +1,147 @@
+/****************************
+ * Called when rezising popup
+ ****************************/
+ 
+cookie_name = "pageStructureDivWidth";
+var pageStructureDivWidth = "225px";
+
+/*
+function setInitialPosition()
+{
+	//alert("Setting initial position...");
+	if(document.cookie)
+	{
+		index = document.cookie.indexOf(cookie_name);
+		//alert("index:" + index);
+		if (index != -1)
+		{
+			namestart = (document.cookie.indexOf("=", index) + 1);
+			nameend = document.cookie.indexOf(";", index);
+			if (nameend == -1) {nameend = document.cookie.length;}
+			defaultMenuSize = document.cookie.substring(namestart, nameend);
+			//alert("defaultMenuSize" + defaultMenuSize);
+		}
+	}
+
+	//alert("defaultMenuSize" + defaultMenuSize)
+	this.document.getElementById('mainarea').cols=defaultMenuSize;
+}
+*/
+
+function expandWindow()
+{
+	size = document.getElementById('pageComponents').style.width;
+	//alert("size:" + size);
+	if(size.indexOf("225") > -1)
+		size = "300px";
+	else if(size.indexOf("300") > -1)
+		size = "350px";
+	else if(size.indexOf("350") > -1)
+		size = "400px";
+	else
+		size = "225px";
+	
+	document.getElementById('pageComponents').style.width=size;
+	
+	/*
+	if(document.cookie != document.cookie)
+		index = document.cookie.indexOf(cookie_name);
+	else
+		index = -1;
+	
+	if (index == -1)
+		document.cookie=cookie_name+"="+size+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+	*/
+} 
+ 
+
+/****************************
+ * Hook method to get informed when a drag ends
+ ****************************/
+
+toolbarTopPositionCookieName = "toolbarTopPosition";
+var defaultToolbarTopPosition = "0px";
+ 
+function dragEnded(object, left, top)
+{
+	alert("dragEnded:" + dragEnded);
+	topPosition = top;
+	if(document.cookie != document.cookie)
+		index = document.cookie.indexOf(toolbarTopPositionCookieName);
+	else
+		index = -1;
+	
+	if (index == -1)
+	{
+		document.cookie=toolbarTopPositionCookieName+"="+topPosition+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+	}
+}
+
+function setToolbarInitialPosition()
+{
+	if(document.cookie)
+	{
+		index = document.cookie.indexOf(toolbarTopPositionCookieName);
+		//alert("index:" + index);
+		if (index != -1)
+		{
+			namestart = (document.cookie.indexOf("=", index) + 1);
+			nameend = document.cookie.indexOf(";", index);
+			if (nameend == -1) {nameend = document.cookie.length;}
+			defaultToolbarTopPosition = document.cookie.substring(namestart, nameend);
+			//alert("defaultMenuSize" + defaultMenuSize);
+		}
+	}
+
+	//alert("defaultToolbarTopPosition" + defaultToolbarTopPosition)
+	this.document.getElementById('paletteDiv').style.top=defaultToolbarTopPosition;
+}
+
+function moveDivDown(id)
+{
+	//alert("clientHeight:" + this.parent.document.body.clientHeight);
+	position = this.parent.document.body.clientHeight - 120 + "px";
+	//position = "500px";
+
+	var div = document.getElementById(id);
+
+	if(div)
+		div.style.top = position;
+	
+	if(document.cookie != document.cookie)
+		index = document.cookie.indexOf(toolbarTopPositionCookieName);
+	else
+		index = -1;
+	
+	if (index == -1)
+		document.cookie=toolbarTopPositionCookieName+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";	
+}
+
+function moveDivUp(id)
+{
+	position = "0px";
+
+	var div = document.getElementById(id);
+	
+	if(div)
+		div.style.top = position;
+	
+	if(document.cookie != document.cookie)
+		index = document.cookie.indexOf(toolbarTopPositionCookieName);
+	else
+		index = -1;
+	
+	if (index == -1)
+		document.cookie=toolbarTopPositionCookieName+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+	
+}
+
+
+
+
+
+
+
 var activeMenuId = "";
 var menuskin = "skin1"; // skin0, or skin1
 var display_url = 0; // Show URLs in status bar?
@@ -1017,81 +1161,6 @@ function viewSource()
 		document.location.href = newLocation;
 	}
 
-
-	cookie_name = "palettePosition";
-	var position = '0px';
-
-	function setInitialPosition(id)
-	{
-		//alert("id:" + id);
-		if(document.cookie)
-		{
-			index = document.cookie.indexOf(cookie_name);
-			//alert("index:" + index);
-			if (index != -1)
-			{
-				namestart = (document.cookie.indexOf("=", index) + 1);
-				nameend = document.cookie.indexOf(";", index);
-				if (nameend == -1) {nameend = document.cookie.length;}
-				position = document.cookie.substring(namestart, nameend);
-				//alert("position: " + position);
-			}
-		}
-		
-		//alert("position: " + position);
-		
-		//alert("document" + document.location.href)
-		var div = document.getElementById(id);
-		//alert("div" + div)
-		if(div)
-			div.style.top = "" + position;
-		
-		//alert("document" + document.location.href);
-		//alert("apa:" + div.style.top);
-	}
-		 
-	function moveDivDown(id)
-	{
-		position = "500px";
-
-		var div = document.getElementById(id);
-		if(div)
-			div.style.top = position;
-		
-		if(document.cookie != document.cookie){
-			index = document.cookie.indexOf(cookie_name);
-		}
-		else{
-			index = -1;
-		}
-		
-		if (index == -1){
-			document.cookie=cookie_name+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
-		}
-		
-	}
-
-	function moveDivUp(id)
-	{
-		position = "0px";
-
-		var div = document.getElementById(id);
-		if(div)
-			div.style.top = position;
-		
-		if(document.cookie != document.cookie){
-			index = document.cookie.indexOf(cookie_name);
-		}
-		else{
-			index = -1;
-		}
-		
-		if (index == -1){
-			document.cookie=cookie_name+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
-		}
-		
-	}
-	
 	var groupHash = new Array();
 	//var componentIndex = 0;
 	

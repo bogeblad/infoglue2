@@ -235,13 +235,13 @@ A.white:active {
 	right:5px;
 	top:100px;
 	height: 400px;
-	overflow: auto;
+	aoverflow: auto;
 	}
 
 #pageComponentsHandle {
-	margin:2px;
-	padding:2px;
-	width:241px;
+	padding-top:2px;
+	padding-bottom:2px;
+	width:100%;
 	color:white;
 	background-color:navy;
 	font-family:verdana, sans-serif;
@@ -249,12 +249,12 @@ A.white:active {
 	}
 
 #pageComponentsBody {
-	margin:2px;
-	padding:2px;
-	width:241px;
+	padding-top:2px;
+	padding-bottom:2px;
+	width:100%;
 	font-family:verdana, sans-serif;
 	font-size:10px;
-	height: 370px;
+	height: 380px;
 	overflow: auto;
 	}
 

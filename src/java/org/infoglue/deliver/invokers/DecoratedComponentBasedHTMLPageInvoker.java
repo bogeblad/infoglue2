@@ -729,6 +729,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 
 		sb.append("<div id=\"pageComponents\" style=\"right:5px; top:5px; visibility:hidden;\">");
+
+		sb.append("	<div id=\"dragCorner\" style=\"position: absolute; width: 20px; height: 20px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"images/winresize.gif\" border=\"0\" width=\"20\" height=\"20\"></a></div>");
+			
 		sb.append("		<div id=\"pageComponentsHandle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Page components</td><td align=\"right\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\">close</a></td></tr></table></div>");
 		sb.append("		<div id=\"pageComponentsBody\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
 		
@@ -738,7 +741,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		//sb.append("<img src=\"images/tcross.png\" width=\"19\" height=\"16\"><span onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"label\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span></td>");
 		sb.append("		</tr>");
 		
-		renderComponentTree(templateController, sb, component, 0);
+		renderComponentTree(templateController, sb, component, 0, 0, 1);
 
 		sb.append("		<tr>");
 		for(int i=0; i<20; i++)
@@ -757,7 +760,16 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("     theRoot.style.left = 160;");
 		sb.append("     theRoot.style.top = 150;");
 		sb.append("	</script>");
-		
+
+		/*
+		sb.append("	<script type=\"text/javascript\">");
+		sb.append("		var theHandle = document.getElementById(\"dragCorner\");");
+		sb.append("		var theRoot   = document.getElementById(\"dragCorner\");");
+		sb.append("		Drag.init(theHandle, theRoot);");
+		sb.append("     theRoot.style.bottom = 0;");
+		sb.append("     theRoot.style.right  = 0;");
+		sb.append("	</script>");
+		*/
 		return sb.toString();
 	}
 
@@ -765,7 +777,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method renders the component tree visually
 	 */
 	
-	private void renderComponentTree(TemplateController templateController, StringBuffer sb, InfoGlueComponent component, int level) throws Exception
+	private void renderComponentTree(TemplateController templateController, StringBuffer sb, InfoGlueComponent component, int level, int position, int maxPosition) throws Exception
 	{
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 
@@ -779,7 +791,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		{
 			sb.append("<td width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
-		sb.append("<td width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td><img src=\"images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"clickableLabel\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "');</script></td>");
+		
+		sb.append("<td width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td><img src=\"images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"clickableLabel\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "');</script>");
+		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0";
+		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1";
+		
+		if(position > 0)
+		    sb.append("<a href=\"" + upUrl + "\"><img src=\"images/upArrow.gif\" border=\"0\" width=\"11\" width=\"10\"></a>");
+		if(maxPosition > position)
+		    sb.append("<a href=\"" + downUrl + "\"><img src=\"images/downArrow.gif\" border=\"0\" width=\"11\" width=\"10\"></a>");
+		
+		sb.append("</td>");
+		
 		sb.append("		</tr>");
 		
 		//Properties
@@ -791,24 +814,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		sb.append("<td><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/propertiesIcon.gif\" width=\"16\" height=\"16\" border=\"0\"></td><td colspan=\"" + (colspan - 3) + "\"><span onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"label\">Properties</span></td>");
 		sb.append("		</tr>");
-
-		/*
-		Iterator propertiesIterator = component.getProperties().values().iterator();
-		while(propertiesIterator.hasNext())
-		{
-			Map property = (Map)propertiesIterator.next();
-
-			sb.append("		<tr>");
-			sb.append("			<td class=\"slot\"><img src=\"images/trans.gif\" width=\"10\" height=\"1\"><img src=\"images/trans.gif\" width=\"10\" height=\"1\"><img src=\"images/trans.gif\" width=\"10\" height=\"1\">");
-			for(int i=0; i<level; i++)
-			{
-				sb.append("<img src=\"images/trans.gif\" width=\"10\" height=\"1\">");
-			}
-			sb.append("		<span onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\">" + property.get("path") + "</span></td>");
-			sb.append("		</tr>");
-		}
-		*/
-
+		
 		sb.append("		<tr>");
 		sb.append("			<td width=\"19\"><img src=\"images/trans.gif\" width=\"19\" height=\"1\"></td><td width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		for(int i=0; i<level; i++)
@@ -846,6 +852,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(slotComponents != null)
 			{
 				Iterator slotComponentIterator = slotComponents.iterator();
+				int newPosition = 0;
 				while(slotComponentIterator.hasNext())
 				{
 					InfoGlueComponent slotComponent = (InfoGlueComponent)slotComponentIterator.next();
@@ -856,7 +863,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					//if(imageUrlTemp != null && imageUrlTemp.length() > 0)
 					//	imageUrl = imageUrlTemp;
 		
-					renderComponentTree(templateController, sb, slotComponent, level + 3);
+					renderComponentTree(templateController, sb, slotComponent, level + 3, newPosition, slotComponents.size() - 1);
+
+					newPosition++;
 				}	
 			}
 			
@@ -937,7 +946,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("	<script type=\"text/javascript\">");
 		sb.append("		var theHandle = document.getElementById(\"paletteHandle\");");
 		sb.append("		var theRoot   = document.getElementById(\"palette\");");
-		sb.append("		Drag.init(theHandle, theRoot);");
+		//sb.append("		Drag.init(theHandle, theRoot);");
+		sb.append("		Drag.init(theHandle, theRoot, 0, 0, 0, 1000);");
 		sb.append("     theRoot.style.left = 450;");
 		sb.append("     theRoot.style.top = 150;");
 		sb.append("	</script>");
@@ -1007,6 +1017,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		sb.append("<script type=\"text/javascript\">");
 		sb.append("var currentGroup = \"" + initialGroupName + "\";");
+		sb.append("setToolbarInitialPosition();");
 		sb.append("</script>");
 				
 		String openGroupName = "";
@@ -1077,11 +1088,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		sb.append("	<script type=\"text/javascript\">");
 		sb.append("	  	changeTab('" + openGroupName + "');");
-		sb.append("	  	setInitialPosition('paletteDiv');");
+		sb.append("	  	setToolbarInitialPosition();");
 		
 		sb.append("		var theHandle = document.getElementById(\"paletteHandle\");");
 		sb.append("		var theRoot   = document.getElementById(\"paletteDiv\");");
-		sb.append("		Drag.init(theHandle, theRoot);");
+		//sb.append("		Drag.init(theHandle, theRoot);");
+		sb.append("		Drag.init(theHandle, theRoot, 0, 0, 0, 1000);");
+
 		//sb.append("     theRoot.style.left = 450;");
 		//sb.append("     theRoot.style.top = 150;");
 		
