@@ -302,7 +302,7 @@
 		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
 		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
 			<classpath refid="test.classpath"/>
-			<sysproperty key="webapp" value="${basedir}/${webapp}"/>
+			<sysproperty key="webapp.dir" value="${basedir}/${webapp}"/>
 			<formatter type="plain"/>
 			<batchtest>
 				<fileset dir="${test.java}">
@@ -323,7 +323,7 @@
 		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
 		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
 			<classpath refid="test.classpath"/>
-			<sysproperty key="webapp" value="${basedir}/${webapp}"/>
+			<sysproperty key="webapp.dir" value="${basedir}/${webapp}"/>
 			<formatter type="plain"/>
 			<test name="${test.class}"/>
 		</junit>
