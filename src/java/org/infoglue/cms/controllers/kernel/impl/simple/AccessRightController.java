@@ -439,8 +439,7 @@ public class AccessRightController extends BaseController
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity.
 	 */
-
-	public boolean getIsPrincipalAuthorized(InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String parameters) throws SystemException, Exception
+	public boolean getIsPrincipalAuthorized(InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String parameters) throws SystemException
 	{
 	    if(infoGluePrincipal == null)
 	        return false;
@@ -474,8 +473,7 @@ public class AccessRightController extends BaseController
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity.
 	 */
-
-	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters) throws Exception
+	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters) throws SystemException
 	{
 	    CmsLogger.logInfo("getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters)");
 		CmsLogger.logInfo("infoGluePrincipal: " + infoGluePrincipal.getName());
@@ -484,19 +482,6 @@ public class AccessRightController extends BaseController
 
 		if(infoGluePrincipal != null && infoGluePrincipal.getIsAdministrator())
 			return true;
-
-		/*
-		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + extraParameters;
-		CmsLogger.logInfo("key:" + key);
-		CmsLogger.logInfo("key:" + key);
-		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
-		if(cachedIsPrincipalAuthorized != null)
-		{
-			CmsLogger.logInfo("There was an cached authorization:" + cachedIsPrincipalAuthorized);
-			CmsLogger.logInfo("There was an cached authorization:" + cachedIsPrincipalAuthorized);
-			return cachedIsPrincipalAuthorized.booleanValue();
-		}
-		*/
 
 		String key = "cachedAccessRightsVOList";
 		CmsLogger.logInfo("key:" + key);
@@ -532,99 +517,13 @@ public class AccessRightController extends BaseController
 			}
 		}
 
-		/*
-		if(!isPrincipalAuthorized)
-		{
-			if(interceptionPointName.indexOf("SiteNode.") > -1)
-			{
-				SiteNodeVO parentSiteNodeVO = SiteNodeController.getParentSiteNode(new Integer(extraParameters));
-				if(parentSiteNodeVO != null)
-					isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, parentSiteNodeVO.getSiteNodeId().toString());
-			}
-			if(interceptionPointName.indexOf("Content.") > -1)
-			{
-				ContentVO parentContentVO = ContentController.getParentContent(new Integer(extraParameters));
-				if(parentContentVO != null)
-					isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, parentContentVO.getId().toString());
-			}
-		}
-		*/
-
-		//CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
-
 		return isPrincipalAuthorized;
 	}
-	/*
-	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters) throws Exception
-	{
-		CmsLogger.logInfo("infoGluePrincipal: " + infoGluePrincipal.getName());
-		CmsLogger.logInfo("interceptionPointName: " + interceptionPointName);
-		CmsLogger.logInfo("extraParameters: " + extraParameters);
-
-		if(infoGluePrincipal.getIsAdministrator())
-			return true;
-
-		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + extraParameters;
-		CmsLogger.logInfo("key:" + key);
-		CmsLogger.logInfo("key:" + key);
-		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
-		if(cachedIsPrincipalAuthorized != null)
-		{
-			CmsLogger.logInfo("There was an cached authorization:" + cachedIsPrincipalAuthorized);
-			CmsLogger.logInfo("There was an cached authorization:" + cachedIsPrincipalAuthorized);
-			return cachedIsPrincipalAuthorized.booleanValue();
-		}
-
-		boolean isPrincipalAuthorized = false;
-
-		Collection roles = infoGluePrincipal.getRoles();
-
-		Iterator i = roles.iterator();
-		while(i.hasNext())
-		{
-			InfoGlueRole role = (InfoGlueRole)i.next();
-
-			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint.name = $1 AND f.parameters = $2 AND f.roleName = $3");
-			oql.bind(interceptionPointName);
-			oql.bind(extraParameters);
-			oql.bind(role.getName());
-
-			QueryResults results = oql.execute();
-			CmsLogger.logInfo("Anything:" + results.hasMore());
-			if (results.hasMore())
-			{
-				isPrincipalAuthorized = true;
-				break;
-			}
-		}
-
-		if(!isPrincipalAuthorized)
-		{
-			if(interceptionPointName.indexOf("SiteNode.") > -1)
-			{
-				SiteNodeVO parentSiteNodeVO = SiteNodeController.getParentSiteNode(new Integer(extraParameters));
-				if(parentSiteNodeVO != null)
-					isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, parentSiteNodeVO.getSiteNodeId().toString());
-			}
-			if(interceptionPointName.indexOf("Content.") > -1)
-			{
-				ContentVO parentContentVO = ContentController.getParentContent(new Integer(extraParameters));
-				if(parentContentVO != null)
-					isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, parentContentVO.getId().toString());
-			}
-		}
-
-		CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
-
-		return isPrincipalAuthorized;
-	}
-	*/
 
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity.
 	 */
-
-	public boolean getIsPrincipalAuthorized(InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws Exception
+	public boolean getIsPrincipalAuthorized(InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
 	{
 		if(infoGluePrincipal.getIsAdministrator())
 			return true;
@@ -666,7 +565,7 @@ public class AccessRightController extends BaseController
 	 * This method checks if a role has access to an entity. It takes name and id of the entity.
 	 */
 
-	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws Exception
+	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
 	{
 	    CmsLogger.logInfo("getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName)");
 	    CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal);
