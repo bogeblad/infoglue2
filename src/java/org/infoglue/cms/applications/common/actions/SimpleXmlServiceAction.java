@@ -328,7 +328,9 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 			            elm.addAttribute("activeVersion", "" + activeVersion.getContentVersionId());
 		        }
 		        
-		        if(!useTemplate)
+		        //System.out.println("SupplierClass:" + sup.getClass().getName());
+		        //TODO - this was a quickfix only
+		        if(!useTemplate && sup.getClass().getName().indexOf("Content") > -1)
 		        {
 		            ContentTypeDefinitionVO contentTypeDefinitionVO = contentController.getContentTypeDefinition(theNode.getId());
 		        	if(contentTypeDefinitionVO != null)
