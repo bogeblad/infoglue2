@@ -302,6 +302,13 @@ function configInfoGlue(config)
 			else
 			{
 				extraParameters = "&oldContentId=&assetKey=";
+				
+				if(inlineImageDefaultRepositoryId != null)
+			  	{
+			  		repositoryId = inlineImageDefaultRepositoryId;
+			  		contentId = -1;
+			  	}	
+				
 			}
 			  		
 	  	  	url = _applicationContext + "ViewContentVersion!viewAssetsDialog.action?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&treatAsLink=true&textAreaId=" + editor.id + extraParameters;
@@ -545,6 +552,12 @@ function configInfoGlue(config)
 	  		contentId = self.opener.contentId;
 	  	if(!languageId)
 	  		languageId = self.opener.languageId;
+	  	
+	  	if(inlineImageDefaultRepositoryId != null)
+	  	{
+	  		repositoryId = inlineImageDefaultRepositoryId;
+	  		contentId = -1;
+	  	}	
 	  	
 	  	url = _applicationContext + "ViewContentVersion!viewAssetsDialog.action?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
 	
