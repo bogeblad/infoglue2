@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.4 2004/12/29 17:30:51 jed Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.5 2004/12/29 18:59:58 jed Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool;
 
@@ -70,7 +70,6 @@ public class ViewMyDesktopToolStartPageActionTest extends WorkflowTestCase
 
 		assertNull("Available workflows should be null:", action.getAvailableWorkflowVOList());
 		assertNull("Current workflows should be null:", action.getWorkflowVOList());
-		assertEquals("Wrong number of current actions:", 1, action.getWorkflowActionVOList().size());
 		assertTrue("URL should contain view for 'Preview News and Approve'",
 					  action.getUrl().indexOf("workflows/ig_create_news/previewNewsAndApprove.jsp") >= 0);
 	}
