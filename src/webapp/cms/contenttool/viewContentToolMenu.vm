@@ -242,7 +242,7 @@
 </small>
 </div>
 <div style="RIGHT:2px; position:absolute; BOTTOM:0px; visibility:visible; z-index:0">
-	<a href="javascript:this.parent.increaseSize();" title="$ui.getString("tool.common.increaseMenuSize.text")"><img src="images/dragCorner.gif" width="12" height="12" border="0" alt="$ui.getString("tool.common.increaseMenuSize.text")"></a>
+	<a href="javascript:this.parent.increaseSize();" title="$ui.getString("tool.common.increaseMenuSize.text")"><img src="images/expandRight.gif" width="20" height="20" border="0" alt="$ui.getString("tool.common.increaseMenuSize.text")"></a>
 </div>
 	
 </body>
