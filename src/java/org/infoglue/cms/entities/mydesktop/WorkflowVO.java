@@ -27,6 +27,7 @@ import java.util.*;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.workflow.StepFilter;
 
 /**
  * This is the general action description object. Can be used by any workflow engine hopefully.
@@ -86,6 +87,25 @@ public class WorkflowVO implements BaseEntityVO
 	public List getCurrentSteps()
 	{
 		return currentSteps;
+	}
+
+	/**
+	 * Returns all the current steps allowed by the given filter.  Useful to restrict the current steps for display, e.g.
+	 * return only the steps owned by the current user.
+	 * @param filter a StepFilter
+	 * @return the current steps allowed by filter
+	 */
+	public List getCurrentSteps(StepFilter filter)
+	{
+		List filteredSteps = new ArrayList();
+		for (Iterator steps = currentSteps.iterator(); steps.hasNext();)
+		{
+			WorkflowStepVO step = (WorkflowStepVO)steps.next();
+			if (filter.isAllowed(step))
+				filteredSteps.add(step);
+		}
+
+		return filteredSteps;
 	}
 
 	public void setCurrentSteps(List steps)
