@@ -75,8 +75,12 @@
     <field name="value" type="java.lang.String">
       <sql name="value" type="varchar" dirty="check" />
     </field>
+    <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
+      <sql many-key="userPropId" many-table="cmUserPropDigAsset"/>
+    </field>
+    
   </class>
-
+  
   <!--  Mapping for UserContentTypeDefinition  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl" identity="userContentTypeDefinitionId" key-generator="SEQUENCE">
     <description>UserContentTypeDefinition</description>
@@ -129,6 +133,10 @@
     <field name="value" type="java.lang.String">
       <sql name="value" type="varchar" dirty="check" />
     </field>
+	<field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
+      <sql many-key="rolePropId" many-table="cmRolePropDigAsset"/>
+    </field>
+    
   </class>
 
   <!--  Mapping for RoleContentTypeDefinition  -->
@@ -308,7 +316,7 @@
       <sql name="ServDefId"/>
     </field>
   </class>
-
+ 
 <!--  Mapping for Qualifyer  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" identity="qualifyerId" key-generator="SEQUENCE">
     <description>Qualifyer</description>
@@ -367,19 +375,22 @@
     <description>RepositoryLanguage</description>
     <cache-type type="unlimited" capacity="1000"/>
     <map-to table="cmRepositoryLanguage"/>
-      <field name="repositoryLanguageId" type="java.lang.Integer">
+    <field name="repositoryLanguageId" type="java.lang.Integer">
       <sql name="repositoryLanguageId" type="integer" dirty="check" />
     </field>
-        <field name="isPublished" type="java.lang.Boolean">
+    <field name="isPublished" type="java.lang.Boolean">
       <sql name="isPublished" type="integer" dirty="check" />
     </field>
-        <field name="language" type="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">
+    <field name="sortOrder" type="java.lang.Integer">
+      <sql name="sortOrder" type="integer" dirty="check" />
+    </field>
+    <field name="language" type="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">
       <sql name="languageId"/>
     </field>
-        <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">
+    <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">
       <sql name="repositoryId"/>
     </field>
-    </class>
+  </class>
 
 <!--  Mapping for Language  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.LanguageImpl" identity="languageId" key-generator="SEQUENCE">
@@ -401,7 +412,7 @@
         <field name="repositoryLanguages" type="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl" lazy="true" collection="collection">
       <sql many-key="languageId"/>
     </field>
-    </class>
+    </class> 
 
 
 <!--  Mapping for ServiceDefinition  -->
@@ -426,7 +437,7 @@
     </field>
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId"/>
-    </field>
+    </field>    
     </class>
 
 
@@ -461,10 +472,10 @@
     </field>
         <field name="serviceDefinitions" type="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId" many-table="cmServDefAvailServBind"/>
-    </field>
+    </field>    
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId"/>
-    </field>
+    </field>    
     </class>
 
 
@@ -490,9 +501,9 @@
     </field>
     <field name="interceptors" type="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" lazy="false" collection="collection">
       <sql many-key="interceptionPointId" many-table="cmIntPointInterceptor"/>
-    </field>
+    </field>    
   </class>
-
+  
   <!--  Mapping for Interceptor  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" identity="interceptorId" key-generator="SEQUENCE">
     <description>Interceptor</description>
@@ -512,10 +523,10 @@
     </field>
     <field name="interceptionPoints" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" lazy="false" collection="collection">
       <sql many-key="interceptorId" many-table="cmIntPointInterceptor"/>
-    </field>
+    </field>    
   </class>
 
-
+  
 <!-- ************************************* -->
 <!-- ****   CONTENT SPECIFIC PARTS   **** -->
 <!-- ************************************* -->
@@ -609,7 +620,7 @@
       <sql name="parentContId" type="integer"/>
     </field>
   </class>
-
+  
   <!--  Mapping for MediumContent  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.MediumContentImpl" identity="contentId" key-generator="SEQUENCE">
     <description>MediumContent</description>
@@ -650,7 +661,7 @@
     </field>
     <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" lazy="true" collection="collection">
       <sql many-key="ContId"/>
-    </field>
+    </field>    
   </class>
 
 <!--  Mapping for ContentVersion  -->
@@ -772,12 +783,18 @@
     <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" lazy="true" collection="collection">
       <sql many-key="DigAssetId" many-table="cmContVerDigAsset"/>
     </field>
+    <field name="userProperties" type="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl" lazy="true" collection="collection">
+      <sql many-key="DigAssetId" many-table="cmUserPropDigAsset"/>
+    </field>
+    <field name="roleProperties" type="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" lazy="true" collection="collection">
+      <sql many-key="DigAssetId" many-table="cmRolePropDigAsset"/>
+    </field>
     <field name="assetBlob" type="stream" >
       <sql name="assetBlob" type="blob" dirty="ignore" />
     </field>
   </class>
-
-
+    
+    
 <!-- ************************************* -->
 <!-- ****   WORKFLOW SPECIFIC PARTS   **** -->
 <!-- ************************************* -->

@@ -1,7 +1,7 @@
 <!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.exolab.org/mapping.dtd">
 
 <mapping>
-
+ 
 <!--  Mapping for TransactionHistory  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl" identity="transactionHistoryId" key-generator="IDENTITY">
     <description>TransactionHistory</description>
@@ -54,7 +54,7 @@
       <sql many-key="userName" many-table="cmSystemUserRole"/>
     </field>
   </class>
-
+  
 <!--  Mapping for UserProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl" identity="userPropertiesId" key-generator="IDENTITY">
     <description>UserProperties</description>
@@ -75,8 +75,12 @@
     <field name="value" type="java.lang.String">
       <sql name="value" type="varchar" dirty="check" />
     </field>
+    <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
+      <sql many-key="userPropertiesId" many-table="cmUserPropertiesDigitalAsset"/>
+    </field>
+    
   </class>
-
+  
   <!--  Mapping for UserContentTypeDefinition  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl" identity="userContentTypeDefinitionId" key-generator="IDENTITY">
     <description>UserContentTypeDefinition</description>
@@ -129,6 +133,10 @@
     <field name="value" type="java.lang.String">
       <sql name="value" type="varchar" dirty="check" />
     </field>
+    <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
+      <sql many-key="rolePropertiesId" many-table="cmRolePropertiesDigitalAsset"/>
+    </field>
+    
   </class>
 
   <!--  Mapping for RoleContentTypeDefinition  -->
@@ -372,6 +380,9 @@
     <field name="isPublished" type="java.lang.Boolean">
       <sql name="isPublished" type="integer" dirty="check" />
     </field>
+    <field name="sortOrder" type="java.lang.Integer">
+      <sql name="sortOrder" type="integer" dirty="check" />
+    </field>
     <field name="language" type="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">
       <sql name="languageId"/>
     </field>
@@ -400,7 +411,7 @@
     <field name="repositoryLanguages" type="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl" lazy="true" collection="collection">
       <sql many-key="languageId"/>
     </field>
-    </class>
+    </class> 
 
 
 <!--  Mapping for ServiceDefinition  -->
@@ -425,7 +436,7 @@
     </field>
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="availableServiceBindingId"/>
-    </field>
+    </field>    
   </class>
 
 
@@ -460,10 +471,10 @@
     </field>
         <field name="serviceDefinitions" type="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl" lazy="true" collection="collection">
       <sql many-key="availableServiceBindingId" many-table="cmServiceDefinitionAvailableServiceBinding"/>
-    </field>
+    </field>    
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="availableServiceBindingId"/>
-    </field>
+    </field>    
   </class>
 
 
@@ -489,9 +500,9 @@
     </field>
     <field name="interceptors" type="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" lazy="false" collection="collection">
       <sql many-key="interceptionPointId" many-table="cmInterceptionPointInterceptor"/>
-    </field>
+    </field>    
   </class>
-
+  
   <!--  Mapping for Interceptor  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" identity="interceptorId" key-generator="IDENTITY">
     <description>Interceptor</description>
@@ -511,9 +522,9 @@
     </field>
     <field name="interceptionPoints" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" lazy="false" collection="collection">
       <sql many-key="interceptorId" many-table="cmInterceptionPointInterceptor"/>
-    </field>
+    </field>    
   </class>
-
+  
 <!-- ************************************* -->
 <!-- ****   CONTENT SPECIFIC PARTS   **** -->
 <!-- ************************************* -->
@@ -614,7 +625,7 @@
     </field>
     -->
   </class>
-
+  
   <!--  Mapping for MediumContent  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.MediumContentImpl" identity="contentId" key-generator="IDENTITY">
     <description>MediumContent</description>
@@ -643,7 +654,7 @@
     </field>
     <field name="contentTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl">
       <sql name="contentTypeDefinitionId"/>
-    </field>
+    </field>    
     <field name="contentTypeDefinitionId" type="java.lang.Integer">
       <sql name="contentTypeDefinitionId" type="integer"/>
     </field>
@@ -657,9 +668,9 @@
       <sql many-key="contentId"/>
     </field>
   </class>
-
-
-
+  
+  
+  
 <!--  Mapping for ContentVersion  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" identity="contentVersionId" key-generator="IDENTITY">
     <description>ContentVersion</description>
@@ -683,11 +694,11 @@
     <field name="isActive" type="java.lang.Boolean">
       <sql name="isActive" type="integer" dirty="check" />
     </field>
-    <!-- NEEDED FOR CATEGORY SEARCHING -->
+    <!--
     <field name="owningContent" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl">
       <sql name="contentId"/>
     </field>
-	<!-- /NEEDED FOR CATEGORY SEARCHING -->
+    -->
     <field name="language" type="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">
       <sql name="languageId"/>
     </field>
@@ -776,12 +787,18 @@
     <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" lazy="true" collection="collection">
       <sql many-key="digitalAssetId" many-table="cmContentVersionDigitalAsset"/>
     </field>
+    <field name="userProperties" type="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl" lazy="true" collection="collection">
+      <sql many-key="digitalAssetId" many-table="cmUserPropertiesDigitalAsset"/>
+    </field>
+    <field name="roleProperties" type="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" lazy="true" collection="collection">
+      <sql many-key="digitalAssetId" many-table="cmRolePropertiesDigitalAsset"/>
+    </field>
     <field name="assetBlob" type="stream" >
       <sql name="assetBlob" type="blob" dirty="ignore" />
     </field>
   </class>
-
-
+    
+    
 <!-- ************************************* -->
 <!-- ****   WORKFLOW SPECIFIC PARTS   **** -->
 <!-- ************************************* -->
@@ -882,7 +899,7 @@
       <sql name="publisher" type="varchar" dirty="check" />
     </field>
   </class>
-
+  
 	<!--  Mapping for Category  -->
 	<class name="org.infoglue.cms.entities.management.impl.simple.CategoryImpl" identity="categoryId" key-generator="IDENTITY">
 		<description>Category</description>

@@ -20,8 +20,9 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryImpl.java,v 1.1 2004/12/01 23:37:42 frank Exp $
+ * $Id: CategoryImpl.java,v 1.2 2005/01/04 15:29:26 mattias Exp $
  */
+
 package org.infoglue.cms.entities.management.impl.simple;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;

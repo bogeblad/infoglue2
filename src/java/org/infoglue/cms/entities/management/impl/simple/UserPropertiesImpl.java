@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  */
-
+ 
 package org.infoglue.cms.entities.management.impl.simple;
 
 import java.util.Collection;
@@ -129,7 +129,7 @@ public class UserPropertiesImpl implements UserProperties
 
 		this.language = language;
 	}
-	
+	 
     public Collection getDigitalAssets()
     {
         return digitalAssets;
