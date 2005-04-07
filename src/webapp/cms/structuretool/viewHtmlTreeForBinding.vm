@@ -27,9 +27,12 @@
 			//if (srcIdLink != null)
 			//	srcIdLink.className = "selected";
 				
-			parent.document.inputForm.entityId.value     = itemId;
-			parent.document.inputForm.repositoryId.value = repoId;
-		 	parent.document.inputForm.path.value         = path;
+			if(itemId)
+				parent.document.inputForm.entityId.value     = itemId;
+			if(repoId)
+				parent.document.inputForm.repositoryId.value = repoId;
+			if(path)
+			 	parent.document.inputForm.path.value         = path;
 		}
 		
 		function markSelected(itemId)
@@ -114,7 +117,7 @@
 	
 	
 </head>
-<body class="structuretooledit" LEFTMARGIN="0" TOPMARGIN="0" onload="parent.notifyExp('${exp}');loaded();">
+<body class="structuretooledit" LEFTMARGIN="0" TOPMARGIN="0" onload="parent.notifyExp('${exp}');loaded();" onMouseUp="clearDrag(event);">
 <link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 
 	#if($treeMode=="classic")

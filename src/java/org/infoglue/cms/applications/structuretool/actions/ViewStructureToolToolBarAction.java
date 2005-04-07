@@ -353,7 +353,7 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 	
 	private ImageButton getMoveMultipleButton()
 	{
-		return new ImageButton(true, "javascript:openPopup('MoveMultipleSiteNodes!input.action?contentId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleSiteNodes', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveMultipleSiteNodes"), "tool.contenttool.moveMultipleSiteNodes.header");	
+		return new ImageButton(true, "javascript:openPopup('MoveMultipleSiteNodes!input.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleSiteNodes', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.moveMultipleSiteNodes"), "tool.structuretool.moveMultipleSiteNodes.header");	
 	}
 
 	private ImageButton getViewPageComponentsButton() throws Exception

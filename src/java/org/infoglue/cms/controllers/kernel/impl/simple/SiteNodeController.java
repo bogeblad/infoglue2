@@ -644,7 +644,7 @@ public class SiteNodeController extends BaseController
 			
             CmsLogger.logInfo("Setting the new Parent siteNode:" + siteNode.getSiteNodeId() + " " + newParentSiteNode.getSiteNodeId());
             siteNode.setParentSiteNode((SiteNodeImpl)newParentSiteNode);
-            
+            siteNode.setRepository(newParentSiteNode.getRepository());
 			newParentSiteNode.getChildSiteNodes().add(siteNode);
 			oldParentSiteNode.getChildSiteNodes().remove(siteNode);
 			

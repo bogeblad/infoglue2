@@ -369,7 +369,7 @@ public class ContentTypeDefinitionController extends BaseController
 			    Element params = (Element)XPathAPI.selectSingleNode(ichild, "xs:annotation/xs:appinfo/params");
 
 			    String descriptionValue = "";
-			    String maximumSizeValue = "100";
+			    String maximumSizeValue = "1000000";
 			    String allowedContentTypesValue = "*";
 			    String imageWidthValue = "*";
 			    String imageHeightValue = "*";

@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.30 2005/04/07 16:57:22 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.31 2005/04/07 21:29:45 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -919,10 +919,10 @@
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
-	<action name="org.infoglue.cms.applications.structuretool.actions.MoveMultipleSiteNodeAction" alias="MoveMultipleSiteNode">
-		<view name="input">/cms/structuretool/viewMoveMultipleContentsChooseContents.vm</view>
-		<view name="chooseDestination">/cms/structuretool/viewMoveMultipleContentsChooseDestination.vm</view>
-		<view name="success">/cms/structuretool/viewMoveMultipleContentsFinished.vm</view>
+	<action name="org.infoglue.cms.applications.structuretool.actions.MoveMultipleSiteNodeAction" alias="MoveMultipleSiteNodes">
+		<view name="input">/cms/structuretool/viewMoveMultipleSiteNodesChooseSiteNodes.vm</view>
+		<view name="chooseDestination">/cms/structuretool/viewMoveMultipleSiteNodesChooseDestination.vm</view>
+		<view name="success">/cms/structuretool/viewMoveMultipleSiteNodesFinished.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>

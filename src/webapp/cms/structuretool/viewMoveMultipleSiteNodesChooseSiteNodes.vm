@@ -4,8 +4,8 @@
 
 <html>
 <head>
-	<title>Choose Contents</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Choose SiteNodes</title>
+	<meta http-equiv="SiteNode-Type" siteNode="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
 	<script type="text/javascript" src="script/vector.js"></script>
@@ -49,7 +49,7 @@
 			entityId = document.inputForm.entityId.value;
 			path     = document.inputForm.path.value;
 			
-		    var qualifyer = new Qualifyer("Content", entityId, path);
+		    var qualifyer = new Qualifyer("SiteNode", entityId, path);
 			qualifyersVector.addElement(qualifyer);
 			drawList();
 		}
@@ -101,7 +101,7 @@
 			document.inputForm.qualifyerXML.value = xml;
 			document.inputForm.repositoryId.value = repositoryId;
 			
-			document.inputForm.action = 'MoveMultipleContent!input.action';
+			document.inputForm.action = 'MoveMultipleSiteNodes!input.action';
 			showDiv("savingLayer");
 			document.inputForm.submit();
 		}
@@ -199,9 +199,9 @@
 		 
 		function init()
 		{
-			#foreach($content in $qualifyers)
+			#foreach($siteNode in $qualifyers)
 				//alert("$qualifyer");
-				qualifyer = new Qualifyer("Content", "$content.id", "$content.name");
+				qualifyer = new Qualifyer("SiteNode", "$siteNode.id", "$siteNode.name");
 				qualifyersVector.addElement(qualifyer);
 			#end
 	
@@ -318,7 +318,7 @@
 	
 </head>
 
-<body class="contenttooledit" onload="javascript:init();" onMouseUp="clearDrag(event);">
+<body class="structuretooledit" onload="javascript:init();" onMouseUp="clearDrag(event);">
 
 <div id="buffer" style="top: 0; left: 0"><img src="images/tree/xp/item.png"></div>
 
@@ -327,27 +327,27 @@
 	<div class="infobody">Processing input - please wait!</div>
 </div>
 
-<table class="contenttooledit" cellpadding="0" cellspacing="0" border="0">
+<table class="structuretooledit" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td valign="top">
 		
 		<table cellpadding="0" cellspacing="0" border="0">
-		<tr class="darkgreen">
-			<td class="smalllabel">Add the contents you want to move and click "Next".</td>
+		<tr class="darkapricot">
+			<td class="smalllabel">Add the siteNodes you want to move and click "Next".</td>
 		</tr>
 		<tr>
-			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#FEF8D0" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
-			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#F0E1B4" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
 			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
 		</tr>		
 		<tr>
 			<td>
-		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
-				    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="structuretool">
+				    <option value="">$ui.getString("tool.structuretool.chooseRepositoryLabel")</option>
 				    #foreach ($repositoryVO in $repositories)
 				    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
 				    #end
@@ -360,9 +360,9 @@
 		<tr>
 			<td class="menu" style="border: 1px solid #C7D1B3;">   
 				#if($tree == "applet") 
-					showJavaTree("350" "450" "199" "209" "179" "Content" $repositoryId "false")
+					showJavaTree("350" "450" "199" "209" "179" "SiteNode" $repositoryId "false")
 				#else
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree!bindingView.action?repositoryId=${repositoryId}" width="350" height="450" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree!bindingView.action?repositoryId=${repositoryId}" width="350" height="450" align="baseline"></IFRAME>
 				#end
 			</td>
 		</tr>	
@@ -378,13 +378,13 @@
 		</tr>		
 		<tr>
 			<td>
-				<form name="inputForm" action="MoveMultipleContent.action">
+				<form name="inputForm" action="MoveMultipleSiteNodes.action">
 					<input type="hidden" name="draggedComponentId" value="">
-					<input type="hidden" name="contentId" value="$contentId">
+					<input type="hidden" name="siteNodeId" value="$siteNodeId">
 					<input type="hidden" name="entityId" value="">
 					<input type="hidden" name="path" value="">
 					<input type="hidden" name="repositoryId" value="$repositoryId">
-					<input type="hidden" name="newParentContentId" value="">
+					<input type="hidden" name="newParentSiteNodeId" value="">
 					<input type="hidden" name="qualifyerXML" value="">
 				</form>
 			</td>
@@ -396,14 +396,14 @@
 	
 	<td valign="top">
 		<table cellpadding="0" cellspacing="0" border="0">
-		<tr class="darkgreen">
-			<td class="smalllabel">The following contents will be moved</td>
+		<tr class="darkapricot">
+			<td class="smalllabel">The following siteNodes will be moved</td>
 		</tr>
 		<tr>
-			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#FEF8D0" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
-			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#F0E1B4" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
 			<td height="1"><img src="images/trans.gif" width="1" height="2"></td>

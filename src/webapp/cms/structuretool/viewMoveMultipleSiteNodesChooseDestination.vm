@@ -4,7 +4,7 @@
 
 <html>
 <head>
-	<title>Choose Contents</title>
+	<title>Choose SiteNodes</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
@@ -49,7 +49,7 @@
 		 
 		function finish()
 		{
-		   	document.inputForm.newParentContentId.value = document.inputForm.entityId.value;
+		   	document.inputForm.newParentSiteNodeId.value = document.inputForm.entityId.value;
 		    showDiv("savingLayer");
 			document.inputForm.submit();
 		}
@@ -62,7 +62,7 @@
 		{
 		   	document.inputForm.repositoryId.value = repositoryId;
 			
-			document.inputForm.action = 'MoveMultipleContent.action';
+			document.inputForm.action = 'MoveMultipleSiteNodes.action';
 			showDiv("savingLayer");
 			document.inputForm.submit();
 		}
@@ -71,33 +71,33 @@
 	
 </head>
 
-<body class="contenttooledit">
+<body class="structuretooledit">
 
 <div id="savingLayer" class="infobackground">
 	<div class="infoheader">Saving changes</div>
 	<div class="infobody">Processing input - please wait!</div>
 </div>
 
-<table class="contenttooledit" cellpadding="0" cellspacing="0" border="0">
+<table class="structuretooledit" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td valign="top">
 		
 		<table cellpadding="0" cellspacing="0" border="0">
-		<tr class="darkgreen">
+		<tr class="darkapricot">
 			<td class="smalllabel">Mark the destination folder and press "Save".</td>
 		</tr>
 		<tr>
-			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#FEF8D0" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
-			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#F0E1B4" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
 			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
 		</tr>		
 		<tr>
 			<td>
-		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
+		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);">
 				    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
 				    #foreach ($repositoryVO in $repositories)
 				    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
@@ -111,9 +111,9 @@
 		<tr>
 			<td class="menu">   
 				#if($tree == "applet") 
-					#showJavaTree("350" "450" "199" "209" "179" "Content" $repositoryId "false")
+					#showJavaTree("350" "450" "199" "209" "179" "SiteNode" $repositoryId "false")
 				#else
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree!bindingView.action?repositoryId=${repositoryId}&showLeafs=false" width="350" height="450" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree!bindingView.action?repositoryId=${repositoryId}&showLeafs=false" width="350" height="450" align="baseline"></IFRAME>
 				#end
 			</td>
 		</tr>	
@@ -128,12 +128,12 @@
 		</tr>		
 		<tr>
 			<td>
-				<form name="inputForm" action="MoveMultipleContent.action">
-					<input type="hidden" name="contentId" value="$contentId">
+				<form name="inputForm" action="MoveMultipleSiteNodes.action">
+					<input type="hidden" name="siteNodeId" value="$siteNodeId">
 					<input type="hidden" name="entityId" value="">
 					<input type="hidden" name="path" value="">
 					<input type="hidden" name="repositoryId" value="">
-					<input type="hidden" name="newParentContentId" value="">
+					<input type="hidden" name="newParentSiteNodeId" value="">
 					<input type="hidden" name="qualifyerXML" value="$qualifyerXML">
 				</form>
 			</td>

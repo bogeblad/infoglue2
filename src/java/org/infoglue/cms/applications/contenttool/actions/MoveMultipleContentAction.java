@@ -136,8 +136,15 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
     {    	
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
 
-        ContentVO contentVO = ContentController.getContentController().getContentVOWithId(getContentId());
-        this.qualifyers.add(contentVO);
+		if(this.qualifyerXML != null && !this.qualifyerXML.equals(""))
+        {
+            this.qualifyers = parseContentsFromXML(this.qualifyerXML);
+        }
+        else
+        {
+			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(getContentId());
+	        this.qualifyers.add(contentVO);
+        }
         
         return "input";
     }
@@ -183,6 +190,7 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
         return "success";
     }
 
+    
 	private List parseContentsFromXML(String qualifyerXML)
 	{
 		List contents = new ArrayList(); 
@@ -205,11 +213,9 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 				
 				if(!addedContents.containsKey(id))
 				{
-				    ContentVO contentVO = new ContentVO();
-					contentVO.setContentId(new Integer(id)); 
-					contentVO.setName(path);
-					contents.add(contentVO);     
-					addedContents.put(id, contentVO);
+				    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(id));
+				    contents.add(contentVO);
+			        addedContents.put(id, contentVO);
 				}    
 			}		        	
 		}

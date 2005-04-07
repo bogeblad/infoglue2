@@ -24,15 +24,22 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.dom.DOMBuilder;
 
 /**
  * This action represents the CreateSiteNode Usecase.
@@ -56,7 +63,7 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
     
     //Tree params
     private Integer changeTypeId;
-    private Integer topContentId;
+    private Integer topSiteNodeId;
 
     private ConstraintExceptionBuffer ceb;
    	private SiteNodeVO siteNodeVO;
@@ -83,14 +90,104 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
 		return siteNodeVO.getSiteNodeId();
 	}
       
+	
+   public String doInput() throws Exception
+    {    	
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+
+		System.out.println("qualifyerXML:" + this.qualifyerXML);
+        if(this.qualifyerXML != null && !this.qualifyerXML.equals(""))
+        {
+            this.qualifyers = parseSiteNodesFromXML(this.qualifyerXML);
+        }
+        else
+        {
+            SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(getSiteNodeId());
+            this.qualifyers.add(siteNodeVO);
+        }
+        
+        return "input";
+    }
+    
     public String doExecute() throws Exception
     {
+        System.out.println("qualifyerXML:" + this.qualifyerXML);
+        
+        if(this.newParentSiteNodeId == null)
+        {
+    		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+            return "chooseDestination";
+        }
+        
         ceb.throwIfNotEmpty();
     	
-		SiteNodeControllerProxy.getSiteNodeControllerProxy().acMoveSiteNode(this.getInfoGluePrincipal(), this.siteNodeVO, this.newParentSiteNodeId);
-	    
+        try
+		{
+            if(this.qualifyerXML != null && this.qualifyerXML.length() != 0)
+		    {
+		        Document document = new DOMBuilder().getDocument(this.qualifyerXML);
+				List siteNodes = parseSiteNodesFromXML(this.qualifyerXML);
+				Iterator i = siteNodes.iterator();
+				while(i.hasNext())
+				{
+				    SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
+				    try
+					{											
+				        SiteNodeControllerProxy.getSiteNodeControllerProxy().acMoveSiteNode(this.getInfoGluePrincipal(), siteNodeVO, this.newParentSiteNodeId);
+					}
+					catch(Exception e)
+					{
+					    this.errorsOccurred = true;
+					}
+		    	}
+		    }
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+		}
+		
+		this.topSiteNodeId = SiteNodeController.getController().getRootSiteNodeVO(this.repositoryId).getId();
+		    
         return "success";
     }
+
+	private List parseSiteNodesFromXML(String qualifyerXML)
+	{
+		List siteNodes = new ArrayList(); 
+    	
+		try
+		{
+			Document document = new DOMBuilder().getDocument(qualifyerXML);
+			
+			String entity = document.getRootElement().attributeValue("entity");
+			
+			Map addedSiteNodes = new HashMap();
+			
+			List children = document.getRootElement().elements();
+			Iterator i = children.iterator();
+			while(i.hasNext())
+			{
+				Element child = (Element)i.next();
+				String id = child.getStringValue();
+				String path = child.attributeValue("path");
+				
+				if(!addedSiteNodes.containsKey(id))
+				{
+				    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(id));
+				    siteNodes.add(siteNodeVO);     
+					addedSiteNodes.put(id, siteNodeVO);
+				}    
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return siteNodes;
+	}
+	
     
     public Integer getChangeTypeId()
     {
@@ -152,14 +249,14 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
         this.repositoryId = repositoryId;
     }
     
-    public Integer getTopContentId()
+    public Integer getTopSiteNodeId()
     {
-        return topContentId;
+        return topSiteNodeId;
     }
     
-    public void setTopContentId(Integer topContentId)
+    public void setTopSiteNodeId(Integer topSiteNodeId)
     {
-        this.topContentId = topContentId;
+        this.topSiteNodeId = topSiteNodeId;
     }
     
     public boolean isErrorsOccurred()
