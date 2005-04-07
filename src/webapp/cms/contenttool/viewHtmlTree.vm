@@ -271,6 +271,9 @@
 	
 </head>
 <body class="contenttool" LEFTMARGIN="0" TOPMARGIN="0" onload="parent.notifyIsLoaded();parent.notifyExp('${exp}');loaded();">
+
+<div id="buffer" style="top: 0; left: 0"></div>
+
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	
 	#if($treeMode=="classic")

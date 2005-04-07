@@ -291,6 +291,7 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateSiteNode!input.action?isBranch=true&parentSiteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.newSiteNode"), "New SiteNode"));	
 		buttons.add(getMoveButton());	
+		buttons.add(getMoveMultipleButton());	
 		buttons.add(new ImageButton("Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
 		String serviceBindingIdString = this.serviceBindingId == null ? "" : this.serviceBindingId.toString();
 		buttons.add(new ImageButton(true, "javascript:openPopup('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "&availableServiceBindingId=" + this.metaInfoAvailableServiceBindingId + "&serviceBindingId=" + serviceBindingIdString + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
@@ -329,6 +330,7 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("Confirm.action?header=Delete%20siteNode&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the siteNode " + this.name + " and all its children", "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
 		buttons.add(getMoveButton());	
+		buttons.add(getMoveMultipleButton());	
 		buttons.add(getPublishButton());
 		return buttons;				
 	}
@@ -347,6 +349,11 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 	private ImageButton getMoveButton() throws Exception
 	{
 		return new ImageButton(true, "javascript:openPopup('ViewSiteNodeTree.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'SiteNode', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.moveSiteNode"), "Move siteNode");
+	}
+	
+	private ImageButton getMoveMultipleButton()
+	{
+		return new ImageButton(true, "javascript:openPopup('MoveMultipleSiteNodes!input.action?contentId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleSiteNodes', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveMultipleSiteNodes"), "tool.contenttool.moveMultipleSiteNodes.header");	
 	}
 
 	private ImageButton getViewPageComponentsButton() throws Exception
