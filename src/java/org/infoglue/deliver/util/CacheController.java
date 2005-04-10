@@ -85,7 +85,7 @@ public class CacheController extends Thread
 	    if(!caches.containsKey(cacheName))
 		    caches.put(cacheName, new GeneralCacheAdministrator());
 		
-	    System.out.println("Putting pageCache in relation to:");
+	    System.out.println("Putting " + cacheName + " with key: " + key + " in relation to:");
 	    for(int i=0; i<groups.length; i++)
 	    {
 	        System.out.println("group:" + groups[i]);
@@ -207,7 +207,12 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("pageCache"))
+				if(cacheName.equalsIgnoreCase("pageCache") && entity.indexOf("Registry") == -1)
+				{	
+					clear = true;
+					selectiveCacheUpdate = true;
+				}
+				if(cacheName.equalsIgnoreCase("componentCache") && entity.indexOf("Registry") == -1)
 				{	
 					clear = true;
 					selectiveCacheUpdate = true;

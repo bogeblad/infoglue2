@@ -730,7 +730,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 						
 						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, db, deliveryContext))
 						{
-							deliveryContext.getUsedContents().add("content:" + candidate.getId());
+							deliveryContext.addUsedContent("content:" + candidate.getId());
 
 						    boundContentVOList.add(candidate);    
 						}
@@ -756,7 +756,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		List folderContents = new ArrayList();
 		
-		deliveryContext.getUsedContents().add("selectiveCacheUpdateNonApplicable");
+		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 		
     	CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
         

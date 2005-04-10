@@ -893,7 +893,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
-		this.deliveryContext.getUsedContents().add("content:" + contentId);
+		this.deliveryContext.addUsedContent("content:" + contentId);
 		
 		try
 		{
@@ -917,7 +917,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
-		this.deliveryContext.getUsedContents().add("content:" + contentId);
+		this.deliveryContext.addUsedContent("content:" + contentId);
 		
 		try
 		{

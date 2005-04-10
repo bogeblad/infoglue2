@@ -24,6 +24,7 @@
 package org.infoglue.deliver.applications.databeans;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletRequest;
@@ -42,7 +43,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
  * TODO - write more
  */
 
-public class DeliveryContext
+public class DeliveryContext implements UsageListener
 {
 	public static final String META_INFO_BINDING_NAME 					= "Meta information";
 	public static final String TEMPLATE_ATTRIBUTE_NAME   				= "Template";
@@ -77,6 +78,8 @@ public class DeliveryContext
 	private WebworkAbstractAction webworkAbstractAction = null;
 	
 	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
+	private List usageListeners = new ArrayList();
+	
 	private List usedContents = new ArrayList();
 	private List usedContentVersions = new ArrayList();
 	private List usedSiteNodes = new ArrayList();
@@ -224,47 +227,55 @@ public class DeliveryContext
 	{
 		this.httpServletResponse = httpServletResponse;
 	}
-	
-    public List getUsedContents()
+
+    public void addUsedContent(String usedContent)
     {
-        return usedContents;
+        this.usedContents.add(usedContent);
+
+        Iterator iterator = this.getUsageListeners().iterator();
+        while(iterator.hasNext())
+        {
+            UsageListener usageListener = (UsageListener)iterator.next();
+            usageListener.addUsedContent(usedContent);
+        }
     }
-    
-    public void setUsedContents(List usedContents)
+
+    public void addUsedSiteNode(String usedSiteNode)
     {
-        this.usedContents = usedContents;
+        this.usedSiteNodes.add(usedSiteNode);
+        
+        Iterator iterator = this.getUsageListeners().iterator();
+        while(iterator.hasNext())
+        {
+            UsageListener usageListener = (UsageListener)iterator.next();
+            usageListener.addUsedSiteNode(usedSiteNode);
+        }
     }
-    
-    public List getUsedSiteNodes()
+
+    public void addUsedContentVersion(String usedContentVersion)
     {
-        return usedSiteNodes;
+        this.usedContentVersions.add(usedContentVersion);
+        
+        Iterator iterator = this.getUsageListeners().iterator();
+        while(iterator.hasNext())
+        {
+            UsageListener usageListener = (UsageListener)iterator.next();
+            usageListener.addUsedContentVersion(usedContentVersion);
+        }
     }
-    
-    public void setUsedSiteNodes(List usedSiteNodes)
+
+    public void addUsedSiteNodeVersion(String usedSiteNodeVersion)
     {
-        this.usedSiteNodes = usedSiteNodes;
+        this.usedSiteNodeVersions.add(usedSiteNodeVersion);
+        
+        Iterator iterator = this.getUsageListeners().iterator();
+        while(iterator.hasNext())
+        {
+            UsageListener usageListener = (UsageListener)iterator.next();
+            usageListener.addUsedSiteNodeVersion(usedSiteNodeVersion);
+        }
     }
-    
-    public List getUsedContentVersions()
-    {
-        return usedContentVersions;
-    }
-    
-    public void setUsedContentVersions(List usedContentVersions)
-    {
-        this.usedContentVersions = usedContentVersions;
-    }
-    
-    public List getUsedSiteNodeVersions()
-    {
-        return usedSiteNodeVersions;
-    }
-    
-    public void setUsedSiteNodeVersions(List usedSiteNodeVersions)
-    {
-        this.usedSiteNodeVersions = usedSiteNodeVersions;
-    }
-    
+
     public String[] getAllUsedEntities()
     {
         List list = new ArrayList();
@@ -279,4 +290,10 @@ public class DeliveryContext
         
         return groups;
     }
+    
+    public List getUsageListeners()
+    {
+        return usageListeners;
+    }
+
 }

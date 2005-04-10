@@ -124,7 +124,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	public ContentVO getContentVO(Database db, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		deliveryContext.getUsedContents().add("content:" + contentId);
+		deliveryContext.addUsedContent("content:" + contentId);
 
 		ContentVO contentVO = (ContentVO)getVOWithId(SmallContentImpl.class, contentId, db);
 				
@@ -161,7 +161,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		
 		if(contentVersionVO != null)
-		    deliveryContext.getUsedContentVersions().add("contentVersion:" + contentVersionVO.getId());
+		    deliveryContext.addUsedContentVersion("contentVersion:" + contentVersionVO.getId());
 		
 		return contentVersionVO;
 	}
@@ -223,7 +223,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		
 		if(contentVersion != null)
-		    deliveryContext.getUsedContentVersions().add("contentVersion:" + contentVersion.getId());
+		    deliveryContext.addUsedContentVersion("contentVersion:" + contentVersion.getId());
 		
 		return contentVersion;
 	}
@@ -292,7 +292,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 */
 	public List findContentVersionVOsForCategory(Database db, Integer categoryId, String attributeName, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-	    deliveryContext.getUsedContents().add("selectiveCacheUpdateNonApplicable");
+	    deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 	    
 		List results = findContentCategories(db, categoryId, attributeName);
 		List versions = findContentVersionsForCategories(results, db);
@@ -1065,7 +1065,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		*/
 		
-		deliveryContext.getUsedContents().add("selectiveCacheUpdateNonApplicable");
+		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 
 		OQLQuery oql = db.getOQLQuery("SELECT content FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl content WHERE content.parentContent.contentId = $1 ORDER BY content.contentId");
     	oql.bind(contentId);
@@ -1090,7 +1090,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	private void getChildContents(InfoGluePrincipal infoGluePrincipal, List contents, Integer contentId, Integer languageId, boolean useLanguageFallback, int currentLevel, boolean searchRecursive, boolean includeFolders, int maximumNumberOfLevels, Database db, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		deliveryContext.getUsedContents().add("selectiveCacheUpdateNonApplicable");
+		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 
 		OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl content WHERE content.parentContent.contentId = $1 ORDER BY content.contentId");
 		oql.bind(contentId);

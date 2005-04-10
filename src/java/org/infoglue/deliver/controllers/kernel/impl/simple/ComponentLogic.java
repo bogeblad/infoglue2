@@ -28,6 +28,7 @@ import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
+import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
@@ -50,11 +51,13 @@ public class ComponentLogic
 	private boolean useInheritance = true;
 	private boolean useEditOnSight = true;
 	private boolean threatFoldersAsContents = false;
-	
+	private ComponentDeliveryContext componentDeliveryContext;
+
  	public ComponentLogic(TemplateController templateController, InfoGlueComponent infoGlueComponent)
  	{
  		this.templateController = templateController;
- 		this.infoGlueComponent = infoGlueComponent;
+ 		this.infoGlueComponent 	= infoGlueComponent;
+ 		this.componentDeliveryContext = ComponentDeliveryContext.getComponentDeliveryContext(templateController.getDeliveryContext(), infoGlueComponent);
  	}
 
 	/**
@@ -881,5 +884,10 @@ public class ComponentLogic
     {
         this.threatFoldersAsContents = threatFoldersAsContents;
         this.templateController.setThreatFoldersAsContents(threatFoldersAsContents);
+    }
+    
+    public ComponentDeliveryContext getComponentDeliveryContext()
+    {
+        return componentDeliveryContext;
     }
 }

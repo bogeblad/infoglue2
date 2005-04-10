@@ -213,10 +213,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Integer contentId 	= new Integer(child.attributeValue("contentId"));
 			String name 	  	= child.attributeValue("name");
 	
+			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
+			
 			component = new InfoGlueComponent();
 			component.setId(id);
 			component.setContentId(contentId);
-			component.setName(name);
+			component.setName(contentVO.getName());
+			//component.setName(name);
 			component.setSlotName(name);
 			component.setParentComponent(parentComponent);
 
@@ -345,10 +348,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Integer contentId 	= new Integer(child.attributeValue("contentId"));
 			String name 	  	= child.attributeValue("name");
 	
+			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
+			
 			component = new InfoGlueComponent();
 			component.setId(id);
 			component.setContentId(contentId);
-			component.setName(name);
+			component.setName(contentVO.getName());
+			//component.setName(name);
 			component.setSlotName(name);
 			component.setParentComponent(parentComponent);
 			////CmsLogger.logInfo("Name:" + name);
@@ -445,78 +451,110 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		String decoratedComponent = "";
 
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
-		
-		try
+		templateController.setComponentLogic(new ComponentLogic(templateController, component));
+		templateController.getDeliveryContext().getUsageListeners().add(templateController.getComponentLogic().getComponentDeliveryContext());
+
+	    boolean renderComponent = false;
+	    boolean cacheComponent = false;
+
+		String cacheResult = templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
+		//System.out.println("cacheResult for component: " + component.getName() + " is " + cacheResult);
+		if(cacheResult == null || !cacheResult.equalsIgnoreCase("true"))
 		{
-			String componentString = getComponentString(templateController, component.getContentId()); 
-			
-			templateController.setComponentLogic(new ComponentLogic(templateController, component));
-			Map context = getDefaultContext();
-			context.put("templateLogic", templateController);
-			StringWriter cacheString = new StringWriter();
-			PrintWriter cachedStream = new PrintWriter(cacheString);
-			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString);
-			componentString = cacheString.toString();
-		
-			int offset = 0;
-			int slotStartIndex = componentString.indexOf("<ig:slot", offset);
-			int slotStopIndex = 0;
-			
-			while(slotStartIndex > -1)
+		    renderComponent = true;
+		}
+		else
+		{
+		    cacheComponent = true;
+		    String refresh = this.getRequest().getParameter("refresh");
+		    if(refresh != null && refresh.equalsIgnoreCase("true"))
+		        renderComponent = true;
+		}
+	    
+	    if(!renderComponent)
+	    {
+	        //System.out.println("ComponentKey:" + templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
+		    decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
+		    if(decoratedComponent == null)
+		        renderComponent = true;
+		}
+	    
+	    System.out.println("Will we render component:" + component.getName() + ":" + renderComponent);
+	    
+		if(renderComponent)
+	    {
+		    decoratedComponent = "";
+		    
+			try
 			{
-				if(offset > 0)
-					decoratedComponent += componentString.substring(offset + 10, slotStartIndex);
-				else
-					decoratedComponent += componentString.substring(offset, slotStartIndex);
+				String componentString = getComponentString(templateController, component.getContentId()); 
 				
-				//decoratedComponent += componentString.substring(offset, slotStartIndex);
-				slotStopIndex = componentString.indexOf("</ig:slot>", slotStartIndex);
-				//CmsLogger.logInfo("slotStopIndex:" + slotStopIndex);
+				Map context = getDefaultContext();
+				context.put("templateLogic", templateController);
+				StringWriter cacheString = new StringWriter();
+				PrintWriter cachedStream = new PrintWriter(cacheString);
+				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString);
+				componentString = cacheString.toString();
+			
+				int offset = 0;
+				int slotStartIndex = componentString.indexOf("<ig:slot", offset);
+				int slotStopIndex = 0;
 				
-				String slot = componentString.substring(slotStartIndex, slotStopIndex + 10);
-				String id = slot.substring(slot.indexOf("id") + 4, slot.indexOf("\"", slot.indexOf("id") + 4));
-				//System.out.println("slot:" + slot);
-				//System.out.println("id:" + id);
-				
-				List subComponents = getInheritedComponents(templateController.getDatabase(), templateController, component, templateController.getSiteNodeId(), id);
-				Iterator subComponentsIterator = subComponents.iterator();
-				while(subComponentsIterator.hasNext())
+				while(slotStartIndex > -1)
 				{
-					InfoGlueComponent subComponent = (InfoGlueComponent)subComponentsIterator.next();
-					String subComponentString = "";
-					if(subComponent != null)
+					if(offset > 0)
+						decoratedComponent += componentString.substring(offset + 10, slotStartIndex);
+					else
+						decoratedComponent += componentString.substring(offset, slotStartIndex);
+					
+					slotStopIndex = componentString.indexOf("</ig:slot>", slotStartIndex);
+					
+					String slot = componentString.substring(slotStartIndex, slotStopIndex + 10);
+					String id = slot.substring(slot.indexOf("id") + 4, slot.indexOf("\"", slot.indexOf("id") + 4));
+					
+					List subComponents = getInheritedComponents(templateController.getDatabase(), templateController, component, templateController.getSiteNodeId(), id);
+					Iterator subComponentsIterator = subComponents.iterator();
+					while(subComponentsIterator.hasNext())
 					{
-						subComponentString = renderComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId, metainfoContentId);
+						InfoGlueComponent subComponent = (InfoGlueComponent)subComponentsIterator.next();
+						System.out.println(component.getName() + " had subcomponent " + subComponent.getName() + ":" + subComponent.getId());
+						String subComponentString = "";
+						if(subComponent != null)
+						{
+							subComponentString = renderComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId, metainfoContentId);
+						}
+						decoratedComponent += subComponentString.trim();	
 					}
-					decoratedComponent += subComponentString.trim();	
-					//CmsLogger.logInfo("subComponentString:" + subComponentString);
+					
+					offset = slotStopIndex;
+					slotStartIndex = componentString.indexOf("<ig:slot", offset);
 				}
 				
-				//CmsLogger.logInfo("slotStopIndex in loop:" + slotStopIndex);
-				offset = slotStopIndex;
-				//CmsLogger.logInfo("offset in loop:" + offset);
-				//CmsLogger.logInfo("Left: " + componentString.substring(offset));
-				slotStartIndex = componentString.indexOf("<ig:slot", offset);
+				if(offset > 0)
+				{	
+					decoratedComponent += componentString.substring(offset + 10);
+				}
+				else
+				{	
+					decoratedComponent += componentString.substring(offset);
+				}
+
+		        if(cacheComponent)
+		        {
+		            System.out.println("The component used: " + templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities().length);
+		            CacheController.cacheObjectInAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities());
+		        }	    
+
 			}
-			
-			
-			//CmsLogger.logInfo("offset:" + offset);
-			if(offset > 0)
-			{	
-				//CmsLogger.logInfo("APA:" + componentString.substring(offset + 10));
-				decoratedComponent += componentString.substring(offset + 10);
-			}
-			else
-			{	
-				//CmsLogger.logInfo("BEPA:" + componentString.substring(offset));
-				decoratedComponent += componentString.substring(offset);
-			}
+			catch(Exception e)
+			{		
+			    e.printStackTrace();
+				CmsLogger.logWarning("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+			}    	
+
 		}
-		catch(Exception e)
-		{		
-			CmsLogger.logWarning("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
-		}    	
 		
+		templateController.getDeliveryContext().getUsageListeners().remove(templateController.getComponentLogic().getComponentDeliveryContext());
 		//CmsLogger.logInfo("decoratedComponent:" + decoratedComponent);
 		
 		return decoratedComponent;
@@ -596,7 +634,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Document document = new DOMBuilder().getDocument(componentXML);
 						
 			Map components = getComponent(db, document.getRootElement(), id, templateController, component);
-			System.out.println("components:" + components.size());
+			//System.out.println("components:" + components.size());
 			
 			if(components.containsKey(id))
 			{
@@ -875,7 +913,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						Element componentsElement = (Element)componentElement.selectSingleNode("components");
 						
 						List subComponents = getPageComponents(db, componentsElement, slotId, templateController, component);
-						System.out.println("subComponents:" + subComponents);
+						//System.out.println("subComponents:" + subComponents);
 						slot.setComponents(subComponents);
 						
 						component.getSlotList().add(slot);

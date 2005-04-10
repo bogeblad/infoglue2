@@ -14,11 +14,13 @@
 	
 	if(window.name.indexOf("CMS") == -1)
 	{
-		/*url = window.location;
+		/*
+		url = window.location;
 		details = "toolbar=no,status=yes,scrollbars=no,location=no,menubar=no,directories=no,resizable=yes,width=1000,height=740,left=5,top=5";
 		newWin=window.open(url, "CMS", details);
 		newWin.focus();
-		window.close();*/
+		window.close();
+		*/
 	}
 	
 </script> 
