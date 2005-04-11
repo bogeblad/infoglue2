@@ -113,6 +113,24 @@ public class CacheController extends Thread
 		return value;
 	}
 
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key, int updateInterval)
+	{
+	    //return getCachedObject(cacheName, key);
+	    Object value = null;
+	    
+	    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
+	    try 
+	    {
+	        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key.toString(), updateInterval);
+		} 
+	    catch (NeedsRefreshException nre) 
+	    {
+	        cacheAdministrator.cancelUpdate(key.toString());
+		}
+		 
+		return value;
+	}
+
 	public static void clearCache(String cacheName)
 	{
 		CmsLogger.logInfo("Clearing the cache called " + cacheName);

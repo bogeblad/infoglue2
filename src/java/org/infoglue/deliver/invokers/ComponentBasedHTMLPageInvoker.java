@@ -457,7 +457,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    boolean renderComponent = false;
 	    boolean cacheComponent = false;
 
-		String cacheResult = templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
+		String cacheResult 		= templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
+		String updateInterval 	= templateController.getComponentLogic().getPropertyValue("UpdateInterval", true, false);
 		//System.out.println("cacheResult for component: " + component.getName() + " is " + cacheResult);
 		if(cacheResult == null || !cacheResult.equalsIgnoreCase("true"))
 		{
@@ -473,9 +474,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    
 	    if(!renderComponent)
 	    {
-	        //System.out.println("ComponentKey:" + templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
-		    decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
-		    if(decoratedComponent == null)
+            //System.out.println("ComponentKey:" + templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
+	        if(updateInterval != null && !updateInterval.equals("") && !updateInterval.equals("-1"))
+	            decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), new Integer(updateInterval).intValue());
+		    else
+		        decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
+		    
+	        if(decoratedComponent == null)
 		        renderComponent = true;
 		}
 	    
