@@ -117,7 +117,8 @@ public class SiteNodeStateController extends BaseController
 						if(contentVersion != null && contentVersion.getStateId().equals(siteNodeVersion.getStateId()))
 						{
 							CmsLogger.logInfo("changing state on contentVersion:" + contentVersion.getId());
-							ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, infoGluePrincipal, contentVO.getId(), db);
+							List events = new ArrayList();
+							ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, infoGluePrincipal, contentVO.getId(), db, events);
 						}
 					}
 				}

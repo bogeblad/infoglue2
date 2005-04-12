@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 
@@ -53,7 +56,8 @@ public class ChangeContentStateAction extends WebworkAbstractAction
     		return "commentVersion";
     	}
 
-		ContentStateController.changeState(getContentVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getContentId());
+    	List events = new ArrayList();
+		ContentStateController.changeState(getContentVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getContentId(), events);
 		
 		this.contentVersionId = null;
 		
@@ -68,7 +72,8 @@ public class ChangeContentStateAction extends WebworkAbstractAction
 			return "commentVersionStandalone";
 		}
 
-		ContentStateController.changeState(getContentVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getContentId());
+    	List events = new ArrayList();
+		ContentStateController.changeState(getContentVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getContentId(), events);
 
 		this.contentVersionId = null;
 		

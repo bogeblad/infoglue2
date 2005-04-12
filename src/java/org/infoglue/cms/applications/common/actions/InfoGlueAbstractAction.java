@@ -167,6 +167,29 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	}
 
 	/**
+	 * Used by the view pages to determine if the current user has sufficient access rights
+	 * to perform the action specific by the interception point name.
+	 *
+	 * @param interceptionPointName THe Name of the interception point to check access rights
+	 * @return True is access is allowed, false otherwise
+	 */
+	public boolean hasAccessTo(String interceptionPointName, String extraParameter)
+	{
+		CmsLogger.logInfo("Checking if " + getUserName() + " has access to " + interceptionPointName + " with extraParameter " + extraParameter);
+
+		try
+		{
+			return AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), interceptionPointName, extraParameter);
+		}
+		catch (SystemException e)
+		{
+			CmsLogger.logWarning("Error checking access rights", e);
+			return false;
+		}
+	}
+
+	
+	/**
 	 * Get the username for the currently logged in user
 	 */
 	public String getUserName()

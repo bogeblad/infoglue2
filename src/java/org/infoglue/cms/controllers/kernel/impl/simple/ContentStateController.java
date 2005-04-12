@@ -56,7 +56,7 @@ public class ContentStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer contentId) throws ConstraintException, SystemException
+    public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer contentId, List resultingEvents) throws ConstraintException, SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -66,7 +66,7 @@ public class ContentStateController extends BaseController
         beginTransaction(db);
 		try
 		{
-			newContentVersion = changeState(oldContentVersionId, stateId, versionComment, infoGluePrincipal, contentId, db);
+			newContentVersion = changeState(oldContentVersionId, stateId, versionComment, infoGluePrincipal, contentId, db, resultingEvents);
         	commitTransaction(db);
         }
         catch(Exception e)
@@ -85,7 +85,7 @@ public class ContentStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db) throws SystemException
+	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException
 	{
 		ContentVersion newContentVersion = null;
 
@@ -140,7 +140,8 @@ public class ContentStateController extends BaseController
 				eventVO.setEntityId(new Integer(newContentVersion.getId().intValue()));
 				eventVO.setName(newContentVersion.getOwningContent().getName());
 				eventVO.setTypeId(EventVO.PUBLISH);
-				EventController.create(eventVO, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, db);
+				eventVO = EventController.create(eventVO, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, db);
+				resultingEvents.add(eventVO);
 			}
 
 			//If the user in the publish-app publishes a publish-version we change state to published.

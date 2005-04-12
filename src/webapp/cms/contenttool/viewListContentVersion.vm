@@ -101,10 +101,12 @@
 	<td align="right" valign="top">
 		<br><br><br>
 		
+		#if($this.hasAccessTo("PublishingTool.Read") && $this.hasAccessTo("Repository.Read", $!repositoryId))
 		<a href="javascript:submitToPublish('true');">
 		<img src="$ui.getString("images.contenttool.buttons.publish")" width="60" height="25" border="0">
 		</a><br>
-
+		#end
+		
 		<a href="javascript:submitToPublish('false');">
 		<img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0">
 		</a><br>

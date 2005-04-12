@@ -63,19 +63,21 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 		List events = new ArrayList();
 		while(it.hasNext())
 		{
-			ContentVersion contentVersion = ContentStateController.changeState((Integer) it.next(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null);
+			ContentVersion contentVersion = ContentStateController.changeState((Integer) it.next(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
 			
+			/*
 			if(attemptDirectPublishing.equalsIgnoreCase("true"))
 			{
 				EventVO eventVO = new EventVO();
 				eventVO.setEntityClass(ContentVersion.class.getName());
 				eventVO.setEntityId(contentVersion.getId());
-				eventVO.setName(contentVersion.getValueObject().getContentName());
+				eventVO.setName(contentVersion.getOwningContent().getName());
 				eventVO.setTypeId(EventVO.PUBLISH);
 				EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal());
 				
 				events.add(eventVO);
 			}
+			*/
 		}
 		
 		if(attemptDirectPublishing.equalsIgnoreCase("true"))

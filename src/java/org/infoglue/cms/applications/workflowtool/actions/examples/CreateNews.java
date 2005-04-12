@@ -23,8 +23,10 @@
 
 package org.infoglue.cms.applications.workflowtool.actions.examples;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -168,7 +170,8 @@ public class CreateNews implements CustomWorkflowAction
             
             db.begin();
             
-            ContentVersion publishContentVersion = ContentStateController.changeState(newContentVersion.getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", infoGluePrincipal, newContent.getId());
+            List events = new ArrayList();
+            ContentVersion publishContentVersion = ContentStateController.changeState(newContentVersion.getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", infoGluePrincipal, newContent.getId(), events);
 
             db.commit();
         } 

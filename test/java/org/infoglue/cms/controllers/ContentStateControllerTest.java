@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentStateControllerTest.java,v 1.1 2004/12/01 23:35:09 frank Exp $
+ * $Id: ContentStateControllerTest.java,v 1.2 2005/04/12 21:18:46 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -121,7 +121,8 @@ public class ContentStateControllerTest extends InfoGlueTestCase
 		assertEquals("Wrong number of ContentCategories returned", 1, found.size());
 		assertTrue("testContentCategory data not returned", found.contains(testContentCategory));
 
-		ContentVersion newVersion = ContentStateController.changeState(testContentVersion.getId(), stateId, getName(), getAdminPrincipal(), null);
+		List events = new ArrayList();
+		ContentVersion newVersion = ContentStateController.changeState(testContentVersion.getId(), stateId, getName(), getAdminPrincipal(), null, events);
 		testEventContentVersion = newVersion.getValueObject();
 
 		List newFound = contentCategoryStore.findByContentVersion(newVersion.getId());

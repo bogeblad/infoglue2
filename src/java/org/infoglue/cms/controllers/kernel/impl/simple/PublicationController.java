@@ -449,8 +449,9 @@ public class PublicationController extends BaseController
 			}
 			else if(oldContentVersion != null && oldContentVersion.getOwningContent() != null)
 			{
+			    List events = new ArrayList();
 				Integer contentId = oldContentVersion.getOwningContent().getContentId();
-	    		ContentVersion newContentVersion = ContentStateController.changeState(entityId, ContentVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, contentId, db);
+	    		ContentVersion newContentVersion = ContentStateController.changeState(entityId, ContentVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, contentId, db, events);
 	    		contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersion.getContentVersionId(), db);
 			}
 
