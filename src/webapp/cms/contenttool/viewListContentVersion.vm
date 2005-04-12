@@ -57,8 +57,9 @@
 			for (i = 0; i < field.length; i++)
 				field[i].checked = false ;
 		}
+
 		
-		function submitToPublish()
+		function submitToPublish(attemptDirectPublishing)
 		{
 			var listForm = document.listForm;
 			var commentElm = document.getElementById("xversionComment");
@@ -71,6 +72,7 @@
 			{
 				listForm.action = "ChangeMultiContentStatePublish.action"
 				listForm.versionComment.value = commentElm.value;
+				listForm.attemptDirectPublishing.value = attemptDirectPublishing;
 				listForm.submit();
 			}
 		}
@@ -99,21 +101,25 @@
 	<td align="right" valign="top">
 		<br><br><br>
 		
-		<a href="javascript:submitToPublish();">
-		<img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
+		<a href="javascript:submitToPublish('true');">
+		<img src="$ui.getString("images.contenttool.buttons.publish")" width="60" height="25" border="0">
+		</a><br>
+
+		<a href="javascript:submitToPublish('false');">
+		<img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0">
 		</a><br>
 		
 		<a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId">
-		<img src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25" border="0">
+		<img src="$ui.getString("images.contenttool.buttons.cancel60x25")" width="60" height="25" border="0">
 		</a><br><br>
 		
 		#if($versions.size() > 1)
 			<a href="javascript:checkAll();">
-			<img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0">
+			<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
 			</a><br>
 			
 			<a href="javascript:uncheckAll();">
-			<img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0">
+			<img src="$ui.getString("images.contenttool.buttons.uncheckAll60x25")" width="60" height="25" border="0">
 			</a><br>
 		#end
 	</td>
@@ -133,6 +139,8 @@
 
 #hiddenField("contentId" $contentId)
 #hiddenField("versionComment" $!versionComment)
+#hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
+#hiddenField("repositoryId" $!repositoryId)
 
 #set($cnt = 0)
 #foreach($cv in $versions)
@@ -142,8 +150,6 @@
 	#lvAddRow($row $cnt $cv.getContentVersionId())
 
 #end
-
-
 
 #lvEnd()
 </td>

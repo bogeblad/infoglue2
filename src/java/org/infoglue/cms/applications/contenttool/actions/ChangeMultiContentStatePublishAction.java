@@ -28,7 +28,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.publishing.PublicationVO;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 
 
@@ -40,6 +43,7 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 	private Integer languageId;
 	private String versionComment;
 	private Integer repositoryId;
+	private String attemptDirectPublishing = "false";
 
 	
 	//private ContentVO contentVO = new ContentVO();	
@@ -52,13 +56,36 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 	 */
 	   
     public String doExecute() throws Exception
-    {      
+    {   
 		setContentVersionId( getRequest().getParameterValues("sel") );
 		Iterator it = getContentVersionId().iterator();
 		
+		List events = new ArrayList();
 		while(it.hasNext())
 		{
-			ContentStateController.changeState((Integer) it.next(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null);
+			ContentVersion contentVersion = ContentStateController.changeState((Integer) it.next(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null);
+			
+			if(attemptDirectPublishing.equalsIgnoreCase("true"))
+			{
+				EventVO eventVO = new EventVO();
+				eventVO.setEntityClass(ContentVersion.class.getName());
+				eventVO.setEntityId(contentVersion.getId());
+				eventVO.setName(contentVersion.getValueObject().getContentName());
+				eventVO.setTypeId(EventVO.PUBLISH);
+				EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal());
+				
+				events.add(eventVO);
+			}
+		}
+		
+		if(attemptDirectPublishing.equalsIgnoreCase("true"))
+		{
+		    PublicationVO publicationVO = new PublicationVO();
+		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+		    publicationVO.setDescription(getVersionComment());
+		    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
+		    publicationVO.setRepositoryId(repositoryId);
+		    publicationVO = PublicationController.createAndPublish(publicationVO, events, this.getInfoGluePrincipal());
 		}
 		
        	return "success";
@@ -129,4 +156,13 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
         return repositoryId;
     }
 
+    public void setAttemptDirectPublishing(String attemptDirectPublishing)
+    {
+        this.attemptDirectPublishing = attemptDirectPublishing;
+    }
+    
+    public void setRepositoryId(Integer repositoryId)
+    {
+        this.repositoryId = repositoryId;
+    }
 }

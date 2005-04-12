@@ -23,11 +23,13 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
@@ -43,16 +45,20 @@ import java.util.List;
  * 
  */
 
-public class ViewListContentVersionAction extends WebworkAbstractAction 
+public class ViewListContentVersionAction extends InfoGlueAbstractAction 
 {
 
 	private List contentVersionVOList = new ArrayList();
 	private Integer contentId;
+	private Integer repositoryId;
 
 	protected String doExecute() throws Exception 
 	{
 		if(this.contentId != null)
 		{
+		    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
+		    this.repositoryId = contentVO.getRepositoryId();
+		    
 			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
 			Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
@@ -89,4 +95,8 @@ public class ViewListContentVersionAction extends WebworkAbstractAction
 		contentId = integer;
 	}
 
+    public Integer getRepositoryId()
+    {
+        return repositoryId;
+    }
 }
