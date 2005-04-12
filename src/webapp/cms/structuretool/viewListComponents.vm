@@ -85,12 +85,23 @@
 				<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$specifyBaseTemplate&filterRepositoryId=$filterRepositoryId&sortProperty=repositoryId">Repository</a></strong>
 				#if($sortProperty == "repositoryId")<img src="images/downArrow.gif">#end
 			</td>
+			#*
 			<td height="1">
 			<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$specifyBaseTemplate&filterRepositoryId=$filterRepositoryId&sortProperty=id">Id</a></strong>
 				#if($sortProperty == "id")<img src="images/downArrow.gif">#end
 			</td>
+			*#
+			<td height="1">
+			<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$specifyBaseTemplate&filterRepositoryId=$filterRepositoryId&sortProperty=GroupName">GroupName</a></strong>
+				#if($sortProperty == "GroupName")<img src="images/downArrow.gif">#end
+			</td>
 		</tr>
-		
+		<tr>
+			<td colspan="4" height="1" bgcolor="#FEF8D0"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td colspan="4" height="1" bgcolor="#F0E1B4"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
 		#set($isOdd = true)
 		#set($sortedComponents = $this.getSortedComponents($sortProperty))
 		#foreach ($content in $sortedComponents)
@@ -115,7 +126,8 @@
 					    	#end
 					    #end
 					</td>
-					<td align="middle">$content.id</td>
+					#*<td align="middle">$content.id</td>*#
+					<td align="middle">$content.extraProperties.get("GroupName")</td>
 				</tr>	
 				#set($imageUrl = "")
 			#end

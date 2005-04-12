@@ -43,6 +43,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
@@ -124,6 +125,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("childContentCache");
 				clearCache(SmallContentImpl.class);
 				clearCache(MediumContentImpl.class);
+			}
+			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
+			{
+				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
 			{
@@ -216,6 +221,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(SmallContentImpl.class);
 				clearCache(MediumContentImpl.class);
 			}
+			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
+			{
+				CacheController.clearCache("componentContentsCache");
+			}
 			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
 			{
 				CacheController.clearCache("masterLanguageCache");
@@ -278,6 +287,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(MediumContentImpl.class);
 
 				RegistryController.getController().clearRegistryForReferencedEntity(ContentImpl.class.getName(), getObjectIdentity(object).toString());
+			}
+			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
+			{
+				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
 			{

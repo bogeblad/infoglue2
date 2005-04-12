@@ -1103,27 +1103,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 	}
 	
-
-	    
-	/**
-	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
-	 */
-	
-	public List getComponents() throws Exception
-	{
-		HashMap arguments = new HashMap();
-		arguments.put("method", "selectListOnContentTypeName");
-		
-		List argumentList = new ArrayList();
-		HashMap argument = new HashMap();
-		argument.put("contentTypeDefinitionName", "HTMLTemplate");
-		argumentList.add(argument);
-		arguments.put("arguments", argumentList);
-		
-		List results = ContentController.getContentController().getContentVOList(arguments);
-		
-		return results;	
-	}
 	
 	/**
 	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate" sorted on the property given.
@@ -1131,11 +1110,19 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	
 	public List getSortedComponents(String sortProperty) throws Exception
 	{
-		List components = getComponents();
+	    List componentVOList = null;
+	    
+	    try
+	    {
+	        String direction = "asc";
+	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction);
+	    }
+	    catch(Exception e)
+	    {
+	        e.printStackTrace();
+	    }
 		
-		Collections.sort(components, new ReflectionComparator(sortProperty));
-		
-		return components;
+	    return componentVOList;
 	}
 	     	     
 	/**

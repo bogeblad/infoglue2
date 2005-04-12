@@ -31,6 +31,9 @@ import org.infoglue.cms.util.validators.*;
 
 import java.util.Date;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class ContentVO implements BaseEntityVO
 { 
@@ -51,6 +54,8 @@ public class ContentVO implements BaseEntityVO
 	private Integer childCount;
   	private String creatorName;
   
+  	//Used if an application wants to add more properties to this item... used for performance reasons.
+  	private Map extraProperties = new Hashtable();
   	
   	public ContentVO()
   	{
@@ -225,5 +230,15 @@ public class ContentVO implements BaseEntityVO
 			.append(" creatorName=").append(creatorName);
 		return sb.toString();
 	}
+	
+    public Map getExtraProperties()
+    {
+        return extraProperties;
+    }
+    
+    public void setExtraProperties(Map extraProperties)
+    {
+        this.extraProperties = extraProperties;
+    }
 }
         
