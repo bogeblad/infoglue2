@@ -25,8 +25,11 @@ package org.infoglue.cms.applications.publishingtool.actions;
 
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.applications.common.ImageButton;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -194,11 +197,22 @@ public class ViewPublishingToolToolBarAction extends WebworkAbstractAction
 	
 	private List getPublicationsButtons()
 	{
-		List buttons = new ArrayList();
-		buttons.add(new ImageButton(true, "javascript:submitToPreview();", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.previewContent"), "Preview", "Preview marked versions"));
-		buttons.add(new ImageButton(true, "javascript:submitToCreate();", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.createEdition"), "Create publication", "Create a new edition of the marked versions"));
-		buttons.add(new ImageButton(true, "javascript:submitToUnpublish('publication');", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.unpublishEdition"), "Unpublish edition", "Unpublish the marked edition and send the versions back to publishable state"));
-		buttons.add(new ImageButton(true, "javascript:submitToDeny();", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.denyPublishing"), "Deny publishing", "Deny the checked items from publication"));
+	    List buttons = new ArrayList();
+		buttons.add(new ImageButton(true, "javascript:submitToPreview();", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.previewContent"), "tool.publishtool.preview.header", "Preview marked versions"));
+		buttons.add(new ImageButton(true, "javascript:submitToCreate();", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.createEdition"), "tool.publishtool.createEdition.header", "Create a new edition of the marked versions"));
+		buttons.add(new ImageButton(true, "javascript:submitToUnpublish('publication');", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.unpublishEdition"), "tool.publishtool.unpublishEdition.header", "Unpublish the marked edition and send the versions back to publishable state"));
+		buttons.add(new ImageButton(true, "javascript:submitToDeny();", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.denyPublishing"), "tool.publishtool.denyPublication.header", "Deny the checked items from publication"));
+		
+		try
+		{
+			String repositoryName = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId).getName();
+			buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("stagingDeliveryUrl") + "?repositoryName=" + repositoryName + "', 'StagingPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.previewEnvironment"), "tool.publishtool.previewEnvironment.header"));
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+		}
+		
 		return buttons;				
 	}
 

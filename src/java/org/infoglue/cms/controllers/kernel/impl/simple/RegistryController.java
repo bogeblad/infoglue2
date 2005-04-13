@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.6 2005/03/21 17:58:48 mattias Exp $
+ * $Id: RegistryController.java,v 1.7 2005/04/13 15:09:17 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -260,10 +260,6 @@ public class RegistryController extends BaseController
 	    }
 	}
 	
-	
-
-	//<?xml version='1.0' encoding='UTF-8'?><qualifyer entity='Content'><id>1275</id><id>198</id><id>196</id><id>1275</id><id>196</id><id>198</id><id>1275</id></qualifyer>
-	//<?xml version='1.0' encoding='UTF-8'?><qualifyer entity='SiteNode'><id>62</id><id>54</id><id>62</id><id>51</id><id>57</id><id>65</id></qualifyer>
 
 	/**
 	 * This method fetches all inline links from any text.
@@ -607,6 +603,31 @@ public class RegistryController extends BaseController
 		return matchingRegistryVOList;		
 	}
 	
+	
+	/**
+	 * Gets matching references
+	 */
+	
+	public List getMatchingRegistryVOListForReferencingEntity(String referencingEntityName, String referencingEntityId, Database db) throws SystemException, Exception
+	{
+	    List matchingRegistryVOList = new ArrayList();
+	    
+		OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
+		oql.bind(referencingEntityName);
+		oql.bind(referencingEntityId);
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
+        {
+            Registry registry = (Registry)results.next();
+            RegistryVO registryVO = registry.getValueObject();
+            
+            matchingRegistryVOList.add(registryVO);
+        }       
+		
+		return matchingRegistryVOList;		
+	}
 	
 	/**
 	 * Gets matching references

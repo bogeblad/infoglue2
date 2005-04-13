@@ -198,6 +198,33 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 	 * This method checks if there are published versions available for the contentVersion.
 	 */
 	
+	private boolean hasAnyPublishedVersion()
+	{
+		boolean hasPublishedVersion = false;
+		
+		try
+		{
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestPublishedContentVersion(this.contentId);
+			if(contentVersion != null)
+			{
+				hasPublishedVersion = true;
+				lastPublishedContentVersionId = contentVersion.getContentVersionId();
+				this.repositoryId = contentVersion.getOwningContent().getRepository().getId();
+				this.name = contentVersion.getOwningContent().getName();
+				this.languageName = contentVersion.getLanguage().getName();
+				this.contentId = contentVersion.getOwningContent().getId();
+				this.languageId = contentVersion.getLanguage().getId();
+			}
+		}
+		catch(Exception e){}
+				
+		return hasPublishedVersion;
+	}
+	
+	/**
+	 * This method checks if there are published versions available for the contentVersion.
+	 */
+	
 	private boolean hasPublishedVersion()
 	{
 		boolean hasPublishedVersion = false;
@@ -256,6 +283,8 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 			buttons.add(getMoveMultipleButton());
 			buttons.add(getDeleteButton());
 			buttons.add(getPublishButton());
+			if(hasAnyPublishedVersion())
+			    buttons.add(getUnpublishButton());
 			buttons.add(getExecuteTaskButton());
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
@@ -282,6 +311,8 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 			buttons.add(getMoveButton());
 			buttons.add(getMoveMultipleButton());
 			buttons.add(getPublishButton());
+			if(hasAnyPublishedVersion())
+			    buttons.add(getUnpublishButton());
 			buttons.add(getExecuteTaskButton());
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
@@ -350,7 +381,8 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 	{
 		try
 		{
-			return new ImageButton("Confirm.action?header=tool.contenttool.unpublishVersion.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("RequestContentVersionUnpublish.action?entityClass=" + ContentVersion.class.getName() + "&entityId=" + this.lastPublishedContentVersionId + "&typeId=" + EventVO.UNPUBLISH_LATEST + "&repositoryId=" + this.repositoryId + "&name=" + this.name + " - " + this.languageName + "&description=tool.contenttool.unpublishVersion.text&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContentVersion.action?title=ContentVersion&contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.unpublishVersion.text", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header");
+			//return new ImageButton("Confirm.action?header=tool.contenttool.unpublishVersion.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("RequestContentVersionUnpublish.action?entityClass=" + ContentVersion.class.getName() + "&entityId=" + this.lastPublishedContentVersionId + "&typeId=" + EventVO.UNPUBLISH_LATEST + "&repositoryId=" + this.repositoryId + "&name=" + this.name + " - " + this.languageName + "&description=tool.contenttool.unpublishVersion.text&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContentVersion.action?title=ContentVersion&contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.unpublishVersion.text", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header");
+			return new ImageButton("UnpublishContentVersion!input.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header");
 		}
 		catch(Exception e){}
 

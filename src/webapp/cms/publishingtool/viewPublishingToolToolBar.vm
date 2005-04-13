@@ -7,6 +7,7 @@
 
 	<title>Toolbar</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script language="JavaScript" src="script/listview.js"></script>
 	
 	<script type="text/javascript" language="JavaScript">
 	<!-- 
@@ -70,7 +71,9 @@
 			}
 			else
 			{
-				listForm.message.value = listForm.message.value + selectedTexts;
+				listForm.header.value = "tool.publishtool.unpublishEdition.header";
+				listForm.message.value = "tool.publishtool.unpublishEdition.text"; 
+				listForm.extraParameters.value = selectedTexts;
 				listForm.yesDestination.value = listForm.yesDestination.value + selectedObjects;
 				listForm.submit();
 			}
@@ -291,19 +294,9 @@
 <!-- This is the headline --->
 <div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:1px; visibility:visble; z-index:0">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
-<!--tr>
-	<td colspan="3" bgcolor="FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
-</tr-->
 <tr class="darkbrown">
-	<td class="actionheader"><div class="leftmarginalized">$title</div></td>
+	<td class="actionheader"><div class="leftmarginalized">$ui.getString($title)</div></td>
 </tr>
-
-<!--tr class="lightblue">
-	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-</tr>
-<tr class="darkbrown">
-	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-</tr-->
 </table>
 
 </body>

@@ -254,7 +254,7 @@ function configInfoGlue(config)
 		
 		//if()
 				
-		alert("text:" + text);
+		//alert("text:" + text);
 		//alert("text.tagName:" + text.tagName);
 		//alert("link:" + link);
 		//alert("editor:" + editor);
@@ -302,7 +302,7 @@ function configInfoGlue(config)
 	  	if(!languageId)
 	  		languageId = self.opener.languageId;
 	
-		alert("text:" + text);
+		//alert("text:" + text);
 		if(text.indexOf("href=\"$templateLogic.getInlineAssetUrl") > -1)  
 		{
 	  	  	/**

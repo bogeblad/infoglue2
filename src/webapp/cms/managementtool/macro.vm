@@ -94,11 +94,11 @@
 ## This is the header for all publishingtool pages *
 ##**************************************************
 
-#macro(beginPublishingTool $title $toolbarKey $arguments)
+#macro(beginPublishingTool $titleKey $toolbarKey $arguments)
 
 <html>
 <head>
-	<title>$title</title>
+	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
@@ -106,7 +106,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
-<body class="publishingtooledit" onload="javascript:refreshPublishingToolBar('$title', '$toolbarKey', '$arguments');">
+<body class="publishingtooledit" onload="javascript:refreshPublishingToolBar('$titleKey', '$toolbarKey', '$arguments');">
 <div class="fullymarginalized">
 #set( $lvColor = "brown")
 

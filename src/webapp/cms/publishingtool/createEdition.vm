@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginPublishingTool("Create new edition" "New edition" "")
+#beginPublishingTool("tool.publishtool.createEdition.header" "New edition" "")
 
 <table class="publishingtooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
 <form name="editForm" method="POST" action="CreateEdition.action">

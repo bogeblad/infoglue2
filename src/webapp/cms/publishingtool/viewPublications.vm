@@ -50,7 +50,7 @@ function uncheckAllBoxes()
 
 
 
-#beginPublishingTool("Publications - $repositoryVO.getName()" "Publications" "")
+#beginPublishingTool("tool.publishingtool.welcomeHeader" "Publications" "repositoryId=$repositoryId")
 
 
 <table width=100%>
@@ -162,10 +162,11 @@ function uncheckAllBoxes()
 #lvHead(["Name","Description", "Date"] "" "" "" "")
 
 		<form name="listFormPublication" action="Confirm.action" method="POST">
-			<input type="hidden" name="header" value="Unpublish edition"/>
+			<input type="hidden" name="header" value=""/>
 			<input type="hidden" name="yesDestination" value="DeleteEdition!checkForModifiedVersions.action?repositoryId=$repositoryId"/>
 			<input type="hidden" name="noDestination" value="ViewPublications.action?repositoryId=$repositoryId"/>
-			<input type="hidden" name="message" value="You are about to unpublish this edition<br>"/>
+			<input type="hidden" name="message" value=""/>
+			<input type="hidden" name="extraParameters" value=""/>
 
 	#hiddenField("repositoryId" $repositoryId)
 
