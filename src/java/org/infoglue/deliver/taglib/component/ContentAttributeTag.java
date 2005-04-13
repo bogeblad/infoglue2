@@ -21,7 +21,7 @@
 * ===============================================================================
 */
 
-package org.infoglue.deliver.taglib;
+package org.infoglue.deliver.taglib.component;
 
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
@@ -29,22 +29,22 @@ import javax.servlet.jsp.tagext.*;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 
 /**
- * This is an attempt to make an TagLib for all actions against the JSP-writers.
+ * This is an attempt to make an TagLib for attempts to get a ContentAttribute from a content referenced by a component
+ * in a JSP.
  * 
  * <%@ taglib uri="infoglue" prefix="infoglue" %>
- * <infoglue:getContentAttribute contentId="1368" attributeName="Name"/>
- * <infoglue:getContentAttribute propertyName="Article" attributeName="Title"/>
+ * 
+ * <infoglue:component.ContentAttribute propertyName="Article" attributeName="Title"/>
  *
  * @author Mattias Bogeblad
  */
 
 public class ContentAttributeTag extends TagSupport
 {
-    //One of these are used
-    private String contentId 	= null;
-    private String propertyName = null;
-    
+    private String propertyName;
     private String attributeName;
+    private boolean disableEditOnSight 	= false;
+    private boolean useInheritance		= true;
     
     public ContentAttributeTag()
     {
@@ -55,17 +55,12 @@ public class ContentAttributeTag extends TagSupport
     {
         try
         {
-            System.out.println("propertyName:" + propertyName);
-            System.out.println("contentId:" + contentId);
-            System.out.println("attributeName:" + attributeName);
             BasicTemplateController templateLogic = (BasicTemplateController)this.pageContext.getRequest().getAttribute("org.infoglue.cms.deliver.templateLogic");
-            if(contentId != null)
-                pageContext.getOut().write(templateLogic.getContentAttribute(new Integer(contentId), attributeName));
-            else if(propertyName != null)
-                pageContext.getOut().write(templateLogic.getComponentLogic().getContentAttribute(propertyName, attributeName));
+            pageContext.getOut().write(templateLogic.getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
         }
         catch(java.io.IOException e)
         {
+            e.printStackTrace();
             throw new JspTagException("IO Error: " + e.getMessage());
         }
         
@@ -77,13 +72,18 @@ public class ContentAttributeTag extends TagSupport
         this.propertyName = propertyName;
     }
     
-    public void setContentId(String contentId)
-    {
-        this.contentId = contentId;
-    }
-    
     public void setAttributeName(String attributeName)
     {
         this.attributeName = attributeName;
+    }
+    
+    public void setDisableEditOnSight(boolean disableEditOnSight)
+    {
+        this.disableEditOnSight = disableEditOnSight;
+    }
+    
+    public void setUseInheritance(boolean useInheritance)
+    {
+        this.useInheritance = useInheritance;
     }
 }

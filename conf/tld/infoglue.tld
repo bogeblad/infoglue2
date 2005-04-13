@@ -10,23 +10,82 @@
     <uri>http://java.sun.com/portlet</uri>
 	
 	<tag>
-        <name>getContentAttribute</name>
-        <tagclass>org.infoglue.deliver.taglib.ContentAttributeTag</tagclass>
+        <name>component.ContentAttribute</name>
+        <tagclass>org.infoglue.deliver.taglib.component.ContentAttributeTag</tagclass>
         <bodycontent>empty</bodycontent>
         <info>ContentAttribute Tag</info>
         <attribute>
-            <name>contentId</name>
-            <required>false</required>
+            <name>propertyName</name>
+            <required>true</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
-            <name>propertyName</name>
+            <name>attributeName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>disableEditOnSight</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
             <name>attributeName</name>
             <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+	<tag>
+        <name>component.AssetUrl</name>
+        <tagclass>org.infoglue.deliver.taglib.component.AssetUrlTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>Asset Url Tag</info>
+        <attribute>
+            <name>propertyName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>assetKey</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+	<tag>
+        <name>component.AssetThumbnailUrl</name>
+        <tagclass>org.infoglue.deliver.taglib.component.AssetThumbnailUrlTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>Asset Thumbnail Tag</info>
+        <attribute>
+            <name>propertyName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>assetKey</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>width</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>height</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useInheritance</name>
+            <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
     </tag>

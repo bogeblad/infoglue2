@@ -145,12 +145,48 @@ public class ComponentLogic
 		}
 		return assetUrl;
 	}
+	
+	public String getAssetUrl(String propertyName, boolean useInheritance) throws Exception
+	{
+		String assetUrl = "";
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			CmsLogger.logInfo("bindings:" + bindings.size());
+			if(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				CmsLogger.logInfo("contentId:" + contentId);
+				assetUrl = templateController.getAssetUrl(contentId);
+			}
+		}
+		return assetUrl;
+	}
 
 	public String getAssetUrl(String propertyName, String assetKey) throws Exception
 	{
 		String assetUrl = "";
 		 		
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				assetUrl = templateController.getAssetUrl(contentId, assetKey);
+			}
+		}
+		return assetUrl;
+	}
+
+	public String getAssetUrl(String propertyName, String assetKey, boolean useInheritance) throws Exception
+	{
+		String assetUrl = "";
+		 		
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");

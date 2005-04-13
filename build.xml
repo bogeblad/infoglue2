@@ -353,7 +353,12 @@
 		<copy todir="${build}/deliverwebapp/WEB-INF/classes">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
-
+		<copy todir="${build}/deliverwebapp/WEB-INF/tld">
+			<fileset dir="${conf}/tld">
+				<include name="*.tld"/>
+			</fileset>
+		</copy>
+		
 		<echo message="Copying confs to cms"/>
 		<copy todir="${build}/cmswebapp/WEB-INF/classes">
 			<fileset dir="${conf}">
