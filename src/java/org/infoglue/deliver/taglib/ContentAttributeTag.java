@@ -33,38 +33,36 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateControll
  * 
  * <%@ taglib uri="infoglue" prefix="infoglue" %>
  * <infoglue:getContentAttribute contentId="1368" attributeName="Name"/>
+ * <infoglue:getContentAttribute propertyName="Article" attributeName="Title"/>
  *
  * @author Mattias Bogeblad
  */
 
-public class TemplateLogicTag extends TagSupport
+public class ContentAttributeTag extends TagSupport
 {
-    private String contentId;
+    //One of these are used
+    private String contentId 	= null;
+    private String propertyName = null;
+    
     private String attributeName;
     
-    public TemplateLogicTag()
+    public ContentAttributeTag()
     {
         super();
     }
-
-    public void setContentId(String contentId)
-    {
-        this.contentId = contentId;
-    }
     
-    public void setAttributeName(String attributeName)
-    {
-        this.attributeName = attributeName;
-    }
-
     public int doEndTag() throws JspTagException
     {
         try
         {
+            System.out.println("propertyName:" + propertyName);
             System.out.println("contentId:" + contentId);
             System.out.println("attributeName:" + attributeName);
             BasicTemplateController templateLogic = (BasicTemplateController)this.pageContext.getRequest().getAttribute("org.infoglue.cms.deliver.templateLogic");
-            pageContext.getOut().write(templateLogic.getContentAttribute(new Integer(contentId), attributeName));
+            if(contentId != null)
+                pageContext.getOut().write(templateLogic.getContentAttribute(new Integer(contentId), attributeName));
+            else if(propertyName != null)
+                pageContext.getOut().write(templateLogic.getComponentLogic().getContentAttribute(propertyName, attributeName));
         }
         catch(java.io.IOException e)
         {
@@ -74,4 +72,18 @@ public class TemplateLogicTag extends TagSupport
         return EVAL_PAGE;
     }
 
+    public void setPropertyName(String propertyName)
+    {
+        this.propertyName = propertyName;
+    }
+    
+    public void setContentId(String contentId)
+    {
+        this.contentId = contentId;
+    }
+    
+    public void setAttributeName(String attributeName)
+    {
+        this.attributeName = attributeName;
+    }
 }
