@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
@@ -45,12 +45,13 @@ import java.util.List;
  * 
  */
 
-public class ViewListSiteNodeVersionAction extends WebworkAbstractAction 
+public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction 
 {
 
 	private List siteNodeVersionVOList = new ArrayList();
 	private Integer siteNodeVersionId;
 	private Integer siteNodeId;
+	private Integer repositoryId;
 	
 	
 
@@ -108,4 +109,13 @@ public class ViewListSiteNodeVersionAction extends WebworkAbstractAction
 		this.siteNodeVersionId = siteNodeVersionId;
 	}
 
+    public Integer getRepositoryId()
+    {
+        return repositoryId;
+    }
+    
+    public void setRepositoryId(Integer repositoryId)
+    {
+        this.repositoryId = repositoryId;
+    }
 }
