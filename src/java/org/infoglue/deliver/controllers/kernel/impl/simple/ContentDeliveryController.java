@@ -377,7 +377,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersionVO mostRecentVersion = getContentVersionVO(db, siteNodeId, content.getContentId(), languageId, useLanguageFallback, deliveryContext);
 		boolean isProperVersion = (mostRecentVersion != null) && (mostRecentVersion.getId().equals(version.getId()));
 
-		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext);
+		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
 
 		return isProperVersion && isValidContent;
 	}
@@ -1079,7 +1079,7 @@ public class ContentDeliveryController extends BaseDeliveryController
         	if(searchRecursive && currentLevel < maximumNumberOfLevels)
 	        	getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db, includeFolders, deliveryContext);
     
-    		if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext))
+    		if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
     			contents.add(content);
         }
 	}
@@ -1104,9 +1104,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if(searchRecursive && currentLevel < maximumNumberOfLevels)
 				getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, includeFolders, maximumNumberOfLevels, db, deliveryContext);
     
-    		if(content.getIsBranch().booleanValue() && includeFolders && isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext))
+    		if(content.getIsBranch().booleanValue() && includeFolders && isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
 				contents.add(content);
-    		else if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext))
+    		else if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
 				contents.add(content);
 		}
 	}
@@ -1146,12 +1146,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * @throws Exception
 	 */
 
-	public boolean isValidContent(Database db, Integer contentId, Integer languageId, boolean useLanguageFallback, InfoGluePrincipal infoGluePrincipal, DeliveryContext deliveryContext) throws Exception
+	public boolean isValidContent(Database db, Integer contentId, Integer languageId, boolean useLanguageFallback, boolean includeFolders, InfoGluePrincipal infoGluePrincipal, DeliveryContext deliveryContext) throws Exception
 	{
 	    boolean isValidContent = false;
 		
 		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
-		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, db, deliveryContext);
+		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext);
 		
 		return isValidContent;					
 	}
@@ -1161,7 +1161,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * @throws Exception
 	 */
 
-	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, Database db, DeliveryContext deliveryContext) throws Exception
+	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext) throws Exception
 	{
 	    boolean isValidContent = false;
 		
@@ -1177,12 +1177,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 		    return false;
 		}
-		/*
-		if(!includeFolders && content.getIsBranch().booleanValue())
+		
+		if(!includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
 			isValidContent = true; 
-		} 
-		*/
+		}
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
 			ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext);

@@ -1373,7 +1373,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, this.deliveryContext);		
+			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, true, this.deliveryContext);		
 			if(contentVOList != null && contentVOList.size() > index)
 			{
 				ContentVO contentVO = (ContentVO)contentVOList.get(index);
@@ -1548,7 +1548,7 @@ public class BasicTemplateController implements TemplateController
 		Integer AssetFileSize = null;
 		try
 		{
-			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, this.deliveryContext);		
+			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, true, this.deliveryContext);		
 			if(contentVOList != null && contentVOList.size() > index)
 			{
 				ContentVO contentVO = (ContentVO)contentVOList.get(index);
@@ -1699,7 +1699,7 @@ public class BasicTemplateController implements TemplateController
 						id = child.getText();
 		
 					ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), new Integer(id), this.deliveryContext);
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVO.getId(), this.languageId, USE_LANGUAGE_FALLBACK, getPrincipal(), this.deliveryContext))
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVO.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 						relatedContentVOList.add(contentVO);
 				}				
 			}
@@ -1911,7 +1911,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, this.deliveryContext);		
+			List contentVOList = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, USE_INHERITANCE, true, this.deliveryContext);		
 			if(contentVOList != null && contentVOList.size() > index)
 			{
 				ContentVO contentVO = (ContentVO)contentVOList.get(index);
@@ -3306,7 +3306,7 @@ public class BasicTemplateController implements TemplateController
 		List boundContents = new ArrayList();
 		try
 		{
-			boundContents = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, structureBindningName, USE_INHERITANCE, this.deliveryContext);	
+			boundContents = this.nodeDeliveryController.getBoundContents(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, structureBindningName, USE_INHERITANCE, true, this.deliveryContext);	
 		}
 		catch(Exception e)
 		{

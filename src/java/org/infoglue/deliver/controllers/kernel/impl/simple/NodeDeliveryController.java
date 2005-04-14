@@ -632,10 +632,20 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, inheritParentBindings, deliveryContext);
+		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, inheritParentBindings, false, deliveryContext);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
 
+
+	/**
+	 * This method return a single content bound. 
+	 */
+	
+	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
+	{
+		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, inheritParentBindings, includeFolders, deliveryContext);
+		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
+	}
 
 	/**
 	 * This method return a single content bound. 
@@ -645,7 +655,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 		CmsLogger.logInfo("availableServiceBindingName:" + availableServiceBindingName);
-		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, deliveryContext);
+		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, true, deliveryContext);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
 	
@@ -664,7 +674,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 
         try
         {
-            contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, deliveryContext);
+            contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, true, deliveryContext);
         
             closeTransaction(db);
 	    }
@@ -683,9 +693,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns a list of contents bound to the named availableServiceBinding.
 	 */
 	
-	public List getBoundContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, DeliveryContext deliveryContext) throws SystemException, Exception
+	public List getBoundContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
+		String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + includeFolders + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		//String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		CmsLogger.logInfo("boundContentsKey:" + boundContentsKey);
 		List boundContentVOList = (List)CacheController.getCachedObject("boundContentCache", boundContentsKey);
@@ -728,7 +738,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 						//	boundContentVOList.add(candidate);        		
 						Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
 						
-						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, db, deliveryContext))
+						System.out.println("candidateContent:" + candidateContent.getName());
+						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
 						{
 							deliveryContext.addUsedContent("content:" + candidate.getId());
 
@@ -760,8 +771,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
     	CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
         
-        ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, deliveryContext);
+        ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, includeFolders, deliveryContext);
         CmsLogger.logInfo("contentVO:" + contentVO);
+        System.out.println("contentVO:" + contentVO);
         
         if(contentVO != null)
         {
