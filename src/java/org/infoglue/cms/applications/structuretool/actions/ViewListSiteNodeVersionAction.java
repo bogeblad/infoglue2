@@ -73,13 +73,9 @@ public class ViewListSiteNodeVersionAction extends WebworkAbstractAction
 			if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
 				ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1005"));
 		
-			//if(SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getIsSiteNodeVersionProtected(siteNodeVersionId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.SubmitToPublish", siteNodeVersionId.toString()))
-			//	ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1005"));
-
 			ceb.throwIfNotEmpty();
 
-			siteNodeVersionVOList = SiteNodeVersionController.getController().getSiteNodeVersionVOWithParentRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE);
-			CmsLogger.logInfo("siteNodeVersionVOList:" + siteNodeVersionVOList.size());
+			siteNodeVersionVOList = SiteNodeVersionController.getController().getSiteNodeVersionVOWithParentRecursiveAndRelated(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE);
 		}
 
 	    return "success";

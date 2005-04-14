@@ -23,7 +23,11 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -615,6 +619,119 @@ public class SiteNodeVersionController extends BaseController
 	
 	
 	/**
+	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
+	 */ 
+	
+    public List getSiteNodeVersionVOWithParentRecursiveAndRelated(Integer siteNodeId, Integer stateId) throws ConstraintException, SystemException
+	{
+        List siteNodeVersionVOList = new ArrayList();
+        
+        Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+
+            List siteNodeVersionList = getSiteNodeVersionWithParentRecursiveAndRelated(siteNode, stateId, new ArrayList(), new ArrayList(), db);
+            siteNodeVersionVOList = toVOList(siteNodeVersionList);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return siteNodeVersionVOList;
+	}
+	
+	private List getSiteNodeVersionWithParentRecursiveAndRelated(SiteNode siteNode, Integer stateId, List resultList, List checkedSiteNodes, Database db) throws ConstraintException, SystemException, Exception
+	{
+	    checkedSiteNodes.add(siteNode.getId());
+        
+		// Get the versions of this siteNode.
+		SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersionIfInState(siteNode, stateId, db);
+		if(siteNodeVersion != null)
+		{
+		    resultList.add(siteNodeVersion);
+	    
+	        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
+	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
+	        
+	        while(relatedEntitiesIterator.hasNext())
+	        {
+	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
+	            System.out.println("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
+	            {
+	                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
+	                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
+	    		    if(relatedSiteNodeVersion != null)
+	    		        resultList.add(relatedSiteNodeVersion);
+	    		    
+	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
+	            }
+	        }	    
+		}
+		
+		// Get the children of this siteNode and do the recursion
+		Collection childSiteNodeList = siteNode.getChildSiteNodes();
+		Iterator cit = childSiteNodeList.iterator();
+		while (cit.hasNext())
+		{
+			SiteNode childSiteNode = (SiteNode) cit.next();
+			getSiteNodeVersionWithParentRecursiveAndRelated(childSiteNode, stateId, resultList, checkedSiteNodes, db);
+		}
+        
+		return resultList;
+	}
+
+	/**
+	 * This method returns the latest sitenodeVersion there is for the given siteNode.
+	 */
+	
+	public SiteNodeVersion getLatestActiveSiteNodeVersionIfInState(SiteNode siteNode, Integer stateId, Database db) throws SystemException, Exception
+	{
+		SiteNodeVersion siteNodeVersion = null;
+		
+		CmsLogger.logInfo("siteNode " + siteNode);
+		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
+		CmsLogger.logInfo("siteNodeVersions " + siteNodeVersions);
+		
+		SiteNodeVersion latestSiteNodeVersion = null;
+		
+		Iterator versionIterator = siteNodeVersions.iterator();
+		while(versionIterator.hasNext())
+		{
+		    SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
+			
+			if(latestSiteNodeVersion == null || latestSiteNodeVersion.getId().intValue() < siteNodeVersionCandidate.getId().intValue())
+			    latestSiteNodeVersion = siteNodeVersionCandidate;
+			
+			if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() == stateId.intValue())
+			{
+				if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNode.getId().intValue())
+				{
+					if(siteNodeVersion == null || siteNodeVersion.getSiteNodeVersionId().intValue() < siteNodeVersionCandidate.getId().intValue())
+					{
+						siteNodeVersion = siteNodeVersionCandidate;
+					}
+				}
+			}
+		}
+
+		if(siteNodeVersion != latestSiteNodeVersion)
+		    siteNodeVersion = null;
+		    
+		return siteNodeVersion;
+	}
+
+	
+	/**
 	 * Updates the SiteNodeVersion.
 	 */
 	
@@ -641,6 +758,7 @@ public class SiteNodeVersionController extends BaseController
 	{
 		return new SiteNodeVersionVO();
 	}
+
 
 }
  
