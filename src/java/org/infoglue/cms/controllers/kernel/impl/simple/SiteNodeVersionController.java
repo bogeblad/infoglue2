@@ -670,7 +670,7 @@ public class SiteNodeVersionController extends BaseController
 	            {
 	                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
 	                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
-	    		    if(relatedSiteNodeVersion != null)
+	                if(relatedSiteNodeVersion != null && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
 	    		        resultList.add(relatedSiteNodeVersion);
 	    		    
 	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));

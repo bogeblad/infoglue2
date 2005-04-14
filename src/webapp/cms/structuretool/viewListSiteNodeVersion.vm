@@ -139,6 +139,7 @@
 #hiddenField("siteNodeId" $siteNodeId)
 #hiddenField("siteNodeVersionId" $siteNodeVersionId)
 #hiddenField("versionComment" $!versionComment)
+#hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
 
 #set($cnt = 0)
 #foreach($cv in $siteNodeVersions)
