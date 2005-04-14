@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.7 2005/04/13 15:09:17 mattias Exp $
+ * $Id: RegistryController.java,v 1.8 2005/04/14 21:34:04 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -167,15 +167,22 @@ public class RegistryController extends BaseController
 	    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 	    {
 	        System.out.println("It was a meta info so lets check it for other stuff as well");
-		    SiteNodeVersion siteNodeVersion = getSiteNodeVersionWhichUsesContentVersionAsMetaInfo(oldContentVersion, db); 
-		    if(siteNodeVersion != null)
-		    {
-			    clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
-			    
-			    getComponents(siteNodeVersion, versionValue, db);
-			    getComponentBindings(siteNodeVersion, versionValue, db);
-		    }
 		    
+	        List siteNodeVersions = getSiteNodeVersionsWhichUsesContentVersionAsMetaInfo(oldContentVersion, db);
+	        Iterator siteNodeVersionsIterator = siteNodeVersions.iterator();
+	        while(siteNodeVersionsIterator.hasNext())
+	        {
+		        SiteNodeVersion siteNodeVersion = (SiteNodeVersion)siteNodeVersionsIterator.next();
+			    if(siteNodeVersion != null)
+			    {
+				    System.out.println("Going to use " + siteNodeVersion.getId() + " as reference");
+			        clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
+				    
+				    getComponents(siteNodeVersion, versionValue, db);
+				    getComponentBindings(siteNodeVersion, versionValue, db);
+			    }
+	        }
+	        
 		    getInlineSiteNodes(oldContentVersion, versionValue, db);
 		    getInlineContents(oldContentVersion, versionValue, db);
 		    getRelationSiteNodes(oldContentVersion, versionValue, db);
@@ -611,8 +618,11 @@ public class RegistryController extends BaseController
 	public List getMatchingRegistryVOListForReferencingEntity(String referencingEntityName, String referencingEntityId, Database db) throws SystemException, Exception
 	{
 	    List matchingRegistryVOList = new ArrayList();
-	    
-		OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
+
+	    System.out.println("referencingEntityName:" + referencingEntityName);
+	    System.out.println("referencingEntityId:" + referencingEntityId);
+		
+	    OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
 		oql.bind(referencingEntityName);
 		oql.bind(referencingEntityId);
 		
@@ -622,6 +632,7 @@ public class RegistryController extends BaseController
         {
             Registry registry = (Registry)results.next();
             RegistryVO registryVO = registry.getValueObject();
+    	    System.out.println("found match:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
             
             matchingRegistryVOList.add(registryVO);
         }       
@@ -681,12 +692,13 @@ public class RegistryController extends BaseController
 	}
 	
 	/**
-	 * Gets siteNodeVersion which uses the metainfo
+	 * Gets siteNodeVersions which uses the metainfo
 	 */
 	
-	public SiteNodeVersion getSiteNodeVersionWhichUsesContentVersionAsMetaInfo(ContentVersion contentVersion, Database db) throws SystemException, Exception
+	public List getSiteNodeVersionsWhichUsesContentVersionAsMetaInfo(ContentVersion contentVersion, Database db) throws SystemException, Exception
 	{
-	    SiteNodeVersion siteNodeVersion = null;
+	    List siteNodeVersions = new ArrayList();
+	    
 	    OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl snv WHERE snv.serviceBindings.availableServiceBinding.name = $1 AND snv.serviceBindings.bindingQualifyers.name = $2 AND snv.serviceBindings.bindingQualifyers.value = $3");
 	    oql.bind("Meta information");
 		oql.bind("contentId");
@@ -696,11 +708,12 @@ public class RegistryController extends BaseController
 		
 		while (results.hasMore()) 
         {
-		    siteNodeVersion = (SiteNodeVersion)results.next();
-            //System.out.println("siteNodeVersion:" + siteNodeVersion.getId());
+		    SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+		    siteNodeVersions.add(siteNodeVersion);
+		    //System.out.println("siteNodeVersion:" + siteNodeVersion.getId());
         }
     	
-		return siteNodeVersion;		
+		return siteNodeVersions;		
 	}
 
 }

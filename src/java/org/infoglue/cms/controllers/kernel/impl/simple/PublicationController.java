@@ -493,8 +493,9 @@ public class PublicationController extends BaseController
 			}
 			else if(oldSiteNodeVersion != null && oldSiteNodeVersion.getOwningSiteNode() != null)
 			{
+			    List events = new ArrayList();
 				Integer siteNodeId = oldSiteNodeVersion.getOwningSiteNode().getSiteNodeId();
-	    		SiteNodeVersion newSiteNodeVersion = SiteNodeStateController.changeState(entityId, SiteNodeVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, siteNodeId, db);
+	    		SiteNodeVersion newSiteNodeVersion = SiteNodeStateController.changeState(entityId, SiteNodeVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, siteNodeId, db, events);
 	    		siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(newSiteNodeVersion.getSiteNodeVersionId(), db);
 			}
 

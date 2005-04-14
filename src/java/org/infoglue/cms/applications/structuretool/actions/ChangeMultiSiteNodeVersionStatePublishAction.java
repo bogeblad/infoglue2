@@ -28,6 +28,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.publishing.PublicationVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
@@ -42,8 +46,12 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstrac
 {
 	private Integer siteNodeId;
 	private List siteNodeVersionId = new ArrayList();
+	private List contentVersionId = new ArrayList();
 	private Integer stateId;
 	private String versionComment;
+	private Integer repositoryId;
+	private String attemptDirectPublishing = "false";
+
 			    
 	/**
 	 * This method gets called when calling this action. 
@@ -53,14 +61,34 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstrac
 	   
     public String doExecute() throws Exception
     {      
-		setSiteNodeVersionId( getRequest().getParameterValues("sel") );
+		setSiteNodeVersionId( getRequest().getParameterValues("selSiteNodeVersions") );
 		Iterator it = siteNodeVersionId.iterator();
-		
+
+		List events = new ArrayList();
 		while(it.hasNext())
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
 			CmsLogger.logInfo("Publishing:" + siteNodeVersionId);
-			SiteNodeStateController.changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null);
+			SiteNodeVersion siteNodeVersion = SiteNodeStateController.changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
+		}
+
+		setContentVersionId( getRequest().getParameterValues("selContentVersions") );
+		Iterator contentVersionIdsIterator = contentVersionId.iterator();
+
+		while(contentVersionIdsIterator.hasNext())
+		{
+			Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
+			CmsLogger.logInfo("Publishing:" + contentVersionId);
+			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
+		}
+
+		if(attemptDirectPublishing.equalsIgnoreCase("true"))
+		{
+		    PublicationVO publicationVO = new PublicationVO();
+		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+		    publicationVO.setDescription(getVersionComment());
+		    publicationVO.setRepositoryId(repositoryId);
+		    publicationVO = PublicationController.createAndPublish(publicationVO, events, this.getInfoGluePrincipal());
 		}
 
        	return "success";
@@ -95,12 +123,6 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstrac
 	{
 		return this.stateId;
 	}
-    /*        
-	public List getSiteNodeVersionId() 
-	{
-		return siteNodeVersionId;
-	}
-	*/
 
 	private void setSiteNodeVersionId(String[] list) 
 	{
@@ -110,4 +132,29 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstrac
 			siteNodeVersionId.add(new Integer(list[i]));
 		}		
 	}
+
+	private void setContentVersionId(String[] list) 
+	{
+		contentVersionId = new ArrayList();
+		for(int i=0; i < list.length; i++)
+		{
+			contentVersionId.add(new Integer(list[i]));
+		}		
+	}
+
+	
+	public Integer getRepositoryId()
+    {
+        return repositoryId;
+    }
+    
+    public void setRepositoryId(Integer repositoryId)
+    {
+        this.repositoryId = repositoryId;
+    }
+    
+    public void setAttemptDirectPublishing(String attemptDirectPublishing)
+    {
+        this.attemptDirectPublishing = attemptDirectPublishing;
+    }
 }

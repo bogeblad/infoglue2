@@ -57,9 +57,11 @@ public class SiteNodeStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public static void changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId) throws ConstraintException, SystemException
+    public static SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
     {
-    	Database db = CastorDatabaseService.getDatabase();
+        SiteNodeVersion newSiteNodeVersion = null; 
+        
+        Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 		
 		beginTransaction(db);
@@ -69,9 +71,8 @@ public class SiteNodeStateController extends BaseController
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getSiteNodeVersionWithIdAsReadOnly(oldSiteNodeVersionId, db);
 			CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getStateId());
 			
-			changeState(oldSiteNodeVersionId, stateId, versionComment, infoGluePrincipal, siteNodeId, db);
+			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, infoGluePrincipal, siteNodeId, db, resultingEvents);
         	
-			boolean isMetaInfoInWorkingState = false;
 			List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
 			Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
 			
@@ -134,6 +135,7 @@ public class SiteNodeStateController extends BaseController
             throw new SystemException(e.getMessage());
         }    	    	
     	
+        return newSiteNodeVersion;
     }        
 
 
@@ -142,7 +144,7 @@ public class SiteNodeStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public static SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db) throws ConstraintException, SystemException
+    public static SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
     {
 		SiteNodeVersion newSiteNodeVersion = null;
 		
@@ -209,7 +211,8 @@ public class SiteNodeStateController extends BaseController
 				eventVO.setEntityId(new Integer(newSiteNodeVersion.getId().intValue()));
 		        eventVO.setName(newSiteNodeVersion.getOwningSiteNode().getName());
 				eventVO.setTypeId(EventVO.PUBLISH);
-				EventController.create(eventVO, newSiteNodeVersion.getOwningSiteNode().getRepository().getId(), infoGluePrincipal, db);			
+				eventVO = EventController.create(eventVO, newSiteNodeVersion.getOwningSiteNode().getRepository().getId(), infoGluePrincipal, db);			
+				resultingEvents.add(eventVO);
 	    	}
 	
 	    	if(stateId.intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())

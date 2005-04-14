@@ -9,23 +9,38 @@
 		function checkMarkedVersions()
 		{
 			var listForm = document.listForm;
-			var lengthsel = null;
+			var lengthselSiteNodeVersions = null;
+			var lengthselContentVersions = null;
 			var lengthsit = null;
 			var ret = 0;
-			if (listForm.sel != null)
-				lengthsel = listForm.sel.length;
+			if (listForm.selSiteNodeVersions != null)
+				lengthselSiteNodeVersions = listForm.selSiteNodeVersions.length;
+			if (listForm.selContentVersions != null)				
+				lengthselContentVersions = listForm.selContentVersions.length;
 			if (listForm.sit != null)
 				lengthsit = listForm.sit.length;
 
-			if (lengthsel == null && listForm.sel != null)
+			if (lengthselSiteNodeVersions == null && listForm.selSiteNodeVersions != null)
 		  	{
-		  		if (listForm.sel.checked)
+		  		if (listForm.selSiteNodeVersions.checked)
 			    	ret++;
 		  	}
 			else
 			{
-			  	for (i=0; i<lengthsel; i++)
-			   		if (listForm.sel[i].checked)
+			  	for (i=0; i<lengthselSiteNodeVersions; i++)
+			   		if (listForm.selSiteNodeVersions[i].checked)
+			    		ret++;
+			}
+
+			if (lengthselContentVersions == null && listForm.selContentVersions != null)
+		  	{
+		  		if (listForm.selContentVersions.checked)
+			    	ret++;
+		  	}
+			else
+			{
+			  	for (i=0; i<lengthselContentVersions; i++)
+			   		if (listForm.selContentVersions[i].checked)
 			    		ret++;
 			}
 			    		
@@ -46,14 +61,22 @@
 		
 		function checkAll()
 		{
-		 	var field = document.listForm.sel;
+		 	var field = document.listForm.selSiteNodeVersions;
+		 	for (i = 0; i < field.length; i++)
+				field[i].checked = true ;
+				
+		 	var field = document.listForm.selContentVersions;
 		 	for (i = 0; i < field.length; i++)
 				field[i].checked = true ;
 		}
 		
 		function uncheckAll()
 		{
-			var field = document.listForm.sel;
+			var field = document.listForm.selSiteNodeVersions;
+			for (i = 0; i < field.length; i++)
+				field[i].checked = false ;
+			
+			var field = document.listForm.selContentVersions;
 			for (i = 0; i < field.length; i++)
 				field[i].checked = false ;
 		}
@@ -140,16 +163,32 @@
 #hiddenField("siteNodeVersionId" $siteNodeVersionId)
 #hiddenField("versionComment" $!versionComment)
 #hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
+#hiddenField("repositoryId" $!repositoryId)
+
+#set($lvChkBoxName = "selSiteNodeVersions")
 
 #set($cnt = 0)
-#foreach($cv in $siteNodeVersions)
+#foreach($snv in $siteNodeVersionVOList)
 
-	#set( $row = ["$cv.getId() - $cv.getSiteNodeName()", ""] )
+	#set( $row = ["$snv.getId() - $snv.getSiteNodeName()", ""] )
 	#set($cnt = $cnt + 1)
-	#lvAddRow($row $cnt $cv.getId())
+	
+	#lvAddRow($row $cnt $snv.getId())
 
 #end
 
+
+#set($lvChkBoxName = "selContentVersions")
+
+#set($cnt = 0)
+#foreach($cv in $contentVersionVOList)
+
+	#set( $row = ["$cv.getId() - $cv.getContentName()", ""] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $cv.getId())
+
+#end
 
 
 #lvEnd()

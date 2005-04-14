@@ -82,7 +82,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
 	protected void initialize(Integer siteNodeId) throws Exception
 	{
-		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
+		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
+		System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
 		

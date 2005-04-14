@@ -49,6 +49,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 {
 
 	private List siteNodeVersionVOList = new ArrayList();
+	private List contentVersionVOList = new ArrayList();
 	private Integer siteNodeVersionId;
 	private Integer siteNodeId;
 	private Integer repositoryId;
@@ -61,7 +62,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		CmsLogger.logInfo("siteNodeVersionId:" + this.siteNodeVersionId);
 		if(this.siteNodeVersionId == null)
 		{
-		    SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
+		    SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
 		    if(siteNodeVersionVO != null)
 		        this.siteNodeVersionId = siteNodeVersionVO.getId();
 		}
@@ -76,7 +77,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		
 			ceb.throwIfNotEmpty();
 
-			siteNodeVersionVOList = SiteNodeVersionController.getController().getSiteNodeVersionVOWithParentRecursiveAndRelated(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE);
+			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList);
 		}
 
 	    return "success";
@@ -117,5 +118,15 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
     public void setRepositoryId(Integer repositoryId)
     {
         this.repositoryId = repositoryId;
+    }
+    
+    public List getContentVersionVOList()
+    {
+        return contentVersionVOList;
+    }
+    
+    public List getSiteNodeVersionVOList()
+    {
+        return siteNodeVersionVOList;
     }
 }

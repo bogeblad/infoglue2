@@ -31,6 +31,8 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.management.*;
 import org.infoglue.cms.entities.management.impl.simple.*;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
@@ -59,6 +61,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import com.sun.rsasign.r;
 
 /**
  * @author Mattias Bogeblad
@@ -327,7 +331,60 @@ public class ContentVersionController extends BaseController
     	
 		return resultList;
 	}
-    
+   
+	
+	/**
+	 * This method returns the latest contentVersion there is for the given content if it is active and is the latest made.
+	 */
+	
+	public List getLatestActiveContentVersionIfInState(Content content, Integer stateId, Database db) throws SystemException, Exception
+	{
+		List resultList = new ArrayList();
+	    Map lastLanguageVersions = new HashMap();
+	    Map languageVersions = new HashMap();
+	    
+		Collection contentVersions = content.getContentVersions();
+		
+		Iterator versionIterator = contentVersions.iterator();
+		while(versionIterator.hasNext())
+		{
+		    ContentVersion contentVersionCandidate = (ContentVersion)versionIterator.next();	
+			
+		    ContentVersion lastVersionInThatLanguage = (ContentVersion)lastLanguageVersions.get(contentVersionCandidate.getLanguage().getId());
+			if(lastVersionInThatLanguage == null || (lastVersionInThatLanguage.getId().intValue() < contentVersionCandidate.getId().intValue() && contentVersionCandidate.getIsActive().booleanValue()))
+			    lastLanguageVersions.put(contentVersionCandidate.getLanguage().getId(), contentVersionCandidate);
+			
+			if(contentVersionCandidate.getIsActive().booleanValue() && contentVersionCandidate.getStateId().intValue() == stateId.intValue())
+			{
+				if(contentVersionCandidate.getOwningContent().getContentId().intValue() == content.getId().intValue())
+				{
+				    ContentVersion versionInThatLanguage = (ContentVersion)languageVersions.get(contentVersionCandidate.getLanguage().getId());
+					if(versionInThatLanguage == null || versionInThatLanguage.getContentVersionId().intValue() < contentVersionCandidate.getId().intValue())
+					{
+					    languageVersions.put(contentVersionCandidate.getLanguage().getId(), contentVersionCandidate);
+					}
+				}
+			}
+		}
+
+		System.out.println("Found languageVersions:" + languageVersions.size());
+		System.out.println("Found lastLanguageVersions:" + lastLanguageVersions.size());
+		Iterator i = languageVersions.values().iterator();
+		while(i.hasNext())
+		{
+		    ContentVersion contentVersion = (ContentVersion)i.next();
+		    ContentVersion lastVersionInThatLanguage = (ContentVersion)lastLanguageVersions.get(contentVersion.getLanguage().getId());
+
+			System.out.println("contentVersion:" + contentVersion.getId());
+			System.out.println("lastVersionInThatLanguage:" + lastVersionInThatLanguage.getId());
+
+		    if(contentVersion == lastVersionInThatLanguage)
+			    resultList.add(contentVersion);
+		}
+		
+		return resultList;
+	}
+	
     
     /**
      * This method returns the latest active content version.

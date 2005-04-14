@@ -126,16 +126,16 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 	 * This method returns a specific siteNodeVersion-object
 	 */
 	
-    public SiteNodeVersionVO getACLatestSiteNodeVersionVO(InfoGluePrincipal infogluePrincipal, Integer siteNodeId) throws ConstraintException, SystemException, Bug, Exception
+    public SiteNodeVersionVO getACLatestActiveSiteNodeVersionVO(InfoGluePrincipal infogluePrincipal, Integer siteNodeId) throws ConstraintException, SystemException, Bug, Exception
     {
-		SiteNodeVersionVO siteNodeVersionVO = getLatestSiteNodeVersionVO(siteNodeId);
+		SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(siteNodeId);
 		
 		Map hashMap = new HashMap();
 		hashMap.put("siteNodeVersionId", siteNodeVersionVO.getId());
 
 		intercept(hashMap, "SiteNodeVersion.Read", infogluePrincipal);
     	
-		return getLatestSiteNodeVersionVO(siteNodeId);
+		return getLatestActiveSiteNodeVersionVO(siteNodeId);
     } 
 	
     

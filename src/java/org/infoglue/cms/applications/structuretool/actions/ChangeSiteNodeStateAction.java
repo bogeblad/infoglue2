@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 
@@ -51,7 +54,8 @@ public class ChangeSiteNodeStateAction extends WebworkAbstractAction
     		return "commentVersion";
     	}
 
-		SiteNodeStateController.changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getSiteNodeId());
+    	List events = new ArrayList();
+		SiteNodeStateController.changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getSiteNodeId(), events);
 		
        	return "success";
     }
