@@ -822,6 +822,8 @@ public class SiteNodeVersionController extends BaseController
 	
 	public SiteNodeVersionVO update(SiteNodeVersionVO siteNodeVersionVO, Database db) throws ConstraintException, SystemException
 	{
+    	registryController.updateSiteNodeVersion(siteNodeVersionVO);
+
 		return (SiteNodeVersionVO) updateEntity(SiteNodeVersionImpl.class, (BaseEntityVO)siteNodeVersionVO, db);
 	}    
 	
