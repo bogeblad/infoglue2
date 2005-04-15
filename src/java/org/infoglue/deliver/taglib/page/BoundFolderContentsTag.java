@@ -27,6 +27,9 @@ import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
+/**
+ * Tag for org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController.getBoundFolderContents(String, boolean, String, String);
+ */
 public class BoundFolderContentsTag extends TemplateControllerTag
 {
 	private static final long serialVersionUID = 3905242346756059449L;
