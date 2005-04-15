@@ -55,7 +55,7 @@ public class ChangeSiteNodeStateAction extends WebworkAbstractAction
     	}
 
     	List events = new ArrayList();
-		SiteNodeStateController.changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getSiteNodeId(), events);
+		SiteNodeStateController.getController().changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getSiteNodeId(), events);
 		
        	return "success";
     }

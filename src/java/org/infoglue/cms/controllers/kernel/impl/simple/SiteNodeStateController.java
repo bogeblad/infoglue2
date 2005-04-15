@@ -52,12 +52,22 @@ import org.exolab.castor.jdo.Database;
 
 public class SiteNodeStateController extends BaseController 
 {
+    
+    /**
+	 * Factory method
+	 */
+
+	public static SiteNodeStateController getController()
+	{
+		return new SiteNodeStateController();
+	}
+	
 	/**
 	 * This method handles versioning and state-control of siteNodes.
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public static SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
+    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
     {
         SiteNodeVersion newSiteNodeVersion = null; 
         
@@ -72,7 +82,8 @@ public class SiteNodeStateController extends BaseController
 			CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getStateId());
 			
 			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, infoGluePrincipal, siteNodeId, db, resultingEvents);
-        	
+        				
+			/*
 			List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
 			Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
 			
@@ -124,7 +135,8 @@ public class SiteNodeStateController extends BaseController
 					}
 				}
 			}
-        	
+			*/
+			
         	commitTransaction(db);
         }
         catch(Exception e)
@@ -144,17 +156,18 @@ public class SiteNodeStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public static SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
+    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
     {
 		SiteNodeVersion newSiteNodeVersion = null;
 		
         try
         { 
-	    	//Here we create a new version if it was a state-change back to working, it's a copy of the publish-version
+			SiteNodeVersion oldSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(oldSiteNodeVersionId, db);
+
+            //Here we create a new version if it was a state-change back to working, it's a copy of the publish-version
 	    	if(stateId.intValue() == SiteNodeVersionVO.WORKING_STATE.intValue())
 	    	{
 	    		CmsLogger.logInfo("About to create a new working version");
-				SiteNodeVersion oldSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(oldSiteNodeVersionId, db);
 	    	    
 				if (siteNodeId == null)
 					siteNodeId = new Integer(oldSiteNodeVersion.getOwningSiteNode().getId().intValue());
@@ -180,8 +193,7 @@ public class SiteNodeStateController extends BaseController
 	    	{
 	    		CmsLogger.logInfo("About to copy the working copy to a publish-one");
 	    		//First we update the old working-version so it gets a comment
-	    		SiteNodeVersion oldSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(oldSiteNodeVersionId, db);
-				
+	    		
 				if (siteNodeId == null)
 					siteNodeId = new Integer(oldSiteNodeVersion.getOwningSiteNode().getId().intValue());
 
@@ -218,11 +230,12 @@ public class SiteNodeStateController extends BaseController
 	    	if(stateId.intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())
 	    	{
 	    		CmsLogger.logInfo("About to publish an existing version");
-	    		SiteNodeVersion oldSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(oldSiteNodeVersionId, db);
-				oldSiteNodeVersion.setStateId(stateId);
+	    		oldSiteNodeVersion.setStateId(stateId);
 				oldSiteNodeVersion.setIsActive(new Boolean(true));
 				newSiteNodeVersion = oldSiteNodeVersion;
-	    	}        	
+	    	}
+	    	
+			changeStateOnMetaInfo(db, oldSiteNodeVersion, stateId, versionComment, infoGluePrincipal, resultingEvents);
         }
         catch(Exception e)
         {
@@ -234,7 +247,73 @@ public class SiteNodeStateController extends BaseController
     	return newSiteNodeVersion;
     }        
 
+    
+    /**
+     * This method checks if the siteNodes latest metainfo is working - if so - it get published with the sitenode.
+     * @param db
+     * @throws ConstraintException
+     * @throws SystemException
+     * @throws Exception
+     */
+    private void changeStateOnMetaInfo(Database db, SiteNodeVersion siteNodeVersion, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, List events) throws ConstraintException, SystemException, Exception
+    {
+        List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
+		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
+		
+		Integer metaInfoAvailableServiceBindingId = null;
+		Integer serviceBindingId = null;
+		AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
+		if(availableServiceBinding != null)
+			metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
+		
+		Collection serviceBindings = siteNodeVersion.getServiceBindings();
+		Iterator serviceBindingIterator = serviceBindings.iterator();
+		while(serviceBindingIterator.hasNext())
+		{
+			ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+			if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+			{
+				serviceBindingId = serviceBinding.getId();
+				break;
+			}
+		}
 
+		if(serviceBindingId != null)
+		{
+			List boundContents = ContentController.getBoundContents(serviceBindingId); 
+			System.out.println("boundContents:" + boundContents.size());
+			if(boundContents.size() > 0)
+			{
+				ContentVO contentVO = (ContentVO)boundContents.get(0);
+				System.out.println("contentVO:" + contentVO.getId());
+				
+				Iterator languageIterator = languages.iterator();
+				while(languageIterator.hasNext())
+				{
+					Language language = (Language)languageIterator.next();
+					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
+					
+					System.out.println("language:" + language.getId());
+					
+					if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
+						throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
+	
+					if(contentVersion != null)
+					{
+					    System.out.println("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getStateId());
+					    System.out.println("State wanted:" + stateId);
+					}
+					
+					if(contentVersion != null && contentVersion.getStateId().intValue() == siteNodeVersion.getStateId().intValue())
+					{
+						System.out.println("State on current:" + contentVersion.getStateId());
+					    System.out.println("changing state on contentVersion:" + contentVersion.getId());
+						ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, infoGluePrincipal, contentVO.getId(), db, events);
+					}
+				}
+			}
+		}
+    }
 
 	/**
 	 * This method copies all serviceBindings a siteNodeVersion has to the new siteNodeVersion.

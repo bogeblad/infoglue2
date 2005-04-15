@@ -69,7 +69,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstrac
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
 			CmsLogger.logInfo("Publishing:" + siteNodeVersionId);
-			SiteNodeVersion siteNodeVersion = SiteNodeStateController.changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
+			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
 		}
 
 		setContentVersionId( getRequest().getParameterValues("selContentVersions") );
@@ -126,20 +126,24 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstrac
 
 	private void setSiteNodeVersionId(String[] list) 
 	{
-		siteNodeVersionId = new ArrayList();
-		for(int i=0; i < list.length; i++)
+		if(list != null)
 		{
-			siteNodeVersionId.add(new Integer(list[i]));
-		}		
+			for(int i=0; i < list.length; i++)
+			{
+				siteNodeVersionId.add(new Integer(list[i]));
+			}	
+		}
 	}
 
 	private void setContentVersionId(String[] list) 
 	{
-		contentVersionId = new ArrayList();
-		for(int i=0; i < list.length; i++)
+		if(list != null)
 		{
-			contentVersionId.add(new Integer(list[i]));
-		}		
+		    for(int i=0; i < list.length; i++)
+			{
+				contentVersionId.add(new Integer(list[i]));
+			}		
+		}
 	}
 
 	
