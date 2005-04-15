@@ -23,8 +23,6 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
@@ -679,6 +677,28 @@ public class SiteNodeController extends BaseController
 	{
 		return new SiteNodeVO();
 	}
+
+	/**
+	 * This method returns a list of all siteNodes in a repository.
+	 */
+
+	public List getRepositorySiteNodes(Integer repositoryId, Database db) throws SystemException, Exception
+    {
+		List siteNodes = new ArrayList();
+		
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.repository.repositoryId = $1");
+    	oql.bind(repositoryId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while(results.hasMore()) 
+        {
+        	SiteNode siteNode = (SiteNodeImpl)results.next();
+        	siteNodes.add(siteNode);
+        }
+		
+		return siteNodes;    	
+    }
 
 }
  

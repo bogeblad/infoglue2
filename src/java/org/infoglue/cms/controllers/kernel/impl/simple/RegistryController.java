@@ -20,11 +20,12 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.8 2005/04/14 21:34:04 mattias Exp $
+ * $Id: RegistryController.java,v 1.9 2005/04/15 14:53:41 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.Registry;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
+import org.infoglue.cms.entities.structure.Qualifyer;
+import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -135,7 +138,8 @@ public class RegistryController extends BaseController
 		{
 			beginTransaction(db);
 		
-			updateContentVersion(contentVersionVO, db);
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
+			updateContentVersion(contentVersion, db);
 		    
 			commitTransaction(db);
 		}
@@ -144,8 +148,8 @@ public class RegistryController extends BaseController
 		    rollbackTransaction(db);
 			throw new SystemException("An error occurred when we tried to fetch which sitenode uses a metainfo. Reason:" + e.getMessage(), e);			
 		}
-		
 	}
+
 	
 	
 	/**
@@ -157,11 +161,11 @@ public class RegistryController extends BaseController
 	 * @throws Exception
 	 */
 	
-	public void updateContentVersion(ContentVersionVO contentVersionVO, Database db) throws ConstraintException, SystemException, Exception
+	public void updateContentVersion(ContentVersion contentVersion, Database db) throws ConstraintException, SystemException, Exception
 	{
-	    String versionValue = contentVersionVO.getVersionValue();
+	    String versionValue = contentVersion.getVersionValue();
 	    
-	    ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
+	    ContentVersion oldContentVersion = contentVersion; //ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
 	    Content oldContent = oldContentVersion.getOwningContent();
 	    
 	    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
@@ -198,6 +202,100 @@ public class RegistryController extends BaseController
 	    }		
 	}
 	
+
+	/**
+	 * this method goes through all page bindings and makes registry entries for them
+	 * 
+	 * @param siteNodeVersion
+	 * @throws SystemException
+	 * @throws Exception
+	 */
+	
+	public void updateSiteNodeVersion(SiteNodeVersionVO siteNodeVersionVO) throws ConstraintException, SystemException
+	{
+	    Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
+			updateSiteNodeVersion(siteNodeVersion, db);
+		    
+			commitTransaction(db);
+		}
+		catch (Exception e)		
+		{
+		    rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to fetch which sitenode uses a metainfo. Reason:" + e.getMessage(), e);			
+		}
+	}
+
+	/**
+	 * this method goes through all page bindings and makes registry entries for them
+	 * 
+	 * @param siteNodeVersion
+	 * @throws SystemException
+	 * @throws Exception
+	 */
+	
+	public void updateSiteNodeVersion(SiteNodeVersion siteNodeVersion, Database db) throws ConstraintException, SystemException, Exception
+	{
+	    SiteNodeVersion oldSiteNodeVersion = siteNodeVersion;
+	    SiteNode oldSiteNode = oldSiteNodeVersion.getOwningSiteNode();
+	    
+		Collection serviceBindings = siteNodeVersion.getServiceBindings();
+		Iterator serviceBindingIterator = serviceBindings.iterator();
+		while(serviceBindingIterator.hasNext())
+		{
+		    ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+		    Iterator qualifyersIterator = serviceBinding.getBindingQualifyers().iterator();
+		    while(qualifyersIterator.hasNext())
+		    {
+		        Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
+		        String name = qualifyer.getName();
+		        String value = qualifyer.getValue();
+
+                try
+                {
+	
+			        RegistryVO registryVO = new RegistryVO();
+			        registryVO.setReferenceType(RegistryVO.PAGE_BINDING);
+		            if(name.equalsIgnoreCase("contentId"))
+			        {
+		                Content content = ContentController.getContentController().getContentWithId(new Integer(value), db);
+		                
+		                registryVO.setEntityId(value);
+			            registryVO.setEntityName(Content.class.getName());
+			            
+			            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
+			            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
+			            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
+			            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+			        }
+		            else if(name.equalsIgnoreCase("siteNodeId"))
+			        {
+		                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(value), db);
+		                
+		                registryVO.setEntityId(value);
+			            registryVO.setEntityName(SiteNode.class.getName());
+			            
+			            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
+			            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
+			            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
+			            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+			        }
+		            
+		            this.create(registryVO, db);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }		        
+		    }
+		}
+	}
+
 	/**
 	 * This method fetches all inline links from any text.
 	 */

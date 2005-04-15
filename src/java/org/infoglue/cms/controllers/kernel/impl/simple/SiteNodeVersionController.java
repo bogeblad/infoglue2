@@ -56,6 +56,8 @@ import org.exolab.castor.jdo.QueryResults;
 
 public class SiteNodeVersionController extends BaseController 
 {
+	private final RegistryController registryController = RegistryController.getController();
+
 	/**
 	 * Factory method
 	 */
@@ -603,6 +605,7 @@ public class SiteNodeVersionController extends BaseController
 	private List getSiteNodeVersionVOWithParentRecursive(Integer siteNodeId, Integer stateId, List resultList) throws ConstraintException, SystemException
 	{
 		SiteNodeVersionVO siteNodeVersionVO = getLatestSiteNodeVersionVO(siteNodeId);
+		System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getId());
 		if(siteNodeVersionVO.getStateId().intValue() == stateId.intValue())
 			resultList.add(siteNodeVersionVO);
 		
@@ -612,12 +615,65 @@ public class SiteNodeVersionController extends BaseController
 		while(childSiteNodeListIterator.hasNext())
 		{
 			SiteNodeVO siteNodeVO = (SiteNodeVO)childSiteNodeListIterator.next();
+			System.out.println("Adding siteNodeVO:" + siteNodeVO.getName());
 			getSiteNodeVersionVOWithParentRecursive(siteNodeVO.getId(), stateId, resultList);
 		}
 	
 		return resultList;
 	}
+
+	/**
+	 * Recursive methods to get all siteNodeVersions of a given state
+	 * under the specified parent siteNode including the given siteNode.
+	 */ 
 	
+	public List getPublishedSiteNodeVersionVOWithParentRecursive(Integer siteNodeId) throws ConstraintException, SystemException
+	{
+	    List publishedSiteNodeVersionVOList = new ArrayList();
+	    
+	    Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+            List publishedSiteNodeVersions = new ArrayList();
+            getPublishedSiteNodeVersionWithParentRecursive(siteNode, publishedSiteNodeVersions, db);
+            publishedSiteNodeVersionVOList = toVOList(publishedSiteNodeVersions);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return publishedSiteNodeVersionVOList;
+	}
+	
+	private List getPublishedSiteNodeVersionWithParentRecursive(SiteNode siteNode, List resultList, Database db) throws ConstraintException, SystemException, Exception
+	{
+	    SiteNodeVersion siteNodeVersion = getLatestPublishedSiteNodeVersion(siteNode.getId(), db);
+		System.out.println("siteNodeVersion:" + siteNodeVersion.getId());
+		if(siteNodeVersion != null)
+			resultList.add(siteNodeVersion);
+		
+		// Get the children of this sitenode and do the recursion
+		Collection childSiteNodeList = siteNode.getChildSiteNodes();
+		Iterator childSiteNodeListIterator = childSiteNodeList.iterator();
+		while(childSiteNodeListIterator.hasNext())
+		{
+			SiteNode childSiteNode = (SiteNode)childSiteNodeListIterator.next();
+			System.out.println("Adding childSiteNode:" + childSiteNode.getName());
+			getPublishedSiteNodeVersionWithParentRecursive(childSiteNode, resultList, db);
+		}
+		
+		return resultList;
+	}
+
 	
 	/**
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
@@ -755,6 +811,8 @@ public class SiteNodeVersionController extends BaseController
 	
 	public SiteNodeVersionVO update(SiteNodeVersionVO siteNodeVersionVO) throws ConstraintException, SystemException
 	{
+    	registryController.updateSiteNodeVersion(siteNodeVersionVO);
+
 		return (SiteNodeVersionVO) updateEntity(SiteNodeVersionImpl.class, (BaseEntityVO)siteNodeVersionVO);
 	}  
 	

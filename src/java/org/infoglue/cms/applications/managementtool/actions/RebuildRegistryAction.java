@@ -52,6 +52,7 @@ import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -95,6 +96,7 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 		{
 			db.begin();
 			
+			//Checks the relations from contents
 			List languages = LanguageController.getController().getLanguageList(this.repositoryId, db);
 			List contents = ContentController.getContentController().getRepositoryContents(this.repositoryId, db);
 			
@@ -102,16 +104,30 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 			while(iterator.hasNext())
 			{
 			    Content content = (Content)iterator.next();
+			    System.out.println("Going to index all version of " + content.getName());
 			    
-			    Iterator languagesIterator = languages.iterator();
-				while(languagesIterator.hasNext())
+			    Iterator versionsIterator = content.getContentVersions().iterator();
+				while(versionsIterator.hasNext())
 				{
-				    Language language = (Language)languagesIterator.next();
-				    
-				    System.out.println("Going to index latest version of " + content.getName() + " in " + language.getName());
-				    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getContentId(), language.getId(), db);
-					if(contentVersion != null)
-					    registryController.updateContentVersion(contentVersion.getValueObject(), db);
+				    ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
+				    registryController.updateContentVersion(contentVersion, db);
+				}
+			}
+			
+			//Checks the relations from sitenodes
+			List siteNodes = SiteNodeController.getController().getRepositorySiteNodes(this.repositoryId, db);
+			
+			Iterator siteNodesIterator = siteNodes.iterator();
+			while(siteNodesIterator.hasNext())
+			{
+			    SiteNode siteNode = (SiteNode)siteNodesIterator.next();
+			    System.out.println("Going to index all versions of " + siteNode.getName());
+			    
+			    Iterator siteNodeVersionsIterator = siteNode.getSiteNodeVersions().iterator();
+				while(siteNodeVersionsIterator.hasNext())
+				{
+				    SiteNodeVersion siteNodeVersion = (SiteNodeVersion)siteNodeVersionsIterator.next();
+				    registryController.updateSiteNodeVersion(siteNodeVersion, db);
 				}
 			}
 			
