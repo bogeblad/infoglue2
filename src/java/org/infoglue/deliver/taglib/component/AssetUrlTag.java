@@ -23,10 +23,8 @@
 
 package org.infoglue.deliver.taglib.component;
 
-import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*;
-
-import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
 
 /**
  * This is an attempt to make an TagLib for attempts to get a AssetUrl:s from a content referenced by a component
@@ -39,35 +37,31 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateControll
  * @author Mattias Bogeblad
  */
 
-public class AssetUrlTag extends TagSupport
+public class AssetUrlTag extends ComponentLogicTag
 {
-    private String propertyName;
+	private static final long serialVersionUID = 3546080250652931383L;
+
+	private String propertyName;
     private String assetKey;
-    private boolean useInheritance		= true;
+    private boolean useInheritance = true;
     
     public AssetUrlTag()
     {
         super();
     }
     
-    public int doEndTag() throws JspTagException
+    public int doEndTag() throws JspException
     {
         try
         {
-            BasicTemplateController templateLogic = (BasicTemplateController)this.pageContext.getRequest().getAttribute("org.infoglue.cms.deliver.templateLogic");
-            
             if(assetKey != null)
-                pageContext.getOut().write(templateLogic.getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance));
+                write(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance));
             else
-                pageContext.getOut().write(templateLogic.getComponentLogic().getAssetUrl(propertyName, useInheritance));    
-        }
-        catch(java.io.IOException e)
-        {
-            throw new JspTagException("IO Error: " + e.getMessage());
+                write(getComponentLogic().getAssetUrl(propertyName, useInheritance));    
         }
         catch(Exception e)
         {
-            throw new JspTagException("IO Error: " + e.getMessage());
+            throw new JspTagException("ComponentLogic.getAssetUrl Error: " + e.getMessage());
         }
         
         return EVAL_PAGE;

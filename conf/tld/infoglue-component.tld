@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+
+<taglib>
+    <tlibversion>1.0</tlibversion>
+    <jspversion>1.1</jspversion>
+    <shortname>infoglue-component</shortname>
+    <description>Tags for org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic</description>
+	 
+	<tag>
+		<name>boundPages</name>
+		<tagclass>org.infoglue.deliver.taglib.component.BoundPagesTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <description>ComponentLogic.getBoundPages(String, boolean)</description>
+        <attribute>
+	        <description>Name of exported variable.</description>
+    	    <name>id</name>
+    	    <type>java.lang.String</type>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyName</name>
+    	    <type>java.lang.String</type>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useInheritance</name>
+    	    <type>boolean</type>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>	 
+	<tag>
+        <name>contentAttribute</name>
+        <tagclass>org.infoglue.deliver.taglib.component.ContentAttributeTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <description>ComponentLogic.getContentAttribute(String, String, boolean, boolean)</description>
+        <attribute>
+	        <description>Name of exported variable.</description>
+    	    <name>id</name>
+    	    <type>java.lang.String</type>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>propertyName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>attributeName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>disableEditOnSight</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+	<tag>
+        <name>assetUrl</name>
+        <tagclass>org.infoglue.deliver.taglib.component.AssetUrlTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <description>ComponentLogic.getAssetUrl(String, String, boolean)</description>
+        <attribute>
+            <name>propertyName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>assetKey</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+	<tag>
+        <name>assetThumbnailUrl</name>
+        <tagclass>org.infoglue.deliver.taglib.component.AssetThumbnailUrlTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <description>ComponentLogic.getThumbnailAssetUrl(String, String, int, int, boolean)</description>
+        <attribute>
+            <name>propertyName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>assetKey</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>width</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>height</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+</taglib>

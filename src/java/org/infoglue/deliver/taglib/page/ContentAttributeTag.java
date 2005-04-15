@@ -21,29 +21,22 @@
 * ===============================================================================
 */
 
-package org.infoglue.deliver.taglib.component;
+package org.infoglue.deliver.taglib.page;
 
 import javax.servlet.jsp.JspException;
 
-/**
- * This is an attempt to make an TagLib for attempts to get a ContentAttribute from a content referenced by a component
- * in a JSP.
- * 
- * <%@ taglib uri="infoglue" prefix="infoglue" %>
- * 
- * <infoglue:component.ContentAttribute propertyName="Article" attributeName="Title"/>
- *
- * @author Mattias Bogeblad
- */
+import org.infoglue.deliver.taglib.TemplateControllerTag;
 
-public class ContentAttributeTag extends ComponentLogicTag
+/**
+ * Tag for org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController.getContentAttribute(<String>, <Sring>, <boolean>);
+ */
+public class ContentAttributeTag extends TemplateControllerTag
 {
-	private static final long serialVersionUID = 3257850991142318897L;
-	
+	private static final long serialVersionUID = 3258135773294113587L;
+
 	private String propertyName;
     private String attributeName;
-    private boolean disableEditOnSight 	= false;
-    private boolean useInheritance		= true;
+	private boolean clean = false;
     
     public ContentAttributeTag()
     {
@@ -52,10 +45,18 @@ public class ContentAttributeTag extends ComponentLogicTag
     
     public int doEndTag() throws JspException
     {
-		produceResult(getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+		produceResult(getContentAttributeValue());
         return EVAL_PAGE;
     }
 
+	private String getContentAttributeValue() throws JspException
+	{
+		if(propertyName == null)
+			return getController().getContentAttribute(attributeName, clean);
+		else
+			return getController().getContentAttribute(propertyName, attributeName, clean);
+	}
+	
 	public void setPropertyName(String propertyName)
     {
         this.propertyName = propertyName;
@@ -65,14 +66,9 @@ public class ContentAttributeTag extends ComponentLogicTag
     {
         this.attributeName = attributeName;
     }
-    
-    public void setDisableEditOnSight(boolean disableEditOnSight)
+
+    public void setClean(boolean clean)
     {
-        this.disableEditOnSight = disableEditOnSight;
-    }
-    
-    public void setUseInheritance(boolean useInheritance)
-    {
-        this.useInheritance = useInheritance;
+        this.clean = clean;
     }
 }

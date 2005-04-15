@@ -23,10 +23,7 @@
 
 package org.infoglue.deliver.taglib.component;
 
-import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*;
-
-import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
+import javax.servlet.jsp.JspException;import javax.servlet.jsp.JspTagException;
 
 /**
  * This is an attempt to make an TagLib for attempts to get a AssetThumbnailUrl:s from a content referenced by a component
@@ -39,38 +36,35 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateControll
  * @author Mattias Bogeblad
  */
 
-public class AssetThumbnailUrlTag extends TagSupport
+public class AssetThumbnailUrlTag extends ComponentLogicTag
 {
-    private String propertyName;
+	private static final long serialVersionUID = 3978145452350648625L;
+
+	private String propertyName;
     private String assetKey;
     private int width;
     private int height;
-    private boolean useInheritance		= true;
+    private boolean useInheritance = true;
     
     public AssetThumbnailUrlTag()
     {
         super();
     }
     
-    public int doEndTag() throws JspTagException
+    public int doEndTag() throws JspException
     {
-        try
-        {
-            BasicTemplateController templateLogic = (BasicTemplateController)this.pageContext.getRequest().getAttribute("org.infoglue.cms.deliver.templateLogic");
-            if(assetKey != null)
-                pageContext.getOut().write(templateLogic.getComponentLogic().getAssetThumbnailUrl(propertyName, assetKey, width, height, useInheritance));
-            else
-                pageContext.getOut().write(templateLogic.getComponentLogic().getAssetThumbnailUrl(propertyName, width, height, useInheritance));    
-        }
-        catch(java.io.IOException e)
-        {
-            throw new JspTagException("IO Error: " + e.getMessage());
-        }
-        catch(Exception e)
-        {
-            throw new JspTagException("IO Error: " + e.getMessage());
-        }
-        
+		try 
+		{
+			if(assetKey != null)
+				write(getComponentLogic().getAssetThumbnailUrl(propertyName, assetKey, width, height, useInheritance));
+			else
+				write(getComponentLogic().getAssetThumbnailUrl(propertyName, width, height, useInheritance));
+		} 
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new JspTagException("ComponentLogic.getAssetThumbnailUrl error: " + e.getMessage());
+		}
         return EVAL_PAGE;
     }
 

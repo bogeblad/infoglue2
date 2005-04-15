@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib>
+    <tlibversion>1.0</tlibversion>
+    <jspversion>1.1</jspversion>
+    <shortname>infoglue-page</shortname>
+    <description>Tags for org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController</description>
+	 
+	<tag>
+        <name>contentAttribute</name>
+        <tagclass>org.infoglue.deliver.taglib.page.ContentAttributeTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <description>TemplateLogic.getContentAttribute(String, String, boolean)</description>
+        <example>
+        </example>
+        <attribute>
+	        <description>Name of exported variable</description>
+    	    <name>id</name>
+    	    <type>java.lang.String</type>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>propertyName</name>
+    	    <type>java.lang.String</type>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>attributeName</name>
+    	    <type>java.lang.String</type>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>clean</name>
+    	    <type>boolean</type>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+
+	<tag>
+        <name>boundFolderContents</name>
+        <tagclass>org.infoglue.deliver.taglib.page.BoundFolderContentsTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <description>TemplateLogic.getBoundFolderContents(String, boolean, String, String)</description>
+        <attribute>
+	        <description>Name of exported variable.</description>
+    	    <name>id</name>
+    	    <type>java.lang.String</type>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+	        <description></description>
+    	    <name>structureBindningName</name>
+    	    <type>java.lang.String</type>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+	        <description></description>
+    	    <name>sortAttribute</name>
+    	    <type>java.lang.String</type>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+	        <description></description>
+    	    <name>sortOrder</name>
+    	    <type>java.lang.String</type>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+	        <description></description>
+    	    <name>searchRecursive</name>
+    	    <type>java.lang.String</type>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	    <variable>
+			<name-from-attribute>id</name-from-attribute>
+        	<variable-class>java.util.List</variable-class>
+        	<declare>true</declare>
+        	<scope>AT_END</scope>
+        	<description>Result collection</description>
+      	</variable> 
+    </tag>
+</taglib>
