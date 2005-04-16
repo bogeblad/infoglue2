@@ -28,6 +28,10 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightGroup;
+import org.infoglue.cms.entities.management.AccessRightGroupVO;
+import org.infoglue.cms.entities.management.AccessRightRole;
+import org.infoglue.cms.entities.management.AccessRightRoleVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.InterceptionPoint;
@@ -383,7 +387,28 @@ public class SiteNodeStateController extends BaseController
 				
 				AccessRightVO copiedAccessRight = accessRight.getValueObject().createCopy();
 				copiedAccessRight.setParameters(newSiteNodeVersion.getId().toString());
-				AccessRightController.getController().create(copiedAccessRight, interceptionPoint, db);
+				AccessRight newAccessRight = AccessRightController.getController().create(copiedAccessRight, interceptionPoint, db);
+				
+				Iterator groupsIterator = accessRight.getGroups().iterator();
+				while(groupsIterator.hasNext())
+				{
+				    AccessRightGroup accessRightGroup = (AccessRightGroup)groupsIterator.next();
+				    AccessRightGroupVO newAccessRightGroupVO = new AccessRightGroupVO();
+				    newAccessRightGroupVO.setGroupName(accessRightGroup.getGroupName());
+				    AccessRightGroup newAccessRightGroup = AccessRightController.getController().createAccessRightGroup(db, newAccessRightGroupVO, newAccessRight);
+				    newAccessRight.getGroups().add(newAccessRightGroup);
+				}
+
+				Iterator rolesIterator = accessRight.getRoles().iterator();
+				while(rolesIterator.hasNext())
+				{
+				    AccessRightRole accessRightRole = (AccessRightRole)rolesIterator.next();
+				    AccessRightRoleVO newAccessRightRoleVO = new AccessRightRoleVO();
+				    newAccessRightRoleVO.setRoleName(accessRightRole.getRoleName());
+				    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, newAccessRightRoleVO, newAccessRight);
+				    newAccessRight.getRoles().add(newAccessRightRole);
+				}
+
 			}
 		}
 	}	

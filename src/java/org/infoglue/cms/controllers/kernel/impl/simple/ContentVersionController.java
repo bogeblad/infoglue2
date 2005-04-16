@@ -699,18 +699,41 @@ public class ContentVersionController extends BaseController
     
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO) throws ConstraintException, SystemException
     {
-    	ContentVersionVO realContentVersionVO = contentVersionVO;
-		contentVersionVO.setModifiedDateTime(new Date());
+        ContentVersionVO updatedContentVersionVO;
 		
-    	if(contentVersionVO.getId() == null)
-    	{
-    		CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
-    		realContentVersionVO = create(contentId, languageId, contentVersionVO, null);
-    	}
-    	
-    	registryController.updateContentVersion(contentVersionVO);
-    	
-    	return (ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
+        Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+        
+        try
+        {        
+            ContentVersion contentVersion = null;
+            
+	        if(contentVersionVO.getId() == null)
+	    	{
+	    		CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
+	    		contentVersion = create(contentId, languageId, contentVersionVO, null, db);
+	    	}
+	    	else
+	    	{
+	    	    contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+	    	    contentVersion.setValueObject(contentVersionVO);
+	    	}
+
+	    	registryController.updateContentVersion(contentVersion, db);
+
+	    	updatedContentVersionVO = contentVersion.getValueObject();
+	    	
+	    	commitTransaction(db);  
+        }
+        catch(Exception e)
+        {
+        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+    	return updatedContentVersionVO; //(ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
     }        
 
 

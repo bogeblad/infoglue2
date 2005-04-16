@@ -29,7 +29,7 @@
 			qualifyerXML += 	"<contentId>" + entityId + "</contentId>";
 			qualifyerXML += "</qualifyer>";
 			 		    
-		    url = 'CreateServiceBinding.action?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&path=' + escape(path) + '&entityId=' + entityId + "&qualifyerXML=" + escape(qualifyerXML);
+		    url = 'CreateServiceBinding.action?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&stay=true&path=' + escape(path) + '&entityId=' + entityId + "&qualifyerXML=" + escape(qualifyerXML);
 		    //alert('Calling:' + url);
 		    self.opener.parent.frames["main"].location.href = url;
 		    window.close();

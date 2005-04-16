@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.33 2005/04/15 14:54:20 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.34 2005/04/16 22:48:06 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -966,11 +966,11 @@
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ChangeMultiSiteNodeVersionStatePublishAction" alias="ChangeMultiSiteNodeVersionStatePublish">
-		<view name="success">ViewSiteNode.action</view>
+		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ChangeSiteNodeStateAction" alias="ChangeSiteNodeState">
-		<view name="success">ViewSiteNode.action</view>
+		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="commentVersion">/cms/structuretool/viewSiteNodeVersionComment.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
@@ -979,11 +979,11 @@
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.CreateServiceBindingAction" alias="CreateServiceBinding">
-		<view name="success">ViewSiteNode.action</view>
+		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.DeleteServiceBindingAction" alias="DeleteServiceBinding">
-		<view name="success">ViewSiteNode.action</view>
+		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewContentTreeForServiceBindingAction" alias="ViewContentTreeForServiceBinding">

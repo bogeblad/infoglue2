@@ -24,12 +24,12 @@
 <table width="300">
 	<tr>
 		<td class="biglabel">
-			$ui.getString("tool.managementtool.importRepository.headerFinished")
+			$ui.getString("tool.managementtool.rebuildRegistry.headerFinished")
 		</td>
 	</tr>		
 	<tr>
 		<td>
-			$ui.getString("tool.managementtool.importRepository.finishedText")<br/><br/>
+			$ui.getString("tool.managementtool.rebuildRegistry.finishedText")<br/><br/>
 		</td>
 	</tr>
 	<tr>

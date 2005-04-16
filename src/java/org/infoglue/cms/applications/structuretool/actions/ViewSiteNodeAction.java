@@ -94,7 +94,15 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 			this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId());
 		}
         
-		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId);
+		try
+		{
+		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId);
+		    System.out.println("referenceBeanList:" + referenceBeanList.size());
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+		}
 	} 
 
 /*    

@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -52,7 +53,7 @@ import java.net.URLEncoder;
  * @author Mattias Bogeblad  
  */
 
-public class ViewStructureToolToolBarAction extends WebworkAbstractAction
+public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 {
 	private String title = "";
 	private String name  = "";
@@ -290,10 +291,13 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 	private List getBranchSiteNodeButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("CreateSiteNode!input.action?isBranch=true&parentSiteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.newSiteNode"), "New SiteNode"));	
+		buttons.add(new ImageButton(this.getURLBase() + "/CreateSiteNode!input.action?isBranch=true&parentSiteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.newSiteNode"), "New SiteNode"));	
 		buttons.add(getMoveButton());	
 		buttons.add(getMoveMultipleButton());	
-		buttons.add(new ImageButton("Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
+
+		if(!hasPublishedVersion())
+		    buttons.add(new ImageButton(this.getURLBase() + "/Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode(this.getURLBase() + "/DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode(this.getURLBase() + "/ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
+		
 		String serviceBindingIdString = this.serviceBindingId == null ? "" : this.serviceBindingId.toString();
 		buttons.add(new ImageButton(true, "javascript:openPopup('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "&availableServiceBindingId=" + this.metaInfoAvailableServiceBindingId + "&serviceBindingId=" + serviceBindingIdString + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
 
@@ -301,15 +305,16 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 		buttons.add(getPreviewButtons());
 		
 		if(hasPublishedVersion())
-			buttons.add(new ImageButton("UnpublishSiteNodeVersion!input.action?siteNodeId=" + this.siteNodeId + "&siteNodeVersionId=" + this.siteNodeVersionId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header"));
+			buttons.add(new ImageButton(this.getURLBase() + "/UnpublishSiteNodeVersion!input.action?siteNodeId=" + this.siteNodeId + "&siteNodeVersionId=" + this.siteNodeVersionId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header"));
 			//buttons.add(new ImageButton("Confirm.action?header=Unpublish%20node&yesDestination=" + URLEncoder.encode(URLEncoder.encode("RequestSiteNodeVersionUnpublish.action?entityClass=" + SiteNodeVersion.class.getName() + "&entityId=" + this.lastPublishedSiteNodeVersionId + "&typeId=" + EventVO.UNPUBLISH_LATEST + "&repositoryId=" + this.repositoryId + "&name=" + this.name + "&description=Unpublish of latest published version&siteNodeId=" + this.siteNodeId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=tool.structuretool.siteNodeDetailsHeader&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to ask the editor to unpublish the latest published version of " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.unpublishVersion"), "Unpublish SiteNode"));
 		
-		buttons.add(new ImageButton("ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeCover"), "SiteNode Cover"));	
+		buttons.add(new ImageButton(this.getURLBase() + "/ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeCover"), "SiteNode Cover"));	
 
 		if(!isReadOnly())
 			buttons.add(getViewPageComponentsButton());	
 		
-		buttons.add(getPublishButton());
+	    buttons.add(getPublishButton());
+		
 		buttons.add(getExecuteTaskButton());
 
 		if(this.siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
@@ -395,7 +400,7 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 	
 	private ImageButton getPublishButton()
 	{
-		return new ImageButton("ViewListSiteNodeVersion.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.publishSiteNode"), "tool.structuretool.publishSiteNode.header");	
+		return new ImageButton(this.getURLBase() + "/ViewListSiteNodeVersion.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.publishSiteNode"), "tool.structuretool.publishSiteNode.header");	
 	}
 
 /*
@@ -409,8 +414,8 @@ public class ViewStructureToolToolBarAction extends WebworkAbstractAction
 
 	private ImageButton getAccessRightsButton() throws Exception
 	{
-		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8");
-		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=SiteNodeVersion&extraParameters=" + this.siteNodeVersionId +"&colorScheme=StructureTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeAccessRights"), "Site Node Access Rights");
+		String returnAddress = URLEncoder.encode(URLEncoder.encode(this.getURLBase() + "/ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", "UTF-8"), "UTF-8");
+		return new ImageButton(this.getURLBase() + "/ViewAccessRights.action?interceptionPointCategory=SiteNodeVersion&extraParameters=" + this.siteNodeVersionId +"&colorScheme=StructureTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeAccessRights"), "Site Node Access Rights");
 	}
 
 	public Integer getServiceBindingId()

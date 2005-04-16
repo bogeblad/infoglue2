@@ -31,13 +31,13 @@ import java.util.List;
  * @author mattias
  */
 
-public class ReferenceBean
+public class ReferenceVersionBean
 {
-    private String name;
-    //private List registryVOList;
-    private Object referencingCompletingObject;
-    private List versions = new ArrayList();
+    //private String name;
+    private List registryVOList = new ArrayList();
+    private Object referencingObject;
     
+    /*
     public String getName()
     {
         return name;
@@ -47,30 +47,21 @@ public class ReferenceBean
     {
         this.name = name;
     }
+    */
     
-    public Object getReferencingCompletingObject()
+    public Object getReferencingObject()
     {
-        return referencingCompletingObject;
+        return referencingObject;
     }
     
-    public void setReferencingCompletingObject(Object referencingCompletingObject)
+    public void setReferencingObject(Object referencingObject)
     {
-        this.referencingCompletingObject = referencingCompletingObject;
+        this.referencingObject = referencingObject;
     }
     
-    /*
     public List getRegistryVOList()
     {
         return registryVOList;
     }
-    
-    public void setRegistryVOList(List registryVOList)
-    {
-        this.registryVOList = registryVOList;
-    }
-    */
-    public List getVersions()
-    {
-        return versions;
-    }
+        
 }

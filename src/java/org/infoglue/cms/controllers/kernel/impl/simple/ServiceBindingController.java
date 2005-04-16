@@ -53,7 +53,6 @@ import org.infoglue.cms.util.CmsLogger;
  */
 public class ServiceBindingController extends BaseController 
 {
-
     public static ServiceBindingController getController()
     {
         return new ServiceBindingController();
@@ -115,7 +114,9 @@ public class ServiceBindingController extends BaseController
 	        db.create(serviceBinding);
             
 			siteNodeVersion.getServiceBindings().add(serviceBinding);
-			
+
+            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+
             commitTransaction(db);
         }
         catch(Exception e)
@@ -164,6 +165,8 @@ public class ServiceBindingController extends BaseController
 			db.create((ServiceBinding)serviceBinding);
 			
 			siteNodeVersion.getServiceBindings().add(serviceBinding);
+			
+            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
 		}
 		catch(Exception e)
 		{
@@ -186,18 +189,22 @@ public class ServiceBindingController extends BaseController
     	CmsLogger.logInfo("siteNodeVersionId:" + siteNodeVersionId);
     	CmsLogger.logInfo("serviceDefinitionId:" + serviceDefinitionId);
 
+    	SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
+    	
 		ServiceBinding serviceBinding = null;
 		
         serviceBinding = new ServiceBindingImpl();
         serviceBinding.setValueObject(serviceBindingVO);
         serviceBinding.setAvailableServiceBinding((AvailableServiceBindingImpl)AvailableServiceBindingController.getController().getAvailableServiceBindingWithId(availableServiceBindingId, db));
         serviceBinding.setServiceDefinition((ServiceDefinitionImpl)ServiceDefinitionController.getController().getServiceDefinitionWithId(serviceDefinitionId, db));
-        serviceBinding.setSiteNodeVersion((SiteNodeVersionImpl)SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db));
+        serviceBinding.setSiteNodeVersion((SiteNodeVersionImpl)siteNodeVersion);
 
         CmsLogger.logInfo("createEntity: " + serviceBinding.getSiteNodeVersion().getSiteNodeVersionId());
         
         db.create(serviceBinding);
             
+        RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+
         return serviceBinding;
     }      
 
@@ -224,6 +231,9 @@ public class ServiceBindingController extends BaseController
 	        serviceBinding.getBindingQualifyers().clear();
 	        Collection newQualifyers = QualifyerController.createQualifyers(qualifyerXML, serviceBinding);
             serviceBinding.setBindingQualifyers(newQualifyers);
+            
+            RegistryController.getController().updateSiteNodeVersion(serviceBinding.getSiteNodeVersion(), db);
+
             commitTransaction(db);
         }
         catch(Exception e)
@@ -330,7 +340,14 @@ public class ServiceBindingController extends BaseController
         	ServiceBinding serviceBinding = ServiceBindingController.getServiceBindingWithId(serviceBindingVO.getServiceBindingId(), db);
 			//QualifyerController.deleteQualifyersForServiceBinding(serviceBinding, db);
 			//deleteEntity(ServiceBindingImpl.class, serviceBindingVO.getServiceBindingId(), db);
+        	SiteNodeVersion siteNodeVersion = serviceBinding.getSiteNodeVersion();
+        	
         	db.remove(serviceBinding);
+        	
+        	siteNodeVersion.getServiceBindings().remove(serviceBinding);
+        	
+            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+
         	commitTransaction(db);
         }
         catch(Exception e)
@@ -348,14 +365,13 @@ public class ServiceBindingController extends BaseController
 	public static void delete(ServiceBindingVO serviceBindingVO, Database db) throws ConstraintException, SystemException, Exception
 	{
 		ServiceBinding serviceBinding = ServiceBindingController.getServiceBindingWithId(serviceBindingVO.getServiceBindingId(), db);
+		
 		db.remove(serviceBinding);
+	
+        RegistryController.getController().updateSiteNodeVersion(serviceBinding.getSiteNodeVersion(), db);
 	}        
 
-    public static ServiceBindingVO update(ServiceBindingVO serviceBindingVO) throws ConstraintException, SystemException
-    {
-    	return (ServiceBindingVO) updateEntity(ServiceBindingImpl.class, serviceBindingVO);
-    }        
-
+	
 	/**
 	 * This method returns a list with QualifyerVO-objects which are available for the
 	 * serviceBinding sent in

@@ -151,7 +151,7 @@
 			#end 		    
 		   	qualifyerXML += "</qualifyer>";
 			
-			var url = 'CreateServiceBinding.action?serviceBindingId=$!serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&path=' + escape(path) + '&entityId=' + entityId + "&qualifyerXML=" + escape(qualifyerXML);
+			var url = 'CreateServiceBinding.action?serviceBindingId=$!serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&stay=true&path=' + escape(path) + '&entityId=' + entityId + "&qualifyerXML=" + escape(qualifyerXML);
 		    //alert('Calling:' + url);
 		    self.opener.parent.frames["main"].location.href = url;
 		    window.close();

@@ -644,7 +644,7 @@ public class AccessRightController extends BaseController
 	 * @throws SystemException
 	 */
 	
-	private AccessRightRole createAccessRightRole(Database db, AccessRightRoleVO accessRightRoleVO, AccessRight accessRight) throws SystemException, Exception
+	public AccessRightRole createAccessRightRole(Database db, AccessRightRoleVO accessRightRoleVO, AccessRight accessRight) throws SystemException, Exception
 	{
 	    AccessRightRole accessRightRole = new AccessRightRoleImpl();
 	    accessRightRole.setValueObject(accessRightRoleVO);
@@ -663,7 +663,7 @@ public class AccessRightController extends BaseController
 	 * @throws SystemException
 	 */
 	
-	private AccessRightGroup createAccessRightGroup(Database db, AccessRightGroupVO accessRightGroupVO, AccessRight accessRight) throws SystemException, Exception
+	public AccessRightGroup createAccessRightGroup(Database db, AccessRightGroupVO accessRightGroupVO, AccessRight accessRight) throws SystemException, Exception
 	{
 	    AccessRightGroup accessRightGroup = new AccessRightGroupImpl();
 	    accessRightGroup.setValueObject(accessRightGroupVO);
