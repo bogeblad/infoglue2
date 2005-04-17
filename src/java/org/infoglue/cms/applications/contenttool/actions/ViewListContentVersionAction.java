@@ -29,8 +29,10 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
@@ -49,6 +51,7 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 {
 
 	private List contentVersionVOList = new ArrayList();
+	private List siteNodeVersionVOList = new ArrayList();
 	private Integer contentId;
 	private Integer repositoryId;
 
@@ -67,18 +70,14 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			
 			ceb.throwIfNotEmpty();
 
-			contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursiveAndRelated(contentId, ContentVersionVO.WORKING_STATE);		
+			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList);
+
+			//contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursiveAndRelated(contentId, ContentVersionVO.WORKING_STATE);		
 		}
 
 	    return "success";
 	}
-	
-
-	public List getContentVersions()
-	{
-		return this.contentVersionVOList;		
-	}
-	
+		
 	/**
 	 * @return
 	 */
@@ -98,5 +97,15 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
     public Integer getRepositoryId()
     {
         return repositoryId;
+    }
+    
+    public List getContentVersionVOList()
+    {
+        return contentVersionVOList;
+    }
+    
+    public List getSiteNodeVersionVOList()
+    {
+        return siteNodeVersionVOList;
     }
 }

@@ -238,6 +238,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
         return CmsPropertyHandler.getProperty("componentRendererAction");
     }
     
+    public String getCMSBaseUrl()
+    {
+        return CmsPropertyHandler.getProperty("cmsBaseUrl");
+    }
+    
     
 	//--------------------------------------------------------------------------
 	// Database/Transaction specific operations

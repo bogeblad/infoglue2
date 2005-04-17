@@ -164,6 +164,47 @@ function CheckUncheck(row,chkbox)
 	}
 }
 
+function checkAllBoxes(element)
+{
+	var length = element.length;
+  	if(length == null)
+  	{
+  		element.checked = true;
+  		rowId = element.getAttribute("rowId");
+		listRowMarked(document.getElementById(rowId));
+  	}
+  	else
+  	{	
+	 	var field = element;
+	 	for (i = 0; i < field.length; i++)
+		{
+			field[i].checked = true;
+			rowId = field[i].getAttribute("rowId");
+			listRowMarked(document.getElementById(rowId));
+		}
+	}
+}
+
+function uncheckAllBoxes(element)
+{
+	var length = element.length;
+  	if(length == null)
+  	{
+  		element.checked = false;
+  		rowId = element.getAttribute("rowId");
+		listRowUnMarked(document.getElementById(rowId));
+  	}
+  	else
+  	{	
+	 	var field = element;
+	 	for (i = 0; i < field.length; i++)
+		{
+			field[i].checked = false;
+			rowId = field[i].getAttribute("rowId");
+			listRowUnMarked(document.getElementById(rowId));
+		}
+	}
+}
 
 //-----------------------------------------------
 // This function reloads the toolbar above the current 

@@ -61,25 +61,16 @@
 		
 		function checkAll()
 		{
-		 	var field = document.listForm.selSiteNodeVersions;
-		 	for (i = 0; i < field.length; i++)
-				field[i].checked = true ;
-				
-		 	var field = document.listForm.selContentVersions;
-		 	for (i = 0; i < field.length; i++)
-				field[i].checked = true ;
+			checkAllBoxes(document.listForm.selSiteNodeVersions);
+			checkAllBoxes(document.listForm.selContentVersions);					
 		}
-		
+
 		function uncheckAll()
 		{
-			var field = document.listForm.selSiteNodeVersions;
-			for (i = 0; i < field.length; i++)
-				field[i].checked = false ;
-			
-			var field = document.listForm.selContentVersions;
-			for (i = 0; i < field.length; i++)
-				field[i].checked = false ;
+			uncheckAllBoxes(document.listForm.selSiteNodeVersions);
+			uncheckAllBoxes(document.listForm.selContentVersions);		
 		}
+				
 		
 		function submitToPublish(attemptDirectPublishing)
 		{
@@ -131,11 +122,12 @@
 		<img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0">
 		</a><br>
 		
-		<a href="ViewSiteNode.action?siteNodeId=$siteNodeId&repositoryId=$!repositoryId">
+		<a href="ViewSiteNode.action?siteNodeId=$siteNodeId&repositoryId=$!repositoryId&stay=true">
 		<img src="$ui.getString("images.contenttool.buttons.cancel60x25")" width="60" height="25" border="0">
 		</a><br><br>
 		
-		#if($siteNodeVersions.size() > 1)
+		#set($items = $siteNodeVersionVOList.size() + $contentVersionVOList.size())
+		#if($items > 1)
 			<a href="javascript:checkAll();">
 			<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
 			</a><br>
@@ -170,7 +162,7 @@
 #set($cnt = 0)
 #foreach($snv in $siteNodeVersionVOList)
 
-	#set( $row = ["$snv.getId() - $snv.getSiteNodeName()", ""] )
+	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", ""] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $snv.getId())
@@ -180,10 +172,10 @@
 
 #set($lvChkBoxName = "selContentVersions")
 
-#set($cnt = 0)
+##set($cnt = 0)
 #foreach($cv in $contentVersionVOList)
 
-	#set( $row = ["$cv.getId() - $cv.getContentName()", ""] )
+	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() ($cv.getId())", ""] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())

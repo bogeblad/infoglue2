@@ -319,6 +319,7 @@ public class ContentVersionController extends BaseController
 		while (results.hasMore()) 
 		{
 			ContentVersion contentVersion = (ContentVersion)results.next();
+			System.out.println("contentVersion:" + contentVersion.getValueObject().getContentName());
 			if(contentVersion.getIsActive().booleanValue())
 			{
 				if ( (contentVersion.getStateId().compareTo(stateId)==0) && 
@@ -1074,5 +1075,97 @@ public class ContentVersionController extends BaseController
 	{
 		return new ContentVersionVO();
 	}
+
+	/**
+	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
+	 */ 
+	
+    public void getContentAndAffectedItemsRecursive(Integer contentId, Integer stateId, List siteNodeVersionVOList, List contenteVersionVOList) throws ConstraintException, SystemException
+	{
+        Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+            Content content = ContentController.getContentController().getContentWithId(contentId, db);
+
+            getContentAndAffectedItemsRecursive(content, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+	}
+	
+	private void getContentAndAffectedItemsRecursive(Content content, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, List siteNodeVersionVOList, List contentVersionVOList) throws ConstraintException, SystemException, Exception
+	{
+	    checkedSiteNodes.add(content.getId());
+        
+	    List contentVersions = getLatestContentVersionWithParent(content.getId(), stateId, db);
+	    
+		Iterator contentVersionsIterator = contentVersions.iterator();
+	    while(contentVersionsIterator.hasNext())
+	    {
+	        ContentVersion contentVersion = (ContentVersion)contentVersionsIterator.next();
+	        contentVersionVOList.add(contentVersion.getValueObject());
+	        
+	        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(ContentVersion.class.getName(), contentVersion.getId().toString(), db);
+	        System.out.println("relatedEntities:" + relatedEntities);
+	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
+	        
+	        while(relatedEntitiesIterator.hasNext())
+	        {
+	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
+	            System.out.println("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
+	            {
+	                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
+	                SiteNodeVersion relatedSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
+	                if(relatedSiteNodeVersion != null && content.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
+	                {
+	                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
+	                }
+	                
+	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
+	            }
+	            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
+	            {
+	                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
+	                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
+	                System.out.println("relatedContentVersions:" + relatedContentVersions.size());
+	                
+	                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
+	                while(relatedContentVersionsIterator.hasNext())
+	                {
+	                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
+		                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+		                {
+		                    contentVersionVOList.add(relatedContentVersion.getValueObject());
+		                    System.out.println("Added:" + relatedContentVersion.getId());
+			            }
+	                }
+	                
+	    		    checkedContents.add(new Integer(registryVO.getEntityId()));
+	            }
+	        }	    
+
+		}
+		
+	    //	  Get the children of this content and do the recursion
+		Collection childContentList = content.getChildren();
+		Iterator cit = childContentList.iterator();
+		while (cit.hasNext())
+		{
+			ContentVO contentVO = (ContentVO) cit.next();
+			getContentAndAffectedItemsRecursive(content, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList);
+		}
+		
+	}
+
 
 }

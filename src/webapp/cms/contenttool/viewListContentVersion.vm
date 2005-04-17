@@ -144,12 +144,35 @@
 #hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
 #hiddenField("repositoryId" $!repositoryId)
 
+#*
 #set($cnt = 0)
 #foreach($cv in $versions)
 
 	#set( $row = ["$cv.getContentVersionId() - $cv.getContentName()","$cv.getLanguageName()", ""] )
 	#set($cnt = $cnt + 1)
 	#lvAddRow($row $cnt $cv.getContentVersionId())
+
+#end
+*#
+
+#set($lvChkBoxName = "selContentVersions")
+#set($cnt = 0)
+#foreach($cv in $contentVersionVOList)
+
+	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() ($cv.getId())", ""] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $cv.getId())
+
+#end
+
+#set($lvChkBoxName = "selSiteNodeVersions")
+#foreach($snv in $siteNodeVersionVOList)
+
+	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", ""] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $snv.getId())
 
 #end
 

@@ -29,7 +29,7 @@
 				parent.frames['main'].location.href="ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
 			#end
 			*#
-			parent.frames['main'].location.href="$this.getURLBase()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
+			parent.frames['main'].location.href="$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
 			
 			refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
 		}

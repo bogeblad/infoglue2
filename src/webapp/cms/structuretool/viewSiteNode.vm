@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginStructureTool("tool.structuretool.siteNodeDetailsHeader" "tool.structuretool.siteNodeDetailsHeader" "siteNodeId=$siteNodeId&siteNodeVersionId=$siteNodeVersionId&repositoryId=$!repositoryId&isBranch=$isBranch" "$unrefreshedSiteNodeId" "$changeTypeId" "$siteNodeId")
+
 <script language="javascript">
 function editContent(contentId)
 {
@@ -8,9 +11,6 @@ function editContent(contentId)
     openPopup(url, "Editcontent", "width=480,height=400,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 }
 </script>
-
-
-#beginStructureTool("tool.structuretool.siteNodeDetailsHeader" "tool.structuretool.siteNodeDetailsHeader" "siteNodeId=$siteNodeId&siteNodeVersionId=$siteNodeVersionId&repositoryId=$!repositoryId&isBranch=$isBranch" "$unrefreshedSiteNodeId" "$changeTypeId" "$siteNodeId")
 
 #if($stateId == 1 || $stateId == 2 || $stateId == 3)
 	#set($readonly = "disabled") 
@@ -418,19 +418,20 @@ function editContent(contentId)
 		<td colspan="8"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	<tr>
-		<input type="hidden" name="siteNodeId" value="$!siteNodeId">
-		<input type="hidden" name="isBranch" value="$!isBranch">
-		<input type="hidden" name="repositoryId" value="$!repositoryId">
-		<input type="hidden" name="unrefreshedSiteNodeId" value="$!siteNodeId">
-		<input type="hidden" name="changeTypeId" value="1">
 		<td colspan="8">
 			#if($readonly == "")
 			<input type="image" img src="$ui.getString("images.structuretool.buttons.save")" width="50" height="25" border="0">
 			#end
 		</td>
 	</tr>
+	</table>
 	
-</table>
+	<input type="hidden" name="siteNodeId" value="$!siteNodeId">
+	<input type="hidden" name="isBranch" value="$!isBranch">
+	<input type="hidden" name="repositoryId" value="$!repositoryId">
+	<input type="hidden" name="unrefreshedSiteNodeId" value="$!siteNodeId">
+	<input type="hidden" name="changeTypeId" value="1">
+</form>
 </div>
 
 #endStructureTool()
