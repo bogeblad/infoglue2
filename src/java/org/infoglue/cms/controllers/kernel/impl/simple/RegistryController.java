@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.10 2005/04/16 22:48:06 mattias Exp $
+ * $Id: RegistryController.java,v 1.11 2005/04/17 19:47:53 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -252,48 +252,51 @@ public class RegistryController extends BaseController
 		while(serviceBindingIterator.hasNext())
 		{
 		    ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-		    Iterator qualifyersIterator = serviceBinding.getBindingQualifyers().iterator();
-		    while(qualifyersIterator.hasNext())
+		    if(serviceBinding.getBindingQualifyers() != null)
 		    {
-		        Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
-		        String name = qualifyer.getName();
-		        String value = qualifyer.getValue();
-
-                try
-                {
-			        RegistryVO registryVO = new RegistryVO();
-			        registryVO.setReferenceType(RegistryVO.PAGE_BINDING);
-		            if(name.equalsIgnoreCase("contentId"))
-			        {
-		                Content content = ContentController.getContentController().getContentWithId(new Integer(value), db);
-		                
-		                registryVO.setEntityId(value);
-			            registryVO.setEntityName(Content.class.getName());
+			    Iterator qualifyersIterator = serviceBinding.getBindingQualifyers().iterator();
+			    while(qualifyersIterator.hasNext())
+			    {
+			        Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
+			        String name = qualifyer.getName();
+			        String value = qualifyer.getValue();
+	
+	                try
+	                {
+				        RegistryVO registryVO = new RegistryVO();
+				        registryVO.setReferenceType(RegistryVO.PAGE_BINDING);
+			            if(name.equalsIgnoreCase("contentId"))
+				        {
+			                Content content = ContentController.getContentController().getContentWithId(new Integer(value), db);
+			                
+			                registryVO.setEntityId(value);
+				            registryVO.setEntityName(Content.class.getName());
+				            
+				            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
+				            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
+				            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
+				            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+				        }
+			            else if(name.equalsIgnoreCase("siteNodeId"))
+				        {
+			                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(value), db);
+			                
+			                registryVO.setEntityId(value);
+				            registryVO.setEntityName(SiteNode.class.getName());
+				            
+				            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
+				            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
+				            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
+				            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+				        }
 			            
-			            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
-			            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
-			            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
-			            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
-			        }
-		            else if(name.equalsIgnoreCase("siteNodeId"))
-			        {
-		                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(value), db);
-		                
-		                registryVO.setEntityId(value);
-			            registryVO.setEntityName(SiteNode.class.getName());
-			            
-			            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
-			            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
-			            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
-			            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
-			        }
-		            
-		            this.create(registryVO, db);
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }		        
+			            this.create(registryVO, db);
+	                }
+	                catch(Exception e)
+	                {
+	                    e.printStackTrace();
+	                }		        
+			    }
 		    }
 		}
 	}

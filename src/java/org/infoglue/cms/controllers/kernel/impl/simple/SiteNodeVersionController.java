@@ -237,19 +237,9 @@ public class SiteNodeVersionController extends BaseController
 
         try
         {
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.isActive = $2 ORDER BY cv.siteNodeVersionId desc");
-        	oql.bind(siteNodeId);
-        	oql.bind(new Boolean(true));
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-            {
-            	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
-            	CmsLogger.logInfo("found one:" + siteNodeVersion.getValueObject());
-            	System.out.println("found one-------------:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getIsActive());
-            	siteNodeVersionVO = siteNodeVersion.getValueObject();
-            }
+            SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(db, siteNodeId);
+            if(siteNodeVersion != null)
+                siteNodeVersionVO = siteNodeVersion.getValueObject();
             
             commitTransaction(db);
         }
@@ -262,7 +252,25 @@ public class SiteNodeVersionController extends BaseController
     	
 		return siteNodeVersionVO;
     }
-	
+
+	public SiteNodeVersion getLatestActiveSiteNodeVersion(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+	    SiteNodeVersion siteNodeVersion = null;
+	    
+	    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.isActive = $2 ORDER BY cv.siteNodeVersionId desc");
+		oql.bind(siteNodeId);
+		oql.bind(new Boolean(true));
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+	    {
+	    	siteNodeVersion = (SiteNodeVersion)results.next();
+        }
+
+		return siteNodeVersion;
+    }
+
 	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();

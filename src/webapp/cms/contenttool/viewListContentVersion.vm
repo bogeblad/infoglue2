@@ -6,26 +6,41 @@
 
 <script language="JavaScript">
 <!--
-		function checkMarkedVersions()
+				function checkMarkedVersions()
 		{
 			var listForm = document.listForm;
-			var lengthsel = null;
+			var lengthselSiteNodeVersions = null;
+			var lengthselContentVersions = null;
 			var lengthsit = null;
 			var ret = 0;
-			if (listForm.sel != null)
-				lengthsel = listForm.sel.length;
+			if (listForm.selSiteNodeVersions != null)
+				lengthselSiteNodeVersions = listForm.selSiteNodeVersions.length;
+			if (listForm.selContentVersions != null)				
+				lengthselContentVersions = listForm.selContentVersions.length;
 			if (listForm.sit != null)
 				lengthsit = listForm.sit.length;
 
-			if (lengthsel == null && listForm.sel != null)
+			if (lengthselSiteNodeVersions == null && listForm.selSiteNodeVersions != null)
 		  	{
-		  		if (listForm.sel.checked)
+		  		if (listForm.selSiteNodeVersions.checked)
 			    	ret++;
 		  	}
 			else
 			{
-			  	for (i=0; i<lengthsel; i++)
-			   		if (listForm.sel[i].checked)
+			  	for (i=0; i<lengthselSiteNodeVersions; i++)
+			   		if (listForm.selSiteNodeVersions[i].checked)
+			    		ret++;
+			}
+
+			if (lengthselContentVersions == null && listForm.selContentVersions != null)
+		  	{
+		  		if (listForm.selContentVersions.checked)
+			    	ret++;
+		  	}
+			else
+			{
+			  	for (i=0; i<lengthselContentVersions; i++)
+			   		if (listForm.selContentVersions[i].checked)
 			    		ret++;
 			}
 			    		
@@ -46,17 +61,16 @@
 		
 		function checkAll()
 		{
-		 	var field = document.listForm.sel;
-		 	for (i = 0; i < field.length; i++)
-				field[i].checked = true ;
+			checkAllBoxes(document.listForm.selSiteNodeVersions);
+			checkAllBoxes(document.listForm.selContentVersions);					
 		}
-		
+
 		function uncheckAll()
 		{
-			var field = document.listForm.sel;
-			for (i = 0; i < field.length; i++)
-				field[i].checked = false ;
+			uncheckAllBoxes(document.listForm.selSiteNodeVersions);
+			uncheckAllBoxes(document.listForm.selContentVersions);		
 		}
+
 
 		
 		function submitToPublish(attemptDirectPublishing)
@@ -78,8 +92,6 @@
 		}
 -->
 </script>
-
-#set($versions = $contentVersions)
 
 <div class="fullymarginalized">
 
@@ -115,7 +127,8 @@
 		<img src="$ui.getString("images.contenttool.buttons.cancel60x25")" width="60" height="25" border="0">
 		</a><br><br>
 		
-		#if($versions.size() > 1)
+		#set($items = $siteNodeVersionVOList.size() + $contentVersionVOList.size())
+		#if($items > 1)
 			<a href="javascript:checkAll();">
 			<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
 			</a><br>
@@ -137,29 +150,18 @@
 
 #set($lvBorder = 0) 
 #set($lvConstraint = -1) 
-#lvHead(["Name", "Language", "Owner"] "Publish items" "" "" "")
+#lvHead(["Name"] "Publish items" "" "" "")
 
 #hiddenField("contentId" $contentId)
 #hiddenField("versionComment" $!versionComment)
 #hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
 #hiddenField("repositoryId" $!repositoryId)
 
-#*
-#set($cnt = 0)
-#foreach($cv in $versions)
-
-	#set( $row = ["$cv.getContentVersionId() - $cv.getContentName()","$cv.getLanguageName()", ""] )
-	#set($cnt = $cnt + 1)
-	#lvAddRow($row $cnt $cv.getContentVersionId())
-
-#end
-*#
-
 #set($lvChkBoxName = "selContentVersions")
 #set($cnt = 0)
 #foreach($cv in $contentVersionVOList)
 
-	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() ($cv.getId())", ""] )
+	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() - $cv.getLanguageName() ($cv.getId())"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())
@@ -169,7 +171,7 @@
 #set($lvChkBoxName = "selSiteNodeVersions")
 #foreach($snv in $siteNodeVersionVOList)
 
-	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", ""] )
+	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $snv.getId())

@@ -107,7 +107,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
             if(siteNodeTypeDefinitionId != null)
 	            siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionId, db));
 
-			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNodeVO.getSiteNodeId()).getValueObject();
+			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeVO.getSiteNodeId()).getValueObject();
 			latestSiteNodeVersionVO.setContentType(updatedSiteNodeVersionVO.getContentType());
 			latestSiteNodeVersionVO.setDisableEditOnSight(updatedSiteNodeVersionVO.getDisableEditOnSight());
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());
