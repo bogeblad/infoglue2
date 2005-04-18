@@ -41,7 +41,7 @@
     <filter-mapping>
         <filter-name>PortalFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping> 
 
 	<filter-mapping>
 		<filter-name>Set Character Encoding</filter-name>
@@ -51,7 +51,7 @@
     <filter-mapping>
         <filter-name>ViewPageFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping> 
 
 	<listener>
 		<listener-class>org.infoglue.deliver.util.DeliverContextListener</listener-class>
@@ -95,7 +95,7 @@
 	<!-- ************************************* -->
 	<!-- This part is for webworks / velocity  -->
 	<!-- ************************************* -->
-
+ 
 	<servlet-mapping>
 		<servlet-name>action</servlet-name>
 		<url-pattern>*.action</url-pattern>
