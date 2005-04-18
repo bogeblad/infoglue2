@@ -358,7 +358,7 @@
 				<include name="*.tld"/>
 			</fileset>
 		</copy>
-		
+
 		<echo message="Copying confs to cms"/>
 		<copy todir="${build}/cmswebapp/WEB-INF/classes">
 			<fileset dir="${conf}">

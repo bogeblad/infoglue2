@@ -237,7 +237,7 @@ function refreshContentToolBar(title, toolbarKey, arguments, unrefreshedContentI
 	parent.frames["toolbar"].location.href = 'ViewContentToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 	if(unrefreshedContentId > 0)
 	{
-		//alert("About to call refresh on applet...");
+		//alert("About to call refresh on menu:" + unrefreshedContentId + ":" + changeTypeId + ":" + newContentId);
 		parent.frames["menu"].refreshContent(unrefreshedContentId, changeTypeId, newContentId);
 	}
 }
