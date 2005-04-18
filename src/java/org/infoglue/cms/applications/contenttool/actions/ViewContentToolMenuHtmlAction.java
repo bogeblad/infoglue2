@@ -45,6 +45,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	private Integer select;
 	private BaseNode rootNode = null;
 	private String[] allowedContentTypeNames = null;
+	private String bodyClass;
 	
 	/* Experiment 2003-09-11 TODO:
 	 * Provide a list of content-type definition, so that
@@ -233,5 +234,15 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
         }
         
         return sb.toString();
+    }
+    
+    public String getBodyClass()
+    {
+        return bodyClass;
+    }
+    
+    public void setBodyClass(String bodyClass)
+    {
+        this.bodyClass = bodyClass;
     }
 }

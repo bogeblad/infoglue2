@@ -93,7 +93,7 @@
 			
 			//alert("src" + document.getElementById("internalAssetFrame").src);
 			if(id == "internalLink" && document.getElementById("internalLinkFrame").src.indexOf("ViewStructureTreeForInlineLink.action") == -1)
-				document.getElementById("internalLinkFrame").src = "ViewStructureTreeForInlineLink.action?contentId=$contentId&languageId=$languageId&textAreaId=$!textAreaId&oldSiteNodeId=$!oldSiteNodeId";
+				document.getElementById("internalLinkFrame").src = "ViewStructureTreeForInlineLink.action?contentId=$contentId&languageId=$languageId&textAreaId=$!textAreaId&oldSiteNodeId=$!oldSiteNodeId&oldContentId=$!oldContentId";
 			else if(id == "internalAsset" && document.getElementById("internalAssetFrame").src.indexOf("ViewContentVersion!viewAssetsDialog.action") == -1)
 				document.getElementById("internalAssetFrame").src = "ViewContentVersion!viewAssetsDialog.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId&treatAsLink=true&textAreaId=$!textAreaId&oldContentId=$!oldContentId&assetKey=$!assetKey";
 			

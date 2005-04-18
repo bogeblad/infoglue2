@@ -41,6 +41,7 @@ public class ViewContentTreeAction extends WebworkAbstractAction implements View
     private Integer contentId;
     private String tree;
     private String hideLeafs;
+    private String bodyClass;
     
     public void setRepositoryId(Integer repositoryId)
     {
@@ -123,4 +124,13 @@ public class ViewContentTreeAction extends WebworkAbstractAction implements View
 		this.tree = tree;
 	}
 
+    public String getBodyClass()
+    {
+        return bodyClass;
+    }
+    
+    public void setBodyClass(String bodyClass)
+    {
+        this.bodyClass = bodyClass;
+    }
 }

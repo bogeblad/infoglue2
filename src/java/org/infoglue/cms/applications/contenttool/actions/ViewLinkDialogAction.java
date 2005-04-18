@@ -134,6 +134,17 @@ public class ViewLinkDialogAction extends InfoGlueAbstractAction
 		this.oldSiteNodeId = oldSiteNodeId;
 	}
 
+    public Integer getOldContentId()
+    {
+        return oldContentId;
+    }
+    
+    public void setOldContentId(Integer oldContentId)
+    {
+        System.out.println("oldContentId:" + oldContentId);
+        this.oldContentId = oldContentId;
+    }
+
     public String getAssetKey()
     {
         return assetKey;
@@ -174,13 +185,4 @@ public class ViewLinkDialogAction extends InfoGlueAbstractAction
         this.method = method;
     }
     
-    public Integer getOldContentId()
-    {
-        return oldContentId;
-    }
-    
-    public void setOldContentId(Integer oldContentId)
-    {
-        this.oldContentId = oldContentId;
-    }
 }

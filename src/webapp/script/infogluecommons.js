@@ -17,6 +17,24 @@ function hideDiv(id)
 }
 
 /**
+ * This method close layer.
+ */
+ 
+function closeDiv(id)
+{
+	document.getElementById(id).style.display = 'none';
+}
+
+/**
+ * This method opens a layer.
+ */
+
+function openDiv(id)
+{
+	document.getElementById(id).style.display = 'block';
+}
+
+/**
  * This method moves a layer.
  */
  

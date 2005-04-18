@@ -10,6 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/editor.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	<script type="text/javascript" src="applications/HTMLArea/popups/infogluePopup.js"></script>
 	
 	<script type="text/javascript">
@@ -44,8 +45,11 @@
 		
 		function htmlTreeItemClick(entityId, repositoryId, path)
 		{
-			var url = "ViewContentVersion!viewAssets.action?contentId=" + entityId + "&languageId=$languageId";
-			document.getElementById("contentVersionAssetsFrame").src = url;
+			alert("aaaa:" + entityId);
+			document.inputForm.contentId.value = entityId;
+			//var url = "ViewContentVersion!viewAssets.action?contentId=" + entityId + "&languageId=$languageId";
+			//document.getElementById("contentVersionAssetsFrame").src = url;
+			
 		}
 				
 		function Init() 
@@ -71,6 +75,7 @@
 		  	}
 		  	
 		  	document.getElementById("entityId").value = "$oldSiteNodeId";
+		  	document.getElementById("contentId").value = "$oldContentId";
 		  	
 		  	var opt = document.createElement("option");
 		  	opt.value = "_other";
@@ -93,69 +98,22 @@
 
 		
 
-		/*
-		
+
 		function onOk() 
 		{
 		  	siteNodeId = document.inputForm.entityId.value;
+		  	contentId = document.inputForm.contentId.value;
 			title = document.inputForm.f_title.value;
 			target = document.inputForm.f_target.value;
 			path = document.inputForm.path.value;
 			navigationTitleHash[siteNodeId] = path;
 			//alert("param: " + "<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, null)\">$templateLogic.getPageNavTitle(" + siteNodeId + ")</a>");
 			document.inputForm.f_href.value = "#";
-			originalTag = transformAttribute("<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, null)\" title=\"" + title + "\" target=\"" + target + "\">" + document.inputForm.f_text.value + "</a>", self.opener.document);
-			
-		  var required = 
-		  	{
-		  	"f_href": "You must select a page in the tree which the link will lead to",
-		    "f_title": "You must enter a title for the url"
-		    };
-		  for (var i in required) {
-		    var el = document.getElementById(i);
-		    if (!el.value) {
-		      alert(required[i]);
-		      el.focus();
-		      return false;
-		    }
-		  }
-		  // pass data back to the calling window
-		  var fields = ["f_href", "f_title", "f_target"];
-		  var param = new Object();
-		  for (var i in fields) {
-		    var id = fields[i];
-		    var el = document.getElementById(id);
-		    param[id] = el.value;
-		  }
-		  if (param.f_target == "_other")
-		    param.f_target = document.getElementById("f_other_target").value;
-		   
-		  param.originaltag = originalTag;  
-		  //alert("param.f_href at closing time:" + param.f_href);  
-		  //alert("param.f_title at closing time:" + param.f_title);  
-		  //alert("param.f_target at closing time:" + param.f_target); 
-		  //alert("param.originaltag at closing time:" + param.originaltag);   
-		  __dlg_close(param);
-		  return false;
-		};
-		function onCancel() 
-		{
-            __dlg_close(null);
-			return false;
-		}
-		*/
-		
-		function onOk() 
-		{
-		  	siteNodeId = document.inputForm.entityId.value;
-			title = document.inputForm.f_title.value;
-			target = document.inputForm.f_target.value;
-			path = document.inputForm.path.value;
-			navigationTitleHash[siteNodeId] = path;
-			//alert("param: " + "<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, null)\">$templateLogic.getPageNavTitle(" + siteNodeId + ")</a>");
-			document.inputForm.f_href.value = "#";
-			originalTag = transformAttribute("<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, null)\" title=\"" + title + "\" target=\"" + target + "\">" + document.inputForm.f_text.value + "</a>", parent.opener.document);
-			
+			if(contentId && contentId > 0)
+				originalTag = transformAttribute("<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, " + contentId + ")\" title=\"" + title + "\" target=\"" + target + "\">" + document.inputForm.f_text.value + "</a>", parent.opener.document);
+			else
+				originalTag = transformAttribute("<a href=\"$templateLogic.getPageUrl(" + siteNodeId + ", $templateLogic.languageId, null)\" title=\"" + title + "\" target=\"" + target + "\">" + document.inputForm.f_text.value + "</a>", parent.opener.document);
+					
 		  	var required = 
 		  	{
 		  		"f_href": "You must select a page in the tree which the link will lead to",
@@ -210,44 +168,106 @@
 <table class="structuretooledit" cellpadding="2" cellspacing="0" border="0" width="100%">
 <tr>
 	<td valign="top" width="100%">
-		<table cellpadding="0" cellspacing="0" border="0" width="100%">
-		<tr class="darkapricot">
-			<td class="smalllabel">Select which page to link to</td>
-		</tr>
-		<tr>
-			<td bgcolor="#FEF8D0" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-		</tr>
-		<tr>
-			<td bgcolor="#F0E1B4" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-		</tr>
-		<tr>
-			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
-		</tr>		
-
-		<tr>
-			<td>
-		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
-				    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
-				    #foreach ($repositoryVO in $repositories)
-				    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
-				    #end
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
-		</tr>	
-		<tr>
-			<td class="menu">   
-				#if($tree == "applet") 
-					#showJavaTree("350" "400" "254" "248" "208" "SiteNode" $repositoryId "false")
-				#else
-					#set($exp = $this.getExpansion($oldSiteNodeId))
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureToolMenuHtml!bindingView.action?repositoryId=${repositoryId}&exp=$exp&akey=/$!oldSiteNodeId/&select=$!oldSiteNodeId" width="350" height="510" align="baseline"></IFRAME>
-				#end
-			</td>
-		</tr>	
-		</table>
+		<div id="structure" style="display: block; border: 1px solid #F0E1B4;">
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr class="darkapricot">
+				<td class="smalllabel" colspan="2">Select which page to link to</td>
+			</tr>
+			<tr>
+				<td bgcolor="#FEF8D0" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			</tr>
+			<tr>
+				<td bgcolor="#F0E1B4" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			</tr>
+			<tr>
+				<td height="1" colspan="2"><img src="images/trans.gif" width="1" height="5"></td>
+			</tr>		
+	
+			<tr>
+				<td colspan="2">
+			  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
+					    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+					    #foreach ($repositoryVO in $repositories)
+					    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+					    #end
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td height="1" colspan="2"><img src="images/trans.gif" width="1" height="5"></td>
+			</tr>	
+			<tr>
+				<td class="menu" colspan="2">   
+					#if($tree == "applet") 
+						#showJavaTree("350" "400" "254" "248" "208" "SiteNode" $repositoryId "false")
+					#else
+						#set($exp = $this.getExpansion($oldSiteNodeId))
+						<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureToolMenuHtml!bindingView.action?repositoryId=${repositoryId}&exp=$exp&akey=/$!oldSiteNodeId/&select=$!oldSiteNodeId" width="350" height="510" align="baseline"></IFRAME>
+					#end
+				</td>
+			</tr>	
+			<tr>
+				<td style="background-color: #F0E1B4; padding: 4px; border: 1px solid silver;">
+					<a href="javascript:openDiv('structure'); closeDiv('content');">Linked page</a>
+				</td>
+				<td style="background-color: #C7D1B3; padding: 4px; border: 1px solid silver;">
+					<a href="javascript:openDiv('content'); closeDiv('structure'); frames['itreeFrameContent'].loaded();">Additional content</a>
+				</td>
+			</tr>
+			</table>
+		</div>
+		
+		<div id="content" style="display: none; background-color: #EEF7DC; border: 1px solid #C7D1B3;">
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr class="darkgreen">
+				<td class="smalllabel" colspan="2">Click on the content you wish to add to the link</td>
+			</tr>
+			<tr>
+				<td bgcolor="#EEF7DC" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			</tr>
+			<tr>
+				<td bgcolor="#C7D1B3" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			</tr>
+			<tr>
+				<td height="1" colspan="2"><img src="images/trans.gif" width="1" height="5"></td>
+			</tr>		
+			<!-- 
+			HERE IS THE REPOSITORY-LIST FOR LATER 
+			-->
+			<tr>
+				<td colspan="2">
+			  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
+					    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+					    #foreach ($repositoryVO in $repositories)
+					    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+					    #end
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td height="1" colspan="2"><img src="images/trans.gif" width="1" height="5"></td>
+			</tr>		
+			<tr>
+				<td class="menu" colspan="2">  
+					#if($tree == "applet")
+						#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
+					#else
+						#set($exp = $this.getContentExpansion($oldContentId))
+						<IFRAME frameborder="0" name="itreeFrameContent" id="itreeFrameContent" src="ViewContentHtmlTree.action?repositoryId=$repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId&bodyClass=contenttooledit" width="350" height="510" align="baseline"></IFRAME>
+					#end
+				</td>
+			</tr>	
+			<tr>
+				<td style="background-color: #F0E1B4; padding: 4px; border: 1px solid silver;">
+					<a href="javascript:openDiv('structure'); closeDiv('content');">Linked page</a>
+				</td>
+				<td style="background-color: #C7D1B3; padding: 4px; border: 1px solid silver;">
+					<a href="javascript:openDiv('content'); closeDiv('structure'); frames['itreeFrameContent'].loaded();">Additional content</a>
+				</td>
+			</tr>
+			</table>	
+		</div>
+				
 	</td>	
 	
 	<td valign="top">
@@ -296,7 +316,8 @@
 		</table>
 		<input type="hidden" id="f_href"/>
 		<input type="hidden" id="f_text"/>
-		<input type="hidden" id="entityId" name="entityId" value="$oldSiteNodeId">
+		<input type="hidden" id="entityId" name="entityId" value="$!oldSiteNodeId">
+		<input type="hidden" id="contentId" name="contentId" value="$!oldContentId">
 		<input type="hidden" id="repositoryId" name="repositoryId" value="">
 		<input type="hidden" id="path" name="path" value="">
 	</form>
@@ -304,6 +325,21 @@
 	</td>
 </tr>
 </table>
+
+<!--
+<div id="menu" style="position: absolute; bottom: 10px; left: 10px;">
+	<table cellpadding="4" cellspacing="0" border="0" style="border-left: 1px solid silver; border-right: 1px solid silver; border-bottom: 1px solid silver;">
+	<tr>
+		<td style="background-color: #F0E1B4;">
+			<a href="javascript:openDiv('structure'); closeDiv('content');">Linked page</a>
+		</td>
+		<td style="background-color: #C7D1B3;">
+			<a href="javascript:openDiv('content'); closeDiv('structure'); frames['itreeFrameContent'].loaded();">Additional content</a>
+		</td>
+	</tr>
+	</table>
+</div>
+-->
 
 <!--
 <div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:5px; visibility:visble; z-index:0">

@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
@@ -44,6 +45,7 @@ public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 	private List repositories;
 	private String textAreaId = "";
 	private Integer oldSiteNodeId;
+	private Integer oldContentId;
 	
 	
 	public ViewStructureTreeForInlineLinkAction()
@@ -138,5 +140,38 @@ public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 	    
 	    return expansion;
 	}
-	
+
+	public String getContentExpansion(Integer oldContentId)
+	{
+	    String expansion = "/";
+	    
+	    if(oldContentId == null)
+	        return "";
+	    
+	    try
+	    {
+	        ContentVO parentContentVO = ContentController.getContentController().getParentContent(oldContentId);
+		    while(parentContentVO != null)
+		    {
+		        expansion += parentContentVO.getId() + "/";
+		        parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId());
+		    }
+	    }
+	    catch(Exception e)
+	    {
+	        CmsLogger.logWarning("Expansion not possible:" + e.getMessage(), e);
+	    }
+	    
+	    return expansion;
+	}
+
+    public Integer getOldContentId()
+    {
+        return oldContentId;
+    }
+    
+    public void setOldContentId(Integer oldContentId)
+    {
+        this.oldContentId = oldContentId;
+    }
 }

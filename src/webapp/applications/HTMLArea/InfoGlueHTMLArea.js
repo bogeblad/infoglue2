@@ -349,14 +349,24 @@ function configInfoGlue(config)
 		  		parenthesisIndex = transformedTag.indexOf("(");
 				stopIndex 		 = transformedTag.indexOf(",");
 				oldSiteNodeId = transformedTag.substring(parenthesisIndex + 1, stopIndex);
+				
+				contentStartIndex = transformedTag.indexOf(",", stopIndex + 1)
+				parenthesisEndIndex = transformedTag.indexOf(")");
+				oldContentId = transformedTag.substring(contentStartIndex + 1, parenthesisEndIndex);
+				if(oldContentId.indexOf(" ") == 0)
+					oldContentId = oldContentId.substring(1);
+				if(oldContentId == "null")
+					oldContentId = "";
+				//alert("oldContentId:" + oldContentId);
+				
 				textStartIndex = transformedTag.indexOf(">");
 				textStopIndex = transformedTag.indexOf("<", textStartIndex);
 				outparam.f_text = transformedTag.substring(textStartIndex + 1, textStopIndex);
-				extraParameters = "&method=inlineLink&oldSiteNodeId=" + oldSiteNodeId;
+				extraParameters = "&method=inlineLink&oldSiteNodeId=" + oldSiteNodeId + "&oldContentId=" + oldContentId;
 			}
 			else
 			{
-				extraParameters = "&method=inlineLink&oldSiteNodeId=";
+				extraParameters = "&method=inlineLink&oldSiteNodeId=&oldContentId=";
 			}  		
 		}
 		else

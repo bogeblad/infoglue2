@@ -176,6 +176,8 @@
 		
 		function markSelected(itemId)
 		{
+			//alert("marking selected:" + itemId);
+		
 			var node = tree.getNodeWithMyId(itemId);
 			if(node)
 				node.select();
@@ -270,7 +272,7 @@
 	
 	
 </head>
-<body class="contenttool" LEFTMARGIN="0" TOPMARGIN="0" onload="parent.notifyIsLoaded();parent.notifyExp('${exp}');loaded();">
+<body #if($bodyClass != "") class="$bodyClass #else class="contenttool" #end LEFTMARGIN="0" TOPMARGIN="0" onload="parent.notifyIsLoaded();parent.notifyExp('${exp}');loaded();">
 
 <div id="buffer" style="top: 0; left: 0"></div>
 
