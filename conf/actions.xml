@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.34 2005/04/16 22:48:06 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.35 2005/04/18 08:55:10 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -785,7 +785,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.UnpublishContentVersionAction" alias="UnpublishContentVersion">
 		<view name="input">/cms/contenttool/viewListContentVersionToUnpublish.vm</view>
-		<view name="success">ViewContent.action</view>
+		<view name="success">ViewContent.action?stay=true</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
@@ -1008,7 +1008,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.UnpublishSiteNodeVersionAction" alias="UnpublishSiteNodeVersion">
 		<view name="input">/cms/structuretool/viewListSiteNodeVersionToUnpublish.vm</view>
-		<view name="success">ViewSiteNode.action</view>
+		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>

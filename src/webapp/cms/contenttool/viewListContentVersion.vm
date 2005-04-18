@@ -6,7 +6,7 @@
 
 <script language="JavaScript">
 <!--
-				function checkMarkedVersions()
+		function checkMarkedVersions()
 		{
 			var listForm = document.listForm;
 			var lengthselSiteNodeVersions = null;
@@ -128,7 +128,7 @@
 		</a><br><br>
 		
 		#set($items = $siteNodeVersionVOList.size() + $contentVersionVOList.size())
-		#if($items > 1)
+		#if($items > 0)
 			<a href="javascript:checkAll();">
 			<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
 			</a><br>

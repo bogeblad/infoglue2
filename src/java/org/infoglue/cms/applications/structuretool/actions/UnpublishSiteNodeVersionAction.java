@@ -33,12 +33,15 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
 import java.util.ArrayList;
@@ -118,6 +121,21 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 			eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
 			eventVO = EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal());
 			events.add(eventVO);
+			
+			List contentVersionVOList = SiteNodeVersionController.getController().getMetaInfoContentVersionVOList(siteNodeVersionId, this.getInfoGluePrincipal());
+			Iterator contentVersionVOListIterator = contentVersionVOList.iterator();
+			while(contentVersionVOListIterator.hasNext())
+			{
+			    ContentVersionVO currentContentVersionVO = (ContentVersionVO)contentVersionVOListIterator.next();
+				EventVO versionEventVO = new EventVO();
+				versionEventVO.setDescription(this.versionComment);
+				versionEventVO.setEntityClass(ContentVersion.class.getName());
+				versionEventVO.setEntityId(currentContentVersionVO.getId());
+				versionEventVO.setName(currentContentVersionVO.getContentName());
+				versionEventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+				versionEventVO = EventController.create(versionEventVO, this.repositoryId, this.getInfoGluePrincipal());
+				events.add(versionEventVO);			    
+			}
 		}
 		
 		if(attemptDirectPublishing.equalsIgnoreCase("true"))

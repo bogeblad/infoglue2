@@ -27,6 +27,8 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
@@ -714,8 +716,9 @@ public class SiteNodeVersionController extends BaseController
 	    checkedSiteNodes.add(siteNode.getId());
         
 		// Get the versions of this siteNode.
-		SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersionIfInState(siteNode, stateId, db);
-		if(siteNodeVersion != null)
+		//SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersionIfInState(siteNode, stateId, db);
+		SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(db, siteNode.getId());
+		if(siteNodeVersion != null && siteNodeVersion.getStateId().intValue() == stateId.intValue())
 		{
 		    siteNodeVersionVOList.add(siteNodeVersion.getValueObject());
 		    
@@ -730,8 +733,9 @@ public class SiteNodeVersionController extends BaseController
 	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
 	            {
 	                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
-	                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
-	                if(relatedSiteNodeVersion != null && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
+	                //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
+	                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersion(db, new Integer(registryVO.getEntityId()));
+	        		if(relatedSiteNodeVersion != null && siteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
 	                {
 	                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
 	                }
@@ -780,10 +784,11 @@ public class SiteNodeVersionController extends BaseController
 	{
 		SiteNodeVersion siteNodeVersion = null;
 		
-		CmsLogger.logInfo("siteNode " + siteNode);
+		System.out.println("siteNode " + siteNode);
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		CmsLogger.logInfo("siteNodeVersions " + siteNodeVersions);
-		
+		System.out.println("siteNodeVersions " + siteNodeVersions);
+		System.out.println("stateId:" + stateId);
+
 		SiteNodeVersion latestSiteNodeVersion = null;
 		
 		Iterator versionIterator = siteNodeVersions.iterator();
@@ -811,6 +816,97 @@ public class SiteNodeVersionController extends BaseController
 		    
 		return siteNodeVersion;
 	}
+
+	
+	   /**
+     * This method gets the meta info for the siteNodeVersion.
+     * @param db
+     * @throws ConstraintException
+     * @throws SystemException
+     * @throws Exception
+     */
+    public List getMetaInfoContentVersionVOList(Integer siteNodeVersionId, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Exception
+    {
+        List contentVersionVOList = new ArrayList();
+        
+        Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+            SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
+            List contentVersions = getMetaInfoContentVersions(db, siteNodeVersion, infoGluePrincipal);
+            contentVersionVOList = toVOList(contentVersions);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return contentVersionVOList;
+    }
+
+    /**
+     * This method gets the meta info for the siteNodeVersion.
+     * @param db
+     * @throws ConstraintException
+     * @throws SystemException
+     * @throws Exception
+     */
+    private List getMetaInfoContentVersions(Database db, SiteNodeVersion siteNodeVersion, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Exception
+    {
+        List contentVersions = new ArrayList();
+        
+        List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
+		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
+		
+		Integer metaInfoAvailableServiceBindingId = null;
+		Integer serviceBindingId = null;
+		AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
+		if(availableServiceBinding != null)
+			metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
+		
+		Collection serviceBindings = siteNodeVersion.getServiceBindings();
+		Iterator serviceBindingIterator = serviceBindings.iterator();
+		while(serviceBindingIterator.hasNext())
+		{
+			ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+			if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+			{
+				serviceBindingId = serviceBinding.getId();
+				break;
+			}
+		}
+
+		if(serviceBindingId != null)
+		{
+			List boundContents = ContentController.getBoundContents(serviceBindingId); 
+			System.out.println("boundContents:" + boundContents.size());
+			if(boundContents.size() > 0)
+			{
+				ContentVO contentVO = (ContentVO)boundContents.get(0);
+				System.out.println("contentVO:" + contentVO.getId());
+				
+				Iterator languageIterator = languages.iterator();
+				while(languageIterator.hasNext())
+				{
+					Language language = (Language)languageIterator.next();
+					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
+					
+					System.out.println("language:" + language.getId());
+					if(contentVersion != null)
+					    contentVersions.add(contentVersion);
+				}
+			}
+		}
+		
+		return contentVersions;
+    }
 
 	
 	/**

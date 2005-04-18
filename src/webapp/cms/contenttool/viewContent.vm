@@ -235,7 +235,6 @@
 	</tr>
 	#set($hasContentReferences = false)
 	#set($isOdd = true)
-	$referenceBeanList.size()
 	#foreach ($referenceBean in $referenceBeanList)
 		#if($referenceBean.referencingObject.class.name.indexOf("Content") > -1)
 			#set($hasContentReferences = true)
