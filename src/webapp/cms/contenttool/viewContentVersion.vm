@@ -207,7 +207,7 @@
 <script type="text/javascript">
 <!--
 	HTMLArea.loadPlugin("CSS");
-	HTMLArea.loadPlugin("EnterParagraphs");
+	//HTMLArea.loadPlugin("EnterParagraphs");
 	
 	var allowSave = true;  //Sets to false if one does not close like one should
 	var currentEditorIdHash = new Array();
@@ -362,7 +362,7 @@
 				//alert("Height:" + document.getElementById(plainTextAreaName).offsetHeight);
 				tempWYSIWYGEditor = new HTMLArea(plainTextAreaName, config);
 				
-				tempWYSIWYGEditor.registerPlugin(EnterParagraphs);
+				//tempWYSIWYGEditor.registerPlugin(EnterParagraphs);
 					
 				//alert("css_plugin_args:" + config.css_plugin_args);
 				#if($this.enableCSSPlugin)
