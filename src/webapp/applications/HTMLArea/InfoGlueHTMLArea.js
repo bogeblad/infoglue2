@@ -302,8 +302,8 @@ function configInfoGlue(config)
 	  	if(!languageId)
 	  		languageId = self.opener.languageId;
 	
-		alert("text:" + text);
-		if(text.indexOf("getInlineAssetUrl") > -1)  
+		//alert("text:" + text);
+		if(text.indexOf("getInlineAssetUrl") > -1 && text.indexOf("getPageUrl") == -1)  
 		{
 	  	  	/**
 	  		 * ASSET INLINE LINK
