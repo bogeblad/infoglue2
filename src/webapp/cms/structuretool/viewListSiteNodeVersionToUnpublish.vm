@@ -46,16 +46,12 @@
 		
 		function checkAll()
 		{
-		 	var field = document.listForm.sel;
-		 	for (i = 0; i < field.length; i++)
-				field[i].checked = true ;
+			checkAllBoxes(document.listForm.sel);
 		}
-		
+
 		function uncheckAll()
 		{
-			var field = document.listForm.sel;
-			for (i = 0; i < field.length; i++)
-				field[i].checked = false ;
+			uncheckAllBoxes(document.listForm.sel);
 		}
 
 		
@@ -115,7 +111,7 @@
 		<img src="$ui.getString("images.contenttool.buttons.cancel60x25")" width="60" height="25" border="0">
 		</a><br><br>
 		
-		#if($versions.size() > 1)
+		#if($versions.size() > 0)
 			<a href="javascript:checkAll();">
 			<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
 			</a><br>
