@@ -22,35 +22,27 @@
  */
 package org.infoglue.deliver.portal.om;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
+import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityList;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.portalImpl.services.portletdefinitionregistry.PortletDefinitionRegistry;
 
 /**
  * @author jand
  *  
  */
 public class PortletApplicationEntityImpl implements PortletApplicationEntity {
-    private static final Log LOG = LogFactory
-            .getLog(PortletApplicationEntityImpl.class);
-
-//    private String warName = null;
-
-    private String logicName = null;
+    private static final Log LOG = LogFactory.getLog(PortletApplicationEntityImpl.class);
 
     private String warName;
-    private List entities;
+    private List entities = new ArrayList();
     private PortletApplicationDefinition definition;
-
-	public PortletApplicationEntityImpl(List entities){
-		this.entities = entities;
-	}
 
     /*
      * (non-Javadoc)
@@ -70,6 +62,10 @@ public class PortletApplicationEntityImpl implements PortletApplicationEntity {
         return new PortletEntityListImpl(entities);
     }
 
+    public void addPortletEntity(PortletEntity e) {
+        entities.add(e);
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -79,35 +75,22 @@ public class PortletApplicationEntityImpl implements PortletApplicationEntity {
         return definition;
     }
 
-	public void setPortletApplicationDefinition(PortletApplicationDefinition definition){
-		this.definition = definition;
-	}
-    
-    public void setLogicName(String logicName) {
-        this.logicName = logicName;
-    }
-    
-    /**
-     * @return Returns the logicName.
-     */
-    public String getLogicName() {
-        return logicName;
+    public void setPortletApplicationDefinition(PortletApplicationDefinition definition) {
+        this.definition = definition;
     }
 
-    public void setId(String id){
+    public void setId(String id) {
         this.warName = id;
     }
-    
-    public String toString(){
+
+    public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("PortletApplicationEntityImpl[ id:");
         buffer.append(this.warName);
-        buffer.append(" logicName:");
-        buffer.append(this.logicName);
         buffer.append(" entities:");
         buffer.append(this.entities);
-         buffer.append("]");
-        
+        buffer.append("]");
+
         return buffer.toString();
     }
 }

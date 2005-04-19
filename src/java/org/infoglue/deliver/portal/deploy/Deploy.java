@@ -1,41 +1,51 @@
-/*
- * Copyright 2003,2004 The Apache Software Foundation.
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
  */
-
 package org.infoglue.deliver.portal.deploy;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
-import java.io.Reader;
-import java.io.StreamTokenizer;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterCtrl;
 import org.apache.pluto.om.common.ParameterSet;
@@ -44,6 +54,7 @@ import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.common.SecurityRoleRefSet;
 import org.apache.pluto.om.common.SecurityRoleRefSetCtrl;
 import org.apache.pluto.om.common.SecurityRoleSet;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.servlet.ServletDefinition;
 import org.apache.pluto.om.servlet.ServletDefinitionCtrl;
@@ -55,8 +66,8 @@ import org.apache.pluto.portalImpl.om.common.impl.DisplayNameSetImpl;
 import org.apache.pluto.portalImpl.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.pluto.portalImpl.om.servlet.impl.ServletDefinitionImpl;
 import org.apache.pluto.portalImpl.om.servlet.impl.ServletMappingImpl;
-import org.apache.pluto.portalImpl.om.servlet.impl.TagDefinitionImpl;
 import org.apache.pluto.portalImpl.om.servlet.impl.WebApplicationDefinitionImpl;
+import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.xml.Constants;
 import org.apache.pluto.portalImpl.xml.XmlParser;
 import org.apache.xml.serialize.OutputFormat;
@@ -64,177 +75,190 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.infoglue.deliver.portal.ServletConfigContainer;
+import org.w3c.dom.Document;
 
 /**
- * Slightly modified version of jakarta-plutos deploy target.
+ * Slightly modified version of jakarta-plutos deploy target. This utility
+ * requires that portletdefinitionmapping.xml and servletdefinitionmapping.xml
+ * are located somewhere in the classpath.
  */
 public class Deploy {
+    private static final Log log = LogFactory.getLog(Deploy.class);
 
-    private static boolean debug = false;
-    private static String dirDelim = System.getProperty("file.separator");
-    private static String webInfDir = dirDelim + "WEB-INF" + dirDelim;
-    private static String webAppsDir;
-    private static String portalImplWebDir;
-    private static String plutoHome;
+    private static final int MAX_POLL_DEPLOY = 30;
 
-    public static void deployArchive(String webAppsDir, String warFile)
-        throws IOException {
-        String warFileName = warFile;
-        if (warFileName.indexOf("/") != -1)
-            warFileName =
-                warFileName.substring(warFileName.lastIndexOf("/") + 1);
-        if (warFileName.indexOf(dirDelim) != -1)
-            warFileName =
-                warFileName.substring(warFileName.lastIndexOf(dirDelim) + 1);
-        if (warFileName.endsWith(".war"))
-            warFileName =
-                warFileName.substring(0, warFileName.lastIndexOf("."));
+    private static final String PORTLET_XML = "WEB-INF/portlet.xml";
 
-        System.out.println("deploying '" + warFileName + "' ...");
+    private static final String WEB_XML = "WEB-INF/web.xml";
 
-        String destination = webAppsDir + warFileName;
+    private static final String PORTLET_MAPPING = "portletdefinitionmapping.xml";
 
-        JarFile jarFile = new JarFile(warFile);
-        Enumeration files = jarFile.entries();
-        while (files.hasMoreElements()) {
-            JarEntry entry = (JarEntry) files.nextElement();
+    private static final String SERVLET_MAPPING = "servletdefinitionmapping.xml";
 
-
-            /* Check for use of '/WEB-INF/tld/portlet.tld' instead of 'http://java.sun.com/portlet' in taglib declaration*/
-            String fileName = entry.getName();
-            if( !entry.isDirectory() && entry.getName().endsWith(".jsp")) {
-        		InputStream is = jarFile.getInputStream(entry);
-        		Reader r = new BufferedReader(new InputStreamReader(is));
-        		StreamTokenizer st = new StreamTokenizer(r);
-        		st.quoteChar('\'');
-        		st.quoteChar('"');
-        		while(st.nextToken()!=StreamTokenizer.TT_EOF) {
-        			if(st.ttype=='\'' || st.ttype=='"'){
-        				String sval = st.sval;
-        				String sqc = Character.toString((char)st.ttype);
-        				if(sval.equals("/WEB-INF/tld/portlet.tld")){
-        					System.out.println("Warning: " + sqc+st.sval+sqc + " has been found in file " + fileName + ". Use instead " +sqc+"http://java.sun.com/portlet"+sqc+" with your portlet taglib declaration!\n");
-        					break;
-        				}
-        			}
-        		}
-         	}
-
-            File file = new File(destination, fileName);
-            File dirF = new File(file.getParent());
-            dirF.mkdirs();
-            if (entry.isDirectory()) {
-                file.mkdirs();
-            } else {
-                byte[] buffer = new byte[1024];
-                int length = 0;
-                InputStream fis = jarFile.getInputStream(entry);
-                FileOutputStream fos = new FileOutputStream(file);
-                while ((length = fis.read(buffer)) >= 0) {
-                    fos.write(buffer, 0, length);
-                }
-                fos.close();
-            }
-
+    /**
+     * Deploy a portlet. Creates a .war-file in webapps and waits until it is
+     * deployed by the servlet container (max 30 seconds).
+     * 
+     * @param webappsDir
+     *            webapps directory
+     * @param warName
+     *            name of .war-file (portlet)
+     * @param is
+     *            stream of .war-file
+     * @param containerName
+     *            name of portlet container to be updated
+     * @return true if portlet was deployed
+     * @throws FileNotFoundException
+     *             in case webapps directory not found
+     * @throws IOException
+     */
+    public static boolean deployArchive(String webappsDir, String warName, InputStream is,
+            String containerName) throws FileNotFoundException, IOException {
+        File webapps = new File(webappsDir);
+        if (!webapps.exists() || !webapps.isDirectory()) {
+            throw new FileNotFoundException("Webapps directory not found: " + webappsDir);
+        }
+        String appName = warName;
+        int dot = appName.lastIndexOf(".");
+        if (dot > 0) {
+            appName = appName.substring(0, dot);
+        } else {
+            warName += ".war";
         }
 
-        System.out.println("finished!");
+        // Create .war-file in webapps
+        File war = new File(webapps, warName);
+        if (war.exists()) {
+            // .war-file already exists - skip?
+            log.info(".war-file already exists: " + war.getAbsolutePath());
+        } else {
+            FileOutputStream os = new FileOutputStream(war);
+            BufferedOutputStream bos = new BufferedOutputStream(os);
+            int num = copyStream(is, bos);
+            bos.close();
+            os.close();
+            log.info(num + " bytes written to " + war.getAbsolutePath());
+        }
+
+        // Expand .war-file into application directory (NOT necessary in Tomcat
+        // 4.1. others?)
+        /*
+         * File appDir = new File(webapps, appName); if (appDir.exists()) { //
+         * app dir already exists - skip? log.warn("Application directory
+         * already exists: " + appDir.getAbsolutePath()); return false; } if
+         * (!appDir.mkdirs()) { throw new IOException( "Unable to create
+         * application directory: " + appDir.getAbsolutePath()); } int numFiles =
+         * expandArchive(war, appDir); log.warn(numFiles + " files extracted to " +
+         * appDir.getAbsolutePath());
+         */
+
+        // Wait until portlet is deployed in servlet container
+        File appDir = new File(webapps, appName);
+        File webInfDir = new File(appDir, "WEB-INF");
+        File portletXml = new File(webInfDir, "portlet.xml");
+        for (int i = 0; !portletXml.exists() && i < MAX_POLL_DEPLOY; i++) {
+            log.debug("Waiting for servlet container to deploy portlet, try " + i + "/"
+                    + MAX_POLL_DEPLOY);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                log.warn("Deployment paus interrupted", e);
+            }
+        }
+        if (!portletXml.exists()) {
+            log.error("Failed to deploy portlet: " + war.getAbsolutePath());
+        }
+
+        // Update pluto service manager
+        log.info("Updating pluto service manager: " + containerName);
+        try {
+            PortletContainerServices.prepare(containerName);
+            ServiceManager.init(ServletConfigContainer.getContainer().getServletConfig());
+        } catch (Exception e) {
+            log.error("Error during update of pluto service manager", e);
+        }
+        return true;
     }
 
-    public static void prepareWebArchive(String webAppsDir, String warFile)
-        throws Exception, IOException {
-        String webModule = warFile;
-        if (webModule.indexOf("/") != -1)
-            webModule = webModule.substring(webModule.lastIndexOf("/") + 1);
-        if (webModule.indexOf(dirDelim) != -1)
-            webModule =
-                webModule.substring(webModule.lastIndexOf(dirDelim) + 1);
-        if (webModule.endsWith(".war"))
-            webModule = webModule.substring(0, webModule.lastIndexOf("."));
-
-        System.out.println("prepare web archive '" + webModule + "' ...");
-
-        Mapping mappingPortletXml = null;
-        Mapping mappingWebXml = null;
-
-        // get portlet xml mapping file
-        String _portlet_mapping =
-            webAppsDir + portalImplWebDir + "WEB-INF" + dirDelim + "data" + dirDelim + "xml" +dirDelim + "portletdefinitionmapping.xml";
-        mappingPortletXml = new Mapping();
+    /**
+     * Prepare a portlet according to Pluto (switch web.xml)
+     * 
+     * @param file .war to prepare
+     * @param tmp the resulting updated .war
+     * @param appName name of application (context name)
+     * @return the portlet application definition (portlet.xml)
+     * @throws IOException
+     */
+    public static PortletApplicationDefinition prepareArchive(File file, File tmp, String appName)
+            throws IOException {
+        PortletApplicationDefinitionImpl portletApp = null;
         try {
-            mappingPortletXml.loadMapping(_portlet_mapping);
-        } catch (Exception e) {
-            System.out.println("CASTOR-Exception: " + e);
-            throw new IOException(
-                "Failed to load mapping file " + _portlet_mapping);
-        }
+            Mapping pdmXml = new Mapping();
+            try {
+                URL url = Deploy.class.getResource("/" + PORTLET_MAPPING);
+                pdmXml.loadMapping(url);
+            } catch (Exception e) {
+                throw new IOException("Failed to load mapping file " + PORTLET_MAPPING);
+            }
+            Mapping sdmXml = new Mapping();
+            try {
+                URL url = Deploy.class.getResource("/" + SERVLET_MAPPING);
+                sdmXml.loadMapping(url);
+            } catch (Exception e) {
+                throw new IOException("Failed to load mapping file " + SERVLET_MAPPING);
+            }
 
-        File portletXml =
-            new File(webAppsDir + webModule + webInfDir + "portlet.xml");
+            // Open the jar file.
+            JarFile jar = new JarFile(file);
 
-        // get web xml mapping file
-        String _web_mapping =
-            webAppsDir
-                + portalImplWebDir
-                + "WEB-INF" + dirDelim + "data" + dirDelim + "xml" + dirDelim + "servletdefinitionmapping.xml";
-        mappingWebXml = new Mapping();
-        try {
-            mappingWebXml.loadMapping(_web_mapping);
-        } catch (Exception e) {
-            throw new IOException(
-                "Failed to load mapping file " + _web_mapping);
-        }
+            // Extract and parse portlet.xml
+            ZipEntry portletEntry = jar.getEntry(PORTLET_XML);
+            if (portletEntry == null) {
+                throw new IOException("Unable to find portlet.xml");
+            }
+            InputStream pis = jar.getInputStream(portletEntry);
+            Document portletDocument = XmlParser.parsePortletXml(pis);
+            pis.close();
 
-        File webXml = new File(webAppsDir + webModule + webInfDir + "web.xml");
+            // Extract and parse web.xml
+            Document webDocument = null;
+            ZipEntry webEntry = jar.getEntry(WEB_XML);
+            if (webEntry != null) {
+                InputStream wis = jar.getInputStream(webEntry);
+                webDocument = XmlParser.parseWebXml(wis);
+                wis.close();
+            }
 
-        try {
-            org.w3c.dom.Document portletDocument =
-                XmlParser.parsePortletXml(new FileInputStream(portletXml));
-
-            Unmarshaller unmarshaller = new Unmarshaller(mappingPortletXml);
-
-            // modified by YCLI: START :: to ignore extra elements and attributes
+            Unmarshaller unmarshaller = new Unmarshaller(pdmXml);
             unmarshaller.setIgnoreExtraElements(true);
             unmarshaller.setIgnoreExtraAttributes(true);
-            // modified by YCLI: END 
 
-            PortletApplicationDefinitionImpl portletApp =
-                (PortletApplicationDefinitionImpl) unmarshaller.unmarshal(
-                    portletDocument);
+            portletApp = (PortletApplicationDefinitionImpl) unmarshaller.unmarshal(portletDocument);
 
             // refill structure with necessary information
             Vector structure = new Vector();
-            structure.add(webModule);
+            structure.add(appName);
             structure.add(null);
             structure.add(null);
             portletApp.preBuild(structure);
 
-            if (debug) {
-                System.out.println(portletApp);
-            }
-
             // now generate web part
-
             WebApplicationDefinitionImpl webApp = null;
+            if (webDocument != null) {
+                Unmarshaller unmarshallerWeb = new Unmarshaller(sdmXml);
 
-            if (webXml.exists()) {
-                org.w3c.dom.Document webDocument =
-                    XmlParser.parseWebXml(new FileInputStream(webXml));
-
-                Unmarshaller unmarshallerWeb = new Unmarshaller(mappingWebXml);
-
-                // modified by YCLI: START :: to ignore extra elements and attributes
+                // modified by YCLI: START :: to ignore extra elements and
+                // attributes
                 unmarshallerWeb.setIgnoreExtraElements(true);
                 unmarshallerWeb.setIgnoreExtraAttributes(true);
-                // modified by YCLI: END 
+                // modified by YCLI: END
 
-                webApp =
-                    (WebApplicationDefinitionImpl) unmarshallerWeb.unmarshal(
-                        webDocument);
+                webApp = (WebApplicationDefinitionImpl) unmarshallerWeb.unmarshal(webDocument);
             } else {
                 webApp = new WebApplicationDefinitionImpl();
                 DisplayNameImpl dispName = new DisplayNameImpl();
-                dispName.setDisplayName(webModule);
+                dispName.setDisplayName(appName);
                 dispName.setLocale(Locale.ENGLISH);
                 DisplayNameSetImpl dispSet = new DisplayNameSetImpl();
                 dispSet.add(dispName);
@@ -247,45 +271,31 @@ public class Deploy {
                 webApp.setDescriptions(descSet);
             }
 
-            org.apache.pluto.om.ControllerFactory controllerFactory =
-                new org.apache.pluto.portalImpl.om.ControllerFactoryImpl();
+            org.apache.pluto.om.ControllerFactory controllerFactory = new org.apache.pluto.portalImpl.om.ControllerFactoryImpl();
 
-            ServletDefinitionListCtrl servletDefinitionSetCtrl =
-                (ServletDefinitionListCtrl) controllerFactory.get(
-                    webApp.getServletDefinitionList());
+            ServletDefinitionListCtrl servletDefinitionSetCtrl = (ServletDefinitionListCtrl) controllerFactory
+                    .get(webApp.getServletDefinitionList());
             Collection servletMappings = webApp.getServletMappings();
 
-            Iterator portlets =
-                portletApp.getPortletDefinitionList().iterator();
+            Iterator portlets = portletApp.getPortletDefinitionList().iterator();
             while (portlets.hasNext()) {
 
                 PortletDefinition portlet = (PortletDefinition) portlets.next();
 
                 // check if already exists
-                ServletDefinition servlet =
-                    webApp.getServletDefinitionList().get(portlet.getName());
+                ServletDefinition servlet = webApp.getServletDefinitionList()
+                        .get(portlet.getName());
                 if (servlet != null) {
-                    if (!servlet
-                        .getServletClass()
-                        .equals("org.apache.pluto.core.PortletServlet")) {
-                        System.out.println(
-                            "Note: Replaced already existing the servlet with the name '"
-                                + portlet.getName()
-                                + "' with the wrapper servlet.");
-                    }
-                    ServletDefinitionCtrl _servletCtrl =
-                        (ServletDefinitionCtrl) controllerFactory.get(servlet);
-                    _servletCtrl.setServletClass(
-                        "org.apache.pluto.core.PortletServlet");
+                    ServletDefinitionCtrl _servletCtrl = (ServletDefinitionCtrl) controllerFactory
+                            .get(servlet);
+                    _servletCtrl.setServletClass("org.apache.pluto.core.PortletServlet");
                 } else {
-                    servlet =
-                        servletDefinitionSetCtrl.add(
-                            portlet.getName(),
+                    servlet = servletDefinitionSetCtrl.add(portlet.getName(),
                             "org.apache.pluto.core.PortletServlet");
                 }
 
-                ServletDefinitionCtrl servletCtrl =
-                    (ServletDefinitionCtrl) controllerFactory.get(servlet);
+                ServletDefinitionCtrl servletCtrl = (ServletDefinitionCtrl) controllerFactory
+                        .get(servlet);
 
                 DisplayNameImpl dispName = new DisplayNameImpl();
                 dispName.setDisplayName(portlet.getName() + " Wrapper");
@@ -301,28 +311,22 @@ public class Deploy {
                 servletCtrl.setDescriptions(descSet);
                 ParameterSet parameters = servlet.getInitParameterSet();
 
-                ParameterSetCtrl parameterSetCtrl =
-                    (ParameterSetCtrl) controllerFactory.get(parameters);
+                ParameterSetCtrl parameterSetCtrl = (ParameterSetCtrl) controllerFactory
+                        .get(parameters);
 
                 Parameter parameter1 = parameters.get("portlet-class");
                 if (parameter1 == null) {
-                    parameterSetCtrl.add(
-                        "portlet-class",
-                        portlet.getClassName());
+                    parameterSetCtrl.add("portlet-class", portlet.getClassName());
                 } else {
-                    ParameterCtrl parameterCtrl =
-                        (ParameterCtrl) controllerFactory.get(parameter1);
+                    ParameterCtrl parameterCtrl = (ParameterCtrl) controllerFactory.get(parameter1);
                     parameterCtrl.setValue(portlet.getClassName());
 
                 }
                 Parameter parameter2 = parameters.get("portlet-guid");
                 if (parameter2 == null) {
-                    parameterSetCtrl.add(
-                        "portlet-guid",
-                        portlet.getId().toString());
+                    parameterSetCtrl.add("portlet-guid", portlet.getId().toString());
                 } else {
-                    ParameterCtrl parameterCtrl =
-                        (ParameterCtrl) controllerFactory.get(parameter2);
+                    ParameterCtrl parameterCtrl = (ParameterCtrl) controllerFactory.get(parameter2);
                     parameterCtrl.setValue(portlet.getId().toString());
 
                 }
@@ -330,243 +334,212 @@ public class Deploy {
                 boolean found = false;
                 Iterator mappings = servletMappings.iterator();
                 while (mappings.hasNext()) {
-                    ServletMappingImpl servletMapping =
-                        (ServletMappingImpl) mappings.next();
-                    if (servletMapping
-                        .getServletName()
-                        .equals(portlet.getName())) {
+                    ServletMappingImpl servletMapping = (ServletMappingImpl) mappings.next();
+                    if (servletMapping.getServletName().equals(portlet.getName())) {
                         found = true;
-                        servletMapping.setUrlPattern(
-                            "/" + portlet.getName().replace(' ', '_') + "/*");
+                        servletMapping.setUrlPattern("/" + portlet.getName().replace(' ', '_')
+                                + "/*");
                     }
                 }
                 if (!found) {
-                    ServletMappingImpl servletMapping =
-                        new ServletMappingImpl();
+                    ServletMappingImpl servletMapping = new ServletMappingImpl();
                     servletMapping.setServletName(portlet.getName());
-                    servletMapping.setUrlPattern(
-                        "/" + portlet.getName().replace(' ', '_') + "/*");
+                    servletMapping.setUrlPattern("/" + portlet.getName().replace(' ', '_') + "/*");
                     servletMappings.add(servletMapping);
                 }
 
-                SecurityRoleRefSet servletSecurityRoleRefs =
-                    ((ServletDefinitionImpl)servlet).getInitSecurityRoleRefSet();
+                SecurityRoleRefSet servletSecurityRoleRefs = ((ServletDefinitionImpl) servlet)
+                        .getInitSecurityRoleRefSet();
 
-                SecurityRoleRefSetCtrl servletSecurityRoleRefSetCtrl =
-                    (SecurityRoleRefSetCtrl) controllerFactory.get(
-                        servletSecurityRoleRefs);
+                SecurityRoleRefSetCtrl servletSecurityRoleRefSetCtrl = (SecurityRoleRefSetCtrl) controllerFactory
+                        .get(servletSecurityRoleRefs);
 
                 SecurityRoleSet webAppSecurityRoles = webApp.getSecurityRoles();
-                    
-                SecurityRoleRefSet portletSecurityRoleRefs =
-                    portlet.getInitSecurityRoleRefSet();
 
-                // TODO - Do we need this call? The variable is never read
-                SecurityRoleRefSetCtrl portletSecurityRoleRefSetCtrl =
-                    (SecurityRoleRefSetCtrl) controllerFactory.get(
-                        portletSecurityRoleRefs);
+                SecurityRoleRefSet portletSecurityRoleRefs = portlet.getInitSecurityRoleRefSet();
 
                 Iterator p = portletSecurityRoleRefs.iterator();
-
                 while (p.hasNext()) {
-                    SecurityRoleRef portletSecurityRoleRef =
-                        (SecurityRoleRef) p.next();
-                    
-                    if (	portletSecurityRoleRef.getRoleLink()== null
-                        &&		
-                            webAppSecurityRoles.get(portletSecurityRoleRef.getRoleName())==null
-                    ){
-                        System.out.println(
-                            "Note: The web application has no security role defined which matches the role name \""
-                                + portletSecurityRoleRef.getRoleName()
-                                + "\" of the security-role-ref element defined for the wrapper-servlet with the name '"
-                                + portlet.getName()
-                                + "'.");
-                        break;						
+                    SecurityRoleRef portletSecurityRoleRef = (SecurityRoleRef) p.next();
+
+                    if (portletSecurityRoleRef.getRoleLink() == null
+                            && webAppSecurityRoles.get(portletSecurityRoleRef.getRoleName()) == null) {
+                        System.out
+                                .println("Note: The web application has no security role defined which matches the role name \""
+                                        + portletSecurityRoleRef.getRoleName()
+                                        + "\" of the security-role-ref element defined for the wrapper-servlet with the name '"
+                                        + portlet.getName() + "'.");
+                        break;
                     }
-                    SecurityRoleRef servletSecurityRoleRef =
-                        servletSecurityRoleRefs.get(
-                            portletSecurityRoleRef.getRoleName());
+                    SecurityRoleRef servletSecurityRoleRef = servletSecurityRoleRefs
+                            .get(portletSecurityRoleRef.getRoleName());
                     if (null != servletSecurityRoleRef) {
-                        System.out.println(
-                            "Note: Replaced already existing element of type <security-role-ref> with value \""
-                                + portletSecurityRoleRef.getRoleName()
-                                + "\" for subelement of type <role-name> for the wrapper-servlet with the name '"
-                                + portlet.getName()
-                                + "'.");
-                        servletSecurityRoleRefSetCtrl.remove(
-                            servletSecurityRoleRef);
+                        System.out
+                                .println("Note: Replaced already existing element of type <security-role-ref> with value \""
+                                        + portletSecurityRoleRef.getRoleName()
+                                        + "\" for subelement of type <role-name> for the wrapper-servlet with the name '"
+                                        + portlet.getName() + "'.");
+                        servletSecurityRoleRefSetCtrl.remove(servletSecurityRoleRef);
                     }
                     servletSecurityRoleRefSetCtrl.add(portletSecurityRoleRef);
                 }
 
             }
 
-            TagDefinitionImpl portletTagLib =
-                new TagDefinitionImpl();
-            Collection taglibs = webApp.getCastorTagDefinitions();
-            taglibs.add(portletTagLib); 
-            
+            /*
+             * TODO is this necessary? TagDefinitionImpl portletTagLib = new
+             * TagDefinitionImpl(); Collection taglibs =
+             * webApp.getCastorTagDefinitions(); taglibs.add(portletTagLib);
+             */
 
-            if (debug) {
-                System.out.println(webApp);
+            // Duplicate jar-file with replaced web.xml
+            FileOutputStream fos = new FileOutputStream(tmp);
+            JarOutputStream tempJar = new JarOutputStream(fos);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            for (Enumeration entries = jar.entries(); entries.hasMoreElements();) {
+                JarEntry entry = (JarEntry) entries.nextElement();
+                JarEntry newEntry = new JarEntry(entry.getName());
+                tempJar.putNextEntry(newEntry);
+
+                if (entry.getName().equals(WEB_XML)) {
+                    // Swap web.xml
+                    log.debug("Swapping web.xml");
+                    OutputFormat of = new OutputFormat();
+                    of.setIndenting(true);
+                    of.setIndent(4); // 2-space indention
+                    of.setLineWidth(16384);
+                    of.setDoctype(Constants.WEB_PORTLET_PUBLIC_ID, Constants.WEB_PORTLET_DTD);
+
+                    XMLSerializer serializer = new XMLSerializer(tempJar, of);
+                    Marshaller marshaller = new Marshaller(serializer.asDocumentHandler());
+                    marshaller.setMapping(sdmXml);
+                    marshaller.marshal(webApp);
+                } else {
+                    InputStream entryStream = jar.getInputStream(entry);
+                    while ((bytesRead = entryStream.read(buffer)) != -1) {
+                        tempJar.write(buffer, 0, bytesRead);
+                    }
+                }
             }
-
-            OutputFormat of = new OutputFormat();
-            of.setIndenting(true);
-            of.setIndent(4); // 2-space indention
-            of.setLineWidth(16384);
-            // As large as needed to prevent linebreaks in text nodes
-            of.setDoctype(
-                Constants.WEB_PORTLET_PUBLIC_ID,
-                Constants.WEB_PORTLET_DTD);
-
-            FileWriter writer =
-                new FileWriter(webAppsDir + webModule + 
-                                               System.getProperty("file.separator") + "WEB-INF"+
-                                               System.getProperty("file.separator") + "web.xml");
-            XMLSerializer serializer = new XMLSerializer(writer, of);
-            try {
-            Marshaller marshaller =
-                new Marshaller(serializer.asDocumentHandler());
-            marshaller.setMapping(mappingWebXml);
-            marshaller.marshal(webApp);
-            } catch (Exception e) {
-                writer.close();
-                e.printStackTrace(System.out);
-                throw new Exception();
-            }
-            String strTo = dirDelim + "WEB-INF" + dirDelim + "tld" + dirDelim + "portlet.tld";
-            String strFrom = "webapps" + dirDelim + strTo;
-             
-            copy(strFrom, webAppsDir + webModule + strTo);
+            tempJar.flush();
+            tempJar.close();
+            fos.flush();
+            fos.close();
+            /*
+             * String strTo = dirDelim + "WEB-INF" + dirDelim + "tld" + dirDelim +
+             * "portlet.tld"; String strFrom = "webapps" + dirDelim + strTo;
+             * 
+             * copy(strFrom, webAppsDir + webModule + strTo);
+             */
         } catch (Exception e) {
-       
-            e.printStackTrace(System.out);
-            throw new Exception();
+            log.error("Failed to prepare archive", e);
+            throw new IOException(e.getMessage());
         }
 
-        System.out.println("finished!");
+        return portletApp;
     }
 
-    public static void copy(String from, String to) throws IOException {
+    private static void copy(String from, String to) throws IOException {
         File f = new File(to);
         f.getParentFile().mkdirs();
-        
-        byte[] buffer = new byte[1024];
-        int length = 0;
+
         InputStream fis = new FileInputStream(from);
         FileOutputStream fos = new FileOutputStream(f);
-        
-        while ((length = fis.read(buffer)) >= 0) {
-            fos.write(buffer, 0, length);
-        }
+        copyStream(fis, fos);
         fos.close();
     }
 
-    public static void main(String args[]) {
-        String warFile;
+    private static int copyStream(InputStream is, OutputStream os) throws IOException {
+        int total = 0;
+        byte[] buffer = new byte[1024];
+        int length = 0;
 
-
-        if (args.length < 4) {
-            System.out.println(
-                "No argument specified. This command must be issued as:");
-            System.out.println(
-                "deploy <TOMCAT-webapps-directory> <TOMCAT-pluto-webmodule-name> <web-archive> <pluto-home-dir> [-debug] [-addToEntityReg <app-id> [<portlet-id>:<portlet-name>]+]");
-            return;
+        while ((length = is.read(buffer)) >= 0) {
+            os.write(buffer, 0, length);
+            total += length;
         }
-
-        if (args.length > 4) {
-            if ((args[4].equals("-debug")) || (args[4].equals("/debug"))) {
-                debug = true;
-            }
-        }
-
-        if(debug) {
-            for(int i=0; i<args.length;i++) {
-                System.out.println( "args["+ i +"]:" + args[i]);				
-            }
-        }
-        
-        webAppsDir = args[0];
-        if (!webAppsDir.endsWith(dirDelim))
-            webAppsDir += dirDelim;
-
-        portalImplWebDir = args[1];
-        if (!portalImplWebDir.endsWith(dirDelim))
-            portalImplWebDir += dirDelim;
-
-        warFile = args[2];
-
-        plutoHome = args[3];
-        if (!plutoHome.endsWith(dirDelim))
-            plutoHome += dirDelim;
-
-        if (args.length > 4) {
-            if ((args[4].equals("-debug")) || (args[4].equals("/debug"))) {
-                debug = true;
-            }
-            if (
-                  (args[4].equals("-addToEntityReg"))
-               || (  (args.length>5)
-                  && (args[5].equals("-addToEntityReg"))
-                  )
-            ) {
-                // parameters: app-id   portlet application id; must be unique in portletentityregistry.xml
-                //             portlet-id   portlet id; must be unique inside the portlet application
-                //             portlet-name the name of the portlet in portlet.xml   
-                addToEntityReg(args);
-            }
-        }
-
-        try {
-            deployArchive(webAppsDir, warFile);
-
-            prepareWebArchive(webAppsDir, warFile);
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
-
+        os.flush();
+        return total;
     }
 
-    static private void addToEntityReg(String[] args) {
-        File portletAppFile = new File(args[2]);
-        String portletAppFileName = portletAppFile.getName();
-        String portletApp =
-            portletAppFileName.substring(0,	portletAppFileName.lastIndexOf(".war"));
-        int o = (args[4].equals("-addToEntityReg") ? 5 : 6);
-        String appId = args[o++];
-        try {
-            String entityMapping = webAppsDir + portalImplWebDir
-  					               + "WEB-INF/data/portletentityregistry.xml";
-            File file = new File(entityMapping);
-            RandomAccessFile ras = new RandomAccessFile(file, "rw");
-            long length = ras.length();
-            byte[] contentByte = new byte[(int) length];
-            ras.read(contentByte);
-            String contentString = new String(contentByte);
-            long pos = contentString.lastIndexOf("</portlet-entity-registry>");
-            ras.seek(pos);
-            ras.writeBytes("    <application id=\"" + appId + "\">\r\n");
-            ras.writeBytes("        <definition-id>" + portletApp + "</definition-id>\r\n");
+    private static int expandArchive(File warFile, File destDir) throws IOException {
+        int numEntries = 0;
 
-            StringTokenizer tokenizer;
-            for (int i = o; i < args.length; ++i) {
-                tokenizer = new StringTokenizer(args[i], ":");
-                String portletId = tokenizer.nextToken();
-                String portletName = tokenizer.nextToken();
-                ras.writeBytes("        <portlet id=\"" + portletId + "\">\r\n");
-                ras.writeBytes("            <definition-id>" + portletApp
-                               + "." + portletName + "</definition-id>\r\n");
-                ras.writeBytes("        </portlet>\r\n");
-            }
-            ras.writeBytes("    </application>\r\n");
-            ras.writeBytes("</portlet-entity-registry>\r\n");
-            ras.close();
-
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
+        if (!destDir.exists()) {
+            destDir.mkdirs();
         }
+        JarFile jarFile = new JarFile(warFile);
+        Enumeration files = jarFile.entries();
+        while (files.hasMoreElements()) {
+            JarEntry entry = (JarEntry) files.nextElement();
+            String fileName = entry.getName();
+
+            File file = new File(destDir, fileName);
+            File dirF = new File(file.getParent());
+            dirF.mkdirs();
+
+            if (entry.isDirectory()) {
+                file.mkdirs();
+            } else {
+                InputStream fis = jarFile.getInputStream(entry);
+                FileOutputStream fos = new FileOutputStream(file);
+                copyStream(fis, fos);
+                fos.close();
+            }
+            numEntries++;
+        }
+        return numEntries;
     }
 
+    private static int createArchive(File dir, File archive) throws IOException {
+        int BUFFER = 2048;
+        BufferedInputStream origin = null;
+        FileOutputStream dest = new FileOutputStream(archive);
+        ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
+        //out.setMethod(ZipOutputStream.DEFLATED);
+        byte data[] = new byte[BUFFER];
+        // get a list of files from current directory
+        File files[] = dir.listFiles();
+
+        for (int i = 0; i < files.length; i++) {
+            File curr = files[i];
+            if (curr.isDirectory()) {
+                // TODO
+            } else {
+                FileInputStream fi = new FileInputStream(curr);
+                origin = new BufferedInputStream(fi, BUFFER);
+                ZipEntry entry = new ZipEntry(curr.getName());
+                out.putNextEntry(entry);
+                int count;
+                while ((count = origin.read(data, 0, BUFFER)) != -1) {
+                    out.write(data, 0, count);
+                }
+                origin.close();
+            }
+        }
+        out.close();
+        return files.length;
+    }
+
+    private static void removeAll(File file) {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                removeAll(files[i]);
+            }
+        }
+        file.delete();
+    }
+
+    public static void main(String[] args) {
+        try {
+            File file = new File("c:\\infoglueHome\\RssPortlet.war");
+            File tmp = new File("c:\\infoglueHome\\RssPortlet2.war");
+            prepareArchive(file, tmp, "test-portlet.war");
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

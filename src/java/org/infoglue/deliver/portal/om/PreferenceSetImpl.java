@@ -54,9 +54,9 @@ public class PreferenceSetImpl implements PreferenceSet {
      * @see org.apache.pluto.om.common.PreferenceSet#get(java.lang.String)
      */
     public Preference get(String name) {
-        for(Iterator it = preferences.iterator(); it.hasNext();) {
-            Preference pref = (Preference)it.next();
-            if(pref.getName().equals(name)) {
+        for (Iterator it = preferences.iterator(); it.hasNext();) {
+            Preference pref = (Preference) it.next();
+            if (pref.getName().equals(name)) {
                 return pref;
             }
         }
@@ -69,9 +69,9 @@ public class PreferenceSetImpl implements PreferenceSet {
     public PreferencesValidator getPreferencesValidator() {
         return preferencesValidator;
     }
-    
-    public String toString(){
-        return "PreferenceSetImpl[ values:"+preferences+"]";
+
+    public String toString() {
+        return "PreferenceSetImpl[ values:" + preferences + "]";
     }
-    
+
 }

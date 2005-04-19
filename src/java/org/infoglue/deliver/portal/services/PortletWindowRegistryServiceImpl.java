@@ -44,22 +44,21 @@ import org.infoglue.deliver.portal.om.PortletWindowImpl;
  * @author jand
  *  
  */
-public class PortletWindowRegistryServiceImpl
-    extends Service
-    implements PortletWindowRegistryService {
+public class PortletWindowRegistryServiceImpl extends Service implements
+        PortletWindowRegistryService {
     private static final Log log = LogFactory.getLog(PortletWindowRegistryServiceImpl.class);
 
     /** Window-id to window */
     private static Map wid2win = Collections.synchronizedMap(new Hashtable());
 
     public synchronized PortletWindow createPortletWindow(String windowID, String entityID)
-        throws NameNotFoundException {
+            throws NameNotFoundException {
         PortletWindow window = (PortletWindow) wid2win.get(windowID);
 
         if (window == null) {
             log.debug("Found no portletwindow with id[" + windowID + "], registring new instance");
-            PortletEntity entity =
-                PortletEntityRegistry.getPortletEntity(ObjectID.createFromString(entityID));
+            PortletEntity entity = PortletEntityRegistry.getPortletEntity(ObjectID
+                    .createFromString(entityID));
             if (entity == null) {
                 log.fatal("Couldn't find entity with id: " + entityID);
                 throw new NameNotFoundException("Portlet entity not found: " + entityID);
@@ -78,7 +77,7 @@ public class PortletWindowRegistryServiceImpl
      * Get a portlet-window by id.
      * 
      * @param id
-     *                  Id of window
+     *            Id of window
      * @return portlet-window with attached portlet-entity, or null
      */
     public PortletWindow getPortletWindow(String id) {

@@ -22,8 +22,8 @@
  */
 package org.infoglue.deliver.portal.om;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
@@ -44,17 +44,11 @@ import org.apache.pluto.portalImpl.services.portletdefinitionregistry.PortletDef
  */
 public class PortletEntityImpl implements PortletEntity {
     private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
-    
+
     private String portletName;
-    private List preferences;
     private PortletApplicationEntity applicationEntity;
+    private ArrayList preferences = new ArrayList();
 
-
-    public PortletEntityImpl(PortletApplicationEntity application, List preferences){
-        this.applicationEntity = application;
-        this.preferences = preferences;
-    }
-    
     /*
      * (non-Javadoc)
      * 
@@ -71,6 +65,13 @@ public class PortletEntityImpl implements PortletEntity {
      */
     public PreferenceSet getPreferenceSet() {
         return new PreferenceSetImpl(preferences);
+    }
+
+    public void setPreferenceSet(PreferenceSet p) {
+        this.preferences = new ArrayList();
+        for (Iterator it = p.iterator(); it.hasNext();) {
+            preferences.add(it.next());
+        }
     }
 
     /*
@@ -124,17 +125,14 @@ public class PortletEntityImpl implements PortletEntity {
      * @see org.apache.pluto.om.entity.PortletEntity#getDescription(java.util.Locale)
      */
     public Description getDescription(Locale locale) {
-                return getPortletDefinition().getDescription(locale);
+        return getPortletDefinition().getDescription(locale);
     }
 
-
-    
-    
     /**
      * @param portletApplicationEntity
      *                   The portletApplicationEntity to set.
      */
-    public void setPortletApplicationEntity( PortletApplicationEntity applicationEntity) {
+    public void setPortletApplicationEntity(PortletApplicationEntity applicationEntity) {
         this.applicationEntity = applicationEntity;
     }
 
@@ -144,16 +142,15 @@ public class PortletEntityImpl implements PortletEntity {
     public void setId(String id) {
         this.portletName = id;
     }
-    
-    
-    public String toString(){
+
+    public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("PortletEntityImpl[ id:");
         buffer.append(this.portletName.toString());
         buffer.append(" preferences:");
         buffer.append(this.preferences);
         buffer.append("]");
-        
+
         return buffer.toString();
     }
 }

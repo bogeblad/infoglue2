@@ -61,4 +61,7 @@ public class PortletEntityListImpl implements PortletEntityList {
         return null;
     }
 
+    public void add(PortletEntity e) {
+        entities.add(e);
+    }
 }

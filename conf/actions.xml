@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.35 2005/04/18 08:55:10 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.36 2005/04/19 11:32:07 jan Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -1192,5 +1192,16 @@
 		</command>
 	</action>
 
+	<!-- Portlet Commands -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.UploadPortletAction" alias="UploadPortlet">
+		<view name="input">/cms/managementtool/uploadPortlet.vm</view>
+		<view name="success">ViewCMSTool.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<!-- Deploy Portlet -->
+	<action name="org.infoglue.deliver.applications.actions.DeployPortletAction" alias="DeployPortlet">
+        <view name="success">/deliver/error.vm</view>
+		<view name="error">/deliver/error.vm</view>
+	</action>
 
 </actions>

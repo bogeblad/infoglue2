@@ -22,10 +22,9 @@
 */
 package org.infoglue.deliver.portal.om;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.pluto.om.common.Preference;
 
@@ -37,16 +36,13 @@ public class PreferenceImpl implements Preference {
 
     private String name;
     private boolean isReadOnly = false;
-    private boolean isValueSet;
-    private String value;
-    
+    private List values = new ArrayList();
 
-    public PreferenceImpl(String name, String value){
-    	this.name = name;
-        this.value = value;
+    public PreferenceImpl(String name, List values) {
+        this.name = name;
+        this.values = values;
     }
-    
-    
+
     /* (non-Javadoc)
      * @see org.apache.pluto.om.common.Preference#getName()
      */
@@ -58,8 +54,6 @@ public class PreferenceImpl implements Preference {
      * @see org.apache.pluto.om.common.Preference#getValues()
      */
     public Iterator getValues() {
-        Vector values = new Vector();
-        values.add(value);
         return values.iterator();
     }
 
@@ -74,10 +68,10 @@ public class PreferenceImpl implements Preference {
      * @see org.apache.pluto.om.common.Preference#isValueSet()
      */
     public boolean isValueSet() {
-        return value != null;
+        return (values != null && values.size() > 0);
     }
 
-    public String toString(){
-        return "PreferenceImpl[name:" +name+ " value:" + value + "]";
+    public String toString() {
+        return "PreferenceImpl[name:" + name + " value:" + values + "]";
     }
 }

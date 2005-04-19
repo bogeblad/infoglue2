@@ -32,13 +32,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.portalImpl.core.PortletContainerEnvironment;
 import org.apache.pluto.portalImpl.core.PortletContainerFactory;
 import org.apache.pluto.portalImpl.factory.FactoryAccess;
 import org.apache.pluto.portalImpl.services.ServiceManager;
-import org.apache.pluto.portalImpl.services.config.Config;
 import org.apache.pluto.portalImpl.services.factorymanager.FactoryManager;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 
@@ -56,6 +54,10 @@ public class PortalServletDispatcher extends ServletDispatcher {
 
     private static final Log log = LogFactory.getLog(PortalServletDispatcher.class);
 
+    public static final String PORTLET_CONTAINER_NAME = "portal_container_name";
+
+    private static String uniqueContainerName;
+
     public void init(ServletConfig config) throws ServletException {
         log.debug("init of servlet");
         // -- delegate to webwork servlet dispatcher init
@@ -71,8 +73,7 @@ public class PortalServletDispatcher extends ServletDispatcher {
         } catch (Throwable exc) {
             log.error("Initialization failed!", exc);
 
-            throw (
-                new javax.servlet.UnavailableException(
+            throw (new javax.servlet.UnavailableException(
                     "Initialization of one or more services failed."));
         }
 
@@ -84,22 +85,20 @@ public class PortalServletDispatcher extends ServletDispatcher {
 
             log.error("Post initialization failed!", expos);
 
-            throw (
-                new javax.servlet.UnavailableException(
+            throw (new javax.servlet.UnavailableException(
                     "Post initialization of one or more services failed."));
         }
 
         if (!PortletContainerFactory.getPortletContainer().isInitialized()) {
-            String uniqueContainerName =
-                Config.getParameters().getString("portletcontainer.uniquename", "pluto");
+            uniqueContainerName = "pluto-" + System.currentTimeMillis();
 
             if (log.isInfoEnabled())
                 log.info("Initializing PortletContainer [" + uniqueContainerName + "]...");
 
             PortletContainerEnvironment environment = new PortletContainerEnvironment();
 
-            environment.addContainerService(
-                org.apache.pluto.portalImpl.services.log.Log.getService());
+            environment.addContainerService(org.apache.pluto.portalImpl.services.log.Log
+                    .getService());
             environment.addContainerService(FactoryManager.getService());
             environment.addContainerService(FactoryAccess.getInformationProviderContainerService());
             environment.addContainerService(FactoryAccess.getDynamicTitleContainerService());
@@ -107,22 +106,23 @@ public class PortalServletDispatcher extends ServletDispatcher {
             Properties properties = new Properties();
 
             try {
-                PortletContainerFactory.getPortletContainer().init(
-                    uniqueContainerName,
-                    config,
-                    environment,
-                    properties);
-            } catch (PortletContainerException exc) {
-                log.error("Initialization of the portlet container failed!", exc);
-                throw (
-                    new javax.servlet.UnavailableException(
-                        "Initialization of the portlet container failed."));
+                PortletContainerFactory.getPortletContainer().init(uniqueContainerName, config,
+                        environment, properties);
+            } catch (Throwable exc) {
+                log.warn("Initialization of the portlet container failed!", exc);
+                //                throw (
+                //                    new javax.servlet.UnavailableException(
+                //                        "Initialization of the portlet container failed."));
             }
         } else if (log.isInfoEnabled()) {
             log.info("PortletContainer already initialized");
         }
 
-        log.debug("Ready to serve you.");
+        // RSS Portlet test-hack-fix
+        System.setProperty("javax.xml.transform.TransformerFactory",
+                "org.apache.xalan.transformer.TransformerImpl");
+
+        log.info("Ready to serve you.");
     }
 
     public void destroy() {
@@ -141,27 +141,28 @@ public class PortalServletDispatcher extends ServletDispatcher {
         }
     }
 
-    public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException 
-    {
-        log.debug("\n*************************************************** infogluePortal service()");
-        Enumeration enum = req.getParameterNames();
-        while(enum.hasMoreElements())
-        {
-            String name = (String)enum.nextElement();
-            Object o = req.getParameter(name);
-            //System.out.println(name + "=" + o);
+    public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+        if (log.isDebugEnabled()) {
+            log.debug("\n******************************************** infogluePortal service()");
+            Enumeration enum = req.getParameterNames();
+            while (enum.hasMoreElements()) {
+                String name = (String) enum.nextElement();
+                Object o = req.getParameter(name);
+                log.debug(name + "=" + o);
+            }
+
+            enum = req.getAttributeNames();
+            while (enum.hasMoreElements()) {
+                String name = (String) enum.nextElement();
+                Object o = req.getAttribute(name);
+                log.debug(name + "=" + o);
+            }
         }
-        
-        enum = req.getAttributeNames();
-        while(enum.hasMoreElements())
-        {
-            String name = (String)enum.nextElement();
-            Object o = req.getParameter(name);
-            //System.out.println(name + "=" + o);
-        }
-        
-        // TODO not very nice, or?.
-        PortletContainerServices.prepare("pluto");
+        // TODO not very nice, or?. Necessary to call before portlet execution.
+        PortletContainerServices.prepare(uniqueContainerName);
+        // Necessary to allow deliver parts to update portlet container when a new
+        // portlet is uploaded.
+        req.setAttribute(PORTLET_CONTAINER_NAME, uniqueContainerName);
 
         // Delegate to super-servlet (infoglue)
         super.service(req, resp);

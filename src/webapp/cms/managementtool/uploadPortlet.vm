@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>Upload portlet</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+	
+	<script language="JavaScript">
+		<!--
+		
+		/**
+		 * This method submits the form and shows a uploading-dialog.
+		 */
+		 
+		function submitForm()
+		{
+			if(document.getElementById("tt").value != "")
+			{
+				moveDiv("savingLayer", "20px", "20px");
+				resizeDiv("savingLayer", "350px", "150px");
+				showDiv("savingLayer");
+				document.editForm.submit();
+			}
+			else
+			{
+				alert("$ui.getString("tool.contenttool.fileUpload.assetKeyMissing")");
+			}
+		}
+				
+		/**
+		 * This method submits the form and shows a uploading-dialog.
+		 */
+		 
+		function submitAndCloseForm()
+		{
+			if(document.getElementById("tt").value != "")
+			{
+				moveDiv("savingLayer", "20px", "20px");
+				resizeDiv("savingLayer", "350px", "150px");
+				showDiv("savingLayer");
+				document.editForm.closeOnLoad.value = "true";
+				document.editForm.submit();
+			}
+			else
+			{
+				alert("$ui.getString("tool.contenttool.fileUpload.assetKeyMissing")");
+			}
+		}
+		
+		//*******************************************
+		//This method refreshes the caller
+		//*******************************************
+	
+		function refreshCaller()
+		{
+			if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
+				window.opener.parent.frames['main'].location.reload();
+			else
+				window.opener.location.reload();	
+	
+			window.close();
+		}
+		
+		
+		function ddClick()
+		{
+			// Show / hide list
+			var list = document.getElementById("dd");
+			
+			if (list.style.visibility == "hidden")
+			{
+				list.style.visibility = "";
+			}
+			else
+			{
+				list.style.visibility = "hidden";
+			}
+		}
+		function ddListClick()
+		{
+			// Show / hide list
+			var tt = document.getElementById("tt");
+			var list = document.getElementById("dd");
+			var val = list.options[list.selectedIndex].value
+			tt.value=val;
+			list.style.visibility = "hidden";
+			// alert(val);
+		}
+		function ddHide()
+		{
+			var list = document.getElementById("dd");
+			list.style.visibility = "hidden";
+		}
+		
+		-->
+	</script>
+	
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body class="contenttooledit" #if($closeOnLoad == "true")onload="refreshCaller();"#end>
+
+<div class="fullymarginalized">
+
+<div id="savingLayer" class="infobackground">
+	<div class="infoheader">Saving changes</div>
+	<div class="infobody">
+		<br>Uploading file - please wait!<br><br>
+		<img src="images/progressbar.gif">
+	</div>
+</div>
+
+<form enctype="multipart/form-data" name="editForm" method="POST" action="UploadPortlet.action">
+<input type="hidden" name="entity" value="$!entity">
+<input type="hidden" name="entityId" value="$!entityId">
+<input type="hidden" name="contentVersionId" value="$!contentVersionId">
+<input type="hidden" name="digitalAssetId" value="$!digitalAssetId">
+<input type="hidden" name="closeOnLoad" value="false">
+<table width="350">
+	<tr>
+		<td class="biglabel" width="250">
+			#if($isUpdated)
+				$ui.getString("tool.contenttool.fileUpload.fileUploadedConfirmationHeader")
+			#else
+				$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateHeader")
+			#end
+		</td>
+		<td rowspan="2" width="100" style="border: 1px solid black; background-color: white;" align="center" valign="middle">
+			#if($isUpdated)
+				#set($digitalAssetUrl = "$digitalAssetUrl")
+				<a href="javascript:openPopup('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$assetThumbnailUrl"><br>
+				$digitalAssetKey</a>
+			#end
+			&nbsp;
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateKeyLabel")
+			<br/>
+			  <div id="comboBox">
+			  <table border="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#808080" id="cboBoxTable">
+			    <tr>
+			      <td width="10" style="border: 1px solid black;">
+			  	  <input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" style="border: 1px solid #FFFFFF" value="$digitalAssetKey"></td>
+			      <td onClick="ddClick();" style="border: 1px solid black;">
+			      <img border="0" src="images/combodown.gif" width="15" height="20"></td>
+			    </tr>
+			  </table>
+			  <select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 163px; height: 100; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
+					#foreach($key in $definedAssetKeys)
+						<option value="${key}">${key}</option>
+					#end
+			  </select>  
+			  </div>
+		</td>
+	</tr>		
+	<tr>
+		<td colspan="2">
+			$ui.getString("tool.contenttool.fileUpload.fileUploadFileLabel")<br/>
+			<input size=30 type="FILE" name="file1" id="file1">
+		</td>
+	</tr>	
+	<tr>
+		<td colspan="2">
+			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+			<a href="javascript:submitAndCloseForm();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+		</td>
+	</tr>
+
+	</form>	
+</table>
+</div>
+
+</body>
+</html>

@@ -22,14 +22,31 @@
 */
 package org.infoglue.deliver.portal;
 
+import java.io.InputStream;
+
 import org.apache.pluto.om.entity.PortletApplicationEntityList;
+import org.infoglue.deliver.portal.om.PortletApplicationEntityListImpl;
 
 /**
  * @author joran
+ * @author jand
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface OmBuilder {
-	public PortletApplicationEntityList getPortletApplicationEntityList();
+    /**
+     * Parse registry from an XML inputstream
+     * 
+     * @param is inputstream of XML
+     * @return
+     */
+    public PortletApplicationEntityListImpl getPortletApplicationEntityList(InputStream is);
 
+    /**
+     * Serialize registry to XML
+     * 
+     * @param pael
+     * @return
+     */
+    public String toXML(PortletApplicationEntityList pael);
 }

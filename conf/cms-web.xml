@@ -109,7 +109,7 @@
 	<!-- Start WebWork -->
 	<servlet>
 		<servlet-name>action</servlet-name>
-		<servlet-class>webwork.dispatcher.ServletDispatcher</servlet-class>
+		<servlet-class>@actionDispatcher@</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
@@ -128,7 +128,7 @@
 	<servlet>
 		<servlet-name>dispatch</servlet-name>
 		<servlet-class>webwork.dispatcher.ClientServletDispatcher</servlet-class>
-	</servlet>¨
+	</servlet>
 	 
     <!-- ****************************************** -->
 	<!-- This part is for the quarz scheduler       -->

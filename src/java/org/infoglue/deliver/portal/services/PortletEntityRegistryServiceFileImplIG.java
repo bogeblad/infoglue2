@@ -37,35 +37,31 @@ import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityR
 import org.apache.pluto.portalImpl.util.Properties;
 import org.infoglue.deliver.portal.OmBuilder;
 import org.infoglue.deliver.portal.OmBuilderXStreamImpl;
+import org.infoglue.deliver.portal.om.PortletApplicationEntityListImpl;
 
 /**
  * @author joran
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PortletEntityRegistryServiceFileImplIG extends PortletEntityRegistryService {
-    private static final Log LOG = LogFactory
-            .getLog(PortletEntityRegistryServiceFileImplIG.class);
-    
+    private static final Log LOG = LogFactory.getLog(PortletEntityRegistryServiceFileImplIG.class);
+
+    private ServletContext aContext;
     private String filename = "WEB-INF/data/portletentityregistryIG.xml";
-    private PortletApplicationEntityList applications;
-    
+    private OmBuilder builder = new OmBuilderXStreamImpl();
+    private PortletApplicationEntityListImpl applications;
+
     /* (non-Javadoc)
      * @see org.apache.pluto.portalImpl.services.Service#init(javax.servlet.ServletContext, org.apache.pluto.portalImpl.util.Properties)
      */
-    protected void init(ServletContext aContext, Properties aProperties)
-            throws Exception {
+    protected void init(ServletContext aContext, Properties aProperties) throws Exception {
         // TODO Auto-generated method stub
         super.init(aContext, aProperties);
-        LOG.info("Start building PortletApplicationList.....");
-        InputStream is = aContext.getResourceAsStream(filename);
-        OmBuilder builder = new OmBuilderXStreamImpl(is);
-        applications = builder.getPortletApplicationEntityList();
-        LOG.info("Applications: " + applications);
-        LOG.info("DONE!");
+        this.aContext = aContext;
+        load();
     }
-    
-    
+
     /* (non-Javadoc)
      * @see org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistryService#getPortletApplicationEntityList()
      */
@@ -98,23 +94,30 @@ public class PortletEntityRegistryServiceFileImplIG extends PortletEntityRegistr
         }
 
         return portletEntity;
-     }
+    }
 
     /* (non-Javadoc)
      * @see org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistryService#store()
      */
     public void store() throws IOException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String xml = builder.toXML(applications);
+        System.out.println(xml);
     }
 
     /* (non-Javadoc)
      * @see org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistryService#load()
      */
     public void load() throws IOException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        LOG.info("Start building PortletApplicationList.....");
+        InputStream is = aContext.getResourceAsStream(filename);
+        if (is == null) {
+            throw new IOException("Unable to find " + filename);
+        }
 
+        applications = builder.getPortletApplicationEntityList(is);
+        is.close();
+        LOG.info("Applications: " + applications);
+        LOG.info("DONE!");
     }
 
     /* (non-Javadoc)
@@ -124,6 +127,19 @@ public class PortletEntityRegistryServiceFileImplIG extends PortletEntityRegistr
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
 
+    }
+
+    public static void main(String[] args) {
+        try {
+            PortletEntityRegistryServiceFileImplIG reg =
+                new PortletEntityRegistryServiceFileImplIG();
+            reg.load();
+
+            reg.store();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }
