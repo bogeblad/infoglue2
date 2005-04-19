@@ -2402,6 +2402,26 @@ public class BasicTemplateController implements TemplateController
 
 
 	/**
+	 * This method fetches the given siteNode
+	 */
+	
+	public SiteNodeVO getSiteNode(Integer siteNodeId)
+	{
+	    SiteNodeVO siteNodeVO = null;
+
+		try
+		{
+			siteNodeVO = this.nodeDeliveryController.getSiteNode(getDatabase(), siteNodeId).getValueObject();
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get the siteNode with id " + siteNodeId + ":" + e.getMessage(), e);
+		}
+
+		return siteNodeVO;
+	}
+
+	/**
 	 * Getter for the siteNodeId on a specific bound page
 	 */
 	
