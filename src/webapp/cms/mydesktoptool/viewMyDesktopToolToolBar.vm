@@ -293,7 +293,7 @@
 <div style="border: 1px solid white; LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:0px; visibility:visble; z-index:0">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr class="darkyellow">
-	<td class="actionheader"><div aclass="leftmarginalized">$title</div></td>
+	<td class="actionheader"><div aclass="leftmarginalized">$ui.getString($title)</div></td>
 </tr>
 </table>
 </div>

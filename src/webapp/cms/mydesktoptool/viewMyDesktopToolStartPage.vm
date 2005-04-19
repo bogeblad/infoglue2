@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginMyDesktopTool($ui.getString("tool.mydesktoptool.welcomeHeader") "Welcome to your desktop" "")
+#beginMyDesktopTool("tool.mydesktoptool.welcomeHeader" "tool.mydesktoptool.welcomeHeader" "")
 
 <script type="text/javascript">
 <!--
