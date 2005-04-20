@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 //import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -32,7 +33,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
  * @author Mattias Bogeblad
  */
 
-public class UpdateGroupAction extends ViewGroupAction //WebworkAbstractAction
+public class UpdateGroupAction extends ViewGroupAction
 {
 	private ConstraintExceptionBuffer ceb;
 	private GroupVO groupVO;
@@ -60,8 +61,8 @@ public class UpdateGroupAction extends ViewGroupAction //WebworkAbstractAction
 
 		GroupControllerProxy.getController().updateGroup(this.groupVO, values);
 		
-		//if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
-		//	GroupPropertiesController.getController().updateContentTypeDefinitions(this.getGroupName(), contentTypeDefinitionIds);
+		if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
+			GroupPropertiesController.getController().updateContentTypeDefinitions(this.getGroupName(), contentTypeDefinitionIds);
 		
 		return "success";
 	}

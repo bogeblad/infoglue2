@@ -305,7 +305,7 @@
 		<td>
 			<p>
 				#editTextField("ContentTypeDefinition.name" "name" $!name "51" "normaltextfield" "")<br>
-				#selectField("ContentTypeDefinition.type" "type" $!type [["0", "Ordinary Content Type"], ["1", "Role Properties"], ["2", "User Properties"]])
+				#selectField("ContentTypeDefinition.type" "type" $!type [["0", "Ordinary Content Type"], ["1", "Role Properties"], ["2", "User Properties"], ["3", "Group Properties"]])
 			</p>
 			<p>
 				Attributes / Form elements - <a href="ViewContentTypeDefinition!useSimple.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title">Simple</a><br>

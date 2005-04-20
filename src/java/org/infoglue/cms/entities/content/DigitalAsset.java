@@ -63,11 +63,15 @@ public interface DigitalAsset extends IBaseEntity
 
     public java.util.Collection getUserProperties();
     
-    public void setUserProperties(java.util.Collection userPropertiess);
+    public void setUserProperties(java.util.Collection userProperties);
 
     public java.util.Collection getRoleProperties();
     
-    public void setRoleProperties(java.util.Collection rolePropertiess);
+    public void setRoleProperties(java.util.Collection roleProperties);
+
+    public java.util.Collection getGroupProperties();
+    
+    public void setGroupProperties(java.util.Collection groupProperties);
 
     public void setAssetBlob(java.io.InputStream blob);
 

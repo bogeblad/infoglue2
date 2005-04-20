@@ -27,6 +27,7 @@ import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -444,9 +445,9 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		if(UserControllerProxy.getController().getSupportDelete())
 			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteGroup.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + URLEncoder.encode(this.groupName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteGroup"), "tool.managementtool.deleteGroup.header"));
 		
-		//List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(this.groupName);
-		//if(contentTypeDefinitionVOList.size() > 0)
-		//	buttons.add(new ImageButton("ViewGroupProperties.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.groupName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewGroupProperties"), "View Group Properties"));
+		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(this.groupName);
+		if(contentTypeDefinitionVOList.size() > 0)
+			buttons.add(new ImageButton("ViewGroupProperties.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.groupName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewGroupProperties"), "View Group Properties"));
 		
 		return buttons;				
 	}

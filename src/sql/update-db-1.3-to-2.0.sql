@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.10 2005/03/31 07:54:11 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.11 2005/04/20 16:08:11 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -98,6 +98,35 @@ CREATE TABLE cmRolePropertiesDigitalAsset (
 ) TYPE=MyISAM;
 
 ----------------------------------------------------------------------------------
+-- Add table for GroupPropertiesDigitalAsset
+----------------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS cmGroupPropertiesDigitalAsset;
+
+CREATE TABLE cmGroupPropertiesDigitalAsset (
+  groupPropertiesDigitalAssetId integer(11) unsigned NOT NULL auto_increment,
+  groupPropertiesId integer(11) unsigned NOT NULL default '0',
+  digitalAssetId integer(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (groupPropertiesDigitalAssetId)
+) TYPE=MyISAM;
+
+
+----------------------------------------------------------------------------------
+-- Add table for PropertyCategory
+----------------------------------------------------------------------------------
+DROP TABLE IF EXISTS cmPropertiesCategory;
+
+CREATE TABLE cmPropertiesCategory
+(
+	propertiesCategoryId	INTEGER(11) unsigned NOT NULL auto_increment,
+	attributeName		VARCHAR(100) NOT NULL,
+	entityName			VARCHAR(100) NOT NULL,
+	entityId			INTEGER(11) NOT NULL,
+	categoryId			INTEGER(11) NOT NULL,
+	PRIMARY KEY (propertiesCategoryId)
+);
+
+----------------------------------------------------------------------------------
 -- Added sort possibility to repository languages
 ----------------------------------------------------------------------------------
 
@@ -152,6 +181,28 @@ CREATE TABLE cmGroup (
   description text NOT NULL,
   PRIMARY KEY  (groupName)
 ) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS cmGroupContentTypeDefinition;
+
+CREATE TABLE cmGroupContentTypeDefinition (
+  groupContentTypeDefinitionId int(11) NOT NULL auto_increment,
+  groupName text NOT NULL,
+  contentTypeDefinitionId int(11) NOT NULL default '0',
+  PRIMARY KEY  (groupContentTypeDefinitionId)
+) TYPE=MyISAM;
+
+
+DROP TABLE IF EXISTS cmGroupProperties;
+
+CREATE TABLE cmGroupProperties (
+  groupPropertiesId int(11) NOT NULL auto_increment,
+  groupName text NOT NULL,
+  contentTypeDefinitionId int(11) NOT NULL default '0',
+  value text NOT NULL,
+  languageId int(11) NOT NULL default '0',
+  PRIMARY KEY  (groupPropertiesId)
+) TYPE=MyISAM;
+
 
 CREATE TABLE cmSystemUserGroup (
   userName varchar(200) NOT NULL default '',

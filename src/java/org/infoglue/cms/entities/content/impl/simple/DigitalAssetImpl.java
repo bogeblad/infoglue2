@@ -41,6 +41,7 @@ public class DigitalAssetImpl implements DigitalAsset
 	private java.util.Collection contentVersions;
 	private java.util.Collection userProperties;
 	private java.util.Collection roleProperties;
+	private java.util.Collection groupProperties;
 	private java.io.InputStream assetBlob;
 	    
     /**
@@ -172,6 +173,15 @@ public class DigitalAssetImpl implements DigitalAsset
         this.roleProperties = roleProperties;
     }
 
+    public java.util.Collection getGroupProperties()
+    {
+        return this.groupProperties;
+    }
+    
+    public void setGroupProperties(java.util.Collection groupProperties)
+    {
+        this.groupProperties = groupProperties;
+    }
     
     public void setAssetBlob(java.io.InputStream assetBlob)
     {

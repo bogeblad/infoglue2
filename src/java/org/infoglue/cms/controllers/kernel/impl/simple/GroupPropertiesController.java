@@ -1,0 +1,555 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
+
+package org.infoglue.cms.controllers.kernel.impl.simple;
+
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.GroupContentTypeDefinition;
+import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.GroupPropertiesVO;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
+import org.infoglue.cms.exception.*;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.CmsLogger;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import org.apache.xerces.parsers.DOMParser;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
+
+import java.io.StringReader;
+import java.util.Collection;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
+
+/**
+ * This class is the controller for all handling of extranet groups properties.
+ */
+
+public class GroupPropertiesController extends BaseController
+{
+	
+	/**
+	 * Factory method
+	 */
+
+	public static GroupPropertiesController getController()
+	{
+		return new GroupPropertiesController();
+	}
+	
+	
+    public GroupProperties getGroupPropertiesWithId(Integer groupPropertiesId, Database db) throws SystemException, Bug
+    {
+		return (GroupProperties) getObjectWithId(GroupPropertiesImpl.class, groupPropertiesId, db);
+    }
+    
+    public GroupPropertiesVO getGroupPropertiesVOWithId(Integer groupPropertiesId) throws SystemException, Bug
+    {
+		return (GroupPropertiesVO) getVOWithId(GroupPropertiesImpl.class, groupPropertiesId);
+    }
+  
+    public List getGroupPropertiesVOList() throws SystemException, Bug
+    {
+        return getAllVOObjects(GroupPropertiesImpl.class, "groupPropertiesId");
+    }
+
+    
+	/**
+	 * This method created a new GroupPropertiesVO in the database.
+	 */
+
+	public GroupPropertiesVO create(Integer languageId, Integer contentTypeDefinitionId, GroupPropertiesVO groupPropertiesVO) throws ConstraintException, SystemException
+    {
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		GroupProperties groupProperties = null;
+
+		beginTransaction(db);
+		try
+		{
+			groupProperties = create(languageId, contentTypeDefinitionId, groupPropertiesVO, db);
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+    
+		return groupProperties.getValueObject();
+	}     
+
+	/**
+	 * This method created a new GroupPropertiesVO in the database. It also updates the extranetgroup
+	 * so it recognises the change. 
+	 */
+
+	public GroupProperties create(Integer languageId, Integer contentTypeDefinitionId, GroupPropertiesVO groupPropertiesVO, Database db) throws ConstraintException, SystemException, Exception
+    {
+		Language language = LanguageController.getController().getLanguageWithId(languageId, db);
+		ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentTypeDefinitionId, db);
+
+		GroupProperties groupProperties = new GroupPropertiesImpl();
+		groupProperties.setLanguage((LanguageImpl)language);
+		groupProperties.setContentTypeDefinition((ContentTypeDefinition)contentTypeDefinition);
+	
+		groupProperties.setValueObject(groupPropertiesVO);
+		db.create(groupProperties); 
+		
+		return groupProperties;
+	}     
+	
+	/**
+	 * This method updates an extranet group properties.
+	 */
+
+	public GroupPropertiesVO update(Integer languageId, Integer contentTypeDefinitionId, GroupPropertiesVO groupPropertiesVO) throws ConstraintException, SystemException
+	{
+		GroupPropertiesVO realGroupPropertiesVO = groupPropertiesVO;
+    	
+		if(groupPropertiesVO.getId() == null)
+		{
+			CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
+			realGroupPropertiesVO = create(languageId, contentTypeDefinitionId, groupPropertiesVO);
+		}
+
+		return (GroupPropertiesVO) updateEntity(GroupPropertiesImpl.class, (BaseEntityVO) realGroupPropertiesVO);
+	}        
+
+	public GroupPropertiesVO update(GroupPropertiesVO groupPropertiesVO, String[] extranetUsers) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		GroupProperties groupProperties = null;
+
+		beginTransaction(db);
+
+		try
+		{
+			//add validation here if needed
+			groupProperties = getGroupPropertiesWithId(groupPropertiesVO.getGroupPropertiesId(), db);       	
+			groupProperties.setValueObject(groupPropertiesVO);
+
+			//If any of the validations or setMethods reported an error, we throw them up now before create.
+			ceb.throwIfNotEmpty();
+            
+			commitTransaction(db);
+		}
+		catch(ConstraintException ce)
+		{
+			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+
+		return groupProperties.getValueObject();
+	}     
+	
+	/**
+	 * This method gets a list of groupProperties for a group
+	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
+	 */
+
+	public List getGroupPropertiesVOList(String groupName, Integer languageId) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		List groupPropertiesVOList = new ArrayList();
+
+		beginTransaction(db);
+
+		try
+		{
+			List groupProperties = getGroupPropertiesList(groupName, languageId, db);
+			groupPropertiesVOList = toVOList(groupProperties);
+			
+			//If any of the validations or setMethods reported an error, we throw them up now before create.
+			ceb.throwIfNotEmpty();
+            
+			commitTransaction(db);
+		}
+		catch(ConstraintException ce)
+		{
+			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+
+		return groupPropertiesVOList;
+	}
+
+	/**
+	 * This method gets a list of groupProperties for a group
+	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
+	 */
+
+	public List getGroupPropertiesList(String groupName, Integer languageId, Database db) throws ConstraintException, SystemException, Exception
+	{
+		List groupPropertiesList = new ArrayList();
+
+		OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl f WHERE f.groupName = $1 AND f.language = $2");
+		oql.bind(groupName);
+		oql.bind(languageId);
+
+		QueryResults results = oql.execute();
+		while (results.hasMore()) 
+		{
+			GroupProperties groupProperties = (GroupProperties)results.next();
+			groupPropertiesList.add(groupProperties);
+		}
+
+		return groupPropertiesList;
+	}
+	
+    public void delete(GroupPropertiesVO groupPropertiesVO) throws ConstraintException, SystemException
+    {
+    	deleteEntity(GroupPropertiesImpl.class, groupPropertiesVO.getGroupPropertiesId());
+    }        
+
+    
+	/**
+	 * This method should return a list of those digital assets the contentVersion has.
+	 */
+	   	
+	public List getDigitalAssetVOList(Integer groupPropertiesId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+    	List digitalAssetVOList = new ArrayList();
+
+        beginTransaction(db);
+
+        try
+        {
+			GroupProperties groupProperties = GroupPropertiesController.getController().getGroupPropertiesWithId(groupPropertiesId, db); 
+			if(groupProperties != null)
+			{
+				Collection digitalAssets = groupProperties.getDigitalAssets();
+				digitalAssetVOList = toVOList(digitalAssets);
+			}
+			            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logInfo("An error occurred when we tried to fetch the list of digitalAssets belonging to this groupProperties:" + e);
+            e.printStackTrace();
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return digitalAssetVOList;
+    }
+
+	
+	/**
+	 * This method deletes the relation to a digital asset - not the asset itself.
+	 */
+	public void deleteDigitalAssetRelation(Integer groupPropertiesId, DigitalAsset digitalAsset, Database db) throws SystemException, Bug
+    {
+	    GroupProperties groupProperties = getGroupPropertiesWithId(groupPropertiesId, db);
+	    groupProperties.getDigitalAssets().remove(digitalAsset);
+        digitalAsset.getGroupProperties().remove(groupProperties);
+    }
+
+
+	/**
+	 * This method fetches all content types available for this group. 
+	 */
+	
+	public List getContentTypeDefinitionVOList(String groupName) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		List contentTypeDefinitionVOList = new ArrayList();
+
+		beginTransaction(db);
+
+		try
+		{
+			List groupContentTypeDefinitionList = getGroupContentTypeDefinitionList(groupName, db);
+			Iterator contentTypeDefinitionsIterator = groupContentTypeDefinitionList.iterator();
+			while(contentTypeDefinitionsIterator.hasNext())
+			{
+				GroupContentTypeDefinition groupContentTypeDefinition = (GroupContentTypeDefinition)contentTypeDefinitionsIterator.next();
+				contentTypeDefinitionVOList.add(groupContentTypeDefinition.getContentTypeDefinition().getValueObject());
+			}
+	
+			ceb.throwIfNotEmpty();
+    
+			commitTransaction(db);
+		}
+		catch(ConstraintException ce)
+		{
+			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+
+		return contentTypeDefinitionVOList;
+	}
+
+	/**
+	 * This method fetches all group content types available for this group within a transaction. 
+	 */
+	
+	public List getGroupContentTypeDefinitionList(String groupName, Database db) throws ConstraintException, SystemException, Exception
+	{
+		List groupContentTypeDefinitionList = new ArrayList();
+
+		OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl f WHERE f.groupName = $1");
+		oql.bind(groupName);
+
+		QueryResults results = oql.execute();
+		while (results.hasMore()) 
+		{
+			GroupContentTypeDefinition groupContentTypeDefinition = (GroupContentTypeDefinition)results.next();
+			groupContentTypeDefinitionList.add(groupContentTypeDefinition);
+		}
+
+		return groupContentTypeDefinitionList;
+	}
+	
+	/**
+	 * This method fetches all content types available for this group. 
+	 */
+
+	public void updateContentTypeDefinitions(String groupName, String[] contentTypeDefinitionIds) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		List contentTypeDefinitionVOList = new ArrayList();
+
+		beginTransaction(db);
+
+		try
+		{
+			List groupContentTypeDefinitionList = this.getGroupContentTypeDefinitionList(groupName, db);
+			Iterator contentTypeDefinitionsIterator = groupContentTypeDefinitionList.iterator();
+			while(contentTypeDefinitionsIterator.hasNext())
+			{
+				GroupContentTypeDefinition groupContentTypeDefinition = (GroupContentTypeDefinition)contentTypeDefinitionsIterator.next();
+				db.remove(groupContentTypeDefinition);
+			}
+			
+			for(int i=0; i<contentTypeDefinitionIds.length; i++)
+			{
+				Integer contentTypeDefinitionId = new Integer(contentTypeDefinitionIds[i]);
+				ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentTypeDefinitionId, db);
+				GroupContentTypeDefinitionImpl groupContentTypeDefinitionImpl = new GroupContentTypeDefinitionImpl();
+				groupContentTypeDefinitionImpl.setGroupName(groupName);
+				groupContentTypeDefinitionImpl.setContentTypeDefinition(contentTypeDefinition);
+				db.create(groupContentTypeDefinitionImpl);
+			}
+			
+			ceb.throwIfNotEmpty();
+
+			commitTransaction(db);
+		}
+		catch(ConstraintException ce)
+		{
+			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * This method fetches a value from the xml that is the groupProperties Value. It then updates that
+	 * single value and saves it back to the db.
+	 */
+	 
+	public void updateAttributeValue(Integer groupPropertiesId, String attributeName, String attributeValue) throws SystemException, Bug
+	{
+		GroupPropertiesVO groupPropertiesVO = getGroupPropertiesVOWithId(groupPropertiesId);
+		
+		if(groupPropertiesVO != null)
+		{
+			try
+			{
+				CmsLogger.logInfo("attributeName:"  + attributeName);
+				CmsLogger.logInfo("versionValue:"   + groupPropertiesVO.getValue());
+				CmsLogger.logInfo("attributeValue:" + attributeValue);
+				InputSource inputSource = new InputSource(new StringReader(groupPropertiesVO.getValue()));
+				
+				DOMParser parser = new DOMParser();
+				parser.parse(inputSource);
+				Document document = parser.getDocument();
+				
+				NodeList nl = document.getDocumentElement().getChildNodes();
+				Node attributesNode = nl.item(0);
+				
+				boolean existed = false;
+				nl = attributesNode.getChildNodes();
+				for(int i=0; i<nl.getLength(); i++)
+				{
+					Node n = nl.item(i);
+					if(n.getNodeName().equalsIgnoreCase(attributeName))
+					{
+						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
+						{
+							n.getFirstChild().setNodeValue(attributeValue);
+							existed = true;
+							break;
+						}
+						else
+						{
+							CDATASection cdata = document.createCDATASection(attributeValue);
+							n.appendChild(cdata);
+							existed = true;
+							break;
+						}
+					}
+				}
+				
+				if(existed == false)
+				{
+					org.w3c.dom.Element attributeElement = document.createElement(attributeName);
+					attributesNode.appendChild(attributeElement);
+					CDATASection cdata = document.createCDATASection(attributeValue);
+					attributeElement.appendChild(cdata);
+				}
+				
+				StringBuffer sb = new StringBuffer();
+				org.infoglue.cms.util.XMLHelper.serializeDom(document.getDocumentElement(), sb);
+				CmsLogger.logInfo("sb:" + sb);
+				groupPropertiesVO.setValue(sb.toString());
+				update(groupPropertiesVO.getLanguageId(), groupPropertiesVO.getContentTypeDefinitionId(), groupPropertiesVO);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	
+	/**
+	 * This method fetches a value from the xml that is the groupProperties Value. 
+	 */
+	 
+	public String getAttributeValue(Integer groupPropertiesId, String attributeName, boolean escapeHTML) throws SystemException, Bug
+	{
+		String value = "";
+		
+		GroupPropertiesVO groupPropertiesVO = getGroupPropertiesVOWithId(groupPropertiesId);
+		
+		if(groupPropertiesVO != null)
+		{	
+			try
+			{
+				CmsLogger.logInfo("attributeName:" + attributeName);
+				CmsLogger.logInfo("VersionValue:"  + groupPropertiesVO.getValue());
+				InputSource inputSource = new InputSource(new StringReader(groupPropertiesVO.getValue()));
+				
+				DOMParser parser = new DOMParser();
+				parser.parse(inputSource);
+				Document document = parser.getDocument();
+				
+				NodeList nl = document.getDocumentElement().getChildNodes();
+				Node n = nl.item(0);
+				
+				nl = n.getChildNodes();
+				for(int i=0; i<nl.getLength(); i++)
+				{
+					n = nl.item(i);
+					if(n.getNodeName().equalsIgnoreCase(attributeName))
+					{
+						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
+						{
+							value = n.getFirstChild().getNodeValue();
+							CmsLogger.logInfo("Getting value: " + value);
+							if(value != null && escapeHTML)
+								value = new VisualFormatter().escapeHTML(value);
+							break;
+						}
+					}
+				}		        	
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		//CmsLogger.logInfo("value:" + value);	
+		return value;
+	}
+	
+	/**
+	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
+	 * is handling.
+	 */
+
+	public BaseEntityVO getNewVO()
+	{
+		return new GroupPropertiesVO();
+	}
+
+}
+ 

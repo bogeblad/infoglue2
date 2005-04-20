@@ -353,8 +353,10 @@ public class CacheController extends Thread
 	
 			clearCache(RolePropertiesImpl.class);
 			clearCache(UserPropertiesImpl.class);
+			clearCache(GroupPropertiesImpl.class);
 			clearCache(UserContentTypeDefinitionImpl.class);
 			clearCache(RoleContentTypeDefinitionImpl.class);
+			clearCache(GroupContentTypeDefinitionImpl.class);
 		}
 		catch(Exception e)
 		{

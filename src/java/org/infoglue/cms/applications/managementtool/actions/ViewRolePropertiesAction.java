@@ -24,26 +24,41 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.dom4j.Node;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class ViewRolePropertiesAction extends InfoGlueAbstractAction
 {
+	private static CategoryController categoryController = CategoryController.getController();
+	private static PropertiesCategoryController propertiesCategoryController = PropertiesCategoryController.getController();
+
 	private final String currentAction		= "ViewRoleProperties.action";
 	private final String updateAction 		= "UpdateRoleProperties";
 	private final String labelKey 			= "Role Properties";
@@ -152,6 +167,34 @@ public class ViewRolePropertiesAction extends InfoGlueAbstractAction
 	}
 	
 	/**
+	 * This method fetches a value from the xml that is the contentVersions Value. If the 
+	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
+	 */
+	 
+	public String getUnescapedAttributeValue(String key)
+	{
+		String value = "";
+		try
+		{
+		    String xml = this.getXML();
+		    
+			int startTagIndex = xml.indexOf("<" + key + ">");
+			int endTagIndex   = xml.indexOf("]]></" + key + ">");
+
+			if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+			{
+				value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
+			}					
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return value;
+	}
+
+	/**
 	 * Returns a list of digital assets available for this content version.
 	 */
 	
@@ -218,6 +261,131 @@ public class ViewRolePropertiesAction extends InfoGlueAbstractAction
 		return imageHref;
 	}
 	
+	public String getQualifyerPath(String entity, String entityId)
+	{	
+		try
+		{	
+			if(entity.equalsIgnoreCase("Content"))
+				return ContentController.getContentController().getContentVOWithId(new Integer(entityId)).getName();
+			else if(entity.equalsIgnoreCase("SiteNode"))
+				return SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId)).getName();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	public List getContentRelationQualifyers(String qualifyerXML)
+	{
+		CmsLogger.logInfo("Content qualifyerXML:" + qualifyerXML);
+	    return parseQualifyersFromXML(qualifyerXML, "contentId");
+	}
+
+	public List getSiteNodeRelationQualifyers(String qualifyerXML)
+	{
+		CmsLogger.logInfo("Content qualifyerXML:" + qualifyerXML);
+	    return parseQualifyersFromXML(qualifyerXML, "siteNodeId");
+	}
+
+	private List parseQualifyersFromXML(String qualifyerXML, String currentEntityIdentifyer)
+	{
+		List qualifyers = new ArrayList(); 
+    	
+		if(qualifyerXML == null || qualifyerXML.length() == 0)
+			return qualifyers;
+		
+		try
+		{
+			Document document = new DOMBuilder().getDocument(qualifyerXML);
+			
+			String entity = document.getRootElement().attributeValue("entity");
+			
+			List children = document.getRootElement().elements();
+			Iterator i = children.iterator();
+			while(i.hasNext())
+			{
+				Element child = (Element)i.next();
+				String id = child.getStringValue();
+				
+				QualifyerVO qualifyerVO = new QualifyerVO();
+				qualifyerVO.setName(currentEntityIdentifyer);
+				qualifyerVO.setValue(id);    
+				qualifyerVO.setPath(this.getQualifyerPath(entity, id));
+				//qualifyerVO.setSortOrder(new Integer(i));
+				qualifyers.add(qualifyerVO);     	
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return qualifyers;
+	}
+	
+	/**
+	 * Return the listing of Category attributes for this type of Content
+	 */
+	public List getDefinedCategoryKeys()
+	{
+		try
+		{
+			if(contentTypeDefinitionVO != null)
+				return ContentTypeDefinitionController.getController().getDefinedCategoryKeys(contentTypeDefinitionVO.getSchemaValue());
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+		}
+
+		return Collections.EMPTY_LIST;
+	}
+
+	/**
+	 * Returns the Category tree for the given Category id.
+	 * @param categoryId The base Category
+	 * @return A list of all Children (and their children, etc)
+	 */
+	public List getAvailableCategories(Integer categoryId)
+	{
+		try
+		{	
+		    String protectCategories = CmsPropertyHandler.getProperty("protectCategories");
+		    if(protectCategories != null && protectCategories.equalsIgnoreCase("true"))
+		        return categoryController.getAuthorizedActiveChildren(categoryId, this.getInfoGluePrincipal());
+			else
+			    return categoryController.findAllActiveChildren(categoryId);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not fetch the list of categories: " + e.getMessage(), e);
+		}
+
+		return Collections.EMPTY_LIST;
+	}
+
+	/**
+	 * Returns all current Category relationships for th specified attrbiute name
+	 * @param attribute
+	 * @return
+	 */
+	public List getRelatedCategories(String attribute)
+	{
+		try
+		{
+			if(this.rolePropertiesVO != null && this.rolePropertiesVO.getId() != null)
+		    	return propertiesCategoryController.findByPropertiesAttribute(attribute, RoleProperties.class.getName(),  this.rolePropertiesVO.getId());
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+		}
+
+		return Collections.EMPTY_LIST;
+	}
+
 	public List getAvailableLanguages()
 	{
 		return this.availableLanguages;

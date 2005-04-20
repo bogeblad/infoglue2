@@ -175,6 +175,49 @@
     </field>
   </class>
 
+  <!--  Mapping for GroupProperties  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl" identity="groupPropertiesId" key-generator="IDENTITY">
+    <description>GroupProperties</description>
+    <cache-type type="unlimited" capacity="1000"/>
+    <map-to table="cmGroupProperties"/>
+    <field name="groupPropertiesId" type="java.lang.Integer">
+      <sql name="groupPropertiesId" type="integer" dirty="check" />
+    </field>
+    <field name="contentTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl">
+      <sql name="contentTypeDefinitionId"/>
+    </field>
+    <field name="groupName" type="java.lang.String">
+      <sql name="groupName" type="varchar" dirty="check" />
+    </field>
+    <field name="language" type="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">
+      <sql name="languageId"/>
+    </field>
+    <field name="value" type="java.lang.String">
+      <sql name="value" type="varchar" dirty="ignore" />
+    </field>
+    <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
+      <sql many-key="groupPropertiesId" many-table="cmGroupPropertiesDigitalAsset"/>
+    </field>
+
+  </class>
+
+  <!--  Mapping for GroupContentTypeDefinition  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl" identity="groupContentTypeDefinitionId" key-generator="IDENTITY">
+    <description>GroupContentTypeDefinition</description>
+    <cache-type type="unlimited" capacity="1000"/>
+    <map-to table="cmGroupContentTypeDefinition"/>
+    <field name="groupContentTypeDefinitionId" type="java.lang.Integer">
+      <sql name="groupContentTypeDefinitionId" type="integer" dirty="check" />
+    </field>
+    <field name="groupName" type="java.lang.String">
+      <sql name="groupName" type="varchar" dirty="check" />
+    </field>
+    <field name="contentTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl">
+      <sql name="contentTypeDefinitionId"/>
+    </field>
+  </class>
+
+
 <!--  Mapping for AccessRight  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" identity="accessRightId" key-generator="IDENTITY">
     <description>AccessRight</description>
@@ -1085,6 +1128,28 @@
 		</field>
 		<field name="contentVersionId" type="java.lang.Integer">
 			<sql name="contentVersionId" type="integer" dirty="check" />
+		</field>
+		<field name="category" type="org.infoglue.cms.entities.management.impl.simple.CategoryImpl">
+		  <sql name="categoryId"/>
+		</field>
+	</class>
+
+    <!--  Mapping for PropertiesCategory  -->
+	<class name="org.infoglue.cms.entities.management.impl.simple.PropertiesCategoryImpl" identity="propertiesCategoryId" key-generator="IDENTITY">
+		<description>PropertiesCategory</description>
+		<cache-type type="unlimited" capacity="10000"/>
+		<map-to table="cmPropertiesCategory"/>
+		<field name="propertiesCategoryId" type="java.lang.Integer">
+			<sql name="propertiesCategoryId" type="integer" dirty="check" />
+		</field>
+		<field name="attributeName" type="java.lang.String">
+			<sql name="attributeName" type="varchar" dirty="check" />
+		</field>
+		<field name="entityName" type="java.lang.String">
+			<sql name="entityName" type="varchar" dirty="check" />
+		</field>
+		<field name="entityId" type="java.lang.Integer">
+			<sql name="entityId" type="integer" dirty="check" />
 		</field>
 		<field name="category" type="org.infoglue.cms.entities.management.impl.simple.CategoryImpl">
 		  <sql name="categoryId"/>

@@ -14,7 +14,7 @@
 	</tr>
 	<tr>
 		<td>
-			#selectField("ContentTypeDefinition.type" "type" $!type [["0", "Ordinary Content Type"], ["1", "Role Properties"], ["2", "User Properties"]])
+			#selectField("ContentTypeDefinition.type" "type" $!type [["0", "Ordinary Content Type"], ["1", "Role Properties"], ["2", "User Properties"], ["3", "Group Properties"]])
 		</td>
 	</tr>
 	<tr>

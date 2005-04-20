@@ -270,17 +270,28 @@ public abstract class ViewRelationEditorAction extends WebworkAbstractAction
 	}
 	
 	/**
-	 * Updates the qualifyer in the extranetRoleProperties stucture.
+	 * Updates the qualifyer in the RoleProperties stucture.
 	 */
-	public String doUpdateQualifyerInExtranetRoleProperties() throws Exception
+	public String doUpdateQualifyerInRoleProperties() throws Exception
 	{
-		updateAttributeValueInExtranetRoleProperties();
+		updateAttributeValueInRoleProperties();
 	
 		initialize();
 	
 		return "success";
 	}
 	
+	/**
+	 * Updates the qualifyer in the extranetRoleProperties stucture.
+	 */
+	public String doUpdateQualifyerInGroupProperties() throws Exception
+	{
+		updateAttributeValueInGroupProperties();
+	
+		initialize();
+	
+		return "success";
+	}
 	
 	
 	private List parseQualifyersFromXML(String qualifyerXML)
@@ -324,8 +335,10 @@ public abstract class ViewRelationEditorAction extends WebworkAbstractAction
 	{
 		try
 		{
-			if(this.entityName.equalsIgnoreCase("ExtranetRoleProperties"))
+			if(this.entityName.equalsIgnoreCase("RoleProperty"))
 				return RolePropertiesController.getController().getAttributeValue(getEntityId(), getAttributeName(), false);
+			else if(this.entityName.equalsIgnoreCase("GroupProperty"))
+				return GroupPropertiesController.getController().getAttributeValue(getEntityId(), getAttributeName(), false);
 			else
 				return ContentVersionController.getContentVersionController().getAttributeValue(getEntityId(), getAttributeName(), false);
 		}
@@ -346,11 +359,21 @@ public abstract class ViewRelationEditorAction extends WebworkAbstractAction
 	}
 
 	/**
-	 * This method is the specialized update method which assumes that the update is in a ExtranetRoleProperties.
+	 * This method is the specialized update method which assumes that the update is in a RoleProperties.
 	 */
 	
-	public void updateAttributeValueInExtranetRoleProperties() throws Exception
+	public void updateAttributeValueInRoleProperties() throws Exception
 	{
 		RolePropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
 	}
+
+	/**
+	 * This method is the specialized update method which assumes that the update is in a GroupProperties.
+	 */
+	
+	public void updateAttributeValueInGroupProperties() throws Exception
+	{
+		GroupPropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
+	}
+
 }

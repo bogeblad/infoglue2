@@ -129,7 +129,7 @@
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
-<!--
+
 	<tr>
 		<td class="biglabel">Base group properties on content type definition</td>
 	</tr>
@@ -149,7 +149,7 @@
 			</select>
 		</td>
 	</tr>
--->
+
 	#if($supportsUpdate)
 	<tr>
 		<td>&nbsp;</td>

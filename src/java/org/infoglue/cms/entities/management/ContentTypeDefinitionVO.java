@@ -30,8 +30,9 @@ public class ContentTypeDefinitionVO implements BaseEntityVO
 { 
 
 	public static final Integer CONTENT = new Integer(0);
-	public static final Integer EXTRANET_ROLE_PROPERTIES = new Integer(1);
-	public static final Integer EXTRANET_USER_PROPERTIES = new Integer(2);     
+	public static final Integer EXTRANET_ROLE_PROPERTIES	= new Integer(1);
+	public static final Integer EXTRANET_USER_PROPERTIES  	= new Integer(2);     
+	public static final Integer EXTRANET_GROUP_PROPERTIES 	= new Integer(3);     
 
 	private java.lang.Integer contentTypeDefinitionId;
 	private java.lang.String name;

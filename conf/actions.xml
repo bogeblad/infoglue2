@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.36 2005/04/19 11:32:07 jan Exp $ -->
+<!-- $Id: actions.xml,v 1.37 2005/04/20 16:04:41 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -558,7 +558,7 @@
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
-	<!-- ExtranetRoleProperties -->
+	<!-- RoleProperties -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRolePropertiesAction" alias="ViewRoleProperties">
 		<view name="success">/cms/managementtool/viewRoleProperties.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -593,6 +593,19 @@
 		<view name="input">/cms/managementtool/viewGroup.vm</view>
 		<view name="success">ViewGroup.action</view>
 		<view name="saveAndExit">ViewListGroup.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	
+	<!-- GroupProperties -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewGroupPropertiesAction" alias="ViewGroupProperties">
+		<view name="success">/cms/managementtool/viewGroupProperties.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateGroupPropertiesAction" alias="UpdateGroupProperties">
+		<view name="success">ViewGroupProperties.action</view>
+		<!-- <view name="standalone">ViewContentVersion!standalone.action</view> -->
+		<view name="saveAndExit">ViewGroup.action</view>
+		<view name="saveAndExitStandalone">ViewContent!standalone.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	
