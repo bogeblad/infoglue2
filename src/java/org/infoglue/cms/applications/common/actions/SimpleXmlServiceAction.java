@@ -29,7 +29,6 @@
 package org.infoglue.cms.applications.common.actions;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -38,6 +37,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -53,7 +53,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.TransactionHistoryVO;
@@ -61,13 +60,17 @@ import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImp
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.INodeSupplier;
 
 public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 {
-	// protected static String ENCODING = "ISO-8859-1";
+    
+    private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
+    
+    protected static final String SERVICEREVISION = "$Revision: 1.10 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -134,14 +137,8 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     protected String out(String string) throws IOException
     {
 		getResponse().setContentType("text/xml; charset=" + ENCODING);
-		// getResponse().setContentLength(string.length());
-		/*OutputStream outs = getResponse().getOutputStream();
-		outs.write(string.getBytes());
-		outs.flush();
-		outs.close();*/
 		PrintWriter out = getResponse().getWriter();
 		out.println(string);
-		// out.write(new String(string.getBytes(), ENCODING));
 		return null;
     }
 	
@@ -152,6 +149,32 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 	{
         return null;
 	}
+    
+    public String doApplicationSettings() throws Exception
+    {
+        Document doc = DocumentHelper.createDocument();
+        Element root = doc.addElement("applicationSettings");
+        Properties props = CmsPropertyHandler.getProperties();
+        for(Iterator i = props.keySet().iterator(); i.hasNext();)
+        {
+            String key = (String) i.next();
+            String value = (String) props.get(key);
+            if(!isProtectedProperty(key))
+                root.addElement(key).setText(value);
+        }
+        
+        root.addElement("serviceRevision").setText(SERVICEREVISION);
+		return out(getFormattedDocument(doc));
+    }
+
+    private boolean isProtectedProperty(String key)
+    {
+        String [] fragments = protectedPropertyFragments.split(",");
+        for(int i=0; i<fragments.length;i++)
+            if(key.toLowerCase().indexOf(fragments[i].toLowerCase()) > -1)
+                return true;
+        return false;
+    }
 
     /*
      * Returns all contentTypeDefinitions
