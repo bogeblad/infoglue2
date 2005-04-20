@@ -329,7 +329,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 				return getAvailablePackagesButtons();
 
 		}
-		catch(Exception e) {}			
+		catch(Exception e) {e.printStackTrace();}			
 					
 		return null;				
 	}
@@ -590,9 +590,12 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 
 		buttons.add(new ImageButton(true, "javascript:submitListForm('category');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteCategory"), "Delete Category"));
 		
-		String returnAddress = URLEncoder.encode(URLEncoder.encode("CategoryManagement!edit.action?categoryId=" + getCategoryId() + "&title=Category%20Details", "UTF-8"), "UTF-8");
-		buttons.add(getAccessRightsButton("Category", getCategoryId().toString(), returnAddress));
-
+		if(getCategoryId() != null)
+		{	
+		    String returnAddress = URLEncoder.encode(URLEncoder.encode("CategoryManagement!edit.action?categoryId=" + getCategoryId() + "&title=Category%20Details", "UTF-8"), "UTF-8");
+		    buttons.add(getAccessRightsButton("Category", getCategoryId().toString(), returnAddress));
+		}
+		
 		return buttons;
 	}
 	

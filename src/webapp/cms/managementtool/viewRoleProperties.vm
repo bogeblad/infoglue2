@@ -113,6 +113,22 @@
 		return false;
 	}
 
+	function addCategory(attributeName, selectName)
+	{
+		var categoryId = document.getElementById(selectName).value;
+		document.getElementById("model/attributeName").value = attributeName;
+		document.getElementById("model/category/categoryId").value = categoryId;
+		document.catForm.submit();
+	}
+
+	function deleteCategory(propertiesCategoryId)
+	{
+		var url = "RoleCategory!delete.action?propertiesCategoryId=" + propertiesCategoryId;
+		url += "&contentId=" + contentId;
+		url += "&languageId=" + languageId;
+		window.location.href = url;
+	}
+
 	//*******************************************
 	// This is a timer that warns the user about saving his work once in a while so he does not
 	// get a new login-screen next time he saves.
@@ -625,12 +641,12 @@
 						<tr valign="bottom" class="darkgreen">
 							<td width="80%">$categoryKey.title ("$keyAttribute") - $categoryKey.description</td>
 							<td align="right">
-                            #if($contentVersionId)
+                            #if($rolePropertiesVO)
 								#addCategorySelect($dropdownName $availableCategories "")
 							#end
 							</td>
 							<td align="right">
-                            #if($contentVersionId)
+                            #if($rolePropertiesVO)
 								<a href="javascript:addCategory('${keyAttribute}', '${dropdownName}');"><img src="$ui.getString("images.contenttool.buttons.addCategory")" border="0"/></a>
 							#end
 							</td>
@@ -655,7 +671,7 @@
 					#if($relatedCategories.size() == 0)
 						<tr class="white">
 							<td colspan="2">
-							#if(!$contentVersionId)
+							#if(!$rolePropertiesVO)
 								$ui.getString("tool.contenttool.saveToRelateCategoriesPrefix") $keyAttribute
 							#else
 								$ui.getString("tool.contenttool.noCategoriesPrefix") $keyAttribute
@@ -867,6 +883,12 @@
 		</td>
 	</tr>
 </table>
+</form>
+
+<form id="catForm" name="catForm" action="RoleCategory!add.action" method="POST">
+	<input type="hidden" id="model/attributeName" name="model/attributeName" value="">
+	<input type="hidden" id="model/category/categoryId" name="model/category/categoryId" value="">
+	<input type="hidden" name="model/rolePropertiesId" value="$rolePropertiesVO.id">
 </form>
 
 </div>

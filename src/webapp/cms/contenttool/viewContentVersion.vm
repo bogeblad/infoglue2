@@ -416,18 +416,6 @@
 		document.getElementById("model/category/categoryId").value = categoryId;
 		document.catForm.submit();
 	}
-	/*
-	function addCategory(attributeName, selectName)
-	{
-		var categoryId = document.getElementById(selectName).value;
-		var url = "ContentCategory!add.action?model/attributeName=" + attributeName;
-		url += "&model/contentVersionId=" + contentVersionId;
-		url += "&model/category/categoryId=" + categoryId;
-		url += "&contentId=" + contentId;
-		url += "&languageId=" + languageId;
-		window.location.href = url;
-	}
-	*/
 
 	function deleteCategory(contentCategoryId)
 	{
