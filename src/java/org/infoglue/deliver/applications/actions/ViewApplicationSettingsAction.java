@@ -23,24 +23,27 @@
 
 package org.infoglue.deliver.applications.actions;
 
-import org.exolab.castor.jdo.Database;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-
-import java.lang.reflect.*;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * This is the action that can supply a caller with a lot of information about the delivery-engine.
@@ -56,6 +59,9 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 	//Used to get the navigation title of a page
 	private String navigationTitle = null;
 	private String sourceId = null;
+	private String className = null;
+
+    private static final String ENCODING = "UTF-8"; 
 
 	/**
 	 * The constructor for this action - contains nothing right now.
@@ -74,10 +80,74 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
     {
 		return NONE;
     }
+
+    protected String out(String string) throws IOException
+    {
+		getResponse().setContentType("text/xml; charset=" + ENCODING);
+		PrintWriter out = getResponse().getWriter();
+		out.println(string);
+		return null;
+    }
+    
+    private String q(String s)
+    {
+        return "\"" + s + "\"";
+    }
+    
+    private String createMethodElement(Method m)
+    {
+        String args = "";
+        Class[] params = m.getParameterTypes();
+        for(int i=0; i<params.length; i++)
+        {
+            if(i!=0) args+=", ";
+            args += params[i].getName();
+        }
+        
+        return "<method name=" + q(m.getName()) + " returnType=" + q(m.getReturnType().getName()) + " args=" + q(args) + "/>";
+    }
+    
+	public String doGetClassMethods() throws Exception
+	{
+	    StringBuffer document = new StringBuffer();
+		try 
+		{
+		    Class cls = null;
+		    if(className==null || className.equals("$templateLogic"))
+		        cls = BasicTemplateController.class;
+		    else if(className.equals("$componentLogic"))
+		        cls = ComponentLogic.class;
+		    else
+		        cls = Class.forName(className);
+		    
+		    if(cls==null) return out("<methods class=\"null\" package=\"null\"/>");
+		    
+		    document.append("<methods class=" +  q(cls.getName()) + " package=" + q(cls.getPackage().getName()) + ">");
+            Method m[] = cls.getDeclaredMethods();
+            for (int i = 0; i < m.length; i++)
+            {
+            	Method method = m[i];
+            	if(Modifier.isPublic(method.getModifiers()))
+            	{
+            	    document.append(createMethodElement(method));
+            	}
+            }
+		    document.append("</methods>");
+        }
+        catch (Throwable e) 
+        {
+            System.err.println(e);
+            return out("<methods class=\"null\" package=\"null\"/>");
+        }
+
+		return out(document.toString());
+	}
+    
     
 	/**
 	 * This command is used to get a list of all available methods on the templateController.
 	 * This service is mostly used by the template-editor so it can keep up with changes easily.
+	 * @deprecated
 	 */
 	
 	public String doGetTemplateLogicMethods() throws Exception
@@ -124,7 +194,6 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
         {
             System.err.println(e);
         }
-
 		return "templateMethods";
 	}
 	
@@ -195,4 +264,12 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 		this.sourceId = sourceId;
 	}
 
+    public String getClassName()
+    {
+        return className;
+    }
+    public void setClassName(String className)
+    {
+        this.className = className;
+    }
 }
