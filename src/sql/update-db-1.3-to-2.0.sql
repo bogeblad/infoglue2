@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.11 2005/04/20 16:08:11 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.12 2005/04/21 21:27:38 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -227,4 +227,18 @@ CREATE TABLE cmAccessRightGroup (
   accessRightId int(11) NOT NULL default '0',
   groupName varchar(150) NOT NULL default '',
   PRIMARY KEY  (accessRightGroupId),
+) TYPE=MyISAM;
+
+
+------------------------------------------------------
+-- Added workflow in IG instead                     --
+------------------------------------------------------
+
+DROP TABLE IF EXISTS cmWorkflowDefinition;
+
+CREATE TABLE cmWorkflowDefinition (
+  workflowDefinitionId int(11) NOT NULL auto_increment,
+  name text NOT NULL,
+  value text NOT NULL,
+  PRIMARY KEY  (workflowDefinitionId)
 ) TYPE=MyISAM;

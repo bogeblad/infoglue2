@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.38 2005/04/21 16:11:03 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.39 2005/04/21 21:27:38 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -1221,6 +1221,33 @@
 	<action name="org.infoglue.deliver.applications.actions.DeployPortletAction" alias="DeployPortlet">
         <view name="success">/deliver/error.vm</view>
 		<view name="error">/deliver/error.vm</view>
+	</action>
+
+
+	<!-- Workflows Actions -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListWorkflowDefinitionAction" alias="ViewListWorkflowDefinition">
+		<view name="success">/cms/managementtool/viewListWorkflowDefinition.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewWorkflowDefinitionAction" alias="ViewWorkflowDefinition">
+		<view name="success">/cms/managementtool/viewWorkflowDefinition.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateWorkflowDefinitionAction" alias="UpdateWorkflowDefinition">
+		<view name="input">/cms/managementtool/viewWorkflowDefinition.vm</view>
+		<view name="success">ViewWorkflowDefinition.action</view>
+		<view name="saveAndExit">ViewListWorkflowDefinition.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteWorkflowDefinitionAction" alias="DeleteWorkflowDefinition">
+		<view name="success">ViewListWorkflowDefinition.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.CreateWorkflowDefinitionAction" alias="CreateWorkflowDefinition">
+		<view name="input">/cms/managementtool/createWorkflowDefinition.vm</view>
+		<view name="success">ViewWorkflowDefinition.action</view>
+		<view name="saveAndExit">ViewListWorkflowDefinition.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
 </actions>

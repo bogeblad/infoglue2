@@ -1190,6 +1190,22 @@
 	    </field>
     </class>
     
+    <!--  Mapping for WorkflowDefinition  -->
+  	<class name="org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl" identity="workflowDefinitionId" key-generator="IDENTITY">
+	    <description>WorkflowDefinition</description>
+	    <cache-type type="unlimited" capacity="1000"/>
+	    <map-to table="cmWorkflowDefinition"/>
+	    <field name="workflowDefinitionId" type="java.lang.Integer">
+	      <sql name="workflowDefinitionId" type="integer" dirty="check" />
+	    </field>
+	    <field name="name" type="java.lang.String">
+	      <sql name="name" type="varchar" dirty="check" />
+	    </field>
+	    <field name="value" type="java.lang.String">
+	      <sql name="value" type="clob" dirty="ignore" />
+	    </field>
+  	</class>
+    
 </mapping>
 
 
