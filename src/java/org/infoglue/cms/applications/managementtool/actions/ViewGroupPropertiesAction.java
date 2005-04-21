@@ -23,47 +23,38 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.dom4j.Document;
-import org.dom4j.Node;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
-import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
-import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.util.CmsLogger;
-import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
+import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.List;
 
-public class ViewGroupPropertiesAction extends InfoGlueAbstractAction
+public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 {
-	private final String currentAction		= "ViewGroupProperties.action";
-	private final String updateAction 		= "UpdateGroupProperties";
-	private final String labelKey 			= "Group Properties";
-	private final String title 				= "Group Properties";
-	private final String extraParameters 	= "";
-
 	private String groupName;
 	private GroupPropertiesVO groupPropertiesVO;
 	private List groupPropertiesVOList;
-	private List availableLanguages;
-	private List contentTypeDefinitionVOList;
-	private List attributes;
-	private ContentTypeDefinitionVO contentTypeDefinitionVO;
-	private Integer contentTypeDefinitionId;
-	private Integer languageId;
-	private Integer currentEditorId;
-	private String attributeName = "";
-	private String textAreaId = "";
 	
 	
+    public ViewGroupPropertiesAction()
+    {
+        this.setCurrentAction("ViewGroupProperties.action");
+        this.setUpdateAction("UpdateGroupProperties");
+        this.setCancelAction("ViewGroup.action");
+        this.setToolbarKey("tool.managementtool.viewGroupProperties.header");
+        this.setTitleKey("tool.managementtool.viewGroupProperties.header");
+        this.setArguments("");
+        this.setEntityName(GroupProperties.class.getName());
+    }
+		
 	/**
 	 * Initializes all properties needed for the usecase.
 	 * @param extranetGroupId
@@ -72,36 +63,32 @@ public class ViewGroupPropertiesAction extends InfoGlueAbstractAction
 
 	protected void initialize(String groupName) throws Exception
 	{
-		this.availableLanguages = LanguageController.getController().getLanguageVOList();
-		
-		if(this.languageId == null && this.availableLanguages.size() > 0)
-			this.languageId = ((LanguageVO)this.availableLanguages.get(0)).getLanguageId();
-		
-		CmsLogger.logInfo("Language:" + this.languageId);
+	    super.initialize();
+				
 		CmsLogger.logInfo("groupName:" + groupName);
-		
+		System.out.println("groupName:" + groupName);
+
 		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(groupName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
-			this.contentTypeDefinitionVO = (ContentTypeDefinitionVO)contentTypeDefinitionVOList.get(0);
-		
-		CmsLogger.logInfo("contentTypeDefinitionVO:" + contentTypeDefinitionVO.getName());
+			this.setContentTypeDefinitionVO((ContentTypeDefinitionVO)contentTypeDefinitionVOList.get(0));
 		
 		InfoGlueGroup infoGlueGroup = GroupControllerProxy.getController().getGroup(groupName);
-		groupPropertiesVOList = GroupPropertiesController.getController().getGroupPropertiesVOList(groupName, this.languageId);
+		groupPropertiesVOList = GroupPropertiesController.getController().getGroupPropertiesVOList(groupName, this.getLanguageId());
 		if(groupPropertiesVOList != null && groupPropertiesVOList.size() > 0)
 		{
 			this.groupPropertiesVO = (GroupPropertiesVO)groupPropertiesVOList.get(0);
-			this.contentTypeDefinitionId = this.groupPropertiesVO.getLanguageId();
+			this.setContentTypeDefinitionId(this.groupPropertiesVO.getContentTypeDefinitionId());
 		}
 		else
 		{
-			this.contentTypeDefinitionId = this.contentTypeDefinitionVO.getContentTypeDefinitionId();
+			this.setContentTypeDefinitionId(this.getContentTypeDefinitionVO().getContentTypeDefinitionId());
 		}
+		System.out.println("this.groupPropertiesVO:" + this.groupPropertiesVO);
 		
-		this.attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());	
+		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
 	
-		CmsLogger.logInfo("attributes:" + this.attributes.size());		
-		CmsLogger.logInfo("availableLanguages:" + this.availableLanguages.size());		
+		CmsLogger.logInfo("attributes:" + this.getContentTypeAttributes().size());		
+		CmsLogger.logInfo("availableLanguages:" + this.getAvailableLanguages().size());		
 		
 	} 
 
@@ -111,46 +98,8 @@ public class ViewGroupPropertiesAction extends InfoGlueAbstractAction
 		
 		return "success";
 	}
-		
-	/**
-	 * This method fetches a value from the xml that is the contentVersions Value. If the 
-	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
-	 */
-	 
-	public String getAttributeValue(String key)
-	{
-		String value = "";
-		try
-		{
-			String xml = this.getXML();
-			if(xml != null)
-			{	
-				CmsLogger.logInfo("key:" + key);
-				CmsLogger.logInfo("XML:" + this.getXML());
-				
-				DOMBuilder domBuilder = new DOMBuilder();
-				
-				Document document = domBuilder.getDocument(this.getXML());
-				CmsLogger.logInfo("rootElement:" + document.getRootElement().asXML());
-				
-				Node node = document.getRootElement().selectSingleNode("attributes/" + key);
-				if(node != null)
-				{
-					value = node.getStringValue();
-					CmsLogger.logInfo("Getting value: " + value);
-					if(value != null)
-						value = new VisualFormatter().escapeHTML(value);
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 
-		return value;
-	}
-	
+
 	/**
 	 * Returns a list of digital assets available for this content version.
 	 */
@@ -175,138 +124,35 @@ public class ViewGroupPropertiesAction extends InfoGlueAbstractAction
 	}	
 
 	
-	/**
-	 * This method fetches the blob from the database and saves it on the disk.
-	 * Then it returnes a url for it
-	 */
 	
-	public String getDigitalAssetUrl(Integer digitalAssetId) throws Exception
+	
+
+	/**
+	 * Returns all current Category relationships for th specified attrbiute name
+	 * @param attribute
+	 * @return
+	 */
+	public List getRelatedCategories(String attribute)
 	{
-		String imageHref = null;
 		try
 		{
-       		imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetId);
+			if(this.groupPropertiesVO != null && this.groupPropertiesVO.getId() != null)
+		    	return getPropertiesCategoryController().findByPropertiesAttribute(attribute, GroupProperties.class.getName(),  this.groupPropertiesVO.getId());
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
-			imageHref = e.getMessage();
+			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
-		
-		return imageHref;
-	}
-	
-	
-	/**
-	 * This method fetches the blob from the database and saves it on the disk.
-	 * Then it returnes a url for it
-	 */
-	
-	public String getDigitalAssetThumbnailUrl(Integer digitalAssetId) throws Exception
-	{
-		String imageHref = null;
-		try
-		{
-       		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(digitalAssetId);
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logWarning("We could not get the url of the thumbnail: " + e.getMessage(), e);
-			imageHref = e.getMessage();
-		}
-		
-		return imageHref;
-	}
-	
-	public List getAvailableLanguages()
-	{
-		return this.availableLanguages;
-	}
-	
-        
-	public Integer getContentTypeDefinitionId()
-	{
-		return this.contentTypeDefinitionId;
-	}
-	
-	public String getExtraParameters()
-	{
-		return extraParameters;
+
+		return Collections.EMPTY_LIST;
 	}
 
-	public String getLabelKey()
-	{
-		return labelKey;
-	}
-
-	public String getTitle()
-	{
-		return title;
-	}
-
-	public String getUpdateAction()
-	{
-		return updateAction;
-	}
-
-	public String getCurrentAction()
-	{
-		return currentAction;
-	}
-
+	
 	public String getXML()
 	{
-		return (this.groupPropertiesVO == null) ? null : this.groupPropertiesVO.getValue();
+	    return (this.groupPropertiesVO == null) ? null : this.groupPropertiesVO.getValue();
 	}
 
-	public Integer getLanguageId()
-	{
-		return languageId;
-	}
-
-	public void setLanguageId(Integer languageId)
-	{
-		this.languageId = languageId;
-	}
-
-	public Integer getCurrentEditorId()
-	{
-		return currentEditorId;
-	}
-
-	public void setCurrentEditorId(Integer integer)
-	{
-		currentEditorId = integer;
-	}
-
-	public String getAttributeName()
-	{
-		return this.attributeName;
-	}
-
-	public void setAttributeName(String attributeName)
-	{
-		this.attributeName = attributeName;
-	}
-
-	public String getTextAreaId()
-	{
-		return this.textAreaId;
-	}
-
-	public void setTextAreaId(String textAreaId)
-	{
-		this.textAreaId = textAreaId;
-	}
-	
-	/**
-	 * This method returns the attributes in the content type definition for generation.
-	 */
-	
-	public List getContentTypeAttributes()
-	{   		
-		return this.attributes;
-	}
 	
 	public String getGroupName()
 	{
@@ -323,9 +169,33 @@ public class ViewGroupPropertiesAction extends InfoGlueAbstractAction
 		return groupPropertiesVOList;
 	}
 
-	public void setGroupName(String string)
+	public void setGroupName(String groupName)
 	{
-		groupName = string;
+		this.groupName = groupName;
+		this.setOwnerEntityId(groupName);
 	}
+    
+    public Integer getEntityId()
+    {
+        return this.groupPropertiesVO.getId();
+    }
+    
+    public void setOwnerEntityId(String ownerEntityId)
+    {
+        super.setOwnerEntityId(ownerEntityId);
+        this.groupName = ownerEntityId;
+    }
+     
+    public String getReturnAddress() throws Exception
+    {
+    	String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+        return this.getCurrentAction() + "?groupName=" + URLEncoder.encode(this.groupName, URIEncoding) + "&languageId=" + this.getLanguageId();
+    }
+
+    public String getCancelAddress() throws Exception
+    {
+    	String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+        return this.getCancelAction() + "?groupName=" + URLEncoder.encode(this.groupName, URIEncoding);
+    }
 
 }

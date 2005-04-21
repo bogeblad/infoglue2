@@ -9,6 +9,7 @@
 <script type="text/javascript">
 <!--
 
+	var allowSave = true;  //Sets to false if one does not close like one should
 	var currentEditorIdHash = new Array();
 
 	//*******************************************
@@ -35,6 +36,7 @@
 	
 	function openFormEditor(url)
 	{
+		allowSave = false;
 		openPopup(url, "FormEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 	}
 
@@ -44,6 +46,7 @@
 	
 	function openRelationEditor(url)
 	{
+		allowSave = false;
 		openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 	}
 
@@ -123,10 +126,9 @@
 
 	function deleteCategory(propertiesCategoryId)
 	{
-		var url = "RoleCategory!delete.action?propertiesCategoryId=" + propertiesCategoryId;
-		url += "&contentId=" + contentId;
-		url += "&languageId=" + languageId;
-		window.location.href = url;
+		document.catForm.action = "PropertiesCategory!delete.action";
+		document.getElementById("propertiesCategoryId").value = propertiesCategoryId;
+		document.catForm.submit();
 	}
 
 	//*******************************************
@@ -135,7 +137,7 @@
 	//*******************************************
 	var beenWarned = false;
 	var inaktiveTime = 0;
-	var timeout = 1000000;
+	var timeout = ($sessionTimeout / 60) * 60 * 1000;
     function warnForTimeout()
     {
        	alert("Please save your work often to avoid loosing it due to the security timeout. If you suspect you might not have saved for 10-20 minutes or so we recommend you copy all of your text before you press save so you don't risk loosing it.");
@@ -458,6 +460,8 @@
 						    </tr>
 						    </table>
 						</div>
+						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
+						
 					#end
 					
 					#if($enableContentRelationEditor == "true" && $readonly == "")
@@ -664,7 +668,7 @@
 						<tr $class>
 							<td width="50%">$relation.category.name</td>
 							<td width="50%" align="right">
-								<a href="javascript:deleteCategory('$relation.contentCategoryId');"><img src="images/delete.gif" border="0"/></a>
+								<a href="javascript:deleteCategory('$relation.propertiesCategoryId');"><img src="images/delete.gif" border="0"/></a>
 							</td>
 						</tr>
 					#end
@@ -742,6 +746,12 @@
 	<script type="text/javascript">
 		function validateAndSubmitContentForm()
 		{
+			if(allowSave == false)
+			{
+				alert("$ui.getString("tool.contenttool.cannotSaveBecauseInvalidClose")");
+				return;
+			}
+		
 			pastedTime = count; 
 			
 			if(beenWarned)
@@ -844,13 +854,20 @@
 			        }
 					else
 					{
-						//alert("elementId:" + elementId);
-						//alert(document.getElementById(elementId).value);
+						/*
 						fieldName = "document.editForm." + elementId;
-						//alert(fieldName);
-						//alert(eval(fieldName).value);
 						value = eval(fieldName).value;
-						//value = document.getElementById(elementId).value;		
+						*/
+						
+						var hiddenField = document.getElementById(elementId + "Hidden");
+						if(hiddenField)
+							fieldName = "document.editForm." + elementId + "Hidden";
+						else
+							fieldName = "document.editForm." + elementId;
+						
+
+						value = eval(fieldName).value;
+						
 					}
 			    }      
 			}	
@@ -885,10 +902,13 @@
 </table>
 </form>
 
-<form id="catForm" name="catForm" action="RoleCategory!add.action" method="POST">
+<form id="catForm" name="catForm" action="PropertiesCategory!add.action" method="POST">
+	<input type="hidden" id="propertiesCategoryId" name="propertiesCategoryId" value="">
 	<input type="hidden" id="model/attributeName" name="model/attributeName" value="">
 	<input type="hidden" id="model/category/categoryId" name="model/category/categoryId" value="">
-	<input type="hidden" name="model/rolePropertiesId" value="$rolePropertiesVO.id">
+	<input type="hidden" name="model/entityName" value="$entityName">
+	<input type="hidden" name="model/entityId" value="$entityId">
+	<input type="hidden" name="returnAddress" value="$currentAction?roleName=$roleName&languageId=$!languageId">
 </form>
 
 </div>

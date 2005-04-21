@@ -81,6 +81,15 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	}
 
 	/**
+	 * This method returns the session timeout value.
+	 */
+	
+	public int getSessionTimeout()
+	{
+	    return this.getHttpSession().getMaxInactiveInterval();
+	}
+
+	/**
 	 * This method returns a propertyValue for the logged in user.
 	 * 
 	 * @author Mattias Bogeblad

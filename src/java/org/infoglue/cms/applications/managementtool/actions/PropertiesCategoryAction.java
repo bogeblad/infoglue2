@@ -16,8 +16,10 @@ public class PropertiesCategoryAction extends ModelAction
 	private PropertiesCategoryController controller = PropertiesCategoryController.getController();
 	private Integer propertiesId;
 	private Integer languageId;
-
-	protected Persistent createModel()				{ return new PropertiesCategoryVO(); }
+	private String returnAddress;
+	
+	protected Persistent createModel() { return new PropertiesCategoryVO(); }
+	
 	public PropertiesCategoryVO getPropertiesCategory()	{ return (PropertiesCategoryVO)getModel(); }
 
 	public Integer getPropertiesCategoryId()		{ return getPropertiesCategory().getPropertiesCategoryId(); }
@@ -29,16 +31,33 @@ public class PropertiesCategoryAction extends ModelAction
 	public Integer getLanguageId()			{ return languageId; }
 	public void setLanguageId(Integer i)	{ languageId = i;	}
 
-	public String doAdd() throws SystemException
+    public String getReturnAddress()
+    {
+        System.out.println("get returnAddress:" + returnAddress);
+        return returnAddress;
+    }
+
+    public void setReturnAddress(String returnAddress)
+    {
+        System.out.println("set returnAddress:" + returnAddress);
+        this.returnAddress = returnAddress;
+    }
+	
+	public String doAdd() throws SystemException, Exception
 	{
-	    System.out.println("Attribute:" + getPropertiesCategory().getAttributeName());
 		setModel(controller.save(getPropertiesCategory()));
-		return SUCCESS;
+		
+		this.getResponse().sendRedirect(returnAddress);
+	    
+	    return NONE;
 	}
 
-	public String doDelete() throws SystemException
+	public String doDelete() throws SystemException, Exception
 	{
 		controller.delete(getPropertiesCategoryId());
-		return SUCCESS;
+		
+		this.getResponse().sendRedirect(returnAddress);
+	    
+	    return NONE;
 	}
 }

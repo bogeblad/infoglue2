@@ -25,6 +25,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.UserProperties;
@@ -151,7 +152,7 @@ public class DigitalAssetController extends BaseController
 	        
 				contentVersion.getDigitalAssets().add(digitalAsset);		        
 		    }
-		    else if(entity.equalsIgnoreCase("UserProperties"))
+		    else if(entity.equalsIgnoreCase(UserProperties.class.getName()))
 		    {
 				UserProperties userProperties = UserPropertiesController.getController().getUserPropertiesWithId(entityId, db);
 				Collection userPropertiesList = new ArrayList();
@@ -167,7 +168,7 @@ public class DigitalAssetController extends BaseController
 	        
 				userProperties.getDigitalAssets().add(digitalAsset);		        
 		    }
-		    else if(entity.equalsIgnoreCase("RoleProperties"))
+		    else if(entity.equalsIgnoreCase(RoleProperties.class.getName()))
 		    {
 		        RoleProperties roleProperties = RolePropertiesController.getController().getRolePropertiesWithId(entityId, db);
 				Collection rolePropertiesList = new ArrayList();
@@ -182,6 +183,22 @@ public class DigitalAssetController extends BaseController
 				db.create(digitalAsset);
 	        
 				roleProperties.getDigitalAssets().add(digitalAsset);		        		        
+		    }
+		    else if(entity.equalsIgnoreCase(GroupProperties.class.getName()))
+		    {
+		        GroupProperties groupProperties = GroupPropertiesController.getController().getGroupPropertiesWithId(entityId, db);
+				Collection groupPropertiesList = new ArrayList();
+				groupPropertiesList.add(groupProperties);
+				CmsLogger.logInfo("Added groupProperties:" + groupProperties.getId());
+	   		
+				digitalAsset = new DigitalAssetImpl();
+				digitalAsset.setValueObject(digitalAssetVO);
+				digitalAsset.setAssetBlob(is);
+				digitalAsset.setGroupProperties(groupPropertiesList);
+				
+				db.create(digitalAsset);
+	        
+				groupProperties.getDigitalAssets().add(digitalAsset);		        		        
 		    }
 		
 			commitTransaction(db);
@@ -319,10 +336,12 @@ public class DigitalAssetController extends BaseController
     		
     		if(entity.equalsIgnoreCase("ContentVersion"))
                 ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(entityId, digitalAsset, db);
-            else if(entity.equalsIgnoreCase("UserProperties"))
+            else if(entity.equalsIgnoreCase(UserProperties.class.getName()))
                 UserPropertiesController.getController().deleteDigitalAssetRelation(entityId, digitalAsset, db);
-            else if(entity.equalsIgnoreCase("RoleProperties"))
+            else if(entity.equalsIgnoreCase(RoleProperties.class.getName()))
                 RolePropertiesController.getController().deleteDigitalAssetRelation(entityId, digitalAsset, db);
+            else if(entity.equalsIgnoreCase(GroupProperties.class.getName()))
+                GroupPropertiesController.getController().deleteDigitalAssetRelation(entityId, digitalAsset, db);
 
             db.remove(digitalAsset);
 

@@ -41,6 +41,7 @@ public class UpdateRolePropertiesAction extends WebworkAbstractAction
 	private Integer contentTypeDefinitionId;
 	private Integer currentEditorId;
 	private String attributeName;
+	private String returnAddress;
 
 	private ConstraintExceptionBuffer ceb;
 	
@@ -52,23 +53,14 @@ public class UpdateRolePropertiesAction extends WebworkAbstractAction
 		
 	public String doExecute() throws Exception
 	{
-		//super.initialize(this.contentVersionId, this.contentId, this.languageId);
-		ceb.throwIfNotEmpty();
+	    ceb.throwIfNotEmpty();
 		RolePropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.rolePropertiesVO);
 		
-		return "success";
+		this.getResponse().sendRedirect(returnAddress);
+	    
+	    return NONE;
 	}
 
-	/*
-	public String doStandalone() throws Exception
-	{
-		//super.initialize(this.contentVersionId, this.contentId, this.languageId);
-		ceb.throwIfNotEmpty();
-		ContentVersionController.update(this.contentId, this.languageId, getRequest().getRemoteUser(), this.contentVersionVO);
-		
-		return "standalone";
-	}
-*/
 	public String doSaveAndExit() throws Exception
 	{
 		doExecute();
@@ -83,12 +75,12 @@ public class UpdateRolePropertiesAction extends WebworkAbstractAction
 		return "saveAndExitStandalone";
 	}
 				   
-	public void setRolePropertiesId(Integer rolePropertiesId)
+	public void setEntityId(Integer rolePropertiesId)
 	{
 		this.rolePropertiesVO.setRolePropertiesId(rolePropertiesId);
 	}
 
-	public java.lang.Integer getRolePropertiesId()
+	public java.lang.Integer getEntityId()
 	{
 		return this.rolePropertiesVO.getRolePropertiesId();
 	}
@@ -111,6 +103,16 @@ public class UpdateRolePropertiesAction extends WebworkAbstractAction
 	public void setRoleName(String roleName)
 	{
 		this.rolePropertiesVO.setRoleName(roleName);
+	}
+
+	public String getOwnerEntityId()
+	{
+		return this.rolePropertiesVO.getRoleName();
+	}
+
+	public void setOwnerEntityId(String ownerEntityId)
+	{
+		this.rolePropertiesVO.setRoleName(ownerEntityId);
 	}
 
 	public void setLanguageId(Integer languageId)
@@ -153,5 +155,13 @@ public class UpdateRolePropertiesAction extends WebworkAbstractAction
 		this.attributeName = attributeName;
 	}
 
-
+    public String getReturnAddress()
+    {
+        return returnAddress;
+    }
+    
+    public void setReturnAddress(String returnAddress)
+    {
+        this.returnAddress = returnAddress;
+    }
 }

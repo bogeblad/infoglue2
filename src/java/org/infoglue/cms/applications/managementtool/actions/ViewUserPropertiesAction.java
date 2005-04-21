@@ -23,83 +23,73 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.dom4j.Document;
-import org.dom4j.Node;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
-import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
+import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.List;
 
-public class ViewUserPropertiesAction extends InfoGlueAbstractAction
+public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 {
-	private final String currentAction		= "ViewUserProperties.action";
-	private final String updateAction 		= "UpdateUserProperties";
-	private final String labelKey 			= "User Properties";
-	private final String title 				= "User Properties";
-	private final String extraParameters 	= "";
+    public ViewUserPropertiesAction()
+    {
+        this.setCurrentAction("ViewUserProperties.action");
+        this.setUpdateAction("UpdateUserProperties");
+        this.setCancelAction("ViewUser.action");
+        this.setToolbarKey("tool.managementtool.viewUserProperties.header");
+        this.setTitleKey("tool.managementtool.viewUserProperties.header");
+        this.setArguments("");
+        this.setEntityName(UserProperties.class.getName());
+    }
 	
 	private String userName;
 	private UserPropertiesVO userPropertiesVO;
 	private List userPropertiesVOList;
-	private List availableLanguages;
-	private List contentTypeDefinitionVOList;
-	private List attributes;
-	private ContentTypeDefinitionVO contentTypeDefinitionVO;
-	private Integer contentTypeDefinitionId;
-	private Integer languageId;
-	private Integer currentEditorId;
-	private String attributeName = "";
-	private String textAreaId = "";
 	
 	
 	/**
 	 * Initializes all properties needed for the usecase.
-	 * @param userId
+	 * @param extranetUserId
 	 * @throws Exception
 	 */
 
 	protected void initialize(String userName) throws Exception
 	{
-		this.availableLanguages = LanguageController.getController().getLanguageVOList();
-		
-		if(this.languageId == null && this.availableLanguages.size() > 0)
-			this.languageId = ((LanguageVO)this.availableLanguages.get(0)).getLanguageId();
-		
-		CmsLogger.logInfo("Language:" + this.languageId);
-		
+	    super.initialize();
+				
+		CmsLogger.logInfo("userName:" + userName);
+		System.out.println("userName:" + userName);
+
 		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(userName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
-			this.contentTypeDefinitionVO = (ContentTypeDefinitionVO)contentTypeDefinitionVOList.get(0);
-		
-		CmsLogger.logInfo("contentTypeDefinitionVO:" + contentTypeDefinitionVO.getName());
+			this.setContentTypeDefinitionVO((ContentTypeDefinitionVO)contentTypeDefinitionVOList.get(0));
 		
 		InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController().getUser(userName);
-		userPropertiesVOList = UserPropertiesController.getController().getUserPropertiesVOList(userName, this.languageId);
+		userPropertiesVOList = UserPropertiesController.getController().getUserPropertiesVOList(userName, this.getLanguageId());
 		if(userPropertiesVOList != null && userPropertiesVOList.size() > 0)
 		{
 			this.userPropertiesVO = (UserPropertiesVO)userPropertiesVOList.get(0);
-			this.contentTypeDefinitionId = this.userPropertiesVO.getLanguageId();
+			this.setContentTypeDefinitionId(this.userPropertiesVO.getContentTypeDefinitionId());
 		}
 		else
 		{
-			this.contentTypeDefinitionId = this.contentTypeDefinitionVO.getContentTypeDefinitionId();
+			this.setContentTypeDefinitionId(this.getContentTypeDefinitionVO().getContentTypeDefinitionId());
 		}
+		System.out.println("this.userPropertiesVO:" + this.userPropertiesVO);
 		
-		this.attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());	
+		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
 	
-		CmsLogger.logInfo("attributes:" + this.attributes.size());		
-		CmsLogger.logInfo("availableLanguages:" + this.availableLanguages.size());		
+		CmsLogger.logInfo("attributes:" + this.getContentTypeAttributes().size());		
+		CmsLogger.logInfo("availableLanguages:" + this.getAvailableLanguages().size());		
+		
 	} 
 
 	public String doExecute() throws Exception
@@ -108,47 +98,8 @@ public class ViewUserPropertiesAction extends InfoGlueAbstractAction
 		
 		return "success";
 	}
-		
-	/**
-	 * This method fetches a value from the xml that is the contentVersions Value. If the 
-	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
-	 */
-	 
-	public String getAttributeValue(String key)
-	{
-		String value = "";
-		try
-		{
-			String xml = this.getXML();
-			if(xml != null)
-			{	
-				CmsLogger.logInfo("key:" + key);
-				CmsLogger.logInfo("XML:" + this.getXML());
-				
-				DOMBuilder domBuilder = new DOMBuilder();
-				
-				Document document = domBuilder.getDocument(this.getXML());
-				CmsLogger.logInfo("rootElement:" + document.getRootElement().asXML());
-				
-				Node node = document.getRootElement().selectSingleNode("attributes/" + key);
-				if(node != null)
-				{
-					value = node.getStringValue();
-					CmsLogger.logInfo("Getting value: " + value);
-					if(value != null)
-						value = new VisualFormatter().escapeHTML(value);
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 
-		return value;
-	}
-	
-	
+
 	/**
 	 * Returns a list of digital assets available for this content version.
 	 */
@@ -173,157 +124,78 @@ public class ViewUserPropertiesAction extends InfoGlueAbstractAction
 	}	
 
 	
-	/**
-	 * This method fetches the blob from the database and saves it on the disk.
-	 * Then it returnes a url for it
-	 */
 	
-	public String getDigitalAssetUrl(Integer digitalAssetId) throws Exception
+	
+
+	/**
+	 * Returns all current Category relationships for th specified attrbiute name
+	 * @param attribute
+	 * @return
+	 */
+	public List getRelatedCategories(String attribute)
 	{
-		String imageHref = null;
 		try
 		{
-       		imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetId);
+			if(this.userPropertiesVO != null && this.userPropertiesVO.getId() != null)
+		    	return getPropertiesCategoryController().findByPropertiesAttribute(attribute, UserProperties.class.getName(),  this.userPropertiesVO.getId());
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
-			imageHref = e.getMessage();
+			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
-		
-		return imageHref;
+
+		return Collections.EMPTY_LIST;
 	}
+
 	
-	
-	/**
-	 * This method fetches the blob from the database and saves it on the disk.
-	 * Then it returnes a url for it
-	 */
-	
-	public String getDigitalAssetThumbnailUrl(Integer digitalAssetId) throws Exception
-	{
-		String imageHref = null;
-		try
-		{
-       		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(digitalAssetId);
-		}
-		catch(Exception e)
-		{
-			CmsLogger.logWarning("We could not get the url of the thumbnail: " + e.getMessage(), e);
-			imageHref = e.getMessage();
-		}
-		
-		return imageHref;
-	}
-
-
-	public List getAvailableLanguages()
-	{
-		return this.availableLanguages;
-	}
-	
-	public Integer getContentTypeDefinitionId()
-	{
-		return this.contentTypeDefinitionId;
-	}
-	
-	public UserPropertiesVO getUserPropertiesVO()
-	{
-		return userPropertiesVO;
-	}
-
-	public void setUserPropertiesVO(UserPropertiesVO userPropertiesVO)
-	{
-		this.userPropertiesVO = userPropertiesVO;
-	}
-
-	public String getExtraParameters()
-	{
-		return extraParameters;
-	}
-
-	public String getLabelKey()
-	{
-		return labelKey;
-	}
-
-	public String getTitle()
-	{
-		return title;
-	}
-
-	public String getUpdateAction()
-	{
-		return updateAction;
-	}
-
-	public String getCurrentAction()
-	{
-		return currentAction;
-	}
-
 	public String getXML()
 	{
-		return (this.userPropertiesVO == null) ? null : this.userPropertiesVO.getValue();
+	    return (this.userPropertiesVO == null) ? null : this.userPropertiesVO.getValue();
 	}
 
-	public Integer getLanguageId()
-	{
-		return languageId;
-	}
-
-	public void setLanguageId(Integer languageId)
-	{
-		this.languageId = languageId;
-	}
-
-	public Integer getCurrentEditorId()
-	{
-		return currentEditorId;
-	}
-
-	public void setCurrentEditorId(Integer integer)
-	{
-		currentEditorId = integer;
-	}
-
-	public String getAttributeName()
-	{
-		return this.attributeName;
-	}
-
-	public void setAttributeName(String attributeName)
-	{
-		this.attributeName = attributeName;
-	}
-
-	public String getTextAreaId()
-	{
-		return this.textAreaId;
-	}
-
-	public void setTextAreaId(String textAreaId)
-	{
-		this.textAreaId = textAreaId;
-	}
-	
-	/**
-	 * This method returns the attributes in the content type definition for generation.
-	 */
-	
-	public List getContentTypeAttributes()
-	{   		
-		return this.attributes;
-	}
 	
 	public String getUserName()
 	{
 		return userName;
 	}
 
+	public UserPropertiesVO getUserPropertiesVO()
+	{
+		return userPropertiesVO;
+	}
+
+	public List getUserPropertiesVOList()
+	{
+		return userPropertiesVOList;
+	}
+
 	public void setUserName(String userName)
 	{
 		this.userName = userName;
+		this.setOwnerEntityId(userName);
 	}
+    
+    public Integer getEntityId()
+    {
+        return this.userPropertiesVO.getId();
+    }
+    
+    public void setOwnerEntityId(String ownerEntityId)
+    {
+        super.setOwnerEntityId(ownerEntityId);
+        this.userName = ownerEntityId;
+    }
+     
+    public String getReturnAddress() throws Exception
+    {
+    	String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+        return this.getCurrentAction() + "?userName=" + URLEncoder.encode(this.userName, URIEncoding) + "&languageId=" + this.getLanguageId();
+    }
+    
+    public String getCancelAddress() throws Exception
+    {
+    	String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+        return this.getCancelAction() + "?userName=" + URLEncoder.encode(this.userName, URIEncoding);
+    }
 
 }

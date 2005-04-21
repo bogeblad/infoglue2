@@ -298,9 +298,10 @@ public class GroupPropertiesController extends BaseController
 	 */
 	public void deleteDigitalAssetRelation(Integer groupPropertiesId, DigitalAsset digitalAsset, Database db) throws SystemException, Bug
     {
+	    System.out.println("groupPropertiesId:" + groupPropertiesId);
 	    GroupProperties groupProperties = getGroupPropertiesWithId(groupPropertiesId, db);
 	    groupProperties.getDigitalAssets().remove(digitalAsset);
-        digitalAsset.getGroupProperties().remove(groupProperties);
+	    digitalAsset.getGroupProperties().remove(groupProperties);
     }
 
 

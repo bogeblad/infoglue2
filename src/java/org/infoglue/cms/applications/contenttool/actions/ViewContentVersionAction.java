@@ -897,15 +897,6 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 		return Collections.EMPTY_LIST;
 	}
-
-	/**
-	 * This method returns the session timeout value.
-	 */
-	
-	public int getSessionTimeout()
-	{
-	    return this.getHttpSession().getMaxInactiveInterval();
-	}
 	
 	
 	public Integer getCurrentEditorId()

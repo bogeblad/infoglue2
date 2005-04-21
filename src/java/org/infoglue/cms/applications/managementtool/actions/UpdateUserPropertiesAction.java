@@ -41,6 +41,7 @@ public class UpdateUserPropertiesAction extends WebworkAbstractAction
 	private Integer contentTypeDefinitionId;
 	private Integer currentEditorId;
 	private String attributeName;
+	private String returnAddress;
 
 	private ConstraintExceptionBuffer ceb;
 	
@@ -56,7 +57,9 @@ public class UpdateUserPropertiesAction extends WebworkAbstractAction
 		ceb.throwIfNotEmpty();
 		UserPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.userPropertiesVO);
 		
-		return "success";
+		this.getResponse().sendRedirect(returnAddress);
+	    
+	    return NONE;
 	}
 
 	/*
@@ -82,13 +85,13 @@ public class UpdateUserPropertiesAction extends WebworkAbstractAction
 						 
 		return "saveAndExitStandalone";
 	}
-				   
-	public void setUserPropertiesId(Integer userPropertiesId)
+
+	public void setEntityId(Integer userPropertiesId)
 	{
 		this.userPropertiesVO.setUserPropertiesId(userPropertiesId);
 	}
 
-	public java.lang.Integer getUserPropertiesId()
+	public java.lang.Integer getEntityId()
 	{
 		return this.userPropertiesVO.getUserPropertiesId();
 	}
@@ -111,6 +114,16 @@ public class UpdateUserPropertiesAction extends WebworkAbstractAction
 	public void setUserName(String userName)
 	{
 		this.userPropertiesVO.setUserName(userName);
+	}
+
+	public String getOwnerEntityId()
+	{
+	    return this.userPropertiesVO.getUserName();
+	}
+
+	public void setOwnerEntityId(String ownerEntityId)
+	{
+	    this.userPropertiesVO.setUserName(ownerEntityId);
 	}
 
 	public void setLanguageId(Integer languageId)
@@ -153,5 +166,14 @@ public class UpdateUserPropertiesAction extends WebworkAbstractAction
 		this.attributeName = attributeName;
 	}
 
+    public String getReturnAddress()
+    {
+        return returnAddress;
+    }
+    
+    public void setReturnAddress(String returnAddress)
+    {
+        this.returnAddress = returnAddress;
+    }
 
 }

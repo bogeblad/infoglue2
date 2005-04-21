@@ -25,6 +25,9 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
+import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.RoleProperties;
+import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -270,29 +273,27 @@ public abstract class ViewRelationEditorAction extends WebworkAbstractAction
 	}
 	
 	/**
-	 * Updates the qualifyer in the RoleProperties stucture.
+	 * Updates the qualifyer in the EntityProperties stucture.
 	 */
-	public String doUpdateQualifyerInRoleProperties() throws Exception
+	public String doUpdateQualifyerInEntityProperties() throws Exception
 	{
-		updateAttributeValueInRoleProperties();
+	    System.out.println("AAAAAAAAAAAAAA");
+	    System.out.println("entityName:" + this.entityName);
+	    System.out.println("entityId:" + this.entityId);
+	    System.out.println("getAttributeName:" + this.getAttributeName());
+	    
+	    if(this.entityName.equalsIgnoreCase(UserProperties.class.getName()))
+	        UserPropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
+	    else if(this.entityName.equalsIgnoreCase(RoleProperties.class.getName()))
+	        RolePropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
+	    else if(this.entityName.equalsIgnoreCase(GroupProperties.class.getName()))
+	        GroupPropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
 	
 		initialize();
 	
 		return "success";
 	}
-	
-	/**
-	 * Updates the qualifyer in the extranetRoleProperties stucture.
-	 */
-	public String doUpdateQualifyerInGroupProperties() throws Exception
-	{
-		updateAttributeValueInGroupProperties();
-	
-		initialize();
-	
-		return "success";
-	}
-	
+		
 	
 	private List parseQualifyersFromXML(String qualifyerXML)
 	{
@@ -335,10 +336,12 @@ public abstract class ViewRelationEditorAction extends WebworkAbstractAction
 	{
 		try
 		{
-			if(this.entityName.equalsIgnoreCase("RoleProperty"))
-				return RolePropertiesController.getController().getAttributeValue(getEntityId(), getAttributeName(), false);
-			else if(this.entityName.equalsIgnoreCase("GroupProperty"))
-				return GroupPropertiesController.getController().getAttributeValue(getEntityId(), getAttributeName(), false);
+	        if(this.entityName.equalsIgnoreCase(UserProperties.class.getName()))
+			   	return UserPropertiesController.getController().getAttributeValue(getEntityId(), getAttributeName(), false);
+	        if(this.entityName.equalsIgnoreCase(RoleProperties.class.getName()))
+			   	return RolePropertiesController.getController().getAttributeValue(getEntityId(), getAttributeName(), false);
+	        else if(this.entityName.equalsIgnoreCase(GroupProperties.class.getName()))
+	            return GroupPropertiesController.getController().getAttributeValue(getEntityId(), getAttributeName(), false);
 			else
 				return ContentVersionController.getContentVersionController().getAttributeValue(getEntityId(), getAttributeName(), false);
 		}
@@ -358,22 +361,6 @@ public abstract class ViewRelationEditorAction extends WebworkAbstractAction
 		ContentVersionController.getContentVersionController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML, this.getInfoGluePrincipal());		
 	}
 
-	/**
-	 * This method is the specialized update method which assumes that the update is in a RoleProperties.
-	 */
-	
-	public void updateAttributeValueInRoleProperties() throws Exception
-	{
-		RolePropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
-	}
 
-	/**
-	 * This method is the specialized update method which assumes that the update is in a GroupProperties.
-	 */
-	
-	public void updateAttributeValueInGroupProperties() throws Exception
-	{
-		GroupPropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
-	}
 
 }

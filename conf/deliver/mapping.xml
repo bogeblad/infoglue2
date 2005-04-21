@@ -986,6 +986,9 @@
     <field name="roleProperties" type="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" lazy="true" collection="collection">
       <sql many-key="digitalAssetId" many-table="cmRolePropertiesDigitalAsset"/>
     </field>
+    <field name="groupProperties" type="org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl" lazy="true" collection="collection">
+      <sql many-key="digitalAssetId" many-table="cmGroupPropertiesDigitalAsset"/>
+    </field>
     <field name="assetBlob" type="stream" >
       <sql name="assetBlob" type="blob" dirty="ignore" />
     </field>

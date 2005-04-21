@@ -41,6 +41,7 @@ public class UpdateGroupPropertiesAction extends WebworkAbstractAction
 	private Integer contentTypeDefinitionId;
 	private Integer currentEditorId;
 	private String attributeName;
+	private String returnAddress;
 
 	private ConstraintExceptionBuffer ceb;
 	
@@ -52,23 +53,14 @@ public class UpdateGroupPropertiesAction extends WebworkAbstractAction
 		
 	public String doExecute() throws Exception
 	{
-		//super.initialize(this.contentVersionId, this.contentId, this.languageId);
 		ceb.throwIfNotEmpty();
 		GroupPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.groupPropertiesVO);
 		
-		return "success";
+		this.getResponse().sendRedirect(returnAddress);
+	    
+	    return NONE;	
 	}
 
-	/*
-	public String doStandalone() throws Exception
-	{
-		//super.initialize(this.contentVersionId, this.contentId, this.languageId);
-		ceb.throwIfNotEmpty();
-		ContentVersionController.update(this.contentId, this.languageId, getRequest().getRemoteUser(), this.contentVersionVO);
-		
-		return "standalone";
-	}
-*/
 	public String doSaveAndExit() throws Exception
 	{
 		doExecute();
@@ -82,13 +74,13 @@ public class UpdateGroupPropertiesAction extends WebworkAbstractAction
 						 
 		return "saveAndExitStandalone";
 	}
-				   
-	public void setGroupPropertiesId(Integer groupPropertiesId)
+				
+	public void setEntityId(Integer groupPropertiesId)
 	{
 		this.groupPropertiesVO.setGroupPropertiesId(groupPropertiesId);
 	}
 
-	public java.lang.Integer getGroupPropertiesId()
+	public java.lang.Integer getEntityId()
 	{
 		return this.groupPropertiesVO.getGroupPropertiesId();
 	}
@@ -111,6 +103,16 @@ public class UpdateGroupPropertiesAction extends WebworkAbstractAction
 	public void setGroupName(String groupName)
 	{
 		this.groupPropertiesVO.setGroupName(groupName);
+	}
+
+	public String getOwnerEntityId()
+	{
+		return this.groupPropertiesVO.getGroupName();
+	}
+
+	public void setOwnerEntityId(String ownerEntityId)
+	{
+		this.groupPropertiesVO.setGroupName(ownerEntityId);
 	}
 
 	public void setLanguageId(Integer languageId)
@@ -153,5 +155,14 @@ public class UpdateGroupPropertiesAction extends WebworkAbstractAction
 		this.attributeName = attributeName;
 	}
 
+    public String getReturnAddress()
+    {
+        return returnAddress;
+    }
+    
+    public void setReturnAddress(String returnAddress)
+    {
+        this.returnAddress = returnAddress;
+    }
 
 }

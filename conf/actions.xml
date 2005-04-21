@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.37 2005/04/20 16:04:41 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.38 2005/04/21 16:11:03 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -509,12 +509,12 @@
 
 	<!-- UserProperties -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewUserPropertiesAction" alias="ViewUserProperties">
-		<view name="success">/cms/managementtool/viewUserProperties.vm</view>
+		<!--<view name="success">/cms/managementtool/viewUserProperties.vm</view>-->
+		<view name="success">/cms/managementtool/viewEntityProperties.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateUserPropertiesAction" alias="UpdateUserProperties">
 		<view name="success">ViewUserProperties.action</view>
-		<!-- <view name="standalone">ViewContentVersion!standalone.action</view> -->
 		<view name="saveAndExit">ViewSystemUser.action</view>
 		<view name="saveAndExitStandalone">ViewContent!standalone.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -560,12 +560,12 @@
 
 	<!-- RoleProperties -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRolePropertiesAction" alias="ViewRoleProperties">
-		<view name="success">/cms/managementtool/viewRoleProperties.vm</view>
+		<view name="success">/cms/managementtool/viewEntityProperties.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateRolePropertiesAction" alias="UpdateRoleProperties">
-		<view name="success">ViewRoleProperties.action</view>
-		<!-- <view name="standalone">ViewContentVersion!standalone.action</view> -->
+		<view name="success">ViewRoleProperties.action?roleName=${ownerEntityId}&amp;languageId=${languageId}</view>
+		<!--<view name="success">ViewRoleProperties.action</view>-->
 		<view name="saveAndExit">ViewRole.action</view>
 		<view name="saveAndExitStandalone">ViewContent!standalone.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -598,7 +598,7 @@
 	
 	<!-- GroupProperties -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewGroupPropertiesAction" alias="ViewGroupProperties">
-		<view name="success">/cms/managementtool/viewGroupProperties.vm</view>
+		<view name="success">/cms/managementtool/viewEntityProperties.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateGroupPropertiesAction" alias="UpdateGroupProperties">
@@ -1203,6 +1203,12 @@
 		<command name="delete" alias="ContentCategory!delete">
 			<view name="success">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}</view>
 		</command>
+	</action>
+
+	<!-- Properties Category Commands -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.PropertiesCategoryAction" alias="PropertiesCategory">
+		<view name="error">/cms/managementtool/error.vm</view>
+		<view name="success">$returnAddress</view>
 	</action>
 
 	<!-- Portlet Commands -->

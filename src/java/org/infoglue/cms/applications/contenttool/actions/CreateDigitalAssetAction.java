@@ -26,8 +26,12 @@ package org.infoglue.cms.applications.contenttool.actions;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
+import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.applications.common.VisualFormatter;
@@ -124,15 +128,20 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	        }
 	        else
 	        {
-	            if(this.entity.equalsIgnoreCase("UserProperties"))
+	            if(this.entity.equalsIgnoreCase(UserProperties.class.getName()))
 	            {
 	                UserPropertiesVO userPropertiesVO = UserPropertiesController.getController().getUserPropertiesVOWithId(this.entityId);
 	                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(userPropertiesVO.getContentTypeDefinitionId());            
 	            }
-	            else if(this.entity.equalsIgnoreCase("RoleProperties"))
+	            else if(this.entity.equalsIgnoreCase(RoleProperties.class.getName()))
 	            {
 	                RolePropertiesVO rolePropertiesVO = RolePropertiesController.getController().getRolePropertiesVOWithId(this.entityId);
 	                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(rolePropertiesVO.getContentTypeDefinitionId());            
+	            }
+	            else if(this.entity.equalsIgnoreCase(GroupProperties.class.getName()))
+	            {
+	                GroupPropertiesVO groupPropertiesVO = GroupPropertiesController.getController().getGroupPropertiesVOWithId(this.entityId);
+	                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(groupPropertiesVO.getContentTypeDefinitionId());            
 	            }
 	        }
 	        
