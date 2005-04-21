@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.viewWorkflowDefinitionList.header" "tool.managementtool.viewWorkflowDefinitionList.header" "")
+
+#set($lvConstraint = 1) 
+#lvHead(["Name"] "tool.managementtool.deleteWorkflowDefinitions.header" "DeleteWorkflowDefinition.action" "ViewListWorkflowDefinition.action" "tool.managementtool.deleteWorkflowDefinitions.text")
+
+#set($cnt = 0)
+#foreach ($workflowDefinitionVO in $workflowDefinitions)
+	#set( $workflowDefinitionId = $workflowDefinitionVO.getWorkflowDefinitionId() ) 
+	
+	#set( $rowUrl = "ViewWorkflowDefinition.action?workflowDefinitionId=$workflowDefinitionVO.getWorkflowDefinitionId()")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$workflowDefinitionVO.getName()'/> <a href=$rowUrl>$workflowDefinitionVO.getName()</a>"])
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $workflowDefinitionId)
+#end
+#lvEnd()
+
+#endManagementTool()
