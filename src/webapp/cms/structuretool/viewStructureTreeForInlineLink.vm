@@ -45,7 +45,6 @@
 		
 		function htmlTreeItemClick(entityId, repositoryId, path)
 		{
-			alert("aaaa:" + entityId);
 			document.inputForm.contentId.value = entityId;
 			//var url = "ViewContentVersion!viewAssets.action?contentId=" + entityId + "&languageId=$languageId";
 			//document.getElementById("contentVersionAssetsFrame").src = url;
