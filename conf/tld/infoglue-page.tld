@@ -4,37 +4,29 @@
     <tlibversion>1.0</tlibversion>
     <jspversion>1.1</jspversion>
     <shortname>infoglue-page</shortname>
-    <description>Tags for org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController</description>
-	 
+    <info>Tags for org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController</info>
 	<tag>
         <name>contentAttribute</name>
         <tagclass>org.infoglue.deliver.taglib.page.ContentAttributeTag</tagclass>
         <bodycontent>empty</bodycontent>
-        <description>TemplateLogic.getContentAttribute(String, String, boolean)</description>
-        <example>
-        </example>
+        <info>TemplateLogic.getContentAttribute(String, String, boolean)</info>
         <attribute>
-	        <description>Name of exported variable</description>
     	    <name>id</name>
-    	    <type>java.lang.String</type>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
             <name>propertyName</name>
-    	    <type>java.lang.String</type>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
             <name>attributeName</name>
-    	    <type>java.lang.String</type>
             <required>true</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
             <name>clean</name>
-    	    <type>boolean</type>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
@@ -45,48 +37,31 @@
         <name>boundFolderContents</name>
         <tagclass>org.infoglue.deliver.taglib.page.BoundFolderContentsTag</tagclass>
         <bodycontent>empty</bodycontent>
-        <description>TemplateLogic.getBoundFolderContents(String, boolean, String, String)</description>
+        <info>TemplateLogic.getBoundFolderContents(String, boolean, String, String)</info>
         <attribute>
-	        <description>Name of exported variable.</description>
     	    <name>id</name>
-    	    <type>java.lang.String</type>
         	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
-	        <description></description>
     	    <name>structureBindningName</name>
-    	    <type>java.lang.String</type>
         	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
-	        <description></description>
     	    <name>sortAttribute</name>
-    	    <type>java.lang.String</type>
         	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
-	        <description></description>
     	    <name>sortOrder</name>
-    	    <type>java.lang.String</type>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
-	        <description></description>
     	    <name>searchRecursive</name>
-    	    <type>java.lang.String</type>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
-	    <variable>
-			<name-from-attribute>id</name-from-attribute>
-        	<variable-class>java.util.List</variable-class>
-        	<declare>true</declare>
-        	<scope>AT_END</scope>
-        	<description>Result collection</description>
-      	</variable> 
     </tag>
 </taglib>

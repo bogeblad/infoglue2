@@ -5,5 +5,9 @@
     <tlibversion>1.0</tlibversion>
     <jspversion>1.1</jspversion>
     <shortname>infoglue-component</shortname>
-    <description>Misc infoglue tags</description>
+    <info>Misc infoglue tags</info>
+    <tag>
+		<name>dummy</name>
+		<tagclass>dummy</tagclass>
+    </tag>
 </taglib>
