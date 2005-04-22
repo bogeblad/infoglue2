@@ -24,6 +24,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
@@ -35,9 +36,13 @@ import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
+import org.infoglue.cms.entities.structure.QualifyerVO;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.*;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.dom.DOMBuilder;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -45,12 +50,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import org.apache.xerces.parsers.DOMParser;
+import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -503,43 +510,246 @@ public class GroupPropertiesController extends BaseController
 		
 		if(groupPropertiesVO != null)
 		{	
-			try
-			{
-				CmsLogger.logInfo("attributeName:" + attributeName);
-				CmsLogger.logInfo("VersionValue:"  + groupPropertiesVO.getValue());
-				InputSource inputSource = new InputSource(new StringReader(groupPropertiesVO.getValue()));
-				
-				DOMParser parser = new DOMParser();
-				parser.parse(inputSource);
-				Document document = parser.getDocument();
-				
-				NodeList nl = document.getDocumentElement().getChildNodes();
-				Node n = nl.item(0);
-				
-				nl = n.getChildNodes();
-				for(int i=0; i<nl.getLength(); i++)
-				{
-					n = nl.item(i);
-					if(n.getNodeName().equalsIgnoreCase(attributeName))
-					{
-						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
-						{
-							value = n.getFirstChild().getNodeValue();
-							CmsLogger.logInfo("Getting value: " + value);
-							if(value != null && escapeHTML)
-								value = new VisualFormatter().escapeHTML(value);
-							break;
-						}
-					}
-				}		        	
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
+			value = getAttributeValue(groupPropertiesVO.getValue(), attributeName, escapeHTML);
 		}
-		//CmsLogger.logInfo("value:" + value);	
+
 		return value;
+	}
+
+	/**
+	 * This method fetches a value from the xml that is the groupProperties Value. 
+	 */
+	 
+	public String getAttributeValue(String xml, String attributeName, boolean escapeHTML) throws SystemException, Bug
+	{
+		String value = "";
+		
+		try
+		{
+			InputSource inputSource = new InputSource(new StringReader(xml));
+			
+			DOMParser parser = new DOMParser();
+			parser.parse(inputSource);
+			Document document = parser.getDocument();
+			
+			NodeList nl = document.getDocumentElement().getChildNodes();
+			Node n = nl.item(0);
+			
+			nl = n.getChildNodes();
+			for(int i=0; i<nl.getLength(); i++)
+			{
+				n = nl.item(i);
+				if(n.getNodeName().equalsIgnoreCase(attributeName))
+				{
+					if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
+					{
+						value = n.getFirstChild().getNodeValue();
+						if(value != null && escapeHTML)
+							value = new VisualFormatter().escapeHTML(value);
+
+						break;
+					}
+				}
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return value;
+	}
+
+	/**
+	 * Returns the related Contents
+	 * @param groupPropertiesId
+	 * @return
+	 */
+
+	public List getRelatedContents(String groupName, Integer languageId, String attributeName) throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+
+		List relatedContentVOList = new ArrayList();
+
+		beginTransaction(db);
+
+		try
+		{
+		    List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
+		    Iterator iterator = groupProperties.iterator();
+		    GroupProperties groupProperty = null;
+		    while(iterator.hasNext())
+		    {
+		        groupProperty = (GroupProperties)iterator.next();
+		        break;
+		    }
+		    
+		    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+			List contents = this.getRelatedContentsFromXML(db, xml);
+
+			relatedContentVOList = toVOList(contents);
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return relatedContentVOList;
+	}
+
+	/**
+	 * Returns the related SiteNodes
+	 * @param groupPropertiesId
+	 * @return
+	 */
+
+	public List getRelatedSiteNodes(String groupName, Integer languageId, String attributeName) throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+
+		List relatedSiteNodeVOList = new ArrayList();
+
+		beginTransaction(db);
+
+		try
+		{
+		    List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
+		    Iterator iterator = groupProperties.iterator();
+		    GroupProperties groupProperty = null;
+		    while(iterator.hasNext())
+		    {
+		        groupProperty = (GroupProperties)iterator.next();
+		        break;
+		    }
+		    
+		    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+			List siteNodes = this.getRelatedContentsFromXML(db, xml);
+
+			relatedSiteNodeVOList = toVOList(siteNodes);
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return relatedSiteNodeVOList;
+	}
+
+	
+	/**
+	 * Parses contents from an XML within a transaction
+	 * @param qualifyerXML
+	 * @return
+	 */
+
+	private List getRelatedContentsFromXML(Database db, String qualifyerXML)
+	{
+		List contents = new ArrayList(); 
+    	
+		if(qualifyerXML == null || qualifyerXML.length() == 0)
+			return contents;
+		
+		try
+		{
+			org.dom4j.Document document = new DOMBuilder().getDocument(qualifyerXML);
+			
+			String entity = document.getRootElement().attributeValue("entity");
+			
+			List children = document.getRootElement().elements();
+			Iterator i = children.iterator();
+			while(i.hasNext())
+			{
+				Element child = (Element)i.next();
+				String id = child.getStringValue();
+				
+				Content content = ContentController.getContentController().getContentWithId(new Integer(id), db);
+				contents.add(content);     	
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return contents;
+	}
+
+	/**
+	 * Parses siteNodes from an XML within a transaction
+	 * @param qualifyerXML
+	 * @return
+	 */
+
+	private List getRelatedSiteNodesFromXML(Database db, String qualifyerXML)
+	{
+		List siteNodes = new ArrayList(); 
+    	
+		if(qualifyerXML == null || qualifyerXML.length() == 0)
+			return siteNodes;
+		
+		try
+		{
+			org.dom4j.Document document = new DOMBuilder().getDocument(qualifyerXML);
+			
+			String entity = document.getRootElement().attributeValue("entity");
+			
+			List children = document.getRootElement().elements();
+			Iterator i = children.iterator();
+			while(i.hasNext())
+			{
+				Element child = (Element)i.next();
+				String id = child.getStringValue();
+				
+				SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(id), db);
+				siteNodes.add(siteNode);     	
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return siteNodes;
+	}
+
+	
+	/**
+	 * Returns all current Category relationships for th specified attrbiute name
+	 * @param attribute
+	 * @return
+	 */
+	
+	public List getRelatedCategories(String groupName, Integer languageId, String attribute)
+	{
+		try
+		{
+		    List groupPropertiesVOList = this.getGroupPropertiesVOList(groupName, languageId);
+		    Iterator iterator = groupPropertiesVOList.iterator();
+		    GroupPropertiesVO groupPropertyVO = null;
+		    while(iterator.hasNext())
+		    {
+		        groupPropertyVO = (GroupPropertiesVO)iterator.next();
+		        break;
+		    }
+
+			if(groupPropertyVO != null && groupPropertyVO.getId() != null)
+		    	return PropertiesCategoryController.getController().findByPropertiesAttribute(attribute, GroupProperties.class.getName(), groupPropertyVO.getId());
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+		}
+
+		return Collections.EMPTY_LIST;
 	}
 	
 	/**
