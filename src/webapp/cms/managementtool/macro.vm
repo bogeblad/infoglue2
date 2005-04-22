@@ -285,7 +285,7 @@
 			#set( $hcnt=0 )
 			#foreach( $header in $headers )
 				#set( $hcnt=$hcnt + 1 )
-				<td class="listheader" STYLE="cursor:hand;" onMouseDown="downHeader($hcnt);" onMouseUp="upHeader($hcnt);" onMouseOut="upHeader($hcnt);">
+				<td class="listheader" ASTYLE="cursor:hand;" onMouseDown="downHeader($hcnt);" onMouseUp="upHeader($hcnt);" onMouseOut="upHeader($hcnt);">
 					<!--img id="a$hcnt" align=right valign=middle src='images/listarrowdown.gif'/--><!-- No sorting in release 1.0 -->
 					<div class="minormarginalized">$header</div>
 				</td>

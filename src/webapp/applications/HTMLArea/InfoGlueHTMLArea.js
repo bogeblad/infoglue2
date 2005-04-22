@@ -147,7 +147,7 @@ function configInfoGlue(config)
 			hilitecolor: [ "Background Color", "ed_color_bg.gif", false, function(e) {e.execCommand("hilitecolor");} ],
 			inserthorizontalrule: [ "Horizontal Rule", "ed_hr.gif", false, function(e) {e.execCommand("inserthorizontalrule");} ],
 			createlink: [ "Insert Web Link", "ed_link.gif", false, function(e) {e.execCommand("createlink", true);} ],
-		    inlinelink: ["Lets the user create a link to a page in infoglue", "ed_inlinelink.gif", false, function(e) {e.execCommand("createinlinelink");} ],
+		    inlinelink: ["Lets the user create a link to an external page, a page in InfoGlue or an asset in InfoGlue", "ed_inlinelink.gif", false, function(e) {e.execCommand("createinlinelink");} ],
 			inlineimage: ["Lets the user select a inline image", "ed_inlineimage.gif", false, function(e) {e.execCommand("insertinlineimage");} ],
 		    insertimage: [ "Insert/Modify Image", "ed_image.gif", false, function(e) {e.execCommand("insertimage");} ],
 			inserttable: [ "Insert Table", "insert_table.gif", false, function(e) {e.execCommand("inserttable");} ],

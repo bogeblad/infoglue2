@@ -106,7 +106,7 @@ this.btnList = {
 
     // Add custom buttons here:
     "inlineimage":    ['InlineImage',          'Lets the user select a inline image',  'editor_action(this.id)',  'ed_inlineimage.gif'],
-    "inlinelink":     ['InlineLink',           'Lets the user create a link to a page in infoglue',   'editor_action(this.id)',  'ed_inlinelink.gif'],
+    "inlinelink":     ['InlineLink',           'Lets the user create a link to an external page, a page in InfoGlue or an asset in InfoGlue',   'editor_action(this.id)',  'ed_inlinelink.gif'],
     "custom2":           ['custom2',         'Purpose of button 2',  'editor_action(this.id)',  'ed_custom.gif'],
     "custom3":           ['custom3',         'Purpose of button 3',  'editor_action(this.id)',  'ed_custom.gif'],
    // end: custom buttons
