@@ -130,6 +130,8 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
     {
         try
         {
+            workflows = new HashMap();
+            
             List list = WorkflowDefinitionController.getController().getWorkflowDefinitionVOList();
 
             Iterator listIterator = list.iterator();

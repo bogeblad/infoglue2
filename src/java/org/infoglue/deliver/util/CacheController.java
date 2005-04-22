@@ -343,6 +343,7 @@ public class CacheController extends Thread
 			clearCache(ConsequenceDefinitionImpl.class);
 			clearCache(EventImpl.class);
 			clearCache(WorkflowImpl.class);
+			clearCache(WorkflowDefinitionImpl.class);
 			clearCache(CategoryImpl.class);
 			clearCache(ContentCategoryImpl.class);
 			clearCache(RegistryImpl.class);

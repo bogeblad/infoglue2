@@ -23,68 +23,63 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
+import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+
 
 /**
  * @author Mattias Bogeblad
  */
 
-public class UpdateWorkflowDefinitionAction extends InfoGlueAbstractAction
-{
-	private ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-	private WorkflowDefinitionVO workflowDefinitionVO = new WorkflowDefinitionVO();
-	
-	private Integer workflowDefinitionId;
-	private String name;
-	private String value;
-	
-	public String doExecute() throws Exception
-    {
-    	ceb.add(this.workflowDefinitionVO.validate());
-    	ceb.throwIfNotEmpty();		
 
-		WorkflowDefinitionController.getController().update(this.workflowDefinitionVO);
+public class CreateWorkflowDefinitionAction extends WebworkAbstractAction
+{
+	private WorkflowDefinitionVO workflowDefinitionVO = new WorkflowDefinitionVO();
+	private ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		
+	public String doInput() throws Exception
+    {
+    	return "input";
+    }
+	
+	protected String doExecute() throws Exception 
+	{
+		ceb.add(this.workflowDefinitionVO.validate());
+    	ceb.throwIfNotEmpty();	
+    				
+		this.workflowDefinitionVO = WorkflowDefinitionController.getController().create(this.workflowDefinitionVO);
 		
 		return "success";
 	}
-	
-	public String doSaveAndExit() throws Exception
+
+    public Integer getWorkflowDefinitionId()
     {
-    	doExecute();
-    	
-		return "saveAndExit";
+        return this.workflowDefinitionVO.getId();
+    }
+
+	public void setName(String name)
+	{
+		this.workflowDefinitionVO.setName(name);	
 	}
 
     public String getName()
     {
-        return workflowDefinitionVO.getName();
+        return this.workflowDefinitionVO.getName();
     }
-    
-    public void setName(String name)
-    {
-        this.workflowDefinitionVO.setName(name);
-    }
-    
-    public String getValue()
-    {
-        return workflowDefinitionVO.getValue();
-    }
-    
-    public void setValue(String value)
-    {
+	
+	public void setValue(String value)
+	{
         this.workflowDefinitionVO.setValue(value);
-    }
-    
-    public Integer getWorkflowDefinitionId()
-    {
-        return workflowDefinitionVO.getWorkflowDefinitionId();
-    }
-    
-    public void setWorkflowDefinitionId(Integer workflowDefinitionId)
-    {
-        this.workflowDefinitionVO.setWorkflowDefinitionId(workflowDefinitionId);
-    }
+	}
+
+	public String getValue()
+	{
+		return this.workflowDefinitionVO.getValue();	
+	}
+
 }

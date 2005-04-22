@@ -236,17 +236,17 @@ public class WorkflowDefinitionController extends BaseController
 	}
 	*/
     
-    public ContentTypeDefinitionVO create(ContentTypeDefinitionVO contentTypeDefinitionVO) throws ConstraintException, SystemException
+    public WorkflowDefinitionVO create(WorkflowDefinitionVO workflowDefinitionVO) throws ConstraintException, SystemException
     {
-        ContentTypeDefinition contentTypeDefinition = new ContentTypeDefinitionImpl();
-        contentTypeDefinition.setValueObject(contentTypeDefinitionVO);
-        contentTypeDefinition = (ContentTypeDefinition) createEntity(contentTypeDefinition);
-        return contentTypeDefinition.getValueObject();
+        WorkflowDefinition workflowDefinition = new WorkflowDefinitionImpl();
+        workflowDefinition.setValueObject(workflowDefinitionVO);
+        workflowDefinition = (WorkflowDefinition) createEntity(workflowDefinition);
+        return workflowDefinition.getValueObject();
     }
 
-    public void delete(ContentTypeDefinitionVO contentTypeDefinitionVO) throws ConstraintException, SystemException
+    public void delete(WorkflowDefinitionVO workflowDefinitionVO) throws ConstraintException, SystemException
     {
-    	deleteEntity(ContentTypeDefinitionImpl.class, contentTypeDefinitionVO.getContentTypeDefinitionId());
+    	deleteEntity(WorkflowDefinitionImpl.class, workflowDefinitionVO.getWorkflowDefinitionId());
     }
 
     public WorkflowDefinitionVO update(WorkflowDefinitionVO workflowDefinitionVO) throws ConstraintException, SystemException

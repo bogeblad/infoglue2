@@ -1,4 +1,5 @@
 <osworkflow>
 	<persistence class="com.opensymphony.workflow.spi.hibernate.HibernateWorkflowStore"/>
 	<factory class="com.opensymphony.workflow.loader.XMLWorkflowFactory"/>
+	<!--<factory class="org.infoglue.cms.util.workflow.InfoGlueWorkflowFactory"/>-->
 </osworkflow>

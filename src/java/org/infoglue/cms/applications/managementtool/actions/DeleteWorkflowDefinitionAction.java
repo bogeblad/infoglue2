@@ -23,68 +23,37 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.exception.*;
 
 /**
+ * This action removes a workflowDefinition from the system.
+ * 
  * @author Mattias Bogeblad
  */
 
-public class UpdateWorkflowDefinitionAction extends InfoGlueAbstractAction
+public class DeleteWorkflowDefinitionAction extends WebworkAbstractAction
 {
-	private ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 	private WorkflowDefinitionVO workflowDefinitionVO = new WorkflowDefinitionVO();
-	
 	private Integer workflowDefinitionId;
-	private String name;
-	private String value;
-	
-	public String doExecute() throws Exception
-    {
-    	ceb.add(this.workflowDefinitionVO.validate());
-    	ceb.throwIfNotEmpty();		
-
-		WorkflowDefinitionController.getController().update(this.workflowDefinitionVO);
 		
+	protected String doExecute() throws Exception 
+	{
+		WorkflowDefinitionController.getController().delete(this.workflowDefinitionVO);
 		return "success";
 	}
 	
-	public String doSaveAndExit() throws Exception
-    {
-    	doExecute();
-    	
-		return "saveAndExit";
+	public void setWorkflowDefinitionId(Integer workflowDefinitionId) throws SystemException
+	{
+		this.workflowDefinitionVO.setWorkflowDefinitionId(workflowDefinitionId);	
 	}
 
-    public String getName()
+    public java.lang.Integer getWorkflowDefinitionId()
     {
-        return workflowDefinitionVO.getName();
+        return this.workflowDefinitionVO.getWorkflowDefinitionId();
     }
-    
-    public void setName(String name)
-    {
-        this.workflowDefinitionVO.setName(name);
-    }
-    
-    public String getValue()
-    {
-        return workflowDefinitionVO.getValue();
-    }
-    
-    public void setValue(String value)
-    {
-        this.workflowDefinitionVO.setValue(value);
-    }
-    
-    public Integer getWorkflowDefinitionId()
-    {
-        return workflowDefinitionVO.getWorkflowDefinitionId();
-    }
-    
-    public void setWorkflowDefinitionId(Integer workflowDefinitionId)
-    {
-        this.workflowDefinitionVO.setWorkflowDefinitionId(workflowDefinitionId);
-    }
+        
+	
 }

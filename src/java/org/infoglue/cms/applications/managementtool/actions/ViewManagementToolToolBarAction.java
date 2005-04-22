@@ -36,6 +36,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionControll
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.treeservice.ss.ManagementNodeImpl;
 import org.infoglue.cms.util.CmsLogger;
@@ -75,6 +76,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	private Integer interceptionPointId = null;
 	private Integer interceptorId = null;
 	private Integer categoryId = null;
+	private Integer workflowDefinitionId = null;
 	
 	private String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
 	
@@ -271,6 +273,16 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		this.userName = userName;
 	}
+	
+    public Integer getWorkflowDefinitionId()
+    {
+        return workflowDefinitionId;
+    }
+    
+    public void setWorkflowDefinitionId(Integer workflowDefinitionId)
+    {
+        this.workflowDefinitionId = workflowDefinitionId;
+    }
 
 	public List getButtons()
 	{
@@ -327,6 +339,10 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 				return getCategoryButtons();
 			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewUp2DateList.header"))
 				return getAvailablePackagesButtons();
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinitionList.header"))
+				return getWorkflowDefinitionsButtons();
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinition.header"))
+				return getWorkflowDefinitionDetailsButtons();
 
 		}
 		catch(Exception e) {e.printStackTrace();}			
@@ -602,6 +618,22 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	private ImageButton getAccessRightsButton(String interceptionPointCategory, String extraParameter, String returnAddress) throws Exception
 	{
 		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=" + interceptionPointCategory + "&extraParameters=" + extraParameter +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header");
+	}
+
+	private List getWorkflowDefinitionsButtons() throws Exception
+	{
+		List buttons = new ArrayList();
+		buttons.add(new ImageButton("CreateWorkflowDefinition!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newWorkflowDefinition"), "New WorkflowDefinition"));	
+		buttons.add(new ImageButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
+		return buttons;
+	}
+	
+	private List getWorkflowDefinitionDetailsButtons() throws Exception
+	{
+		List buttons = new ArrayList();
+		this.name = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(this.workflowDefinitionId).getName();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteWorkflowDefinition.header&yesDestination=" + URLEncoder.encode("DeleteWorkflowDefinition.action?workflowDefinitionId=" + this.workflowDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListWorkflowDefinition.action", "UTF-8") + "&message=tool.managementtool.deleteWorkflowDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinition.header"));
+		return buttons;				
 	}
 
 }
