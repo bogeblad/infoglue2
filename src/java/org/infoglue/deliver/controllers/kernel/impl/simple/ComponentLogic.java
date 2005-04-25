@@ -58,6 +58,7 @@ public class ComponentLogic
  		this.templateController = templateController;
  		this.infoGlueComponent 	= infoGlueComponent;
  		this.componentDeliveryContext = ComponentDeliveryContext.getComponentDeliveryContext(templateController.getDeliveryContext(), infoGlueComponent);
+ 		this.componentDeliveryContext.addUsedContent("content:" + infoGlueComponent.getContentId());
  	}
 
 	/**

@@ -37,12 +37,14 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 
 import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.UserProperties;
@@ -50,6 +52,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsLogger;
@@ -282,7 +285,7 @@ public class ExtranetController extends BaseDeliveryController
 	 * This method starts with getting the property on the user and if it does not exist we check out the
 	 * group-properties as well.
 	 */
-	
+	/*
 	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
 	{
 		String value = "";
@@ -291,14 +294,11 @@ public class ExtranetController extends BaseDeliveryController
 			return null;
 		
 		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
-		//CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
 		Iterator userPropertiesListIterator = userPropertiesList.iterator();
 		while(userPropertiesListIterator.hasNext())
 		{
 			UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
-			//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
-			//CmsLogger.logInfo("propertyName:" + propertyName);
-
+	
 			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId) && userProperties.getValue() != null && propertyName != null)
 			{
 				String propertyXML = userProperties.getValue();
@@ -308,9 +308,7 @@ public class ExtranetController extends BaseDeliveryController
 				Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
 				if(node != null)
 				{
-					//CmsLogger.logInfo("node:" + node.asXML());
 					value = node.getStringValue();
-					//CmsLogger.logInfo("value:" + value);
 					CmsLogger.logInfo("Getting value: " + value);
 					if(value != null && escapeSpecialCharacters)
 						value = new VisualFormatter().escapeHTML(value);
@@ -321,23 +319,17 @@ public class ExtranetController extends BaseDeliveryController
 		
 		if(value.equals(""))
 		{	
-			//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
 			List roles = infoGluePrincipal.getRoles();
-			//CmsLogger.logInfo("roles:" + roles.size());
 			Iterator rolesIterator = roles.iterator();
 			while(rolesIterator.hasNext())
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-				//CmsLogger.logInfo("role:" + role.getName());
 				
 				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
-				//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
 				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
 				while(rolePropertiesListIterator.hasNext())
 				{
 					RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
-					//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
-					//CmsLogger.logInfo("propertyName:" + propertyName);
 					
 					if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId) && roleProperties.getValue() != null && propertyName != null)
 					{
@@ -348,9 +340,7 @@ public class ExtranetController extends BaseDeliveryController
 						Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
 						if(node != null)
 						{
-							//CmsLogger.logInfo("node:" + node.asXML());
 							value = node.getStringValue();
-							//CmsLogger.logInfo("value:" + value);
 							CmsLogger.logInfo("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
@@ -368,10 +358,52 @@ public class ExtranetController extends BaseDeliveryController
 					return getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters);
 			}
 		}
+
+		if(value.equals(""))
+		{	
+			List groups = infoGluePrincipal.getGroups();
+			Iterator groupsIterator = groups.iterator();
+			while(groupsIterator.hasNext())
+			{
+				InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+				
+				Collection groupPropertiesList = GroupPropertiesController.getController().getGroupPropertiesList(group.getName(), languageId, db);
+				Iterator groupPropertiesListIterator = groupPropertiesList.iterator();
+				while(groupPropertiesListIterator.hasNext())
+				{
+					GroupProperties groupProperties = (GroupProperties)groupPropertiesListIterator.next();
 					
+					if(groupProperties != null && groupProperties.getLanguage().getLanguageId().equals(languageId) && groupProperties.getValue() != null && propertyName != null)
+					{
+						String propertyXML = groupProperties.getValue();
+						DOMBuilder domBuilder = new DOMBuilder();
+						Document document = domBuilder.getDocument(propertyXML);
+						
+						Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
+						if(node != null)
+						{
+							value = node.getStringValue();
+							CmsLogger.logInfo("Getting value: " + value);
+							if(value != null && escapeSpecialCharacters)
+								value = new VisualFormatter().escapeHTML(value);
+							break;
+						}
+					}
+				}
+									
+			}
+			
+			if(value.equals("") && useLanguageFallback)
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+				if(!masterLanguageVO.getLanguageId().equals(languageId))
+					return getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters);
+			}
+		}
+
 		return value;
 	}	
-	
+	*/
 	
 	
 	/**
@@ -420,23 +452,17 @@ public class ExtranetController extends BaseDeliveryController
 		
 		if(assetUrl.equals(""))
 		{	
-			//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
 			List roles = infoGluePrincipal.getRoles();
-			//CmsLogger.logInfo("roles:" + roles.size());
 			Iterator rolesIterator = roles.iterator();
 			while(rolesIterator.hasNext())
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-				//CmsLogger.logInfo("role:" + role.getName());
 				
 				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
-				//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
 				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
 				while(rolePropertiesListIterator.hasNext())
 				{
 					RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
-					//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
-					//CmsLogger.logInfo("propertyName:" + propertyName);
 					
 					if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId))
 					{
@@ -464,7 +490,48 @@ public class ExtranetController extends BaseDeliveryController
 					return getPrincipalAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback);
 			}
 		}
-		
+
+		if(assetUrl.equals(""))
+		{	
+			List groups = infoGluePrincipal.getGroups();
+			Iterator groupsIterator = groups.iterator();
+			while(groupsIterator.hasNext())
+			{
+				InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+				
+				Collection groupPropertiesList = GroupPropertiesController.getController().getGroupPropertiesList(group.getName(), languageId, db);
+				Iterator groupPropertiesListIterator = groupPropertiesList.iterator();
+				while(groupPropertiesListIterator.hasNext())
+				{
+					GroupProperties groupProperties = (GroupProperties)groupPropertiesListIterator.next();
+					
+					if(groupProperties != null && groupProperties.getLanguage().getLanguageId().equals(languageId))
+					{
+					    Collection assets = groupProperties.getDigitalAssets();
+					    Iterator assetsIterator = assets.iterator();
+					    while(assetsIterator.hasNext())
+					    {
+					        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
+					        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
+					        {
+					            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
+					            break;
+					        }
+					    }
+					}
+				}
+									
+			}
+			
+			if(assetUrl.equals("") && useLanguageFallback)
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+				if(!masterLanguageVO.getLanguageId().equals(languageId))
+					return getPrincipalAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback);
+			}
+		}
+
 		return assetUrl;
 	}	
 	
@@ -483,14 +550,11 @@ public class ExtranetController extends BaseDeliveryController
 			return null;
 		
 		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
-		//CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
 		Iterator userPropertiesListIterator = userPropertiesList.iterator();
 		while(userPropertiesListIterator.hasNext())
 		{
 			UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
-			//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
-			//CmsLogger.logInfo("propertyName:" + propertyName);
-
+	
 			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId))
 			{
 			    Collection assets = userProperties.getDigitalAssets();
@@ -510,23 +574,17 @@ public class ExtranetController extends BaseDeliveryController
 		
 		if(assetUrl.equals(""))
 		{	
-			//CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
 			List roles = infoGluePrincipal.getRoles();
-			//CmsLogger.logInfo("roles:" + roles.size());
 			Iterator rolesIterator = roles.iterator();
 			while(rolesIterator.hasNext())
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-				//CmsLogger.logInfo("role:" + role.getName());
 				
 				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
-				//CmsLogger.logInfo("roleProperties:" + rolePropertiesList.size());
 				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
 				while(rolePropertiesListIterator.hasNext())
 				{
 					RoleProperties roleProperties = (RoleProperties)rolePropertiesListIterator.next();
-					//CmsLogger.logInfo("roleProperties:" + roleProperties.getValue());
-					//CmsLogger.logInfo("propertyName:" + propertyName);
 					
 					if(roleProperties != null && roleProperties.getLanguage().getLanguageId().equals(languageId))
 					{
@@ -554,7 +612,48 @@ public class ExtranetController extends BaseDeliveryController
 					return getPrincipalThumbnailAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, width, height);
 			}
 		}
-		
+	
+		if(assetUrl.equals(""))
+		{	
+			List groups = infoGluePrincipal.getGroups();
+			Iterator groupsIterator = groups.iterator();
+			while(groupsIterator.hasNext())
+			{
+				InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+				
+				Collection groupPropertiesList = GroupPropertiesController.getController().getGroupPropertiesList(group.getName(), languageId, db);
+				Iterator groupPropertiesListIterator = groupPropertiesList.iterator();
+				while(groupPropertiesListIterator.hasNext())
+				{
+					GroupProperties groupProperties = (GroupProperties)groupPropertiesListIterator.next();
+					
+					if(groupProperties != null && groupProperties.getLanguage().getLanguageId().equals(languageId))
+					{
+					    Collection assets = groupProperties.getDigitalAssets();
+					    Iterator assetsIterator = assets.iterator();
+					    while(assetsIterator.hasNext())
+					    {
+					        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
+					        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
+					        {
+					            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height);
+					            break;
+					        }
+					    }
+					}
+				}
+									
+			}
+			
+			if(assetUrl.equals("") && useLanguageFallback)
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+				if(!masterLanguageVO.getLanguageId().equals(languageId))
+					return getPrincipalThumbnailAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, width, height);
+			}
+		}
+	
 		return assetUrl;
 	}	
 	
@@ -564,7 +663,7 @@ public class ExtranetController extends BaseDeliveryController
 	 * This method starts with getting the property on the user and if it does not exist we check out the
 	 * group-properties as well. The value in question is a map - name-value.
 	 */
-	
+	/*
 	public Map getPrincipalPropertyHashValues(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
 	{
 		Properties properties = new Properties();
@@ -577,5 +676,6 @@ public class ExtranetController extends BaseDeliveryController
 		
 		return properties;
 	}	
+	*/
 
 }

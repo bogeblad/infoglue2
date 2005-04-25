@@ -26,12 +26,11 @@ package org.infoglue.cms.entities.workflow;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
-/**
- * @deprecated This is not used anywhere except in this package.  This class should be removed in the next release.
- */ 
 public class WorkflowDefinitionVO implements BaseEntityVO
 {
-	private java.lang.Integer workflowDefinitionId;
+	private static final long serialVersionUID = 1L;
+	
+    private java.lang.Integer workflowDefinitionId;
     private java.lang.String name;
     private java.lang.String value;
 

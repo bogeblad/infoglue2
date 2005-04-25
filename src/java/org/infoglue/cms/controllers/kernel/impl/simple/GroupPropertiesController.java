@@ -32,6 +32,7 @@ import org.infoglue.cms.entities.management.GroupContentTypeDefinition;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
@@ -628,7 +629,7 @@ public class GroupPropertiesController extends BaseController
 		    }
 		    
 		    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
-			List siteNodes = this.getRelatedContentsFromXML(db, xml);
+			List siteNodes = this.getRelatedSiteNodesFromXML(db, xml);
 
 			relatedSiteNodeVOList = toVOList(siteNodes);
 			
@@ -644,7 +645,7 @@ public class GroupPropertiesController extends BaseController
 		return relatedSiteNodeVOList;
 	}
 
-	
+
 	/**
 	 * Parses contents from an XML within a transaction
 	 * @param qualifyerXML
@@ -723,13 +724,15 @@ public class GroupPropertiesController extends BaseController
 
 	
 	/**
-	 * Returns all current Category relationships for th specified attrbiute name
+	 * Returns all current Category relationships for th specified attribute name
 	 * @param attribute
 	 * @return
 	 */
 	
 	public List getRelatedCategories(String groupName, Integer languageId, String attribute)
 	{
+	    List relatedCategories = new ArrayList();
+	    
 		try
 		{
 		    List groupPropertiesVOList = this.getGroupPropertiesVOList(groupName, languageId);
@@ -742,14 +745,22 @@ public class GroupPropertiesController extends BaseController
 		    }
 
 			if(groupPropertyVO != null && groupPropertyVO.getId() != null)
-		    	return PropertiesCategoryController.getController().findByPropertiesAttribute(attribute, GroupProperties.class.getName(), groupPropertyVO.getId());
+			{
+		    	List propertiesCategoryVOList = PropertiesCategoryController.getController().findByPropertiesAttribute(attribute, GroupProperties.class.getName(), groupPropertyVO.getId());
+		    	Iterator propertiesCategoryVOListIterator = propertiesCategoryVOList.iterator();
+		    	while(propertiesCategoryVOListIterator.hasNext())
+		    	{
+		    	    PropertiesCategoryVO propertiesCategoryVO = (PropertiesCategoryVO)propertiesCategoryVOListIterator.next();
+		    	    relatedCategories.add(propertiesCategoryVO.getCategory());
+		    	}
+			}
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
-		return Collections.EMPTY_LIST;
+		return relatedCategories;
 	}
 	
 	/**

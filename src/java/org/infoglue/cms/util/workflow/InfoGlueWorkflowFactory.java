@@ -31,18 +31,10 @@ import com.opensymphony.workflow.loader.WorkflowLoader;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.SystemException;
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
 
 import java.io.*;
 
-import java.net.URL;
-
 import java.util.*;
-
-import javax.xml.parsers.*;
 
 
 /**

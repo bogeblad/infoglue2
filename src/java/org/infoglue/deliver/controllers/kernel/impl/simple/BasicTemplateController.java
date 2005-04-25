@@ -27,6 +27,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
@@ -637,7 +639,31 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			value = ExtranetController.getController().getPrincipalPropertyValue(getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+			//value = ExtranetController.getController().getPrincipalPropertyValue(getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+			value = getPrincipalPropertyValue(infoGluePrincipal, propertyName, escapeSpecialCharacters, false);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}	
+
+	/**
+	 * Getting a property for a Principal - used for personalisation. 
+	 * This method starts with getting the property on the user and if it does not exist we check out the
+	 * group-properties as well.
+	 */
+	
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, boolean escapeSpecialCharacters, boolean findLargestValue)
+	{
+		String value = "";
+		
+		try
+		{
+			//value = ExtranetController.getController().getPrincipalPropertyValue(getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+			value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
 		}
 		catch(Exception e)
 		{
@@ -661,7 +687,8 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
-		    value = ExtranetController.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+		    //value = ExtranetController.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+		    value = getPrincipalPropertyValue(propertyName, escapeSpecialCharacters, false);
 		}
 		catch(Exception e)
 		{
@@ -671,7 +698,32 @@ public class BasicTemplateController implements TemplateController
 		return value;
 	}
 	
+
+	/**
+	 * Getting a property for the current Principal - used for personalisation. 
+	 * This method starts with getting the property on the user and if it does not exist we check out the
+	 * group-properties as well.
+	 */
+	
+	public String getPrincipalPropertyValue(String propertyName, boolean escapeSpecialCharacters, boolean findLargestValue)
+	{
+		String value = "";
 		
+		try
+		{
+		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
+		    //value = ExtranetController.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}
+
+	
 	/**
 	 * Getting a property for a Principal - used for personalisation. 
 	 * This method starts with getting the property on the user and if it does not exist we check out the
@@ -684,7 +736,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			value = ExtranetController.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+			//value = ExtranetController.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 		}
 		catch(Exception e)
 		{
@@ -708,7 +761,8 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
-			value = ExtranetController.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+			//value = ExtranetController.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+			value = getPrincipalPropertyHashValues(this.infoGluePrincipal, propertyName, escapeSpecialCharacters);
 		}
 		catch(Exception e)
 		{
@@ -717,6 +771,93 @@ public class BasicTemplateController implements TemplateController
 		
 		return value;
 	}	
+	
+	
+	/**
+	 * Getting a property for a Principal - used for personalisation. 
+	 * This method starts with getting the property on the user and if it does not exist we check out the
+	 * group-properties as well.
+	 */
+	
+	public List getPrincipalGroupRelatedContents(String groupName, String propertyName)
+	{
+		List contents = new ArrayList();
+		
+		try
+		{
+		    contents = GroupPropertiesController.getController().getRelatedContents(groupName, this.languageId, propertyName);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return contents;
+	}	
+
+	/**
+	 * Getting a property for a Principal - used for personalisation. 
+	 * This method starts with getting the property on the user and if it does not exist we check out the
+	 * group-properties as well.
+	 */
+	
+	public List getPrincipalGroupRelatedPages(String groupName, String propertyName)
+	{
+		List pages = new ArrayList();
+		
+		try
+		{
+		    List siteNodeVOList = GroupPropertiesController.getController().getRelatedSiteNodes(groupName, this.languageId, propertyName);
+		    
+		    Iterator i = siteNodeVOList.iterator();
+			while(i.hasNext())
+			{
+			    SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
+			    try
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+					webPage.setLanguageId(this.languageId);
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
+					pages.add(webPage);
+				}
+				catch(Exception e)
+				{
+				    CmsLogger.logInfo("An error occurred when looking up one of the related pages:" + e.getMessage(), e);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return pages;
+	}	
+
+	/**
+	 * Getting all categories assigned to a property for a Group - used for personalisation. 
+	 */
+	
+	public List getPrincipalGroupCategories(String groupName, String propertyName)
+	{
+		List categories = new ArrayList();
+		
+		try
+		{
+		    categories = GroupPropertiesController.getController().getRelatedCategories(groupName, this.languageId, propertyName);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return categories;
+	}	
+	
 	
 	/**
 	 * Getter for request-object
@@ -1673,6 +1814,29 @@ public class BasicTemplateController implements TemplateController
 		
 		return relatedContentVOList;
 	}
+
+	/**
+	 * This method gets a List of related contents defined in a principal property as an xml-definition.
+	 */
+	
+	public List getRelatedContents(InfoGluePrincipal infogluePrincipal, String attributeName)
+	{
+		List relatedContentVOList = new ArrayList();
+		
+		try
+		{
+			String qualifyerXML = this.getPrincipalPropertyValue(infogluePrincipal, attributeName, false);
+			
+			relatedContentVOList = getRelatedContentsFromXML(qualifyerXML);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+		}
+		
+		return relatedContentVOList;
+	}
+
 	
 	/**
 	 * This method gets the related contents from an XML.
@@ -1833,6 +1997,30 @@ public class BasicTemplateController implements TemplateController
 		catch(Exception e)
 		{
 			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+		}
+		
+		return relatedPages;
+	}
+
+	/**
+	 * This method gets a List of related contents defined in an attribute as an xml-definition.
+	 * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be
+	 * used to access other systems than our own.
+	 */
+
+	public List getRelatedPages(InfoGluePrincipal infogluePrincipal, String attributeName)
+	{
+		List relatedPages = new ArrayList();
+		
+		try
+		{
+			String qualifyerXML = this.getPrincipalPropertyValue(infogluePrincipal, attributeName, false);
+			
+			relatedPages = getRelatedPagesFromXML(qualifyerXML);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred trying to get related pages on infogluePrincipal " + infogluePrincipal + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedPages;

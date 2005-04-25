@@ -237,8 +237,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback;
+	    String versionKey = attributeKey + "_contentVersionId";
 		CmsLogger.logInfo("attributeKey:" + attributeKey);
 		String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
+		Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
 		if(attribute != null)
 		{
 			CmsLogger.logInfo("There was an cached content attribute:" + attribute);
@@ -249,13 +251,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if (contentVersionVO != null) 
 			{
 			    CmsLogger.logInfo("found one:" + contentVersionVO);
-				attribute = getAttributeValue(db, contentVersionVO, attributeName);		
+				attribute = getAttributeValue(db, contentVersionVO, attributeName);	
+				contentVersionId = contentVersionVO.getId();
 			}
 			else
 				attribute = "";
 
 			CacheController.cacheObject("contentAttributeCache", attributeKey, attribute);
+			CacheController.cacheObject("contentAttributeCache", versionKey, contentVersionId);
 		}
+		
+		deliveryContext.addUsedContentVersion("contentVersion:" + contentVersionId);
 		
 		return (attribute == null) ? "" : attribute;
 	}
