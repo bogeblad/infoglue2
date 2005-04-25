@@ -192,8 +192,8 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						is = new FileInputStream(file);
 						
 						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
-						System.out.println("fileUploadMaximumSize:" + fileUploadMaximumSize);
-						if(new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
+						System.out.println("fileUploadMaximumSize in create:" + fileUploadMaximumSize);
+						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
 						{
 						    file.delete();
 						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
