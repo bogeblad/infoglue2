@@ -152,7 +152,12 @@
 			#if($uploadedFilesCounter != 0)
 				#set($digitalAssetUrl = "$digitalAssetUrl")
 				<a href="javascript:openPopup('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$assetThumbnailUrl"><br>
-				$digitalAssetKey</a>
+				#if($digitalAssetKey.length() > 15)
+					$digitalAssetKey.substring(0, 12)...
+				#else
+					$digitalAssetKey
+				#end
+				</a>
 			#end
 			&nbsp;
 		</td>

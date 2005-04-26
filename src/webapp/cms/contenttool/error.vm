@@ -19,7 +19,6 @@
     </table>
     <table class="outer">
       #foreach($errorList in $errors.allErrors)
-      $errorList
       #foreach($error in $errorList)
       <tr>
         <td>$error
