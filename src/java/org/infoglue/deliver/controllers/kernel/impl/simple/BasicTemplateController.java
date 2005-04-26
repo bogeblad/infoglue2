@@ -29,6 +29,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
@@ -41,7 +42,9 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -771,21 +774,45 @@ public class BasicTemplateController implements TemplateController
 		
 		return value;
 	}	
+
 	
+	public boolean getHasPrincipalGroup(InfoGluePrincipal infoGluePrincipal, String groupName)
+	{
+	    boolean isValid = false;
+	    Iterator groupsIterator = infoGluePrincipal.getGroups().iterator();
+	    while(groupsIterator.hasNext())
+	    {
+	        InfoGlueGroup infoglueGroup = (InfoGlueGroup)groupsIterator.next();
+	        if(infoglueGroup.getName().equalsIgnoreCase(groupName))
+	        {
+	            isValid = true;
+	        }
+	    }
+	    
+	    return isValid;
+	}
 	
 	/**
-	 * Getting a property for a Principal - used for personalisation. 
-	 * This method starts with getting the property on the user and if it does not exist we check out the
-	 * group-properties as well.
+	 * Getting all related contents for the current Principals group - used for personalisation. 
 	 */
 	
 	public List getPrincipalGroupRelatedContents(String groupName, String propertyName)
+	{
+	    return getPrincipalGroupRelatedContents(this.infoGluePrincipal, groupName, propertyName);
+	}
+	
+	/**
+	 * Getting all related contents for the current Principals group - used for personalisation. 
+	 */
+	
+	public List getPrincipalGroupRelatedContents(InfoGluePrincipal infoGluePrincipal, String groupName, String propertyName)
 	{
 		List contents = new ArrayList();
 		
 		try
 		{
-		    contents = GroupPropertiesController.getController().getRelatedContents(groupName, this.languageId, propertyName);
+		    if(getHasPrincipalGroup(infoGluePrincipal, groupName))
+		        contents = GroupPropertiesController.getController().getRelatedContents(groupName, this.languageId, propertyName);
 		}
 		catch(Exception e)
 		{
@@ -796,39 +823,179 @@ public class BasicTemplateController implements TemplateController
 	}	
 
 	/**
-	 * Getting a property for a Principal - used for personalisation. 
-	 * This method starts with getting the property on the user and if it does not exist we check out the
-	 * group-properties as well.
+	 * Getting related pages for a Principals group - used for personalisation. 
 	 */
 	
 	public List getPrincipalGroupRelatedPages(String groupName, String propertyName)
+	{
+	    return getPrincipalGroupRelatedPages(this.infoGluePrincipal, groupName, propertyName);
+	}
+	
+	/**
+	 * Getting related pages for a Principals group - used for personalisation. 
+	 */
+	
+	public List getPrincipalGroupRelatedPages(InfoGluePrincipal infoGluePrincipal, String groupName, String propertyName)
 	{
 		List pages = new ArrayList();
 		
 		try
 		{
-		    List siteNodeVOList = GroupPropertiesController.getController().getRelatedSiteNodes(groupName, this.languageId, propertyName);
-		    
-		    Iterator i = siteNodeVOList.iterator();
-			while(i.hasNext())
-			{
-			    SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-			    try
+		    if(getHasPrincipalGroup(infoGluePrincipal, groupName))
+		    {
+			    List siteNodeVOList = GroupPropertiesController.getController().getRelatedSiteNodes(groupName, this.languageId, propertyName);
+			    
+			    Iterator i = siteNodeVOList.iterator();
+				while(i.hasNext())
 				{
-					WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-					webPage.setLanguageId(this.languageId);
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
-					pages.add(webPage);
+				    SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
+				    try
+					{
+						WebPage webPage = new WebPage();						
+						webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+						webPage.setLanguageId(this.languageId);
+						webPage.setContentId(null);
+						webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+						webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+						webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
+						pages.add(webPage);
+					}
+					catch(Exception e)
+					{
+					    CmsLogger.logInfo("An error occurred when looking up one of the related pages:" + e.getMessage(), e);
+					}
 				}
-				catch(Exception e)
+		    }
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return pages;
+	}	
+
+	/**
+	 * Getting all categories assigned to a property for a Role - used for personalisation. 
+	 */
+	
+	public List getPrincipalGroupCategories(String groupName, String propertyName)
+	{
+	    return getPrincipalGroupCategories(this.infoGluePrincipal, groupName, propertyName);
+	}
+	
+	/**
+	 * Getting all categories assigned to a property for a Role - used for personalisation. 
+	 */
+	
+	public List getPrincipalGroupCategories(InfoGluePrincipal infoGluePrincipal, String groupName, String propertyName)
+	{
+		List categories = new ArrayList();
+		
+		try
+		{
+		    if(getHasPrincipalGroup(infoGluePrincipal, groupName))
+		        categories = GroupPropertiesController.getController().getRelatedCategories(groupName, this.languageId, propertyName);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return categories;
+	}	
+
+	
+	public boolean getHasPrincipalRole(InfoGluePrincipal infoGluePrincipal, String roleName)
+	{
+	    boolean isValid = false;
+	    Iterator groupsIterator = infoGluePrincipal.getRoles().iterator();
+	    while(groupsIterator.hasNext())
+	    {
+	        InfoGlueRole infoglueRole = (InfoGlueRole)groupsIterator.next();
+	        if(infoglueRole.getName().equalsIgnoreCase(roleName))
+	        {
+	            isValid = true;
+	        }
+	    }
+	    
+	    return isValid;
+	}
+	
+	/**
+	 * Getting all related contents for the current Principals role - used for personalisation. 
+	 */
+	
+	public List getPrincipalRoleRelatedContents(String roleName, String propertyName)
+	{
+	    return getPrincipalRoleRelatedContents(this.infoGluePrincipal, roleName, propertyName);
+	}
+	
+	/**
+	 * Getting all related contents for the current Principals role - used for personalisation. 
+	 */
+	
+	public List getPrincipalRoleRelatedContents(InfoGluePrincipal infoGluePrincipal, String roleName, String propertyName)
+	{
+		List contents = new ArrayList();
+		
+		try
+		{
+		    if(getHasPrincipalRole(infoGluePrincipal, roleName))
+		        contents = RolePropertiesController.getController().getRelatedContents(roleName, this.languageId, propertyName);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return contents;
+	}	
+
+	/**
+	 * Getting related pages for a Principals role - used for personalisation. 
+	 */
+	
+	public List getPrincipalRoleRelatedPages(String roleName, String propertyName)
+	{
+	    return getPrincipalRoleRelatedPages(this.infoGluePrincipal, roleName, propertyName);
+	}
+	
+	/**
+	 * Getting related pages for a Principals role - used for personalisation. 
+	 */
+	
+	public List getPrincipalRoleRelatedPages(InfoGluePrincipal infoGluePrincipal, String roleName, String propertyName)
+	{
+		List pages = new ArrayList();
+		
+		try
+		{
+		    if(getHasPrincipalRole(infoGluePrincipal, roleName))
+		    {
+			    List siteNodeVOList = GroupPropertiesController.getController().getRelatedSiteNodes(roleName, this.languageId, propertyName);
+			    
+			    Iterator i = siteNodeVOList.iterator();
+				while(i.hasNext())
 				{
-				    CmsLogger.logInfo("An error occurred when looking up one of the related pages:" + e.getMessage(), e);
+				    SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
+				    try
+					{
+						WebPage webPage = new WebPage();						
+						webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+						webPage.setLanguageId(this.languageId);
+						webPage.setContentId(null);
+						webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+						webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+						webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
+						pages.add(webPage);
+					}
+					catch(Exception e)
+					{
+					    CmsLogger.logInfo("An error occurred when looking up one of the related pages:" + e.getMessage(), e);
+					}
 				}
-			}
+		    }
 		}
 		catch(Exception e)
 		{
@@ -842,13 +1009,23 @@ public class BasicTemplateController implements TemplateController
 	 * Getting all categories assigned to a property for a Group - used for personalisation. 
 	 */
 	
-	public List getPrincipalGroupCategories(String groupName, String propertyName)
+	public List getPrincipalRoleCategories(String roleName, String propertyName)
+	{
+	    return getPrincipalRoleCategories(this.infoGluePrincipal, roleName, propertyName);
+	}
+	
+	/**
+	 * Getting all categories assigned to a property for a Group - used for personalisation. 
+	 */
+	
+	public List getPrincipalRoleCategories(InfoGluePrincipal infoGluePrincipal, String roleName, String propertyName)
 	{
 		List categories = new ArrayList();
 		
 		try
 		{
-		    categories = GroupPropertiesController.getController().getRelatedCategories(groupName, this.languageId, propertyName);
+		    if(getHasPrincipalRole(infoGluePrincipal, roleName))
+		        categories = GroupPropertiesController.getController().getRelatedCategories(roleName, this.languageId, propertyName);
 		}
 		catch(Exception e)
 		{
@@ -857,7 +1034,6 @@ public class BasicTemplateController implements TemplateController
 		
 		return categories;
 	}	
-	
 	
 	/**
 	 * Getter for request-object

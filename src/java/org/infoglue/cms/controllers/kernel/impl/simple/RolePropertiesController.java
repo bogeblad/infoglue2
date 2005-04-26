@@ -24,9 +24,14 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.RolePropertiesVO;
+import org.infoglue.cms.entities.management.RoleProperties;
+import org.infoglue.cms.entities.management.RolePropertiesVO;
+import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 import org.infoglue.cms.entities.management.RoleContentTypeDefinition;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
@@ -35,9 +40,11 @@ import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.impl.simple.RoleContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.dom.DOMBuilder;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -45,6 +52,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import org.apache.xerces.parsers.DOMParser;
+import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -116,7 +124,7 @@ public class RolePropertiesController extends BaseController
 	}     
 
 	/**
-	 * This method created a new RolePropertiesVO in the database. It also updates the extranetgroup
+	 * This method created a new RolePropertiesVO in the database. It also updates the extranetrole
 	 * so it recognises the change. 
 	 */
 
@@ -502,45 +510,258 @@ public class RolePropertiesController extends BaseController
 		
 		if(rolePropertiesVO != null)
 		{	
-			try
-			{
-				CmsLogger.logInfo("attributeName:" + attributeName);
-				CmsLogger.logInfo("VersionValue:"  + rolePropertiesVO.getValue());
-				InputSource inputSource = new InputSource(new StringReader(rolePropertiesVO.getValue()));
-				
-				DOMParser parser = new DOMParser();
-				parser.parse(inputSource);
-				Document document = parser.getDocument();
-				
-				NodeList nl = document.getDocumentElement().getChildNodes();
-				Node n = nl.item(0);
-				
-				nl = n.getChildNodes();
-				for(int i=0; i<nl.getLength(); i++)
-				{
-					n = nl.item(i);
-					if(n.getNodeName().equalsIgnoreCase(attributeName))
-					{
-						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
-						{
-							value = n.getFirstChild().getNodeValue();
-							CmsLogger.logInfo("Getting value: " + value);
-							if(value != null && escapeHTML)
-								value = new VisualFormatter().escapeHTML(value);
-							break;
-						}
-					}
-				}		        	
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
+			value = getAttributeValue(rolePropertiesVO.getValue(), attributeName, escapeHTML);
 		}
-		//CmsLogger.logInfo("value:" + value);	
+
+		return value;
+	}
+
+	/**
+	 * This method fetches a value from the xml that is the roleProperties Value. 
+	 */
+	 
+	public String getAttributeValue(String xml, String attributeName, boolean escapeHTML) throws SystemException, Bug
+	{
+		String value = "";
+		
+		try
+		{
+			InputSource inputSource = new InputSource(new StringReader(xml));
+			
+			DOMParser parser = new DOMParser();
+			parser.parse(inputSource);
+			Document document = parser.getDocument();
+			
+			NodeList nl = document.getDocumentElement().getChildNodes();
+			Node n = nl.item(0);
+			
+			nl = n.getChildNodes();
+			for(int i=0; i<nl.getLength(); i++)
+			{
+				n = nl.item(i);
+				if(n.getNodeName().equalsIgnoreCase(attributeName))
+				{
+					if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
+					{
+						value = n.getFirstChild().getNodeValue();
+						if(value != null && escapeHTML)
+							value = new VisualFormatter().escapeHTML(value);
+
+						break;
+					}
+				}
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
 		return value;
 	}
 	
+	
+	/**
+	 * Returns the related Contents
+	 * @param rolePropertiesId
+	 * @return
+	 */
+
+	public List getRelatedContents(String roleName, Integer languageId, String attributeName) throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+
+		List relatedContentVOList = new ArrayList();
+
+		beginTransaction(db);
+
+		try
+		{
+		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db);
+		    Iterator iterator = roleProperties.iterator();
+		    RoleProperties roleProperty = null;
+		    while(iterator.hasNext())
+		    {
+		        roleProperty = (RoleProperties)iterator.next();
+		        break;
+		    }
+		    
+		    String xml = this.getAttributeValue(roleProperty.getValue(), attributeName, false);
+			List contents = this.getRelatedContentsFromXML(db, xml);
+
+			relatedContentVOList = toVOList(contents);
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return relatedContentVOList;
+	}
+
+	/**
+	 * Returns the related SiteNodes
+	 * @param rolePropertiesId
+	 * @return
+	 */
+
+	public List getRelatedSiteNodes(String roleName, Integer languageId, String attributeName) throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+
+		List relatedSiteNodeVOList = new ArrayList();
+
+		beginTransaction(db);
+
+		try
+		{
+		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db);
+		    Iterator iterator = roleProperties.iterator();
+		    RoleProperties roleProperty = null;
+		    while(iterator.hasNext())
+		    {
+		        roleProperty = (RoleProperties)iterator.next();
+		        break;
+		    }
+		    
+		    String xml = this.getAttributeValue(roleProperty.getValue(), attributeName, false);
+			List siteNodes = this.getRelatedSiteNodesFromXML(db, xml);
+
+			relatedSiteNodeVOList = toVOList(siteNodes);
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return relatedSiteNodeVOList;
+	}
+
+
+	/**
+	 * Parses contents from an XML within a transaction
+	 * @param qualifyerXML
+	 * @return
+	 */
+
+	private List getRelatedContentsFromXML(Database db, String qualifyerXML)
+	{
+		List contents = new ArrayList(); 
+    	
+		if(qualifyerXML == null || qualifyerXML.length() == 0)
+			return contents;
+		
+		try
+		{
+			org.dom4j.Document document = new DOMBuilder().getDocument(qualifyerXML);
+			
+			String entity = document.getRootElement().attributeValue("entity");
+			
+			List children = document.getRootElement().elements();
+			Iterator i = children.iterator();
+			while(i.hasNext())
+			{
+				Element child = (Element)i.next();
+				String id = child.getStringValue();
+				
+				Content content = ContentController.getContentController().getContentWithId(new Integer(id), db);
+				contents.add(content);     	
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return contents;
+	}
+
+	/**
+	 * Parses siteNodes from an XML within a transaction
+	 * @param qualifyerXML
+	 * @return
+	 */
+
+	private List getRelatedSiteNodesFromXML(Database db, String qualifyerXML)
+	{
+		List siteNodes = new ArrayList(); 
+    	
+		if(qualifyerXML == null || qualifyerXML.length() == 0)
+			return siteNodes;
+		
+		try
+		{
+			org.dom4j.Document document = new DOMBuilder().getDocument(qualifyerXML);
+			
+			String entity = document.getRootElement().attributeValue("entity");
+			
+			List children = document.getRootElement().elements();
+			Iterator i = children.iterator();
+			while(i.hasNext())
+			{
+				Element child = (Element)i.next();
+				String id = child.getStringValue();
+				
+				SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(id), db);
+				siteNodes.add(siteNode);     	
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return siteNodes;
+	}
+
+	
+	/**
+	 * Returns all current Category relationships for th specified attribute name
+	 * @param attribute
+	 * @return
+	 */
+	
+	public List getRelatedCategories(String roleName, Integer languageId, String attribute)
+	{
+	    List relatedCategories = new ArrayList();
+	    
+		try
+		{
+		    List rolePropertiesVOList = this.getRolePropertiesVOList(roleName, languageId);
+		    Iterator iterator = rolePropertiesVOList.iterator();
+		    RolePropertiesVO rolePropertyVO = null;
+		    while(iterator.hasNext())
+		    {
+		        rolePropertyVO = (RolePropertiesVO)iterator.next();
+		        break;
+		    }
+
+			if(rolePropertyVO != null && rolePropertyVO.getId() != null)
+			{
+		    	List propertiesCategoryVOList = PropertiesCategoryController.getController().findByPropertiesAttribute(attribute, RoleProperties.class.getName(), rolePropertyVO.getId());
+		    	Iterator propertiesCategoryVOListIterator = propertiesCategoryVOList.iterator();
+		    	while(propertiesCategoryVOListIterator.hasNext())
+		    	{
+		    	    PropertiesCategoryVO propertiesCategoryVO = (PropertiesCategoryVO)propertiesCategoryVOListIterator.next();
+		    	    relatedCategories.add(propertiesCategoryVO.getCategory());
+		    	}
+			}
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+		}
+
+		return relatedCategories;
+	}
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.
