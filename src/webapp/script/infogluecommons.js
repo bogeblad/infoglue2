@@ -61,8 +61,6 @@ function resizeDiv(id, width, height)
 function submitForm(id)
 {
 	form = document.getElementById(id);
-	alert("form:" + form.name);
-	//document.getElementById(id).submit();
 }
 
 /**
