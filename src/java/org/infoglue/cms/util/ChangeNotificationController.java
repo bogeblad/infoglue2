@@ -74,6 +74,14 @@ public class ChangeNotificationController
 		this.listeners.add(notificationListener);
 	}
 
+	/**
+	 * This method unregisters an existing listener.
+	 */
+	
+	public void unregisterListener(NotificationListener notificationListener)
+	{
+		this.listeners.remove(notificationListener);
+	}
 	
 	/**
 	 * This method gets called when a new notification has come. 
