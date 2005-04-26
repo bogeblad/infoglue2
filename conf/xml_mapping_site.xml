@@ -71,6 +71,9 @@
     <field name="repositoryLanguageId" type="java.lang.Integer">
       <bind-xml node="attribute"/>
     </field>
+    <field name="sortOrder" type="java.lang.Integer">
+		<bind-xml name="sortOrder" node="element"/>
+    </field>
     <field name="isPublished" type="java.lang.Boolean">
       <bind-xml name="isPublished" node="element"/>
     </field>
@@ -342,12 +345,49 @@
     <field name="parameters" type="java.lang.String">
       <bind-xml name="parameters" node="element"/>
     </field>
-    <field name="roleName" type="java.lang.String">
-      <bind-xml name="roleName" node="element"/>
-    </field>
     <field name="interceptionPoint" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl">
       <bind-xml name="interceptionPoint" node="element"/>
     </field>
+    <field name="roles" type="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" collection="collection">
+      <bind-xml name="roles" node="element"/>
+    </field>
+    <field name="groups" type="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" collection="collection">
+      <bind-xml name="groups" node="element"/>
+    </field>
+  </class>
+  
+  <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" identity="accessRightRoleId" key-generator="IDENTITY">
+    <description>AccessRightRole</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmAccessRightRole"/>
+    <field name="accessRightRoleId" type="java.lang.Integer">
+      <bind-xml node="attribute"/>
+    </field>
+    <field name="roleName" type="java.lang.String">
+      <bind-xml name="roleName" node="element"/>
+    </field>
+	<!--
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+      <sql name="accessRightId"/>
+    </field>
+    -->
+  </class>
+  
+  <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" identity="accessRightGroupId" key-generator="IDENTITY">
+    <description>AccessRightGroup</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmAccessRightGroup"/>
+    <field name="accessRightGroupId" type="java.lang.Integer">
+      <bind-xml node="attribute"/>
+    </field>
+    <field name="groupName" type="java.lang.String">
+		<bind-xml name="groupName" node="element"/>
+    </field>
+    <!--
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+      <sql name="accessRightId"/>
+    </field>
+    -->
   </class>
 
 <!--  Mapping for ContentTypeDefinition  -->
