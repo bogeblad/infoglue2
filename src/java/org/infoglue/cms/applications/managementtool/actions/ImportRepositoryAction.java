@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.TransactionNotInProgressException;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -73,6 +74,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.FileUploadHelper;
 
@@ -99,10 +101,10 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 	}
 	
 	/**
-	 * This handles the actual exporting.
+	 * This handles the actual importing.
 	 */
 	
-	protected String doExecute() throws Exception 
+	protected String doExecute() throws SystemException 
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
@@ -182,8 +184,18 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 		} 
 		catch ( Exception e) 
 		{
-			db.rollback();
+			try
+            {
+                db.rollback();
+            } 
+			catch (TransactionNotInProgressException e1)
+            {
+                CmsLogger.logSevere("An error occurred when importing a repository: " + e.getMessage(), e);
+    			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
+            }
+			
 			CmsLogger.logSevere("An error occurred when importing a repository: " + e.getMessage(), e);
+			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
 		}
 		
 		return "success";

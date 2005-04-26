@@ -500,6 +500,45 @@ public class GroupPropertiesController extends BaseController
 
 	
 	/**
+	 * Returns the value of a Group Property
+	 */
+
+	public String getAttributeValue(String groupName, Integer languageId, String attributeName) throws SystemException
+	{
+		String value = "";
+		
+	    Database db = CastorDatabaseService.getDatabase();
+
+		beginTransaction(db);
+
+		try
+		{
+		    List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
+		    Iterator iterator = groupProperties.iterator();
+		    GroupProperties groupProperty = null;
+		    while(iterator.hasNext())
+		    {
+		        groupProperty = (GroupProperties)iterator.next();
+		        break;
+		    }
+		    
+		    value = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+		    
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return value;
+	}
+
+	
+	/**
 	 * This method fetches a value from the xml that is the groupProperties Value. 
 	 */
 	 

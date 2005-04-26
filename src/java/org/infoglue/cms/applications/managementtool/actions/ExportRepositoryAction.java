@@ -115,7 +115,7 @@ public class ExportRepositoryAction extends WebworkAbstractAction
 			infoGlueExportImpl.setRootContent((ContentImpl)content);
 			infoGlueExportImpl.setRootSiteNode((SiteNodeImpl)siteNode);
 			marshaller.marshal(infoGlueExportImpl);
-				
+			
 			osw.flush();
 			osw.close();
 			

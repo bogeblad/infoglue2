@@ -28,6 +28,7 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
@@ -495,6 +496,45 @@ public class RolePropertiesController extends BaseController
 				e.printStackTrace();
 			}
 		}
+	}
+
+	
+	/**
+	 * Returns the value of a Role Property
+	 */
+
+	public String getAttributeValue(String roleName, Integer languageId, String attributeName) throws SystemException
+	{
+		String value = "";
+		
+	    Database db = CastorDatabaseService.getDatabase();
+
+		beginTransaction(db);
+
+		try
+		{
+		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db);
+		    Iterator iterator = roleProperties.iterator();
+		    RoleProperties roleProperty = null;
+		    while(iterator.hasNext())
+		    {
+		        roleProperty = (RoleProperties)iterator.next();
+		        break;
+		    }
+		    
+		    value = this.getAttributeValue(roleProperty.getValue(), attributeName, false);
+		    
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return value;
 	}
 
 	
