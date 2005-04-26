@@ -120,9 +120,9 @@
 	z-index:1000004;
 	text-align:left;
 	width:350px;
-	border:2px solid red;
-	background-color:menu;
-	font-family:Verdana;
+	//background-color:menu;
+	background-color:#F9F8F7;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	line-height:20px;
 	cursor:default;
 	visibility:hidden;
@@ -133,17 +133,30 @@
 	position:absolute;
 	z-index:1000004;
 	text-align:left;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	width:140px;
-	background-color:menu;
-	border:1px solid buttonface;
+	background-color:#F9F8F7;
+	background-image: url('../images/contextBackground.gif');
+	background-repeat: repeat-y;
+	border:1px solid #666666;
 	visibility:hidden;
-	border:2px outset buttonhighlight;
 }
 .menuitems {
-	padding-left:15px;
+	padding-left:30px;
 	padding-right:10px;
+	padding-top:2px;
+	padding-bottom:2px;
+}
+.menudivider {
+	aborder: 1px solid #666666;
+	height: 1px;
+	//color: #666666;
+	awidth: 100px;
+	text-align: right;
+	margin: 0 0 0 auto;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 td.propertiesheader {	

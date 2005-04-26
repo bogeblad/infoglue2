@@ -718,9 +718,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">Edit</div>");
 		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">Add&nbsp;component</div>");
 		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponent();\">Delete&nbsp;component</div>");
-		sb.append("<hr>");
+		sb.append("<div class=\"menudivider\"><img src=\"images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
 		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponent();\">Properties</div>");
-		sb.append("<hr>");
+		sb.append("<div class=\"menudivider\"><img src=\"images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
 		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">View&nbsp;Source</div>");
 		sb.append("</div>");
 				
