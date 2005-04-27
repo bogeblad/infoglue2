@@ -28,18 +28,26 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.axis.message.SOAPEnvelope;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
@@ -60,17 +68,23 @@ import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImp
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationListener;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.XMLNotificationWriter;
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.INodeSupplier;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.Dom4JDriver;
 
 public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 {
     
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.10 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.11 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -84,6 +98,13 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     protected boolean useTemplate = false;
     protected VisualFormatter formatter = new VisualFormatter();
 	protected String[] allowedContentTypeNames = null;
+	
+	/*
+	 * 
+	 * Experimental
+	 *
+	 */
+	protected static Map changeNotificationBuffer = new HashMap();
 
 
 	public abstract INodeSupplier getNodeSupplier() throws SystemException;
@@ -112,14 +133,14 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 	
 	protected String getFormattedDocument(Document doc)
 	{
-	    return getFormattedDocument(doc, true);
+	    return getFormattedDocument(doc, true, false);
 	}
 	
-	protected String getFormattedDocument(Document doc, boolean compact)
+	protected String getFormattedDocument(Document doc, boolean compact, boolean supressDecl)
 	{
-	    OutputFormat format = compact ? OutputFormat.createCompactFormat() : OutputFormat.createPrettyPrint(); 
+	    OutputFormat format = compact ? OutputFormat.createCompactFormat() : OutputFormat.createPrettyPrint();
+        format.setSuppressDeclaration(supressDecl);
 		format.setEncoding(ENCODING);
-		
 		format.setExpandEmptyElements(false);
 		StringWriter stringWriter = new StringWriter();
 		XMLWriter writer = new XMLWriter(stringWriter, format);
@@ -211,7 +232,71 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 		return out(getFormattedDocument(doc));
     	
 	}
-	
+
+    public String doGetChangeNotifications() throws IOException
+    {
+        String id = getRequest().getSession().getId();
+        StringWriter buffer = (StringWriter) changeNotificationBuffer.get(id);
+        if(buffer==null)
+        {
+            buffer = new StringWriter();
+            buffer.write("<changeNotifications>");
+            changeNotificationBuffer.put(id, buffer);
+    		XMLNotificationWriter streamWriter = new XMLNotificationWriter(buffer, ENCODING, "", null, true, true);
+            ChangeNotificationController.getInstance().registerListener(streamWriter);
+        }
+
+        buffer.write("</changeNotifications>");
+        try
+        {
+            out(getFormattedDocument(DocumentHelper.parseText(buffer.toString())));
+        }
+        catch(Exception e)
+        {
+            out("<exception/>");
+        }
+        buffer.getBuffer().delete(0, buffer.getBuffer().length());
+        buffer.write("<changeNotifications>");
+        return null;
+    }
+    
+    public String doGetChangeNotificationsStream() throws IOException
+    {
+        boolean open = true;
+        String remoteId = getRequest().getRemoteAddr() + " / " + getInfoGluePrincipal().getName();
+        
+        String boundary = getRequest().getParameter("boundary");
+        if(boundary==null) boundary = "-----------------infoglue-multipart-1d4faa3ac353573";
+        getResponse().setHeader("boundary", boundary);
+		getResponse().setBufferSize(0);
+		getResponse().setContentType("text/plain; charset=" + ENCODING);
+		getResponse().flushBuffer();
+		Thread thread = Thread.currentThread();
+		OutputStream out = getResponse().getOutputStream();
+		InputStream in = getRequest().getInputStream();
+		
+		XMLNotificationWriter streamWriter = new XMLNotificationWriter(new OutputStreamWriter(out), ENCODING, boundary, thread, true, false);
+		
+        System.out.println("Notification stream listen started from:"  + remoteId);
+        ChangeNotificationController.getInstance().registerListener(streamWriter);
+        
+		while(open)
+		{
+            try
+            {
+                Thread.sleep(Long.MAX_VALUE);
+                out.flush();
+            }
+            catch (Exception e)
+            {
+                open = false;
+            }
+		}
+        ChangeNotificationController.getInstance().unregisterListener(streamWriter);
+        System.out.println("Notification stream listen ended from:"  + remoteId);
+        return null;
+    }
+
     protected String formatDate(Date date)
     {
         return "" + date;
@@ -368,7 +453,6 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     	
     	return null;
     }
-
 
 	public Integer getParent() {
 		return parent;
