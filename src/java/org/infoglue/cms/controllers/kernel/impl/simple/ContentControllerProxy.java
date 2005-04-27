@@ -312,6 +312,25 @@ public class ContentControllerProxy extends ContentController
 	}   
 
 	/**
+	 * This method moves a content after first checking that the user has rights to within a transaction.
+	 */
+
+	public void acMoveContent(InfoGluePrincipal infogluePrincipal, ContentVO contentVO, Integer newParentContentId, Database db) throws ConstraintException, SystemException, Bug, Exception
+	{
+		Map hashMap = new HashMap();
+		hashMap.put("contentId", contentVO.getId());
+    	
+		intercept(hashMap, "Content.Move", infogluePrincipal);
+		
+		hashMap = new HashMap();
+		hashMap.put("contentId", newParentContentId);
+
+		intercept(hashMap, "Content.Create", infogluePrincipal);
+
+		moveContent(contentVO, newParentContentId, db);
+	}   
+
+	/**
 	 * This method returns true if the if the content in question is protected.
 	 */
 

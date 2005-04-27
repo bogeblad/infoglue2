@@ -362,32 +362,41 @@ public class PublicationController extends BaseController
 		{
 	        beginTransaction(db);
 
-	    	CmsLogger.logInfo("*********************************");
-	    	CmsLogger.logInfo("Creating edition ");
-	    	CmsLogger.logInfo("*********************************");
-
-	        Publication publication = new PublicationImpl();
-	        publicationVO.setPublicationDateTime(Calendar.getInstance().getTime());
-	        publication.setValueObject(publicationVO);
-			publication.setPublisher(infoGluePrincipal.getName());
-
-			Iterator eventIterator = events.iterator();
-			while(eventIterator.hasNext())
-			{
-				EventVO event = (EventVO)eventIterator.next();
-				createPublicationInformation(publication, EventController.getEventWithId(event.getId(), db), infoGluePrincipal, db);
-			}
-
-			db.create(publication);
-
+	        publicationVO = createAndPublish(publicationVO, events, infoGluePrincipal, db);
+	        
 	        commitTransaction(db);
-	    	CmsLogger.logInfo("Done with the transaction for the publication...");
 		}
 		catch(Exception e)
 		{
 			CmsLogger.logSevere("An error occurred when we tried to commit the publication: " + e.getMessage(), e);
 	    	rollbackTransaction(db);
 		}
+
+        return publicationVO;
+    }
+
+	/**
+	 * This method creates a new publication with the concerned events carried out.
+	 */
+	public static PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
+    {
+	   	CmsLogger.logInfo("*********************************");
+    	CmsLogger.logInfo("Creating edition ");
+    	CmsLogger.logInfo("*********************************");
+
+        Publication publication = new PublicationImpl();
+        publicationVO.setPublicationDateTime(Calendar.getInstance().getTime());
+        publication.setValueObject(publicationVO);
+		publication.setPublisher(infoGluePrincipal.getName());
+
+		Iterator eventIterator = events.iterator();
+		while(eventIterator.hasNext())
+		{
+			EventVO event = (EventVO)eventIterator.next();
+			createPublicationInformation(publication, EventController.getEventWithId(event.getId(), db), infoGluePrincipal, db);
+		}
+
+		db.create(publication);
 
         // Replicate database!!!
         try
@@ -417,7 +426,6 @@ public class PublicationController extends BaseController
 
         return publicationVO;
     }
-
 
 
 	/**

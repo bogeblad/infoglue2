@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.3 2005/03/31 13:52:23 mattias Exp $
+ * $Id: CategoryController.java,v 1.4 2005/04/27 07:19:49 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -90,6 +90,67 @@ public class CategoryController extends BaseController
 		return (CategoryVO)getVOWithId(CategoryImpl.class, id);
 	}
 
+	/**
+	 * Find a Category by it's name path.
+	 *
+	 * @param	path The path of the Category to find in the form /categoryName/categoryName/categoryName
+	 * @return	The CategoryVO identified by the provided path
+	 * @throws	SystemException If an error happens
+	 */
+	public CategoryVO findByPath(String path) throws SystemException
+	{
+	    CategoryVO categoryVO = null;
+	    
+	    String[] nodes = path.substring(1).split("/");
+        System.out.println("length:" + nodes.length);
+	    
+	    if(nodes.length > 0)
+	    {
+	        List rootCategories = findRootCategories();
+	        String name = nodes[0];
+	        System.out.println("name:" + name);
+	        categoryVO = getCategoryVOWithNameInList(rootCategories, name);
+	        System.out.println("categoryVO:" + categoryVO.getName());
+	        
+	        for(int i = 1; i < nodes.length; i++)
+	        {
+	            System.out.println("i:" + i);
+	            System.out.println("name:" + nodes[i]);
+	            categoryVO = getCategoryVOWithNameInList(findByParent(categoryVO.getId()), nodes[i]);
+		        System.out.println("categoryVO:" + categoryVO.getName());
+		    }
+	    }
+	    
+	    return categoryVO;
+	}
+
+	/**
+	 * Iterates the list of categories and returns the first one that matches your name.
+	 * @param categoryVOList
+	 * @param name
+	 * @return
+	 */
+
+	private CategoryVO getCategoryVOWithNameInList(List categoryVOList, String name)
+	{
+	    System.out.println("categoryVOList:" + categoryVOList.size());
+	    CategoryVO categoryVO = null;
+	    
+        Iterator categoryVOListIterator = categoryVOList.iterator();
+        while(categoryVOListIterator.hasNext())
+        {
+            CategoryVO currentCategoryVO = (CategoryVO)categoryVOListIterator.next();
+	        System.out.println("currentCategoryVO:" + currentCategoryVO.getName());
+            if(currentCategoryVO.getName().equalsIgnoreCase(name))
+            {
+                categoryVO = currentCategoryVO;
+            	break;
+            }
+        }
+        
+        return categoryVO;
+	}
+	
 	/**
 	 * Find a List of Categories by parent.
 	 *

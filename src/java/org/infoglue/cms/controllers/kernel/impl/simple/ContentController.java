@@ -554,67 +554,14 @@ public class ContentController extends BaseController
 	public void moveContent(ContentVO contentVO, Integer newParentContentId) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-        Content content = null;
-		Content newParentContent = null;
-		Content oldParentContent = null;
 
         beginTransaction(db);
 
         try
         {
-            //Validation that checks the entire object
-            contentVO.validate();
-			
-			if(newParentContentId == null)
-            {
-            	CmsLogger.logWarning("You must specify the new parent-content......");
-            	throw new ConstraintException("Content.parentContentId", "3303");
-            }
-
-            if(contentVO.getId().intValue() == newParentContentId.intValue())
-            {
-            	CmsLogger.logWarning("You cannot have the content as it's own parent......");
-            	throw new ConstraintException("Content.parentContentId", "3301");
-            }
-			
-			content          = getContentWithId(contentVO.getContentId(), db);
-            oldParentContent = content.getParentContent();
-            newParentContent = getContentWithId(newParentContentId, db);
-                        
-            if(oldParentContent.getId().intValue() == newParentContentId.intValue())
-            {
-            	CmsLogger.logWarning("You cannot specify the same folder as it originally was located in......");
-            	throw new ConstraintException("Content.parentContentId", "3304");
-            }
-
-			Content tempContent = newParentContent.getParentContent();
-			while(tempContent != null)
-			{
-				if(tempContent.getId().intValue() == content.getId().intValue())
-				{
-					CmsLogger.logWarning("You cannot move the content to a child under it......");
-            		throw new ConstraintException("Content.parentContentId", "3302");
-				}
-				tempContent = tempContent.getParentContent();
-			}				            
-            
-            oldParentContent.getChildren().remove(content);
-            content.setParentContent((ContentImpl)newParentContent);
-            content.setRepository(newParentContent.getRepository());
-            newParentContent.getChildren().add(content);
-            
-            //If any of the validations or setMethods reported an error, we throw them up now before create.
-            ceb.throwIfNotEmpty();
+            moveContent(contentVO, newParentContentId, db);
             
             commitTransaction(db);
-        }
-        catch(ConstraintException ce)
-        {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
-            rollbackTransaction(db);
-            throw ce;
         }
         catch(Exception e)
         {
@@ -624,7 +571,66 @@ public class ContentController extends BaseController
         }
 
     }   
-    
+
+	/**
+	 * This method moves a content from one parent-content to another. First we check so no illegal actions are 
+	 * in process. For example the target folder must not be the item to be moved or a child to the item.
+	 * Such actions would result in model-errors.
+	 */
+		
+	public void moveContent(ContentVO contentVO, Integer newParentContentId, Database db) throws ConstraintException, SystemException
+    {
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        Content content = null;
+		Content newParentContent = null;
+		Content oldParentContent = null;
+
+        //Validation that checks the entire object
+        contentVO.validate();
+		
+		if(newParentContentId == null)
+        {
+        	CmsLogger.logWarning("You must specify the new parent-content......");
+        	throw new ConstraintException("Content.parentContentId", "3303");
+        }
+
+        if(contentVO.getId().intValue() == newParentContentId.intValue())
+        {
+        	CmsLogger.logWarning("You cannot have the content as it's own parent......");
+        	throw new ConstraintException("Content.parentContentId", "3301");
+        }
+		
+		content          = getContentWithId(contentVO.getContentId(), db);
+        oldParentContent = content.getParentContent();
+        newParentContent = getContentWithId(newParentContentId, db);
+                    
+        if(oldParentContent.getId().intValue() == newParentContentId.intValue())
+        {
+        	CmsLogger.logWarning("You cannot specify the same folder as it originally was located in......");
+        	throw new ConstraintException("Content.parentContentId", "3304");
+        }
+
+		Content tempContent = newParentContent.getParentContent();
+		while(tempContent != null)
+		{
+			if(tempContent.getId().intValue() == content.getId().intValue())
+			{
+				CmsLogger.logWarning("You cannot move the content to a child under it......");
+        		throw new ConstraintException("Content.parentContentId", "3302");
+			}
+			tempContent = tempContent.getParentContent();
+		}				            
+        
+        oldParentContent.getChildren().remove(content);
+        content.setParentContent((ContentImpl)newParentContent);
+        content.setRepository(newParentContent.getRepository());
+        newParentContent.getChildren().add(content);
+        
+        //If any of the validations or setMethods reported an error, we throw them up now before create.
+        ceb.throwIfNotEmpty();
+    }   
+
 	/**
 	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
 	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
