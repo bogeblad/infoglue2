@@ -57,6 +57,10 @@ public class ChangeNotificationController
 	//List of all listeners.
 	private List listeners = new ArrayList();
 	
+	//List of all listeners that shall be unregistered
+	//(to avoid concurrent modification exceptions, and deadlocks)
+	private List unregisteredlisteners = new ArrayList();
+	
 	/**
 	 * The standard constructor is private to force use of factory-method.
 	 */
@@ -80,7 +84,7 @@ public class ChangeNotificationController
 	
 	public void unregisterListener(NotificationListener notificationListener)
 	{
-		this.listeners.remove(notificationListener);
+		this.unregisteredlisteners.add(notificationListener);
 	}
 	
 	/**
@@ -96,14 +100,19 @@ public class ChangeNotificationController
 			try
 			{
 				NotificationListener nl = (NotificationListener)i.next();
-				CmsLogger.logInfo("Notifying the listener:" + nl.getClass().getName());
-				nl.notify(notificationMessage);
+				if(!unregisteredlisteners.contains(nl))
+				{
+					CmsLogger.logInfo("Notifying the listener:" + nl.getClass().getName());
+					nl.notify(notificationMessage);
+				}
 			}
 			catch(Exception e)
 			{
 				CmsLogger.logSevere("One of the listeners threw an exception but we carry on with the others. Error: " + e.getMessage(), e);
 			}
-		}		
+		}
+		listeners.removeAll(unregisteredlisteners);
+		unregisteredlisteners.clear();
 	}	
 			
 
