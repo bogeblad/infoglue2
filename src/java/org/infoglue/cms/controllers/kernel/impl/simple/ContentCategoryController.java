@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.4 2005/03/14 21:41:47 jed Exp $
+ * $Id: ContentCategoryController.java,v 1.5 2005/04/28 07:16:12 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -28,10 +28,14 @@ import java.util.*;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Category;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentCategory;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
@@ -160,6 +164,75 @@ public class ContentCategoryController extends BaseController
 		// TODO: it is used to make the relationship...ask me for clarification -frank
 		Category category = (Category)getObjectWithId(CategoryImpl.class, c.getCategory().getId(), db);
 
+		ContentCategory contentCategory = new ContentCategoryImpl();
+		contentCategory.setValueObject(c);
+		contentCategory.setCategory((CategoryImpl)category);
+		db.create(contentCategory);
+		return contentCategory;
+	}
+
+	/**
+	 * Creates a number of ContentCategories from a list of categories and a contentVersion.
+	 */
+	private List create(List categoryVOList, ContentVersionVO contentVersionVO, String attributeName) throws SystemException
+	{
+		List contentCategoryVOList = new ArrayList();
+		
+	    Database db = beginTransaction();
+
+		try
+		{
+			Iterator categoryVOListIterator = categoryVOList.iterator();
+			while(categoryVOListIterator.hasNext())
+			{
+			    CategoryVO categoryVO = (CategoryVO)categoryVOListIterator.next();
+				Category category = (Category)getObjectWithId(CategoryImpl.class, categoryVO.getId(), db);
+				
+			    ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
+			    contentCategoryVO.setAttributeName(attributeName);
+			    contentCategoryVO.setContentVersionId(contentVersionVO.getId());
+			    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, db);
+					    
+			    contentCategoryVOList.add(contentCategory.getValueObject());
+			}
+		    
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return contentCategoryVOList;
+	}
+
+	/**
+	 * Creates a number of ContentCategories from a list of categories and a contentVersion.
+	 */
+	
+	private List create(List categoryList, ContentVersion contentVersion, String attributeName, Database db) throws SystemException, Exception
+	{
+		List contentCategoryList = new ArrayList();
+		
+		Iterator categoryListIterator = categoryList.iterator();
+		while(categoryListIterator.hasNext())
+		{
+		    Category category = (Category)categoryListIterator.next();
+			
+		    ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
+		    contentCategoryVO.setAttributeName(attributeName);
+		    contentCategoryVO.setContentVersionId(contentVersion.getId());
+		    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, db);
+				    
+		    contentCategoryList.add(contentCategory);
+		}
+		
+		return contentCategoryList;
+	}
+
+	public ContentCategory createWithDatabase(ContentCategoryVO c, Category category, Database db) throws SystemException, PersistenceException
+	{
 		ContentCategory contentCategory = new ContentCategoryImpl();
 		contentCategory.setValueObject(c);
 		contentCategory.setCategory((CategoryImpl)category);
