@@ -122,5 +122,9 @@
 		<taglib-uri>infoglue-page</taglib-uri>
 		<taglib-location>/WEB-INF/tld/infoglue-page.tld</taglib-location>
 	</taglib>
+	<taglib>
+		<taglib-uri>infoglue-workflow</taglib-uri>
+		<taglib-location>/WEB-INF/tld/infoglue-workflow.tld</taglib-location>
+	</taglib>
 	<!-- End WebWork -->
 </web-app>
