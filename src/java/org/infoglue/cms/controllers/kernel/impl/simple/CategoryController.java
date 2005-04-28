@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.4 2005/04/27 07:19:49 mattias Exp $
+ * $Id: CategoryController.java,v 1.5 2005/04/28 07:59:51 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -30,6 +30,7 @@ import java.util.Iterator;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.exception.SystemException;
@@ -88,6 +89,18 @@ public class CategoryController extends BaseController
 	public CategoryVO findById(Integer id) throws SystemException
 	{
 		return (CategoryVO)getVOWithId(CategoryImpl.class, id);
+	}
+
+	/**
+	 * Find a Category by it's identifier.
+	 *
+	 * @param	id The id of the Category to find
+	 * @return	The Category identified by the provided id
+	 * @throws	SystemException If an error happens
+	 */
+	public Category findById(Integer id, Database db) throws SystemException
+	{
+		return (Category)getObjectWithId(CategoryImpl.class, id, db);
 	}
 
 	/**
