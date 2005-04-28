@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.5 2005/04/28 07:16:12 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.6 2005/04/28 07:29:39 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -174,7 +174,7 @@ public class ContentCategoryController extends BaseController
 	/**
 	 * Creates a number of ContentCategories from a list of categories and a contentVersion.
 	 */
-	private List create(List categoryVOList, ContentVersionVO contentVersionVO, String attributeName) throws SystemException
+	public List create(List categoryVOList, ContentVersionVO contentVersionVO, String attributeName) throws SystemException
 	{
 		List contentCategoryVOList = new ArrayList();
 		
@@ -211,7 +211,7 @@ public class ContentCategoryController extends BaseController
 	 * Creates a number of ContentCategories from a list of categories and a contentVersion.
 	 */
 	
-	private List create(List categoryList, ContentVersion contentVersion, String attributeName, Database db) throws SystemException, Exception
+	public List create(List categoryList, ContentVersion contentVersion, String attributeName, Database db) throws SystemException, Exception
 	{
 		List contentCategoryList = new ArrayList();
 		
