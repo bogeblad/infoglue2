@@ -378,6 +378,8 @@ function setEditUrl(anEditUrl)
 
 function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl) 
 {
+	hidepreviousmenues();
+	
 	activeMenuId = "component" + compId + "Menu";
 
 	componentId = compId;
@@ -456,6 +458,8 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 
 function showEmptySlotMenu(event, compId, anInsertUrl) 
 {
+	hidepreviousmenues();
+	
 	activeMenuId = "emptySlotMenu";
 	
 	slotId = compId;
@@ -499,6 +503,14 @@ function release()
         busy = false;
 }
 
+function hidepreviousmenues() 
+{
+	//alert("Hiding menu");
+	layer = getActiveMenuDiv();
+	if(layer)
+		layer.style.visibility = "hidden";
+}
+
 function hidemenuie5() 
 {
 	//alert("Hiding menu");
@@ -517,8 +529,8 @@ function highlightie5(event)
 	
 	if (layer.className == "menuitems") 
 	{
-		layer.style.backgroundColor = "highlight";
-		layer.style.color = "white";
+		layer.style.backgroundColor = "#B6BDD2";
+		layer.style.border = "1px solid black";
 		
 		if (display_url)
 			window.status = layer.url;
@@ -532,7 +544,7 @@ function lowlightie5(event)
 	if (layer.className == "menuitems") 
 	{
 		layer.style.backgroundColor = "";
-		layer.style.color = "black";
+		layer.style.border = "0px solid white";
 		window.status = "";
 	}
 }
