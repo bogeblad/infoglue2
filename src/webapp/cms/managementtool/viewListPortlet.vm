@@ -13,7 +13,7 @@
 	
 	#foreach($portlet in $portlets.get($app))
 	  #if($velocityCount > 1)
-		  #set($portletsString = "$portletsString<br>$portlet")
+		  #set($portletsString = "$portletsString<br>")
 	  #end
 	  #set($portletsString = "$portletsString $portlet")
 	#end
