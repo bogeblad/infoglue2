@@ -33,7 +33,7 @@ import javax.servlet.jsp.JspException;
 public class ContentTextFieldTag extends ContentInputTag {
 	private static final long serialVersionUID = 4051330041428390198L;
 
-	private static final String TEXT_FIELD = "<input id=\"{0}\" name=\"{0}\" type=\"text\" value=\"{1}\"/>";
+	private static final String TEXT_FIELD = "<input id=\"{0}\" name=\"{0}\" type=\"text\" value=\"{1}\" class=\"{2}\"/>";
 	
 	/**
 	 * 
@@ -56,6 +56,7 @@ public class ContentTextFieldTag extends ContentInputTag {
 	 */
 	private String createTextFieldHTML() {
 		String value = (getContentValue() == null) ? "" : getContentValue();
-		return MessageFormat.format(TEXT_FIELD, new Object[] { getName(), value });
+		String cssClass = (getCssClass() == null) ? "" : getCssClass();
+		return MessageFormat.format(TEXT_FIELD, new Object[] { getName(), value, cssClass });
 	}
 }

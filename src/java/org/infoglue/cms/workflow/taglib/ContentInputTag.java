@@ -34,6 +34,7 @@ import javax.servlet.jsp.tagext.TagSupport;
  */
 public abstract class ContentInputTag extends TagSupport {
 	private String name;
+	private String cssClass;
 
 
 	/**
@@ -75,4 +76,14 @@ public abstract class ContentInputTag extends TagSupport {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+    public String getCssClass()
+    {
+        return cssClass;
+    }
+    
+    public void setCssClass(String cssClass)
+    {
+        this.cssClass = cssClass;
+    }
 }

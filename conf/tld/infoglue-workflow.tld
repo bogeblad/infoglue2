@@ -54,6 +54,11 @@
 			<required>true</required>
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>
 	<tag>
         <name>textarea</name>
@@ -65,6 +70,12 @@
 			<required>true</required>
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
+    	<attribute>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    	
 	</tag>
 	<tag>
         <name>radio</name>
