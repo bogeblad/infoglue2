@@ -26,6 +26,7 @@ package org.infoglue.deliver.util;
 //import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.impl.simple.*;
 import org.infoglue.cms.entities.structure.impl.simple.*;
 import org.infoglue.cms.entities.publishing.impl.simple.*;
@@ -255,6 +256,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("workflowCache") && entity.indexOf("WorkflowDefinition") > 0)
+				{
+					clear = true;
+				}
 				
 				if(clear)
 				{	
@@ -357,7 +362,7 @@ public class CacheController extends Thread
 			clearCache(GroupPropertiesImpl.class);
 			clearCache(UserContentTypeDefinitionImpl.class);
 			clearCache(RoleContentTypeDefinitionImpl.class);
-			clearCache(GroupContentTypeDefinitionImpl.class);
+			clearCache(GroupContentTypeDefinitionImpl.class);			
 		}
 		catch(Exception e)
 		{

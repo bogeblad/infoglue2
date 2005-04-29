@@ -41,6 +41,7 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
@@ -140,6 +141,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//System.out.println("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
 			}
+			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
+			{
+				CacheController.clearCache("workflowCache");
+			}
     	}
     }
 
@@ -230,6 +235,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("masterLanguageCache");
 				CacheController.clearCache("repositoryLanguageListCache");
 			}
+			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
+			{
+				CacheController.clearCache("workflowCache");
+			}
+
 
 			//System.out.println("created end...:" + object);
     	}
@@ -306,6 +316,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 			    RegistryController.getController().clearRegistryForReferencedEntity(SiteNodeImpl.class.getName(), getObjectIdentity(object).toString());
 			}
+			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
+			{
+				CacheController.clearCache("workflowCache");
+			}
+
 
        	}
     }

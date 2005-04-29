@@ -30,7 +30,9 @@ import com.opensymphony.workflow.loader.WorkflowDescriptor;
 import com.opensymphony.workflow.loader.WorkflowLoader;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
+import org.infoglue.deliver.util.CacheController;
 
 import java.io.*;
 
@@ -43,7 +45,7 @@ import java.util.*;
 
 public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
 {
-    protected Map workflows;
+    //protected Map workflows;
     protected boolean reload;
 
     public void setLayout(String workflowName, Object layout) 
@@ -80,6 +82,13 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
 
     public WorkflowDescriptor getWorkflow(String name, boolean validate) throws FactoryException 
     {
+        Map workflows = (Map)CacheController.getCachedObject("workflowCache", "workflowMap");
+		
+        if(workflows == null)
+            initDone(); 
+
+        workflows = (Map)CacheController.getCachedObject("workflowCache", "workflowMap");
+
         WorkflowConfig c = (WorkflowConfig) workflows.get(name);
 
         if (c == null) {
@@ -100,8 +109,29 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
         return c.descriptor;
     }
 
+    public void reload() throws FactoryException
+    {
+        initDone();   
+    }
+
     public String[] getWorkflowNames() 
     {
+        Map workflows = (Map)CacheController.getCachedObject("workflowCache", "workflowMap");
+		
+        if(workflows == null)
+        {
+            try
+            {
+                initDone();
+            } 
+        	catch (FactoryException e)
+            {
+                e.printStackTrace();
+            } 
+        }
+
+        workflows = (Map)CacheController.getCachedObject("workflowCache", "workflowMap");
+
         int i = 0;
         String[] res = new String[workflows.keySet().size()];
         Iterator it = workflows.keySet().iterator();
@@ -116,13 +146,21 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
 
     public void createWorkflow(String name) 
     {
+        try
+        {
+            initDone();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void initDone() throws FactoryException 
     {
         try
         {
-            workflows = new HashMap();
+            Map workflows = new HashMap();
             
             List list = WorkflowDefinitionController.getController().getWorkflowDefinitionVOList();
 
@@ -134,6 +172,7 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
                 workflows.put(workflowDefinitionVO.getName(), config);
             }
 
+            CacheController.cacheObject("workflowCache", "workflowMap", workflows);
         }
         catch (Exception e) 
         {
@@ -489,4 +528,5 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
         }
     }
     */
+
 } 
