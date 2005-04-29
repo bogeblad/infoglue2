@@ -337,8 +337,70 @@
 	* Replaces the mapping.xml from the war with the deliver version.
 	-->
 	<target name="fast-build" depends="" description="Compiles the classes if class and moves configs to the right spot">
+		<echo message="Copying infoglueCMS/WEB-INF/lib"/>
+		<copy todir="${deploy.dir.cms}/WEB-INF/lib">
+			<fileset dir="${lib}/build">
+				<include name="*.*"/>
+				<exclude name="pluto-1.0.1-rc2.jar"/>
+				<exclude name="portlet-api-1.0.jar"/>
+			</fileset>
+			<fileset dir="${lib}/core">
+				<include name="*.*"/>
+				<exclude name="pluto-1.0.1-rc2.jar"/>
+				<exclude name="portlet-api-1.0.jar"/>
+			</fileset>
+			<fileset dir="${lib}/jdbc">
+				<include name="*.*"/>
+			</fileset>
+		</copy>
+
+		<echo message="Copying infoglueDeliver/WEB-INF/lib"/>
+		<copy todir="${deploy.dir.working}/WEB-INF/lib">
+			<fileset dir="${lib}/build">
+				<include name="*.*"/>
+				<exclude name="pluto-1.0.1-rc2.jar"/>
+				<exclude name="portlet-api-1.0.jar"/>
+			</fileset>
+			<fileset dir="${lib}/core">
+				<include name="*.*"/>
+				<exclude name="pluto-1.0.1-rc2.jar"/>
+				<exclude name="portlet-api-1.0.jar"/>
+			</fileset>
+			<fileset dir="${lib}/jdbc">
+				<include name="*.*"/>
+			</fileset>
+		</copy>
+
 		<echo message="Copying infoglueCMS/WEB-INF/classes"/>
-		<copy todir="${build}/cmswebapp/WEB-INF/classes">
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
+			<fileset dir="${build.classes}">
+				<include name="**/*.*"/>
+				<exclude name="cms-web.xml"/>
+				<exclude name="deliver-web.xml"/>
+			</fileset>
+		</copy>
+
+		<echo message="Copying infoglueCMS/WEB-INF/classes"/>
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
+			<fileset dir="${conf}/data/xml">
+				<include name="portletdefinitionmapping.xml"/>
+				<include name="portletentitymapping.xml"/>
+				<include name="servletdefinitionmapping.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.cms}/WEB-INF/config">
+			<fileset dir="${conf}/config">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.cms}/WEB-INF/data">
+			<fileset dir="${conf}/data">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+
+		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
+		<copy todir="${deploy.dir.working}/WEB-INF/classes">
 			<fileset dir="${build.classes}">
 				<include name="**/*.*"/>
 				<exclude name="cms-web.xml"/>
@@ -347,65 +409,36 @@
 		</copy>
 
 		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
-		<copy todir="${build}/deliverwebapp/WEB-INF/classes">
-			<fileset dir="${build.classes}">
-				<include name="**/*.*"/>
-				<exclude name="cms-web.xml"/>
-				<exclude name="deliver-web.xml"/>
+		<copy todir="${deploy.dir.working}/WEB-INF/classes">
+			<fileset dir="${conf}/data/xml">
+				<include name="portletdefinitionmapping.xml"/>
+				<include name="portletentitymapping.xml"/>
+				<include name="servletdefinitionmapping.xml"/>
 			</fileset>
 		</copy>
 
 		<echo message="Copying infoglueDeliver"/>
-		<copy todir="${build}/deliverwebapp">
+		<copy todir="${deploy.dir.working}">
 			<fileset dir="${webapp}">
 				<include name="**/*.*"/>
 			</fileset>
 		</copy>
 
 		<echo message="Copying infoglueCMS"/>
-		<copy todir="${build}/cmswebapp">
+		<copy todir="${deploy.dir.cms}">
 			<fileset dir="${webapp}">
 				<include name="**/*.*"/>
 			</fileset>
 		</copy>
-
-		<echo message="Copying confs to deliver"/>
-		<copy todir="${build}/deliverwebapp/WEB-INF/classes">
-			<fileset dir="${conf}">
-				<include name="*.properties"/>
-				<include name="*.xml"/>
-				<include name="*.dtd"/>
-				<include name="LICENSE.HTML"/>
-				<exclude name="*web.xml"/>
-			</fileset>
-			<filterset refid="project.filters"/>
-			<filterset>
-				<filter token="context.root.deliver" value="${context.root.working}"/>
-				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
-			</filterset>
-		</copy>
-		<copy todir="${build}/deliverwebapp/WEB-INF/classes">
-			<fileset dir="${conf}/deliver" includes="mapping.xml"/>
-			<fileset dir="${conf}/deliver" includes="webwork.properties"/>
-		</copy>
-		<copy file="${conf}/deliver-web.xml" tofile="${build}/deliverwebapp/WEB-INF/web.xml">
-			<filterset refid="project.filters"/>
-			<filterset>
-				<filter token="context.root.deliver" value="${context.root.working}"/>
-				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
-			</filterset>
-		</copy>
-		<copy todir="${build}/deliverwebapp/WEB-INF/classes">
-			<fileset dir="${src}" includes="workflows/*.xml"/>
-		</copy>
-		<copy todir="${build}/deliverwebapp/WEB-INF/tld">
+		<copy todir="${deploy.dir.cms}/WEB-INF/tld">
 			<fileset dir="${conf}/tld">
 				<include name="*.tld"/>
 			</fileset>
 		</copy>
-		
-		<echo message="Copying confs to cms"/>
-		<copy todir="${build}/cmswebapp/WEB-INF/classes">
+
+
+		<echo message="Copying confs to deliver"/>
+		<copy todir="${deploy.dir.working}/WEB-INF/classes">
 			<fileset dir="${conf}">
 				<include name="*.properties"/>
 				<include name="*.xml"/>
@@ -419,12 +452,57 @@
 				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
 			</filterset>
 		</copy>
-		<copy todir="${build}/cmswebapp/WEB-INF/classes">
+		<copy todir="${deploy.dir.working}/WEB-INF/classes">
+			<fileset dir="${conf}/deliver" includes="mapping.xml"/>
+			<fileset dir="${conf}/deliver" includes="webwork.properties"/>
+		</copy>
+		<copy file="${conf}/deliver-web.xml" tofile="${deploy.dir.working}/WEB-INF/web.xml">
+			<filterset refid="project.filters"/>
+			<filterset>
+				<filter token="context.root.deliver" value="${context.root.working}"/>
+				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
+			</filterset>
+		</copy>
+		<copy todir="${deploy.dir.working}/WEB-INF/classes">
+			<fileset dir="${src}" includes="workflows/*.xml"/>
+		</copy>
+		<copy todir="${deploy.dir.working}/WEB-INF/tld">
+			<fileset dir="${conf}/tld">
+				<include name="*.tld"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.working}/WEB-INF/config">
+			<fileset dir="${conf}/config">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.working}/WEB-INF/data">
+			<fileset dir="${conf}/data">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		
+		<echo message="Copying confs to cms"/>
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
+			<fileset dir="${conf}">
+				<include name="*.properties"/>
+				<include name="*.xml"/>
+				<include name="*.dtd"/>
+				<include name="LICENSE.HTML"/>
+				<exclude name="*web.xml"/>
+			</fileset>
+			<filterset refid="project.filters"/>
+			<filterset>
+				<filter token="context.root.deliver" value="${context.root.working}"/>
+				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
+			</filterset>
+		</copy>
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
 			<fileset dir="${conf}/cms" includes="mapping.xml"/>
 			<fileset dir="${conf}/cms" includes="webwork.properties"/>
 		</copy>
 
-		<copy file="${conf}/cms-web.xml" tofile="${build}/cmswebapp/WEB-INF/web.xml">
+		<copy file="${conf}/cms-web.xml" tofile="${deploy.dir.cms}/WEB-INF/web.xml">
 		<filterset refid="project.filters"/>
 			<filterset>
 				<filter token="context.root.deliver" value="${context.root.working}"/>
@@ -432,7 +510,7 @@
 			</filterset>
 		</copy>
 		
-		<copy todir="${build}/cmswebapp/WEB-INF/classes">
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
 </target>
