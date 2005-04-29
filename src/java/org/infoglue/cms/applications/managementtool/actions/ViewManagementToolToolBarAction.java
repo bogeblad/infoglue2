@@ -644,7 +644,7 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("UploadPortlet.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newPortlet"), "New Portlet"));	
-		buttons.add(new ImageButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
+		//buttons.add(new ImageButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
 		return buttons;
 	}
 
