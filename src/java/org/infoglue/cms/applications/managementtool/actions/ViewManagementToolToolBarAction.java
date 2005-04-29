@@ -343,7 +343,11 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 				return getWorkflowDefinitionsButtons();
 			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinition.header"))
 				return getWorkflowDefinitionDetailsButtons();
-
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.portletList.header"))
+				return getPortletsButtons();
+			//if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.portlet.header"))
+			//	return getPortletDetailsButtons();
+			
 		}
 		catch(Exception e) {e.printStackTrace();}			
 					
@@ -634,6 +638,14 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		this.name = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(this.workflowDefinitionId).getName();
 		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteWorkflowDefinition.header&yesDestination=" + URLEncoder.encode("DeleteWorkflowDefinition.action?workflowDefinitionId=" + this.workflowDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListWorkflowDefinition.action", "UTF-8") + "&message=tool.managementtool.deleteWorkflowDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinition.header"));
 		return buttons;				
+	}
+
+	private List getPortletsButtons() throws Exception
+	{
+		List buttons = new ArrayList();
+		buttons.add(new ImageButton("UploadPortlet.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newPortlet"), "New Portlet"));	
+		buttons.add(new ImageButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
+		return buttons;
 	}
 
 }

@@ -1,36 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<SCRIPT LANGUAGE="JavaScript">
-function reloadMenu()
-		{
-			menuFrame = parent.header;
-			menuFrame.location.reload();
-		}
-</SCRIPT>
 
-## FIXME
-#beginManagementTool("tool.managementtool.repositoryList.header" "tool.managementtool.repositoryList.header" "")
+#beginManagementTool("tool.managementtool.portletList.header" "tool.managementtool.portletList.header" "")
 
 #set($lvConstraint = 1)
-## FIXME 
-#lvHead(["Context","Portlets"] "tool.managementtool.deleteRepositories.header" "DeleteRepository.action" "ViewListRepository.action?title=Repositories" "tool.managementtool.deleteRepositories.text")
+#lvHead(["Context","Portlets"] "tool.managementtool.deletePortlets.header" "DeletePortlet.action" "ViewListPortlet.action?title=Portlets" "tool.managementtool.deletePortlets.text")
 
 #set($cnt = 0)
 #foreach ($app in $portlets.keySet())
-	## entities is a comma-separated list of all portlet entities 
- 	#set( $entities = "" )
-	#foreach($entity in $app.get($portlet))
-		#set($entities = "$entities, $entity")
-	#end 
+	#set($portletsString = "")
+	
+	#foreach($portlet in $portlets.get($app))
+	  #if($velocityCount > 1)
+		  #set($portletsString = "$portletsString<br>$portlet")
+	  #end
+	  #set($portletsString = "$portletsString $portlet")
+	#end
 	
 	## FIXME
-	#set( $rowUrl = "ViewRepository.action?repositoryId=$repositoryVO.getRepositoryId()&title=Repository%20details")
-	#set( $row = ["<input type='hidden' name='rowtitle' value='$repositoryVO.getName()'/> <a href=$rowUrl>$repositoryVO.getName()</a>","$repositoryVO.getDescription()","$repositoryVO.getDnsName()"])
+	#set( $rowUrl = "ViewPortlet.action?portletName=$repositoryVO.getRepositoryId()&title=Repository%20details")
+	##set( $row = ["<input type='hidden' name='rowtitle' value='$app.getName()'/> <a href=$rowUrl>$app</a>", "$portletsString"])
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$app.getName()'/> $app", "$portletsString"])
 	#set($cnt = $cnt + 1)
 
-	#lvAddRow($row $cnt ##$ ??? )
+	#lvAddRow($row $cnt $app.name)
 #end
 #lvEnd()
-<script>reloadMenu()</script>
+
 #endManagementTool()
