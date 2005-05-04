@@ -47,6 +47,10 @@ public class BasicURLComposer extends URLComposer
 
     public String composeDigitalAssetUrl(String dnsName, String filename)
     {
+        String disableEmptyUrls = CmsPropertyHandler.getProperty("disableEmptyUrls");
+        if((filename == null || filename.equals("")) && (disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("no")))
+            return "";
+            
         String assetUrl = "";
         
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
@@ -86,6 +90,12 @@ public class BasicURLComposer extends URLComposer
 
     public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext)
     {
+        /*
+        String disableEmptyUrls = CmsPropertyHandler.getProperty("disableEmptyUrls");
+        if(filename == null || filename.equals("") && disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("no"))
+            return "";
+        */
+        
     	String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";

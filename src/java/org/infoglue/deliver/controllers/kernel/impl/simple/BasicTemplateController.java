@@ -1269,9 +1269,10 @@ public class BasicTemplateController implements TemplateController
 	 * This method deliveres a String with the content-attribute asked for in the language asked for.
 	 * If the attribute is not found in the language requested it fallbacks to the master language.
 	 */
-	 
-	public String getContentAttributeUsingLanguageFallback(Database db, Integer contentId, String attributeName, boolean disableEditOnSight) 
+
+	public String getContentAttributeUsingLanguageFallback(Integer contentId, String attributeName, boolean disableEditOnSight) 
 	{
+	    System.out.println("getContentAttributeUsingLanguageFallback: " + contentId + ":" + attributeName + ":" + disableEditOnSight);
 		String attributeValue = "";
 		
 		try
@@ -1279,7 +1280,7 @@ public class BasicTemplateController implements TemplateController
 		    attributeValue = this.getContentAttribute(contentId, attributeName, true);
 		    if(attributeValue != null && attributeValue.trim().equals(""))
 		    {
-		        LanguageVO masteLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.siteNodeId);
+		        LanguageVO masteLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), this.siteNodeId);
 		        attributeValue = this.getContentAttribute(contentId, masteLanguageVO.getLanguageId(), attributeName, disableEditOnSight);
 		    }
 		}
