@@ -143,8 +143,13 @@ public class ContentVO implements BaseEntityVO
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
  		ValidatorFactory.createStringValidator("Content.name", true, 2, 100).validate(name, ceb);
  		
- 		if(this.publishDateTime.after(this.expireDateTime))
-			ceb.add(new ConstraintException("Content.publishDateTime", "308"));
+		if(this.publishDateTime == null)
+			ceb.add(new ConstraintException("Content.publishDateTime", "300"));
+		if(this.expireDateTime == null)
+			ceb.add(new ConstraintException("Content.expireDateTime", "300"));
+		if(this.publishDateTime != null && this.expireDateTime != null)
+			if(this.publishDateTime.after(this.expireDateTime))
+				ceb.add(new ConstraintException("Content.publishDateTime", "308"));
 		
 		return ceb;
 	}	
