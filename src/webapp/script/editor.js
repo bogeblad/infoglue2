@@ -133,7 +133,8 @@ function hideEditors(editorId, attributeName)
 		wysiwygEditor._iframe.style.display = "none";
 		wysiwygEditor._toolbar.style.display = "none";
 		var plainTextArea = document.getElementById(attributeName);
-		plainTextArea.value = untransformAttribute(wysiwygEditor.getHTML());
+		plainTextArea.value = untransformAttribute(untransformAttribute(wysiwygEditor.getHTML()));
+		
 		plainTextArea.style.display = "block";
 	}
 	else if(currentEditorId == 2)
@@ -198,6 +199,236 @@ function getAttributeInTagWithDefaultValue(tag, attributeName, defaultValue)
 	return value;
 }
 
+
+function transformAttribute(plainAttribute, document)
+{
+	//alert("Going to transform:" + plainAttribute);
+	var newAttribute = "";
+	var startPosition;
+	var endPosition;
+
+	startPosition = plainAttribute.toLowerCase().indexOf("<a ");
+	index = 0;
+	var oldTitle;
+	
+	//alert("startPosition:" + startPosition);
+	while(startPosition > -1 && index < 100)
+	{
+		newAttribute += plainAttribute.substring(0, startPosition);
+		//alert("newAttribute:" + newAttribute);
+		plainAttribute = plainAttribute.substring(startPosition, plainAttribute.length)
+		//alert("Left in plainAttribute:" + plainAttribute)
+		startTextPosition = plainAttribute.indexOf(">") + 1;
+		//alert("startTextPosition:" + startTextPosition);
+		endPosition = plainAttribute.indexOf("</a>");
+		text = plainAttribute.substring(startTextPosition, endPosition);
+		//alert("text:" + text);
+			
+		hrefTag = plainAttribute.substring(0, endPosition + 4);
+		//alert("hrefTag:" + hrefTag);
+		
+		if(hrefTag.indexOf("href") > -1 && hrefTag.indexOf("$templateLogic.getPageUrl") > -1)
+		{
+			hrefStartIndex = hrefTag.toLowerCase().indexOf("href");
+			//alert(hrefStartIndex);
+			startPart = hrefTag.substring(0, hrefStartIndex + 5);
+
+			//alert("Tranforming templateLogic.getPageUrl...");
+			siteNodeIdIndex = hrefTag.indexOf("getPageUrl(") + 11;
+			siteNodeIdEndIndex = hrefTag.indexOf(",", siteNodeIdIndex);
+			siteNodeId = hrefTag.substring(siteNodeIdIndex, siteNodeIdEndIndex);
+			//alert("siteNodeId:" + siteNodeId);
+			
+			//alert("navigationTitleHash:" + navigationTitleHash)
+			//navigationTitle = navigationTitleHash[siteNodeId];
+			//alert("navigationTitle:" + navigationTitle);
+			
+			remainingTag = hrefTag.substring(hrefStartIndex + 5, hrefTag.length);
+			//alert("Remaining tag before:" + remainingTag);
+			endIndex = remainingTag.indexOf("\" ");
+			//alert("endIndex:" + endIndex);
+			var jumpSteps = 0;
+			if(remainingTag.indexOf("' ") > -1 && (endIndex == -1 || remainingTag.indexOf("' ") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("' ");
+			}
+			else if(remainingTag.indexOf("\")") > -1 && (endIndex == -1 || remainingTag.indexOf("\")") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("\")");
+				jumpSteps = 3;
+			}
+			else if(remainingTag.indexOf("')") > -1 && (endIndex == -1 || remainingTag.indexOf("')") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("')");
+				jumpSteps = 3;
+			}
+			remainingTag = remainingTag.substring(endIndex + jumpSteps + 1, remainingTag.indexOf(">", endIndex + jumpSteps));
+			//alert("remainingTag:" + remainingTag);
+			//newAttribute += startPart + remainingTag; 
+
+			//alert("hrefTag:" + hrefTag);
+			//alert("unescaped hrefTag:" + unescape(hrefTag));
+			newAttribute += "<a href=\"#\" originaltag=\"" + escape(hrefTag) + "\"" + remainingTag + ">" + text + "</a>";
+			//newAttribute += "<a href=\"#\" originaltag=\"" + escape(unescape(hrefTag)) + "\"" + remainingTag + ">" + text + "</a>";
+			//alert("newAttribute:" + newAttribute);
+		}
+		else if(hrefTag.indexOf("href") > -1 && hrefTag.indexOf("$templateLogic.getInlineAssetUrl") > -1)
+		{
+			//alert("Tranforming $templateLogic.getInlineAssetUrl...");
+			//alert("hrefTag:" + hrefTag);
+			
+			hrefStartIndex = hrefTag.toLowerCase().indexOf("href");
+			//alert(hrefStartIndex);
+			
+			remainingTag = hrefTag.substring(hrefStartIndex + 5, hrefTag.length);
+			//alert("Remaining tag before:" + remainingTag);
+			endIndex = remainingTag.indexOf("\" ");
+			//alert("endIndex:" + endIndex);
+			var jumpSteps = 0;
+			if(remainingTag.indexOf("' ") > -1 && (endIndex == -1 || remainingTag.indexOf("' ") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("' ");
+			}
+			else if(remainingTag.indexOf("\")") > -1 && (endIndex == -1 || remainingTag.indexOf("\")") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("\")");
+				jumpSteps = 3;
+			}
+			else if(remainingTag.indexOf("')") > -1 && (endIndex == -1 || remainingTag.indexOf("')") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("')");
+				jumpSteps = 3;
+			}
+			remainingTag = remainingTag.substring(endIndex + jumpSteps + 1, remainingTag.indexOf(">", endIndex + jumpSteps));
+			//alert("remainingTag:" + remainingTag);
+			
+			transformedTag = "<a href=\"#\" originaltag=\"" + escape(hrefTag) + "\"" + remainingTag + ">" + text + "</a>";
+			//alert("transformedTag:" + transformedTag);
+			newAttribute += transformedTag;
+			//newAttribute += "<a href=\"#\" originaltag=\"" + escape(hrefTag) + "\"" + remainingTag + ">" + text + "</a>";
+			//alert("newAttribute:" + newAttribute);
+		}
+		else
+		{
+			newAttribute += hrefTag;
+		}
+		
+		if((endPosition + 4) < plainAttribute.length)
+			plainAttribute = plainAttribute.substring(endPosition + 4, plainAttribute.length)		
+		else
+			plainAttribute = "";		
+
+		//alert("plainAttribute:" + plainAttribute);
+		startPosition = plainAttribute.toLowerCase().indexOf("<a ");
+		
+		index += 1;
+	}
+	
+	
+	newAttribute += plainAttribute;
+	plainAttribute = newAttribute;
+	//alert("plainAttribute:" + plainAttribute);
+	//First transformation done... now to the next
+	
+	newAttribute = "";
+	
+	startPosition = plainAttribute.toLowerCase().indexOf("<img");
+	index = 0;
+	while(startPosition > -1 && index < 100)
+	{
+		newAttribute += plainAttribute.substring(0, startPosition);
+		//alert("newAttribute:" + newAttribute);
+		plainAttribute = plainAttribute.substring(startPosition, plainAttribute.length)
+		//alert("Left in plainAttribute:" + plainAttribute)
+		endPosition = plainAttribute.indexOf(">");
+			
+		imgTag = plainAttribute.substring(0, endPosition + 1);
+		
+		//alert(imgTag);
+		if(imgTag.indexOf("$templateLogic") > -1)
+		{
+			srcStartIndex = imgTag.toLowerCase().indexOf("src");
+			//alert(srcStartIndex);
+			startPart = imgTag.substring(0, srcStartIndex + 4);
+			//alert("StartPart:" + startPart);
+			
+			//alert("imgTag:" + imgTag);
+			imgTag = imgTag.replace(/\$templateLogic.getAssetUrl\(\$templateLogic.contentId,[\s]{0,1}/gi, "$templateLogic.getInlineAssetUrl(");
+			imgTag = imgTag.replace(/\'/gi, "\"");
+			//alert("imgTag:" + imgTag);
+			
+			assetUrl = "images/imagePlaceHolder.jpg";
+			//alert("imgTag:" + imgTag);
+			//alert("indexOf:" + imgTag.indexOf("getInlineAssetUrl"));
+			if(imgTag.indexOf("getInlineAssetUrl") > -1)
+			{
+				if(imgTag.indexOf(",") > -1)
+				{
+					currentContentId = imgTag.substring(imgTag.indexOf("getInlineAssetUrl") + 18, imgTag.indexOf(","));
+					assetKey = imgTag.substring(imgTag.indexOf(", \"") + 3, imgTag.indexOf("\"\)"));
+					assetUrl = "DownloadAsset.action?contentId=" + currentContentId + "&languageId=" + document.editForm.languageId.value + "&assetKey=" + assetKey;
+				}
+				else
+				{			
+					assetKey = imgTag.substring(imgTag.indexOf("getInlineAssetUrl") + 19, imgTag.indexOf("\"\)"));
+					//alert("assetKey:" + assetKey);	
+					//alert("Document:" + self.document.location);
+					if(document.getElementById("digitalAsset" + assetKey))
+						assetUrl =  document.getElementById("digitalAsset" + assetKey).value;
+					else if(self.document.getElementById("digitalAsset" + assetKey))
+						assetUrl =  self.document.getElementById("digitalAsset" + assetKey).value;
+					
+					//alert("languageId:" + document.editForm.languageId.value);
+				}
+			}
+				
+			startPart += "\"" + assetUrl + "\" originaltag=\"" + escape(imgTag) + "\"";
+			//alert("StartPart:" + startPart);
+			remainingTag = imgTag.substring(srcStartIndex + 4, imgTag.length);
+			//alert("Remaining tag before:" + remainingTag);
+			endIndex = remainingTag.indexOf("\" ");
+			//alert("endIndex:" + endIndex);
+			var jumpSteps = 0;
+			if(remainingTag.indexOf("' ") > -1 && (endIndex == -1 || remainingTag.indexOf("' ") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("' ");
+			}
+			else if(remainingTag.indexOf("\")") > -1 && (endIndex == -1 || remainingTag.indexOf("\")") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("\")");
+				jumpSteps = 3;
+			}
+			else if(remainingTag.indexOf("')") > -1 && (endIndex == -1 || remainingTag.indexOf("')") < endIndex))
+			{
+				endIndex = remainingTag.indexOf("')");
+				jumpSteps = 3;
+			}
+			remainingTag = remainingTag.substring(endIndex + jumpSteps, remainingTag.length);
+			newAttribute += startPart + remainingTag; 
+			//alert("Remaining tag after:" + remainingTag);
+		}
+		else
+		{
+			newAttribute += imgTag;
+		}
+		
+		if((endPosition + 1) < plainAttribute.length)
+			plainAttribute = plainAttribute.substring(endPosition + 1, plainAttribute.length)		
+		else
+			plainAttribute = "";		
+			
+		startPosition = plainAttribute.toLowerCase().indexOf("<img");
+		
+		index += 1;
+	}
+	
+	newAttribute += plainAttribute;
+
+	//alert("Done transforming:" + newAttribute);
+	return newAttribute;
+}
+
+/*
 function transformAttribute(plainAttribute, document)
 {
 	//alert("Going to transform:" + plainAttribute);
@@ -420,7 +651,7 @@ function transformAttribute(plainAttribute, document)
 	//alert("Done transforming:" + newAttribute);
 	return newAttribute;
 }
-
+*/
 
 
 
