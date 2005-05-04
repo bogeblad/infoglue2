@@ -156,7 +156,8 @@ public class ContentVersionVO implements BaseEntityVO
 	 */
 	public ConstraintExceptionBuffer validate() 
 	{ 
-		return null;
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		return ceb;
 	}
 
         
