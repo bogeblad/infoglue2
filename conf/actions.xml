@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.41 2005/04/29 13:22:16 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.42 2005/05/04 14:39:08 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -1107,6 +1107,12 @@
 	<!-- Download Action -->
 	<action name="org.infoglue.cms.applications.contenttool.actions.DownloadAssetAction" alias="DownloadAsset">
 		<view name="error">/cms/contenttool/error.vm</view>
+	</action>
+
+	<!-- WYSIWYG Configuration lookup Action -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.WYSIWYGPropertiesAction" alias="WYSIWYGProperties">
+		<view name="success">/cms/managementtool/viewWYSIWYGProperties.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
 	<!-- Redirect -->
