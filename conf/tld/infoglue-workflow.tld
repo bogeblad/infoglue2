@@ -109,4 +109,22 @@
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
 	</tag>
+	<!--  TODO: move to common -->
+	<tag>
+        <name>categoryWithName</name>
+        <tagclass>org.infoglue.cms.workflow.taglib.CategoryWithNameTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info></info>
+        <attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>
+	<!--  /TODO -->
 </taglib>
