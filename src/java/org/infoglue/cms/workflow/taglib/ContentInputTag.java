@@ -33,7 +33,8 @@ import javax.servlet.jsp.tagext.TagSupport;
  * 
  */
 public abstract class ContentInputTag extends TagSupport {
-	private String name;
+	private String idAttr;
+    private String name;
 	private String cssClass;
 
 
@@ -42,6 +43,7 @@ public abstract class ContentInputTag extends TagSupport {
 	 */
 	public ContentInputTag() {
 		super();
+		System.out.println("AAAA");
 	}
 
 	/**
@@ -62,6 +64,17 @@ public abstract class ContentInputTag extends TagSupport {
 	protected String getContentValue() {
 		return WorkflowHelper.getProperty(getName(), pageContext.getSession(), pageContext.getRequest());
 	}
+
+    public String getIdAttr()
+    {
+        return idAttr;
+    }
+    
+    public void setIdAttr(String idAttr)
+    {
+        System.out.println("idAttr:" + idAttr);
+        this.idAttr = idAttr;
+    }
 
 	/**
 	 * 
@@ -86,4 +99,5 @@ public abstract class ContentInputTag extends TagSupport {
     {
         this.cssClass = cssClass;
     }
+    
 }
