@@ -83,7 +83,37 @@ FCKeditor.prototype.ReplaceTextarea = function()
 			return ;
 		}
 
+		//InfoGlue addition: We want to be able to let the css of the textarea affect the size of the iframe.
+		if(document.styleSheets[0] && document.styleSheets[0].cssRules && oTextarea.className) 
+		{
+			for(i=0; i<document.styleSheets[0].cssRules.length; i++)
+			{
+				cssRule = document.styleSheets[0].cssRules[i];
+				//alert("cssRule.cssText:" + cssRule.cssText);
+				if(cssRule.cssText.indexOf(oTextarea.className) > -1)
+					break;
+			}
+			
+			this.Width = cssRule.style.width;
+			this.Height = cssRule.style.height;
+		}
+		else if(document.styleSheets[0] && document.styleSheets[0].rules && oTextarea.className)
+		{
+			for(i=0; i<document.styleSheets[0].rules.length; i++)
+			{
+				cssRule = document.styleSheets[0].rules[i];
+				//alert("cssRule.selectorText:" + cssRule.selectorText);
+				if(cssRule.selectorText.indexOf(oTextarea.className) > -1)
+					break;
+			}
+			
+			this.Width = cssRule.style.width;
+			this.Height = cssRule.style.height;
+		}
+		//InfoGlue addition ended
+				
 		oTextarea.style.display = 'none' ;
+				
 		this._InsertHtmlBefore( this._GetConfigHtml(), oTextarea ) ;
 		this._InsertHtmlBefore( this._GetIFrameHtml(), oTextarea ) ;
 	}
