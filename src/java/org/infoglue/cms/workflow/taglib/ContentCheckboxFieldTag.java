@@ -33,6 +33,6 @@ public class ContentCheckboxFieldTag extends ContentBooleanFieldTag {
 	 * 
 	 */
 	public ContentCheckboxFieldTag() {
-		super("radio");
+		super("checkbox");
 	}
 }
