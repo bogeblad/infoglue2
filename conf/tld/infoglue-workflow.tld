@@ -18,7 +18,7 @@
 		<attribute>
 			<name>key</name>
 			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
 
@@ -50,9 +50,14 @@
         <bodycontent>empty</bodycontent>
         <info></info>
         <attribute>
+			<name>idAttr</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
 			<name>name</name>
 			<required>true</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
 			<name>cssClass</name>
@@ -66,21 +71,20 @@
         <bodycontent>empty</bodycontent>
         <info></info>
         <attribute>
-			<name>name</name>
-			<required>true</required>
-			<rtexprvalue>false</rtexprvalue>
-    	</attribute>
-        <attribute>
 			<name>idAttr</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
     	</attribute>
     	<attribute>
 			<name>cssClass</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
-    	
 	</tag>
 	<tag>
         <name>radio</name>
@@ -88,9 +92,14 @@
         <bodycontent>empty</bodycontent>
         <info></info>
         <attribute>
+			<name>idAttr</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
 			<name>name</name>
 			<required>true</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
 			<name>value</name>
@@ -104,12 +113,43 @@
         <bodycontent>empty</bodycontent>
         <info></info>
         <attribute>
+			<name>idAttr</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
 			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>
+	<tag>
+        <name>categorySelector</name>
+        <tagclass>org.infoglue.cms.workflow.taglib.CategorySelector</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info></info>
+        <attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+			<name>categoryPath</name>
 			<required>true</required>
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
-			<name>value</name>
+			<name>defaultLabel</name>
 			<required>true</required>
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
