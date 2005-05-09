@@ -220,10 +220,10 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-		    System.out.println("getAccessRightList(Integer interceptionPointId, String parameters, String roleName, Database db)");
-		    System.out.println("interceptionPointId:" + interceptionPointId);
-		    System.out.println("parameters:" + parameters);
-		    System.out.println("roleName:" + roleName);
+		    //System.out.println("getAccessRightList(Integer interceptionPointId, String parameters, String roleName, Database db)");
+		    //System.out.println("interceptionPointId:" + interceptionPointId);
+		    //System.out.println("parameters:" + parameters);
+		    //System.out.println("roleName:" + roleName);
 			OQLQuery oql = null;
 			
 			if(parameters == null || parameters.length() == 0)
@@ -917,7 +917,8 @@ public class AccessRightController extends BaseController
 		
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
-				
+		
+	    /*
 	    System.out.println("isPrincipalAuthorized:" + isPrincipalAuthorized);
 	    if(!isPrincipalAuthorized)
 	    {
@@ -925,6 +926,8 @@ public class AccessRightController extends BaseController
 	    	System.out.println("interceptionPointName: " + interceptionPointName);
 	    	System.out.println("extraParameters: " + extraParameters);
 	    }
+	    */
+	    
 		return isPrincipalAuthorized;
 	}
 	/*

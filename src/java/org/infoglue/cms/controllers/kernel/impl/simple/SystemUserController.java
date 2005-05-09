@@ -164,13 +164,13 @@ public class SystemUserController extends BaseController
 	public SystemUserVO getSystemUserVO(String userName, String password)  throws SystemException, Bug
 	{
 		SystemUserVO systemUserVO = null;
-		
+
 		Database db = CastorDatabaseService.getDatabase();
 
 		try 
 		{
 			beginTransaction(db);
-			
+
 			systemUserVO = getSystemUserVO(db, userName, password);
 
 			commitTransaction(db);
