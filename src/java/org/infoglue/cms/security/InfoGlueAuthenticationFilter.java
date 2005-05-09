@@ -24,6 +24,7 @@
 package org.infoglue.cms.security;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -50,6 +51,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 	
  	public static String loginUrl 				= null;
 	public static String invalidLoginUrl 		= null;
+	public static String successLoginBaseUrl	= null;
 	public static String authenticatorClass 	= null;
 	public static String authorizerClass 		= null;
 	public static String serverName	 			= null;
@@ -64,6 +66,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 	{
 		loginUrl 			= config.getInitParameter("org.infoglue.cms.security.loginUrl");
 		invalidLoginUrl 	= config.getInitParameter("org.infoglue.cms.security.invalidLoginUrl");
+		successLoginBaseUrl = config.getInitParameter("org.infoglue.cms.security.successLoginBaseUrl");
 		authenticatorClass 	= config.getInitParameter("org.infoglue.cms.security.authenticatorClass");
 		authorizerClass 	= config.getInitParameter("org.infoglue.cms.security.authorizerClass");
 		serverName  		= config.getInitParameter("org.infoglue.cms.security.serverName");
@@ -95,9 +98,11 @@ public class InfoGlueAuthenticationFilter implements Filter
 		HttpServletResponse httpServletResponse = (HttpServletResponse)response;
 		
 		String URI = httpServletRequest.getRequestURI();
-    	if(URI.indexOf(loginUrl) > 0 || URI.indexOf("UpdateCache") > 0  || URI.indexOf("InvokeWorkflow") > 0)
+		String URL = httpServletRequest.getRequestURL().toString();
+
+		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf("UpdateCache") > -1  || URI.indexOf("InvokeWorkflow") > -1)
 		{
-			fc.doFilter(request, response); 
+    	    fc.doFilter(request, response); 
 			return;
    	 	}
 						
@@ -117,15 +122,22 @@ public class InfoGlueAuthenticationFilter implements Filter
 		//CmsLogger.logInfo("User:" + session.getAttribute(INFOGLUE_FILTER_USER));
 		if (session != null && session.getAttribute(INFOGLUE_FILTER_USER) != null) 
 		{
-			//CmsLogger.logInfo("Found user in session:" + session.getAttribute(INFOGLUE_FILTER_USER));
-		  	fc.doFilter(request, response);
-		  	return;
+		    //CmsLogger.logInfo("Found user in session:" + session.getAttribute(INFOGLUE_FILTER_USER));
+		    //if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
+		    //{
+		    //    checkSuccessRedirect(request, response, URL);
+		    //}
+		    //else
+		    //{
+			  	fc.doFilter(request, response);
+			    return;
+			//}
 		}
 		
 		// otherwise, we need to authenticate somehow
 		try
 		{
-			String authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
+		    String authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
 			
 			if(authenticatedUserName != null)
 			{	
@@ -145,8 +157,15 @@ public class InfoGlueAuthenticationFilter implements Filter
 				if(session != null)
 					session.setAttribute(INFOGLUE_FILTER_USER, user);
 				
-				fc.doFilter(request, response);
-				return;
+			    if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
+			    {
+			        checkSuccessRedirect(request, response, URL);
+			    }
+			    else
+			    {
+				  	fc.doFilter(request, response);
+				    return;
+			    }
 			}
 		}
 		catch(Exception e)
@@ -158,6 +177,37 @@ public class InfoGlueAuthenticationFilter implements Filter
 
   	public void destroy() { }
 
+  	private void checkSuccessRedirect(ServletRequest request, ServletResponse response, String URL) throws ServletException, IOException, UnsupportedEncodingException
+  	{
+	    //System.out.println("successLoginUrl:" + successLoginUrl);
+	    //System.out.println("URL:" + URL);
+        String requestURI = ((HttpServletRequest)request).getRequestURI();
+		//System.out.println("requestURL:" + requestURL);
+        //System.out.println("requestURI:" + requestURI);
+		
+		String requestQueryString = ((HttpServletRequest)request).getQueryString();
+		if(requestQueryString != null)
+		    requestQueryString = "?" + requestQueryString;
+		else
+		    requestQueryString = "";
+		
+		String redirectUrl = "";			    
+		    
+		/*
+		if(requestURI.indexOf("?") > 0)
+			redirectUrl = loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+		else
+			redirectUrl = loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+		*/
+		if(requestURI.indexOf("?") > -1)
+			redirectUrl = successLoginBaseUrl + requestURI + URLEncoder.encode(requestQueryString, "UTF-8");
+		else
+			redirectUrl = successLoginBaseUrl + requestURI + URLEncoder.encode(requestQueryString, "UTF-8");
+		
+		CmsLogger.logInfo("redirectUrl:" + redirectUrl);
+		//System.out.println("redirectUrl:" + redirectUrl);
+		((HttpServletResponse)response).sendRedirect(redirectUrl);
+	}
 
   	private boolean hasAuthorizedRole(InfoGluePrincipal user)
   	{
@@ -191,6 +241,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		authenticationModule.setAuthenticatorClass(authenticatorClass);
 		authenticationModule.setAuthorizerClass(authorizerClass);
 		authenticationModule.setInvalidLoginUrl(invalidLoginUrl);
+		//authenticationModule.setSuccessLoginBaseUrl(successLoginBaseUrl);
 		authenticationModule.setLoginUrl(loginUrl);
 		authenticationModule.setServerName(serverName);
 		authenticationModule.setExtraProperties(extraProperties);
@@ -233,6 +284,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    authenticatorClass 	= CmsPropertyHandler.getProperty("authenticatorClass");
 		    authorizerClass 	= CmsPropertyHandler.getProperty("authorizerClass");
 		    invalidLoginUrl 	= CmsPropertyHandler.getProperty("invalidLoginUrl");
+		    successLoginBaseUrl = CmsPropertyHandler.getProperty("successLoginBaseUrl");
 		    loginUrl 			= CmsPropertyHandler.getProperty("loginUrl");
 		    serverName 			= CmsPropertyHandler.getProperty("serverName");
 		    casRenew 			= CmsPropertyHandler.getProperty("casRenew");
@@ -258,6 +310,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    CmsLogger.logInfo("authenticatorClass:" + authenticatorClass);
 		    CmsLogger.logInfo("authorizerClass:" + authorizerClass);
 		    CmsLogger.logInfo("invalidLoginUrl:" + invalidLoginUrl);
+		    CmsLogger.logInfo("successLoginBaseUrl:" + successLoginBaseUrl);
 		    CmsLogger.logInfo("loginUrl:" + loginUrl);
 		    CmsLogger.logInfo("serverName:" + serverName);
 		    CmsLogger.logInfo("casRenew:" + casRenew);

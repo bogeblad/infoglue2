@@ -49,6 +49,7 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 {
 	private String loginUrl 			= null;
 	private String invalidLoginUrl 		= null;
+	private String successLoginUrl		= null;
 	private String authenticatorClass 	= null;
 	private String authorizerClass 		= null;
 	private String serverName			= null;
@@ -84,8 +85,10 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 						"filter parameter");
 			}
   
+			//String requestURL = request.getRequestURL().toString();
 			String requestURI = request.getRequestURI();
-			CmsLogger.logInfo("requestURI:" + requestURI);
+			//System.out.println("requestURL:" + requestURL);
+			//System.out.println("requestURI:" + requestURI);
 
 			String requestQueryString = request.getQueryString();
 			if(requestQueryString != null)
@@ -95,8 +98,8 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 			
 			CmsLogger.logInfo("requestQueryString:" + requestQueryString);
 
-			String redirectUrl = "";
-
+			String redirectUrl = "";			    
+			    
 			if(requestURI.indexOf("?") > 0)
 				redirectUrl = loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
 			else
@@ -249,6 +252,16 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 		this.loginUrl = loginUrl;
 	}
 
+    public String getSuccessLoginUrl()
+    {
+        return successLoginUrl;
+    }
+    
+    public void setSuccessLoginUrl(String successLoginUrl)
+    {
+        this.successLoginUrl = successLoginUrl;
+    }
+
 	public String getServerName()
 	{
 		return this.serverName;
@@ -318,4 +331,5 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
     {
         this.transactionObject = (Database)transactionObject; 
     }
+    
 }
