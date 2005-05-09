@@ -238,6 +238,24 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		return "viewAssetsDialog";
 	}
 
+	public String doViewAssetsDialogForFCKEditor() throws Exception
+	{
+	    if(this.oldContentId != null)
+		{
+	        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getOldContentId());
+		}
+		else
+		{
+		    if(getContentId() != null && getContentId().intValue() != -1)
+		        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+		}
+		
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+
+		return "viewAssetsDialogForFCKEditor";
+	}
+	
+	
 	public String doViewAssets() throws Exception
 	{
 		if(getContentId() != null && getContentId().intValue() != -1)
@@ -248,6 +266,18 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
 
 		return "viewAssets";
+	}
+
+	public String doViewAssetsForFCKEditor() throws Exception
+	{
+		if(getContentId() != null && getContentId().intValue() != -1)
+		{
+		    this.initialize(getContentVersionId(), getContentId(), this.languageId);
+		}
+		
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+
+		return "viewAssetsForFCKEditor";
 	}
 
     public String doPreview() throws Exception

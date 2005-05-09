@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>Select image</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<script type="text/javascript" src="script/listview.js"></script>
+	
+	<script language="JavaScript">
+	<!--		
+		#set($exp = $this.getExpansion($oldContentId))
+		var exp = "$exp";
+		
+	    function notifyExp(v)
+	    {
+	    	//alert("v:" + v);
+	    	// The html tree notifies this page about the
+	    	// current expansion key, so that we can reload
+	    	// the tree with the same expansion.
+	    	exp=v;
+	    }
+
+		function notifyIsLoaded()
+	    {
+	    	//alert("Tree was loaded - notifyIsLoaded");
+	    	treeIsLoaded = true;
+	    }
+		
+		function changeRepository(selectBox)
+		{
+			//alert("selectBox:" + selectBox);
+			var repositoryId = selectBox.value;
+			var url = "ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=" + repositoryId + "&contentId=-1&languageId=$languageId&treatAsLink=$treatAsLink";
+			document.location.href = url;
+		}
+		
+		function htmlTreeItemClick(entityId, repositoryId, path)
+		{
+			var url = "ViewContentVersion!viewAssetsForFCKEditor.action?contentId=" + entityId + "&languageId=$languageId&treatAsLink=$treatAsLink";
+			document.getElementById("contentVersionAssetsFrame").src = url;
+		}
+		
+		function onOk(contentId, assetKey)
+		{
+			var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+			window.top.opener.SetUrl( url );
+			window.top.close();
+			window.top.opener.focus();
+		}
+		
+		function getDownloadUrl(contentId, assetKey)
+		{
+			return "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+		}
+		
+		function onCancel() 
+		{
+			window.top.close();
+			window.top.opener.focus();
+		}	
+
+		function getRequestParameter(url, parameterName)
+		{
+			valueIndex = url.indexOf(parameterName + "=");
+			//alert("valueIndex:" + valueIndex);
+			endIndex = url.indexOf("&", valueIndex);
+			if(endIndex != -1)
+				value = url.substring(valueIndex + parameterName.length + 1, endIndex);
+			else
+				value = url.substring(valueIndex + parameterName.length + 1);
+			//alert("value:" + value);
+			return value;
+		}
+		
+		function init() 
+		{
+			window.resizeTo(750,600);
+
+      		var txtUrl 		= top.opener.document.getElementById("txtUrl").value;
+			contentId 		= getRequestParameter(txtUrl, "contentId");
+			if(!contentId || contentId == "")
+				contentId = "$contentId";
+			languageId 		= getRequestParameter(txtUrl, "languageId");
+			assetKey 		= getRequestParameter(txtUrl, "assetKey");
+			
+			document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
+			
+			document.getElementById("contentVersionAssetsFrame").src = "ViewContentVersion!viewAssetsForFCKEditor.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink";
+		};
+		
+		-->
+	</script>
+	
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+</head>
+
+<body class="contenttooledit" onload="init();">
+
+<table border="0" width="100%" cellpadding="2" cellspacing="0">
+<tr>
+	<td valign="top">
+		<table cellpadding="0" cellspacing="0" border="0" width="350">
+		<tr class="darkgreen">
+			<td class="smalllabel">Click on the content you wish to fetch the asset from</td>
+		</tr>
+		<tr>
+			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
+		</tr>		
+		<!-- 
+		HERE IS THE REPOSITORY-LIST FOR LATER 
+		-->
+		<tr>
+			<td>
+		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
+				    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+				    #foreach ($repositoryVO in $repositories)
+				    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+				    #end
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
+		</tr>		
+		<tr>
+			<td class="menu">  
+				#if($tree == "applet")
+					#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
+				#else
+					<!--<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree.action?repositoryId=$repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId" width="350" height="510" align="baseline"></IFRAME>-->
+					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="" width="350" height="510" align="baseline"></IFRAME>
+				#end
+			</td>
+		</tr>	
+		<!--
+		<tr>
+			<td colspan="3"><img src="images/trans.gif" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<a href="javascript:submitBindning();"><img src="$ui.getString("images.structuretool.buttons.save")" border="0"></a>
+				<a href="javascript:window.close();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
+			</td>
+		</tr>
+		-->
+		<tr>
+			<td>
+				<form name="inputForm" action="CreateServiceBinding.action">
+					<input type="hidden" name="entityId" value="">
+					<input type="hidden" name="repositoryId" value="">
+					<input type="hidden" name="path" value="">
+					<input type="hidden" name="qualifyerXML" value="">
+				</form>
+			</td>
+		</tr>		
+		</table>
+
+	</td>
+	
+	<td valign="top">
+		<table cellpadding="0" cellspacing="0" border="0" width="350">
+		<tr class="darkgreen">
+			<td class="smalllabel">$ui.getString("tool.contenttool.associatedAttachments")</td>
+		</tr>
+		<tr>
+			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
+		</tr>		
+		<tr>
+			<td>
+				#if($oldContentId > 0)
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="370" height="540" align="baseline"></IFRAME>
+				#else
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="370" height="540" align="baseline"></IFRAME>
+				#end
+				#*
+				#if($oldContentId > 0)
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="ViewContentVersion!viewAssetsForFCKEditor.action?contentId=$contentId&languageId=$languageId&oldContentId=$oldContentId&assetKey=$assetKey&treatAsLink=$treatAsLink" width="370" height="540" align="baseline"></IFRAME>
+				#else
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="ViewContentVersion!viewAssetsForFCKEditor.action?contentId=$contentId&languageId=$languageId&treatAsLink=$treatAsLink" width="370" height="540" align="baseline"></IFRAME>
+				#end
+				*#
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+
+</body>
+</html>

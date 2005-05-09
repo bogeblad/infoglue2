@@ -17,12 +17,13 @@
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
  */
-alert("repositoryId:" + repositoryId);
+//alert("repositoryId:" + parent.document.getElementById("repositoryId").value);
+//alert("repositoryId:" + parent.repositoryId);
 //var url = _applicationContext + "ViewContentVersion!viewAssetsDialog.action?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
 //var url = "/infoglueCMS/ViewContentVersion!viewAssetsDialog.action"; //?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
-var url = "/infoglueCMS/ViewContentVersion!viewAssetsDialog.action"; //?repositoryId=" + repositoryId + "&contentId=" + contentId + "&languageId=" + languageId + "&textAreaId=" + editor.id + extraParameters;
+var url = "/infoglueCMS/ViewContentVersion!viewAssetsDialog.action?repositoryId=" + parent.repositoryId + "&contentId=" + parent.contentId + "&languageId=" + parent.languageId; // + "&textAreaId=" + parent.editor.id + parent.extraParameters;
 
-FCKCommands.RegisterCommand( 'InlineImage'	, new FCKDialogCommand( FCKLang['DlgMyReplaceTitle'], FCKLang['DlgMyReplaceTitle'], url, 340, 200 ) ) ;
+FCKCommands.RegisterCommand( 'InlineImage'	, new FCKDialogCommand( FCKLang['DlgMyReplaceTitle'], FCKLang['DlgMyReplaceTitle'], url, 800, 800 ) ) ;
 
 // Create the "InlineImage" toolbar button.
 var oInlineImage			= new FCKToolbarButton( 'InlineImage', FCKLang['DlgMyReplaceTitle'] ) ;

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>Select inline image</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<script type="text/javascript" src="script/listview.js"></script>
+	
+	<script language="JavaScript">
+	<!--
+		
+		var selectedAssetElement;
+		var contentId;
+		var assetKey;
+		var firstAssetKey;
+			
+		function markAsset(object, aContentId, anAssetKey)
+		{
+			if(selectedAssetElement)
+				selectedAssetElement.style.background = "";
+				
+			contentId = aContentId;	
+			assetKey = anAssetKey;	
+			
+			//alert("object:" + object);
+			//alert("contentId" + contentId);
+			//alert("assetKey" + assetKey);
+			selectedAssetElement = document.getElementById("digitalAsset" + assetKey);
+			//alert("selectedAssetElement" + selectedAssetElement);
+			if(selectedAssetElement)
+				selectedAssetElement.style.background = "#C2D0E2";
+		}
+		
+		function onOk()
+		{
+			#if(!$treatAsLink)
+				parent.onOk(contentId, assetKey);
+			#else
+				parent.onOk(contentId, assetKey);
+			#end
+		}
+
+		function onCancel() 
+		{
+		    //alert("Parent:" + parent.name) 
+		    parent.onCancel(null);
+			return false;
+		}	
+		
+		function initSub() 
+		{
+			//alert("assetKey: $assetKey");
+			#if($assetKey && $assetKey != "")
+				assetKey = "$assetKey";
+				contentId = "$oldContentId";
+				//alert("assetKey:" + assetKey);
+				//alert("contentId:" + contentId);
+				//if(selectedAssetElement)
+					selectedAssetElement = document.getElementById("digitalAsset" + assetKey);
+				//alert("selectedAssetElement:" + selectedAssetElement);
+			#else
+				markAsset(this, $contentId, firstAssetKey);
+			#end
+		};
+		
+		-->
+	</script>
+	
+	<style>
+	
+		form p {
+		  margin-top: 5px;
+		  margin-bottom: 5px;
+		}
+		.fl { width: 9em; float: left; padding: 2px 5px; text-align: left; }
+		.fr { width: 6em; float: left; padding: 2px 5px; text-align: right; }
+		fieldset { padding: 0px 10px 5px 5px; height:110px;}
+		select, input, button { font: 11px Tahoma,Verdana,sans-serif; }
+		button { width: 70px; }
+		.space { padding: 2px; }
+		
+		.title { background: #ddf; color: #000; font-weight: bold; font-size: 120%; padding: 3px 10px; margin-bottom: 10px;
+		border-bottom: 1px solid black; letter-spacing: 2px;
+		}
+		form { padding: 0px; margin: 0px; }
+
+	</style>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+</head>
+
+<body class="contenttooledit" onload="initSub();">
+
+<table border="0" width="100%" cellpadding="2" cellspacing="0">
+#set($counter = 0)
+#foreach($digitalAsset in $inheritedDigitalAssets)
+<tr>
+	<td id="digitalAsset$digitalAsset.assetKey" valign="bottom" align="center" class="bordered" #if($assetKey == $digitalAsset.assetKey) style="background-color: #C2D0E2;" #end>
+		<input type="hidden" id="digitalAsset$digitalAsset.assetKey" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
+		<a href="javascript:markAsset(this, $contentId, '$digitalAsset.assetKey');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
+		<br/>$digitalAsset.assetKey</a><br/>
+	</td>
+	#if($counter == 0)
+		<script type="text/javascript">
+		<!--
+			//markAsset(this, $contentId, '$digitalAsset.assetKey');
+			firstAssetKey = '$digitalAsset.assetKey';
+		-->
+		</script>
+	#end
+	#set($counter = $counter + 1)
+</tr>
+#end
+
+#if($counter == 0)
+<tr>
+	<td id="digitalAsset$digitalAsset.assetKey" valign="bottom" align="center" class="bordered">
+		<br/>No images available or no content selected<br/><br/>
+	</td>
+</tr>
+#end
+
+<tr>
+	<td>
+		<br/>
+		<a href="javascript:openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');">Upload new image</a>
+	</td>
+</tr>
+
+<tr>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>
+		<a href="javascript:onOk();"><img src="$ui.getString("images.structuretool.buttons.save")" border="0"></a>
+		<a href="javascript:onCancel();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
+	</td>
+</tr>
+</table>
+
+<script type="text/javascript">
+	setTimeout("initSub()", 500);
+</script>
+</body>
+</html>

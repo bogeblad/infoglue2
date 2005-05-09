@@ -65,6 +65,20 @@ public class ViewLinkDialogAction extends InfoGlueAbstractAction
 		return "success";					
     }
       
+    public String doViewLinkDialogForFCKEditor() throws Exception
+    {
+        this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+
+		if(this.repositoryId == null)
+		{
+			this.repositoryId = (Integer)getHttpSession().getAttribute("repositoryId");
+			if(this.repositoryId == null)
+				this.repositoryId = RepositoryController.getController().getFirstRepositoryVO().getRepositoryId();		
+		}
+		
+		return "viewLinkDialogForFCKEditor";					        
+    }
+    
 	public List getRepositories()
 	{
 		return repositories;

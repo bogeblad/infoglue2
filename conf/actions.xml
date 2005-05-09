@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.42 2005/05/04 14:39:08 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.43 2005/05/09 22:18:33 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -767,7 +767,9 @@
 		<view name="standalone">/cms/contenttool/viewContentVersionStandalone.vm</view>
 		<view name="background">/cms/contenttool/viewContentVersionBackground.vm</view>
 		<view name="viewAssetsDialog">/cms/contenttool/viewContentAssets.vm</view>
+		<view name="viewAssetsDialogForFCKEditor">/cms/contenttool/viewContentAssetsForFCKEditor.vm</view>
 		<view name="viewAssets">/cms/contenttool/viewContentVersionAssets.vm</view>
+		<view name="viewAssetsForFCKEditor">/cms/contenttool/viewContentVersionAssetsForFCKEditor.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="preview">/cms/contenttool/viewContentVersionPreview.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
@@ -827,6 +829,7 @@
 
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewLinkDialogAction" alias="ViewLinkDialog">
 		<view name="success">/cms/contenttool/viewLinkDialog.vm</view>
+		<view name="viewLinkDialogForFCKEditor">/cms/contenttool/viewLinkDialogForFCKEditor.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 
@@ -1027,6 +1030,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureTreeForInlineLinkAction" alias="ViewStructureTreeForInlineLink">
 		<view name="success">/cms/structuretool/viewStructureTreeForInlineLink.vm</view>
+		<view name="successFCKEditor">/cms/structuretool/viewStructureTreeForInlineLinkForFCKEditor.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<!-- Experimenting with direct editing -->
