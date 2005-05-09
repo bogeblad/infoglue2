@@ -31,8 +31,8 @@ import javax.servlet.jsp.JspException;
  * 
  */
 public abstract class ContentBooleanFieldTag extends ContentInputTag {
-	private static final String FIELD_UNCHECKED = "<input id=\"{0}\" name=\"{0}\" type=\"{1}\" value=\"{2}\"/>";
-	private static final String FIELD_CHECKED   = "<input id=\"{0}\" name=\"{0}\" type=\"{1}\" value=\"{2}\" checked=\"true\"/>";
+	private static final String FIELD_UNCHECKED = "<input id=\"{0}\" name=\"{1}\" type=\"{2}\" value=\"{3}\"/>";
+	private static final String FIELD_CHECKED   = "<input id=\"{0}\" name=\"{1}\" type=\"{2}\" value=\"{3}\" checked=\"true\"/>";
 
 	private String value;
 	private String fieldType;
@@ -61,9 +61,9 @@ public abstract class ContentBooleanFieldTag extends ContentInputTag {
 	private String createBooleanFieldHTML() {
 		String value = (this.value == null) ? "" : this.value;
 		if(getContentValue() != null && value != null && value.equals(getContentValue()))
-			return MessageFormat.format(FIELD_CHECKED, new Object[] { getName(), fieldType, value });
+			return MessageFormat.format(FIELD_CHECKED, new Object[] { getIdAttr(), getName(), fieldType, value });
 		else
-			return MessageFormat.format(FIELD_UNCHECKED, new Object[] { getName(), fieldType, value });
+			return MessageFormat.format(FIELD_UNCHECKED, new Object[] { getIdAttr(), getName(), fieldType, value });
 	}
 
 	/**

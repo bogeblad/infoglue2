@@ -31,11 +31,10 @@ import javax.servlet.jsp.JspException;
  * 
  */
 public class ContentTextareaFieldTag extends ContentInputTag {
-    
 	private static final long serialVersionUID = 3257002146774660403L;
-	
-	private static final String TEXTAREA_FIELD = "<textarea id=\"{0}\" name=\"{1}\" class=\"{2}\">{3}</textarea>";
 
+	private static final String TEXTAREA_FIELD = "<textarea id=\"{0}\" name=\"{1}\" class=\"{2}\">{3}</textarea>";
+	
 	/**
 	 * 
 	 */
