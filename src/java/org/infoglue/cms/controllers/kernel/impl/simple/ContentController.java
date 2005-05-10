@@ -632,6 +632,55 @@ public class ContentController extends BaseController
     }   
 
 	/**
+	 * Returns all Contents having the specified ContentTypeDefintion.
+	 */
+	public List getContentVOWithContentTypeDefinition(String contentTypeDefinitionName) throws SystemException
+	{
+        Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+        try
+        {
+			List result = getContentVOWithContentTypeDefinition(contentTypeDefinitionName, db);
+            commitTransaction(db);
+			return result;
+        }
+        catch(Exception e)
+        {
+            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+	}
+
+	/**
+	 * Returns all Contents having the specified ContentTypeDefintion.
+	 */
+	public List getContentVOWithContentTypeDefinition(String contentTypeDefinitionName, Database db) throws SystemException 
+	{
+		HashMap arguments = new HashMap();
+		arguments.put("method", "selectListOnContentTypeName");
+
+		List argumentList = new ArrayList();
+		HashMap argument = new HashMap();
+		argument.put("contentTypeDefinitionName", "HTMLTemplate");
+		argumentList.add(argument);
+		arguments.put("arguments", argumentList);
+        try 
+		{
+			return getContentVOList(arguments, db);
+		}
+        catch(SystemException e)
+		{
+			throw e;
+		}
+        catch(Exception e)
+		{
+			throw new SystemException(e.getMessage());
+		}
+	}
+	
+	
+	/**
 	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
 	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
 	 */
