@@ -51,7 +51,7 @@ oRegex.UrlOnChangeProtocol = new RegExp('') ;
 oRegex.UrlOnChangeProtocol.compile( '^(http|https|ftp|news)://(?=.)', 'gi' ) ;
 
 oRegex.UrlOnChangeTestOther = new RegExp('') ;
-oRegex.UrlOnChangeTestOther.compile( '^(javascript:|#|/)', 'gi' ) ;
+oRegex.UrlOnChangeTestOther.compile( '^(javascript:|#|/|\\$templateLogic|DownloadAsset.action)', 'gi' ) ;
 
 oRegex.ReserveTarget = new RegExp('') ;
 oRegex.ReserveTarget.compile( '^_(blank|self|top|parent)$', 'i' ) ;
