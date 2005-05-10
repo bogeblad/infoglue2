@@ -24,6 +24,8 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.io.ByteArrayInputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,6 +61,8 @@ import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.css.CSSHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.deliver.util.VelocityTemplateProcessor;
+
 import com.opensymphony.module.propertyset.*;
 
 /**
@@ -72,10 +76,16 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	private Integer repositoryId = null;
 
 	private String WYSIWYGProperties = "";
+	private String StylesXML = "";
 	
     public String doExecute() throws Exception
     {
     	return "success";
+    }
+
+    public String doViewStylesXML() throws Exception
+    {
+    	return "successStylesXML";
     }
 
 	/**
@@ -101,9 +111,44 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 		    }
 	    }
 	    
+	    Map parameters = new HashMap();
+	    parameters.put("request", this.getRequest());
+	    
+		StringWriter tempString = new StringWriter();
+		PrintWriter pw = new PrintWriter(tempString);
+		new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties);
+		this.WYSIWYGProperties = tempString.toString();
+
 	    return this.WYSIWYGProperties;
 	}
+
+	/**
+	 * This method gets the WYSIWYG Properties
+	 */
 	
+	public String getStylesXML() throws Exception
+	{
+	    System.out.println("Getting StylesXML for principal...");
+	    this.StylesXML = getPrincipalPropertyValue("StylesXML", false);
+	    
+	    if(this.StylesXML == null && this.repositoryId != null)
+	    {
+		    System.out.println("Getting StylesXML for repository...");
+			Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+		    
+		    byte[] StylesXMLBytes = ps.getData("repository_" + this.repositoryId + "_StylesXML");
+		    if(StylesXMLBytes != null)
+		    {
+		    	this.StylesXML = new String(StylesXMLBytes);
+		    }
+	    }
+	    
+	    this.getResponse().setContentType("text/xml");
+	    return this.StylesXML;
+	}
+
 	
     public void setRepositoryId(Integer repositoryId)
     {

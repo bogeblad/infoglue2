@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.43 2005/05/09 22:18:33 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.44 2005/05/10 21:22:38 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -1116,6 +1116,7 @@
 	<!-- WYSIWYG Configuration lookup Action -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.WYSIWYGPropertiesAction" alias="WYSIWYGProperties">
 		<view name="success">/cms/managementtool/viewWYSIWYGProperties.vm</view>
+		<view name="successStylesXML">/cms/managementtool/viewWYSIWYGStylesXML.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
