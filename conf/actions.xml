@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.44 2005/05/10 21:22:38 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.45 2005/05/11 21:26:55 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -765,6 +765,8 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentVersionAction" alias="ViewContentVersion">
 		<view name="success">/cms/contenttool/viewContentVersion.vm</view>
 		<view name="standalone">/cms/contenttool/viewContentVersionStandalone.vm</view>
+		<view name="successForFCKEditor">/cms/contenttool/viewContentVersionForFCKEditor.vm</view>
+		<view name="standaloneForFCKEditor">/cms/contenttool/viewContentVersionStandaloneForFCKEditor.vm</view>
 		<view name="background">/cms/contenttool/viewContentVersionBackground.vm</view>
 		<view name="viewAssetsDialog">/cms/contenttool/viewContentAssets.vm</view>
 		<view name="viewAssetsDialogForFCKEditor">/cms/contenttool/viewContentAssetsForFCKEditor.vm</view>
