@@ -206,13 +206,22 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     {
     	this.initialize(getContentVersionId(), getContentId(), this.languageId);
         
-    	return "success";
+    	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
+    	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
+    	    return "success";
+    	else
+    	    return "successForFCKEditor";
     }
 
 	public String doStandalone() throws Exception
 	{
 		this.initialize(getContentVersionId(), getContentId(), this.languageId);
-		return "standalone";
+
+    	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
+    	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
+    	    return "standalone";
+    	else
+    	    return "standaloneForFCKEditor";
 	}
 
 	public String doBackground() throws Exception
@@ -289,8 +298,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     public String doDeleteDigitalAsset() throws Exception
     {
     	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId);
-    	this.initialize(getContentVersionId(), getContentId(), this.languageId);
-        return "success";
+    	//this.initialize(getContentVersionId(), getContentId(), this.languageId);
+    	//return "success";
+    	return doExecute();
     }
     
     
