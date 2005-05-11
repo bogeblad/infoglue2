@@ -59,7 +59,7 @@
 	<!--
 	* fileset for the deliver version of mapping.xml.
 	-->
-	<fileset id="deliver.mapping" dir="${conf}/deliver" includes="mapping.xml"/>	
+	<fileset id="deliver.mapping" dir="${conf}/deliver" includes="mapping.xml,oracle_mapping.xml"/>
 	
 	<!--
 	* paths
@@ -142,7 +142,7 @@
 			</filterset>
 		</copy>
 		<copy todir="${build.classes}">
-			<fileset dir="${conf}/cms" includes="mapping.xml"/>
+			<fileset dir="${conf}/cms" includes="mapping.xml,oracle_mapping.xml"/>
 		</copy>
 		<copy todir="${build.classes}">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
@@ -459,7 +459,7 @@
 			</filterset>
 		</copy>
 		<copy todir="${deploy.dir.working}/WEB-INF/classes">
-			<fileset dir="${conf}/deliver" includes="mapping.xml"/>
+			<fileset dir="${conf}/deliver" includes="mapping.xml,oracle_mapping.xml"/>
 			<fileset dir="${conf}/deliver" includes="webwork.properties"/>
 		</copy>
 		<copy file="${conf}/deliver-web.xml" tofile="${deploy.dir.working}/WEB-INF/web.xml">
@@ -504,7 +504,7 @@
 			</filterset>
 		</copy>
 		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
-			<fileset dir="${conf}/cms" includes="mapping.xml"/>
+			<fileset dir="${conf}/cms" includes="mapping.xml,oracle_mapping.xml"/>
 			<fileset dir="${conf}/cms" includes="webwork.properties"/>
 		</copy>
 
