@@ -4,7 +4,7 @@ Option Explicit
 %>
 <!--
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -14,9 +14,6 @@ Option Explicit
  * 
  * File Name: connector.asp
  * 	This is the File Manager Connector for ASP.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-02-11 16:04:56
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)

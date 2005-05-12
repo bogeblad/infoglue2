@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="true" showdebugoutput="false">
 <!---
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -25,9 +25,6 @@
  * 	/UserFiles/Flash/
  * 	/UserFiles/File/
  * 	/UserFiles/Media/
- * 
- * Version:  2.0 RC3
- * Modified: 2004-12-07 12:01:46
  * 
  * File Authors:
  * 		Hendrik Kramer (hk@lwd.de)

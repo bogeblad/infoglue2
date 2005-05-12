@@ -1,6 +1,6 @@
 #####
 #  FCKeditor - The text editor for internet
-#  Copyright (C) 2003-2004 Frederico Caldeira Knabben
+#  Copyright (C) 2003-2005 Frederico Caldeira Knabben
 #  
 #  Licensed under the terms of the GNU Lesser General Public License:
 #  		http://www.opensource.org/licenses/lgpl-license.php
@@ -10,9 +10,6 @@
 #  
 #  File Name: upload_fck.pl
 #  	This is the File Manager Connector for Perl.
-#  
-#  Version:  2.0 RC3
-#  Modified: 2005-02-28 17:05:41
 #  
 #  File Authors:
 #  		Takashi Yamaguchi (jack@omakase.net)
@@ -176,7 +173,8 @@ eval("use File::Path;");
 				while(<STDIN>) {
 					last	if(/^$Boundary/o);
 					$value .= $_;
-				}
+				};
+				$lastline = $_;
 				$value =~s /\x0D\x0A$//;
 				if($value ne '') {
 					if($FileName || $ContentType) {
@@ -211,8 +209,8 @@ eval("use File::Path;");
 						$FORM{$name} .= $value;
 					}
 				}
-			}
-			last if(/^$Boundary\-\-/o);
+			};
+			last if($lastline =~ /^$Boundary\-\-/o);
 		}
 	} elsif($ENV{'CONTENT_LENGTH'}) {
 		read(STDIN,$Buffer,$ENV{'CONTENT_LENGTH'});

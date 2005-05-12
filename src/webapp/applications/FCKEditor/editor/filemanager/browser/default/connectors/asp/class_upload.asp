@@ -1,6 +1,6 @@
 ﻿<!--
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -11,9 +11,6 @@
  * File Name: class_upload.asp
  * 	These are the classes used to handle ASP upload without using third
  * 	part components (OCX/DLL).
- * 
- * Version:  2.0 RC3
- * Modified: 2005-03-01 12:13:29
  * 
  * File Authors:
  * 		NetRube (netrube@126.com)
@@ -41,7 +38,6 @@
 '			如果您对本上传类进行修改增强，
 '			请发送一份给俺。
 '**********************************************
-
 
 Class NetRube_Upload
 

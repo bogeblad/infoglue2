@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -10,9 +10,6 @@
  * 
  * File Name: fcktools.js
  * 	Utility functions.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-02-19 15:27:16
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -82,19 +79,21 @@ FCKTools.AttachToLinkedFieldFormSubmit = function( functionPointer )
 		oForm.originalSubmit = oForm.submit ;
 		
 		// Creates our replacement for the submit
-		oForm.submit = function()
-		{
-			if (this.updateFCKEditor)
-			{
-				// Calls all functions in the functions array
-				for (var i = 0 ; i < this.updateFCKEditor.length ; i++)
-					this.updateFCKEditor[i]() ;
-			}
-			// Calls the original "submit"
-			this.originalSubmit() ;
-		}
+		oForm.submit = FCKTools_SubmitReplacer ;
 	}
 	// END --
+}
+
+function FCKTools_SubmitReplacer()
+{
+	if (this.updateFCKEditor)
+	{
+		// Calls all functions in the functions array
+		for (var i = 0 ; i < this.updateFCKEditor.length ; i++)
+			this.updateFCKEditor[i]() ;
+	}
+	// Calls the original "submit"
+	this.originalSubmit() ;
 }
 
 //**
@@ -205,4 +204,3 @@ FCKTools.Pause = function( miliseconds )
 			return ;
 	}
 }
-

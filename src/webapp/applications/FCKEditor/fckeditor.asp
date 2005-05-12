@@ -1,6 +1,6 @@
 ﻿<!--
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -13,9 +13,6 @@
  * 
  * 	It defines the FCKeditor class that can be used to create editor
  * 	instances in ASP pages on server side.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-02-27 19:16:33
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -80,14 +77,14 @@ Class FCKeditor
 			sLink = sBasePath & "editor/fckeditor.html?InstanceName=" + instanceName
 
 			If (sToolbarSet & "") <> "" Then
-				sLink = sLink + "&Toolbar=" & sToolbarSet
+				sLink = sLink + "&amp;Toolbar=" & sToolbarSet
 			End If
 
 			' Render the linked hidden field.
-			Response.Write "<input type=""hidden"" id=""" & instanceName & """ name=""" & instanceName & """ value=""" & Server.HTMLEncode( sValue ) & """>"
+			Response.Write "<input type=""hidden"" id=""" & instanceName & """ name=""" & instanceName & """ value=""" & Server.HTMLEncode( sValue ) & """ />"
 
 			' Render the configurations hidden field.
-			Response.Write "<input type=""hidden"" id=""" & instanceName & "___Config"" value=""" & GetConfigFieldString() & """>"
+			Response.Write "<input type=""hidden"" id=""" & instanceName & "___Config"" value=""" & GetConfigFieldString() & """ />"
 
 			' Render the editor IFRAME.
 			Response.Write "<iframe id=""" & instanceName & "___Frame"" src=""" & sLink & """ width=""" & sWidth & """ height=""" & sHeight & """ frameborder=""no"" scrolling=""no""></iframe>"
@@ -126,7 +123,7 @@ Class FCKeditor
 		If InStr(sAgent, "MSIE") > 0 AND InStr(sAgent, "mac") <= 0  AND InStr(sAgent, "Opera") <= 0 Then
 			iVersion = CInt( ToNumericFormat( Mid(sAgent, InStr(sAgent, "MSIE") + 5, 3) ) )
 			IsCompatible = ( iVersion >= 5.5 )
-		ElseIf InStr(sAgent, "Gecko") > 0 Then
+		ElseIf InStr(sAgent, "Gecko/") > 0 Then
 			iVersion = CLng( Mid( sAgent, InStr( sAgent, "Gecko/" ) + 6, 8 ) )
 			IsCompatible = ( iVersion >= 20030210 )
 		Else
@@ -159,7 +156,7 @@ Class FCKeditor
 		For Each sKey in oConfig
 
 			If bFirst = False Then
-				sParams = sParams & "&"
+				sParams = sParams & "&amp;"
 			Else
 				bFirst = False
 			End If

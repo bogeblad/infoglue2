@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -10,9 +10,6 @@
  * 
  * File Name: ar.js
  * 	Arabic language file.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-03-01 17:26:17
  * 
  * File Authors:
  * 		Abdul-Aziz Abdul-Kareem Al-Oraij (http://aziz.oraij.com)
@@ -120,7 +117,7 @@ SelectionFieldProp	: "خصائص القائمة المنسدلة",
 TextareaProp		: "خصائص ناحية النص",
 FormProp			: "خصائص النموذج",
 
-FontFormats			: "عادي;منسّق;دوس;العنوان 1;العنوان  2;العنوان  3;العنوان  4;العنوان  5;العنوان  6",	// 2.0: The last entry has been added.
+FontFormats			: "عادي;منسّق;دوس;العنوان 1;العنوان  2;العنوان  3;العنوان  4;العنوان  5;العنوان  6",
 
 // Alerts and Messages
 ProcessingXHTML		: "انتظر قليلاً ريثما تتم   معالَجة�? XHTML. لن يستغرق طويلاً...",
@@ -183,6 +180,7 @@ DlgImgAlignTextTop	: "أعلى النص",
 DlgImgAlignTop		: "أعلى",
 DlgImgPreview		: "معاينة",
 DlgImgAlertUrl		: "�?ضلاً اكتب الموقع الذي توجد عليه هذه الصورة.",
+DlgImgLinkTab		: "Link",	//MISSING
 
 // Link Dialog
 DlgLnkWindowTitle	: "ارتباط تشعبي",
@@ -438,6 +436,13 @@ DlgDocMeDescr		: "وص�? الص�?حة",
 DlgDocMeAuthor		: "الكاتب",
 DlgDocMeCopy		: "المالك",
 DlgDocPreview		: "معاينة",
+
+// Templates Dialog
+Templates			: "Templates",	//MISSING
+DlgTemplatesTitle	: "Content Templates",	//MISSING
+DlgTemplatesSelMsg	: "Please select the template to open in the editor<br>(the actual contents will be lost):",	//MISSING
+DlgTemplatesLoading	: "Loading templates list. Please wait...",	//MISSING
+DlgTemplatesNoTpl	: "(No templates defined)",	//MISSING
 
 // About Dialog
 DlgAboutAboutTab	: "نبذة",

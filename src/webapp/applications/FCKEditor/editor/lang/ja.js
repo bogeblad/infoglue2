@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -10,9 +10,6 @@
  * 
  * File Name: ja.js
  * 	English language file.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-03-01 17:26:17
  * 
  * File Authors:
  * 		Takashi Yamaguchi (jack@omakase.net)
@@ -120,7 +117,7 @@ SelectionFieldProp	: "�?�択フィールド プロパティ",
 TextareaProp		: "テキストエリア プロパティ",
 FormProp			: "フォーム プロパティ",
 
-FontFormats			: "Normal;Formatted;Address;Heading 1;Heading 2;Heading 3;Heading 4;Heading 5;Heading 6;Paragraph (DIV)",	// 2.0: The last entry has been added.
+FontFormats			: "Normal;Formatted;Address;Heading 1;Heading 2;Heading 3;Heading 4;Heading 5;Heading 6;Paragraph (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "XHTML処�?�中. �?��?�ら�??�?�待�?��??�?��?��?�...",
@@ -183,6 +180,7 @@ DlgImgAlignTextTop	: "テキスト上部",
 DlgImgAlignTop		: "上",
 DlgImgPreview		: "プレビュー",
 DlgImgAlertUrl		: "イメージ�?�URLを入力�?��?��??�?��?��?�。",
+DlgImgLinkTab		: "Link",	//MISSING
 
 // Link Dialog
 DlgLnkWindowTitle	: "�?イパーリンク",
@@ -438,6 +436,13 @@ DlgDocMeDescr		: "文書�?�概�?",
 DlgDocMeAuthor		: "文書�?�作者",
 DlgDocMeCopy		: "文書�?�著作権",
 DlgDocPreview		: "プレビュー",
+
+// Templates Dialog
+Templates			: "Templates",	//MISSING
+DlgTemplatesTitle	: "Content Templates",	//MISSING
+DlgTemplatesSelMsg	: "Please select the template to open in the editor<br>(the actual contents will be lost):",	//MISSING
+DlgTemplatesLoading	: "Loading templates list. Please wait...",	//MISSING
+DlgTemplatesNoTpl	: "(No templates defined)",	//MISSING
 
 // About Dialog
 DlgAboutAboutTab	: "�?ージョン情報",

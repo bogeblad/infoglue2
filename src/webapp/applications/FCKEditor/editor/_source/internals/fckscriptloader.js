@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -11,9 +11,6 @@
  * File Name: fckscriptloader.js
  * 	Defines the FCKScriptLoader object that is used to dynamically load
  * 	scripts in the editor.
- * 
- * Version:  2.0 RC3
- * Modified: 2004-05-31 23:07:50
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -76,20 +73,12 @@ FCKScriptLoader.CheckQueue = function()
 		// Add the new object to the HEAD.
 		document.getElementsByTagName("head")[0].appendChild( e ) ; 
 
-		var oEvent = function()
-		{
-			// Gecko doesn't have a "readyState" property
-			if ( this.tagName == 'LINK' || !this.readyState || this.readyState == 'loaded' )
-				// Load the next script available in the queue
-				FCKScriptLoader.CheckQueue() ;
-		}
-		
 		// Start downloading it.
 		if ( e.tagName == 'LINK' )
 		{
 			// IE must wait for the file to be downloaded.
 			if ( FCKBrowserInfo.IsIE )
-				e.onload = oEvent ;
+				e.onload = FCKScriptLoader_OnLoad ;
 			// Gecko doens't fire any event when the CSS is loaded, so we 
 			// can't wait for it.
 			else
@@ -100,7 +89,7 @@ FCKScriptLoader.CheckQueue = function()
 		else
 		{
 			// Gecko fires the "onload" event and IE fires "onreadystatechange"
-			e.onload = e.onreadystatechange = oEvent ;
+			e.onload = e.onreadystatechange = FCKScriptLoader_OnLoad ;
 			e.src = sScriptPath ;
 		}
 	}
@@ -112,4 +101,12 @@ FCKScriptLoader.CheckQueue = function()
 		if ( this.OnEmpty ) 
 			this.OnEmpty() ;
 	}
+}
+
+function FCKScriptLoader_OnLoad()
+{
+	// Gecko doesn't have a "readyState" property
+	if ( this.tagName == 'LINK' || !this.readyState || this.readyState == 'loaded' )
+		// Load the next script available in the queue
+		FCKScriptLoader.CheckQueue() ;
 }

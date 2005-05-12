@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -10,9 +10,6 @@
  * 
  * File Name: ru.js
  * 	Russian language file.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-03-01 17:26:18
  * 
  * File Authors:
  * 		Andrey Grebnev (andrey.grebnev@blandware.com)
@@ -120,7 +117,7 @@ SelectionFieldProp	: "Свой�?тва �?пи�?ка",
 TextareaProp		: "Свой�?тва тек�?товой обла�?ти",
 FormProp			: "Свой�?тва формы",
 
-FontFormats			: "�?ормальный;Форматированный;�?дре�?;Заголовок 1;Заголовок 2;Заголовок 3;Заголовок 4;Заголовок 5;Заголовок 6",	// 2.0: The last entry has been added.
+FontFormats			: "�?ормальный;Форматированный;�?дре�?;Заголовок 1;Заголовок 2;Заголовок 3;Заголовок 4;Заголовок 5;Заголовок 6",
 
 // Alerts and Messages
 ProcessingXHTML		: "Обработка XHTML. Пожалуй�?та подождите...",
@@ -183,6 +180,7 @@ DlgImgAlignTextTop	: "Тек�?т наверху",
 DlgImgAlignTop		: "По верху",
 DlgImgPreview		: "Предварительный про�?мотр",
 DlgImgAlertUrl		: "Пожалуй�?та введите URL изображени�?",
+DlgImgLinkTab		: "С�?ылка",
 
 // Link Dialog
 DlgLnkWindowTitle	: "С�?ылка",
@@ -273,12 +271,12 @@ DlgCellWordWrap		: "Заворачивание тек�?та",
 DlgCellWordWrapNotSet	: "<�?е у�?т.>",
 DlgCellWordWrapYes	: "Да",
 DlgCellWordWrapNo	: "�?ет",
-DlgCellHorAlign		: "Горизонтальное выравнивание",
+DlgCellHorAlign		: "Гор. выравнивание",
 DlgCellHorAlignNotSet	: "<�?е у�?т.>",
 DlgCellHorAlignLeft	: "Слева",
 DlgCellHorAlignCenter	: "По центру",
 DlgCellHorAlignRight: "Справа",
-DlgCellVerAlign		: "Вертикальное выравнивание",
+DlgCellVerAlign		: "Верт. выравнивание",
 DlgCellVerAlignNotSet	: "<�?е у�?т.>",
 DlgCellVerAlignTop	: "Сверху",
 DlgCellVerAlignMiddle	: "По�?ередине",
@@ -438,6 +436,13 @@ DlgDocMeDescr		: "Опи�?ание документа",
 DlgDocMeAuthor		: "�?втор",
 DlgDocMeCopy		: "�?втор�?кие права",
 DlgDocPreview		: "Предварительный про�?мотр",
+
+// Templates Dialog
+Templates			: "Шаблоны",
+DlgTemplatesTitle	: "Шаблоны �?одержимого",
+DlgTemplatesSelMsg	: "Пожалуй�?та выберете шаблон дл�? открыти�? в редакторе<br>(текущее �?одержимое будет потер�?но):",
+DlgTemplatesLoading	: "Загрузка �?пи�?ка шаблонов. Пожалуй�?та подождите...",
+DlgTemplatesNoTpl	: "(�?и одного шаблона не определено)",
 
 // About Dialog
 DlgAboutAboutTab	: "О программе",

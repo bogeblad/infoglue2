@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -11,9 +11,6 @@
  * File Name: fckcontextmenu.js
  * 	Defines the FCKContextMenu object that is responsible for all
  * 	Context Menu operations.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-02-16 20:34:58
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)

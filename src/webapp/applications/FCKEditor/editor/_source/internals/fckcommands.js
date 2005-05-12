@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -10,9 +10,6 @@
  * 
  * File Name: fckcommands.js
  * 	Define all commands available in the editor.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-03-02 08:22:35
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -36,6 +33,7 @@ FCKCommands.GetCommand = function( commandName )
 	switch ( commandName )
 	{
 		case 'DocProps'		: oCommand = new FCKDialogCommand( 'DocProps'	, FCKLang.DocProps				, 'dialog/fck_docprops.html'	, 400, 390, FCKCommands.GetFullPageState ) ; break ;
+		case 'Templates'	: oCommand = new FCKDialogCommand( 'Templates'	, FCKLang.DlgTemplatesTitle		, 'dialog/fck_template.html'	, 380, 450 ) ; break ;
 		case 'Link'			: oCommand = new FCKDialogCommand( 'Link'		, FCKLang.DlgLnkWindowTitle		, 'dialog/fck_link.html'		, 400, 330, FCK.GetNamedCommandState, 'CreateLink' ) ; break ;
 		case 'Anchor'		: oCommand = new FCKDialogCommand( 'Anchor'		, FCKLang.DlgAnchorTitle		, 'dialog/fck_anchor.html'		, 370, 170 ) ; break ;
 		case 'BulletedList'	: oCommand = new FCKDialogCommand( 'BulletedList', FCKLang.BulletedListProp		, 'dialog/fck_listprop.html'	, 370, 170 ) ; break ;
@@ -91,6 +89,9 @@ FCKCommands.GetCommand = function( commandName )
 
 		case 'SpellCheck'	: oCommand = new FCKSpellCheckCommand() ; break ;
 
+		case 'Undo'	: oCommand = new FCKUndoCommand() ; break ;
+		case 'Redo'	: oCommand = new FCKRedoCommand() ; break ;
+
 		// Generic Undefined command (usually used when a command is under development).
 		case 'Undefined'	: oCommand = new FCKUndefinedCommand() ; break ;
 		
@@ -116,4 +117,3 @@ FCKCommands.GetFullPageState = function()
 {
 	return FCKConfig.FullPage ? FCK_TRISTATE_OFF : FCK_TRISTATE_DISABLED ;
 }
-

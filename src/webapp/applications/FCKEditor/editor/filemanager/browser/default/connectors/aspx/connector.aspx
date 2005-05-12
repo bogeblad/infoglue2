@@ -1,7 +1,7 @@
 <%@ Page language="c#" Inherits="FredCK.FCKeditorV2.FileBrowserConnector" AutoEventWireup="false" %>
 <%--
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -14,9 +14,6 @@
  * 	
  * 	The code of this page if included in the FredCK.FCKeditorV2.dll file. So to
  * 	use it you must include the DLL in your "bin" directory.
- * 
- * Version:  2.0 RC3
- * Modified: 2004-11-26 23:16:40
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)

@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -10,9 +10,6 @@
  * 
  * File Name: fa.js
  * 	Persian language file.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-03-01 17:26:17
  * 
  * File Authors:
  * 		Hamed Taj-Abadi (hamed@ranginkaman.com)
@@ -120,7 +117,7 @@ SelectionFieldProp	: "ويژگيهای �?يلد انتخابی",
 TextareaProp		: "ويژگيهای ناحيه متنی",
 FormProp			: "ويژگيهای �?رم",
 
-FontFormats			: "نرمال;�?رمت شده;آدرس;سرنويس 1;سرنويس 2;سرنويس 3;سرنويس 4;سرنويس 5;سرنويس 6;بند;(DIV)",	// 2.0: The last entry has been added.
+FontFormats			: "نرمال;�?رمت شده;آدرس;سرنويس 1;سرنويس 2;سرنويس 3;سرنويس 4;سرنويس 5;سرنويس 6;بند;(DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "پردازش XHTML. لط�?ا صبر کنيد...",
@@ -183,6 +180,7 @@ DlgImgAlignTextTop	: "متن بالا",
 DlgImgAlignTop		: "بالا",
 DlgImgPreview		: "پيش نمايش",
 DlgImgAlertUrl		: "لط�?ا URL تصوير را انتخاب کنيد",
+DlgImgLinkTab		: "لينک",
 
 // Link Dialog
 DlgLnkWindowTitle	: "لينک",
@@ -438,6 +436,13 @@ DlgDocMeDescr		: "سند",
 DlgDocMeAuthor		: "نويسنده",
 DlgDocMeCopy		: "کپی رايت",
 DlgDocPreview		: "پيش نمايش",
+
+// Templates Dialog
+Templates			: "الگوها",
+DlgTemplatesTitle	: "الگوهای محتويات",
+DlgTemplatesSelMsg	: "لط�?ا الگوی مورد نظر را برای باز کردن در ويرايشگر انتخاب نمائيد<br>(محتويات اصلی از دست خواهند ر�?ت):",
+DlgTemplatesLoading	: "بارگذاری �?هرست الگوها. لط�?ا صبر کنيد...",
+DlgTemplatesNoTpl	: "(الگوئی تعري�? نشده است)",
 
 // About Dialog
 DlgAboutAboutTab	: "درباره",

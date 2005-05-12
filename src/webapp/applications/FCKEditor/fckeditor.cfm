@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 <!---
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -24,9 +24,6 @@
  * 		value="..."
  * 		config="..." 
  * 	>
- * 
- * Version:  2.0 RC3
- * Modified: 2004-12-22 13:51:08
  * 
  * File Authors:
  * 		Hendrik Kramer (hk@lwd.de)
@@ -67,7 +64,7 @@ if( attributes.checkBrowser )
 		}
 	}
 	// check for Gecko ( >= 20030210+ )
-	else if( find( "gecko", sAgent ) )
+	else if( find( "gecko/", sAgent ) )
 	{
 		// try to extract Gecko version date
 		stResult = reFind( "gecko/(200[3-9][0-1][0-9][0-3][0-9])", sAgent, 1, true );
@@ -103,7 +100,7 @@ else
 
 		// append toolbarset name to the url
 		if( len( attributes.toolbarSet ) )
-			sURL = sURL & "&Toolbar=" & attributes.toolbarSet;
+			sURL = sURL & "&amp;Toolbar=" & attributes.toolbarSet;
 
 		// create configuration string: Key1=Value1&Key2=Value2&... (Key/Value:HTML encoded)
 
@@ -114,9 +111,10 @@ else
 		 * changed 20041206 hk@lwd.de (improvements are welcome!)
 		 */
 		lConfigKeys = "";
-		lConfigKeys = lConfigKeys & "CustomConfigurationsPath,EditorAreaCSS,Debug,SkinPath,PluginsPath,AutoDetectLanguage,DefaultLanguage,EnableXHTML,EnableSourceXHTML";
-		lConfigKeys = lConfigKeys & ",GeckoUseSPAN,StartupFocus,ForcePasteAsPlainText,LinkShowTargets,LinkTargets,LinkDefaultTarget,ToolbarStartExpanded,ToolbarCanCollapse";
-		lConfigKeys = lConfigKeys & ",ToolbarSets,FontColors,FontNames,FontSizes,FontFormats,StylesXmlPath,LinkBrowser,LinkBrowserURL,LinkBrowserWindowWidth,LinkBrowserWindowHeight";
+		lConfigKeys = lConfigKeys & "CustomConfigurationsPath,EditorAreaCSS,DocType,BaseHref,FullPage,Debug,SkinPath,PluginsPath,AutoDetectLanguage,DefaultLanguage,ContentLangDirection,EnableXHTML,EnableSourceXHTML,ProcessHTMLEntities,IncludeLatinEntities,IncludeGreekEntities";
+		lConfigKeys = lConfigKeys & ",FillEmptyBlocks,FormatSource,FormatOutput,FormatIndentator,GeckoUseSPAN,StartupFocus,ForcePasteAsPlainText,ForceSimpleAmpersand,TabSpaces,ShowBorders,UseBROnCarriageReturn";
+		lConfigKeys = lConfigKeys & ",ToolbarStartExpanded,ToolbarCanCollapse,ToolbarSets,ContextMenu,FontColors,FontNames,FontSizes,FontFormats,StylesXmlPath,SpellChecker,IeSpellDownloadUrl,MaxUndoLevels";
+		lConfigKeys = lConfigKeys & ",LinkBrowser,LinkBrowserURL,LinkBrowserWindowWidth,LinkBrowserWindowHeight";
 		lConfigKeys = lConfigKeys & ",LinkUpload,LinkUploadURL,LinkUploadWindowWidth,LinkUploadWindowHeight,LinkUploadAllowedExtensions,LinkUploadDeniedExtensions";
 		lConfigKeys = lConfigKeys & ",ImageBrowser,ImageBrowserURL,ImageBrowserWindowWidth,ImageBrowserWindowHeight,SmileyPath,SmileyImages,SmileyColumns,SmileyWindowWidth,SmileyWindowHeight";
 		
@@ -128,17 +126,11 @@ else
 			if( iPos GT 0 )
 			{
 				if( len( sConfig ) )
-					sConfig = sConfig & "&";
+					sConfig = sConfig & "&amp;";
 	
 				fieldValue = attributes.config[key];
 				fieldName = listGetAt( lConfigKeys, iPos );
 				
-				// set all boolean possibilities in CFML to true/false values
-				if( isBoolean( fieldValue) and fieldValue )
-					fieldValue = "true";
-				else if( isBoolean( fieldValue) )
-					fieldValue = "false";
-			
 				sConfig = sConfig & HTMLEditFormat( fieldName ) & '=' & HTMLEditFormat( fieldValue );
 			}
 		}

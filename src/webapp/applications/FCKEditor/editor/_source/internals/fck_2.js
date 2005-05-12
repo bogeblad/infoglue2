@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -12,9 +12,6 @@
  * 	This is the second part of the "FCK" object creation. This is the main
  * 	object that represents an editor instance.
  * 
- * Version:  2.0 RC3
- * Modified: 2005-03-02 10:44:27
- * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
  */
@@ -25,6 +22,8 @@ FCK.RedirectNamedCommands = new Object() ;
 
 FCK.ExecuteNamedCommand = function( commandName, commandParameter )
 {
+	FCKUndo.SaveUndoStep() ;
+
 	if ( FCK.RedirectNamedCommands[ commandName ] != null )
 		FCK.ExecuteRedirectedNamedCommand( commandName, commandParameter ) ;
 	else
@@ -114,7 +113,11 @@ FCK.SwitchEditMode = function()
 
 	// Update the HTML in the view output to show.
 	if ( bWYSIWYG )
+	{
+		if ( FCKBrowserInfo.IsIE )
+			FCKUndo.SaveUndoStep() ;
 		document.getElementById('eSourceField').value = ( FCKConfig.EnableXHTML && FCKConfig.EnableSourceXHTML ? FCK.GetXHTML( FCKConfig.FormatSource ) : FCK.GetHTML( FCKConfig.FormatSource ) ) ;
+	}
 	else
 		FCK.SetHTML( FCK.GetHTML(), true ) ;
 
@@ -127,7 +130,6 @@ FCK.SwitchEditMode = function()
 	// Set the Focus.
 	FCK.Focus() ;
 }
-
 
 FCK.CreateElement = function( tag )
 {
@@ -152,4 +154,3 @@ FCK.InsertElementAndGetIt = function( e )
 		}
 	}
 }
-

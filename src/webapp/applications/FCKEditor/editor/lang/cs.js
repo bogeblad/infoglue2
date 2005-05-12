@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -11,11 +11,9 @@
  * File Name: cs.js
  * 	Czech language file.
  * 
- * Version:  2.0 RC3
- * Modified: 2005-03-01 17:26:17
- * 
  * File Authors:
  * 		David Horák (david.horak@email.cz)
+ * 		Petr Plavjaník (plavjanik@gmail.com)
  */
 
 var FCKLang =
@@ -41,7 +39,7 @@ RemoveFormat		: "Odstranit formátování",
 InsertLinkLbl		: "Odkaz",
 InsertLink			: "Vložit/změnit odkaz",
 RemoveLink			: "Odstranit odkaz",
-Anchor				: "Insert/Edit Anchor",	//MISSING
+Anchor				: "Vložít/změnit záložku",
 InsertImageLbl		: "Obrázek",
 InsertImage			: "Vložit/změnit obrázek",
 InsertTableLbl		: "Tabulka",
@@ -82,18 +80,18 @@ BGColor				: "Barva pozadí",
 Source				: "Zdroj",
 Find				: "Hledat",
 Replace				: "Nahradit",
-SpellCheck			: "Check Spell",	//MISSING
-UniversalKeyboard	: "Universal Keyboard",	//MISSING
+SpellCheck			: "Zkontrolovat pravopis",
+UniversalKeyboard	: "Univerzální klávesnice",
 
-Form			: "Form",	//MISSING
-Checkbox		: "Checkbox",	//MISSING
-RadioButton		: "Radio Button",	//MISSING
-TextField		: "Text Field",	//MISSING
-Textarea		: "Textarea",	//MISSING
-HiddenField		: "Hidden Field",	//MISSING
-Button			: "Button",	//MISSING
-SelectionField	: "Selection Field",	//MISSING
-ImageButton		: "Image Button",	//MISSING
+Form			: "Formulář",
+Checkbox		: "Zaškrtávací polí�?ko",
+RadioButton		: "Přepína�?",
+TextField		: "Textové pole",
+Textarea		: "Textová oblast",
+HiddenField		: "Skryté pole",
+Button			: "Tla�?ítko",
+SelectionField	: "Seznam",
+ImageButton		: "Obrázkové tla�?ítko",
 
 // Context Menu
 EditLink			: "Změnit odkaz",
@@ -109,18 +107,18 @@ CellProperties		: "Vlastnosti buňky",
 TableProperties		: "Vlastnosti tabulky",
 ImageProperties		: "Vlastnosti obrázku",
 
-AnchorProp			: "Anchor Properties",	//MISSING
-ButtonProp			: "Button Properties",	//MISSING
-CheckboxProp		: "Checkbox Properties",	//MISSING
-HiddenFieldProp		: "Hidden Field Properties",	//MISSING
-RadioButtonProp		: "Radio Button Properties",	//MISSING
-ImageButtonProp		: "Image Button Properties",	//MISSING
-TextFieldProp		: "Text Field Properties",	//MISSING
-SelectionFieldProp	: "Selection Field Properties",	//MISSING
-TextareaProp		: "Textarea Properties",	//MISSING
-FormProp			: "Form Properties",	//MISSING
+AnchorProp			: "Vlastnosti záložky",
+ButtonProp			: "Vlastnosti tla�?ítka",
+CheckboxProp		: "Vlastnosti zaškrtávacího polí�?ka",
+HiddenFieldProp		: "Vlastnosti skrytého pole",
+RadioButtonProp		: "Vlastnosti přepína�?e",
+ImageButtonProp		: "Vlastností obrázkového tla�?ítka",
+TextFieldProp		: "Vlastnosti textového pole",
+SelectionFieldProp	: "Vlastnosti seznamu",
+TextareaProp		: "Vlastnosti textové oblasti",
+FormProp			: "Vlastnosti formuláře",
 
-FontFormats			: "Normální;Formátovaný;Adresa;Nadpis 1;Nadpis 2;Nadpis 3;Nadpis 4;Nadpis 5;Nadpis 6",	// 2.0: The last entry has been added.
+FontFormats			: "Normální;Formátovaný;Adresa;Nadpis 1;Nadpis 2;Nadpis 3;Nadpis 4;Nadpis 5;Nadpis 6",
 
 // Alerts and Messages
 ProcessingXHTML		: "Probíhá zpracování XHTML. Prosím �?ekejte...",
@@ -136,9 +134,9 @@ UnknownToolbarSet	: "Panel nástrojů \"%1\" neexistuje",
 DlgBtnOK			: "OK",
 DlgBtnCancel		: "Storno",
 DlgBtnClose			: "Zavřít",
-DlgBtnBrowseServer	: "Browse Server",	//MISSING
+DlgBtnBrowseServer	: "Vybrat na serveru",
 DlgAdvancedTag		: "Rozšířené",
-DlgOpOther			: "&lt;Other&gt;",	//MISSING
+DlgOpOther			: "&lt;Ostatní&gt;",
 
 // General Dialogs Labels
 DlgGenNotSet		: "&lt;nenastaveno&gt;",
@@ -183,6 +181,7 @@ DlgImgAlignTextTop	: "Na horní okraj textu",
 DlgImgAlignTop		: "Nahoru",
 DlgImgPreview		: "Náhled",
 DlgImgAlertUrl		: "Zadejte prosím URL obrázku",
+DlgImgLinkTab		: "Link",	//MISSING
 
 // Link Dialog
 DlgLnkWindowTitle	: "Odkaz",
@@ -213,7 +212,7 @@ DlgLnkTargetBlank	: "Nové okno (_blank)",
 DlgLnkTargetParent	: "Rodi�?ovské okno (_parent)",
 DlgLnkTargetSelf	: "Stejné okno (_self)",
 DlgLnkTargetTop		: "Hlavní okno (_top)",
-DlgLnkTargetFrameName	: "Target Frame Name",	//MISSING
+DlgLnkTargetFrameName	: "Název cílového rámu",
 DlgLnkPopWinName	: "Název vyskakovacího okna",
 DlgLnkPopWinFeat	: "Vlastnosti vyskakovacího okna",
 DlgLnkPopResize		: "Měnitelná velikost",
@@ -319,130 +318,137 @@ ColorAutomatic	: "Automaticky",
 ColorMoreColors	: "Více barev...",
 
 // Document Properties
-DocProps		: "Document Properties",	//MISSING
+DocProps		: "Vlastnosti dokumentu",
 
 // Anchor Dialog
-DlgAnchorTitle		: "Anchor Properties",	//MISSING
-DlgAnchorName		: "Anchor Name",	//MISSING
-DlgAnchorErrorName	: "Please type the anchor name",	//MISSING
+DlgAnchorTitle		: "Vlastnosti záložky",
+DlgAnchorName		: "Název záložky",
+DlgAnchorErrorName	: "Zadejte prosím název záložky",
 
 // Speller Pages Dialog
-DlgSpellNotInDic		: "Not in dictionary",	//MISSING
-DlgSpellChangeTo		: "Change to",	//MISSING
-DlgSpellBtnIgnore		: "Ignore",	//MISSING
-DlgSpellBtnIgnoreAll	: "Ignore All",	//MISSING
-DlgSpellBtnReplace		: "Replace",	//MISSING
-DlgSpellBtnReplaceAll	: "Replace All",	//MISSING
-DlgSpellBtnUndo			: "Undo",	//MISSING
-DlgSpellNoSuggestions	: "- No suggestions -",	//MISSING
-DlgSpellProgress		: "Spell check in progress...",	//MISSING
-DlgSpellNoMispell		: "Spell check complete: No misspellings found",	//MISSING
-DlgSpellNoChanges		: "Spell check complete: No words changed",	//MISSING
-DlgSpellOneChange		: "Spell check complete: One word changed",	//MISSING
-DlgSpellManyChanges		: "Spell check complete: %1 words changed",	//MISSING
+DlgSpellNotInDic		: "Není ve slovníku",
+DlgSpellChangeTo		: "Změnit na",
+DlgSpellBtnIgnore		: "Přesko�?it",
+DlgSpellBtnIgnoreAll	: "Přeskakovat vše",
+DlgSpellBtnReplace		: "Zaměnit",
+DlgSpellBtnReplaceAll	: "Zaměňovat vše",
+DlgSpellBtnUndo			: "Zpět",
+DlgSpellNoSuggestions	: "- žádné návrhy -",
+DlgSpellProgress		: "Probíhá kontrola pravopisu...",
+DlgSpellNoMispell		: "Kontrola pravopisu dokon�?ena: Žádné pravopisné chyby nenalezeny",
+DlgSpellNoChanges		: "Kontrola pravopisu dokon�?ena: Beze změn",
+DlgSpellOneChange		: "Kontrola pravopisu dokon�?ena: Jedno slovo změněno",
+DlgSpellManyChanges		: "Kontrola pravopisu dokon�?ena: %1 slov změněno",
 
-IeSpellDownload			: "Spell checker not installed. Do you want to download it now?",	//MISSING
+IeSpellDownload			: "Kontrola pravopisu není nainstalována. Chcete ji nyní stáhnout?",
 
 // Button Dialog
-DlgButtonText	: "Text (Value)",	//MISSING
-DlgButtonType	: "Type",	//MISSING
+DlgButtonText	: "Popisek",
+DlgButtonType	: "Typ",
 
 // Checkbox and Radio Button Dialogs
-DlgCheckboxName		: "Name",	//MISSING
-DlgCheckboxValue	: "Value",	//MISSING
-DlgCheckboxSelected	: "Selected",	//MISSING
+DlgCheckboxName		: "Název",
+DlgCheckboxValue	: "Hodnota",
+DlgCheckboxSelected	: "Zaškrtnuto",
 
 // Form Dialog
-DlgFormName		: "Name",	//MISSING
-DlgFormAction	: "Action",	//MISSING
-DlgFormMethod	: "Method",	//MISSING
+DlgFormName		: "Název",
+DlgFormAction	: "Akce",
+DlgFormMethod	: "Metoda",
 
 // Select Field Dialog
-DlgSelectName		: "Name",	//MISSING
-DlgSelectValue		: "Value",	//MISSING
-DlgSelectSize		: "Size",	//MISSING
-DlgSelectLines		: "lines",	//MISSING
-DlgSelectChkMulti	: "Allow multiple selections",	//MISSING
-DlgSelectOpAvail	: "Available Options",	//MISSING
-DlgSelectOpText		: "Text",	//MISSING
-DlgSelectOpValue	: "Value",	//MISSING
-DlgSelectBtnAdd		: "Add",	//MISSING
-DlgSelectBtnModify	: "Modify",	//MISSING
-DlgSelectBtnUp		: "Up",	//MISSING
-DlgSelectBtnDown	: "Down",	//MISSING
-DlgSelectBtnSetValue : "Set as selected value",	//MISSING
-DlgSelectBtnDelete	: "Delete",	//MISSING
+DlgSelectName		: "Název",
+DlgSelectValue		: "Hodnota",
+DlgSelectSize		: "Velikost",
+DlgSelectLines		: "řádků",
+DlgSelectChkMulti	: "Povolit mnohonásobné výběry",
+DlgSelectOpAvail	: "Dostupná nastavení",
+DlgSelectOpText		: "Text",
+DlgSelectOpValue	: "Hodnota",
+DlgSelectBtnAdd		: "Přidat",
+DlgSelectBtnModify	: "Změnit",
+DlgSelectBtnUp		: "Nahoru",
+DlgSelectBtnDown	: "Dolů",
+DlgSelectBtnSetValue : "Nastavit jako vybranou hodnotu",
+DlgSelectBtnDelete	: "Smazat",
 
 // Textarea Dialog
-DlgTextareaName	: "Name",	//MISSING
-DlgTextareaCols	: "Columns",	//MISSING
-DlgTextareaRows	: "Rows",	//MISSING
+DlgTextareaName	: "Název",
+DlgTextareaCols	: "Sloupců",
+DlgTextareaRows	: "Řádků",
 
 // Text Field Dialog
-DlgTextName			: "Name",	//MISSING
-DlgTextValue		: "Value",	//MISSING
-DlgTextCharWidth	: "Character Width",	//MISSING
-DlgTextMaxChars		: "Maximum Characters",	//MISSING
-DlgTextType			: "Type",	//MISSING
-DlgTextTypeText		: "Text",	//MISSING
-DlgTextTypePass		: "Password",	//MISSING
+DlgTextName			: "Název",
+DlgTextValue		: "Hodnota",
+DlgTextCharWidth	: "Šířka ve znacích",
+DlgTextMaxChars		: "Maximální po�?et znaků",
+DlgTextType			: "Typ",
+DlgTextTypeText		: "Text",
+DlgTextTypePass		: "Heslo",
 
 // Hidden Field Dialog
-DlgHiddenName	: "Name",	//MISSING
-DlgHiddenValue	: "Value",	//MISSING
+DlgHiddenName	: "Název",
+DlgHiddenValue	: "Hodnota",
 
 // Bulleted List Dialog
-BulletedListProp	: "Bulleted List Properties",	//MISSING
-NumberedListProp	: "Numbered List Properties",	//MISSING
-DlgLstType			: "Type",	//MISSING
-DlgLstTypeCircle	: "Circle",	//MISSING
-DlgLstTypeDisk		: "Disk",	//MISSING
-DlgLstTypeSquare	: "Square",	//MISSING
-DlgLstTypeNumbers	: "Numbers (1, 2, 3)",	//MISSING
-DlgLstTypeLCase		: "Lowercase Letters (a, b, c)",	//MISSING
-DlgLstTypeUCase		: "Uppercase Letters (A, B, C)",	//MISSING
-DlgLstTypeSRoman	: "Small Roman Numerals (i, ii, iii)",	//MISSING
-DlgLstTypeLRoman	: "Large Roman Numerals (I, II, III)",	//MISSING
+BulletedListProp	: "Vlastnosti odrážek",
+NumberedListProp	: "Vlastnosti �?íslovaného seznamu",
+DlgLstType			: "Typ",
+DlgLstTypeCircle	: "Kružnice",
+DlgLstTypeDisk		: "Plný kruh",
+DlgLstTypeSquare	: "Čtverec",
+DlgLstTypeNumbers	: "Čísla (1, 2, 3)",
+DlgLstTypeLCase		: "Malá písmena (a, b, c)",
+DlgLstTypeUCase		: "Velká písmena (A, B, C)",
+DlgLstTypeSRoman	: "Malé římská �?íslice (i, ii, iii)",
+DlgLstTypeLRoman	: "Velké římské �?íslice (I, II, III)",
 
 // Document Properties Dialog
-DlgDocGeneralTab	: "General",	//MISSING
-DlgDocBackTab		: "Background",	//MISSING
-DlgDocColorsTab		: "Colors and Margins",	//MISSING
-DlgDocMetaTab		: "Meta Data",	//MISSING
+DlgDocGeneralTab	: "Obecné",
+DlgDocBackTab		: "Pozadí",
+DlgDocColorsTab		: "Barvy a okraje",
+DlgDocMetaTab		: "Metadata",
 
-DlgDocPageTitle		: "Page Title",	//MISSING
-DlgDocLangDir		: "Language Direction",	//MISSING
-DlgDocLangDirLTR	: "Left to Right (LTR)",	//MISSING
-DlgDocLangDirRTL	: "Right to Left (RTL)",	//MISSING
-DlgDocLangCode		: "Language Code",	//MISSING
-DlgDocCharSet		: "Character Set Encoding",	//MISSING
-DlgDocCharSetOther	: "Other Character Set Encoding",	//MISSING
+DlgDocPageTitle		: "Titulek stránky",
+DlgDocLangDir		: "Směr jazyku",
+DlgDocLangDirLTR	: "Zleva do prava ",
+DlgDocLangDirRTL	: "Zprava doleva",
+DlgDocLangCode		: "Kód jazyku",
+DlgDocCharSet		: "Znaková sada",
+DlgDocCharSetOther	: "Další znaková sada",
 
-DlgDocDocType		: "Document Type Heading",	//MISSING
-DlgDocDocTypeOther	: "Other Document Type Heading",	//MISSING
-DlgDocIncXHTML		: "Include XHTML Declarations",	//MISSING
-DlgDocBgColor		: "Background Color",	//MISSING
-DlgDocBgImage		: "Background Image URL",	//MISSING
-DlgDocBgNoScroll	: "Nonscrolling Background",	//MISSING
-DlgDocCText			: "Text",	//MISSING
-DlgDocCLink			: "Link",	//MISSING
-DlgDocCVisited		: "Visited Link",	//MISSING
-DlgDocCActive		: "Active Link",	//MISSING
-DlgDocMargins		: "Page Margins",	//MISSING
-DlgDocMaTop			: "Top",	//MISSING
-DlgDocMaLeft		: "Left",	//MISSING
-DlgDocMaRight		: "Right",	//MISSING
-DlgDocMaBottom		: "Bottom",	//MISSING
-DlgDocMeIndex		: "Document Indexing Keywords (comma separated)",	//MISSING
-DlgDocMeDescr		: "Document Description",	//MISSING
-DlgDocMeAuthor		: "Author",	//MISSING
-DlgDocMeCopy		: "Copyright",	//MISSING
-DlgDocPreview		: "Preview",	//MISSING
+DlgDocDocType		: "Typ dokumentu",
+DlgDocDocTypeOther	: "Jiný typ dokumetu",
+DlgDocIncXHTML		: "Zahrnou deklarace XHTML",
+DlgDocBgColor		: "Barva pozadí",
+DlgDocBgImage		: "URL obrázku na pozadí",
+DlgDocBgNoScroll	: "Nerolovatelné pozadí",
+DlgDocCText			: "Text",
+DlgDocCLink			: "Odkaz",
+DlgDocCVisited		: "Navštívený odkaz",
+DlgDocCActive		: "Vybraný odkaz",
+DlgDocMargins		: "Okraje stránky",
+DlgDocMaTop			: "Horní",
+DlgDocMaLeft		: "Levý",
+DlgDocMaRight		: "Pravý",
+DlgDocMaBottom		: "Dolní",
+DlgDocMeIndex		: "Klí�?ová slova (oddělená �?árkou)",
+DlgDocMeDescr		: "Popis dokumentu",
+DlgDocMeAuthor		: "Autor",
+DlgDocMeCopy		: "Autorská práva",
+DlgDocPreview		: "Náhled",
+
+// Templates Dialog
+Templates			: "Templates",	//MISSING
+DlgTemplatesTitle	: "Content Templates",	//MISSING
+DlgTemplatesSelMsg	: "Please select the template to open in the editor<br>(the actual contents will be lost):",	//MISSING
+DlgTemplatesLoading	: "Loading templates list. Please wait...",	//MISSING
+DlgTemplatesNoTpl	: "(No templates defined)",	//MISSING
 
 // About Dialog
-DlgAboutAboutTab	: "About",	//MISSING
-DlgAboutBrowserInfoTab	: "Browser Info",	//MISSING
+DlgAboutAboutTab	: "O aplikaci",
+DlgAboutBrowserInfoTab	: "Informace o prohlíže�?i",
 DlgAboutVersion		: "verze",
-DlgAboutLicense		: "Licensed under the terms of the GNU Lesser General Public License",
+DlgAboutLicense		: "Licencováno pomocí GNU Lesser General Public License",
 DlgAboutInfo		: "Více informací získáte na"
 }

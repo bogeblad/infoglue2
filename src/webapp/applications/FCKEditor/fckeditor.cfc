@@ -1,7 +1,7 @@
 <cfcomponent output="false" displayname="FCKEditor" hint="Create an instance of the FCKEditor.">
 <!---
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -32,9 +32,6 @@
  * 	*** Note: 
  * 	Do not use path names with a "." (dot) in the name. This is a coldfusion 
  * 	limitation with the cfc invocation.
- * 
- * Version:  2.0 RC3
- * Modified: 2004-12-22 13:49:40
  * 
  * File Authors:
  * 		Hendrik Kramer (hk@lwd.de)
@@ -96,7 +93,7 @@
 		}
 	}
 	// check for Gecko ( >= 20030210+ )
-	else if( find( "gecko", sAgent ) )
+	else if( find( "gecko/", sAgent ) )
 	{
 		// try to extract Gecko version date
 		stResult = reFind( "gecko/(200[3-9][0-1][0-9][0-3][0-9])", sAgent, 1, true );
@@ -156,7 +153,7 @@
 
 	// append toolbarset name to the url
 	if( len( this.toolbarSet ) )
-		sURL = sURL & "&Toolbar=" & this.toolbarSet;
+		sURL = sURL & "&amp;Toolbar=" & this.toolbarSet;
 	</cfscript>
 
 	<cfoutput>
@@ -191,9 +188,10 @@
 	 * We "fix" this by comparing the caseless configuration keys to a list of all available configuration options in the correct case.
 	 * changed 20041206 hk@lwd.de (improvements are welcome!)
 	 */
-	lConfigKeys = lConfigKeys & "CustomConfigurationsPath,EditorAreaCSS,Debug,SkinPath,PluginsPath,AutoDetectLanguage,DefaultLanguage,EnableXHTML,EnableSourceXHTML";
-	lConfigKeys = lConfigKeys & ",GeckoUseSPAN,StartupFocus,ForcePasteAsPlainText,LinkShowTargets,LinkTargets,LinkDefaultTarget,ToolbarStartExpanded,ToolbarCanCollapse";
-	lConfigKeys = lConfigKeys & ",ToolbarSets,FontColors,FontNames,FontSizes,FontFormats,StylesXmlPath,LinkBrowser,LinkBrowserURL,LinkBrowserWindowWidth,LinkBrowserWindowHeight";
+	lConfigKeys = lConfigKeys & "CustomConfigurationsPath,EditorAreaCSS,DocType,BaseHref,FullPage,Debug,SkinPath,PluginsPath,AutoDetectLanguage,DefaultLanguage,ContentLangDirection,EnableXHTML,EnableSourceXHTML,ProcessHTMLEntities,IncludeLatinEntities,IncludeGreekEntities";
+	lConfigKeys = lConfigKeys & ",FillEmptyBlocks,FormatSource,FormatOutput,FormatIndentator,GeckoUseSPAN,StartupFocus,ForcePasteAsPlainText,ForceSimpleAmpersand,TabSpaces,ShowBorders,UseBROnCarriageReturn";
+	lConfigKeys = lConfigKeys & ",ToolbarStartExpanded,ToolbarCanCollapse,ToolbarSets,ContextMenu,FontColors,FontNames,FontSizes,FontFormats,StylesXmlPath,SpellChecker,IeSpellDownloadUrl,MaxUndoLevels";
+	lConfigKeys = lConfigKeys & ",LinkBrowser,LinkBrowserURL,LinkBrowserWindowWidth,LinkBrowserWindowHeight";
 	lConfigKeys = lConfigKeys & ",LinkUpload,LinkUploadURL,LinkUploadWindowWidth,LinkUploadWindowHeight,LinkUploadAllowedExtensions,LinkUploadDeniedExtensions";
 	lConfigKeys = lConfigKeys & ",ImageBrowser,ImageBrowserURL,ImageBrowserWindowWidth,ImageBrowserWindowHeight,SmileyPath,SmileyImages,SmileyColumns,SmileyWindowWidth,SmileyWindowHeight";
 	
@@ -203,7 +201,7 @@
 		if( iPos GT 0 )
 		{
 			if( len( sParams ) )
-				sParams = sParams & "&";
+				sParams = sParams & "&amp;";
 
 			fieldValue = this.config[key];
 			fieldName = listGetAt( lConfigKeys, iPos );

@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -11,9 +11,6 @@
  * File Name: fck_1.js
  * 	This is the first part of the "FCK" object creation. This is the main
  * 	object that represents an editor instance.
- * 
- * Version:  2.0 RC3
- * Modified: 2005-02-27 21:46:32
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -34,8 +31,8 @@ FCK.StartEditor = function()
 	// The Base Path of the editor is saved to rebuild relative URL (IE issue).
 //	this.BaseUrl = this.EditorDocument.location.protocol + '//' + this.EditorDocument.location.host ;
 
-	if ( FCKBrowserInfo.IsGecko )
-		this.MakeEditable() ;
+//	if ( FCKBrowserInfo.IsGecko )
+//		this.MakeEditable() ;
 
 	// Set the editor's startup contents
 	this.SetHTML( FCKTools.GetLinkedFieldValue() ) ;
@@ -43,7 +40,14 @@ FCK.StartEditor = function()
 	// Attach the editor to the form onsubmit event
 	FCKTools.AttachToLinkedFieldFormSubmit( this.UpdateLinkedField ) ;
 
+	FCKUndo.SaveUndoStep() ;
+
 	this.SetStatus( FCK_STATUS_ACTIVE ) ;
+}
+
+function Window_OnFocus()
+{
+	FCK.Focus() ;
 }
 
 FCK.SetStatus = function( newStatus )
@@ -53,7 +57,7 @@ FCK.SetStatus = function( newStatus )
 	if ( newStatus == FCK_STATUS_ACTIVE )
 	{
 		// Force the focus in the window to go to the editor.
-		window.onfocus = window.document.body.onfocus = FCK.Focus ;
+		window.onfocus = window.document.body.onfocus = Window_OnFocus ;
 
 		// Force the focus in the editor.
 		if ( FCKConfig.StartupFocus )
@@ -85,7 +89,6 @@ FCK.SetStatus = function( newStatus )
 
 		FCKScriptLoader.AddScript( '_source/internals/fckcommands.js' ) ;
 		FCKScriptLoader.AddScript( '_source/classes/fcktoolbarbutton.js' ) ;
-		FCKScriptLoader.AddScript( '_source/classes/fcktoolbarcombo.js' ) ;
 		FCKScriptLoader.AddScript( '_source/classes/fckspecialcombo.js' ) ;
 		FCKScriptLoader.AddScript( '_source/classes/fcktoolbarspecialcombo.js' ) ;
 		FCKScriptLoader.AddScript( '_source/classes/fcktoolbarfontscombo.js' ) ;
@@ -120,8 +123,6 @@ FCK.SetStatus = function( newStatus )
 	}
 
 	this.Events.FireEvent( 'OnStatusChange', newStatus ) ;
-	if ( this.OnStatusChange ) this.OnStatusChange( newStatus ) ;
-
 }
 
 FCK.GetHTML = function( format )
@@ -202,9 +203,7 @@ FCK.OnDoubleClick = function( element )
 {
 	var oHandler = FCK.RegisteredDoubleClickHandlers[ element.tagName ] ;
 	if ( oHandler )
-	{
 		oHandler( element ) ;
-	}
 }
 
 // Register objects that can handle double click operations.
@@ -212,4 +211,3 @@ FCK.RegisterDoubleClickHandler = function( handlerFunction, tag )
 {
 	FCK.RegisteredDoubleClickHandlers[ tag.toUpperCase() ] = handlerFunction ;
 }
-
