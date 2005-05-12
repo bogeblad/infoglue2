@@ -162,7 +162,7 @@
 				var oFCKeditor = new FCKeditor(plainTextAreaName) ;
 				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
 				oFCKeditor.Config['CustomConfigurationsPath'] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
-				oFCKeditor.ToolbarSet = "Small";
+				//oFCKeditor.ToolbarSet = "Small";
 				oFCKeditor.ReplaceTextarea();
 				
 				//alert("Generation in progress..");
@@ -787,14 +787,12 @@
 	   				//alert("currentEditorId:" + currentEditorId);
 					if(currentEditorId == 1)
 					{
-						var wysiwygEditor = htmlEditors["${attribute.name}WYSIWYGEditor"];
-						//alert("WYSIWYG:" + wysiwygEditor.getHTML());
+						//var wysiwygEditor = htmlEditors["${attribute.name}WYSIWYGEditor"];
+						var oEditor = FCKeditorAPI.GetInstance('${attribute.name}') ;
+						//alert("WYSIWYG:" + oEditor.GetXHTML(false));
 						
-						var text = wysiwygEditor.getHTML();
-						//alert("text1:" + text);
-						untransformedAttribute = untransformAttribute(text);
-						//alert("untransformedAttribute:" + untransformedAttribute);
-						document.getElementById("$attribute.name").value = untransformedAttribute;
+						//alert("Attribute:" + document.getElementById("$attribute.name").value);
+						document.getElementById("$attribute.name").value = oEditor.GetXHTML(false);
 					}
 					else if(currentEditorId == 2)
 					{

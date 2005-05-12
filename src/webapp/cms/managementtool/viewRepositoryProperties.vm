@@ -11,6 +11,7 @@
 	<tr>
 		<td>
 			<p>#editTextArea("Repository.property.WYSIWYGConfig" "WYSIWYGConfig" $!WYSIWYGConfig "50" "10" "normaltextarea")</p>
+			<p>#editTextArea("Repository.property.WYSIWYGStyles" "WYSIWYGStyles" $!WYSIWYGStyles "50" "10" "normaltextarea")</p>
 			<p>
 				$ui.getString("entity.Repository.property.defaultFolderContentTypeName.label")<br/>
 				<select class="siteNodetypes" name="defaultFolderContentTypeName">

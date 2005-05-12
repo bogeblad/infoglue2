@@ -96,8 +96,8 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	{
 	    System.out.println("Getting WYSIWYGProperties for principal...");
 	    this.WYSIWYGProperties = getPrincipalPropertyValue("WYSIWYGConfig", false);
-	    
-	    if(this.WYSIWYGProperties == null && this.repositoryId != null)
+	    System.out.println("WYSIWYGProperties:" + WYSIWYGProperties);
+	    if(this.WYSIWYGProperties == null || this.WYSIWYGProperties.equalsIgnoreCase("") && this.repositoryId != null)
 	    {
 		    System.out.println("Getting WYSIWYGProperties for repository...");
 			Map args = new HashMap();
@@ -131,7 +131,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	    System.out.println("Getting StylesXML for principal...");
 	    this.StylesXML = getPrincipalPropertyValue("StylesXML", false);
 	    
-	    if(this.StylesXML == null && this.repositoryId != null)
+	    if(this.StylesXML == null || this.WYSIWYGProperties.equalsIgnoreCase("") && this.repositoryId != null)
 	    {
 		    System.out.println("Getting StylesXML for repository...");
 			Map args = new HashMap();

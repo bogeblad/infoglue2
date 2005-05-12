@@ -34,6 +34,7 @@ import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	private List contentTypeDefinitionVOList 	= null;
 	
 	private String WYSIWYGConfig 				= null;
+	private String stylesXML					= null;
 	private String defaultFolderContentTypeName = null;	
 
 	
@@ -71,6 +73,10 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    byte[] WYSIWYGConfigBytes = ps.getData("repository_" + this.getRepositoryId() + "_WYSIWYGConfig");
 	    if(WYSIWYGConfigBytes != null)
 	    	this.WYSIWYGConfig = new String(WYSIWYGConfigBytes, "utf-8");
+
+	    byte[] StylesXMLBytes = ps.getData("repository_" + this.getRepositoryId() + "_StylesXML");
+	    if(StylesXMLBytes != null)
+	    	this.stylesXML = new String(StylesXMLBytes, "utf-8");
 
 	    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
     } 
@@ -97,6 +103,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
 	    ps.setData("repository_" + this.getRepositoryId() + "_WYSIWYGConfig", WYSIWYGConfig.getBytes("utf-8"));
+	    ps.setData("repository_" + this.getRepositoryId() + "_StylesXML", stylesXML.getBytes("utf-8"));
 	    ps.setString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", defaultFolderContentTypeName);
 	    
     	return "save";
@@ -135,7 +142,17 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	{
 		WYSIWYGConfig = config;
 	}
-	
+
+	public String getWYSIWYGStyles()
+    {
+        return stylesXML;
+    }
+    
+    public void setWYSIWYGStyles(String stylesXML)
+    {
+        this.stylesXML = stylesXML;
+    }
+
 	public PropertySet getPropertySet() 
 	{
 		return propertySet;
@@ -154,5 +171,5 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
     public List getContentTypeDefinitionVOList()
     {
         return contentTypeDefinitionVOList;
-    }
+    }    
 }
