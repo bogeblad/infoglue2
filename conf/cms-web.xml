@@ -56,7 +56,12 @@
 		<!-- HERE COMES THE INFOGLUE-SETUP -->
 		<init-param>
 			<param-name>org.infoglue.cms.security.loginUrl</param-name>
+			<!--<param-value>https://localhost:8443/infoglueCMS2/Login.action</param-value>-->
 			<param-value>Login.action</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.infoglue.cms.security.successLoginBaseUrl</param-name>
+			<param-value>http://localhost:8080</param-value>
 		</init-param>
 		<init-param>
 			<param-name>org.infoglue.cms.security.invalidLoginUrl</param-name>
