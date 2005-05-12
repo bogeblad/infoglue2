@@ -48,6 +48,7 @@
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/calendar1.js"></script>
+	<script type="text/javascript" src="script/editorForFCKEditor.js"></script>
 	<script type="text/javascript" src="script/hotkeys.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
@@ -63,8 +64,6 @@
 
 <body class="contenttooledit" onload="javascript:refreshContentToolBar('tool.contenttool.contentVersionHeader', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '$!unrefreshedContentId', '$!changeTypeId', '$!newContentId'); generateWYSIWYGS();" onkeypress="hotKeys(event);">
 #set( $lvColor = "green")
-
-<script language="javascript" src="script/jsrsClient.js"></script>
 
 <script type="text/javascript">
 <!--
@@ -128,23 +127,7 @@
 			window.location.href="ChangeContentState.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId;
 		}
 	}
-	
-
-	//*******************************************
-	// This is a timer that warns the user about saving his work once in a while so he does not
-	// get a new login-screen next time he saves.
-	//*******************************************
-	var beenWarned = false;
-	var inaktiveTime = 0;
-	var timeout = ($sessionTimeout / 60) * 60 * 1000;
-    function warnForTimeout()
-    {
-       	alert("Please save your work often to avoid loosing it due to the security timeout. If you suspect you might not have saved for " + ($sessionTimeout / 60) + " minutes or so we recommend you copy all of your text before you press save so you don't risk loosing it.");
-		beenWarned = true;
-		inaktiveTime = inaktiveTime + timeout;
-		setTimeout("warnForTimeout()", timeout);
-	}
-		
+			
 	//*******************************************
 	// This is the method that generates the wysiwygs when the page is loaded
 	//*******************************************
@@ -187,9 +170,33 @@
 		window.location.href = url;
 	}
 
+
 	//*******************************************
-	// This is a timer that keeps track of the number of minutes the user has been on the page without saving.
+	// This is a timer that warns the user about saving his work once in a while so he does not
+	// get a new login-screen next time he saves.
 	//*******************************************
+    function warnForTimeout()
+    {
+       	alert("Please save your work often to avoid loosing it due to the security timeout. If you suspect you might not have saved for " + ($sessionTimeout / 60) + " minutes or so we recommend you copy all of your text before you press save so you don't risk loosing it.");
+		beenWarned = true;
+		inaktiveTime = inaktiveTime + timeout;
+		setTimeout("warnForTimeout()", timeout);
+	}
+
+	function doTimer()
+	{
+		count += 1;
+		setTimeout("doTimer();", minute);
+	}
+
+	//*****************************************
+	// Variables
+	//*****************************************
+	
+	var beenWarned = false;
+	var inaktiveTime = 0;
+	var timeout = ($sessionTimeout / 60) * 60 * 1000;
+
 	var textArea;
 	var contentVersionId 	= "$contentVersionId";
 	var repositoryId 		= "$repositoryId";
@@ -198,11 +205,6 @@
 	
 	var count = 0;
 	var minute = 60000;
-	function doTimer()
-	{
-		count += 1;
-		setTimeout("doTimer();", minute);
-	}
 	
 	doTimer();
 	setTimeout("warnForTimeout()", timeout);
@@ -376,6 +378,7 @@
 		#if($activateExtendedEditorOnLoad == "")
 			#set($activateExtendedEditorOnLoad = "false")
 		#end
+
 		<script type="text/javascript">
 		<!--
 			attributesStatus["${attribute.name}ActivateExtendedEditorOnLoad"] = $activateExtendedEditorOnLoad;
@@ -399,12 +402,15 @@
 					    <tr>
 					    	<td align="left">$attributeTitle ("$attribute.name") $attributeDescription </td>
 					    	<td align="right">
-					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false")
+								
+					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
 					    			<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a> 
 								#end
+					    		#*
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableWYSIWYG == "true")
 					    		| <a href="javascript:changeEditor(1, '${attribute.name}');">$ui.getString("tool.contenttool.editorHTMLWYSIWYG")</a> 
 					    		#end
+								*#
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
 					    		| <a href="javascript:changeEditor(2, '${attribute.name}');">$ui.getString("tool.contenttool.editorInfoGlueTemplateEditor")</a>
 								#end
@@ -791,7 +797,7 @@
 					}
 					else if(currentEditorId == 2)
 					{
-						document.getElementById("$attribute.name").value = document.applets("${attribute.name}InfoGlueCodeEditor").getText();
+						document.getElementById("$attribute.name").value = document.${attribute.name}InfoGlueCodeEditor.getText();	
 					}
 	
 	   				#if($attribute.inputType != "digitalAsset")

@@ -35,7 +35,7 @@
 		{
 			//alert("selectBox:" + selectBox);
 			var repositoryId = selectBox.value;
-			var url = "ViewStructureTreeForInlineLink.action!useFCKEditor?repositoryId=" + repositoryId + "&contentId=-1&languageId=1";
+			var url = "ViewStructureTreeForInlineLink!useFCKEditor.action?repositoryId=" + repositoryId;
 			document.location.href = url;
 		}
 		
