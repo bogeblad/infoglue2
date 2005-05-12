@@ -144,7 +144,7 @@
 		inaktiveTime = inaktiveTime + timeout;
 		setTimeout("warnForTimeout()", timeout);
 	}
-	
+		
 	//*******************************************
 	// This is the method that generates the wysiwygs when the page is loaded
 	//*******************************************
@@ -155,18 +155,13 @@
 			for (var i in plainEditors) 
 			{
 				var plainTextAreaName = plainEditors[i];
-				//alert("Creating a textarea for " + plainTextAreaName.name + " = " + i);
-	
-				//alert("Generation in progress..");
+				//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
 	
 				var oFCKeditor = new FCKeditor(plainTextAreaName) ;
 				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
 				oFCKeditor.Config['CustomConfigurationsPath'] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
-				//oFCKeditor.ToolbarSet = "Small";
 				oFCKeditor.ReplaceTextarea();
 				
-				//alert("Generation in progress..");
-										
 				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
 			}
 		#end
