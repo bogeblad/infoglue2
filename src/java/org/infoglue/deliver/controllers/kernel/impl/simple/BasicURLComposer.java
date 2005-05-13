@@ -56,8 +56,12 @@ public class BasicURLComposer extends URLComposer
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
-        
-        if(enableNiceURI.equalsIgnoreCase("true"))
+
+        String useDNSNameInUrls = CmsPropertyHandler.getProperty("useDNSNameInURI");
+        if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
+            useDNSNameInUrls = "false";
+
+        if(enableNiceURI.equalsIgnoreCase("true") || useDNSNameInUrls.equalsIgnoreCase("false"))
         {
 	        StringBuffer sb = new StringBuffer(256);
 	        
@@ -100,6 +104,10 @@ public class BasicURLComposer extends URLComposer
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
         
+        String useDNSNameInUrls = CmsPropertyHandler.getProperty("useDNSNameInURI");
+        if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
+            useDNSNameInUrls = "false";
+
         if(enableNiceURI.equalsIgnoreCase("true"))
         {
 	        StringBuffer sb = new StringBuffer(26);
@@ -122,19 +130,42 @@ public class BasicURLComposer extends URLComposer
         }
         else
         {
-    		if(siteNodeId == null)
-    			siteNodeId = new Integer(-1);
-
-    		if(languageId == null)
-    			languageId = new Integer(-1);
-
-    		if(contentId == null)
-    			contentId = new Integer(-1);
-
-            String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
-            String url = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
-            //CmsLogger.logInfo("url:" + url);
-            return url;
+            if(!useDNSNameInUrls.equalsIgnoreCase("false"))
+            {
+	    		if(siteNodeId == null)
+	    			siteNodeId = new Integer(-1);
+	
+	    		if(languageId == null)
+	    			languageId = new Integer(-1);
+	
+	    		if(contentId == null)
+	    			contentId = new Integer(-1);
+	
+	            String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
+	            String url = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
+	            //CmsLogger.logInfo("url:" + url);
+	            return url;
+            }
+            else
+            {
+                String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+    	        
+                if(siteNodeId == null)
+	    			siteNodeId = new Integer(-1);
+	
+	    		if(languageId == null)
+	    			languageId = new Integer(-1);
+	
+	    		if(contentId == null)
+	    			contentId = new Integer(-1);
+	
+	            String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
+	            System.out.println("servletContext:" + servletContext);
+	            String url = servletContext + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
+	            System.out.println("url:" + url);
+	            //CmsLogger.logInfo("url:" + url);
+	            return url;            
+            }
         }
     }
 
