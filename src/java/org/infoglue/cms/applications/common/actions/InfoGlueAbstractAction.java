@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.common.actions;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
@@ -252,6 +253,15 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
         return CmsPropertyHandler.getProperty("cmsBaseUrl");
     }
     
+    public Locale getLocale()
+    {
+        return this.getSession().getLocale();
+    }
+    
+    public String getLanguageCode()
+    {
+        return this.getSession().getLocale().getLanguage();
+    }
     
 	//--------------------------------------------------------------------------
 	// Database/Transaction specific operations

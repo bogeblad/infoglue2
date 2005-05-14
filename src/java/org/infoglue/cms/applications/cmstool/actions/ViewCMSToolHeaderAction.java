@@ -23,11 +23,16 @@
 
 package org.infoglue.cms.applications.cmstool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * This class implements the action class for the base fram for the entire tool.
@@ -56,6 +61,25 @@ public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
 		return this.getInfoGluePrincipal().getName();
 	}
   	
+	public List getToolLocales()
+	{
+	    List toolLocales = new ArrayList();
+	    
+	    int index = 0;
+	    String languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
+	    while(languageCode != null)
+	    {
+	        Locale locale = new java.util.Locale(languageCode);
+	        if(locale != null)
+	            toolLocales.add(locale);
+	        
+	        index++;
+	        languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
+	    }
+	    
+	    return toolLocales;
+	}
+	
     public String doExecute() throws Exception
     {
         return "success";
