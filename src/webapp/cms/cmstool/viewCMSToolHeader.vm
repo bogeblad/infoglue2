@@ -172,7 +172,13 @@
 <div style="RIGHT:15px; position:absolute; TOP:7px; visibility:visble; z-index:0">
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
-	<td align="right" colspan="5" valign="top"><a href="ViewCMSTool.action?languageCode=se" target="_top" class="whitelabel">Svenska</a> <a href="ViewCMSTool.action?languageCode=en" target="_top" class="whitelabel">English</a></td>
+	<td align="right" colspan="5" valign="top">
+		<a href="ViewCMSTool.action?languageCode=sv" target="_top" class="whitelabel">Svenska</a> |
+		<a href="ViewCMSTool.action?languageCode=en" target="_top" class="whitelabel">English</a>
+		#foreach($toolLocale in $toolLocales)
+			| <a href="ViewCMSTool.action?languageCode=$toolLocale.language" target="_top" class="whitelabel">$toolLocale.displayName</a>
+		#end
+	</td>
 </tr>
 <tr>
 	<td align="right" colspan="5" valign="top"><image src="images/$ui.getString("images.header.loggedInAsLabel")" width="119" height="13"><image src="images/trans.gif" width="3" height="13">$userName</td>

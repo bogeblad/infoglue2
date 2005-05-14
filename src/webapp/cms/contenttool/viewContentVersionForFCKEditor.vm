@@ -143,6 +143,8 @@
 				var oFCKeditor = new FCKeditor(plainTextAreaName) ;
 				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
 				oFCKeditor.Config['CustomConfigurationsPath'] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
+				oFCKeditor.Config["AutoDetectLanguage"] = false ;
+				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
 				oFCKeditor.ReplaceTextarea();
 				
 				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
