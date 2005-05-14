@@ -1,4 +1,4 @@
-var FCKUndo = new Object() ;
+﻿var FCKUndo = new Object() ;
 
 FCKUndo.SaveUndoStep = function()
 {}

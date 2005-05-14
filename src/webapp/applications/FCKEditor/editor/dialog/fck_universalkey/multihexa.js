@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
@@ -231,8 +231,8 @@ function arkey(a) {
 		cont=event.srcElement ;
 		if (keyCode>64 && keyCode<91) {
 			entry=false;
-			source='ش لاؤ ي ث ب ل ا ه ت ن م ة ى خ ح ض ق س �? ع ر ص ء غ ئ ';
-			shsource='�? لآ} ] �? [ لأأ ÷ ـ ، /   آ × ؛ َ ٌ �? لإ  { ً ْ إ ~'; 
+			source='ش لاؤ ي ث ب ل ا ه ت ن م ة ى خ ح ض ق س ف ع ر ص ء غ ئ ';
+			shsource='ِ لآ} ] ُ [ لأأ ÷ ـ ، /   آ × ؛ َ ٌ ٍ لإ  { ً ْ إ ~'; 
 
 			if (event.shiftKey) cont.value += shsource.substr((keyCode-64)*2-2,2);
 			else

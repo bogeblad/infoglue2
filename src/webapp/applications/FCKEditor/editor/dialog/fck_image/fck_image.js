@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
@@ -71,36 +71,9 @@ function UpdateOriginal( resetSize )
 
 	oImageOriginal.src = GetE('imgPreview').src ;
 }
-/*
+
 window.onload = function()
 {
-	alert("onload:" + document.location.href);
-	alert("divLnkBrowseServer:" + document.getElementById("divLnkBrowseServer"));
-	// Translate the dialog box texts.
-	oEditor.FCKLanguageManager.TranslatePage(document) ;
-
-	GetE('btnLockSizes').title = oEditor.FCKLang.DlgImgLockRatio ;
-	GetE('btnResetSize').title = oEditor.FCKLang.DlgBtnResetSize ;
-
-	// Load the selected element information (if any).
-	LoadSelection() ;
-
-	// Show/Hide the "Browse Server" button.
-	GetE('tdBrowse').style.display				= FCKConfig.ImageBrowser	? '' : 'none' ;
-	GetE('divLnkBrowseServer').style.display	= FCKConfig.LinkBrowser		? '' : 'none' ;
-
-	UpdateOriginal() ;
-
-	window.parent.SetAutoSize( true ) ;
-
-	// Activate the "OK" button.
-	window.parent.SetOkButton( true ) ;
-}
-*/
-function loaded()
-{
-	//alert("onload:" + document.location.href);
-	//alert("divLnkBrowseServer:" + document.getElementById("divLnkBrowseServer"));
 	// Translate the dialog box texts.
 	oEditor.FCKLanguageManager.TranslatePage(document) ;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
@@ -86,7 +86,7 @@ Form			: "Formulário",
 Checkbox		: "Caixa de Seleção",
 RadioButton		: "Botão de Opção",
 TextField		: "Caixa de Texto",
-Textarea		: "�?rea de Texto",
+Textarea		: "Área de Texto",
 HiddenField		: "Campo Oculto",
 Button			: "Botão",
 SelectionField	: "Caixa de Listagem",
@@ -114,7 +114,7 @@ RadioButtonProp		: "Formatar Botão de Opção",
 ImageButtonProp		: "Formatar Botão de Imagem",
 TextFieldProp		: "Formatar Caixa de Texto",
 SelectionFieldProp	: "Formatar Caixa de Listagem",
-TextareaProp		: "Formatar �?rea de Texto",
+TextareaProp		: "Formatar Área de Texto",
 FormProp			: "Formatar Formulário",
 
 FontFormats			: "Normal;Formatado;Endereço;Título 1;Título 2;Título 3;Título 4;Título 5;Título 6",
@@ -146,7 +146,7 @@ DlgGenLangDirRtl	: "Direita para Esquerda (RTL)",
 DlgGenLangCode		: "Idioma",
 DlgGenAccessKey		: "Chave de Acesso",
 DlgGenName			: "Nome",
-DlgGenTabIndex		: "�?ndice de Tabulação",
+DlgGenTabIndex		: "Índice de Tabulação",
 DlgGenLongDescr		: "Descrição da URL",
 DlgGenClass			: "Classe de Folhas de Estilo",
 DlgGenTitle			: "Título",

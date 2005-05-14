@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
@@ -53,7 +53,7 @@ About				: "FCKeditor névjegy",
 Bold				: "Félkövér",
 Italic				: "Dõlt",
 Underline			: "Aláhúzott",
-StrikeThrough		: "�?thúzott",
+StrikeThrough		: "Áthúzott",
 Subscript			: "Alsó index",
 Superscript			: "Felsõ index",
 LeftJustify			: "Balra",
@@ -80,7 +80,7 @@ Source				: "Forráskód",
 Find				: "Keresés",
 Replace				: "Csere",
 SpellCheck			: "Helyesírásellenőrzés",
-UniversalKeyboard	: "�?ltalános billentyűzet",
+UniversalKeyboard	: "Általános billentyűzet",
 
 Form			: "Űrlap",
 Checkbox		: "Jelölőnégyzet",
@@ -218,7 +218,7 @@ DlgLnkPopResize		: "Méretezhetõ",
 DlgLnkPopLocation	: "Location Bar",
 DlgLnkPopMenu		: "Menü sor",
 DlgLnkPopScroll		: "Gördítõsáv",
-DlgLnkPopStatus		: "�?llapotsor",
+DlgLnkPopStatus		: "Állapotsor",
 DlgLnkPopToolbar	: "Eszköztár",
 DlgLnkPopFullScrn	: "Teljes képernyõ (IE)",
 DlgLnkPopDependent	: "Netscape sajátosság",
@@ -326,7 +326,7 @@ DlgAnchorErrorName	: "Kérem adja meg a horgony nevét",
 
 // Speller Pages Dialog
 DlgSpellNotInDic		: "Nincs a könyvtárban",
-DlgSpellChangeTo		: "�?tváltás",
+DlgSpellChangeTo		: "Átváltás",
 DlgSpellBtnIgnore		: "Kihagyja",
 DlgSpellBtnIgnoreAll	: "Összeset kihagyja",
 DlgSpellBtnReplace		: "Csere",
@@ -403,7 +403,7 @@ DlgLstTypeSRoman	: "Kis római számok (i, ii, iii)",
 DlgLstTypeLRoman	: "Nagy római számok (I, II, III)",
 
 // Document Properties Dialog
-DlgDocGeneralTab	: "�?ltalános",
+DlgDocGeneralTab	: "Általános",
 DlgDocBackTab		: "Háttér",
 DlgDocColorsTab		: "Színek és margók",
 DlgDocMetaTab		: "Meta adatok",
