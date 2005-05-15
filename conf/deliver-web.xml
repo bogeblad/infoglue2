@@ -37,16 +37,16 @@
         </init-param>
     </filter>
 
+	<filter-mapping>
+		<filter-name>Set Character Encoding</filter-name>
+		<url-pattern>*.action</url-pattern>
+	</filter-mapping>
+
 	<!-- added by portal in order to wrap the request -->
     <filter-mapping>
         <filter-name>PortalFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping> 
-
-	<filter-mapping>
-		<filter-name>Set Character Encoding</filter-name>
-		<url-pattern>*.action</url-pattern>
-	</filter-mapping>
 
     <filter-mapping>
         <filter-name>ViewPageFilter</filter-name>
