@@ -187,11 +187,21 @@
 	<td colspan="5"><image src="images/trans.gif" width="1" height="5"></td>
 </tr>
 <tr>
+	<td width="40%">&nbsp;</td>
+	<td align="right" colspan="4">
+		<a href="javascript:logout();"><image src="images/$ui.getString("images.header.logoutLabel")" border="0"></a>
+		<image src="images/trans.gif" width="10" height="13">
+		<a href="javascript:openToolWindow();"><image src="images/$ui.getString("images.header.newWindowLabel")" border="0"></a>
+		<image src="images/trans.gif" width="10" height="13">
+		<image src="images/$ui.getString("images.header.helpLabel")">
+	</td>
+<!--
 	<td><a href="javascript:logout();"><image src="images/$ui.getString("images.header.logoutLabel")" border="0"></a></td>
 	<td><image src="images/trans.gif" width="20" height="13"></td>
 	<td><a href="javascript:openToolWindow();"><image src="images/$ui.getString("images.header.newWindowLabel")" border="0"></a></td>
 	<td><image src="images/trans.gif" width="20" height="13"></td>
 	<td><image src="images/$ui.getString("images.header.helpLabel")"></td>
+-->
 </tr>
 </table>
 </div>
