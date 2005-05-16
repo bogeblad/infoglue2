@@ -231,6 +231,7 @@ public class Deploy {
             }
 
             Unmarshaller unmarshaller = new Unmarshaller(pdmXml);
+            unmarshaller.setWhitespacePreserve(true);
             unmarshaller.setIgnoreExtraElements(true);
             unmarshaller.setIgnoreExtraAttributes(true);
 
@@ -250,6 +251,7 @@ public class Deploy {
 
                 // modified by YCLI: START :: to ignore extra elements and
                 // attributes
+                unmarshallerWeb.setWhitespacePreserve(true);
                 unmarshallerWeb.setIgnoreExtraElements(true);
                 unmarshallerWeb.setIgnoreExtraAttributes(true);
                 // modified by YCLI: END

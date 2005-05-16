@@ -181,6 +181,7 @@ public class UpdateController
 			 try 
 			 {
 				Unmarshaller unmar = new Unmarshaller(mapping);
+				unmar.setWhitespacePreserve(true);
 				
 				// Fix url to updateserver, so that it filters
 				// packages allready installed locally
@@ -234,6 +235,7 @@ public class UpdateController
 		try 
 		{
 			unmar = new Unmarshaller(mapping);
+			unmar.setWhitespacePreserve(true);
 			coll = (UpdateCollection) unmar.unmarshal(new InputSource(new FileReader(path + "installed.xml")));
 		} 
 		catch (MarshalException e2) 
@@ -262,6 +264,7 @@ public class UpdateController
 			Unmarshaller unmar = null;
 			try {
 				unmar = new Unmarshaller(mapping);
+				unmar.setWhitespacePreserve(true);
 			} catch (MappingException e1) {
 				e1.printStackTrace();
 			}
@@ -308,6 +311,7 @@ public class UpdateController
 		Unmarshaller unmar = null;
 		try {
 			unmar = new Unmarshaller(mapping);
+			unmar.setWhitespacePreserve(true);
 		} catch (MappingException e1) {
 			e1.printStackTrace();
 		}

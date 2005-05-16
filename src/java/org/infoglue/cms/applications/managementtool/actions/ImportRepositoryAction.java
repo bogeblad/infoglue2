@@ -128,6 +128,7 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 			//Reader reader = new FileReader(file);
 
 			Unmarshaller unmarshaller = new Unmarshaller(map);
+			unmarshaller.setWhitespacePreserve(true);
 			InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
 			SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
 			CmsLogger.logInfo(readSiteNode.getName());

@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 //import org.exolab.castor.jdo.CacheManager;
+import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
@@ -377,10 +378,10 @@ public class CacheController extends Thread
 
 		try
 		{
-		    //CacheManager manager = db.getCacheManager();
-		    //manager.expireCache(type, ids);
-		    Class[] types = {type};
-		    db.expireCache(types, ids);
+		    CacheManager manager = db.getCacheManager();
+		    manager.expireCache(type, ids);
+		    //Class[] types = {type};
+		    //db.expireCache(types, ids);
 		}
 		catch(Exception e)
 		{
@@ -400,9 +401,9 @@ public class CacheController extends Thread
 		{
 			Class[] types = {c};
 			Class[] ids = {null};
-			//CacheManager manager = db.getCacheManager();
-			//manager.expireCache(types);
-			db.expireCache(types, null);
+			CacheManager manager = db.getCacheManager();
+			manager.expireCache(types);
+			//db.expireCache(types, null);
 		}
 		catch(Exception e)
 		{
