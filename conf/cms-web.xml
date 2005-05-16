@@ -209,6 +209,11 @@
 		<session-timeout>30</session-timeout>
 	</session-config>
 
+	<mime-mapping>
+        <extension>js</extension>
+        <mime-type>text/javascript;charset=UTF-8</mime-type>
+    </mime-mapping>
+	
 	<welcome-file-list>
 		<welcome-file>index-cms.html</welcome-file>
 	</welcome-file-list>
