@@ -60,7 +60,12 @@
 	* fileset for the deliver version of mapping.xml.
 	-->
 	<fileset id="deliver.mapping" dir="${conf}/deliver" includes="mapping.xml,oracle_mapping.xml"/>
-	
+
+	<!--
+	* fileset for the deliver version of webwork.properties.
+	-->
+	<fileset id="deliver.webwork" dir="${conf}/deliver" includes="webwork.properties"/>
+
 	<!--
 	* paths
 	-->
@@ -142,7 +147,7 @@
 			</filterset>
 		</copy>
 		<copy todir="${build.classes}">
-			<fileset dir="${conf}/cms" includes="mapping.xml,oracle_mapping.xml"/>
+			<fileset dir="${conf}/cms" includes="mapping.xml,oracle_mapping.xml,webwork.properties"/>
 		</copy>
 		<copy todir="${build.classes}">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
@@ -217,6 +222,12 @@
 									excludes="pluto-1.0.1-rc2.jar,portlet-api-1.0.jar"/>
 			<lib refid="core.libs"/>
 			<lib refid="jdbc.libs"/>
+			<zipfileset dir="${conf}/cms"
+                        prefix="WEB-INF/classes"
+                        includes="webwork.properties"/>
+			<zipfileset dir="${conf}/data/xml"
+                        prefix="WEB-INF/classes"
+                        includes="*.xml"/>
 			<zipfileset dir="${conf}/data"
                         prefix="WEB-INF/data"
                         includes="**/*"/>
@@ -246,6 +257,12 @@
 									excludes="pluto-1.0.1-rc2.jar,portlet-api-1.0.jar"/>
 			<lib refid="core.libs"/>
 			<lib refid="jdbc.libs"/>
+			<zipfileset dir="${conf}/deliver"
+                        prefix="WEB-INF/classes"
+                        includes="webwork.properties"/>
+			<zipfileset dir="${conf}/data/xml"
+                        prefix="WEB-INF/classes"
+                        includes="*.xml"/>
 			<zipfileset dir="${conf}/data"
                         prefix="WEB-INF/data"
                         includes="**/*"/>
