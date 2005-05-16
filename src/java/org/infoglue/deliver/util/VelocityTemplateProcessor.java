@@ -52,30 +52,38 @@ public class VelocityTemplateProcessor
 	
 	public void renderTemplate(Map params, PrintWriter pw, String templateAsString) throws Exception 
 	{
-		Timer timer = new Timer();
-	    //timer.setActive(false);
+		try
+		{
+		    Timer timer = new Timer();
+		    timer.setActive(false);
+			
+		    if(templateAsString.indexOf("<%") > -1)
+		    {
+		    	dispatchJSP(params, pw, templateAsString);
+		    }
+		    else
+		    {
+				Velocity.init();
 		
-	    if(templateAsString.indexOf("<%") > -1)
-	    {
-	    	dispatchJSP(params, pw, templateAsString);
-	    }
-	    else
-	    {
-			Velocity.init();
-	
-	        VelocityContext context = new VelocityContext();
-	        Iterator i = params.keySet().iterator();
-	        while(i.hasNext())
-	        {
-	        	String key = (String)i.next();
-	            context.put(key, params.get(key));
-	        }
-	        
-	        Reader reader = new StringReader(templateAsString);
-	        boolean finished = Velocity.evaluate(context, pw, "Generator Error", reader);        
-	    }
-        
-        timer.printElapsedTime("End renderTemplate");
+		        VelocityContext context = new VelocityContext();
+		        Iterator i = params.keySet().iterator();
+		        while(i.hasNext())
+		        {
+		        	String key = (String)i.next();
+		            context.put(key, params.get(key));
+		        }
+		        
+		        Reader reader = new StringReader(templateAsString);
+		        boolean finished = Velocity.evaluate(context, pw, "Generator Error", reader);        
+		    }
+
+		    timer.printElapsedTime("End renderTemplate");
+		}
+		catch(Exception e)
+		{
+		    System.out.println("templateAsString:" + templateAsString);
+		    throw e;
+		}
 	}
 
 	/**
