@@ -49,11 +49,11 @@ FCKConfig.StylesXmlPath	= '$request.contextPath/WYSIWYGProperties!viewStylesXML.
 FCKConfig.SpellChecker			= 'ieSpell' ;	// 'ieSpell' | 'SpellerPages'
 FCKConfig.IeSpellDownloadUrl	= 'http://www.iespell.com/rel/ieSpellSetup211325.exe' ;
 FCKConfig.LinkBrowser = true ;
-FCKConfig.LinkBrowserURL = "$request.contextPath/ViewLinkDialog!viewLinkDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=1" ;
+FCKConfig.LinkBrowserURL = "$request.contextPath/ViewLinkDialog!viewLinkDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")" ;
 FCKConfig.LinkBrowserWindowWidth	= "770" ;
 FCKConfig.LinkBrowserWindowHeight	= "660" ;
 FCKConfig.ImageBrowser = true ;
-FCKConfig.ImageBrowserURL = "$request.contextPath/ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=1";	
+FCKConfig.ImageBrowserURL = "$request.contextPath/ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")";	
 FCKConfig.ImageBrowserWindowWidth  = "750" ;
 FCKConfig.ImageBrowserWindowHeight = "600" ;
 FCKConfig.SmileyPath	= FCKConfig.BasePath + 'images/smiley/msn/' ;
