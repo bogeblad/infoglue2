@@ -61,6 +61,7 @@ import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.css.CSSHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 import com.opensymphony.module.propertyset.*;
@@ -94,6 +95,8 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	
 	public String getWYSIWYGProperties() throws Exception
 	{
+	    Timer timer = new Timer();
+	    
 	    System.out.println("Getting WYSIWYGProperties for principal...");
 	    this.WYSIWYGProperties = getPrincipalPropertyValue("WYSIWYGConfig", false);
 	    System.out.println("WYSIWYGProperties:" + WYSIWYGProperties);
@@ -105,6 +108,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 		    
 		    byte[] WYSIWYGConfigBytes = ps.getData("repository_" + this.repositoryId + "_WYSIWYGConfig");
+		    System.out.println("WYSIWYGConfigBytes:" + WYSIWYGConfigBytes);
 		    if(WYSIWYGConfigBytes != null)
 		    {
 		    	this.WYSIWYGProperties = new String(WYSIWYGConfigBytes);
@@ -119,19 +123,24 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 		new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties);
 		this.WYSIWYGProperties = tempString.toString();
 
+	    this.getResponse().setContentType("text/javascript");
+
+		timer.printElapsedTime("getWYSIWYGProperties took:");
 	    return this.WYSIWYGProperties;
 	}
 
 	/**
-	 * This method gets the WYSIWYG Properties
+	 * This method gets the Styles XML
 	 */
 	
 	public String getStylesXML() throws Exception
 	{
+	    Timer timer = new Timer();
+
 	    System.out.println("Getting StylesXML for principal...");
 	    this.StylesXML = getPrincipalPropertyValue("StylesXML", false);
-	    
-	    if(this.StylesXML == null || this.WYSIWYGProperties.equalsIgnoreCase("") && this.repositoryId != null)
+	    System.out.println("this.StylesXML:" + this.StylesXML);
+	    if(this.StylesXML == null || this.StylesXML.equalsIgnoreCase("") && this.repositoryId != null)
 	    {
 		    System.out.println("Getting StylesXML for repository...");
 			Map args = new HashMap();
@@ -144,7 +153,9 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 		    	this.StylesXML = new String(StylesXMLBytes);
 		    }
 	    }
-	    
+
+		timer.printElapsedTime("getStylesXML took:");
+
 	    this.getResponse().setContentType("text/xml");
 	    return this.StylesXML;
 	}
