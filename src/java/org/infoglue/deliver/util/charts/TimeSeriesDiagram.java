@@ -182,7 +182,6 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 		{
 			Element serieElement = (Element)seriesIterator.next();
 			String serieName = serieElement.attributeValue("name");
-			//System.out.println("SerieName:" + serieName);
 			
 			TimeSeries s1 = null;
 			if(this.timeGranulariry.equalsIgnoreCase("Month"))
@@ -201,10 +200,6 @@ public class TimeSeriesDiagram implements XMLDataDiagram
 				String year = yearElement.getText();
 				String time = timeElement.getText();
 				String value = valueElement.getText();
-				//System.out.println("key:" + key);
-				//System.out.println("year:" + year);
-				//System.out.println("month:" + month);
-				//System.out.println("ppd:" + ppd);
 				
 				if(this.timeGranulariry.equalsIgnoreCase("Month"))
 					s1.add(new Month(new Integer(time).intValue(), new Integer(year).intValue()), new Float(value));

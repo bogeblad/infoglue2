@@ -25,6 +25,7 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.filters.FilterConstants;
@@ -160,9 +161,9 @@ public class BasicURLComposer extends URLComposer
 	    			contentId = new Integer(-1);
 	
 	            String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
-	            System.out.println("servletContext:" + servletContext);
+	            CmsLogger.logInfo("servletContext:" + servletContext);
 	            String url = servletContext + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
-	            System.out.println("url:" + url);
+	            CmsLogger.logInfo("url:" + url);
 	            //CmsLogger.logInfo("url:" + url);
 	            return url;            
             }

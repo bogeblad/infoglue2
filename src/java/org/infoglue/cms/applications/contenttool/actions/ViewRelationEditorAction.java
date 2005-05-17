@@ -276,12 +276,7 @@ public abstract class ViewRelationEditorAction extends WebworkAbstractAction
 	 * Updates the qualifyer in the EntityProperties stucture.
 	 */
 	public String doUpdateQualifyerInEntityProperties() throws Exception
-	{
-	    System.out.println("AAAAAAAAAAAAAA");
-	    System.out.println("entityName:" + this.entityName);
-	    System.out.println("entityId:" + this.entityId);
-	    System.out.println("getAttributeName:" + this.getAttributeName());
-	    
+	{	    
 	    if(this.entityName.equalsIgnoreCase(UserProperties.class.getName()))
 	        UserPropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
 	    else if(this.entityName.equalsIgnoreCase(RoleProperties.class.getName()))

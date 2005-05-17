@@ -86,7 +86,7 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
         	}
             else
             {
-                System.out.println("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
+                CmsLogger.logInfo("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
             }
 			
 			CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);

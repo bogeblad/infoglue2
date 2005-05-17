@@ -159,7 +159,7 @@ public class SearchController extends BaseController
 			}
 			    
 			String sql = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 AND cv.owningContent.repository.repositoryId = $3 " + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
-			System.out.println("sql:" + sql);
+			CmsLogger.logInfo("sql:" + sql);
 			OQLQuery oql = db.getOQLQuery(sql);
 			oql.bind(new Boolean(true));
 			oql.bind("%" + searchString + "%");
@@ -218,13 +218,13 @@ public class SearchController extends BaseController
 			for(int i=0; i<contentVersionIds.length; i++)
 			{
 			    String contentVersionId = contentVersionIds[i];
-			    System.out.println("contentVersionId:" + contentVersionId);
+			    CmsLogger.logInfo("contentVersionId:" + contentVersionId);
 			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(contentVersionIds[i]), db);
 			    if(contentVersion.getStateId().intValue() != ContentVersionVO.WORKING_STATE.intValue())
 			    {
 		            List events = new ArrayList();
 			        contentVersion = ContentStateController.changeState(contentVersion.getId(), ContentVersionVO.WORKING_STATE, "Automatic by the replace function", infoGluePrincipal, null, db, events);
-			        System.out.println("Setting the version to working before replacing string...");
+			        CmsLogger.logInfo("Setting the version to working before replacing string...");
 			    }
 			    
 			    String value = contentVersion.getVersionValue();

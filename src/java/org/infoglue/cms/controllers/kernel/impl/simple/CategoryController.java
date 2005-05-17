@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.5 2005/04/28 07:59:51 mattias Exp $
+ * $Id: CategoryController.java,v 1.6 2005/05/17 16:01:36 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -115,22 +115,16 @@ public class CategoryController extends BaseController
 	    CategoryVO categoryVO = null;
 	    
 	    String[] nodes = path.substring(1).split("/");
-        System.out.println("length:" + nodes.length);
-	    
+        
 	    if(nodes.length > 0)
 	    {
 	        List rootCategories = findRootCategories();
 	        String name = nodes[0];
-	        System.out.println("name:" + name);
 	        categoryVO = getCategoryVOWithNameInList(rootCategories, name);
-	        System.out.println("categoryVO:" + categoryVO.getName());
 	        
 	        for(int i = 1; i < nodes.length; i++)
 	        {
-	            System.out.println("i:" + i);
-	            System.out.println("name:" + nodes[i]);
 	            categoryVO = getCategoryVOWithNameInList(findByParent(categoryVO.getId()), nodes[i]);
-		        System.out.println("categoryVO:" + categoryVO.getName());
 		    }
 	    }
 	    
@@ -146,15 +140,13 @@ public class CategoryController extends BaseController
 
 	private CategoryVO getCategoryVOWithNameInList(List categoryVOList, String name)
 	{
-	    System.out.println("categoryVOList:" + categoryVOList.size());
 	    CategoryVO categoryVO = null;
 	    
         Iterator categoryVOListIterator = categoryVOList.iterator();
         while(categoryVOListIterator.hasNext())
         {
             CategoryVO currentCategoryVO = (CategoryVO)categoryVOListIterator.next();
-	        System.out.println("currentCategoryVO:" + currentCategoryVO.getName());
-            if(currentCategoryVO.getName().equalsIgnoreCase(name))
+	        if(currentCategoryVO.getName().equalsIgnoreCase(name))
             {
                 categoryVO = currentCategoryVO;
             	break;

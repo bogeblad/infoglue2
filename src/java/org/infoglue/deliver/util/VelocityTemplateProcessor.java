@@ -26,6 +26,7 @@ package org.infoglue.deliver.util;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.*;
 import org.infoglue.cms.io.FileHelper;
+import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
@@ -81,7 +82,7 @@ public class VelocityTemplateProcessor
 		}
 		catch(Exception e)
 		{
-		    System.out.println("templateAsString:" + templateAsString);
+		    CmsLogger.logWarning("templateAsString:" + templateAsString);
 		    throw e;
 		}
 	}

@@ -33,13 +33,11 @@ public class PropertiesCategoryAction extends ModelAction
 
     public String getReturnAddress()
     {
-        System.out.println("get returnAddress:" + returnAddress);
         return returnAddress;
     }
 
     public void setReturnAddress(String returnAddress)
     {
-        System.out.println("set returnAddress:" + returnAddress);
         this.returnAddress = returnAddress;
     }
 	

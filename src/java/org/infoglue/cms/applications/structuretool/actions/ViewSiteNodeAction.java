@@ -83,7 +83,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	protected void initialize(Integer siteNodeId) throws Exception
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
-		System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
+		CmsLogger.logInfo("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
 		this.repositoryId = this.siteNodeVO.getRepositoryId();
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
@@ -98,7 +98,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		try
 		{
 		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId);
-		    System.out.println("referenceBeanList:" + referenceBeanList.size());
+		    CmsLogger.logInfo("referenceBeanList:" + referenceBeanList.size());
 		}
 		catch(Exception e)
 		{

@@ -124,7 +124,6 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						roles.add(infoGlueRole);
 					}
 	
-					System.out.println("************************:" + systemUser.getGroups().size());
 					Iterator groupListIterator = systemUser.getGroups().iterator();
 					while(groupListIterator.hasNext())
 					{

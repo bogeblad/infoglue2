@@ -353,14 +353,12 @@ public class ContentTypeDefinitionController extends BaseController
 	 */
 	protected List getEnumValues(NodeList nodes)
 	{
-	    System.out.println("nodes:" + nodes.getLength());
-	    
-		List keys = new ArrayList();
+	   List keys = new ArrayList();
 		for(int i = 0; i < nodes.getLength(); i++)
 		{
 		    Node ichild = nodes.item(i);
 		    
-			System.out.println("ichild:" + ichild.getNodeName() + ":" + ichild.getNodeValue());
+		    CmsLogger.logInfo("ichild:" + ichild.getNodeName() + ":" + ichild.getNodeValue());
 			
 			try
 			{
@@ -392,7 +390,7 @@ public class ContentTypeDefinitionController extends BaseController
 				assetKeyDefinition.setImageWidth(imageWidthValue);
 				assetKeyDefinition.setImageHeight(imageHeightValue);
 				
-				System.out.println("Adding assetKeyDefinition " + assetKeyDefinition.getAssetKey());
+				CmsLogger.logInfo("Adding assetKeyDefinition " + assetKeyDefinition.getAssetKey());
 				keys.add(assetKeyDefinition);
 			}
 			catch(Exception e)
@@ -401,7 +399,7 @@ public class ContentTypeDefinitionController extends BaseController
 			}
 		}
 		
-		System.out.println("keys:" + keys.size());
+		CmsLogger.logInfo("keys:" + keys.size());
 		
 		return keys;
 	}

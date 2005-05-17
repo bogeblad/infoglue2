@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
@@ -70,8 +71,8 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 
 	    this.allowedContentTypeNames 	= ps.getString("content_" + this.getContentId() + "_allowedContentTypeNames");
 	    this.defaultContentTypeName		= ps.getString("content_" + this.getContentId() + "_defaultContentTypeName");
-	    System.out.println("allowedContentTypeNames:" + allowedContentTypeNames);
-	    System.out.println("defaultContentTypeName:" + defaultContentTypeName);
+	    CmsLogger.logInfo("allowedContentTypeNames:" + allowedContentTypeNames);
+	    CmsLogger.logInfo("defaultContentTypeName:" + defaultContentTypeName);
     } 
 
     /**
@@ -93,7 +94,7 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
     {
         String allowedContentTypeNames = "";
         String[] allowedContentTypeNameArray = getRequest().getParameterValues("allowedContentTypeName");
-        System.out.println("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
+        CmsLogger.logInfo("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
         for(int i=0; i<allowedContentTypeNameArray.length; i++)
         {
             allowedContentTypeNames += allowedContentTypeNameArray[i] + ","; 

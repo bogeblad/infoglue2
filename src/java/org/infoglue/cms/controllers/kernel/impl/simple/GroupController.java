@@ -113,7 +113,6 @@ public class GroupController extends BaseController
 
 	public void delete(String groupName) throws ConstraintException, SystemException
 	{
-	    System.out.println("groupName:" + groupName);
 		deleteEntity(GroupImpl.class, groupName);
 	}        
 

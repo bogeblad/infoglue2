@@ -110,9 +110,9 @@ public class ViewPageFilter implements Filter {
             
             Integer siteNodeId = null;
             String[] nodeNames = splitString(requestURI, "/");
-            //System.out.println("RepositoryId.: "+repositoryId);
-            //System.out.println("LanguageId...: "+languageId);
-            //System.out.println("RequestURI...: "+requestURI);
+            //CmsLogger.logInfo("RepositoryId.: "+repositoryId);
+            //CmsLogger.logInfo("LanguageId...: "+languageId);
+            //CmsLogger.logInfo("RequestURI...: "+requestURI);
 
             try {
                 InfoGluePrincipal infoGluePrincipal =
@@ -151,7 +151,7 @@ public class ViewPageFilter implements Filter {
 
                 end = System.currentTimeMillis();
 
-                System.out.println(
+                CmsLogger.logInfo(
                     "Mapped URI "
                         + requestURI
                         + " --> "
@@ -162,7 +162,7 @@ public class ViewPageFilter implements Filter {
 
                 HttpServletRequest wrappedHttpRequest =
                     prepareRequest(httpRequest, siteNodeId, languageId);
-                //System.out.println("wrappedHttpRequest:" + wrappedHttpRequest.getRequestURI() + "?" + wrappedHttpRequest.getQueryString());
+                //CmsLogger.logInfo("wrappedHttpRequest:" + wrappedHttpRequest.getRequestURI() + "?" + wrappedHttpRequest.getQueryString());
                 wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(
                     wrappedHttpRequest,
                     httpResponse);
@@ -194,14 +194,14 @@ public class ViewPageFilter implements Filter {
     {
         if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) 
         {
-            System.out.println("Fetching repositoryId from session");
+            CmsLogger.logInfo("Fetching repositoryId from session");
             return (Integer) session.getAttribute(FilterConstants.REPOSITORY_ID);
         }
 
-        System.out.println("Trying to lookup repositoryId");
+        CmsLogger.logInfo("Trying to lookup repositoryId");
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
-        System.out.println("serverName:" + serverName);
+        CmsLogger.logInfo("serverName:" + serverName);
 
         RepositoryVO repository = null;
         
@@ -214,12 +214,11 @@ public class ViewPageFilter implements Filter {
     		try 
             {
                 repository = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryFromServerName(db, serverName, portNumber);
-                System.out.println("repository:" + repository);
+                CmsLogger.logInfo("repository:" + repository);
             } 
             catch (Exception e) 
             {
                 CmsLogger.logInfo("Failed to map servername " + serverName + " to a repository");
-                System.out.println("Failed to map servername " + serverName + " to a repository");
             }
 
             if (repository == null) 
@@ -229,7 +228,6 @@ public class ViewPageFilter implements Filter {
                     BaseDeliveryController.beginTransaction(db);
 
                     repository = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db);
-                    System.out.println("masterRepository:" + repository);
                     
                     BaseDeliveryController.closeTransaction(db);
                 } 
@@ -259,7 +257,7 @@ public class ViewPageFilter implements Filter {
         Integer languageId = null;
         if (request.getParameter("languageId") != null) 
         {
-            System.out.println("Language is explicitely given in request");
+            CmsLogger.logInfo("Language is explicitely given in request");
             try 
             {
                 languageId = Integer.valueOf(request.getParameter("languageId"));
@@ -272,11 +270,11 @@ public class ViewPageFilter implements Filter {
             return languageId;
 
         if (session.getAttribute(FilterConstants.LANGUAGE_ID) != null) {
-            System.out.println("Fetching languageId from session");
+            CmsLogger.logInfo("Fetching languageId from session");
             return (Integer) session.getAttribute(FilterConstants.LANGUAGE_ID);
         }
 
-        System.out.println("Looking for languageId for repository " + repositoryId);
+        CmsLogger.logInfo("Looking for languageId for repository " + repositoryId);
         Locale requestLocale = request.getLocale();
         
         Database db = CastorDatabaseService.getDatabase();
@@ -294,8 +292,8 @@ public class ViewPageFilter implements Filter {
 	                for (int i = 0; i < availableLanguagesForRepository.size(); i++) 
 	                {
 	                    LanguageVO language = (LanguageVO) availableLanguagesForRepository.get(i);
-	                    System.out.println("language:" + language.getLanguageCode());
-	                    System.out.println("browserLanguage:" + requestLocale.getLanguage());
+	                    CmsLogger.logInfo("language:" + language.getLanguageCode());
+	                    CmsLogger.logInfo("browserLanguage:" + requestLocale.getLanguage());
 	                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage())) {
 	                        languageId = language.getLanguageId();
 	                    }
@@ -377,9 +375,9 @@ public class ViewPageFilter implements Filter {
             if (requestParameters.get("contentId") == null)
                 requestParameters.put("contentId", new String[] { String.valueOf(-1)});
 
-            System.out.println("siteNodeId:" + siteNodeId);
-            System.out.println("languageId:" + languageId);
-            System.out.println("contentId:" + requestParameters.get("contentId"));
+            //CmsLogger.logInfo("siteNodeId:" + siteNodeId);
+            //CmsLogger.logInfo("languageId:" + languageId);
+            //CmsLogger.logInfo("contentId:" + requestParameters.get("contentId"));
         }
 
         public String getParameter(String s) {

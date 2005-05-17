@@ -66,7 +66,6 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 	    super.initialize();
 				
 		CmsLogger.logInfo("groupName:" + groupName);
-		System.out.println("groupName:" + groupName);
 
 		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(groupName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
@@ -83,7 +82,8 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 		{
 			this.setContentTypeDefinitionId(this.getContentTypeDefinitionVO().getContentTypeDefinitionId());
 		}
-		System.out.println("this.groupPropertiesVO:" + this.groupPropertiesVO);
+		
+		CmsLogger.logInfo("this.groupPropertiesVO:" + this.groupPropertiesVO);
 		
 		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
 	

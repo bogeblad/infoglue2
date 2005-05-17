@@ -124,7 +124,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 						is = new FileInputStream(file);    	
 						
 						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
-						System.out.println("fileUploadMaximumSize:" + fileUploadMaximumSize);
+						CmsLogger.logInfo("fileUploadMaximumSize:" + fileUploadMaximumSize);
 						
 						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
 						{

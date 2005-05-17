@@ -84,8 +84,7 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 	    super.initialize();
 				
 		CmsLogger.logInfo("roleName:" + roleName);
-		System.out.println("roleName:" + roleName);
-
+		
 		List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(roleName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
 			this.setContentTypeDefinitionVO((ContentTypeDefinitionVO)contentTypeDefinitionVOList.get(0));
@@ -101,7 +100,8 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 		{
 			this.setContentTypeDefinitionId(this.getContentTypeDefinitionVO().getContentTypeDefinitionId());
 		}
-		System.out.println("this.rolePropertiesVO:" + this.rolePropertiesVO);
+		
+		CmsLogger.logInfo("this.rolePropertiesVO:" + this.rolePropertiesVO);
 		
 		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
 	

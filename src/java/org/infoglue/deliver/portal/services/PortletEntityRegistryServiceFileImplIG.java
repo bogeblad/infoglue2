@@ -42,7 +42,7 @@ import org.infoglue.deliver.portal.om.PortletApplicationEntityListImpl;
 /**
  * @author joran
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PortletEntityRegistryServiceFileImplIG extends PortletEntityRegistryService {
     private static final Log LOG = LogFactory.getLog(PortletEntityRegistryServiceFileImplIG.class);
@@ -101,7 +101,7 @@ public class PortletEntityRegistryServiceFileImplIG extends PortletEntityRegistr
      */
     public void store() throws IOException {
         String xml = builder.toXML(applications);
-        System.out.println(xml);
+        LOG.info(xml);
     }
 
     /* (non-Javadoc)

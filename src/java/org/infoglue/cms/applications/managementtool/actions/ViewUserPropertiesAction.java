@@ -66,8 +66,7 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 	    super.initialize();
 				
 		CmsLogger.logInfo("userName:" + userName);
-		System.out.println("userName:" + userName);
-
+		
 		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(userName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
 			this.setContentTypeDefinitionVO((ContentTypeDefinitionVO)contentTypeDefinitionVOList.get(0));
@@ -83,7 +82,8 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 		{
 			this.setContentTypeDefinitionId(this.getContentTypeDefinitionVO().getContentTypeDefinitionId());
 		}
-		System.out.println("this.userPropertiesVO:" + this.userPropertiesVO);
+		
+		CmsLogger.logInfo("this.userPropertiesVO:" + this.userPropertiesVO);
 		
 		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
 	

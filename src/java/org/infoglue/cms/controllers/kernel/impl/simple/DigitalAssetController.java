@@ -1055,9 +1055,6 @@ public class DigitalAssetController extends BaseController
 	{
 		long timer = System.currentTimeMillis();
 
-		System.out.println("fileName:" + fileName);
-	    System.out.println("filePath:" + filePath);
-		
 		File outputFile = new File(filePath + File.separator + fileName);
 		if(outputFile.exists())
 		{

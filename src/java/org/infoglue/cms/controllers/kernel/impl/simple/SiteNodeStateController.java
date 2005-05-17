@@ -285,11 +285,11 @@ public class SiteNodeStateController extends BaseController
 		if(serviceBindingId != null)
 		{
 			List boundContents = ContentController.getBoundContents(serviceBindingId); 
-			System.out.println("boundContents:" + boundContents.size());
+			CmsLogger.logInfo("boundContents:" + boundContents.size());
 			if(boundContents.size() > 0)
 			{
 				ContentVO contentVO = (ContentVO)boundContents.get(0);
-				System.out.println("contentVO:" + contentVO.getId());
+				CmsLogger.logInfo("contentVO:" + contentVO.getId());
 				
 				Iterator languageIterator = languages.iterator();
 				while(languageIterator.hasNext())
@@ -297,21 +297,21 @@ public class SiteNodeStateController extends BaseController
 					Language language = (Language)languageIterator.next();
 					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
 					
-					System.out.println("language:" + language.getId());
+					CmsLogger.logInfo("language:" + language.getId());
 					
 					if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
 						throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
 	
 					if(contentVersion != null)
 					{
-					    System.out.println("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getStateId());
-					    System.out.println("State wanted:" + stateId);
+					    CmsLogger.logInfo("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getStateId());
+					    CmsLogger.logInfo("State wanted:" + stateId);
 					}
 					
 					if(contentVersion != null && contentVersion.getStateId().intValue() == siteNodeVersion.getStateId().intValue())
 					{
-						System.out.println("State on current:" + contentVersion.getStateId());
-					    System.out.println("changing state on contentVersion:" + contentVersion.getId());
+					    CmsLogger.logInfo("State on current:" + contentVersion.getStateId());
+					    CmsLogger.logInfo("changing state on contentVersion:" + contentVersion.getId());
 						ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, infoGluePrincipal, contentVO.getId(), db, events);
 					}
 				}

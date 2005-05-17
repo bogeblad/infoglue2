@@ -135,12 +135,8 @@ public class ComponentController extends BaseController
 			CacheController.cacheObject("componentContentsCache", componentsKey, components);
 		}
 		
-		Timer timer = new Timer();
 		ContentComparator comparator = new ContentComparator(sortAttribute, direction, null);
 		Collections.sort(components, comparator);
-		
-		timer.printElapsedTime("Sorting took:");
-		System.out.println("extractTime:" + comparator.extractTime);
 		
 		return components;
 	}

@@ -308,8 +308,6 @@ public class RepositoryController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 		
-		//System.out.println("hasAccess:" + hasAccess);
-		
 		return hasAccess;
 	}	
     

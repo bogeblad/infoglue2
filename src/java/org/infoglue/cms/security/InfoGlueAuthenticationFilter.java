@@ -179,11 +179,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 
   	private void checkSuccessRedirect(ServletRequest request, ServletResponse response, String URL) throws ServletException, IOException, UnsupportedEncodingException
   	{
-	    //System.out.println("successLoginUrl:" + successLoginUrl);
-	    //System.out.println("URL:" + URL);
-        String requestURI = ((HttpServletRequest)request).getRequestURI();
-		//System.out.println("requestURL:" + requestURL);
-        //System.out.println("requestURI:" + requestURI);
+	    String requestURI = ((HttpServletRequest)request).getRequestURI();
 		
 		String requestQueryString = ((HttpServletRequest)request).getQueryString();
 		if(requestQueryString != null)
@@ -205,7 +201,6 @@ public class InfoGlueAuthenticationFilter implements Filter
 			redirectUrl = successLoginBaseUrl + requestURI + URLEncoder.encode(requestQueryString, "UTF-8");
 		
 		CmsLogger.logInfo("redirectUrl:" + redirectUrl);
-		//System.out.println("redirectUrl:" + redirectUrl);
 		((HttpServletResponse)response).sendRedirect(redirectUrl);
 	}
 

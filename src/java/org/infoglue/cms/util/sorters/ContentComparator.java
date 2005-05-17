@@ -68,7 +68,7 @@ public class ContentComparator implements Comparator
 		    result = valueOne.compareTo(valueTwo);
 
 		long elapsedTime = System.currentTimeMillis() - previousTime;
-		//System.out.println("elapsedTime:" + elapsedTime);
+
 		extractTime = extractTime + elapsedTime;
 
 		return result;

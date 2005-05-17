@@ -31,7 +31,6 @@ public class ContentCategoryAction extends ModelAction
 
 	public String doAdd() throws SystemException
 	{
-	    System.out.println("Attribute:" + getContentCategory().getAttributeName());
 		setModel(controller.save(getContentCategory()));
 		return SUCCESS;
 	}
@@ -44,7 +43,6 @@ public class ContentCategoryAction extends ModelAction
 
 	public String doAddStandalone() throws SystemException
 	{
-	    System.out.println("Attribute:" + getContentCategory().getAttributeName());
 		setModel(controller.save(getContentCategory()));
 		return SUCCESS;
 	}

@@ -95,7 +95,6 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
     {    	
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
 
-		System.out.println("qualifyerXML:" + this.qualifyerXML);
         if(this.qualifyerXML != null && !this.qualifyerXML.equals(""))
         {
             this.qualifyers = parseSiteNodesFromXML(this.qualifyerXML);
@@ -111,8 +110,6 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
     
     public String doExecute() throws Exception
     {
-        System.out.println("qualifyerXML:" + this.qualifyerXML);
-        
         if(this.newParentSiteNodeId == null)
         {
     		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());

@@ -87,10 +87,10 @@ public class CacheController extends Thread
 	    if(!caches.containsKey(cacheName))
 		    caches.put(cacheName, new GeneralCacheAdministrator());
 		
-	    System.out.println("Putting " + cacheName + " with key: " + key + " in relation to:");
+	    CmsLogger.logInfo("Putting " + cacheName + " with key: " + key + " in relation to:");
 	    for(int i=0; i<groups.length; i++)
 	    {
-	        System.out.println("group:" + groups[i]);
+	        CmsLogger.logInfo("group:" + groups[i]);
 	    }
 	    
 		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
@@ -162,7 +162,6 @@ public class CacheController extends Thread
 		{
 			CmsLogger.logInfo("Clearing some caches");
 			CmsLogger.logInfo("entity:" + entity);
-			System.out.println("entity:" + entity);
 			for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
 			{
 				Map.Entry e = (Map.Entry) i.next();
@@ -283,24 +282,24 @@ public class CacheController extends Thread
 					    if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
 					    {
 					    	cacheInstance.flushAll();
-							System.out.println("clearing:" + e.getKey());
+					    	CmsLogger.logInfo("clearing:" + e.getKey());
 					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
 					    {
 					    	cacheInstance.flushGroup("contentVersion:" + entityId);
 					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-							System.out.println("clearing " + e.getKey() + " with group " + "contentVersion:" + entityId);
+					    	CmsLogger.logInfo("clearing " + e.getKey() + " with group " + "contentVersion:" + entityId);
 					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("Content") > 0 && useSelectivePageCacheUpdate)
 					    {
 					    	cacheInstance.flushGroup("content:" + entityId);
 					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-							System.out.println("clearing " + e.getKey() + " with group " + "content:" + entityId);
+					    	CmsLogger.logInfo("clearing " + e.getKey() + " with group " + "content:" + entityId);
 					    }
 					    else
 					    {
 							cacheInstance.flushAll();
-							System.out.println("clearing:" + e.getKey());
+							CmsLogger.logInfo("clearing:" + e.getKey());
 					    }
 					}
 				}

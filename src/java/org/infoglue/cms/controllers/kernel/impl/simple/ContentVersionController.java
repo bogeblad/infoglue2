@@ -177,7 +177,7 @@ public class ContentVersionController extends BaseController
 	        while(relatedEntitiesIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            System.out.println("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            CmsLogger.logInfo("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
 	            {
 	                List relatedContentVersions = getLatestContentVersionWithParent(new Integer(registryVO.getEntityId()), stateId, db);
@@ -319,7 +319,7 @@ public class ContentVersionController extends BaseController
 		while (results.hasMore()) 
 		{
 			ContentVersion contentVersion = (ContentVersion)results.next();
-			System.out.println("contentVersion:" + contentVersion.getValueObject().getContentName());
+			CmsLogger.logInfo("contentVersion:" + contentVersion.getValueObject().getContentName());
 			if(contentVersion.getIsActive().booleanValue())
 			{
 				if ( (contentVersion.getStateId().compareTo(stateId)==0) && 
@@ -368,16 +368,16 @@ public class ContentVersionController extends BaseController
 			}
 		}
 
-		System.out.println("Found languageVersions:" + languageVersions.size());
-		System.out.println("Found lastLanguageVersions:" + lastLanguageVersions.size());
+		CmsLogger.logInfo("Found languageVersions:" + languageVersions.size());
+		CmsLogger.logInfo("Found lastLanguageVersions:" + lastLanguageVersions.size());
 		Iterator i = languageVersions.values().iterator();
 		while(i.hasNext())
 		{
 		    ContentVersion contentVersion = (ContentVersion)i.next();
 		    ContentVersion lastVersionInThatLanguage = (ContentVersion)lastLanguageVersions.get(contentVersion.getLanguage().getId());
 
-			System.out.println("contentVersion:" + contentVersion.getId());
-			System.out.println("lastVersionInThatLanguage:" + lastVersionInThatLanguage.getId());
+		    CmsLogger.logInfo("contentVersion:" + contentVersion.getId());
+		    CmsLogger.logInfo("lastVersionInThatLanguage:" + lastVersionInThatLanguage.getId());
 
 		    if(contentVersion == lastVersionInThatLanguage)
 			    resultList.add(contentVersion);
@@ -1115,13 +1115,13 @@ public class ContentVersionController extends BaseController
 	        contentVersionVOList.add(contentVersion.getValueObject());
 	        
 	        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(ContentVersion.class.getName(), contentVersion.getId().toString(), db);
-	        System.out.println("relatedEntities:" + relatedEntities);
+	        CmsLogger.logInfo("relatedEntities:" + relatedEntities);
 	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
 	        
 	        while(relatedEntitiesIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            System.out.println("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            CmsLogger.logInfo("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
 	            {
 	                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
@@ -1137,7 +1137,7 @@ public class ContentVersionController extends BaseController
 	            {
 	                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
 	                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-	                System.out.println("relatedContentVersions:" + relatedContentVersions.size());
+	                CmsLogger.logInfo("relatedContentVersions:" + relatedContentVersions.size());
 	                
 	                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
 	                while(relatedContentVersionsIterator.hasNext())
@@ -1146,7 +1146,7 @@ public class ContentVersionController extends BaseController
 		                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
 		                {
 		                    contentVersionVOList.add(relatedContentVersion.getValueObject());
-		                    System.out.println("Added:" + relatedContentVersion.getId());
+		                    CmsLogger.logInfo("Added:" + relatedContentVersion.getId());
 			            }
 	                }
 	                

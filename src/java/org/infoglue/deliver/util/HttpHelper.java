@@ -422,10 +422,7 @@ public class HttpHelper
 		    {		        
 		        String name  = (String)e.nextElement();
 		        String value = (String)request.getParameter(name);
-		        System.out.println(name + "=" + value);
-		        if(value.equals("frövi"))
-		            System.out.println("YES!!!");
-	            parameters.put(name, value);
+		        parameters.put(name, value);
 		    }        
 		}
 		        

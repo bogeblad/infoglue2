@@ -551,11 +551,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					if(componentProperty.getEntityClass().equalsIgnoreCase("Content"))
 					{
 					    String allowedContentTypeNamesParameters = "";
-					    //System.out.println();
+
 					    if(componentProperty.getAllowedContentTypeNamesArray() != null && componentProperty.getAllowedContentTypeNamesArray().length > 0)
 					    {
 					        allowedContentTypeNamesParameters = "&" + componentProperty.getAllowedContentTypeNamesAsUrlEncodedString();
-					        System.out.println("allowedContentTypeNamesParameters:" + allowedContentTypeNamesParameters);
+					        CmsLogger.logInfo("allowedContentTypeNamesParameters:" + allowedContentTypeNamesParameters);
 					    }
 					    
 						if(componentProperty.getIsMultipleBinding())
@@ -877,10 +877,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	private String getComponentPaletteDiv(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
 	{		
-		System.out.println("siteNodeId:" + siteNodeId);
-		System.out.println("siteNodeId2:" + templateController.getSiteNodeId());
+	    CmsLogger.logInfo("siteNodeId:" + siteNodeId);
+	    CmsLogger.logInfo("siteNodeId2:" + templateController.getSiteNodeId());
 		ContentVO contentVO = templateController.getBoundContent(BasicTemplateController.META_INFO_BINDING_NAME);
-		System.out.println("contentVO:" + contentVO.getName());
+		CmsLogger.logInfo("contentVO:" + contentVO.getName());
 
 		if(componentPaletteDiv != null && (templateController.getRequestParameter("refresh") == null || !templateController.getRequestParameter("refresh").equalsIgnoreCase("true")))
 		{

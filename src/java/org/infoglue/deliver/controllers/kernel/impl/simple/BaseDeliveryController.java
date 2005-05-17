@@ -260,7 +260,7 @@ public abstract class BaseDeliveryController
 		try
 		{
 			db.begin();
-			System.out.println("Opening a new Transaction...");
+			CmsLogger.logInfo("Opening a new Transaction...");
 		}
 		catch(Exception e)
 		{
@@ -275,7 +275,7 @@ public abstract class BaseDeliveryController
      
 	public static void closeTransaction(Database db) throws SystemException
 	{
-	    System.out.println("closeTransaction a transaction and closing it...");
+	    CmsLogger.logInfo("closeTransaction a transaction and closing it...");
 	    //rollbackTransaction(db);
 	    commitTransaction(db);
 	}
@@ -288,7 +288,7 @@ public abstract class BaseDeliveryController
 	{
 		try
 		{
-		    System.out.println("Committing a transaction and closing it...");
+		    CmsLogger.logInfo("Committing a transaction and closing it...");
 			db.commit();
 			db.close();
 		}
@@ -306,7 +306,7 @@ public abstract class BaseDeliveryController
      
 	public static void rollbackTransaction(Database db) throws SystemException
 	{
-	    System.out.println("Rollback a transaction...");
+	    CmsLogger.logInfo("Rollback a transaction...");
 
 		try
 		{
@@ -331,7 +331,7 @@ public abstract class BaseDeliveryController
 	{
 		try
 		{
-		    System.out.println("Closing database...");
+		    CmsLogger.logInfo("Closing database...");
 
 			db.close();
 		}

@@ -155,7 +155,6 @@ public class ViewLinkDialogAction extends InfoGlueAbstractAction
     
     public void setOldContentId(Integer oldContentId)
     {
-        System.out.println("oldContentId:" + oldContentId);
         this.oldContentId = oldContentId;
     }
 

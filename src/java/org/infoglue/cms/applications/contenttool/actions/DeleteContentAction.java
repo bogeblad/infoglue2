@@ -70,7 +70,6 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
 		if(this.referenceBeanList != null && this.referenceBeanList.size() > 0)
 		{
-		    System.out.println("contentId:" + this.contentVO.getContentId());
 		    return "showRelations";
 		}
 	    else

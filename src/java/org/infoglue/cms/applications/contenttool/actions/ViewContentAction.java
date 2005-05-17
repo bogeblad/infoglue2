@@ -105,8 +105,6 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	            if(this.repositoryId == null)
 	                this.repositoryId = contentVO.getRepositoryId();
 	            
-	            System.out.println("**********newContentId:" + contentVO.getId());
-	            
 		        this.languageId = getMasterLanguageVO().getId();
 	            return "viewVersion";
 	        }

@@ -183,7 +183,7 @@ public class BasicTemplateController implements TemplateController
 		{
 		    this.databaseWrapper.getDatabase().commit();
 			//this.db.close();
-			System.out.println("Closed transaction...");
+		    CmsLogger.logInfo("Closed transaction...");
 		}
 		catch(Exception e)
 		{
@@ -201,7 +201,7 @@ public class BasicTemplateController implements TemplateController
 	    try
 		{
 			this.databaseWrapper.getDatabase().begin();
-			System.out.println("Started new transaction...");
+			CmsLogger.logInfo("Started new transaction...");
 		}
 		catch(Exception e)
 		{
@@ -566,7 +566,6 @@ public class BasicTemplateController implements TemplateController
     
     public InfoGluePrincipal getPrincipal(String userName)
     {
-        System.out.println("userName:" + userName);
         if(userName == null || userName.equals(""))
             return null;
         
@@ -1272,7 +1271,7 @@ public class BasicTemplateController implements TemplateController
 
 	public String getContentAttributeUsingLanguageFallback(Integer contentId, String attributeName, boolean disableEditOnSight) 
 	{
-	    System.out.println("getContentAttributeUsingLanguageFallback: " + contentId + ":" + attributeName + ":" + disableEditOnSight);
+	    CmsLogger.logInfo("getContentAttributeUsingLanguageFallback: " + contentId + ":" + attributeName + ":" + disableEditOnSight);
 		String attributeValue = "";
 		
 		try

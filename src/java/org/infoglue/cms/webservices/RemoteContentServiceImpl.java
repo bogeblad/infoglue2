@@ -30,6 +30,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.util.CmsLogger;
 
 /**
  * This class is responsible for letting an external application call InfoGlue
@@ -51,9 +52,9 @@ public class RemoteContentServiceImpl
     {
         int newContentId = 0;
         
-        System.out.println("***************************************");
-        System.out.println("Creating content through webservice....");
-        System.out.println("***************************************");
+        CmsLogger.logInfo("***************************************");
+        CmsLogger.logInfo("Creating content through webservice....");
+        CmsLogger.logInfo("***************************************");
         
         try
         {
@@ -76,9 +77,9 @@ public class RemoteContentServiceImpl
     {
         int newContentVersionId = 0;
         
-        System.out.println("***************************************");
-        System.out.println("Creating content through webservice....");
-        System.out.println("***************************************");
+        CmsLogger.logInfo("***************************************");
+        CmsLogger.logInfo("Creating content through webservice....");
+        CmsLogger.logInfo("***************************************");
         
         try
         {

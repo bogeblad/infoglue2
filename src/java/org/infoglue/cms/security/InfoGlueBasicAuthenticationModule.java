@@ -85,11 +85,8 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 						"filter parameter");
 			}
   
-			//String requestURL = request.getRequestURL().toString();
 			String requestURI = request.getRequestURI();
-			//System.out.println("requestURL:" + requestURL);
-			//System.out.println("requestURI:" + requestURI);
-
+			
 			String requestQueryString = request.getQueryString();
 			if(requestQueryString != null)
 			    requestQueryString = "?" + requestQueryString;

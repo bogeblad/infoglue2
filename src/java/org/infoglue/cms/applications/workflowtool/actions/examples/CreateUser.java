@@ -45,15 +45,11 @@ public class CreateUser implements CustomWorkflowAction
 {
 	public CreateUser()
 	{
-	    System.out.println("AAAAAAAAAAAA - yes - inside CreateUser");
 	}
 	
 	
 	public void invokeAction(String callerUserName, HttpServletRequest request, Map args, PropertySet ps) throws WorkflowException
 	{
-	    System.out.println("BBBBBBBBBBBB - yes - inside CreateUser.invokeAction");
-	    System.out.println("callerUserName:" + callerUserName);
-	    
 	    Iterator paramsIterator = request.getParameterMap().keySet().iterator();
 	    while(paramsIterator.hasNext())
 	    {

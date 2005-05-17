@@ -228,9 +228,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-			//System.out.println("Found no item with key:" + key); 
-			
-		    /*
+			/*
 			Collection siteNodeVersions = siteNode.getSiteNodeVersions();
 			SiteNodeVersion siteNodeVersion = null;
 			
@@ -315,7 +313,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 			}
 			
 
-			//System.out.println("caching with key:" + key); 
 			CacheController.cacheObject("serviceDefinitionCache", key, object);
 			CacheController.cacheObject("qualifyerListCache", key, object2);
 
@@ -738,7 +735,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 						//	boundContentVOList.add(candidate);        		
 						Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
 						
-						System.out.println("candidateContent:" + candidateContent.getName());
+						CmsLogger.logInfo("candidateContent:" + candidateContent.getName());
 						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
 						{
 							deliveryContext.addUsedContent("content:" + candidate.getId());
@@ -773,7 +770,6 @@ public class NodeDeliveryController extends BaseDeliveryController
         
         ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, includeFolders, deliveryContext);
         CmsLogger.logInfo("contentVO:" + contentVO);
-        System.out.println("contentVO:" + contentVO);
         
         if(contentVO != null)
         {

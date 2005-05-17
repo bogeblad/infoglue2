@@ -754,8 +754,6 @@ public class PublicationController extends BaseController
         try
         {
 	    	contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(id, db);
-	    	System.out.println("contentVersion:" + contentVersion.getId());
-	    	//System.out.println("contentVersion:" + contentVersion);
 	    	contentVO = contentVersion.getOwningContent().getValueObject();
 	    	//Content content = ContentController.getContentController().getContentWithId(contentVersion.getValueObject().getContentId(), db);
 	    	//contentVO = content.getValueObject();

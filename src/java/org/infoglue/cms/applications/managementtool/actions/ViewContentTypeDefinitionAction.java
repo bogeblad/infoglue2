@@ -870,8 +870,6 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				params.appendChild(allowedContentTypesElement);
 				params.appendChild(imageWidthElement);
 				params.appendChild(imageHeightElement);
-				
-				System.out.println("Added a lot to the document....");
 			}
 			else
 			{

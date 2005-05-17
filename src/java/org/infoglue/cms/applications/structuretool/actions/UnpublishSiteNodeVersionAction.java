@@ -86,10 +86,8 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 			
 			ceb.throwIfNotEmpty();
 
-			System.out.println("Before.....");
 			//siteNodeVersionVOList = SiteNodeVersionController.getController().getSiteNodeVersionVOWithParentRecursive(siteNodeId, SiteNodeVersionVO.PUBLISHED_STATE);
 			siteNodeVersionVOList = SiteNodeVersionController.getController().getPublishedSiteNodeVersionVOWithParentRecursive(siteNodeId);
-			System.out.println("siteNodeVersionVOList:" + siteNodeVersionVOList.size());
 		}
 
 	    return "input";

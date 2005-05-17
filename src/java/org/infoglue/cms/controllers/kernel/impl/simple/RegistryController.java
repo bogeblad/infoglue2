@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.11 2005/04/17 19:47:53 mattias Exp $
+ * $Id: RegistryController.java,v 1.12 2005/05/17 16:01:36 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -171,7 +171,7 @@ public class RegistryController extends BaseController
 	    
 	    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 	    {
-	        System.out.println("It was a meta info so lets check it for other stuff as well");
+	        CmsLogger.logInfo("It was a meta info so lets check it for other stuff as well");
 		    
 	        List siteNodeVersions = getSiteNodeVersionsWhichUsesContentVersionAsMetaInfo(oldContentVersion, db);
 	        Iterator siteNodeVersionsIterator = siteNodeVersions.iterator();
@@ -180,7 +180,7 @@ public class RegistryController extends BaseController
 		        SiteNodeVersion siteNodeVersion = (SiteNodeVersion)siteNodeVersionsIterator.next();
 			    if(siteNodeVersion != null)
 			    {
-				    System.out.println("Going to use " + siteNodeVersion.getId() + " as reference");
+				    CmsLogger.logInfo("Going to use " + siteNodeVersion.getId() + " as reference");
 			        clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
 				    
 				    getComponents(siteNodeVersion, versionValue, db);
@@ -312,7 +312,7 @@ public class RegistryController extends BaseController
 	    while ( matcher.find() ) 
 	    { 
 	        String match = matcher.group();
-	        System.out.println("Adding match to registry after some processing: " + match);
+	        CmsLogger.logInfo("Adding match to registry after some processing: " + match);
 	        Integer siteNodeId;
 	        
 	        int siteNodeStartIndex = match.indexOf("(");
@@ -320,7 +320,7 @@ public class RegistryController extends BaseController
 	        if(siteNodeStartIndex > 0 && siteNodeEndIndex > 0 && siteNodeEndIndex > siteNodeStartIndex)
 	        {
 	            siteNodeId = new Integer(match.substring(siteNodeStartIndex + 1, siteNodeEndIndex));
-	            System.out.println("siteNodeId:" + siteNodeId);
+	            CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 	            RegistryVO registryVO = new RegistryVO();
 	            registryVO.setEntityId(siteNodeId.toString());
 	            registryVO.setEntityName(SiteNode.class.getName());
@@ -346,7 +346,7 @@ public class RegistryController extends BaseController
 	    while ( matcher.find() ) 
 	    { 
 	        String match = matcher.group();
-	        System.out.println("Adding match to registry after some processing: " + match);
+	        CmsLogger.logInfo("Adding match to registry after some processing: " + match);
 	        Integer contentId;
 	        
 	        int contentStartIndex = match.indexOf("(");
@@ -354,7 +354,7 @@ public class RegistryController extends BaseController
 	        if(contentStartIndex > 0 && contentEndIndex > 0 && contentEndIndex > contentStartIndex)
 	        {
 	            contentId = new Integer(match.substring(contentStartIndex + 1, contentEndIndex));
-	            System.out.println("contentId:" + contentId);
+	            CmsLogger.logInfo("contentId:" + contentId);
 	            
 	            RegistryVO registryVO = new RegistryVO();
 	            registryVO.setEntityId(contentId.toString());
@@ -382,7 +382,7 @@ public class RegistryController extends BaseController
 	    while ( matcher.find() ) 
 	    { 
 	        String match = matcher.group();
-	        System.out.println("Adding match to registry after some processing: " + match);
+	        CmsLogger.logInfo("Adding match to registry after some processing: " + match);
 	        Integer siteNodeId;
 	        
 	        int siteNodeStartIndex = match.indexOf("<id>");
@@ -390,7 +390,7 @@ public class RegistryController extends BaseController
 	        while(siteNodeStartIndex > 0 && siteNodeEndIndex > 0 && siteNodeEndIndex > siteNodeStartIndex)
 	        {
 	            siteNodeId = new Integer(match.substring(siteNodeStartIndex + 4, siteNodeEndIndex));
-	            System.out.println("siteNodeId:" + siteNodeId);
+	            CmsLogger.logInfo("siteNodeId:" + siteNodeId);
 	            RegistryVO registryVO = new RegistryVO();
 	            registryVO.setEntityId(siteNodeId.toString());
 	            registryVO.setEntityName(SiteNode.class.getName());
@@ -419,7 +419,7 @@ public class RegistryController extends BaseController
 	    while ( matcher.find() ) 
 	    { 
 	        String match = matcher.group();
-	        System.out.println("Adding match to registry after some processing: " + match);
+	        CmsLogger.logInfo("Adding match to registry after some processing: " + match);
 	        Integer contentId;
 	        
 	        int contentStartIndex = match.indexOf("<id>");
@@ -427,7 +427,7 @@ public class RegistryController extends BaseController
 	        while(contentStartIndex > 0 && contentEndIndex > 0 && contentEndIndex > contentStartIndex)
 	        {
 	            contentId = new Integer(match.substring(contentStartIndex + 4, contentEndIndex));
-	            System.out.println("contentId:" + contentId);
+	            CmsLogger.logInfo("contentId:" + contentId);
 	            
 	            RegistryVO registryVO = new RegistryVO();
 	            registryVO.setEntityId(contentId.toString());
@@ -458,7 +458,7 @@ public class RegistryController extends BaseController
 	    while ( matcher.find() ) 
 	    { 
 	        String match = matcher.group();
-	        System.out.println("Adding match to registry after some processing: " + match);
+	        CmsLogger.logInfo("Adding match to registry after some processing: " + match);
 	        Integer contentId;
 	        
 	        int contentStartIndex = match.indexOf("\"");
@@ -466,7 +466,7 @@ public class RegistryController extends BaseController
 	        if(contentStartIndex > 0 && contentEndIndex > 0 && contentEndIndex > contentStartIndex)
 	        {
 	            contentId = new Integer(match.substring(contentStartIndex + 1, contentEndIndex));
-	            System.out.println("contentId:" + contentId);
+	            CmsLogger.logInfo("contentId:" + contentId);
 	            
 	            RegistryVO registryVO = new RegistryVO();
 	            registryVO.setEntityId(contentId.toString());
@@ -493,27 +493,27 @@ public class RegistryController extends BaseController
 	    while ( matcher.find() ) 
 	    { 
 	        String match = matcher.group();
-	        System.out.println("Adding match to registry after some processing: " + match);
+	        CmsLogger.logInfo("Adding match to registry after some processing: " + match);
 	        String entityName;
 	        String entityId;
 	        
 	        int entityNameStartIndex = match.indexOf("\"");
 	        int entityNameEndIndex = match.indexOf("\"", entityNameStartIndex + 1);
-	        System.out.println("entityNameStartIndex:" + entityNameStartIndex);
-	        System.out.println("entityNameEndIndex:" + entityNameEndIndex);
+	        CmsLogger.logInfo("entityNameStartIndex:" + entityNameStartIndex);
+	        CmsLogger.logInfo("entityNameEndIndex:" + entityNameEndIndex);
 	        if(entityNameStartIndex > 0 && entityNameEndIndex > 0 && entityNameEndIndex > entityNameStartIndex)
 	        {
 	            entityName = match.substring(entityNameStartIndex + 1, entityNameEndIndex);
-	            System.out.println("entityName:" + entityName);
+	            CmsLogger.logInfo("entityName:" + entityName);
 
 		        int entityIdStartIndex = match.indexOf("\"", entityNameEndIndex + 1);
 		        int entityIdEndIndex = match.indexOf("\"", entityIdStartIndex + 1);
-		        System.out.println("entityIdStartIndex:" + entityIdStartIndex);
-		        System.out.println("entityIdEndIndex:" + entityIdEndIndex);
+		        CmsLogger.logInfo("entityIdStartIndex:" + entityIdStartIndex);
+		        CmsLogger.logInfo("entityIdEndIndex:" + entityIdEndIndex);
 		        if(entityIdStartIndex > 0 && entityIdEndIndex > 0 && entityIdEndIndex > entityIdStartIndex)
 		        {
 		            entityId = match.substring(entityIdStartIndex + 1, entityIdEndIndex);
-		            System.out.println("entityId:" + entityId);
+		            CmsLogger.logInfo("entityId:" + entityId);
 
 		            RegistryVO registryVO = new RegistryVO();
 		            if(entityName.indexOf("Content") > -1)
@@ -566,21 +566,21 @@ public class RegistryController extends BaseController
 	        while(registryEntiresIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
-	            System.out.println("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
+	            CmsLogger.logInfo("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
 	            
 	            ReferenceBean referenceBean = new ReferenceBean();
 	            	            
 	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
 	            {
 		            ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		System.out.println("contentVersion:" + contentVersion.getContentVersionId());
+		    		CmsLogger.logInfo("contentVersion:" + contentVersion.getContentVersionId());
 		    		referenceBean.setName(contentVersion.getOwningContent().getName());
 		    		referenceBean.setReferencingObject(contentVersion.getValueObject());
 	            }
 	            else
 	            {
 	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		System.out.println("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+		    		CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
 		    		referenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
 		    		referenceBean.setReferencingObject(siteNodeVersion.getValueObject());
 	            }
@@ -592,13 +592,13 @@ public class RegistryController extends BaseController
 		            List registryVOList = new ArrayList();
 		            registryVOList.add(registryVO);
 		            referenceBean.setRegistryVOList(registryVOList);
-		            System.out.println("Adding referenceBean to entries with key:" + key);
+		            CmsLogger.logInfo("Adding referenceBean to entries with key:" + key);
 		            entries.put(key, referenceBean);
 		            referenceBeanList.add(referenceBean);
 	            }
 	            else
 	            {
-	                System.out.println("Found referenceBean in entries with key:" + key);
+	                CmsLogger.logInfo("Found referenceBean in entries with key:" + key);
 	                existingReferenceBean.getRegistryVOList().add(registryVO);
 	            }
 	        }
@@ -632,7 +632,7 @@ public class RegistryController extends BaseController
 	        while(registryEntiresIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
-	            System.out.println("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
+	            CmsLogger.logInfo("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
 	     
 	            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
 	            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
@@ -640,7 +640,7 @@ public class RegistryController extends BaseController
 	            if(existingReferenceBean == null)
 	            {
 	                existingReferenceBean = new ReferenceBean();
-		            System.out.println("Adding referenceBean to entries with key:" + key);
+		            CmsLogger.logInfo("Adding referenceBean to entries with key:" + key);
 		            entries.put(key, existingReferenceBean);
 		            referenceBeanList.add(existingReferenceBean);
 		        }
@@ -650,7 +650,7 @@ public class RegistryController extends BaseController
 	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
 	            {
                     ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		System.out.println("contentVersion:" + contentVersion.getContentVersionId());
+		    		CmsLogger.logInfo("contentVersion:" + contentVersion.getContentVersionId());
 		    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
 		    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
 		    		
@@ -660,8 +660,8 @@ public class RegistryController extends BaseController
 	            else
 	            {
 	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		System.out.println("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
-		    		System.out.println("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
+		    		CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+		    		CmsLogger.logInfo("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
 		    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
 		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
 
@@ -727,21 +727,21 @@ public class RegistryController extends BaseController
 	        while(registryEntiresIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
-	            System.out.println("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
+	            CmsLogger.logInfo("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
 	            
 	            ReferenceBean referenceBean = new ReferenceBean();
 	           
 	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
 	            {
                     ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		System.out.println("contentVersion:" + contentVersion.getContentVersionId());
+		    		CmsLogger.logInfo("contentVersion:" + contentVersion.getContentVersionId());
 		    		referenceBean.setName(contentVersion.getOwningContent().getName());
 		    		referenceBean.setReferencingObject(contentVersion.getValueObject());
 		    	}
 	            else
 	            {
 	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		System.out.println("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+		    		CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
 		    		referenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
 		    		referenceBean.setReferencingObject(siteNodeVersion.getValueObject());
 	            }
@@ -754,13 +754,13 @@ public class RegistryController extends BaseController
 		            List registryVOList = new ArrayList();
 		            registryVOList.add(registryVO);
 		            referenceBean.setRegistryVOList(registryVOList);
-		            System.out.println("Adding referenceBean to entries with key:" + key);
+		            CmsLogger.logInfo("Adding referenceBean to entries with key:" + key);
 		            entries.put(key, referenceBean);
 		            referenceBeanList.add(referenceBean);
 	            }
 	            else
 	            {
-	                System.out.println("Found referenceBean in entries with key:" + key);
+	                CmsLogger.logInfo("Found referenceBean in entries with key:" + key);
 	                existingReferenceBean.getRegistryVOList().add(registryVO);
 	            }
 	        }
@@ -795,7 +795,7 @@ public class RegistryController extends BaseController
 	        while(registryEntiresIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
-	            System.out.println("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
+	            CmsLogger.logInfo("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
 	     
 	            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
 	            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
@@ -803,7 +803,7 @@ public class RegistryController extends BaseController
 	            if(existingReferenceBean == null)
 	            {
 	                existingReferenceBean = new ReferenceBean();
-		            System.out.println("Adding referenceBean to entries with key:" + key);
+		            CmsLogger.logInfo("Adding referenceBean to entries with key:" + key);
 		            entries.put(key, existingReferenceBean);
 		            referenceBeanList.add(existingReferenceBean);
 		        }
@@ -813,7 +813,7 @@ public class RegistryController extends BaseController
 	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
 	            {
                     ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		System.out.println("contentVersion:" + contentVersion.getContentVersionId());
+		    		CmsLogger.logInfo("contentVersion:" + contentVersion.getContentVersionId());
 		    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
 		    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
 		    		
@@ -823,8 +823,8 @@ public class RegistryController extends BaseController
 	            else
 	            {
 	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		System.out.println("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
-		    		System.out.println("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
+		    		CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+		    		CmsLogger.logInfo("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
 		    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
 		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
 
@@ -898,8 +898,8 @@ public class RegistryController extends BaseController
 	{
 	    List matchingRegistryVOList = new ArrayList();
 
-	    System.out.println("referencingEntityName:" + referencingEntityName);
-	    System.out.println("referencingEntityId:" + referencingEntityId);
+	    CmsLogger.logInfo("referencingEntityName:" + referencingEntityName);
+	    CmsLogger.logInfo("referencingEntityId:" + referencingEntityId);
 		
 	    OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
 		oql.bind(referencingEntityName);
@@ -911,7 +911,7 @@ public class RegistryController extends BaseController
         {
             Registry registry = (Registry)results.next();
             RegistryVO registryVO = registry.getValueObject();
-    	    System.out.println("found match:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+    	    CmsLogger.logInfo("found match:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
             
             matchingRegistryVOList.add(registryVO);
         }       
@@ -989,7 +989,7 @@ public class RegistryController extends BaseController
         {
 		    SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
 		    siteNodeVersions.add(siteNodeVersion);
-		    //System.out.println("siteNodeVersion:" + siteNodeVersion.getId());
+		    //CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion.getId());
         }
     	
 		return siteNodeVersions;		

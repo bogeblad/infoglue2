@@ -375,7 +375,6 @@ public class VisualFormatter
 		for (int i = 0; i < n; i++) 
 		{
 			char c = s.charAt(i);
-			//System.out.println("c:" + c);
 			if(c < 128 && c > 32)
 			{
 			    if(Character.isLetterOrDigit(c) ||  c == '-' || c == '_' || c == '.')

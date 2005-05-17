@@ -192,7 +192,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						is = new FileInputStream(file);
 						
 						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
-						System.out.println("fileUploadMaximumSize in create:" + fileUploadMaximumSize);
+						CmsLogger.logInfo("fileUploadMaximumSize in create:" + fileUploadMaximumSize);
 						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
 						{
 						    file.delete();
@@ -308,7 +308,6 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
         }
         catch(Throwable e){ e.printStackTrace(); }
         
-        System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
         return "success";
     }
 

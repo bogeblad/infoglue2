@@ -57,12 +57,7 @@ public class ReplaceContentAction extends SearchContentAction
 		
 	public String doExecute() throws Exception 
 	{
-	    System.out.println("contentVersionId:" + contentVersionId);
-	    
 	    String contentVersionIds[] = contentVersionId.split(",");
-	    System.out.println("QueryString:" + this.getRequest().getQueryString());
-	    //System.out.println("contentVersionId.length:" + contentVersionId.length);
-	    System.out.println("contentVersionId:" + this.getRequest().getParameterValues("contentVersionId"));
 	    
 	    SearchController.replaceString(getSearchString(), this.replaceString, contentVersionIds, this.getInfoGluePrincipal());
 	    

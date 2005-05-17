@@ -92,7 +92,6 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 			this.setLanguageId(((LanguageVO)this.getAvailableLanguages().get(0)).getLanguageId());
 		
 		CmsLogger.logInfo("Language:" + this.languageId);
-		System.out.println("Language:" + this.languageId);
     }
     
 	

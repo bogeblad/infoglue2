@@ -104,7 +104,7 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 			while(iterator.hasNext())
 			{
 			    Content content = (Content)iterator.next();
-			    System.out.println("Going to index all version of " + content.getName());
+			    CmsLogger.logInfo("Going to index all version of " + content.getName());
 			    
 			    Iterator versionsIterator = content.getContentVersions().iterator();
 				while(versionsIterator.hasNext())
@@ -121,7 +121,7 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 			while(siteNodesIterator.hasNext())
 			{
 			    SiteNode siteNode = (SiteNode)siteNodesIterator.next();
-			    System.out.println("Going to index all versions of " + siteNode.getName());
+			    CmsLogger.logInfo("Going to index all versions of " + siteNode.getName());
 			    
 			    Iterator siteNodeVersionsIterator = siteNode.getSiteNodeVersions().iterator();
 				while(siteNodeVersionsIterator.hasNext())

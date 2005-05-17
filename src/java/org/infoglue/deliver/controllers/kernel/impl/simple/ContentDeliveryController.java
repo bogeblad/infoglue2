@@ -375,7 +375,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		//Content content = version.getOwningContent();
 	    Integer contentId = version.getValueObject().getContentId();
-	    System.out.println("contentId:" + contentId);
+	    CmsLogger.logInfo("contentId:" + contentId);
 	    
 	    Content content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
 	    //Content content = ContentController.getContentController().getContentWithId(contentId, db);

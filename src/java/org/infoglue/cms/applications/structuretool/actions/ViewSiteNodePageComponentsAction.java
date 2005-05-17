@@ -317,19 +317,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
     
 	public String doMoveComponent() throws Exception
 	{
-		System.out.println("************************************************************");
-		System.out.println("* MOVING COMPONENT UP                                        *");
-		System.out.println("************************************************************");
-		System.out.println("siteNodeId:" + this.siteNodeId);
-		System.out.println("languageId:" + this.languageId);
-		System.out.println("contentId:" + this.contentId);
-		System.out.println("queryString:" + this.getRequest().getQueryString());
-		System.out.println("parentComponentId:" + this.parentComponentId);
-		System.out.println("componentId:" + this.componentId);
-		System.out.println("slotId:" + this.slotId);
-		System.out.println("specifyBaseTemplate:" + this.specifyBaseTemplate);
-		System.out.println("direction:" + this.direction);
-
 		initialize();
 			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
@@ -341,23 +328,17 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
 		String componentXML   = getPageComponentsString(siteNodeId, languageId, contentId);			
 		//CmsLogger.logInfo("componentXML:" + componentXML);
-		//System.out.println("componentXML:" + componentXML);
 		
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentXPath = "//component[@id=" + this.componentId + "]";
-		//System.out.println("componentXPath:" + componentXPath);
+	
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-		//System.out.println("nodeList:" + anl.getLength());
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
 			String name = component.getAttribute("name");
-			//System.out.println("Name1:" + name);
 			//CmsLogger.logInfo(XMLHelper.serializeDom(component, new StringBuffer()));
-			//System.out.println("YES - now only add the new component...");		
 			Node parentNode = component.getParentNode();
-			//System.out.println("Before: " + XMLHelper.serializeDom(parentNode, new StringBuffer()));
-			//System.out.println("parentNode:" + parentNode + ":" + ((Element)parentNode).getAttribute("id"));
 			
 			boolean hasChanged = false;
 			
@@ -365,17 +346,12 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			{
 			    Node previousNode = component.getPreviousSibling();
 				Element element = ((Element)previousNode);
-				//System.out.println("Name:" + element.getAttribute("name"));
 				while(element != null && !element.getAttribute("name").equalsIgnoreCase(name))
 			    {
 			        previousNode = previousNode.getPreviousSibling();
 					element = ((Element)previousNode);
-					//System.out.println("Name:" + element.getAttribute("name"));
 			    }
 				
-				//System.out.println("Name finally:" + element.getAttribute("name"));
-				//System.out.println("previousNode:" + previousNode + ":" + element.getAttribute("name"));
-				//System.out.println("previousNode: " + XMLHelper.serializeDom(previousNode, new StringBuffer()));
 				if(previousNode != null)
 				{
 					parentNode.removeChild(component);
@@ -387,18 +363,15 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			{
 			    Node nextNode = component.getNextSibling();
 			    Element element = ((Element)nextNode);
-				//System.out.println("Name:" + element.getAttribute("name"));
 				while(element != null && !element.getAttribute("name").equalsIgnoreCase(name))
 			    {
 				    nextNode = nextNode.getNextSibling();
 					element = ((Element)nextNode);
-					//System.out.println("Name:" + element.getAttribute("name"));
 			    }
 				
 				if(nextNode != null)
 				    nextNode = nextNode.getNextSibling();
 				
-				//System.out.println("nextNode:" + nextNode);
 				if(nextNode != null)
 				{
 					parentNode.removeChild(component);
@@ -415,7 +388,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			
 			if(hasChanged)
 			{
-				//System.out.println("Added: " + XMLHelper.serializeDom(parentNode, new StringBuffer()));
 				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 				//CmsLogger.logInfo("modifiedXML:" + modifiedXML);
 				

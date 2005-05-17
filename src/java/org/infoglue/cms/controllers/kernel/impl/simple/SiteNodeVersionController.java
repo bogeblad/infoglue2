@@ -615,7 +615,6 @@ public class SiteNodeVersionController extends BaseController
 	private List getSiteNodeVersionVOWithParentRecursive(Integer siteNodeId, Integer stateId, List resultList) throws ConstraintException, SystemException
 	{
 		SiteNodeVersionVO siteNodeVersionVO = getLatestSiteNodeVersionVO(siteNodeId);
-		System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getId());
 		if(siteNodeVersionVO.getStateId().intValue() == stateId.intValue())
 			resultList.add(siteNodeVersionVO);
 		
@@ -625,7 +624,6 @@ public class SiteNodeVersionController extends BaseController
 		while(childSiteNodeListIterator.hasNext())
 		{
 			SiteNodeVO siteNodeVO = (SiteNodeVO)childSiteNodeListIterator.next();
-			System.out.println("Adding siteNodeVO:" + siteNodeVO.getName());
 			getSiteNodeVersionVOWithParentRecursive(siteNodeVO.getId(), stateId, resultList);
 		}
 	
@@ -667,7 +665,6 @@ public class SiteNodeVersionController extends BaseController
 	private List getPublishedSiteNodeVersionWithParentRecursive(SiteNode siteNode, List resultList, Database db) throws ConstraintException, SystemException, Exception
 	{
 	    SiteNodeVersion siteNodeVersion = getLatestPublishedSiteNodeVersion(siteNode.getId(), db);
-		System.out.println("siteNodeVersion:" + siteNodeVersion.getId());
 		if(siteNodeVersion != null)
 			resultList.add(siteNodeVersion);
 		
@@ -677,7 +674,6 @@ public class SiteNodeVersionController extends BaseController
 		while(childSiteNodeListIterator.hasNext())
 		{
 			SiteNode childSiteNode = (SiteNode)childSiteNodeListIterator.next();
-			System.out.println("Adding childSiteNode:" + childSiteNode.getName());
 			getPublishedSiteNodeVersionWithParentRecursive(childSiteNode, resultList, db);
 		}
 		
@@ -723,13 +719,11 @@ public class SiteNodeVersionController extends BaseController
 		    siteNodeVersionVOList.add(siteNodeVersion.getValueObject());
 		    
 	        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
-	        System.out.println("relatedEntities:" + relatedEntities);
 	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
 	        
 	        while(relatedEntitiesIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            System.out.println("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
 	            {
 	                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
@@ -746,7 +740,6 @@ public class SiteNodeVersionController extends BaseController
 	            {
 	                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
 	                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-	                System.out.println("relatedContentVersions:" + relatedContentVersions.size());
 	                
 	                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
 	                while(relatedContentVersionsIterator.hasNext())
@@ -755,8 +748,7 @@ public class SiteNodeVersionController extends BaseController
 		                if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
 		                {
 		                    contentVersionVOList.add(relatedContentVersion.getValueObject());
-		                    System.out.println("Added:" + relatedContentVersion.getId());
-			            }
+		                }
 	                }
 	                
 	    		    checkedContents.add(new Integer(registryVO.getEntityId()));
@@ -784,10 +776,7 @@ public class SiteNodeVersionController extends BaseController
 	{
 		SiteNodeVersion siteNodeVersion = null;
 		
-		System.out.println("siteNode " + siteNode);
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		System.out.println("siteNodeVersions " + siteNodeVersions);
-		System.out.println("stateId:" + stateId);
 
 		SiteNodeVersion latestSiteNodeVersion = null;
 		
@@ -886,11 +875,9 @@ public class SiteNodeVersionController extends BaseController
 		if(serviceBindingId != null)
 		{
 			List boundContents = ContentController.getBoundContents(serviceBindingId); 
-			System.out.println("boundContents:" + boundContents.size());
 			if(boundContents.size() > 0)
 			{
 				ContentVO contentVO = (ContentVO)boundContents.get(0);
-				System.out.println("contentVO:" + contentVO.getId());
 				
 				Iterator languageIterator = languages.iterator();
 				while(languageIterator.hasNext())
@@ -898,7 +885,6 @@ public class SiteNodeVersionController extends BaseController
 					Language language = (Language)languageIterator.next();
 					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
 					
-					System.out.println("language:" + language.getId());
 					if(contentVersion != null)
 					    contentVersions.add(contentVersion);
 				}

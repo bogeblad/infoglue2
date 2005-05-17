@@ -120,26 +120,6 @@ public abstract class PageInvoker
         return dbWrapper.getDatabase();
     }
 
-    /**
-     * Starts a new transaction so a different call can be made.
-     */
-    /*
-    public void beginTransaction() throws SystemException
-	{
-	    this.db = CastorDatabaseService.getDatabase();
-
-	    try
-		{
-			db.begin();
-			System.out.println("Started new transaction...");
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
-		}
-	}
-	*/
     
 	/**
 	 * This is the method that will deliver the page to the user. It can have special
@@ -305,8 +285,8 @@ public abstract class PageInvoker
 		{
 		    PortalController pController = new PortalController(getRequest(), getResponse());
 		    context.put(PortalController.NAME, pController);
-		    System.out.println("PortalController.NAME:" + PortalController.NAME);
-		    System.out.println("pController:" + pController);
+		    CmsLogger.logInfo("PortalController.NAME:" + PortalController.NAME);
+		    CmsLogger.logInfo("pController:" + pController);
 		}
 		
 		return context;
