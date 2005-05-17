@@ -6,160 +6,33 @@
 <head>
 	<title>$ui.getString("tool.contenttool.contentVersionHeader")</title>
 	
-	<script type="text/javascript">
-	<!--
+	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
 	
-		function cut_copy_paste(e, cmd, obj) {
+		<script type="text/javascript">
+		
+		function hotkeyS()
+		{
+			validateAndSubmitContentForm();
+		}
+		
+		function cut_copy_paste(e, cmd, obj) 
+		{
 			e.execCommand(cmd);
 		};
 	
-	   _applicationContext = "${root}/";
-	   _editor_url = "${root}/applications/HTMLArea/";
-	   _editor_lang = "en";
-	   
-	   	   	var personalConfig = ""; 
-	   	var buttonConfig = "";
-	   	var allowedCSS = "";
-
-		#set($buttonConfig = "")
-		
-		#set($map = $this.getWYSIWYGProperties())
-	   	##set($map = $this.getPrincipalPropertyHashValues("WYSIWYGConfig", false))
-	   	#set($lineIndex = 0)
-	   	#set($positionIndex = 0)
-	   	#set($quote = "'")
-	   
-	   	#foreach($lineIndex in [0..3])
-	   		#foreach($positionIndex in [0..30])
-	   			#set($key = "toolbar_line${lineIndex}_position${positionIndex}")
-	   			#set($value = $map.get($key))
-	   			#if($value != "")
-					#if($lineIndex == 0 && $positionIndex == 0)
-						personalConfig = personalConfig + "["; 
-					#elseif($positionIndex == 0)
-						personalConfig = personalConfig + "], ["; 
-					#end
-					#if($positionIndex == 0)
-	   					personalConfig = personalConfig + "\"$value\""; 
-	   				#else
-	   					personalConfig = personalConfig + ", \"$value\""; 
-	   				#end
-	   			
-	   				##alert("value: $value");
-	   				#if($value == "bold") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}bold: [ ${quote}Bold${quote}, ${quote}ed_format_bold.gif${quote}, false, function(e) {e.execCommand(${quote}bold${quote});} ]") #end							
-	   				#if($value == "italic") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}italic: [ ${quote}Italic${quote}, ${quote}ed_format_italic.gif${quote}, false, function(e) {e.execCommand(${quote}italic${quote});} ]") #end							
-	   				#if($value == "underline") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}underline: [ ${quote}Underline${quote}, ${quote}ed_format_underline.gif${quote}, false, function(e) {e.execCommand(${quote}underline${quote});} ]") #end							
-	   				#if($value == "strikethrough") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}strikethrough: [ ${quote}Strikethrough${quote}, ${quote}ed_format_strike.gif${quote}, false, function(e) {e.execCommand(${quote}strikethrough${quote});} ]") #end							
-	   				#if($value == "subscript") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}subscript: [ ${quote}Subscript${quote}, ${quote}ed_format_sub.gif${quote}, false, function(e) {e.execCommand(${quote}subscript${quote});} ]") #end							
-	   				#if($value == "superscript") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}superscript: [ ${quote}Superscript${quote}, ${quote}ed_format_sup.gif${quote}, false, function(e) {e.execCommand(${quote}superscript${quote});} ]") #end							
-	   				#if($value == "justifyleft") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyleft: [ ${quote}Justify Left${quote}, ${quote}ed_align_left.gif${quote}, false, function(e) {e.execCommand(${quote}justifyleft${quote});} ]") #end							
-	   				#if($value == "justifycenter") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifycenter: [ ${quote}Justify Center${quote}, ${quote}ed_align_center.gif${quote}, false, function(e) {e.execCommand(${quote}justifycenter${quote});} ]") #end							
-	   				#if($value == "justifyright") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyright: [ ${quote}Justify Right${quote}, ${quote}ed_align_right.gif${quote}, false, function(e) {e.execCommand(${quote}justifyright${quote});} ]") #end							
-	   				#if($value == "justifyfull") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}justifyfull: [ ${quote}Justify Full${quote}, ${quote}ed_align_justify.gif${quote}, false, function(e) {e.execCommand(${quote}justifyfull${quote});} ]") #end							
-	   				#if($value == "orderedlist") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}orderedlist: [ ${quote}Ordered List${quote}, ${quote}ed_list_num.gif${quote}, false, function(e) {e.execCommand(${quote}insertorderedlist${quote});} ]") #end							
-	   				#if($value == "unorderedlist") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}unorderedlist: [ ${quote}Bulleted List${quote}, ${quote}ed_list_bullet.gif${quote}, false, function(e) {e.execCommand(${quote}insertunorderedlist${quote});} ]") #end							
-	   				#if($value == "outdent") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}outdent: [ ${quote}Decrease Indent${quote}, ${quote}ed_indent_less.gif${quote}, false, function(e) {e.execCommand(${quote}outdent${quote});} ]") #end							
-	   				#if($value == "indent") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}indent: [ ${quote}Increase Indent${quote}, ${quote}ed_indent_more.gif${quote}, false, function(e) {e.execCommand(${quote}indent${quote});} ]") #end							
-	   				#if($value == "forecolor") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}forecolor: [ ${quote}Font Color${quote}, ${quote}ed_color_fg.gif${quote}, false, function(e) {e.execCommand(${quote}forecolor${quote});} ]") #end							
-	   				#if($value == "hilitecolor") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}hilitecolor: [ ${quote}Background Color${quote}, ${quote}ed_color_bg.gif${quote}, false, function(e) {e.execCommand(${quote}hilitecolor${quote});} ]") #end							
-	   				#if($value == "inserthorizontalrule") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}inserthorizontalrule: [ ${quote}Horizontal Rule${quote}, ${quote}ed_hr.gif${quote}, false, function(e) {e.execCommand(${quote}inserthorizontalrule${quote});} ]") #end							
-	   				#if($value == "createlink") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}createlink: [ ${quote}Insert Web Link${quote}, ${quote}ed_link.gif${quote}, false, function(e) {e.execCommand(${quote}createlink${quote}, true);} ]") #end
-	   				#if($value == "inlinelink") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}inlinelink: [${quote}Lets the user create a link to an external page, a page in InfoGlue or an asset in InfoGlue${quote}, ${quote}ed_inlinelink.gif${quote}, false, function(e) {e.execCommand(${quote}createinlinelink${quote});} ]") #end
-	   				#if($value == "inlineimage") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}inlineimage: [${quote}Lets the user select a inline image${quote}, ${quote}ed_inlineimage.gif${quote}, false, function(e) {e.execCommand(${quote}insertinlineimage${quote});} ]") #end
-	   				#if($value == "insertimage") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}insertimage: [ ${quote}Insert/Modify Image${quote}, ${quote}ed_image.gif${quote}, false, function(e) {e.execCommand(${quote}insertimage${quote});} ]") #end
-	   				#if($value == "inserttable") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}inserttable: [ ${quote}Insert Table${quote}, ${quote}insert_table.gif${quote}, false, function(e) {e.execCommand(${quote}inserttable${quote});} ]") #end
-	   				#if($value == "htmlmode") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}htmlmode: [ ${quote}Toggle HTML Source${quote}, ${quote}ed_html.gif${quote}, true, function(e) {e.execCommand(${quote}htmlmode${quote});} ]") #end
-	   				#if($value == "popupeditor") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}popupeditor: [ ${quote}Enlarge Editor${quote}, ${quote}fullscreen_maximize.gif${quote}, true, function(e) {e.execCommand(${quote}popupeditor${quote});} ]") #end
-	   				#if($value == "about") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}about: [ ${quote}About this editor${quote}, ${quote}ed_about.gif${quote}, true, function(e) {e.execCommand(${quote}about${quote});} ]") #end
-	   				#if($value == "showhelp") #set($foundItem = true)#set($buttonConfig = "${buttonConfig}showhelp: [ ${quote}Help using editor${quote}, ${quote}ed_help.gif${quote}, true, function(e) {e.execCommand(${quote}showhelp${quote});} ]") #end
-	   				#if($value == "undo") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}undo: [ ${quote}Undoes your last action${quote}, ${quote}ed_undo.gif${quote}, false, function(e) {e.execCommand(${quote}undo${quote});} ]") #end
-	   				#if($value == "redo") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}redo: [ ${quote}Redoes your last action${quote}, ${quote}ed_redo.gif${quote}, false, function(e) {e.execCommand(${quote}redo${quote});} ]") #end
-	   				#if($value == "cut") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}cut: [ ${quote}Cut selection${quote}, ${quote}ed_cut.gif${quote}, false, cut_copy_paste ]") #end
-	   				#if($value == "copy") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}copy: [ ${quote}Copy selection${quote}, ${quote}ed_copy.gif${quote}, false, cut_copy_paste ]") #end
-	   				#if($value == "paste") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}paste: [ ${quote}Paste from clipboard${quote}, ${quote}ed_paste.gif${quote}, false, cut_copy_paste ]") #end
-	   				#if($value == "lefttoright") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}lefttoright: [ ${quote}Direction left to right${quote}, ${quote}ed_left_to_right.gif${quote}, false, function(e) {e.execCommand(${quote}lefttoright${quote});} ]") #end
-	   				#if($value == "righttoleft") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}righttoleft: [ ${quote}Direction right to left${quote}, ${quote}ed_right_to_left.gif${quote}, false, function(e) {e.execCommand(${quote}righttoleft${quote});} ]") #end
-	   				#if($value == "removeformat") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}removeformat: [ ${quote}Remove formatting${quote}, ${quote}ed_rmformat.gif${quote}, false, function(e) {e.execCommand(${quote}removeformat${quote});} ]") #end
-	   				#if($value == "print") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}print: [ ${quote}Print document${quote}, ${quote}ed_print.gif${quote}, false, function(e) {e._iframe.contentWindow.print();} ]") #end
-	   				#if($value == "killword") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}killword: [ ${quote}Clear MS Office tags${quote}, ${quote}ed_killword.gif${quote}, false, function(e) {e.execCommand(${quote}killword${quote});} ]") #end
-		   			#if($value == "unlink") #set($foundItem = true) #set($buttonConfig = "${buttonConfig}unlink: [ ${quote}Remove link${quote}, ${quote}ed_unlink.gif${quote}, false, function(e) {e.execCommand(${quote}unlink${quote});} ]") #end
-	
-	   				#if($foundItem)
-						//alert("value: $value");	
-						#set($buttonConfig = "$buttonConfig, ")
-	   				#end
-	   				
-	   				#set($foundItem = false)
-	   			#end
-	   		
-	   			#set($value = "")
-	   		#end
-	   	#end
-		
-		//alert("personalConfig:" + personalConfig);
-		if(personalConfig && personalConfig != "")
-	   	{
-		   	personalConfig = "[" + personalConfig + "]]"; 
-		   	#*
-		   	#set($length = $buttonConfig.length() - 2)
-		   	#set($buttonConfig = "$buttonConfig.substring(0, $length)")
-			buttonConfig = { ${buttonConfig} };
-			*#
-		}
-
-		#if($buttonConfig && $buttonConfig != "")
-		   	#set($length = $buttonConfig.length() - 2)
-		   	#set($buttonConfig = "$buttonConfig.substring(0, $length)")
-		   	buttonConfig = { ${buttonConfig} };
+		var inlineImageDefaultRepositoryId = null;
+		#set($inlineImageDefaultRepositoryId = $map.get("inlineImageDefaultRepositoryId"))
+		#if($inlineImageDefaultRepositoryId && $inlineImageDefaultRepositoryId != "")
+			var inlineImageDefaultRepositoryId = $inlineImageDefaultRepositoryId;
 		#end
-		
-		//alert("enableCSSPlugin:" + $this.enableCSSPlugin);
-		var enableCSSPlugin = $this.enableCSSPlugin;
-		#if($this.enableCSSPlugin)
-			#set($allowedClasses = $this.getAllowedClasses())
-			//Allowed classes $allowedClasses.size()
-			var cssPluginArgs = 
-		    {
-		      combos : 
-		      [{ 
-		        	label: "Style",
-		        	options: { "None"       	: ""
-							#foreach($allowedClass in $allowedClasses)
-		                    	,"$allowedClass" 	: "$allowedClass"
-							#end
-		                    },
-		                    context: "p"
-		          			//context: "pre"
-		          	
-		       }
-		       /*, 
-		       { 
-		          	label: "Info",
-		          	options: { 
-		          			 "None"           : "",
-		                     "title"          : "title",
-		                     "Highlight"      : "highlight",
-		                     "Deprecated"     : "deprecated"
-		                   }
-		       }
-		       */
-		    ]};
-		#else
-			var cssPluginArgs;
-		#end
-		
-		//alert("personalConfig:" + personalConfig);
-		//alert("buttonConfig:" + buttonConfig);
-		//alert("cssPluginArgs:" + cssPluginArgs);
-	-->
+
 	</script>
-	
+		
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/calendar1.js"></script>
-	<script type="text/javascript" src="script/editor.js"></script>
-	<script type="text/javascript" src="applications/HTMLArea/InfoGlueHTMLArea.js"></script>
-	<script type="text/javascript" src="applications/HTMLArea/htmlarea.js"></script>
+	<script type="text/javascript" src="script/editorForFCKEditor.js"></script>
+	<script type="text/javascript" src="script/hotkeys.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -176,14 +49,12 @@
 	#set($readonly = "")
 #end
 
-<body class="contenttooledit" onload="javascript:#if($closeOnLoad == "true")refreshCaller(); #else generateWYSIWYGS(); #end">
+<body class="contenttooledit" onload="javascript:#if($closeOnLoad == "true")refreshCaller(); #else generateWYSIWYGS(); #end" onkeypress="hotKeys(event);">
 
 <script language="javascript" src="script/jsrsClient.js"></script>
 
 <script type="text/javascript">
 <!--
-	HTMLArea.loadPlugin("CSS");
-
 	var allowSave = true;  //Sets to false if one does not close like one should
 	var currentEditorIdHash = new Array();
 	var attributesStatus = new Array();
@@ -261,56 +132,6 @@
 	}
 
 
-	var navigationTitleHash = new Array();
-	
-	function fetchPageNavigationTitle(baseUrl, params){
-		//alert("fetchPageNavigationTitle:" + baseUrl);
-	    jsrsPOST = false;
-	  	jsrsExecute(baseUrl, myCallback, "test", params);
-	}
-	
-	function myCallback( siteNodeId, navigationTitle ){
-	  //alert("Inside myCallback with " + siteNodeId + ":" + navigationTitle);
-	  navigationTitleHash[siteNodeId] = navigationTitle;
-	  //alert("Stored title: " + navigationTitleHash[siteNodeId]);
-	  //alert("navigationTitleHash:" + navigationTitleHash.length);
-	} 
-
-	/**
-	 * This method precaches all needed navigationtitles.
-	 */
-	 
-	function preCacheNavigationTitles(plainAttribute, document)
-	{
-		//alert("Inside preCacheNavigationTitles");
-		//alert("plainAttribute1:" + plainAttribute);
-		
-		siteNodeIdStartIndex = plainAttribute.indexOf("getPageNavTitle(");
-		//alert(siteNodeIdStartIndex);
-		while(siteNodeIdStartIndex > -1)
-		{
-			siteNodeIdEndIndex = plainAttribute.indexOf(")", siteNodeIdStartIndex);
-			//alert("siteNodeIdStartIndex" + siteNodeIdStartIndex);
-			//alert("siteNodeIdEndIndex" + siteNodeIdEndIndex);
-			if(siteNodeIdStartIndex < siteNodeIdEndIndex)
-			{
-				siteNodeId = plainAttribute.substring(siteNodeIdStartIndex + 16, siteNodeIdEndIndex);
-				//alert("siteNodeId:" + siteNodeId);
-				
-				if(siteNodeId > 0 && !navigationTitleHash[siteNodeId])
-				{
-					dataBaseUrl = "$deliveryBaseUrl/ViewApplicationSettings!getPageNavigationTitle.action";
-					fetchPageNavigationTitle(dataBaseUrl, "siteNodeId=" + siteNodeId + "&languageId=1&contentId=-1");
-				}
-			}
-						
-			siteNodeIdStartIndex = plainAttribute.indexOf("getPageNavTitle(", siteNodeIdEndIndex);	
-			//alert("siteNodeIdStartIndex" + siteNodeIdStartIndex);		
-		}
-		
-		return false;
-	}
-
 	//*******************************************
 	// This is a timer that warns the user about saving his work once in a while so he does not
 	// get a new login-screen next time he saves.
@@ -337,43 +158,17 @@
 			for (var i in plainEditors) 
 			{
 				var plainTextAreaName = plainEditors[i];
-				//alert("Creating a textarea for " + plainTextAreaName.name + " = " + i);
-	
-				//alert("Generation in progress..");
-	
-				var plainTextArea = document.getElementById(plainTextAreaName);
-				var plainAttribute = plainTextArea.value;
-				//alert(plainAttribute);
-				plainAttribute = transformAttribute(plainAttribute, document);
-				plainTextArea.value = plainAttribute;
+				//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
+				document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
 				
-				var config = new HTMLArea.Config();
-				configInfoGlue(config);
-										
-				//alert("Generation in progress..");
-											
-				//alert("Height:" + document.getElementById(plainTextAreaName).offsetHeight);
-				tempWYSIWYGEditor = new HTMLArea(plainTextAreaName, config);
-				//alert("css_plugin_args:" + config.css_plugin_args);
-				#if($this.enableCSSPlugin)
-					tempWYSIWYGEditor.registerPlugin(CSS, config.css_plugin_args);
-					
-					#set($cssList = $this.getCSSList())
-					#foreach($css in $cssList)
-						tempWYSIWYGEditor.config.pageStyle = "@import url($css);";
-					#end
-				#end
+				var oFCKeditor = new FCKeditor(plainTextAreaName) ;
+				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
+				oFCKeditor.Config['CustomConfigurationsPath'] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
+				oFCKeditor.Config["AutoDetectLanguage"] = false ;
+				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
+				oFCKeditor.ReplaceTextarea();
 				
-				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = tempWYSIWYGEditor;
-			}
-			
-			for (var i in htmlEditors) 
-			{
-				var htmlEditor = htmlEditors[i];
-				htmlEditor.generate();
-							
-				//alert("Changing status to plain...");
-				setTimeout(changeToPlainAttribute, 500);
+				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
 			}
 		#end
 		
@@ -381,22 +176,21 @@
 			alert("The view is in read only mode as the content version is not in working state. If you want to edit the version you must first change state to working.");
 		#end
 	}	
-	
-	
-	function changeToPlainAttribute()
+
+	function addCategory(attributeName, selectName)
 	{
-		for (var i in plainEditors) 
-		{
-			var plainTextAreaName = plainEditors[i];
-			var plainTextArea = document.getElementById(plainTextAreaName);
-			
-			//alert("UseExdendedEditor:" + attributesStatus[plainTextAreaName + "ActivateExtendedEditorOnLoad"])
-			if(attributesStatus[plainTextAreaName + "ActivateExtendedEditorOnLoad"] == false)
-			{
-				//alert("Changing status to plain...");
-				changeEditor(0, plainTextAreaName);
-			}
-		}
+		var categoryId = document.getElementById(selectName).value;
+		document.getElementById("model/attributeName").value = attributeName;
+		document.getElementById("model/category/categoryId").value = categoryId;
+		document.catForm.submit();
+	}
+
+	function deleteCategory(contentCategoryId, contentId, languageId)
+	{
+		var url = "ContentCategory!deleteStandalone.action?contentCategoryId=" + contentCategoryId;
+		url += "&contentId=" + contentId;
+		url += "&languageId=" + languageId;
+		window.location.href = url;
 	}
 	
 	//*******************************************
@@ -626,12 +420,14 @@
 					    <tr>
 					    	<td align="left">$attributeTitle ("$attribute.name") $attributeDescription </td>
 					    	<td align="right">
-					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false")
+					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
 					    			<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a> 
 								#end
+					    		#*
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableWYSIWYG == "true")
 					    		| <a href="javascript:changeEditor(1, '${attribute.name}');">$ui.getString("tool.contenttool.editorHTMLWYSIWYG")</a> 
 					    		#end
+								*#
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
 					    		| <a href="javascript:changeEditor(2, '${attribute.name}');">$ui.getString("tool.contenttool.editorInfoGlueTemplateEditor")</a>
 								#end
@@ -845,36 +641,7 @@
 						showdiv.style.visibility = "visible";
 		    		</script>
 		    		#end
-		
-					
-					<script type="text/javascript">
-						//alert("CurrentEditorId:" + currentEditorIdHash["${attribute.name}CurrentEditorId"])
-						if(!currentEditorIdHash["${attribute.name}CurrentEditorId"])
-							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 0;
 						
-						var plainAttribute = document.getElementById("${attribute.name}").value;
-		    			//alert("plainAttribute:" + plainAttribute);
-		    			preCacheNavigationTitles(plainAttribute, document);
-					    
-					    #if($currentEditorId == 2 && $activateExtendedEditorOnLoad == "false")
-							changeEditor(0, '${attribute.name}');
-						#end
-					    #*		
-						#if($currentEditorId == 1)
-							changeEditor(${attribute.name}WYSIWYGEditor, 1, "${attribute.name}");
-						#elseif($currentEditorId == 2)
-							changeEditor(${attribute.name}WYSIWYGEditor, 2, "${attribute.name}");
-						#elseif($currentEditorId == 3)
-							changeEditor(${attribute.name}WYSIWYGEditor, 3, "${attribute.name}");
-						#elseif($currentEditorId == 4)
-							changeEditor(${attribute.name}WYSIWYGEditor, 4, "${attribute.name}");
-						#else
-							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 0;
-						#end
-						*#
-						
-					</script>
-					
 				#elseif($attribute.inputType == "select")
 				<!-- Handles the input type select = dropbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
@@ -906,6 +673,71 @@
 		<tr>
 			<td colspan="3"><img src="images/trans.gif" width="1" height="5"/></td>
 		</tr>
+				#set($allCategoryKeys = $definedCategoryKeys)
+		#if($allCategoryKeys.size() > 0)
+		<tr>
+			<tr>
+				<td colspan="3">$ui.getString("tool.contenttool.relatedCategories")</td>
+			</tr>
+			<td colspan="3" class="bordered">
+				#foreach($categoryKey in $allCategoryKeys)
+					#if($velocityCount > 1)
+					<br>
+					#end
+					
+					#set($keyAttribute = $categoryKey.value)
+					#set($dropdownName = "${keyAttribute}${velocityCount}categoryId")
+					#set($availableCategories = $this.getAvailableCategories($categoryKey.categoryId))
+					<table border="0" width="100%" cellspacing="0" style="background-color: white;">
+						<tr valign="bottom" class="darkgreen">
+							<td width="80%">$categoryKey.title ("$keyAttribute") - $categoryKey.description</td>
+							<td align="right">
+                            #if($contentVersionId)
+								#addCategorySelect($dropdownName $availableCategories "")
+							#end
+							</td>
+							<td align="right">
+                            #if($contentVersionId)
+								<a href="javascript:addCategory('${keyAttribute}', '${dropdownName}');"><img src="$ui.getString("images.contenttool.buttons.addCategory")" border="0"/></a>
+							#end
+							</td>
+						</tr>
+					</table>
+					<table border="0" width="100%" cellspacing="0" cellpadding="2" aclass="bordered" style="border-top: 1px solid black;">
+					#set($relatedCategories = $this.getRelatedCategories($keyAttribute))
+					#foreach($relation in $relatedCategories)
+                        #set($isOdd = $velocityCount % 2)
+						#set($class = "class='white'")
+						#if($isOdd == 0)
+							##set($class = "class='darkgreen'")
+							#set($class = "class='lightgreen'")
+						#end
+						<tr $class>
+							<td width="50%">$relation.category.name</td>
+							<td width="50%" align="right">
+								<a href="javascript:deleteCategory('$relation.contentCategoryId', '$contentId', '$languageId');"><img src="images/delete.gif" border="0"/></a>
+							</td>
+						</tr>
+					#end
+					#if($relatedCategories.size() == 0)
+						<tr class="white">
+							<td colspan="2">
+							#if(!$contentVersionId)
+								$ui.getString("tool.contenttool.saveToRelateCategoriesPrefix") $keyAttribute
+							#else
+								$ui.getString("tool.contenttool.noCategoriesPrefix") $keyAttribute
+							#end
+							</td>
+						</tr>
+					#end
+					</table>
+				#end
+			</td>
+		</tr>
+		#end
+		<tr>
+			<td colspan="3"><img src="images/trans.gif" width="1" height="5"/></td>
+		</tr>
 		<tr>
 			<td colspan="3">
 				$ui.getString("tool.contenttool.associatedAttachments")<br/>
@@ -920,7 +752,7 @@
 							<br/>$digitalAsset.assetKey</a><br/>
 							#if($readonly == "")
 								<a href="javascript:openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.editAttachment")</a> / 
-								<a href="ViewContentVersion!deleteDigitalAsset.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId">$ui.getString("tool.contenttool.deleteAttachment")</a>
+								<a href="ViewContentVersion!deleteDigitalAssetStandalone.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId">$ui.getString("tool.contenttool.deleteAttachment")</a>
 							#end
 						</td>
 						#set($counter = $counter + 1)
@@ -977,13 +809,10 @@
 					if(currentEditorId == 1)
 					{
 						var wysiwygEditor = htmlEditors["${attribute.name}WYSIWYGEditor"];
-						//alert("WYSIWYG:" + wysiwygEditor.getHTML());
+						var oEditor = FCKeditorAPI.GetInstance('${attribute.name}') ;
 						
-						var text = wysiwygEditor.getHTML();
-						//alert("text1:" + text);
-						untransformedAttribute = untransformAttribute(text);
 						//alert("untransformedAttribute:" + untransformedAttribute);
-						document.getElementById("$attribute.name").value = untransformedAttribute;
+						document.getElementById("$attribute.name").value = untransformAttribute(oEditor.GetXHTML(false));
 					}
 					else if(currentEditorId == 2)
 					{
@@ -1119,6 +948,15 @@
 	</tr>
 </table>
 </form>
+
+<form id="catForm" name="catForm" action="ContentCategory!addStandalone.action" method="POST">
+	<input type="hidden" id="model/attributeName" name="model/attributeName" value="">
+	<input type="hidden" id="model/category/categoryId" name="model/category/categoryId" value="">
+	<input type="hidden" name="model/contentVersionId" value="$contentVersionId">
+	<input type="hidden" name="contentId" value="$contentId">
+	<input type="hidden" name="languageId" value="$languageId">
+</form>
+
 
 </div>
  

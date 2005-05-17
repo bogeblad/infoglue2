@@ -303,6 +303,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     	return doExecute();
     }
     
+    public String doDeleteDigitalAssetStandalone() throws Exception
+    {
+    	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId);
+    	//this.initialize(getContentVersionId(), getContentId(), this.languageId);
+    	//return "success";
+    	return doStandalone();
+    }
     
     public EventVO getEvent(Integer contentVersionId)
 	{

@@ -41,4 +41,19 @@ public class ContentCategoryAction extends ModelAction
 		controller.delete(getContentCategoryId());
 		return SUCCESS;
 	}
+
+	public String doAddStandalone() throws SystemException
+	{
+	    System.out.println("Attribute:" + getContentCategory().getAttributeName());
+		setModel(controller.save(getContentCategory()));
+		return SUCCESS;
+	}
+
+	public String doDeleteStandalone() throws SystemException
+	{
+		controller.delete(getContentCategoryId());
+		return SUCCESS;
+	}
+
+
 }
