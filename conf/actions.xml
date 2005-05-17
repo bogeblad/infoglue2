@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.45 2005/05/11 21:26:55 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.46 2005/05/17 16:00:20 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -1216,6 +1216,13 @@
 		<command name="delete" alias="ContentCategory!delete">
 			<view name="success">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}</view>
 		</command>
+		<command name="addStandalone" alias="ContentCategory!addStandalone">
+			<view name="success">ViewContentVersion!standalone.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+		</command>
+		<command name="deleteStandalone" alias="ContentCategory!deleteStandalone">
+			<view name="success">ViewContentVersion!standalone.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+		</command>
+
 	</action>
 
 	<!-- Properties Category Commands -->
