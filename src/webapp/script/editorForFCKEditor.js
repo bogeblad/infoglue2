@@ -213,230 +213,101 @@ function getAttributeInTagWithDefaultValue(tag, attributeName, defaultValue)
 	return value;
 }
 
+function Trim(TRIM_VALUE){
+if(TRIM_VALUE.length < 1){
+return"";
+}
+TRIM_VALUE = RTrim(TRIM_VALUE);
+TRIM_VALUE = LTrim(TRIM_VALUE);
+if(TRIM_VALUE==""){
+return "";
+}
+else{
+return TRIM_VALUE;
+}
+} //End Function
 
-function transformAttribute(plainAttribute, document)
+function RTrim(VALUE){
+var w_space = String.fromCharCode(32);
+var v_length = VALUE.length;
+var strTemp = "";
+if(v_length < 0){
+return"";
+}
+var iTemp = v_length -1;
+
+while(iTemp > -1){
+if(VALUE.charAt(iTemp) == w_space){
+}
+else{
+strTemp = VALUE.substring(0,iTemp +1);
+break;
+}
+iTemp = iTemp-1;
+
+} //End While
+return strTemp;
+
+} //End Function
+
+function LTrim(VALUE){
+var w_space = String.fromCharCode(32);
+if(v_length < 1){
+return"";
+}
+var v_length = VALUE.length;
+var strTemp = "";
+
+var iTemp = 0;
+
+while(iTemp < v_length){
+if(VALUE.charAt(iTemp) == w_space){
+}
+else{
+strTemp = VALUE.substring(iTemp,v_length);
+break;
+}
+iTemp = iTemp + 1;
+} //End While
+return strTemp;
+} //End Function
+
+
+
+function transformAttribute(plainAttribute)
 {
 	//alert("Going to transform:" + plainAttribute);
 	var newAttribute = "";
+	var remainingAttribute = plainAttribute;
 	var startPosition;
 	var endPosition;
 
-	startPosition = plainAttribute.toLowerCase().indexOf("<a ");
-	index = 0;
-	var oldTitle;
-	
-	//alert("startPosition:" + startPosition);
-	while(startPosition > -1 && index < 100)
+	startPosition = remainingAttribute.indexOf("$templateLogic.getInlineAssetUrl(");
+	while(startPosition > -1)
 	{
-		newAttribute += plainAttribute.substring(0, startPosition);
+		newAttribute = newAttribute + remainingAttribute.substring(0, startPosition);
 		//alert("newAttribute:" + newAttribute);
-		plainAttribute = plainAttribute.substring(startPosition, plainAttribute.length)
-		//alert("Left in plainAttribute:" + plainAttribute)
-		startTextPosition = plainAttribute.indexOf(">") + 1;
-		//alert("startTextPosition:" + startTextPosition);
-		endPosition = plainAttribute.indexOf("</a>");
-		text = plainAttribute.substring(startTextPosition, endPosition);
-		//alert("text:" + text);
-			
-		hrefTag = plainAttribute.substring(0, endPosition + 4);
-		//alert("hrefTag:" + hrefTag);
+		remainingAttribute = remainingAttribute.substring(startPosition + 33);
 		
-		if(hrefTag.indexOf("href") > -1 && hrefTag.indexOf("$templateLogic.getPageUrl") > -1)
-		{
-			hrefStartIndex = hrefTag.toLowerCase().indexOf("href");
-			//alert(hrefStartIndex);
-			startPart = hrefTag.substring(0, hrefStartIndex + 5);
-
-			//alert("Tranforming templateLogic.getPageUrl...");
-			siteNodeIdIndex = hrefTag.indexOf("getPageUrl(") + 11;
-			siteNodeIdEndIndex = hrefTag.indexOf(",", siteNodeIdIndex);
-			siteNodeId = hrefTag.substring(siteNodeIdIndex, siteNodeIdEndIndex);
-			//alert("siteNodeId:" + siteNodeId);
-			
-			//alert("navigationTitleHash:" + navigationTitleHash)
-			//navigationTitle = navigationTitleHash[siteNodeId];
-			//alert("navigationTitle:" + navigationTitle);
-			
-			remainingTag = hrefTag.substring(hrefStartIndex + 5, hrefTag.length);
-			//alert("Remaining tag before:" + remainingTag);
-			endIndex = remainingTag.indexOf("\" ");
-			//alert("endIndex:" + endIndex);
-			var jumpSteps = 0;
-			if(remainingTag.indexOf("' ") > -1 && (endIndex == -1 || remainingTag.indexOf("' ") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("' ");
-			}
-			else if(remainingTag.indexOf("\")") > -1 && (endIndex == -1 || remainingTag.indexOf("\")") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("\")");
-				jumpSteps = 3;
-			}
-			else if(remainingTag.indexOf("')") > -1 && (endIndex == -1 || remainingTag.indexOf("')") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("')");
-				jumpSteps = 3;
-			}
-			remainingTag = remainingTag.substring(endIndex + jumpSteps + 1, remainingTag.indexOf(">", endIndex + jumpSteps));
-			//alert("remainingTag:" + remainingTag);
-			//newAttribute += startPart + remainingTag; 
-
-			//alert("hrefTag:" + hrefTag);
-			//alert("unescaped hrefTag:" + unescape(hrefTag));
-			newAttribute += "<a href=\"#\" originaltag=\"" + escape(hrefTag) + "\"" + remainingTag + ">" + text + "</a>";
-			//newAttribute += "<a href=\"#\" originaltag=\"" + escape(unescape(hrefTag)) + "\"" + remainingTag + ">" + text + "</a>";
-			//alert("newAttribute:" + newAttribute);
-		}
-		else if(hrefTag.indexOf("href") > -1 && hrefTag.indexOf("$templateLogic.getInlineAssetUrl") > -1)
-		{
-			//alert("Tranforming $templateLogic.getInlineAssetUrl...");
-			//alert("hrefTag:" + hrefTag);
-			
-			hrefStartIndex = hrefTag.toLowerCase().indexOf("href");
-			//alert(hrefStartIndex);
-			
-			remainingTag = hrefTag.substring(hrefStartIndex + 5, hrefTag.length);
-			//alert("Remaining tag before:" + remainingTag);
-			endIndex = remainingTag.indexOf("\" ");
-			//alert("endIndex:" + endIndex);
-			var jumpSteps = 0;
-			if(remainingTag.indexOf("' ") > -1 && (endIndex == -1 || remainingTag.indexOf("' ") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("' ");
-			}
-			else if(remainingTag.indexOf("\")") > -1 && (endIndex == -1 || remainingTag.indexOf("\")") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("\")");
-				jumpSteps = 3;
-			}
-			else if(remainingTag.indexOf("')") > -1 && (endIndex == -1 || remainingTag.indexOf("')") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("')");
-				jumpSteps = 3;
-			}
-			remainingTag = remainingTag.substring(endIndex + jumpSteps + 1, remainingTag.indexOf(">", endIndex + jumpSteps));
-			//alert("remainingTag:" + remainingTag);
-			
-			transformedTag = "<a href=\"#\" originaltag=\"" + escape(hrefTag) + "\"" + remainingTag + ">" + text + "</a>";
-			//alert("transformedTag:" + transformedTag);
-			newAttribute += transformedTag;
-			//newAttribute += "<a href=\"#\" originaltag=\"" + escape(hrefTag) + "\"" + remainingTag + ">" + text + "</a>";
-			//alert("newAttribute:" + newAttribute);
-		}
-		else
-		{
-			newAttribute += hrefTag;
-		}
+		seperatorCharIndex = remainingAttribute.indexOf(",");
+		contentId = remainingAttribute.substring(0, seperatorCharIndex);
+		assetKey = Trim(remainingAttribute.substring(seperatorCharIndex + 1, remainingAttribute.indexOf(")")));
+		//alert("assetKey:" + assetKey);
+		assetKey = assetKey.substring(1, assetKey.length - 1);
+		//alert("assetKey:" + assetKey);
 		
-		if((endPosition + 4) < plainAttribute.length)
-			plainAttribute = plainAttribute.substring(endPosition + 4, plainAttribute.length)		
-		else
-			plainAttribute = "";		
-
+		newAttribute = newAttribute + "DownloadAsset.action?contentId=" + contentId +"&languageId=1&assetKey=" + assetKey + "\"";
+		
+		//alert("remainingAttribute:" + remainingAttribute);
+		endIndex = remainingAttribute.indexOf(")");
+		//alert("endIndex:" + endIndex);
+		
+		remainingAttribute = remainingAttribute.substring(endIndex + 1);
+		
 		//alert("plainAttribute:" + plainAttribute);
-		startPosition = plainAttribute.toLowerCase().indexOf("<a ");
-		
-		index += 1;
+		startPosition = remainingAttribute.indexOf("$templateLogic.getInlineAssetUrl(");
 	}
-	
-	
-	newAttribute += plainAttribute;
-	plainAttribute = newAttribute;
-	//alert("plainAttribute:" + plainAttribute);
-	//First transformation done... now to the next
-	
-	newAttribute = "";
-	
-	startPosition = plainAttribute.toLowerCase().indexOf("<img");
-	index = 0;
-	while(startPosition > -1 && index < 100)
-	{
-		newAttribute += plainAttribute.substring(0, startPosition);
-		//alert("newAttribute:" + newAttribute);
-		plainAttribute = plainAttribute.substring(startPosition, plainAttribute.length)
-		//alert("Left in plainAttribute:" + plainAttribute)
-		endPosition = plainAttribute.indexOf(">");
-			
-		imgTag = plainAttribute.substring(0, endPosition + 1);
-		
-		//alert(imgTag);
-		if(imgTag.indexOf("$templateLogic") > -1)
-		{
-			srcStartIndex = imgTag.toLowerCase().indexOf("src");
-			//alert(srcStartIndex);
-			startPart = imgTag.substring(0, srcStartIndex + 4);
-			//alert("StartPart:" + startPart);
-			
-			//alert("imgTag:" + imgTag);
-			imgTag = imgTag.replace(/\$templateLogic.getAssetUrl\(\$templateLogic.contentId,[\s]{0,1}/gi, "$templateLogic.getInlineAssetUrl(");
-			imgTag = imgTag.replace(/\'/gi, "\"");
-			//alert("imgTag:" + imgTag);
-			
-			assetUrl = "images/imagePlaceHolder.jpg";
-			//alert("imgTag:" + imgTag);
-			//alert("indexOf:" + imgTag.indexOf("getInlineAssetUrl"));
-			if(imgTag.indexOf("getInlineAssetUrl") > -1)
-			{
-				if(imgTag.indexOf(",") > -1)
-				{
-					currentContentId = imgTag.substring(imgTag.indexOf("getInlineAssetUrl") + 18, imgTag.indexOf(","));
-					assetKey = imgTag.substring(imgTag.indexOf(", \"") + 3, imgTag.indexOf("\"\)"));
-					assetUrl = "DownloadAsset.action?contentId=" + currentContentId + "&languageId=" + document.editForm.languageId.value + "&assetKey=" + assetKey;
-				}
-				else
-				{			
-					assetKey = imgTag.substring(imgTag.indexOf("getInlineAssetUrl") + 19, imgTag.indexOf("\"\)"));
-					//alert("assetKey:" + assetKey);	
-					//alert("Document:" + self.document.location);
-					if(document.getElementById("digitalAsset" + assetKey))
-						assetUrl =  document.getElementById("digitalAsset" + assetKey).value;
-					else if(self.document.getElementById("digitalAsset" + assetKey))
-						assetUrl =  self.document.getElementById("digitalAsset" + assetKey).value;
-					
-					//alert("languageId:" + document.editForm.languageId.value);
-				}
-			}
-				
-			startPart += "\"" + assetUrl + "\" originaltag=\"" + escape(imgTag) + "\"";
-			//alert("StartPart:" + startPart);
-			remainingTag = imgTag.substring(srcStartIndex + 4, imgTag.length);
-			//alert("Remaining tag before:" + remainingTag);
-			endIndex = remainingTag.indexOf("\" ");
-			//alert("endIndex:" + endIndex);
-			var jumpSteps = 0;
-			if(remainingTag.indexOf("' ") > -1 && (endIndex == -1 || remainingTag.indexOf("' ") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("' ");
-			}
-			else if(remainingTag.indexOf("\")") > -1 && (endIndex == -1 || remainingTag.indexOf("\")") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("\")");
-				jumpSteps = 3;
-			}
-			else if(remainingTag.indexOf("')") > -1 && (endIndex == -1 || remainingTag.indexOf("')") < endIndex))
-			{
-				endIndex = remainingTag.indexOf("')");
-				jumpSteps = 3;
-			}
-			remainingTag = remainingTag.substring(endIndex + jumpSteps, remainingTag.length);
-			newAttribute += startPart + remainingTag; 
-			//alert("Remaining tag after:" + remainingTag);
-		}
-		else
-		{
-			newAttribute += imgTag;
-		}
-		
-		if((endPosition + 1) < plainAttribute.length)
-			plainAttribute = plainAttribute.substring(endPosition + 1, plainAttribute.length)		
-		else
-			plainAttribute = "";		
-			
-		startPosition = plainAttribute.toLowerCase().indexOf("<img");
-		
-		index += 1;
-	}
-	
-	newAttribute += plainAttribute;
+	newAttribute = newAttribute + remainingAttribute;
 
 	//alert("Done transforming:" + newAttribute);
 	return newAttribute;
@@ -448,110 +319,40 @@ function untransformAttribute(plainAttribute)
 {
 	//alert("Going to untransform:" + plainAttribute);
 	var newAttribute = "";
+	var remainingAttribute = plainAttribute;
 	var startPosition;
 	var endPosition;
 
-	startPosition = plainAttribute.toLowerCase().indexOf("<img");
-	//alert("startPosition:" + startPosition);
-	index = 0;
-	while(startPosition > -1 && index < 100)
+	startPosition = remainingAttribute.indexOf("DownloadAsset.action?contentId=");
+	while(startPosition > -1)
 	{
-		newAttribute += plainAttribute.substring(0, startPosition);
+		newAttribute = newAttribute + remainingAttribute.substring(0, startPosition);
 		//alert("newAttribute:" + newAttribute);
-		plainAttribute = plainAttribute.substring(startPosition, plainAttribute.length)
-		//alert("Left in plainAttribute:" + plainAttribute)
-		endPosition = plainAttribute.indexOf(">");
-			
-		imgTag = plainAttribute.substring(0, endPosition + 1);
-		//alert(imgTag);
-		originalTagStartIndex = imgTag.indexOf("originaltag");
-		//alert(originalTagStartIndex);
-		if(originalTagStartIndex > -1)
-		{
-			imgTag = imgTag.substring(originalTagStartIndex + 13, imgTag.length)
-			//alert(imgTag);
-			originalTagEndIndex = imgTag.indexOf("\"");
-			//alert("originalTagEndIndex:" + originalTagEndIndex);
-			//alert("ImageTag med påhäng:" + imgTag + ":" + imgTag.length + ":" + originalTagEndIndex);
-			imgTag = imgTag.substring(0, originalTagEndIndex);
-			//alert(imgTag);
-			imgTag = unescape(imgTag);
-			//alert("ImageTag som skall vara ren:" + imgTag);
-			newAttribute += imgTag;
-		}
-		else
-		{
-			newAttribute += imgTag;
-		}
-
-		//alert((endPosition + 1) + "<" + plainAttribute.length + "=" + ((endPosition + 1) < plainAttribute.length));
-		if((endPosition + 1) < plainAttribute.length)
-			plainAttribute = plainAttribute.substring(endPosition + 1, plainAttribute.length)		
-		else
-			plainAttribute = "";		
-			
-		startPosition = plainAttribute.toLowerCase().indexOf("<img");
+		remainingAttribute = remainingAttribute.substring(startPosition + 31);
 		
-		index += 1;
+		seperatorCharIndex = remainingAttribute.indexOf("&amp;");
+		contentId = remainingAttribute.substring(0, seperatorCharIndex);
+		assetKey = remainingAttribute.substring(seperatorCharIndex + 1, remainingAttribute.indexOf("\""));
+		//alert("assetKey:" + assetKey);
+		assetStartIndex = assetKey.indexOf("assetKey=") + 9;
+		//alert("assetStartIndex:" + assetStartIndex);
+		assetKey = assetKey.substring(assetStartIndex);
+		//alert("assetKey:" + assetKey);
+		
+		newAttribute = newAttribute + "$templateLogic.getInlineAssetUrl(" + contentId + ", \"" + assetKey + "\")\"";
+		
+		//alert("remainingAttribute:" + remainingAttribute);
+		endIndex = remainingAttribute.indexOf("\"");
+		//alert("endIndex:" + endIndex);
+		
+		remainingAttribute = remainingAttribute.substring(endIndex + 1);
+		
+		//alert("plainAttribute:" + plainAttribute);
+		startPosition = remainingAttribute.indexOf("DownloadAsset.action?contentId=");
 	}
-	newAttribute += plainAttribute;
+	newAttribute = newAttribute + remainingAttribute;
 
-	plainAttribute = newAttribute;
-	//First transformation done... now to the next
-
-	//alert("Going to untransform:" + plainAttribute);
-	
-	newAttribute = "";
-	startPosition = plainAttribute.toLowerCase().indexOf("<a ");
-	//alert("startPosition:" + startPosition);
-	index = 0;
-	while(startPosition > -1 && index < 100)
-	{
-		newAttribute += plainAttribute.substring(0, startPosition);
-		//alert("newAttribute:" + newAttribute);
-		plainAttribute = plainAttribute.substring(startPosition, plainAttribute.length)
-		//alert("Left in plainAttribute:" + plainAttribute)
-		endPosition = plainAttribute.toLowerCase().indexOf("</a>");
-			
-		hrefTag = plainAttribute.substring(0, endPosition + 4);
-		//alert("hrefTag:" + hrefTag);
-		
-		originalTagStartIndex = hrefTag.indexOf("originaltag");
-		//alert("originalTagStartIndex:" + originalTagStartIndex);
-		if(originalTagStartIndex > -1)
-		{
-			//alert("1 hrefTag:" + hrefTag);
-			originalTagEndIndex = hrefTag.indexOf("\"", originalTagStartIndex + 13);
-			//alert("2 hrefTag:" + originalTagEndIndex);
-			//hrefTag = hrefTag.substring(originalTagStartIndex + 13, hrefTag.length);
-			hrefTag = hrefTag.substring(originalTagStartIndex + 13, originalTagEndIndex)
-			//alert("hrefTag:" + hrefTag);
-			originalTagEndIndex = hrefTag.indexOf(">");
-			//alert("originalTagEndIndex:" + originalTagEndIndex);
-			//hrefTag = hrefTag.substring(0, originalTagEndIndex - 1);
-			//alert("hrefTag:" + hrefTag);
-			hrefTag = unescape(hrefTag);
-			//alert("escaped hrefTag:" + hrefTag);
-			newAttribute += hrefTag;
-		}
-		else
-		{
-			newAttribute += hrefTag;
-		}
-
-		//alert((endPosition + 4) + "<" + plainAttribute.length + "=" + ((endPosition + 4) < plainAttribute.length));
-		if((endPosition + 4) < plainAttribute.length)
-			plainAttribute = plainAttribute.substring(endPosition + 4, plainAttribute.length)		
-		else
-			plainAttribute = "";	
-			
-		startPosition = plainAttribute.toLowerCase().indexOf("<a ");
-		
-		index += 1;
-	}
-
-	newAttribute += plainAttribute;
-
+	//alert("Done transforming:" + newAttribute);
 	return newAttribute;
 }	
 
