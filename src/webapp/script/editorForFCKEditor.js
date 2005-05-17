@@ -296,7 +296,7 @@ function transformAttribute(plainAttribute)
 		assetKey = assetKey.substring(1, assetKey.length - 1);
 		//alert("assetKey:" + assetKey);
 		
-		newAttribute = newAttribute + "DownloadAsset.action?contentId=" + contentId +"&languageId=1&assetKey=" + assetKey + "\"";
+		newAttribute = newAttribute + "DownloadAsset.action?contentId=" + contentId +"&languageId=" + languageId + "&assetKey=" + assetKey + "\"";
 		
 		//alert("remainingAttribute:" + remainingAttribute);
 		endIndex = remainingAttribute.indexOf(")");
