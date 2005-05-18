@@ -289,7 +289,8 @@ public abstract class BaseDeliveryController
 		try
 		{
 		    CmsLogger.logInfo("Committing a transaction and closing it...");
-			db.commit();
+		    
+		    db.commit();
 			db.close();
 		}
 		catch(Exception e)
@@ -313,7 +314,7 @@ public abstract class BaseDeliveryController
 			if (db.isActive())
 			{
 				db.rollback();
-				db.close();
+			    db.close();
 			}
 		}
 		catch(Exception e)

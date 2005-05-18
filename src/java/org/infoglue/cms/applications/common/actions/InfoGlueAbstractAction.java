@@ -304,7 +304,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		try
 		{
 		    db.commit();
-			db.close();
+		 	db.close();
 		}
 		catch(Exception e)
 		{

@@ -91,7 +91,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		
-		if(componentXML != null && componentXML.length() != 0)
+   		if(componentXML != null && componentXML.length() != 0)
 		{
 			Document document = new DOMBuilder().getDocument(componentXML);
 
@@ -106,6 +106,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			if(baseComponent != null)
 			{
 				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
+
 				pageContent = renderComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId());
 			}
 		}
@@ -449,7 +450,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	private String renderComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId) throws Exception
 	{
 		String decoratedComponent = "";
-
+		
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 		templateController.setComponentLogic(new ComponentLogic(templateController, component));
 		templateController.getDeliveryContext().getUsageListeners().add(templateController.getComponentLogic().getComponentDeliveryContext());
@@ -492,15 +493,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    
 			try
 			{
-				String componentString = getComponentString(templateController, component.getContentId()); 
+			    String componentString = getComponentString(templateController, component.getContentId()); 
 				
 				Map context = getDefaultContext();
-				context.put("templateLogic", templateController);
-				StringWriter cacheString = new StringWriter();
+		    	context.put("templateLogic", templateController);
+		    	StringWriter cacheString = new StringWriter();
 				PrintWriter cachedStream = new PrintWriter(cacheString);
 				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString);
 				componentString = cacheString.toString();
-			
+
 				int offset = 0;
 				int slotStartIndex = componentString.indexOf("<ig:slot", offset);
 				int slotStopIndex = 0;

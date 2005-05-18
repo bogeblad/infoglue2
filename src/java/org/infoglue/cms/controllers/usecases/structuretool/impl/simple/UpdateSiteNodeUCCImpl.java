@@ -103,7 +103,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
             //add validation here if needed
             siteNode = SiteNodeController.getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
             siteNode.setValueObject(siteNodeVO);
-    
+            
             if(siteNodeTypeDefinitionId != null)
 	            siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionId, db));
 
@@ -113,7 +113,8 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());
 			latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
 			latestSiteNodeVersionVO.setVersionModifier(updatedSiteNodeVersionVO.getVersionModifier());
-			
+			latestSiteNodeVersionVO.setModifiedDateTime(new java.util.Date());
+
 			SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(infoGluePrincipal, latestSiteNodeVersionVO, db);
 
             //If any of the validations or setMethods reported an error, we throw them up now before create.

@@ -908,7 +908,7 @@ public abstract class BaseController
             //CmsLogger.logInfo("Closing a transaction in cms...");
 
             db.commit();
-			db.close();
+		    db.close();
         }
         catch(Exception e)
         {

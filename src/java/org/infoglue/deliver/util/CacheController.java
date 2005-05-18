@@ -388,7 +388,7 @@ public class CacheController extends Thread
 		}
 		finally
 		{
-			db.close();			
+		    db.close();			
 		}
 	}
 	

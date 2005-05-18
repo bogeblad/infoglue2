@@ -52,7 +52,7 @@ public class ComponentLogic
 	private boolean useEditOnSight = true;
 	private boolean threatFoldersAsContents = false;
 	private ComponentDeliveryContext componentDeliveryContext;
-
+	
  	public ComponentLogic(TemplateController templateController, InfoGlueComponent infoGlueComponent)
  	{
  		this.templateController = templateController;
@@ -60,6 +60,20 @@ public class ComponentLogic
  		this.componentDeliveryContext = ComponentDeliveryContext.getComponentDeliveryContext(templateController.getDeliveryContext(), infoGlueComponent);
  		this.componentDeliveryContext.addUsedContent("content:" + infoGlueComponent.getContentId());
  	}
+ 	
+ 	/*
+	public void getDatabaseStatus(String debug)
+	{
+		try
+		{
+		    this.templateController.getDatabaseStatus(debug);
+		}
+		catch(Exception e) 
+		{
+		    e.printStackTrace();
+		}
+	}
+	*/
 
 	/**
 	 * The method returns a list of ContentVO-objects that is children to the bound content of named binding on the siteNode sent in. 
@@ -458,6 +472,7 @@ public class ComponentLogic
 		List pages = new ArrayList();
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");

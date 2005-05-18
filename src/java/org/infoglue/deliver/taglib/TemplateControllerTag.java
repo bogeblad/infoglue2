@@ -34,7 +34,6 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
  * Base class for all Tags operating on the TemplateController.
  */
 public abstract class TemplateControllerTag extends TagSupport {
-	private TemplateController controller;
 	private String id;
 	
 	
@@ -66,18 +65,20 @@ public abstract class TemplateControllerTag extends TagSupport {
 	 */
 	protected TemplateController getController() throws JspTagException
 	{
-		if(controller == null)
-			try 
-			{
-				controller = (TemplateController) this.pageContext.getRequest().getAttribute("org.infoglue.cms.deliver.templateLogic");
-				if(controller == null)
-					throw new NullPointerException("No TemplateController found in context.");
-			} 
-			catch(Exception e) 
-			{
-				e.printStackTrace();
-				throw new JspTagException("PageContext error: " + e.getMessage());
-			}
+	    TemplateController controller;
+    	
+	    try 
+		{
+			controller = (TemplateController) this.pageContext.getRequest().getAttribute("org.infoglue.cms.deliver.templateLogic");
+			if(controller == null)
+				throw new NullPointerException("No TemplateController found in context.");
+		} 
+		catch(Exception e) 
+		{
+			e.printStackTrace();
+			throw new JspTagException("PageContext error: " + e.getMessage());
+		}
+			
 		return controller;
 	}
 	

@@ -59,6 +59,8 @@ import org.infoglue.deliver.util.webservices.WebServiceHelper;
  */
 public interface TemplateController
 {
+    //public void getDatabaseStatus(String debugMessage);
+    
     /**
      * Sets the transaction the controller should work within. This is to limit the number of connections we use. 
      */
