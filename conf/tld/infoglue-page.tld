@@ -32,7 +32,6 @@
         </attribute>
     </tag>
 
-
 	<tag>
         <name>boundFolderContents</name>
         <tagclass>org.infoglue.deliver.taglib.page.BoundFolderContentsTag</tagclass>
@@ -62,6 +61,23 @@
     	    <name>searchRecursive</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    </tag>
+
+	<tag>
+        <name>isSiteNodeParentToCurrentSiteNode</name>
+        <tagclass>org.infoglue.deliver.taglib.page.IsSiteNodeParentToCurrentSiteNodeTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateLogic.getIsParentToCurrent(Integer siteNodeId)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>siteNodeId</name>
+        	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
     </tag>
 </taglib>
