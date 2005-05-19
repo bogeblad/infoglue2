@@ -44,7 +44,7 @@ FCKConfig.FontNames = 'Times New Roman;Verdana' ;
 FCKConfig.FontSizes = '1/xx-small;2/x-small;3/small;4/medium;' ;
 FCKConfig.FontFormats	= 'p;div;pre;address;h1;h2;h3;' ;
 
-FCKConfig.StylesXmlPath	= '$request.contextPath/WYSIWYGProperties!viewStylesXML.action' ;
+FCKConfig.StylesXmlPath	= '$request.contextPath/WYSIWYGProperties!viewStylesXML.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")' ;
 
 FCKConfig.SpellChecker			= 'ieSpell' ;	// 'ieSpell' | 'SpellerPages'
 FCKConfig.IeSpellDownloadUrl	= 'http://www.iespell.com/rel/ieSpellSetup211325.exe' ;
