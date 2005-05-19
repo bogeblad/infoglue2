@@ -458,6 +458,42 @@ public class ComponentLogic
 		return contents;
 	}
 	
+	public WebPage getBoundPage(String propertyName)
+	{
+	    return getBoundPage(propertyName, this.useInheritance);
+	}
+	
+	/**
+	 * This method returns a page bound to the component.
+	 */
+
+	public WebPage getBoundPage(String propertyName, boolean useInheritance)
+	{
+		WebPage webPage = null;
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			if(bindingsIterator.hasNext())
+			{
+			    webPage = new WebPage();
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				webPage.setSiteNodeId(siteNodeId);
+				webPage.setLanguageId(templateController.getLanguageId());
+				webPage.setContentId(null);
+				webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+				webPage.setMetaInfoContentId(templateController.getContentId(siteNodeId, DeliveryContext.META_INFO_BINDING_NAME));
+				webPage.setUrl(getPageUrl(siteNodeId));
+			}
+		}
+
+		return webPage;
+	}
+
+	
 	public List getBoundPages(String propertyName)
 	{
 	    return getBoundPages(propertyName, this.useInheritance);
@@ -494,19 +530,52 @@ public class ComponentLogic
 		return pages;
 	}
 
+	
+	/**
+	 * This method returns a list of childpages using inheritence as default.
+	 */
+
+	public List getChildPages(String propertyName)
+	{
+	    return getChildPages(propertyName, this.useInheritance);
+	}
+	
+	/**
+	 * This method returns a list of childpages.
+	 */
+
+	public List getChildPages(String propertyName, boolean useInheritance)
+	{
+	    List childPages = new ArrayList();
+	    
+	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				childPages.addAll(getChildPages(siteNodeId));
+			}
+		}	
+		return childPages;
+	}
+
+	
 	/**
 	 * This method returns a list of childpages.
 	 */
 
 	public List getChildPages(Integer siteNodeId)
 	{
-		List pages = templateController.getChildPages();
+		List pages = templateController.getChildPages(siteNodeId);
 
 		Iterator pagesIterator = pages.iterator();
 		while(pagesIterator.hasNext())
 		{
 			WebPage webPage = (WebPage)pagesIterator.next();
-			webPage.setUrl(getPageUrl(siteNodeId));
+			webPage.setUrl(getPageUrl(webPage.getSiteNodeId()));
 		}
 	
 		return pages;

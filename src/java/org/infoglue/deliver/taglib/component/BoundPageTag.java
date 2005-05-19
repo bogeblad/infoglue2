@@ -25,30 +25,23 @@ package org.infoglue.deliver.taglib.component;
 
 import javax.servlet.jsp.JspException;
 
-public class ChildPagesTag extends ComponentLogicTag {
+public class BoundPageTag extends ComponentLogicTag {
 	private static final long serialVersionUID = 4050206323348354355L;
 
-	private Integer siteNodeId;
 	private String propertyName;
 	private boolean useInheritance;
 	
 	
 	
-    public ChildPagesTag()
+    public BoundPageTag()
     {
         super();
     }
 
 	public int doEndTag() throws JspException
     {
-	    if(this.siteNodeId != null)
-	        setResultAttribute(this.getController().getChildPages(this.siteNodeId));
-        else if(this.propertyName != null)
-            setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance));
-        else
-            throw new JspException("You must state either propertyName or siteNodeId");
-	    
-	    return EVAL_PAGE;
+		setResultAttribute(getComponentLogic().getBoundPage(propertyName, useInheritance));
+        return EVAL_PAGE;
     }
 
 	public void setPropertyName(String name) 
@@ -56,13 +49,8 @@ public class ChildPagesTag extends ComponentLogicTag {
 		this.propertyName = name;
 	}
 	
-    public void setSiteNodeId(Integer siteNodeId)
-    {
-        this.siteNodeId = siteNodeId;
-    }
-    
-    public void setUseInheritance(boolean useInheritance)
-    {
-        this.useInheritance = useInheritance;
-    }
+	public void setUseInheritence(boolean useInheritance)
+	{
+		this.useInheritance = useInheritance;
+	}
 }
