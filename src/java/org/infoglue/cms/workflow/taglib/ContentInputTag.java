@@ -33,9 +33,9 @@ import javax.servlet.jsp.tagext.TagSupport;
  * 
  */
 public abstract class ContentInputTag extends TagSupport {
-	private String idAttr;
-	private String name;
-	private String cssClass;
+	private String idAttr   = "";
+	private String name     = "";
+	private String cssClass = "";
 
 
 	/**
