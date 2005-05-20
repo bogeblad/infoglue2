@@ -29,10 +29,9 @@ public class BoundPagesTag extends ComponentLogicTag {
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private String propertyName;
-	private boolean useInheritance;
+	private boolean useInheritance = true;
 	
-	
-	
+		
     public BoundPagesTag()
     {
         super();

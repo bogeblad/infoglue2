@@ -30,7 +30,7 @@ public class ChildPagesTag extends ComponentLogicTag {
 
 	private Integer siteNodeId;
 	private String propertyName;
-	private boolean useInheritance;
+	private boolean useInheritance = true;
 	
 	
 	
