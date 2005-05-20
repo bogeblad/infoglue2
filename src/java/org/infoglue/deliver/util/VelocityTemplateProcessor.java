@@ -58,7 +58,7 @@ public class VelocityTemplateProcessor
 		    Timer timer = new Timer();
 		    timer.setActive(false);
 			
-		    if(templateAsString.indexOf("<%") > -1)
+		    if(templateAsString.indexOf("<%") > -1 || templateAsString.indexOf("http://java.sun.com/products/jsp/dtd/jspcore_1_0.dtd") > -1)
 		    {
 		    	dispatchJSP(params, pw, templateAsString);
 		    }
