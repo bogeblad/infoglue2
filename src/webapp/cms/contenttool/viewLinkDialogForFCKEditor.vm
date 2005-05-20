@@ -59,8 +59,10 @@
 					contentIdStartIndex = txtUrl.lastIndexOf(",");
 					contentIdEndIndex = txtUrl.lastIndexOf(")");
 					oldContentId = txtUrl.substring(contentIdStartIndex + 1, contentIdEndIndex);
+					if(oldContentId == "null" || oldContentId == " null")
+						oldContentId = "-1";
 					//alert("oldSiteNodeId:" + oldSiteNodeId);
-					//alert("oldContentId:" + oldContentId);
+					//alert("oldContentId:" + oldContentId + ":");
 				}
 				
 				changeTab("internalLink");
