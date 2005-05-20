@@ -115,6 +115,14 @@
 		<taglib-location>/WEB-INF/tld/infoglue-common.tld</taglib-location>
 	</taglib>
 	<taglib>
+		<taglib-uri>infoglue-content</taglib-uri>
+		<taglib-location>/WEB-INF/tld/infoglue-content.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>infoglue-management</taglib-uri>
+		<taglib-location>/WEB-INF/tld/infoglue-management.tld</taglib-location>
+	</taglib>
+	<taglib>
 		<taglib-uri>infoglue-component</taglib-uri>
 		<taglib-location>/WEB-INF/tld/infoglue-component.tld</taglib-location>
 	</taglib>

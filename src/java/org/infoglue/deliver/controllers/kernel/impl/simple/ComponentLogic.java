@@ -412,6 +412,29 @@ public class ComponentLogic
 		return propertyValue;
 	}
 	
+	public ContentVO getBoundContent(String propertyName)
+	{
+	    return getBoundContent(propertyName, true);
+	}
+	
+	public ContentVO getBoundContent(String propertyName, boolean useInheritance)
+	{
+		ContentVO content = null;
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				content = this.templateController.getContent(contentId);
+			}
+		}
+
+		return content;
+	}
+
 	public Integer getBoundContentId(String propertyName)
 	{
 	    return getBoundContentId(propertyName, true);

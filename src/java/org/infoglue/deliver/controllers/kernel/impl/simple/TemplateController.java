@@ -39,6 +39,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
@@ -75,8 +76,7 @@ public interface TemplateController
     /**
      * Setter for the template to get all the parameters from the user.
      */
-    public abstract void setStandardRequestParameters(Integer siteNodeId,
-            Integer languageId, Integer contentId);
+    public abstract void setStandardRequestParameters(Integer siteNodeId, Integer languageId, Integer contentId);
 
     /**
      * Setter for the template to get all the parameters from the user.
@@ -170,6 +170,14 @@ public interface TemplateController
 
     public abstract InfoGluePrincipal getPrincipal();
 
+    /**
+     * This method returns the InfoGlue Principal requested
+     * 
+     * @param userName
+     */
+    
+    public abstract InfoGluePrincipal getPrincipal(String userName);
+    
     /**
      * Getting a property for the current Principal - used for personalisation. 
      * This method starts with getting the property on the user and if it does not exist we check out the
@@ -882,6 +890,18 @@ public interface TemplateController
 	
 	public List getChildContents(Integer contentId, boolean searchRecursive, String sortAttribute, String sortOrder, boolean includeFolders);
 
+	/**
+	 * Getter for the most recent contentVersion on a content
+	 */
+	
+	public ContentVersionVO getContentVersion(Integer contentId);
+	
+	/**
+	 * Getter for the most recent contentVersion on a content
+	 */
+	
+	public ContentVersionVO getContentVersion(Integer contentId, Integer languageId, boolean useLanguageFallback);
+	
     /**
 	 * Finds a list of ContentVersionVOs that are related to the provided category under the given attribute name.
 	 * @param categoryId The id of the Category

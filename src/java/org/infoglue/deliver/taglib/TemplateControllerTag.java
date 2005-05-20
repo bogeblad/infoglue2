@@ -52,10 +52,10 @@ public abstract class TemplateControllerTag extends TagSupport {
 		pageContext.setAttribute(id, value);
 	}
 	
-	protected void produceResult(String value) throws JspTagException
+	protected void produceResult(Object value) throws JspTagException
 	{
-		if(id == null)
-			write(value);
+	    if(id == null)
+			write(value.toString());
 		else
 			setResultAttribute(value);
 	}
