@@ -292,8 +292,13 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton(this.getCMSBaseUrl() + "/CreateSiteNode!input.action?isBranch=true&parentSiteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.newSiteNode"), "New SiteNode"));	
-		buttons.add(getMoveButton());	
-		buttons.add(getMoveMultipleButton());	
+		
+		ImageButton moveButton = getMoveButton();
+		moveButton.getSubButtons().add(getMoveMultipleButton());
+		buttons.add(moveButton);	
+
+		//buttons.add(getMoveButton());	
+		//buttons.add(getMoveMultipleButton());	
 
 		if(!hasPublishedVersion())
 		    buttons.add(new ImageButton(this.getCMSBaseUrl() + "/Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
@@ -308,10 +313,16 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			buttons.add(new ImageButton(this.getCMSBaseUrl() + "/UnpublishSiteNodeVersion!input.action?siteNodeId=" + this.siteNodeId + "&siteNodeVersionId=" + this.siteNodeVersionId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header"));
 			//buttons.add(new ImageButton("Confirm.action?header=Unpublish%20node&yesDestination=" + URLEncoder.encode(URLEncoder.encode("RequestSiteNodeVersionUnpublish.action?entityClass=" + SiteNodeVersion.class.getName() + "&entityId=" + this.lastPublishedSiteNodeVersionId + "&typeId=" + EventVO.UNPUBLISH_LATEST + "&repositoryId=" + this.repositoryId + "&name=" + this.name + "&description=Unpublish of latest published version&siteNodeId=" + this.siteNodeId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=tool.structuretool.siteNodeDetailsHeader&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to ask the editor to unpublish the latest published version of " + this.name, "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.unpublishVersion"), "Unpublish SiteNode"));
 		
-		buttons.add(new ImageButton(this.getCMSBaseUrl() + "/ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeCover"), "SiteNode Cover"));	
+		ImageButton coverButton = new ImageButton(this.getCMSBaseUrl() + "/ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeCover"), "SiteNode Cover");	
+		coverButton.getSubButtons().add(getSimplePageComponentsButton());
+		buttons.add(coverButton);	
 
 		if(!isReadOnly())
-			buttons.add(getViewPageComponentsButton());	
+		{
+		    ImageButton pageComponentsButton = getViewPageComponentsButton();
+		    pageComponentsButton.getSubButtons().add(getSimplePageComponentsButton());
+		    buttons.add(pageComponentsButton);	
+		}
 		
 	    buttons.add(getPublishButton());
 		
@@ -390,6 +401,36 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		catch(Exception e)
 		{
 			return new ImageButton(true, "javascript:alert('Cannot edit this page. You must first assign a metainfo content. Do this by entering node properties and fill in the information requested.');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
+		}
+	}
+
+	private ImageButton getSimplePageComponentsButton() throws Exception
+	{
+		try
+		{
+		    boolean isMetaInfoInWorkingState = false;
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
+			Integer languageId = masterLanguageVO.getLanguageId();
+			
+			List boundContents = ContentController.getBoundContents(serviceBindingId); 			
+			if(boundContents.size() > 0)
+			{
+				ContentVO contentVO = (ContentVO)boundContents.get(0);
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
+				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+					isMetaInfoInWorkingState = true;
+			}
+			
+			CmsLogger.logInfo("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
+			if(isMetaInfoInWorkingState)
+			    return new ImageButton(CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&showSimple=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
+			    //return new ImageButton("ViewSiteNodePageComponents.action?siteNodeId=" + this.siteNodeId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
+			else
+				return new ImageButton(true, "javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
+		}
+		catch(Exception e)
+		{
+			return new ImageButton(true, "javascript:alert('Cannot edit this page. You must first assign a metainfo content. Do this by entering node properties and fill in the information requested.');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
 		}
 	}
 

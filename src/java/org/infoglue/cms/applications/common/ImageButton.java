@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.applications.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class represents a button in the CMSTools menu.
  * Just a very simple javabean.
@@ -37,6 +40,7 @@ public class ImageButton
 	private Integer width			= new Integer(76);
 	private String title            = "";
 	private String tooltip 			= "";
+	private List subButtons			= new ArrayList();
 
 	public ImageButton(String actionURL, String imageURL, String title)
 	{
@@ -120,4 +124,9 @@ public class ImageButton
 	{
 		return width;
 	}
+	
+    public List getSubButtons()
+    {
+        return subButtons;
+    }
 }
