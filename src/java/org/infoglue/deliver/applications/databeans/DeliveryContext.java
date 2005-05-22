@@ -68,6 +68,9 @@ public class DeliveryContext implements UsageListener
 	
 	//This sets the content type
 	private String contentType = null;
+	
+	//Lets one disable caching of this page if needed for some requests.
+	private boolean disablePageCache = false;
 
 	//This decides if to show a minimalistic version of the page structure - not render all compoents etc.
 	private boolean showSimple = false;
@@ -320,5 +323,16 @@ public class DeliveryContext implements UsageListener
     public void setContentType(String contentType)
     {
         this.contentType = contentType;
+    }
+    
+    public boolean getDisablePageCache()
+    {
+        return disablePageCache;
+    }
+    
+    public void setDisablePageCache(boolean disablePageCache)
+    {
+        System.out.println("Setting disabling pagecache...");
+        this.disablePageCache = disablePageCache;
     }
 }

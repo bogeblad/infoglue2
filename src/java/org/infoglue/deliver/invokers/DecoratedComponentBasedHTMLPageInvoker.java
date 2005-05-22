@@ -179,26 +179,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		 String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 		 String url = "javascript:window.open('" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&specifyBaseTemplate=true&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', 'BaseTemplate', 'width=600,height=700,left=50,top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes');";
 		 this.getTemplateController().getDeliveryContext().setContentType("text/html");
+		 this.getTemplateController().getDeliveryContext().setDisablePageCache(true);
 		 return "<html><body style=\"font-family:verdana, sans-serif; font-size:10px;\">The page has no base component assigned yet. Click <a href=\"" + url + "\">here</a> to assign one</body></html>";
 	 }
 
-	 /**
-	  * This method shows the page structure simple without the components rendered.
-	  */
-
-	 private String showSimplePageStructure(TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, InfoGlueComponent component) throws Exception
-	 {
-	     String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
-		
-         String template = "<html><head></head><body onload=\"toggleDiv('pageComponents');\" style=\"font-family:verdana, sans-serif; font-size:10px;\">This is the simple page mode. It gives the user a possibility to edit the page structure without showing the real layout.</body></html>";
-         
-		 org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, component.getContentId()); 
-
-         this.propertiesDivs += getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, templateController.getDeliveryContext().getContentId(), component.getId(), componentPropertiesDocument);
-         template = decorateTemplate(templateController, template, templateController.getDeliveryContext(), component);
-         
-         return template;
-	 }
 
 	/**
 	 * This method adds the neccessairy html to a template to make it right-clickable.
@@ -318,6 +302,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(component.getParentComponent() == null && templateController.getDeliveryContext().getShowSimple())
 			{
 			    templateController.getDeliveryContext().setContentType("text/html");
+			    templateController.getDeliveryContext().setDisablePageCache(true);
+			    System.out.println("Sat the content type...");
 			    componentString = "<html><head></head><body onload=\"toggleDiv('pageComponents');\">" + componentString + "</body></html>";
 			}
 			

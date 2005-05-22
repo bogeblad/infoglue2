@@ -142,26 +142,11 @@ public abstract class PageInvoker
 		
 		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.getTemplateController().getLanguageId());
 		CmsLogger.logInfo("languageVO:" + languageVO);
-		String contentType = this.getTemplateController().getPageContentType();
-		if(!contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))
-		    contentType = this.deliveryContext.getContentType();
-		//CmsLogger.logWarning("contentType:" + contentType);
-		//if(!languageVO.getCharset().equalsIgnoreCase("utf-8"))
-		//{
-			this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
-			CmsLogger.logInfo("contentType:" + contentType + "; charset=" + languageVO.getCharset());
-		//}
-		//else
-		//{
-		//	this.getResponse().setContentType(contentType);
-		//	CmsLogger.logWarning("contentType:" + contentType);
-		//}
-
 		
 		String isPageCacheOn = CmsPropertyHandler.getProperty("isPageCacheOn");
 		CmsLogger.logInfo("isPageCacheOn:" + isPageCacheOn);
 		String refresh = this.getRequest().getParameter("refresh");
-
+		
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")))
 		{
 		    this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
@@ -170,7 +155,7 @@ public abstract class PageInvoker
 				invokePage();
 				this.pageString = getPageString();
 				
-				if(!this.getTemplateController().getIsPageCacheDisabled()) //Caching page if not disabled
+				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
 					CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities());
 			}
 			else
@@ -184,7 +169,7 @@ public abstract class PageInvoker
 			{
 				this.getDeliveryContext().setPagePath(this.getTemplateController().getCurrentPagePath());
 			
-				if(!this.getTemplateController().getIsPageCacheDisabled()) //Caching page path if not disabled
+				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page path if not disabled
 					CacheController.cacheObject("pagePathCache", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getPagePath());
 			}
 		}
@@ -196,15 +181,15 @@ public abstract class PageInvoker
 			this.getDeliveryContext().setPagePath(this.templateController.getCurrentPagePath());
 		}
 
-		//if(!languageVO.getCharset().equalsIgnoreCase("utf-8"))
-		//{
-			//CmsLogger.logInfo("Encoding resulting html to " + languageVO.getCharset());
-			//pageString = new String(pageString.getBytes(languageVO.getCharset()), "UTF-8");
-		//}
+		String contentType = this.getTemplateController().getPageContentType();
+		//System.out.println("ContentType in deliveryContext:" + this.deliveryContext.getContentType());
+		if(this.deliveryContext.getContentType() != null && !contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))
+		    contentType = this.deliveryContext.getContentType();
 		
-
-		//ServletOutputStream out = this.getResponse().getOutputStream();
-		//out.write(pageString.getBytes("UTF-8"));
+		//System.out.println("ContentType:" + contentType);
+		this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
+		CmsLogger.logInfo("contentType:" + contentType + "; charset=" + languageVO.getCharset());
+		
 		PrintWriter out = this.getResponse().getWriter();
 		out.println(pageString);
 		out.flush();
