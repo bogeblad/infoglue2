@@ -95,6 +95,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		Integer repositoryId = nodeDeliveryController.getSiteNode(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
+		//System.out.println("componentXML:" + componentXML);
 		
 		timer.printElapsedTime("After getPageComponentsString");
 		
@@ -135,17 +136,16 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			}
 			else
 			{
-				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
-				
-				decoratorTimer.printElapsedTime("After metaInfoContentVO");
-				
-				decoratePageTemplate = decorateComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()/*, metaInfoContentVO.getId()*/);
-				
-				decoratorTimer.printElapsedTime("After decorateComponent");
-				
-				decoratePageTemplate = decorateTemplate(this.getTemplateController(), decoratePageTemplate, this.getDeliveryContext(), baseComponent);
-				
-				decoratorTimer.printElapsedTime("After decorateTemplate");
+				//if(this.getDeliveryContext().getShowSimple() == true)
+			    //{
+			    //    decoratePageTemplate = showSimplePageStructure(this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), baseComponent);
+			    //}
+			    //else
+			    //{
+				    ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
+					decoratePageTemplate = decorateComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()/*, metaInfoContentVO.getId()*/);
+					decoratePageTemplate = decorateTemplate(this.getTemplateController(), decoratePageTemplate, this.getDeliveryContext(), baseComponent);
+				//}
 			}
 		}
 		
@@ -177,10 +177,29 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 private String showInitialBindingDialog(Integer siteNodeId, Integer languageId, Integer contentId)
 	 {
 		 String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
-		 String url = "javascript:window.open('" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&specifyBaseTemplate=true', 'BaseTemplate', 'width=600,height=700,left=50,top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes');";
+		 String url = "javascript:window.open('" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&specifyBaseTemplate=true&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', 'BaseTemplate', 'width=600,height=700,left=50,top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes');";
+		 this.getTemplateController().getDeliveryContext().setContentType("text/html");
 		 return "<html><body style=\"font-family:verdana, sans-serif; font-size:10px;\">The page has no base component assigned yet. Click <a href=\"" + url + "\">here</a> to assign one</body></html>";
 	 }
-	 
+
+	 /**
+	  * This method shows the page structure simple without the components rendered.
+	  */
+
+	 private String showSimplePageStructure(TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, InfoGlueComponent component) throws Exception
+	 {
+	     String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		
+         String template = "<html><head></head><body onload=\"toggleDiv('pageComponents');\" style=\"font-family:verdana, sans-serif; font-size:10px;\">This is the simple page mode. It gives the user a possibility to edit the page structure without showing the real layout.</body></html>";
+         
+		 org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, component.getContentId()); 
+
+         this.propertiesDivs += getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, templateController.getDeliveryContext().getContentId(), component.getId(), componentPropertiesDocument);
+         template = decorateTemplate(templateController, template, templateController.getDeliveryContext(), component);
+         
+         return template;
+	 }
+
 	/**
 	 * This method adds the neccessairy html to a template to make it right-clickable.
 	 */	
@@ -294,10 +313,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		try
 		{
-			String componentString = getComponentString(templateController, component.getContentId()); 
-			//CmsLogger.logInfo("componentString:" + componentString);
-			
-			timer.printElapsedTime("1");
+			String componentString = getComponentString(templateController, component.getContentId(), component); 
+
+			if(component.getParentComponent() == null && templateController.getDeliveryContext().getShowSimple())
+			{
+			    templateController.getDeliveryContext().setContentType("text/html");
+			    componentString = "<html><head></head><body onload=\"toggleDiv('pageComponents');\">" + componentString + "</body></html>";
+			}
 			
 			templateController.setComponentLogic(new DecoratedComponentLogic(templateController, component));
 			Map context = super.getDefaultContext();
@@ -307,37 +329,28 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString);
 			componentString = cacheString.toString();
 	
-			timer.printElapsedTime("2");
-			
 			int bodyIndex = componentString.indexOf("<body");
 			if(bodyIndex == -1)
 				bodyIndex = componentString.indexOf("<BODY");
 		
 			if(component.getParentComponent() == null && bodyIndex > -1)
 			{
-				//CmsLogger.logInfo("onContextMenu.contentId:" + contentId);
 				String onContextMenu = " class=\"siteBody\" onload=\"javascript:setToolbarInitialPosition();\"";
+				if(templateController.getDeliveryContext().getShowSimple())
+					onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";
+				
+				
 				StringBuffer sb = new StringBuffer(componentString);
 				sb.insert(bodyIndex + 5, onContextMenu);
 				componentString = sb.toString();
-				/*
-				String componentPropertiesString = getComponentPropertiesString(templateController, siteNodeId, languageId, component.getContentId()); 
-				componentString = componentString + getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, contentId, component.getId(), componentPropertiesString);
-				*/
+
 				org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, component.getContentId()); 
-				//CmsLogger.logInfo("getComponentPropertiesDiv.contentId:" + contentId);
 				this.propertiesDivs += getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, contentId, component.getId(), componentPropertiesDocument);
 
 				org.w3c.dom.Document componentTasksDocument = getComponentTasksDocument(templateController, siteNodeId, languageId, component.getContentId()); 
-				//CmsLogger.logInfo("getComponentPropertiesDiv.contentId:" + contentId);
 				this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, component.getId(), componentTasksDocument);
 			}
-			//CmsLogger.logInfo("****************************************************************");
 	
-			timer.printElapsedTime("3");
-	
-			//End Test
-		
 			////CmsLogger.logInfo("Before:" + componentString);
 			int offset = 0;
 			int slotStartIndex = componentString.indexOf("<ig:slot", offset);
@@ -381,53 +394,34 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							//CmsLogger.logInfo("");
 							if(subComponent.getIsInherited())
 							{
-								timer.printElapsedTime("5a0");
-	
 								//CmsLogger.logInfo("Inherited..." + contentId);
 								String childComponentsString = decorateComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId/*, metainfoContentId*/);
-								//subComponentString += "<span id=\""+ id + "\" class=\"dragTarget\"><table width=\"100%\" heigh=\"100%\" style=\"border-style: solid; border-width: 1px; border-color: #333333;\"><tr><td class=\"inheritedslot\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\"><!--<div class=\"inheritedOverlay\">Inherited</div><div class=\"inherited\">-->" + subComponentString + "<!--</div>--></td></tr></table></span>";
-								subComponentString += "<span id=\""+ id + index + "Comp\" class=\"inheritedslot\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\">" + childComponentsString + "</span>";
-								
-								timer.printElapsedTime("5a1");
-								/*
-								String componentPropertiesString = getComponentPropertiesString(templateController, siteNodeId, languageId, subComponent.getContentId()); 
-								this.propertiesDivs += getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, contentId, new Integer(siteNodeId.intValue()*100 + subComponent.getId().intValue()), componentPropertiesString);
-								//subComponentString = getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, contentId, new Integer(siteNodeId.intValue()*100 + subComponent.getId().intValue()), componentPropertiesString) + subComponentString;
-								*/
+								if(!this.getTemplateController().getDeliveryContext().getShowSimple())
+								    subComponentString += "<span id=\""+ id + index + "Comp\" class=\"inheritedslot\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\">" + childComponentsString + "</span>";
+								else
+								    subComponentString += childComponentsString;
+								    
 								org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, component.getContentId()); 
 								this.propertiesDivs += getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, contentId, new Integer(siteNodeId.intValue()*100 + subComponent.getId().intValue()), componentPropertiesDocument);
 								
-								timer.printElapsedTime("5a2");
-							
 								org.w3c.dom.Document componentTasksDocument = getComponentTasksDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
 								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), componentTasksDocument);
 								
 							}
 							else
 							{
-								timer.printElapsedTime("5b0");
-	
 								//CmsLogger.logInfo("Not inherited..." + contentId);
 								String childComponentsString = decorateComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId/*, metainfoContentId*/);
 								//CmsLogger.logInfo("childComponentsString:" + childComponentsString);
 								
-								//TODO - TEST
-								subComponentString += "<span id=\""+ id + index + "_" + subComponent.getId() + "Comp\" class=\"dragTarget\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=" + id + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + subComponent.getId() + "&slotId=" + id + "');</script></span>";
-								timer.printElapsedTime("5b1");
-								
-								/*
-								String componentPropertiesString = getComponentPropertiesString(templateController, siteNodeId, languageId, subComponent.getContentId()); 
-								this.propertiesDivs += getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), componentPropertiesString);
-								//subComponentString = getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), componentPropertiesString) + subComponentString;
-								*/
-								
+								if(!this.getTemplateController().getDeliveryContext().getShowSimple())
+									subComponentString += "<span id=\""+ id + index + "_" + subComponent.getId() + "Comp\" class=\"dragTarget\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + subComponent.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "');</script></span>";
+								else
+								    subComponentString += childComponentsString;
+							    
 								org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
-								//CmsLogger.logInfo("subComponent.getId():" + subComponent.getId());
 								this.propertiesDivs += getComponentPropertiesDiv(repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), componentPropertiesDocument);
-								//CmsLogger.logInfo("................");
-	
-								timer.printElapsedTime("5b2");							
-
+								
 								org.w3c.dom.Document componentTasksDocument = getComponentTasksDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
 								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), componentTasksDocument);
 							}
@@ -442,7 +436,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 				
 				if(!component.getIsInherited())
-				    subComponentString += "<script type=\"text/javascript\">initializeSlotEventHandler('" + component.getId() + "_" + id + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=" + id + "', '');</script></div>";
+				    subComponentString += "<script type=\"text/javascript\">initializeSlotEventHandler('" + component.getId() + "_" + id + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '');</script></div>";
 				
 				decoratedComponent += subComponentString;
 							
@@ -544,7 +538,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				 
 				if(componentProperty.getVisualizingAction() != null && !componentProperty.getVisualizingAction().equals(""))
 				{
-					assignUrl = componentEditorUrl + componentProperty.getVisualizingAction() + "?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+					assignUrl = componentEditorUrl + componentProperty.getVisualizingAction() + "?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 				}
 				else
 				{	
@@ -559,29 +553,29 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					    }
 					    
 						if(componentProperty.getIsMultipleBinding())
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeNamesParameters;
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeNamesParameters + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 						else
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeNamesParameters;
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeNamesParameters + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 					}
 					else if(componentProperty.getEntityClass().equalsIgnoreCase("SiteNode"))
 					{
 						if(componentProperty.getIsMultipleBinding())
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 						else
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 					}
 					else if(componentProperty.getEntityClass().equalsIgnoreCase("Category"))
 					{
 						if(componentProperty.getIsMultipleBinding())
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showCategoryTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showCategoryTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 						else
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showCategoryTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showCategoryTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 					}
 				}
 					
 				if(componentProperty.getCreateAction() != null && !componentProperty.getCreateAction().equals(""))
 				{
-					createUrl = componentEditorUrl + componentProperty.getCreateAction() + "?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+					createUrl = componentEditorUrl + componentProperty.getCreateAction() + "?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 				}
 				else
 				{	
@@ -591,19 +585,19 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					}
 					else if(componentProperty.getEntityClass().equalsIgnoreCase("Content"))
 					{
-						String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&path=TEMPPPP", "UTF-8");
+						String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&path=TEMPPPP&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "", "UTF-8");
 						
 						if(componentProperty.getIsMultipleBinding())
-							createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&refreshAddress=" + returnAddress;
+							createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&refreshAddress=" + returnAddress + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 						else
-							createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&refreshAddress=" + returnAddress;
+							createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&refreshAddress=" + returnAddress + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 					}
 					else if(componentProperty.getEntityClass().equalsIgnoreCase("SiteNode"))
 					{
 						if(componentProperty.getIsMultipleBinding())
-							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 						else
-							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName();
+							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 					}
 				}
 				
@@ -622,7 +616,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					//sb.append("			<td><a href=\"" + createUrl + "\"><img src=\"" + componentEditorUrl + "/images/createContent.gif\" border=\"0\" alt=\"Create new content to show\"></a></td>");
 					sb.append("			<td><!--<a href=\"" + createUrl + "\"><img src=\"" + componentEditorUrl + "/images/createContent.gif\" border=\"0\" alt=\"Create new content to show\"></a>--></td>");
 				else
-					sb.append("			<td><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
+					sb.append("			<td><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
 		
 				sb.append("		</tr>");
 			}
@@ -632,7 +626,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				sb.append("			<td class=\"propertylabel\" valign=\"top\">" + componentProperty.getName() + "<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"></td>");
 				sb.append("			<td><img src=\"" + componentEditorUrl + "/images/questionMark.gif\"></td>");
 				sb.append("			<td class=\"propertyvalue\"><input type=\"text\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\"></td>");
-				sb.append("			<td><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
+				sb.append("			<td><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
 				sb.append("			<!--<td>&nbsp;</td>-->");
 				sb.append("		</tr>");
 				
@@ -657,6 +651,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		<input type=\"hidden\" name=\"languageId\" value=\"" + languageId + "\">");
 		sb.append("		<input type=\"hidden\" name=\"contentId\" value=\"" + contentId + "\">");
 		sb.append("		<input type=\"hidden\" name=\"componentId\" value=\"" + componentId + "\">");
+		sb.append("		<input type=\"hidden\" name=\"showSimple\" value=\"" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\">");
 		sb.append("		</form>");
 		sb.append("	</div>");
 		sb.append("	</div>");
@@ -746,7 +741,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		sb.append("		<tr>");
 		sb.append("			<td colspan=\"20\">");
-		sb.append("<img src=\"images/tcross.png\" width=\"19\" height=\"16\"><span id=\"" + component.getId() + "\" class=\"label\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" +  component.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=base', '');</script></td>");
+		sb.append("<img src=\"images/tcross.png\" width=\"19\" height=\"16\"><span id=\"" + component.getId() + "\" class=\"label\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" +  component.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=base&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '');</script></td>");
 		sb.append("		</tr>");
 		
 		renderComponentTree(templateController, sb, component, 0, 0, 1);
@@ -791,9 +786,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			sb.append("<td width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
 		
-		sb.append("<td width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td><img src=\"images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"clickableLabel\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "');</script>");
-		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0";
-		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1";
+		sb.append("<td width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td><img src=\"images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"clickableLabel\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "');</script>");
+		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
+		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
 		
 		if(position > 0)
 		    sb.append("<a href=\"" + upUrl + "\"><img src=\"images/upArrow.gif\" border=\"0\" width=\"11\" width=\"10\"></a>");
@@ -840,7 +835,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				sb.append("<td width=\"19\"><img src=\"images/endline.png\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
 
 //			sb.append("<td colspan=\"" + (colspan - 4) + "\"><span id=\"" + component.getId() + "\" class=\"label\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" +  component.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&componentId=" + component.getId() + "&contentId=" + -1 + "&slotId=" + slot.getId() + "', '');</script></td>");
-			sb.append("<td colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"label\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + slot.getId() + "ClickableDiv', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=" + slot.getId() + "', '');</script></td>");
+			sb.append("<td colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"label\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + slot.getId() + "ClickableDiv', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=" + slot.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '');</script></td>");
 			
 			sb.append("		</tr>");
 

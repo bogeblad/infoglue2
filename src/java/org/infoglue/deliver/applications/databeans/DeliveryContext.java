@@ -66,6 +66,12 @@ public class DeliveryContext implements UsageListener
 	private Integer contentId  = null; 
 	private Integer languageId = null;
 	
+	//This sets the content type
+	private String contentType = null;
+
+	//This decides if to show a minimalistic version of the page structure - not render all compoents etc.
+	private boolean showSimple = false;
+
 	//This parameter are set if you want to access a certain repository startpage
 	private String repositoryName = null;
 
@@ -296,4 +302,23 @@ public class DeliveryContext implements UsageListener
         return usageListeners;
     }
 
+    public boolean getShowSimple()
+    {
+        return showSimple;
+    }
+    
+    public void setShowSimple(boolean showSimple)
+    {
+        this.showSimple = showSimple;
+    }
+    
+    public String getContentType()
+    {
+        return contentType;
+    }
+    
+    public void setContentType(String contentType)
+    {
+        this.contentType = contentType;
+    }
 }

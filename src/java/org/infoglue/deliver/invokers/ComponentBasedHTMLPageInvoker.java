@@ -131,18 +131,29 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    
 	protected String getPageComponentsString(Database db, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{ 
+		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(db, templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", this.getDeliveryContext());		
+
 	    String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
-		String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
+	    
+		String attributeName = "ComponentStructure";
+		String attributeKey = "" + contentVO.getId() + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + true;
+	    
+		String versionKey 	= attributeKey + "_contentVersionId";
+
+	    String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
+	    Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
+		
 		if(cachedPageComponentsString != null)
 		{
+		    //System.out.println("Returning cached...");
+		    //System.out.println("First added..." + versionKey + ":" + "contentVersion:" + contentVersionId);
+		    templateController.getDeliveryContext().addUsedContentVersion("contentVersion:" + contentVersionId);
 		    return cachedPageComponentsString;
 		}
 		
 		String pageComponentsString = null;
-   	
-		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(db, templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", this.getDeliveryContext());		
-		
+   			
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
 		
@@ -286,7 +297,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			
 			
 			//Getting slots for the component
-			String componentString = this.getComponentString(templateController, contentId);
+			String componentString = this.getComponentString(templateController, contentId, component);
 			//CmsLogger.logInfo("Getting the slots for component.......");
 			//CmsLogger.logInfo("componentString:" + componentString);
 			int offset = 0;
@@ -493,7 +504,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    
 			try
 			{
-			    String componentString = getComponentString(templateController, component.getContentId()); 
+			    String componentString = getComponentString(templateController, component.getContentId(), component); 
 				
 				Map context = getDefaultContext();
 		    	context.put("templateLogic", templateController);
@@ -571,13 +582,30 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 * This method fetches the component template as a string.
 	 */
    
-	protected String getComponentString(TemplateController templateController, Integer contentId) throws SystemException, Exception
+	protected String getComponentString(TemplateController templateController, Integer contentId, InfoGlueComponent component) throws SystemException, Exception
 	{
 		String template = null;
    	
 		try
 		{
-			template = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
+		    if(templateController.getDeliveryContext().getShowSimple() == true)
+		    {
+		        String componentString = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
+                String slots = "";
+                int offset = 0;
+		        int index = componentString.indexOf("<ig:slot");
+                int end = componentString.indexOf("</ig:slot>", offset);
+		        while(index > -1 && end > -1)
+		        {
+		            offset = end;
+		            slots += componentString.substring(index, end + 10);
+		            index = componentString.indexOf("<ig:slot", offset + 1);
+	                end = componentString.indexOf("</ig:slot>", index);
+			    }
+                template = "<div style=\"position:relative; awidth:90%; padding: 5px 5px 5px 5px; font-family:verdana, sans-serif; font-size:10px; border: 1px solid black;\">" + component.getName() + slots + "</div>";
+		    }
+		    else
+		        template = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
 			
 			if(template == null)
 				throw new SystemException("There was no template available on the content with id " + contentId + ". Check so that the templates language are active on your site.");	
@@ -902,7 +930,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				//Getting slots for the component
 				try
 				{
-					String componentString = this.getComponentString(templateController, contentId);
+					String componentString = this.getComponentString(templateController, contentId, component);
 					int offset = 0;
 					int slotStartIndex = componentString.indexOf("<ig:slot", offset);
 					while(slotStartIndex > -1)

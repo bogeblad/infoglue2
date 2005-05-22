@@ -30,7 +30,7 @@
 	    function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree";
+			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&showSimple=$showSimple";
 			document.location.href = url;
 		}
 	    
@@ -41,7 +41,7 @@
 				qualifyerString += "$qualifyer.value,";
 			#end 
 						 		    
-		    var url = "ViewMultiSelectStructureTreeForServiceBinding!changeTree.action?tree=" + tree + "&serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&entityName=SiteNode&qualifyerString=" + qualifyerString;
+		    var url = "ViewMultiSelectStructureTreeForServiceBinding!changeTree.action?tree=" + tree + "&serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&entityName=SiteNode&showSimple=$showSimple&qualifyerString=" + qualifyerString;
 		    //alert('Calling:' + url);
 		    self.location.href = url;
 		}
@@ -83,7 +83,7 @@
 			}
 		   	qualifyerXML += "</qualifyer>";
 			
-			//var url = "ViewSiteNodePageComponents!addComponentPropertyBindingWithQualifyer.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&qualifyerXML=" + escape(qualifyerXML) + "&path=" + escape(path) + "&componentId=$componentId&propertyName=$propertyName";
+			//var url = "ViewSiteNodePageComponents!addComponentPropertyBindingWithQualifyer.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&qualifyerXML=" + escape(qualifyerXML) + "&path=" + escape(path) + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple";
 		    //alert('Calling:' + url);
 			//self.opener.location.href = url;
 		    //window.close();
@@ -541,6 +541,7 @@
 	<input type="hidden" name="contentId" value="$contentId">
 	<input type="hidden" name="componentId" value="$componentId">
 	<input type="hidden" name="propertyName" value="$propertyName">
+	<input type="hidden" name="showSimple" value="$showSimple">
 	<input type="hidden" name="path" value="">
 	<input type="hidden" name="qualifyerXML" value="">
 </form>

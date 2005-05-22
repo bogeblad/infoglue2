@@ -143,6 +143,8 @@ public abstract class PageInvoker
 		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.getTemplateController().getLanguageId());
 		CmsLogger.logInfo("languageVO:" + languageVO);
 		String contentType = this.getTemplateController().getPageContentType();
+		if(!contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))
+		    contentType = this.deliveryContext.getContentType();
 		//CmsLogger.logWarning("contentType:" + contentType);
 		//if(!languageVO.getCharset().equalsIgnoreCase("utf-8"))
 		//{
@@ -185,7 +187,6 @@ public abstract class PageInvoker
 				if(!this.getTemplateController().getIsPageCacheDisabled()) //Caching page path if not disabled
 					CacheController.cacheObject("pagePathCache", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getPagePath());
 			}
-
 		}
 		else
 		{
@@ -194,25 +195,13 @@ public abstract class PageInvoker
 			
 			this.getDeliveryContext().setPagePath(this.templateController.getCurrentPagePath());
 		}
-		
+
 		//if(!languageVO.getCharset().equalsIgnoreCase("utf-8"))
 		//{
 			//CmsLogger.logInfo("Encoding resulting html to " + languageVO.getCharset());
 			//pageString = new String(pageString.getBytes(languageVO.getCharset()), "UTF-8");
 		//}
 		
-		/*
-		FileHelper.writeUTF8ToFileSpecial(new File("/usr/local/tomcat/logs/utf8special.txt"), pageString, false);
-		FileHelper.writeToFile(new File("/usr/local/tomcat/logs/normal.txt"), pageString, false);
-		FileHelper.writeToFile(new File("/usr/local/tomcat/logs/normal2.txt"), pageString.getBytes("UTF-8"));
-		*/
-		
-		//FileHelper.writeUTF8ToFileSpecial(new File("c:/temp/" + this.getDeliveryContext().getSiteNodeId() + "utf8special.txt"), pageString, false);
-		//FileHelper.writeToFile(new File("c:/temp/" + this.getDeliveryContext().getSiteNodeId() + "normal.txt"), pageString, false);
-		//FileHelper.writeToFile(new File("c:/temp/" + this.getDeliveryContext().getSiteNodeId() + "normal2.txt"), pageString.getBytes("UTF-8"));
-
-		//DataOutputStream out = new DataOutputStream(this.getResponse().getOutputStream());
-		//out.writeBytes(pageString);
 
 		//ServletOutputStream out = this.getResponse().getOutputStream();
 		//out.write(pageString.getBytes("UTF-8"));

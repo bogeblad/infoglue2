@@ -66,6 +66,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private String specifyBaseTemplate = null;
 	private String url			= null;
 	private Integer direction 	= null;
+	private boolean showSimple 	= false;
 	
 	LanguageVO masterLanguageVO = null;
 	
@@ -302,7 +303,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		
 		CmsLogger.logInfo("newComponentId:" + newComponentId);
 		
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + newComponentId;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + newComponentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -402,7 +403,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			}
 		}
 				
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -529,7 +530,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 		ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -590,7 +591,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
 		
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -679,7 +680,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
 					
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -788,7 +789,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
 					
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -855,7 +856,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
 			
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -991,7 +992,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO.getContentVersionId());
 		ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId;;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -1329,5 +1330,15 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
         }
         
         return sb.toString();
+    }
+    
+    public boolean getShowSimple()
+    {
+        return showSimple;
+    }
+    
+    public void setShowSimple(boolean showSimple)
+    {
+        this.showSimple = showSimple;
     }
 }

@@ -76,6 +76,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	private Integer contentId  = null; 
 	private Integer languageId = null;
 	
+	private boolean showSimple = false;
+	
 	//This parameter are set if you want to access a certain repository startpage
 	private String repositoryName = null;
 	
@@ -287,7 +289,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 			validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
-			String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_pagecomponentDecorated";
+			String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + this.showSimple + "_pagecomponentDecorated";
 			CmsLogger.logInfo("A pageKey:" + pageKey);
 			String pagePath	= null;
 	    	
@@ -312,6 +314,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setSiteNodeId(this.siteNodeId);
 				deliveryContext.setLanguageId(this.languageId);
 				deliveryContext.setContentId(this.contentId);
+				deliveryContext.setShowSimple(this.showSimple);
 				deliveryContext.setPageKey(pageKey);
 				deliveryContext.setSession(this.getSession());
 				deliveryContext.setWebworkAbstractAction(this);
@@ -619,6 +622,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		this.referer = referer;
 	}
 
-	
-
+    public void setShowSimple(boolean showSimple)
+    {
+        this.showSimple = showSimple;
+    }
 }
