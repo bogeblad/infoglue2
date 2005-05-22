@@ -110,13 +110,42 @@
 	-->
 	</script>
 	
+	<style type="text/css">
+	
+	  .menuItem {
+		  position: absolute;
+		  background-color: #C7D1B3;
+		  overflow: hidden;
+		  top: 3px; 
+		  height: 24px;
+	  }
+	  .selectedMenuItem {
+		  position: absolute;
+		  background-color: #C7D1B3;
+		  overflow: hidden;
+		  top: 3px; 
+		  height: 48px;
+		  border: 1px solid gray;
+	  }
+
+	  .menuButton {
+		  background-color: #C7D1B3;
+		  border: 1px solid #C7D1B3;
+	  }
+	  .selectedMenuButton {
+	  	  background-color: #B4C299;
+	  	  border: 1px outset #C2D0E2;
+	  }
+	
+	</style>
+	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>
 
 <body class="contenttool">
 
 <!-- This is the toolbar --->
-<div style="LEFT:1px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:1px; visibility:visble; z-index:0">
+<div style="LEFT:1px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:1px; visibility:visble; z-index:1">
 <table class="contenttool" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td colspan="3" bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
@@ -124,13 +153,53 @@
 <tr>
 	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="28"></td>
 	<td valign="middle" width="100%" height="100%">
+		#*
 		#foreach($button in $buttons)
 			#if($button.isSelfContained)
-				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0"></a><img src="images/splitter.gif">						 
+				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a><img src="images/splitter.gif">						 
 			#else
-				<a href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0"></a><img src="images/splitter.gif">		
+				<a href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0"class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>
+				<img src="images/splitter.gif">		
 			#end
 		#end
+		*#
+		
+		#set($left = 0)
+		#foreach($button in $buttons)
+			#set($width = $button.width + 2)
+			
+			#if($button.isSelfContained)
+			<div class="menuItem" #if($button.subButtons.size() > 0)onmouseover="this.className='selectedMenuItem';" onmouseout="this.className='menuItem';"#end style="left: ${left}px; width: ${width}px;">
+				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>
+			#else
+				<div class="menuItem" #if($button.subButtons.size() > 0)onmouseover="this.className='selectedMenuItem';" onmouseout="this.className='menuItem';"#end style="left: ${left}px; width: ${width}px;">
+					<a id="$button.getTitle()" $style href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>
+			#end
+			
+		    #foreach($subButton in $button.subButtons)
+				#set($width = $subButton.width + 2)
+				#if($subButton.isSelfContained)
+					<a href="$subButton.getActionUrl()"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>						 
+				#else
+					<a id="$subButton.getTitle()" $style href="javascript:openMainArea('$subButton.getActionUrl()', '$subButton.getTitle()');"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>
+				#end
+			#end
+			  				
+			#if($button.subButtons.size() > 0)
+				<div style="position: absolute; right: 0px; bottom: 2px; width: 3px; height: 3px;">
+					<img src="images/expandMenu.gif">
+				</div>
+			#end
+	 		  </div>
+
+			#set($left = $left + $button.width + 5)
+				<div style="position: absolute; left: ${left}px; top: 5px; width: 2px; height: 20px;">
+					<img src="images/splitter.gif">
+				</div>
+			#set($left = $left + 3)
+			
+		#end
+ 		
 	</td>
 	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
 </tr>

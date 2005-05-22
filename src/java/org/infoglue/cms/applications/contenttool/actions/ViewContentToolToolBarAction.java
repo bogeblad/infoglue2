@@ -279,8 +279,11 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		{
 			buttons.add(new ImageButton("CreateContent!input.action?isBranch=false&parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newContent"), "tool.contenttool.newContent.header"));	
 			buttons.add(new ImageButton("CreateContent!input.action?isBranch=true&parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newContentFolder"), "tool.contenttool.newContentFolder.header"));	
-			buttons.add(getMoveButton());
-			buttons.add(getMoveMultipleButton());
+			
+			ImageButton moveButton = getMoveButton();
+			moveButton.getSubButtons().add(getMoveMultipleButton());
+			buttons.add(moveButton);
+			
 			buttons.add(getDeleteButton());
 			buttons.add(getPublishButton());
 			if(hasAnyPublishedVersion())
@@ -308,8 +311,11 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		try
 		{
 			buttons.add(getDeleteButton());	
-			buttons.add(getMoveButton());
-			buttons.add(getMoveMultipleButton());
+			
+			ImageButton moveButton = getMoveButton();
+			moveButton.getSubButtons().add(getMoveMultipleButton());
+			buttons.add(moveButton);
+			
 			buttons.add(getPublishButton());
 			if(hasAnyPublishedVersion())
 			    buttons.add(getUnpublishButton());
@@ -336,10 +342,11 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		try
 		{
 		    buttons.add(getCoverButton());
+			buttons.add(getDeleteButton());
 		    
 		    if(this.contentVersionId != null)
 			{
-				if(!isReadOnly())
+		        if(!isReadOnly())
 					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'FileUpload', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
 			
 				buttons.add(new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'ContentPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header"));	
