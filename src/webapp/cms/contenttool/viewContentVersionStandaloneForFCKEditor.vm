@@ -161,9 +161,11 @@
 				//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
 				document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
 				
-				var oFCKeditor = new FCKeditor(plainTextAreaName) ;
+				var oFCKeditor = new FCKeditor(plainTextAreaName);
+				oFCKeditor.Width = document.getElementById(plainTextAreaName).style.width;
+				oFCKeditor.Height = document.getElementById(plainTextAreaName).style.height;
 				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
-				oFCKeditor.Config['CustomConfigurationsPath'] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
+				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
 				oFCKeditor.Config["AutoDetectLanguage"] = false ;
 				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
 				oFCKeditor.ReplaceTextarea();

@@ -142,8 +142,10 @@
 				document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
 				
 				var oFCKeditor = new FCKeditor(plainTextAreaName) ;
+				oFCKeditor.Width = document.getElementById(plainTextAreaName).style.width;
+				oFCKeditor.Height = document.getElementById(plainTextAreaName).style.height;
 				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
-				oFCKeditor.Config['CustomConfigurationsPath'] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
+				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
 				oFCKeditor.Config["AutoDetectLanguage"] = false ;
 				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
 				oFCKeditor.ReplaceTextarea();
@@ -437,7 +439,6 @@
 					#if($width >= 700)
 						#set($wysiwygHeight = $height - 20)
 					#end
-					
 					<textarea $readonly rows="$rows" cols="$cols" style="visibility: visible; width:${width}px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="$attribute.name" name="$attribute.name" $readonly $onchange>$this.getAttributeValue($attribute.name)</textarea>
 					
 					#if($enableWYSIWYG == "true")
