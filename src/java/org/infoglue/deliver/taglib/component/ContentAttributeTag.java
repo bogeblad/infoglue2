@@ -44,6 +44,7 @@ public class ContentAttributeTag extends ComponentLogicTag
     private String attributeName;
     private boolean disableEditOnSight 	= false;
     private boolean useInheritance		= true;
+    private boolean parse				= false;
     
     public ContentAttributeTag()
     {
@@ -52,7 +53,11 @@ public class ContentAttributeTag extends ComponentLogicTag
     
     public int doEndTag() throws JspException
     {
-		produceResult(getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+        if(!parse)
+            produceResult(getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+        else
+            produceResult(getComponentLogic().getParsedContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+            
         return EVAL_PAGE;
     }
 
@@ -74,5 +79,10 @@ public class ContentAttributeTag extends ComponentLogicTag
     public void setUseInheritance(boolean useInheritance)
     {
         this.useInheritance = useInheritance;
+    }
+    
+    public void setParse(boolean parse)
+    {
+        this.parse = parse;
     }
 }

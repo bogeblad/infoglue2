@@ -340,16 +340,21 @@ public class ComponentLogic
 	
 	public String getParsedContentAttribute(String propertyName, String attributeName)
 	{
+		return getParsedContentAttribute(propertyName, attributeName, !this.useEditOnSight, this.useInheritance);
+	}
+
+	public String getParsedContentAttribute(String propertyName, String attributeName, boolean disableEditOnSight, boolean useInheritance)
+	{
 		String attributeValue = "";
 
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
 			if(bindings.size() > 0)
 			{
 				Integer contentId = new Integer((String)bindings.get(0));
-				attributeValue = templateController.getParsedContentAttribute(contentId, attributeName);
+				attributeValue = templateController.getParsedContentAttribute(contentId, attributeName, disableEditOnSight);
 			}
 		}
 
