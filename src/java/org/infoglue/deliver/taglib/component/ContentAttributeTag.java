@@ -40,6 +40,7 @@ public class ContentAttributeTag extends ComponentLogicTag
 {
 	private static final long serialVersionUID = 3257850991142318897L;
 	
+	private Integer contentId;
 	private String propertyName;
     private String attributeName;
     private boolean disableEditOnSight 	= false;
@@ -53,11 +54,24 @@ public class ContentAttributeTag extends ComponentLogicTag
     
     public int doEndTag() throws JspException
     {
-        if(!parse)
-            produceResult(getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+        if(contentId != null)
+        {
+            if(!parse)
+	            produceResult(getController().getContentAttribute(contentId, attributeName, disableEditOnSight));
+	        else
+	            produceResult(getController().getParsedContentAttribute(contentId, attributeName, disableEditOnSight));
+        }
+        else if(propertyName != null)
+        {
+	        if(!parse)
+	            produceResult(getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+	        else
+	            produceResult(getComponentLogic().getParsedContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+        }
         else
-            produceResult(getComponentLogic().getParsedContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
-            
+        {
+            throw new JspException("You must specify either contentId or attributeName");
+        }
         return EVAL_PAGE;
     }
 
@@ -84,5 +98,10 @@ public class ContentAttributeTag extends ComponentLogicTag
     public void setParse(boolean parse)
     {
         this.parse = parse;
+    }
+    
+    public void setContentId(Integer contentId)
+    {
+        this.contentId = contentId;
     }
 }

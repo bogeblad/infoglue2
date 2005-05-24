@@ -41,6 +41,7 @@ public class AssetUrlTag extends ComponentLogicTag
 {
 	private static final long serialVersionUID = 3546080250652931383L;
 
+	private Integer contentId;
 	private String propertyName;
     private String assetKey;
     private boolean useInheritance = true;
@@ -54,10 +55,24 @@ public class AssetUrlTag extends ComponentLogicTag
     {
         try
         {
-            if(assetKey != null)
-                write(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance));
+            if(contentId != null)
+            {
+	            if(assetKey != null)
+	                write(getController().getAssetUrl(contentId, assetKey));
+	            else
+	                write(getController().getAssetUrl(contentId));    
+            }
+            else if(propertyName != null)
+            {
+	            if(assetKey != null)
+	                write(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance));
+	            else
+	                write(getComponentLogic().getAssetUrl(propertyName, useInheritance));                    
+            }
             else
-                write(getComponentLogic().getAssetUrl(propertyName, useInheritance));    
+            {
+                throw new JspException("You must supply either contentId or propertyName");
+            }
         }
         catch(Exception e)
         {
@@ -80,5 +95,10 @@ public class AssetUrlTag extends ComponentLogicTag
     public void setUseInheritance(boolean useInheritance)
     {
         this.useInheritance = useInheritance;
+    }
+    
+    public void setContentId(Integer contentId)
+    {
+        this.contentId = contentId;
     }
 }

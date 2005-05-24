@@ -682,6 +682,24 @@ public class ComponentLogic
 		return pageUrl;
 	}
 	
+	public List getRelatedPages(String propertyName, String attributeName)
+	{
+	    List relatedPages = new ArrayList();
+	    
+	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				relatedPages = templateController.getRelatedPages(contentId, attributeName);
+			}
+		}
+		
+		return relatedPages;
+	}
+	
 	/**
 	 * This method gets a property from the component and if not found there checks in parent components.
 	 */

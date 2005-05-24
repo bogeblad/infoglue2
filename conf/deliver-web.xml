@@ -119,6 +119,10 @@
 		<taglib-location>/WEB-INF/tld/infoglue-content.tld</taglib-location>
 	</taglib>
 	<taglib>
+		<taglib-uri>infoglue-structure</taglib-uri>
+		<taglib-location>/WEB-INF/tld/infoglue-structure.tld</taglib-location>
+	</taglib>
+	<taglib>
 		<taglib-uri>infoglue-management</taglib-uri>
 		<taglib-location>/WEB-INF/tld/infoglue-management.tld</taglib-location>
 	</taglib>
@@ -135,4 +139,10 @@
 		<taglib-location>/WEB-INF/tld/infoglue-workflow.tld</taglib-location>
 	</taglib>
 	<!-- End WebWork -->
+	<!--
+	<taglib>
+		<taglib-uri>gu</taglib-uri>
+		<taglib-location>/WEB-INF/tld/gu.tld</taglib-location>
+	</taglib>
+	-->
 </web-app>
