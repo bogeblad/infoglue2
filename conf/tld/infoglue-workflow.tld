@@ -66,6 +66,22 @@
     	</attribute>
 	</tag>
 	<tag>
+        <name>hidden</name>
+        <tagclass>org.infoglue.cms.workflow.taglib.ContentHiddenFieldTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info></info>
+        <attribute>
+			<name>idAttr</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+	</tag>
+	<tag>
         <name>textarea</name>
         <tagclass>org.infoglue.cms.workflow.taglib.ContentTextareaFieldTag</tagclass>
         <bodycontent>empty</bodycontent>
