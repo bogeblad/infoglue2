@@ -29,6 +29,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import com.opensymphony.module.propertyset.PropertySet;
+
 /**
  * 
  */
@@ -47,7 +49,7 @@ public class PropertySetTag extends TagSupport {
 	 * 
 	 */
 	public int doEndTag() throws JspException {
-		String value = WorkflowHelper.getProperty(key, pageContext.getSession(), pageContext.getRequest());
+		final String value = getValueAsString();
 		if(value != null) {
 			try {
 				if(id != null)
@@ -62,10 +64,47 @@ public class PropertySetTag extends TagSupport {
         return EVAL_PAGE;
     }
 
+	/**
+	 * 
+	 */
+	private String getValueAsString() throws JspException {
+		final PropertySet ps = WorkflowHelper.getPropertySet(pageContext.getSession(), pageContext.getRequest());
+		
+		if(!ps.exists(key))
+			return "";
+		
+		switch(ps.getType(key)) {
+			case PropertySet.BOOLEAN:
+				return new Boolean(ps.getBoolean(key)).toString();
+			case PropertySet.DATA:
+				return WorkflowHelper.getPropertyData(ps, key);
+			case PropertySet.DATE:
+				return ps.getDate(key).toString();
+			case PropertySet.DOUBLE:
+				return new Double(ps.getDouble(key)).toString();
+			case PropertySet.INT:
+				return new Integer(ps.getInt(key)).toString();
+			case PropertySet.LONG:
+				return new Long(ps.getLong(key)).toString();
+			case PropertySet.STRING:
+				return ps.getString(key);
+			case PropertySet.TEXT:
+				return ps.getText(key);
+			default:
+				throw new JspTagException("PropertySetTag.getValueAsString() - unsupported type " + ps.getType(key) + ".");
+		}
+	}
+	
+	/**
+	 * 
+	 */
     public void setKey(String key) {
         this.key = key;
     }
 
+	/**
+	 * 
+	 */
     public void setId(String id) {
         this.id = id;
     }

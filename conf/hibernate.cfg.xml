@@ -38,7 +38,7 @@
 		<mapping resource="com/opensymphony/workflow/spi/hibernate/HibernateWorkflowEntry.hbm.xml"/>
 
 		<!-- PropertySet mapping -->
-		<mapping resource="com/opensymphony/module/propertyset/hibernate/PropertySetItemImpl.hbm.xml"/>
+		<mapping resource="org/infoglue/cms/util/workflow/hibernate/InfogluePropertySetItemImpl.hbm.xml"/>
 
 	</session-factory>
 </hibernate-configuration>

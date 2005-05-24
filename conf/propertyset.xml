@@ -26,9 +26,6 @@
     <propertyset name="memory" class="com.opensymphony.module.propertyset.memory.MemoryPropertySet"/>
     <propertyset name="serializable" class="com.opensymphony.module.propertyset.memory.SerializablePropertySet"/>
     <propertyset name="ofbiz" class="com.opensymphony.module.propertyset.ofbiz.OFBizPropertySet"/>
-    <propertyset name="hibernate" class="com.opensymphony.module.propertyset.hibernate.HibernatePropertySet">
-        <arg name="hibernate.connection.datasource" value="jdbc/DefaultDS" />
-        <arg name="hibernate.dialect" value="net.sf.hibernate.dialect.MckoiDialect" />
-    </propertyset>
+    <propertyset name="hibernate" class="org.infoglue.cms.util.workflow.hibernate.InfoGlueHibernatePropertySet"/>
     <propertyset name="xml" class="com.opensymphony.module.propertyset.xml.XMLPropertySet"/>
 </propertysets>

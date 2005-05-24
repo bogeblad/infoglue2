@@ -61,7 +61,7 @@ public abstract class ContentInputTag extends TagSupport {
 	 *
 	 */
 	protected String getContentValue() {
-		return WorkflowHelper.getProperty(getName(), pageContext.getSession(), pageContext.getRequest());
+		return WorkflowHelper.getPropertyData(getName(), pageContext.getSession(), pageContext.getRequest());
 	}
 
 	/**

@@ -102,8 +102,7 @@ public class CategorySelector extends ContentInputTag {
 	/**
 	 * 
 	 */
-    public String getSelected()
-    {
-		return WorkflowHelper.getProperty(getName(), pageContext.getSession(), pageContext.getRequest());
+    public String getSelected() {
+		return WorkflowHelper.getPropertyData(getName(), pageContext.getSession(), pageContext.getRequest());
     }
 }

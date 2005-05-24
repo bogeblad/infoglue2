@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.workflow.taglib;
 
+import java.io.UnsupportedEncodingException;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -74,8 +76,27 @@ public class WorkflowHelper {
 	/**
 	 * 
 	 */
-	public static String getProperty(String name, HttpSession session, ServletRequest request) {
+	public static String getPropertyString(String name, HttpSession session, ServletRequest request) {
 		return getPropertySet(session, request).getString(name);
 	}
-	
+
+	/**
+	 * 
+	 */
+	public static String getPropertyData(String name, HttpSession session, ServletRequest request) {
+		return getPropertyData(getPropertySet(session, request), name);
+	}
+
+	/**
+	 * 
+	 */
+	public static String getPropertyData(final PropertySet ps, final String name) {
+		try {
+			final byte[] data = ps.getData(name); 
+			return (data == null) ? "" : new String(data, "utf-8");
+		} catch(UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
 }
