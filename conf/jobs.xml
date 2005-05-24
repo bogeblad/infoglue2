@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<quartz xmlns="http://www.quartzscheduler.org/ns/quartz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.quartzscheduler.org/ns/quartz C://downloads/hibernate/quartz-1.4.2/src/java/main/org/quartz/xml/job_scheduling_data_1_1.xsd" version="1.1">
+	<calendar class-name="org.quartz.impl.calendar.WeeklyCalendar">
+		<name>weeklyCalendar</name>
+		<description>WeeklyCalendar</description>
+		<base-calendar class-name="org.quartz.impl.calendar.AnnualCalendar">
+			<name>annualCalendar</name>
+			<description>AnnualCalendar</description>
+		</base-calendar>
+	</calendar>
+<!--
+	<job>
+		<job-detail>
+			<name>SyncronizeUsers</name>
+			<group>infoglueJobs</group>
+			<job-class>de.spiritlink.igcms.jobs.SynchronizeUsersJob</job-class>
+			<volatility>false</volatility>
+			<durability>false</durability>
+			<recover>false</recover>
+			<job-data-map allows-transient-data="true">
+				<entry>
+					<key>driverClass</key>
+					<value>net.sourceforge.jtds.jdbc.Driver</value>
+				</entry>
+				<entry>
+					<key>url</key>
+					<value>jdbc:jtds:sqlserver://dev2.sprawlsolutions.se/CustomUserDB;SelectMethod=Cursor</value>
+				</entry>
+				<entry>
+					<key>userName</key>
+					<value>GermanUser</value>
+				</entry>
+				<entry>
+					<key>password</key>
+					<value>german</value>
+				</entry>
+			</job-data-map>
+		</job-detail>
+			        
+		<trigger>
+			<cron>
+				<name>infoglueTrigger</name>
+				<group>infoglueJobs</group>
+				<job-name>SyncronizeUsers</job-name>
+				<job-group>infoglueJobs</job-group>
+				<cron-expression>* 45 23 ? * *</cron-expression>
+			</cron>
+		</trigger>
+	</job>
+-->
+</quartz>
