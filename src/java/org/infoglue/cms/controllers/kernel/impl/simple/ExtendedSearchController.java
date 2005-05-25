@@ -329,8 +329,10 @@ class SqlBuilder {
 		clauses.add(CV_LATEST_VERSION_CLAUSE);
 		clauses.add(CV_CONTENT_JOIN);
 		
-		clauses.add(MessageFormat.format(CV_LANGUAGE_CLAUSE, new Object[] { getBindingVariable() }));
-		bindings.add(languageVO.getId());
+		if(languageVO != null) {
+			clauses.add(MessageFormat.format(CV_LANGUAGE_CLAUSE, new Object[] { getBindingVariable() }));
+			bindings.add(languageVO.getId());
+		}
 		
 		return clauses;
 	}
@@ -340,11 +342,12 @@ class SqlBuilder {
 	 */
 	private String getContentVersionWhereClauses() {
 		final List expressions = new ArrayList();
-		for(final Iterator i=contentTypeDefinitionVOs.iterator(); i.hasNext(); ) {
-			final ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO) i.next();
-			expressions.add(MessageFormat.format(C_CONTENT_TYPE_CLAUSE, new Object[] { getBindingVariable() }));
-			bindings.add(contentTypeDefinitionVO.getId());
-		}
+		if(contentTypeDefinitionVOs != null)
+			for(final Iterator i=contentTypeDefinitionVOs.iterator(); i.hasNext(); ) {
+				final ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO) i.next();
+				expressions.add(MessageFormat.format(C_CONTENT_TYPE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(contentTypeDefinitionVO.getId());
+			}
 
 		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
 	}
