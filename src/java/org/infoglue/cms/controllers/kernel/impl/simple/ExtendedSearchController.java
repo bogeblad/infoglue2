@@ -170,21 +170,21 @@ class SqlBuilder {
 	//
 	private static final String CATEGORY_TABLE                = "cmcategory";
 	private static final String CONTENT_CATEGORY_TABLE        = "cmcontentcategory";
-	private static final String CONTENT_TABLE                 = "cmCont"; //"cmcontent";
-	private static final String CONTENT_VERSION_TABLE         = "cmContVer"; //"cmcontentversion";
+	private static final String CONTENT_TABLE                 = "cmCont"; // TODO: TEMPORARY FIX!!! "cmcontent";
+	private static final String CONTENT_VERSION_TABLE         = "cmContVer"; // TODO: TEMPORARY FIX!!! "cmcontentversion";
 	
 	//
 	private static final String CV_ACTIVE_CLAUSE              = CONTENT_VERSION_ALIAS + ".isActive=1";
 	private static final String CV_LANGUAGE_CLAUSE            = CONTENT_VERSION_ALIAS + ".languageId={0}";
 	private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId=" + ContentVersionVO.PUBLISHED_STATE;
-	private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".contentId=" + CONTENT_VERSION_ALIAS + ".contentId";
-	private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".contentVersionId in (select max(contentVersionId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.contentId=" + CONTENT_VERSION_ALIAS + ".contentId)";
+	private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".ContId=" + CONTENT_VERSION_ALIAS + ".ContId"; // TODO: TEMPORARY FIX!!! CONTENT_ALIAS + ".contentId=" + CONTENT_VERSION_ALIAS + ".contentId";
+	private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".ContVerId in (select max(ContVerId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.ContId=" + CONTENT_VERSION_ALIAS + ".ContId)"; //  TODO: TEMPORARY FIX!!! CONTENT_VERSION_ALIAS + ".contentVersionId in (select max(contentVersionId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.contentId=" + CONTENT_VERSION_ALIAS + ".contentId)";
 	
 	//
-	private static final String C_CONTENT_TYPE_CLAUSE         = CONTENT_ALIAS + ".contentTypeDefinitionId={0}";
+	private static final String C_CONTENT_TYPE_CLAUSE         = CONTENT_ALIAS + ".contentTypeDefId={0}"; // TODO: TEMPORARY FIX!!! CONTENT_ALIAS + ".contentTypeDefinitionId={0}";
 	
 	//
-	private static final String FREETEXT_EXPRESSION           = CONTENT_VERSION_ALIAS + ".versionValue like {0}";
+	private static final String FREETEXT_EXPRESSION           = CONTENT_VERSION_ALIAS + ".VerValue like {0}"; // TODO: TEMPORARY FIX!!! CONTENT_VERSION_ALIAS + ".versionValue like {0}";
 	private static final String FREETEXT_EXPRESSION_VARIABLE  = "%<{0}><![CDATA[%{1}%]]></{0}>%";
 	
 	//
@@ -266,17 +266,21 @@ class SqlBuilder {
 	 */
 	private String generateSelectClause() {
 		return 	SELECT_KEYWORD + SPACE + 
-		CONTENT_VERSION_ALIAS + ".contentVersionId" +
+		CONTENT_VERSION_ALIAS + ".ContVerId" +
+		//CONTENT_VERSION_ALIAS + ".contentVersionId" +
 		COMMA + CONTENT_VERSION_ALIAS + ".stateId" +
 		COMMA + CONTENT_VERSION_ALIAS + ".modifiedDateTime" +
-		COMMA + CONTENT_VERSION_ALIAS + ".versionComment" +
+		COMMA + CONTENT_VERSION_ALIAS + ".VerComment" +
+		//COMMA + CONTENT_VERSION_ALIAS + ".versionComment" +
 		COMMA + CONTENT_VERSION_ALIAS + ".isCheckedOut" +
 		COMMA + CONTENT_VERSION_ALIAS + ".isActive" +
 		COMMA + CONTENT_VERSION_ALIAS + ".contentId" +
 		COMMA + CONTENT_VERSION_ALIAS + ".languageId" +
 		COMMA + CONTENT_VERSION_ALIAS + ".versionModifier" +
 		COMMA + CONTENT_VERSION_ALIAS + ".contentVersionId" +
-		COMMA + CONTENT_VERSION_ALIAS + ".versionValue";
+		//COMMA + CONTENT_VERSION_ALIAS + ".contentVersionId" +
+		//COMMA + CONTENT_VERSION_ALIAS + ".versionValue";
+		COMMA + CONTENT_VERSION_ALIAS + ".VerValue";
 	}
 
 	/**
