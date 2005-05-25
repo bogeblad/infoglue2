@@ -277,7 +277,8 @@ class SqlBuilder {
 		//COMMA + CONTENT_VERSION_ALIAS + ".versionComment" +
 		COMMA + CONTENT_VERSION_ALIAS + ".isCheckedOut" +
 		COMMA + CONTENT_VERSION_ALIAS + ".isActive" +
-		COMMA + CONTENT_VERSION_ALIAS + ".contentId" +
+		COMMA + CONTENT_VERSION_ALIAS + ".ContID" +
+		//COMMA + CONTENT_VERSION_ALIAS + ".contentId" +
 		COMMA + CONTENT_VERSION_ALIAS + ".languageId" +
 		COMMA + CONTENT_VERSION_ALIAS + ".versionModifier" +
 		COMMA + CONTENT_VERSION_ALIAS + ".ContVerId" +
