@@ -53,6 +53,9 @@
     <field name="roles" type="org.infoglue.cms.entities.management.impl.simple.RoleImpl" lazy="true" collection="collection">
       <sql many-key="userName" many-table="cmSystemUserRole"/>
     </field>
+    <field name="groups" type="org.infoglue.cms.entities.management.impl.simple.GroupImpl" lazy="true" collection="collection">
+      <sql many-key="userName" many-table="cmSystemUserGroup"/>
+    </field>
   </class>
 
 <!--  Mapping for UserProperties  -->
