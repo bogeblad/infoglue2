@@ -125,6 +125,7 @@ public class ExtendedSearchController extends BaseController {
 		} 
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			throw new SystemException(e.getMessage());
 		}
 	}
@@ -244,8 +245,9 @@ class SqlBuilder {
 	 */
 	private void initializeUniqueCategoryTableKeys() {
 		int uniqueKey=0;
-		for(final Iterator names=categories.keySet().iterator(); names.hasNext(); ++uniqueKey)
-			uniqueCategoryTableKeys.put(names.next(), new Integer(uniqueKey));
+		if(categories != null)
+			for(final Iterator names=categories.keySet().iterator(); names.hasNext(); ++uniqueKey)
+				uniqueCategoryTableKeys.put(names.next(), new Integer(uniqueKey));
 	}
 	
 	/**
@@ -278,7 +280,7 @@ class SqlBuilder {
 		COMMA + CONTENT_VERSION_ALIAS + ".contentId" +
 		COMMA + CONTENT_VERSION_ALIAS + ".languageId" +
 		COMMA + CONTENT_VERSION_ALIAS + ".versionModifier" +
-		COMMA + CONTENT_VERSION_ALIAS + ".contentVersionId" +
+		COMMA + CONTENT_VERSION_ALIAS + ".ContVerId" +
 		//COMMA + CONTENT_VERSION_ALIAS + ".contentVersionId" +
 		//COMMA + CONTENT_VERSION_ALIAS + ".versionValue";
 		COMMA + CONTENT_VERSION_ALIAS + ".VerValue";
@@ -313,7 +315,7 @@ class SqlBuilder {
 	 * 
 	 */
 	private boolean doFreetextSearch() {
-		return freetext != null && freetext.length() > 0 && !xmlAttributes.isEmpty();
+		return freetext != null && freetext.length() > 0 && xmlAttributes != null && !xmlAttributes.isEmpty();
 	}
 	
 	/**
@@ -352,8 +354,9 @@ class SqlBuilder {
 	 */
 	private List getCategoriesWhereClauses() {
 		final List clauses = new ArrayList();
-		for(Iterator names=categories.keySet().iterator(); names.hasNext(); )
-			clauses.add(getCategoriesWhereClause((String) names.next()));
+		if(categories != null)
+			for(Iterator names=categories.keySet().iterator(); names.hasNext(); )
+				clauses.add(getCategoriesWhereClause((String) names.next()));
 		return clauses;
 	}
 
@@ -373,14 +376,15 @@ class SqlBuilder {
 	 */
 	private String getFreetextWhereClause() {
 		final List expressions = new ArrayList();
-		for(final Iterator i=xmlAttributes.iterator(); i.hasNext(); ) {
-			final String xmlAttribute = (String) i.next();
-			final String freeTextExpression = MessageFormat.format(FREETEXT_EXPRESSION, new Object[] { getBindingVariable() }); 
-			final String freeTextVariable   = MessageFormat.format(FREETEXT_EXPRESSION_VARIABLE, new Object[] { xmlAttribute, freetext }); 
+		if(xmlAttributes != null)
+			for(final Iterator i=xmlAttributes.iterator(); i.hasNext(); ) {
+				final String xmlAttribute = (String) i.next();
+				final String freeTextExpression = MessageFormat.format(FREETEXT_EXPRESSION, new Object[] { getBindingVariable() }); 
+				final String freeTextVariable   = MessageFormat.format(FREETEXT_EXPRESSION_VARIABLE, new Object[] { xmlAttribute, freetext }); 
 			
-			bindings.add(freeTextVariable);
-			expressions.add(freeTextExpression);
-		}
+				bindings.add(freeTextVariable);
+				expressions.add(freeTextExpression);
+			}
 		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
 	}
 	
@@ -389,12 +393,13 @@ class SqlBuilder {
 	 */
 	private List getCategoryTables() {
 		final List tables = new ArrayList();
-		for(Iterator i=categories.keySet().iterator(); i.hasNext(); ) {
-			final String attributeName  = (String) i.next();
-			final String uniqueKey      = getUniqueCategoryTableKey(attributeName);
-			tables.add(CATEGORY_TABLE + SPACE + CATEGORY_ALIAS_PREFIX + uniqueKey);
-			tables.add(CONTENT_CATEGORY_TABLE + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + uniqueKey);
-		}
+		if(categories != null)
+			for(Iterator i=categories.keySet().iterator(); i.hasNext(); ) {
+				final String attributeName  = (String) i.next();
+				final String uniqueKey      = getUniqueCategoryTableKey(attributeName);
+				tables.add(CATEGORY_TABLE + SPACE + CATEGORY_ALIAS_PREFIX + uniqueKey);
+				tables.add(CONTENT_CATEGORY_TABLE + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + uniqueKey);
+			}
 		return tables;
 	}
 	
