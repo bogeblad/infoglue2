@@ -910,6 +910,12 @@ public interface TemplateController
 	 */
 	public abstract List getContentVersionsByCategory(Integer categoryId, String attributeName);
 
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems);
+
     /**
      * The method returns the ContentTypeVO-objects of the given contentId. 
      */

@@ -1274,7 +1274,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method just sorts the list of qualifyers on sortOrder.
 	 */
 	
-	private List sortContents(Database db, Collection contents, Integer languageId, Integer siteNodeId, String sortAttributeName, String sortOrder, boolean useLanguageFallback, boolean includeFolders, DeliveryContext deliveryContext)
+	public List sortContents(Database db, Collection contents, Integer languageId, Integer siteNodeId, String sortAttributeName, String sortOrder, boolean useLanguageFallback, boolean includeFolders, DeliveryContext deliveryContext)
 	{
 		List sortedContents = new ArrayList();
 

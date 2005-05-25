@@ -76,4 +76,21 @@
     	</attribute>
 	</tag>	 
 
+	<tag>
+		<name>matchingContents</name>
+		<tagclass>org.infoglue.deliver.taglib.content.MatchingContentsTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info>TemplateLogic.getMatchingContents(String, boolean)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>contentTypeDefinitionNames</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>	 
+
 </taglib>

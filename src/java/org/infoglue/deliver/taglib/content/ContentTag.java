@@ -54,7 +54,14 @@ public class ContentTag extends ComponentLogicTag
 
 	private ContentVO getContent() throws JspException
 	{
-		return this.getComponentLogic().getBoundContent(propertyName, useInheritance);
+	    if(this.contentId != null)
+	        return this.getController().getContent(this.contentId);
+	    else if(this.propertyName != null)
+	        return this.getComponentLogic().getBoundContent(propertyName, useInheritance);
+	    else if(this.getController().getContentId() != null && this.getController().getContentId().intValue() > -1)
+	        return this.getController().getContent();
+	    else
+	        return null;
 	}
 	
     public void setContentId(Integer contentId)

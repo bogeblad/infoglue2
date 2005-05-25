@@ -25,18 +25,23 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -2919,7 +2924,73 @@ public class BasicTemplateController implements TemplateController
 		return Collections.EMPTY_LIST;
 	}
 
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems)
+	{
+		try
+		{
+		    List contentTypeDefinitionVOList = new ArrayList();
+		    String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
+		    for(int i=0; i<contentTypeDefinitionNames.length; i++)
+		    {
+		        ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(contentTypeDefinitionNames[i], getDatabase());
+		        contentTypeDefinitionVOList.add(contentTypeDefinition.getValueObject());
+		    }
+		    
+		    List contents = new ArrayList();
+		    
+		    List contentVersionVOList = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), null, getDatabase());
+		    Iterator contentVersionVOListIterator = contentVersionVOList.iterator();
+		    while(contentVersionVOListIterator.hasNext())
+		    {
+		        ContentVersionVO contentVersionVO = (ContentVersionVO)contentVersionVOListIterator.next();
+		        contents.add(ContentController.getContentController().getContentWithId(contentVersionVO.getContentId(), this.getDatabase()));
+		    }
+		    
+		    contents = ContentDeliveryController.getContentDeliveryController().sortContents(getDatabase(), contents, languageId, siteNodeId, sortAttributeName, sortOrder, useLanguageFallback, true, deliveryContext);
+		    List filteredContents = new ArrayList();
+		    for(int i=0; i<numberOfItems; i++)
+		    {
+		        if(contents.size() > i)
+		        {
+		            Content content = (Content)contents.get(i);
+		            filteredContents.add(content.getVO());
+		        }
+		    }
+		    
+		    return filteredContents;
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
+		}
 
+		return Collections.EMPTY_LIST;
+	}
+
+	/**
+	 * This method returns which mode the delivery-engine is running in.
+	 * The mode is important to be able to show working, preview and published data separate.
+	 */
+	
+	private Integer getOperatingMode()
+	{
+		Integer operatingMode = new Integer(0); //Default is working
+		try
+		{
+			operatingMode = new Integer(CmsPropertyHandler.getProperty("operatingMode"));
+			//CmsLogger.logInfo("Operating mode is:" + operatingMode);
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logWarning("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
+		}
+		return operatingMode;
+	}
+	
 	/**
 	 * This method deliveres a String with the URL to the page asked for.
 	 * As the siteNode can have multiple bindings the method requires a bindingName 
