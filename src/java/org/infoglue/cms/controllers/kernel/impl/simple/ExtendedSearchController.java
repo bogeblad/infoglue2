@@ -188,7 +188,8 @@ class SqlBuilder {
 	private static final String FREETEXT_EXPRESSION_VARIABLE  = "%<{0}><![CDATA[%{1}%]]></{0}>%";
 	
 	//
-	private static final String CATEGORY_CLAUSE               = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.contentVersionId=" + CONTENT_VERSION_ALIAS + ".contentVersionId)";
+	private static final String CATEGORY_CLAUSE               = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContVerId=" + CONTENT_VERSION_ALIAS + ".ContVerId)";
+	//private static final String CATEGORY_CLAUSE               = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.contentVersionId=" + CONTENT_VERSION_ALIAS + ".contentVersionId)";
 	
 	private final List contentTypeDefinitionVOs;
 	private final LanguageVO languageVO;
