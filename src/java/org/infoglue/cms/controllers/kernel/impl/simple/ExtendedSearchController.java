@@ -170,8 +170,8 @@ class SqlBuilder {
 	//
 	private static final String CATEGORY_TABLE                = "cmcategory";
 	private static final String CONTENT_CATEGORY_TABLE        = "cmcontentcategory";
-	private static final String CONTENT_TABLE                 = "cmcontent";
-	private static final String CONTENT_VERSION_TABLE         = "cmcontentversion";
+	private static final String CONTENT_TABLE                 = "cmCont"; //"cmcontent";
+	private static final String CONTENT_VERSION_TABLE         = "cmContVer"; //"cmcontentversion";
 	
 	//
 	private static final String CV_ACTIVE_CLAUSE              = CONTENT_VERSION_ALIAS + ".isActive=1";
