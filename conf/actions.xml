@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.46 2005/05/17 16:00:20 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.47 2005/05/26 09:10:04 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -706,6 +706,7 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.DeleteContentAction" alias="DeleteContent">
 		<view name="success">ViewContent.action?stay=true</view>
 		<view name="showRelations">/cms/contenttool/showRelations.vm</view>
+		<view name="successStandalone">/cms/contenttool/operationSucceeded.vm</view>
 		<view name="fixPage">/cms/contenttool/fixPage.vm</view>
 		<view name="fixPageHeader">/cms/contenttool/fixPageHeader.vm</view>
 		<view name="input">/cms/contenttool/showConstraintException.vm</view>
