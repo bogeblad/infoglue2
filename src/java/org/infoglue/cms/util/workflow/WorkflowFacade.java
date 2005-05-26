@@ -44,7 +44,7 @@ import net.sf.hibernate.cfg.Configuration;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.12 $ $Date: 2005/02/28 21:11:08 $
+ * @version $Revision: 1.13 $ $Date: 2005/05/26 09:14:53 $
  */
 public class WorkflowFacade
 {
@@ -90,6 +90,12 @@ public class WorkflowFacade
 	{
 		this(userPrincipal);
 		initialize(name, initialAction);
+	}
+
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, String name, int initialAction, Map map) throws SystemException
+	{
+		this(userPrincipal);
+		initialize(name, initialAction, map);
 	}
 
 	/**
@@ -139,6 +145,23 @@ public class WorkflowFacade
 		}
 	}
 
+	/**
+	 * Initializes the workflow, setting workflowId as a side-effect.
+	 * @param name the name of the workflow to initialize
+	 * @throws SystemException if a workflow error occurs.
+	 */
+	private void initialize(String name, int initialAction, Map map) throws SystemException
+	{
+		try
+		{
+			setWorkflowIdAndDescriptor(workflow.initialize(name, initialAction, map));
+		}
+		catch (Exception e)
+		{
+			throw new SystemException(e);
+		}
+	}
+	
 	/**
 	 * Performs an action using the given inputs
 	 * @param actionId the ID of the action to perform
@@ -192,9 +215,16 @@ public class WorkflowFacade
 
 		for (Iterator workflows = findActiveWorkflows().iterator(); workflows.hasNext();)
 		{
-			setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
-			CmsLogger.logInfo("workflowId:" + workflowId);
-			workflowVOs.add(createWorkflowVO());
+		    try
+		    {
+				setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
+				CmsLogger.logInfo("workflowId:" + workflowId);
+				workflowVOs.add(createWorkflowVO());
+		    }
+		    catch(Exception e)
+		    {
+		        e.printStackTrace();
+		    }
 		}
 
 		return workflowVOs;

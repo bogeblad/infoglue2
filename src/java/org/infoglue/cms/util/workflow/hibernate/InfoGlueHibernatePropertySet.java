@@ -72,6 +72,8 @@ public class InfoGlueHibernatePropertySet extends HibernatePropertySet {
         else if (item.getType() != type)
             throw new PropertyException("Existing key '" + key + "' does not have matching type of " + type);
 		
+        System.out.println("Class value:" + value.getClass().getName());
+        System.out.println("Class item:" + item.getClass().getName());
 		((InfogluePropertySetItem) item).setDataVal(((com.opensymphony.util.Data) value).getBytes());
 		
         item.setType(type);

@@ -266,7 +266,9 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
     {
         try 
         {
-            c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes("UTF-8")) , validate);
+            //System.out.println("c.workflowDefinitionVO.getValue():\n" + c.workflowDefinitionVO.getValue());
+            c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes("ISO-8859-1")) , validate);
+            //c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes("UTF-8")) , validate);
         } 
         catch (Exception e) 
         {
