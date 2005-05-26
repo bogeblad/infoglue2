@@ -271,7 +271,8 @@
 <!--  Mapping for SiteNodeVersion  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl" identity="siteNodeVersionId" key-generator="SEQUENCE">
     <description>SiteNodeVersion</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="unlimited"/>
+    <!--<cache-type type="none"/>-->
     <map-to table="cmSiNoVer"/>
     <field name="siteNodeVersionId" type="java.lang.Integer">
       <sql name="SiNoVerId" type="integer" dirty="check" />
@@ -282,8 +283,8 @@
     <field name="versionNumber" type="java.lang.Integer">
       <sql name="VerNumber" type="integer" dirty="check" />
     </field>
-    <field name="modifiedDateTime" type="java.util.Date">
-      <sql name="modifiedDateTime" type="timestamp" dirty="check" />
+    <field name="modifiedDateTime" type="java.sql.Date">
+      <sql name="modifiedDateTime" type="timestamp" dirty="ignore" />
     </field>
     <field name="versionComment" type="java.lang.String">
       <sql name="VerComment" type="varchar" dirty="check" />
@@ -359,6 +360,9 @@
     <field name="isBranch" type="java.lang.Boolean">
       <sql name="isBranch" type="integer" dirty="check" />
     </field>
+    <field name="creator" type="java.lang.String">
+      <sql name="creator" type="varchar" dirty="check" />
+    </field>
     <field name="parentSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       <sql name="parentSiNoId"/>
     </field>
@@ -367,9 +371,6 @@
     </field>
     <field name="siteNodeVersions" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl" lazy="true" collection="collection">
       <sql many-key="SiNoId"/>
-    </field>
-    <field name="creator" type="java.lang.String">
-      <sql name="creator" type="varchar" dirty="check" />
     </field>
     <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">
       <sql name="repositoryId"/>

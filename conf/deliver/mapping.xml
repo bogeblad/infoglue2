@@ -486,21 +486,21 @@
 <!--  Mapping for Qualifyer  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" identity="qualifyerId" key-generator="IDENTITY">
     <description>Qualifyer</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="unlimited"/>
     <map-to table="cmQualifyer"/>
-      <field name="qualifyerId" type="java.lang.Integer">
+    <field name="qualifyerId" type="java.lang.Integer">
       <sql name="qualifyerId" type="integer" dirty="check" />
     </field>
-        <field name="name" type="java.lang.String">
+    <field name="name" type="java.lang.String">
       <sql name="name" type="varchar" dirty="check" />
     </field>
-        <field name="value" type="java.lang.String">
+    <field name="value" type="java.lang.String">
       <sql name="value" type="varchar" dirty="check" />
     </field>
-        <field name="sortOrder" type="java.lang.Integer">
+    <field name="sortOrder" type="java.lang.Integer">
       <sql name="sortOrder" type="integer" dirty="check" />
     </field>
-        <field name="serviceBinding" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl">
+    <field name="serviceBinding" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl">
       <sql name="serviceBindingId"/>
     </field>
   </class>
