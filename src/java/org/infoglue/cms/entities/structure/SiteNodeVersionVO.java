@@ -26,6 +26,7 @@ package org.infoglue.cms.entities.structure;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SiteNodeVersionVO implements BaseEntityVO
@@ -44,7 +45,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
     private Integer siteNodeVersionId;
     private Integer stateId       		= WORKING_STATE;
     private Integer versionNumber 		= new Integer(1);
-    private Date modifiedDateTime 		= new Date();
+    private Date modifiedDateTime 		= new java.sql.Date(System.currentTimeMillis());
     private String versionComment 		= "";
     private String versionModifier		= null;
     private Boolean isCheckedOut  		= new Boolean(false);
@@ -98,12 +99,12 @@ public class SiteNodeVersionVO implements BaseEntityVO
         this.versionNumber = versionNumber;
     }
     
-    public java.util.Date getModifiedDateTime()
+    public Date getModifiedDateTime()
     {
         return this.modifiedDateTime;
     }
                 
-    public void setModifiedDateTime(java.util.Date modifiedDateTime)
+    public void setModifiedDateTime(Date modifiedDateTime)
     {
         this.modifiedDateTime = modifiedDateTime;
     }
@@ -207,5 +208,26 @@ public class SiteNodeVersionVO implements BaseEntityVO
 		this.siteNodeName = siteNodeName;
 	}
 
+	public String toString()
+	{
+	    StringBuffer sb = new StringBuffer();
+	    sb.append("siteNodeVersionId:" + siteNodeVersionId + '\n');
+	    sb.append("stateId:" + stateId + '\n');
+	    sb.append("versionNumber:" + versionNumber + '\n');
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:ss");
+	    sb.append("modifiedDateTime:" + sdf.format(modifiedDateTime) + ":" + modifiedDateTime.getClass().getName() + '\n');
+	    sb.append("versionComment:" + versionComment + '\n');
+	    sb.append("versionModifier:" + versionModifier + '\n');
+	    sb.append("isCheckedOut:" + isCheckedOut + '\n');
+	    sb.append("isActive:" + isActive + '\n');
+	    sb.append("isProtected:" + isProtected + '\n');
+	    sb.append("disablePageCache:" + disablePageCache + '\n');
+	    sb.append("disableEditOnSight:" + disableEditOnSight + '\n');
+	    sb.append("contentType:" + contentType + '\n');
+	    sb.append("siteNodeId:" + siteNodeId + '\n');
+	    sb.append("siteNodeName:" + siteNodeName + '\n');
+	    
+	    return sb.toString();
+	}
 }
         

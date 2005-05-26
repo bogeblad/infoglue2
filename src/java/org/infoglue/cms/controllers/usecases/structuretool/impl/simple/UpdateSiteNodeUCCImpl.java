@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCC;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
@@ -108,13 +111,17 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 	            siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionId, db));
 
 			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeVO.getSiteNodeId()).getValueObject();
+			//System.out.println("latestSiteNodeVersionVO:" + latestSiteNodeVersionVO);
+			
 			latestSiteNodeVersionVO.setContentType(updatedSiteNodeVersionVO.getContentType());
 			latestSiteNodeVersionVO.setDisableEditOnSight(updatedSiteNodeVersionVO.getDisableEditOnSight());
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());
 			latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
-			latestSiteNodeVersionVO.setVersionModifier(updatedSiteNodeVersionVO.getVersionModifier());
-			latestSiteNodeVersionVO.setModifiedDateTime(new java.util.Date());
-
+			latestSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
+			latestSiteNodeVersionVO.setModifiedDateTime(new java.sql.Date(System.currentTimeMillis()));
+			
+			//System.out.println("latestSiteNodeVersionVO:" + latestSiteNodeVersionVO);
+			
 			SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(infoGluePrincipal, latestSiteNodeVersionVO, db);
 
             //If any of the validations or setMethods reported an error, we throw them up now before create.
