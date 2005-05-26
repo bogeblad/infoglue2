@@ -139,7 +139,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	public String doStartWorkflow() throws SystemException
 	{
-		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), getWorkflowName(), actionId);
+		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), getWorkflowName(), actionId, this.getRequest().getParameterMap());
 		return redirectToView();
 	}
 

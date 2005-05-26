@@ -57,9 +57,9 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	private String decorateTag(Integer contentId, Integer languageId, String attributeName, String attributeValue)
 	{
 		String editOnSiteUrl = CmsPropertyHandler.getProperty("editOnSiteUrl");
-		String decoratedAttributeValue = "<span oncontextmenu=\"setEditUrl('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "');\">" + attributeValue + "</span>";
+		String decoratedAttributeValue = "<span oncontextmenu=\"setContentItemParameters(" + contentId + "," + languageId + ",'" + attributeName + "'); setEditUrl('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "');\">" + attributeValue + "</span>";
 		return decoratedAttributeValue;
-	}
+	} 
 	
 	/**
 	 * This method adds the neccessairy html to a template to make it right-clickable.

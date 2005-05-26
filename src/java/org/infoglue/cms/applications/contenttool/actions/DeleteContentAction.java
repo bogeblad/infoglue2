@@ -89,6 +89,30 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	    }
 	}	
 	
+	public String doStandalone() throws Exception 
+	{
+		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
+		if(this.referenceBeanList != null && this.referenceBeanList.size() > 0)
+		{
+		    return "showRelations";
+		}
+	    else
+	    {
+	    	try
+			{
+				this.parentContentId = ContentController.getParentContent(this.contentVO.getContentId()).getContentId();
+			}
+			catch(Exception e)
+			{
+				CmsLogger.logInfo("The content must have been a root-content because we could not find a parent.");
+			}
+
+	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
+			
+	    	return "successStandalone";
+	    }
+	}	
+
 	public String doDeleteReference() throws Exception 
 	{
 	    for(int i=0; i<registryId.length; i++)

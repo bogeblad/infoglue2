@@ -92,6 +92,25 @@ public class WorkflowController extends BaseController
 	}
 
 	/**
+	 * @param principal the user principal representing the desired user
+	 * @param name the name of the workflow to create.
+	 * @param actionId the ID of the initial action
+	 * @return a WorkflowVO representing the newly created workflow instance
+	 * @throws SystemException if an error occurs while initiaizing the workflow
+	 */
+	public WorkflowVO initializeWorkflow(InfoGluePrincipal principal, String name, int actionId, Map map) throws SystemException
+	{
+		try
+		{
+			return new WorkflowFacade(principal, name, actionId, map).createWorkflowVO();
+		}
+		catch (Exception e)
+		{
+			throw new SystemException(e);
+		}
+	}
+
+	/**
 	 * Returns a list of all available workflows, i.e., workflows defined in workflows.xml
 	 * @param userPrincipal a user principal
 	 * @return a list WorkflowVOs representing available workflows
@@ -122,12 +141,15 @@ public class WorkflowController extends BaseController
 	 * @return a WorkflowVO representing the current state of the workflow identified by workflowId
 	 * @throws SystemException if a workflow error occurs
 	 */
-	public WorkflowVO invokeAction(InfoGluePrincipal principal, HttpServletRequest request, long workflowId, int actionId)
-			throws SystemException
+	public WorkflowVO invokeAction(InfoGluePrincipal principal, HttpServletRequest request, long workflowId, int actionId) throws SystemException
 	{
 		CmsLogger.logInfo("invokeAction.............");
 		CmsLogger.logInfo("workflowId:" + workflowId);
 		CmsLogger.logInfo("actionId:" + actionId);
+
+		System.out.println("invokeAction.............");
+		System.out.println("workflowId:" + workflowId);
+		System.out.println("actionId:" + actionId);
 
 		try
 		{
@@ -143,6 +165,7 @@ public class WorkflowController extends BaseController
 		}
 		catch (Exception e)
 		{
+		    e.printStackTrace();
 			throw new SystemException(e);
 		}
 	}
