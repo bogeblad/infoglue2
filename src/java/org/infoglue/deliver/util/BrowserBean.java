@@ -37,20 +37,26 @@ public final class BrowserBean implements Serializable
 	private boolean ns7 = false;
 	private boolean ns6 = false;
 	private boolean ns4 = false;
+	
+	private String os;
 
 	public void setRequest(HttpServletRequest req)
 	{
 		this.request = req;
 		this.useragent = request.getHeader("User-Agent");
 		this.languages = request.getHeader("Accept-Language");
+		System.out.println("useragent: " + useragent);
 		if(this.languages != null)
 			this.languages = this.languages.toLowerCase();
 
 		if(useragent != null)
-			initUserAgent();
+		{
+			inituseragent();
+			initOs();
+		}
 	}
 
-	private void initUserAgent()
+	private void inituseragent()
 	{
 		String user = useragent.toLowerCase();
 		if(user.indexOf("msie") != -1) 
@@ -74,6 +80,47 @@ public final class BrowserBean implements Serializable
 			this.netEnabled = true;
 	}
 
+	private void initOs() 
+	{
+        if (this.useragent.indexOf("win") > -1)
+        {
+            if (this.useragent.indexOf("windows 95") > -1 || this.useragent.indexOf("win95") > -1)
+            {
+                this.os = "Windows 95";
+            } 
+            else if (this.useragent.indexOf("windows 98") > -1 || this.useragent.indexOf("win98") > -1)
+            {
+                this.os = "Windows 98";
+            } 
+            else if (this.useragent.indexOf("windows nt") > -1 || this.useragent.indexOf("winnt") > -1)
+            {
+                this.os = "Windows NT";
+            } 
+            else if (this.useragent.indexOf("win16") > -1 || this.useragent.indexOf("windows 3.") > -1)
+            {
+                this.os = "Windows 3.x";
+            }
+            else
+                this.os = "Windows";
+
+        } 
+        else if (this.useragent.indexOf("Mac") > -1)
+        {
+            if (this.useragent.indexOf("Mac_PowerPC") > -1 || this.useragent.indexOf("Mac_PPC") > -1)
+            {
+                this.os = "Macintosh Power PC";
+            } 
+            else if (this.useragent.indexOf("Macintosh") > -1)
+            {
+                this.os = "Macintosh";
+            } 
+            else
+            {
+                this.os = "Mac";
+            }
+        }
+    }	
+	
 	public String getUseragent()
 	{
 		return useragent;
@@ -108,4 +155,9 @@ public final class BrowserBean implements Serializable
 	{
 		return ns4;
 	}
+	
+    public String getOs()
+    {
+        return os;
+    }
 }
