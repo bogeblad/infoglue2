@@ -47,6 +47,16 @@ function setEditUrl(anEditUrl)
 	editUrl = anEditUrl;
 }
 
+function setContentItemParameters(contentId, languageId, attributeName)
+{
+	//alert("Setting contentId:" + contentId);
+	//alert("Setting languageId:" + languageId);
+	//alert("Setting attributeName:" + attributeName);
+	selectedContentId = contentId;
+	selectedLanguageId = languageId;
+	selectedAttributeName = attributeName;
+}
+
 function showmenuie5(anEditUrl, event) 
 {
 	document.body.onclick = hidemenuie5;
