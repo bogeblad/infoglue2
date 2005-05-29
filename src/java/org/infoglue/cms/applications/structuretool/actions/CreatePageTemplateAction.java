@@ -94,6 +94,8 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
         CmsLogger.logInfo("name:" + name);
         
         ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PageTemplate");
+        if(contentTypeDefinitionVO == null)
+            throw new SystemException("The system does not have the content type named 'PageTemplate' which is required for this operation.");
         
         ContentVO contentVO = new ContentVO();
         
