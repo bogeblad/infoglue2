@@ -823,7 +823,7 @@
       <sql name="stateId" type="integer" dirty="ignore" />
     </field>
     <field name="modifiedDateTime" type="java.util.Date">
-      <sql name="modifiedDateTime" type="date" dirty="ignore" />
+      <sql name="modifiedDateTime" type="timestamp" dirty="ignore" />
     </field>
     <field name="versionComment" type="java.lang.String">
       <sql name="VerComment" type="varchar" dirty="ignore" />

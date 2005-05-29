@@ -36,10 +36,10 @@ public class SiteNodeVO implements BaseEntityVO
 
     private java.lang.Integer siteNodeId 	= null;
     private java.lang.String name			= "";
-    private java.util.Date publishDateTime = new Date();
-    private java.util.Date expireDateTime  = new Date();
+    private java.util.Date publishDateTime 	= new java.sql.Date(System.currentTimeMillis());
+    private java.util.Date expireDateTime  	= new java.sql.Date(System.currentTimeMillis());
     private java.lang.Boolean isBranch		= new Boolean(false);             
-  	private java.lang.Integer repositoryId = null;    
+  	private java.lang.Integer repositoryId 	= null;    
   	private java.lang.Integer siteNodeTypeDefinitionId = null;  
   	private Integer childCount;
   	

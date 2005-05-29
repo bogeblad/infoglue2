@@ -40,7 +40,7 @@ public class ContentVersionVO implements BaseEntityVO
 	
 	private Integer contentVersionId;
     private Integer stateId						= new Integer(0);
-    private Date modifiedDateTime				= new Date();
+    private Date modifiedDateTime				= new java.sql.Date(System.currentTimeMillis());
     private String versionComment				= "Saved";
     private Boolean isCheckedOut				= new Boolean(false);
    	private Boolean isActive					= new Boolean(true);
