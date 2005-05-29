@@ -95,24 +95,7 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 		try 
 		{
 			db.begin();
-			
-			//Checks the relations from contents
-			List languages = LanguageController.getController().getLanguageList(this.repositoryId, db);
-			List contents = ContentController.getContentController().getRepositoryContents(this.repositoryId, db);
-			
-			Iterator iterator = contents.iterator();
-			while(iterator.hasNext())
-			{
-			    Content content = (Content)iterator.next();
-			    CmsLogger.logInfo("Going to index all version of " + content.getName());
-			    
-			    Iterator versionsIterator = content.getContentVersions().iterator();
-				while(versionsIterator.hasNext())
-				{
-				    ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
-				    registryController.updateContentVersion(contentVersion, db);
-				}
-			}
+
 			
 			//Checks the relations from sitenodes
 			List siteNodes = SiteNodeController.getController().getRepositorySiteNodes(this.repositoryId, db);
@@ -130,14 +113,32 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 				    registryController.updateSiteNodeVersion(siteNodeVersion, db);
 				}
 			}
+
+			//Checks the relations from contents
+			List languages = LanguageController.getController().getLanguageList(this.repositoryId, db);
+			List contents = ContentController.getContentController().getRepositoryContents(this.repositoryId, db);
 			
+			Iterator iterator = contents.iterator();
+			while(iterator.hasNext())
+			{
+			    Content content = (Content)iterator.next();
+			    CmsLogger.logInfo("Going to index all version of " + content.getName());
+			    
+			    Iterator versionsIterator = content.getContentVersions().iterator();
+				while(versionsIterator.hasNext())
+				{
+				    ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
+				    registryController.updateContentVersion(contentVersion, db);
+				}
+			}
+						
 			db.commit();
 			db.close();
 
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logSevere("An error was found exporting a repository: " + e.getMessage(), e);
+			CmsLogger.logSevere("An error was found rebuilding the registry: " + e.getMessage(), e);
 			db.rollback();
 			db.close();
 		}

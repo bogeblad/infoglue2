@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.12 2005/05/17 16:01:36 mattias Exp $
+ * $Id: RegistryController.java,v 1.13 2005/05/29 20:43:26 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -171,16 +171,17 @@ public class RegistryController extends BaseController
 	    
 	    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 	    {
-	        CmsLogger.logInfo("It was a meta info so lets check it for other stuff as well");
+	        System.out.println("It was a meta info so lets check it for other stuff as well");
 		    
 	        List siteNodeVersions = getSiteNodeVersionsWhichUsesContentVersionAsMetaInfo(oldContentVersion, db);
+	        System.out.println("siteNodeVersions:" + siteNodeVersions.size());
 	        Iterator siteNodeVersionsIterator = siteNodeVersions.iterator();
 	        while(siteNodeVersionsIterator.hasNext())
 	        {
 		        SiteNodeVersion siteNodeVersion = (SiteNodeVersion)siteNodeVersionsIterator.next();
 			    if(siteNodeVersion != null)
 			    {
-				    CmsLogger.logInfo("Going to use " + siteNodeVersion.getId() + " as reference");
+				    System.out.println("Going to use " + siteNodeVersion.getId() + " as reference");
 			        clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
 				    
 				    getComponents(siteNodeVersion, versionValue, db);
@@ -628,12 +629,13 @@ public class RegistryController extends BaseController
 			Map entries = new HashMap();
 			
 	        List registryEntires = getMatchingRegistryVOList(Content.class.getName(), contentId.toString(), db);
+	        CmsLogger.logInfo("registryEntires:" + registryEntires.size());
 	        Iterator registryEntiresIterator = registryEntires.iterator();
 	        while(registryEntiresIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
 	            CmsLogger.logInfo("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
-	     
+	            
 	            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
 	            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
 	            ReferenceBean existingReferenceBean = (ReferenceBean)entries.get(key);
@@ -697,6 +699,8 @@ public class RegistryController extends BaseController
 		    rollbackTransaction(db);
 			//throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
 		}
+		
+		System.out.println("referenceBeanList:" + referenceBeanList.size());
 		
         return referenceBeanList;
     }

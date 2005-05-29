@@ -236,8 +236,9 @@
 	#set($hasContentReferences = false)
 	#set($isOdd = true)
 	#foreach ($referenceBean in $referenceBeanList)
-		#if($referenceBean.referencingObject.class.name.indexOf("Content") > -1)
+		#if($referenceBean.referencingCompletingObject.class.name.indexOf("Content") > -1)
 			#set($hasContentReferences = true)
+			#set($lastIndex = $referenceBean.versions.size() - 1)
 			#if($isOdd)
 				#set($class = "class='lightgreen'")
 				#set($isOdd = false)
@@ -247,8 +248,11 @@
 			#end
 			<tr $class>
 				<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
-				<td width="100%"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingObject.contentId&languageId=$referenceBean.referencingObject.languageId" target="_blank">$referenceBean.name</a> #if($referenceBean.registryVOList.size() > 1)- $referenceBean.registryVOList.size() $ui.getString("tool.contenttool.referencesFound")#end</td>
-				<td width="16"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingObject.contentId&languageId=$referenceBean.referencingObject.languageId" target="_blank"><img src="images/edit.gif" border="0" width="16" height="16"></a></td>
+				<td width="100%">
+					<a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$referenceBean.versions.get($lastIndex).referencingObject.languageId" target="_blank">$referenceBean.name</a>
+ 					- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.contenttool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.contenttool.versions"))
+ 				</td>
+				<td width="16"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$referenceBean.versions.get($lastIndex).referencingObject.languageId" target="_blank"><img src="images/edit.gif" border="0"></a></td>
 			</tr>	
 		#end
 	#end
@@ -272,8 +276,9 @@
 	#set($hasPageReferences = false)
 	#set($isOdd = true)
 	#foreach ($referenceBean in $referenceBeanList)
-		#if($referenceBean.referencingObject.class.name.indexOf("SiteNode") > -1)
+		#if($referenceBean.referencingCompletingObject.class.name.indexOf("SiteNode") > -1)
 			#set($hasPageReferences = true)
+			#set($lastIndex = $referenceBean.versions.size() - 1)
 			#if($isOdd)
 				#set($class = "class='lightgreen'")
 				#set($isOdd = false)
@@ -283,9 +288,13 @@
 			#end
 			<tr $class>
 				<td width="16"><img src="images/tree/structureRoot.gif"></td>
-				<td width="100%"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a> #if($referenceBean.registryVOList.size() > 1)- $referenceBean.registryVOList.size() $ui.getString("tool.structuretool.referencesFound")#end</td>
-				<td width="16"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				<td width="100%">
+					<a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a>
+					- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.structuretool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.structuretool.versions"))
+				</td>
+				<td width="16"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
 			</tr>	
+			
 		#end
 	#end
 	#if(!$hasPageReferences)
