@@ -178,7 +178,7 @@ class SqlBuilder {
 	private static final String CV_ACTIVE_CLAUSE              = CONTENT_VERSION_ALIAS + ".isActive=1";
 	private static final String CV_LANGUAGE_CLAUSE            = CONTENT_VERSION_ALIAS + ".languageId={0}";
 	//private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId={0}";
-	private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId=" + ContentVersionVO.PUBLISHED_STATE;
+	private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId>=" + ContentVersionVO.PUBLISHED_STATE;
 	private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".ContId=" + CONTENT_VERSION_ALIAS + ".ContId"; // TODO: TEMPORARY FIX!!! CONTENT_ALIAS + ".contentId=" + CONTENT_VERSION_ALIAS + ".contentId";
 	private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".ContVerId in (select max(ContVerId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.ContId=" + CONTENT_VERSION_ALIAS + ".ContId)"; //  TODO: TEMPORARY FIX!!! CONTENT_VERSION_ALIAS + ".contentVersionId in (select max(contentVersionId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.contentId=" + CONTENT_VERSION_ALIAS + ".contentId)";
 	
