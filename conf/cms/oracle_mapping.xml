@@ -283,7 +283,7 @@
     <field name="versionNumber" type="java.lang.Integer">
       <sql name="VerNumber" type="integer" dirty="check" />
     </field>
-    <field name="modifiedDateTime" type="java.sql.Date">
+    <field name="modifiedDateTime" type="java.util.Date">
       <sql name="modifiedDateTime" type="timestamp" dirty="ignore" />
     </field>
     <field name="versionComment" type="java.lang.String">
