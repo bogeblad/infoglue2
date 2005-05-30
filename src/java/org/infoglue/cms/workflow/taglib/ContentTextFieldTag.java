@@ -31,9 +31,14 @@ import javax.servlet.jsp.JspException;
  * 
  */
 public class ContentTextFieldTag extends ContentInputTag {
-	private static final long serialVersionUID = 4051330041428390198L;
-
-	private static final String TEXT_FIELD = "<input id=\"{0}\" name=\"{1}\" type=\"text\" value=\"{2}\" class=\"{3}\"/>";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3256727294570804535L;
+	
+	private static final String TEXT_FIELD = "<input id=\"{0}\" name=\"{1}\" type=\"text\" value=\"{2}\" {3}\"/>";
+	private static final String READONLY_ATTRIBUTE = " readonly=\"{0}\" ";
+	private static final String CLASS_ATTRIBUTE    = " class=\"{0}\" ";
 	
 	/**
 	 * 
@@ -55,8 +60,14 @@ public class ContentTextFieldTag extends ContentInputTag {
 	 * 
 	 */
 	private String createTextFieldHTML() {
+		StringBuffer extraAttributes = new StringBuffer();
+		if(getCssClass() != null) 
+			extraAttributes.append(MessageFormat.format(CLASS_ATTRIBUTE, new Object[] { getCssClass() }));
+		if(getReadonly() != null) 
+			extraAttributes.append(MessageFormat.format(READONLY_ATTRIBUTE, new Object[] { getReadonly() }));
+		
+		
 		String value = (getContentValue() == null) ? "" : getContentValue();
-		String cssClass = (getCssClass() == null) ? "" : getCssClass();
-		return MessageFormat.format(TEXT_FIELD, new Object[] { getIdAttr(), getName(), value, cssClass });
+		return MessageFormat.format(TEXT_FIELD, new Object[] { getIdAttr(), getName(), value, extraAttributes.toString() });
 	}
 }

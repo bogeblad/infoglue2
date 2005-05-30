@@ -36,6 +36,7 @@ public abstract class ContentInputTag extends TagSupport {
 	private String idAttr   = "";
 	private String name     = "";
 	private String cssClass = "";
+	private String readonly;
 
 
 	/**
@@ -104,5 +105,19 @@ public abstract class ContentInputTag extends TagSupport {
 	 */
     public void setCssClass(String cssClass) {
         this.cssClass = cssClass;
+    }
+
+	/**
+	 * 
+	 */
+    public String getReadonly() {
+        return readonly;
+    }
+    
+	/**
+	 * 
+	 */
+    public void setReadonly(String readonly) {
+        this.readonly = readonly;
     }
 }
