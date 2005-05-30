@@ -528,6 +528,63 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	}
 
 
+	public String doUpdateAttributeValidatorArguments() throws Exception
+	{
+		this.initialize(getContentTypeDefinitionId());
+
+		try
+		{
+			Document document = createDocumentFromDefinition();
+
+			int i = 0;
+			String attributeValidatorName = this.getRequest().getParameter("attributeValidatorName");
+			String argumentName = this.getRequest().getParameter(i + "_argumentName");
+			
+			System.out.println("attributeValidatorName:" + attributeValidatorName);
+			System.out.println("argumentName:" + argumentName);
+			while(argumentName != null && !argumentName.equalsIgnoreCase(""))
+			{
+			    String argumentValue = this.getRequest().getParameter(i + "_argumentValue");
+				System.out.println("argumentValue:" + argumentValue);
+			    
+			    String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '" + attributeName + "'][@depends = '" + attributeValidatorName + "']";
+				Node fieldNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), validatorsXPath);
+				if(fieldNode != null)
+				{
+					Element element = (Element)fieldNode;
+					NodeList nl = element.getElementsByTagName("var");
+					for(int nlIndex=0; nlIndex < nl.getLength(); nlIndex++)
+					{
+					    Node node = (Node)nl.item(nlIndex);
+					    element.removeChild(node);
+					}
+					
+					Element newVar = document.createElement("var");
+					
+					Element varNameElement = createTextElement(document, "var-name", argumentName);
+					Element varValueElement = createTextElement(document, "var-value", argumentValue);
+					newVar.appendChild(varNameElement);
+					newVar.appendChild(varValueElement);
+					
+					element.appendChild(newVar);
+				}
+				
+				i++;
+				argumentName = this.getRequest().getParameter(i + "_argumentName");
+			}
+			
+			saveUpdatedDefinition(document);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		this.initialize(getContentTypeDefinitionId());
+		return USE_EDITOR;
+	}
+
+	
 	//-------------------------------------------------------------------------------------
 	// Methods dealing with extra keys
 	//
