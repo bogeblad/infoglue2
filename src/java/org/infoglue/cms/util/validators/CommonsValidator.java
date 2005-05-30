@@ -1,5 +1,7 @@
 package org.infoglue.cms.util.validators;
 
+import java.util.Iterator;
+
 import org.apache.commons.validator.Field;
 import org.apache.commons.validator.GenericTypeValidator;
 import org.apache.commons.validator.GenericValidator;
@@ -174,9 +176,11 @@ public class CommonsValidator {
     */
    public static boolean validateRegexp(Object bean, Field field) {
       String value = ValidatorUtils.getValueAsString(bean, field.getProperty());
-      String regexp = ValidatorUtils.getValueAsString(bean, field.getVarValue("regexp"));
+      String regexp = field.getVarValue("regexp");
       
-      return GenericValidator.matchRegexp(value, regexp);
+      //boolean valid = GenericValidator.matchRegexp(value, regexp);
+      boolean valid = value.matches(regexp);
+      return valid;
    }
    
   public final static String FIELD_TEST_NULL = "NULL";

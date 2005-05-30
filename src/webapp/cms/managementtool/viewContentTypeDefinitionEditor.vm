@@ -50,8 +50,57 @@
 			//document.getElementById(id + "height").readonly = true;
 		}
 	}
+	
+	function showAddValidatorFormDiv(attributeName)
+	{
+		document.newValidatorForm.attributeName.value = attributeName;
+		showDiv('newValidatorFormLayer');
+	}
 -->
 </script>
+
+<div id="newValidatorFormLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+	<form name="newValidatorForm" action="ViewContentTypeDefinition!insertAttributeValidator.action" method="POST">
+	<table border="0" cellpadding="4" cellspacing="0">
+	<tr>
+		<td colspan="2" class="propertiesheader">Create new validator</td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="images/trans.gif" height="5" width="1"></td>
+	</tr>
+	<tr>
+		<td><b>Validation Type</b></td>
+		<td>
+			<select size="1" name="validatorName" class="sitedropbox">
+			    <option value="">Choose validator type</option>
+			    <option value="required">Required</option>
+			    <option value="requiredif">Required If</option>
+			    <option value="matchRegexp">Match Regexp</option>
+			 </select>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<img src="images/trans.gif" width="80" height="25" border="0">
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>
+			<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="javascript:hideDiv('newValidatorFormLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+		</td>
+	</tr>
+	</table>
+	<input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
+	<input type="hidden" name="attributeName" value="$attribute.name">
+	<!--
+	<input type="hidden" name="attributeParameterValueLocale" value="$!currentContentTypeEditorViewLanguageCode">
+	<input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
+	-->
+	<input type="hidden" name="attributeToExpand" value="${attribute.name}">
+	</form>
+</div>
 
 
 #foreach($attribute in $contentTypeAttributes)
@@ -195,16 +244,25 @@
 	<tr>
 		<td>Validator</td>
 		<td>
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table width="50%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td>$validator.name</td>
+				<td width="90%">$validator.name</td>
 				<td>&nbsp;</td>
 				<td><a href="javascript:showDiv('${attribute.name}_${validator.name}_layer');"><img src="images/properties.gif" border="0"></a></td>
+				<td>&nbsp;</td>
+				<td><a href="ViewContentTypeDefinition!deleteAttributeValidator.action?contentTypeDefinitionId=$contentTypeDefinitionId&attributeName=${attribute.name}&attributeValidatorName=${validator.name}&attributeToExpand=$attribute.name"><img src="images/delete.gif" border="0"></a></td>
+				<td>&nbsp;</td>
 			</tr>
 			</table>					
 		</td>
 	</tr>
 	#end
+	<tr>
+		<td>
+			<a href="javascript:showAddValidatorFormDiv('$attribute.name');">Add new validation rule</a>
+		</td>
+	</tr>
+
 	<tr>
 		<td colspan="2"><b>Extra parameters</b></td>
 	</tr>

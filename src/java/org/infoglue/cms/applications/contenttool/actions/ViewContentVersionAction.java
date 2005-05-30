@@ -1050,4 +1050,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     {
         this.newContentId = newContentId;
     }
+    
+    public void setContentVersionVO(ContentVersionVO contentVersionVO)
+    {
+        this.contentVersionVO = contentVersionVO;
+    }
 }

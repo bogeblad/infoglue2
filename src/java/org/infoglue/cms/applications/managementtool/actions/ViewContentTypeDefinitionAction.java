@@ -528,6 +528,79 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	}
 
 
+	public String doInsertAttributeValidator() throws Exception
+	{
+		this.initialize(getContentTypeDefinitionId());
+
+		try
+		{
+			Document document = createDocumentFromDefinition();
+
+			String validatorName = this.getRequest().getParameter("validatorName");
+			
+			System.out.println("validatorName:" + validatorName);
+			
+			if(validatorName != null && !validatorName.equalsIgnoreCase(""))
+			{
+			    String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form";
+				Node formNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), validatorsXPath);
+				if(formNode != null)
+				{
+					Element element = (Element)formNode;
+					
+					Element newField = document.createElement("field");
+					newField.setAttribute("property", this.attributeName);
+					newField.setAttribute("depends", validatorName);
+
+					String errorKey = null;
+					
+					if(validatorName.equals("required"))
+					{
+					    errorKey = "300"; //Required
+					}
+					else if(validatorName.equals("requiredif"))
+					{
+					    errorKey = "300"; //Required
+
+						Element newVar = document.createElement("var");
+					    Element varNameElement = createTextElement(document, "var-name", "dependent");
+						Element varValueElement = createTextElement(document, "var-value", "AttributeName");
+						newVar.appendChild(varNameElement);
+						newVar.appendChild(varValueElement);
+						newField.appendChild(newVar);
+					}
+					else if(validatorName.equals("matchRegexp"))
+					{
+					    errorKey = "307"; //Invalid format
+
+						Element newVar = document.createElement("var");
+					    Element varNameElement = createTextElement(document, "var-name", "regexp");
+						Element varValueElement = createTextElement(document, "var-value", ".*");
+						newVar.appendChild(varNameElement);
+						newVar.appendChild(varValueElement);
+						newField.appendChild(newVar);
+					}
+
+					Element newMessage = document.createElement("msg");
+					newMessage.setAttribute("name", validatorName);
+					newMessage.setAttribute("key", errorKey);
+					newField.appendChild(newMessage);
+					
+					element.appendChild(newField);
+				}
+			}
+			
+			saveUpdatedDefinition(document);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		this.initialize(getContentTypeDefinitionId());
+		return USE_EDITOR;
+	}
+
 	public String doUpdateAttributeValidatorArguments() throws Exception
 	{
 		this.initialize(getContentTypeDefinitionId());
@@ -571,6 +644,39 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				
 				i++;
 				argumentName = this.getRequest().getParameter(i + "_argumentName");
+			}
+			
+			saveUpdatedDefinition(document);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		this.initialize(getContentTypeDefinitionId());
+		return USE_EDITOR;
+	}
+
+	public String doDeleteAttributeValidator() throws Exception
+	{
+		this.initialize(getContentTypeDefinitionId());
+
+		try
+		{
+			Document document = createDocumentFromDefinition();
+
+			int i = 0;
+			String attributeValidatorName = this.getRequest().getParameter("attributeValidatorName");
+			System.out.println("attributeValidatorName:" + attributeValidatorName);
+			if(attributeValidatorName != null && !attributeValidatorName.equalsIgnoreCase(""))
+			{
+			    String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '" + attributeName + "'][@depends = '" + attributeValidatorName + "']";
+				Node fieldNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), validatorsXPath);
+				if(fieldNode != null)
+				{
+					Element element = (Element)fieldNode;
+					element.getParentNode().removeChild(element);
+				}
 			}
 			
 			saveUpdatedDefinition(document);

@@ -56,10 +56,10 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 	}
 	
 	public String doExecute() throws Exception
-    {
+	{
 		super.initialize(this.contentVersionId, this.contentId, this.languageId);
 		ceb.throwIfNotEmpty();
-		
+
 		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 		this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
 		

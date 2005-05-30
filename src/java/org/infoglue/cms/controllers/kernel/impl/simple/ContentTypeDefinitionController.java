@@ -1038,7 +1038,37 @@ public class ContentTypeDefinitionController extends BaseController
 						}
 					}
 				}
+				else if(schemaElement.getAttribute("version") != null && schemaElement.getAttribute("version").equalsIgnoreCase("2.1"))
+				{
+					isModified = true;
+					schemaElement.setAttribute("version", "2.2");
 
+					//Now we deal with adding the validation part if not existent
+					String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']";
+					Node formNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), validatorsXPath);
+					System.out.println("formNode:" + formNode);
+					if(formNode == null)
+					{
+					    String schemaXPath = "/xs:schema";
+						Node schemaNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), schemaXPath);
+						
+					    Element element = (Element)schemaNode;
+					    
+					    String validationXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><xs:complexType name=\"Validation\" xmlns:xi=\"http://www.w3.org/2001/XInclude\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><xs:annotation><xs:appinfo><form-validation><global><validator name=\"required\" classname=\"org.infoglue.cms.util.validators.CommonsValidator\" method=\"validateRequired\" methodParams=\"java.lang.Object,org.apache.commons.validator.Field\" msg=\"300\"/><validator name=\"requiredif\" classname=\"org.infoglue.cms.util.validators.CommonsValidator\" method=\"validateRequiredIf\" methodParams=\"java.lang.Object,org.apache.commons.validator.Field,org.apache.commons.validator.Validator\" msg=\"315\"/><validator name=\"matchRegexp\" classname=\"org.infoglue.cms.util.validators.CommonsValidator\" method=\"validateRegexp\" methodParams=\"java.lang.Object,org.apache.commons.validator.Field\" msg=\"300\"/></global><formset><form name=\"requiredForm\"></form></formset></form-validation></xs:appinfo></xs:annotation></xs:complexType>";
+					    
+					    InputSource validationXMLSource = new InputSource(new StringReader(validationXML));
+						DOMParser parser2 = new DOMParser();
+						parser2.parse(validationXMLSource);
+						Document document2 = parser2.getDocument();
+
+						System.out.println("formNode:" + formNode);
+
+						Node node = document.importNode(document2.getDocumentElement(), true);
+						element.appendChild(node);
+					}
+				}
+
+				
 			}
 
 			if(isModified)
