@@ -39,9 +39,11 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.io.*;
 
 import javax.xml.transform.TransformerException;
@@ -512,6 +514,47 @@ public class ContentTypeDefinitionController extends BaseController
 				contentTypeAttribute.setName(attributeName);
 				contentTypeAttribute.setInputType(attributeType);
 
+				String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '"+ attributeName +"']";
+
+				// Get validators
+				NodeList validatorNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), validatorsXPath);
+				for(int j=0; j < validatorNodeList.getLength(); j++)
+				{
+					Element validatorNode = (Element)validatorNodeList.item(j);
+					System.out.println("validatorNode:" + validatorNode);
+					if (validatorNode != null)
+					{
+					    Map arguments = new HashMap();
+					    
+					    NodeList varNodeList = validatorNode.getElementsByTagName("var");
+					    for(int k=0; k < varNodeList.getLength(); k++)
+						{
+							Element varNode = (Element)varNodeList.item(k);
+							System.out.println("varNode:" + varNode);
+
+							String varName = getElementValue(varNode, "var-name");
+							String varValue = getElementValue(varNode, "var-value");
+
+							arguments.put(varName, varValue);
+						}	    
+					    
+					    String attribute = ((Element)validatorNode).getAttribute("depends");
+					    System.out.println("attribute: " + attribute);
+					    String[] depends = attribute.split(",");
+					    for(int dependsIndex=0; dependsIndex < depends.length; dependsIndex++)
+					    {
+					        String name = depends[dependsIndex];
+					        System.out.println("Name:" + name);
+					        ContentTypeAttributeValidator contentTypeAttributeValidator = new ContentTypeAttributeValidator();
+					        contentTypeAttributeValidator.setName(name);
+					        contentTypeAttributeValidator.setArguments(arguments);
+					        contentTypeAttribute.getValidators().add(contentTypeAttributeValidator);					        
+					    }
+					    
+					    
+					}
+				}
+				
 				// Get extra parameters
 				Node paramsNode = org.apache.xpath.XPathAPI.selectSingleNode(child, "xs:annotation/xs:appinfo/params");
 				if (paramsNode != null)

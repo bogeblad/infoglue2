@@ -397,15 +397,19 @@
 		</tr>
 		<tr>
 			<td colspan="3">
-			
+				
 				#if($attribute.inputType == "textfield")
-					$attributeTitle ("$attribute.name") $attributeDescription<br/>
+					$attributeTitle ("$attribute.name") $attributeDescription
+					#printError("ContentVersion.$attribute.name")
 					<input $readonly type="text" length="50" class="$class" maxlength="" id="$attribute.name" name="$attribute.name" value="$this.getAttributeValue($attribute.name)" $onchange/>
 				#elseif($attribute.inputType == "textarea")
 					
 					<table cellpadding="0" cellspacing="0" border="0" width="100%">
 					    <tr>
-					    	<td align="left">$attributeTitle ("$attribute.name") $attributeDescription </td>
+					    	<td align="left">
+						    	$attributeTitle ("$attribute.name") $attributeDescription 
+						    	#printError("ContentVersion.$attribute.name")
+						    </td>
 					    	<td align="right">
 								
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
@@ -633,6 +637,7 @@
 				#elseif($attribute.inputType == "select")
 				<!-- Handles the input type select = dropbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
+					#printError("ContentVersion.$attribute.name")
 					<select $readonly size="1" id="$attribute.name" name="$attribute.name" class="$class" $onchange>
 		    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
 		    				<option value="$value.id" #checkSelected("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
@@ -642,14 +647,16 @@
 				#elseif($attribute.inputType == "checkbox")
 				<!-- Handles the input type checkbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
-	    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
+	    			#printError("ContentVersion.$attribute.name")
+					#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
 						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 
 				#elseif($attribute.inputType == "radiobutton")
 				<!-- Handles the input type radiobutton -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
-	    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
+	    			#printError("ContentVersion.$attribute.name")
+					#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
 						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 

@@ -52,6 +52,7 @@ public class ContentTypeAttribute
 	private String name 	 = "";
 	private String inputType = "";
 	private Map contentTypeAttributeParameters = new LinkedHashMap();
+	private List validators  = new ArrayList();
 	
 	public ContentTypeAttribute()
 	{
@@ -109,4 +110,8 @@ public class ContentTypeAttribute
 		return extraParameters;
 	}
 
+    public List getValidators()
+    {
+        return validators;
+    }
 }

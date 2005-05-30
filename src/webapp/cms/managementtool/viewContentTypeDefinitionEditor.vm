@@ -55,6 +55,55 @@
 
 
 #foreach($attribute in $contentTypeAttributes)
+
+	#foreach($validator in $attribute.validators)
+		<div id="${attribute.name}_${validator.name}_layer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+			<form name="${attribute.name}_${validator.name}ArgumentsForm" action="ViewContentTypeDefinition!updateAttributeValidatorArguments.action" method="POST">
+			<table border="0" cellpadding="4" cellspacing="0">
+			<tr>
+				<td colspan="2" class="propertiesheader">Validator arguments</td>
+			</tr>
+			<tr>
+				<td colspan="2"><img src="images/trans.gif" height="5" width="1"></td>
+			</tr>
+			#set($index = 0)
+			#foreach($key in $validator.arguments.keySet())
+				<tr>
+					<td>
+						<input type="hidden" name="${index}_argumentName" value="$key">
+						$key:
+					</td>
+					<td>
+						<input type="textfield" name="${index}_argumentValue" value="$validator.arguments.get("$key")" class="normaltextfield">
+					</td>
+				</tr>
+				#set($index = $index + 1)
+			#end
+			<tr>
+				<td colspan="2">
+					<img src="images/trans.gif" width="80" height="25" border="0">
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>
+					<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+					<a href="javascript:hideDiv('${attribute.name}_${validator.name}_layer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+				</td>
+			</tr>
+			</table>
+			<input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
+			<input type="hidden" name="attributeName" value="$attribute.name">
+			<input type="hidden" name="attributeValidatorName" value="$validator.name">
+			<!--
+			<input type="hidden" name="attributeParameterValueLocale" value="$!currentContentTypeEditorViewLanguageCode">
+			<input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
+			-->
+			<input type="hidden" name="attributeToExpand" value="${attribute.name}">
+			</form>
+		</div>
+	#end
+	
 	#foreach($parameter in $attribute.getContentTypeAttributeParameters())
 		#set($values = $parameter.value.getContentTypeAttributeParameterValues())
 		#foreach($value in $values)
@@ -110,7 +159,7 @@
 #end
 <div id="${attribute.name}PropertyLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:150px; visibility:${visibility}; z-index:0">
 	<form name="${attribute.name}PropertiesForm" action="ViewContentTypeDefinition!updateAttribute.action" method="POST">
-	<table border="0" cellpadding="4" cellspacing="0">
+	<table border="0" cellpadding="2" cellspacing="0">
 	<tr>
 		<td colspan="2" class="propertiesheader">Properties for attribute</td>
 	</tr>
@@ -139,6 +188,23 @@
 			</select>
 		</td>
 	</tr>
+	<tr>
+		<td colspan="2"><b>Validation</b></td>
+	</tr>
+	#foreach($validator in $attribute.validators)
+	<tr>
+		<td>Validator</td>
+		<td>
+			<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>$validator.name</td>
+				<td>&nbsp;</td>
+				<td><a href="javascript:showDiv('${attribute.name}_${validator.name}_layer');"><img src="images/properties.gif" border="0"></a></td>
+			</tr>
+			</table>					
+		</td>
+	</tr>
+	#end
 	<tr>
 		<td colspan="2"><b>Extra parameters</b></td>
 	</tr>

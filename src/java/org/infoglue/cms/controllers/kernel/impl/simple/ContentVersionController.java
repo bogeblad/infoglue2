@@ -43,6 +43,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.validators.ContentVersionValidator;
 import org.infoglue.deliver.applications.actions.ViewPageAction;
 
 import java.util.Date;
@@ -694,6 +695,17 @@ public class ContentVersionController extends BaseController
     }
 
 
+	/**
+	 * 
+	 */
+	private ConstraintExceptionBuffer validate(ContentTypeDefinitionVO contentType, ContentVO contentVO, ContentVersionVO contentVersionVO) {
+		ConstraintExceptionBuffer ceb = contentVO.validate();
+		ceb.add(contentVersionVO.validate());
+		ceb.add(new ContentVersionValidator().validate(contentType, contentVersionVO));
+		return ceb;
+
+	}
+	
     /**
      * This method updates the contentversion.
      */
@@ -707,7 +719,12 @@ public class ContentVersionController extends BaseController
         beginTransaction(db);
         
         try
-        {        
+        {     
+            Content content = ContentController.getContentController().getContentWithId(contentId, db);
+            ContentTypeDefinition contentTypeDefinition = content.getContentTypeDefinition();
+            ConstraintExceptionBuffer ceb = validate(contentTypeDefinition.getValueObject(), content.getValueObject(), contentVersionVO);
+            ceb.throwIfNotEmpty();
+            
             ContentVersion contentVersion = null;
             
 	        if(contentVersionVO.getId() == null)
@@ -726,6 +743,12 @@ public class ContentVersionController extends BaseController
 	    	updatedContentVersionVO = contentVersion.getValueObject();
 	    	
 	    	commitTransaction(db);  
+        }
+        catch(ConstraintException ce)
+        {
+        	CmsLogger.logSevere("Validation error:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
         }
         catch(Exception e)
         {
@@ -1161,8 +1184,8 @@ public class ContentVersionController extends BaseController
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{
-			ContentVO contentVO = (ContentVO) cit.next();
-			getContentAndAffectedItemsRecursive(content, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList);
+			Content citContent = (Content) cit.next();
+			getContentAndAffectedItemsRecursive(citContent, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList);
 		}
 		
 	}

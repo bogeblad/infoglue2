@@ -447,6 +447,15 @@
 ## INPUT FIELD MACROS   						   *
 ##**************************************************
 
+#macro(printError $fieldNameKey)
+	#if($errors.hasErrors($fieldNameKey))
+		#foreach($errorMessage in $errors.getErrors($fieldNameKey))
+		<font color="red"> - $errorMessage</font>
+		#end
+	#end
+	<br/>
+#end
+
 #macro(editTextField $fieldNameKey $fieldName $fieldValue $length $className)
   #editTextField3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $className)
 #end
