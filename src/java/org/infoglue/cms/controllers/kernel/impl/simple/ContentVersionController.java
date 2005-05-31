@@ -694,18 +694,6 @@ public class ContentVersionController extends BaseController
         content.setContentVersions(new ArrayList());
     }
 
-
-	/**
-	 * 
-	 */
-	public ConstraintExceptionBuffer validate(ContentTypeDefinitionVO contentType, ContentVO contentVO, ContentVersionVO contentVersionVO) 
-	{
-		ConstraintExceptionBuffer ceb = contentVO.validate();
-		ceb.add(contentVersionVO.validate());
-		ceb.add(new ContentVersionValidator().validate(contentType, contentVersionVO));
-		return ceb;
-
-	}
 	
     /**
      * This method updates the contentversion.
@@ -723,7 +711,7 @@ public class ContentVersionController extends BaseController
         {     
             Content content = ContentController.getContentController().getContentWithId(contentId, db);
             ContentTypeDefinition contentTypeDefinition = content.getContentTypeDefinition();
-            ConstraintExceptionBuffer ceb = validate(contentTypeDefinition.getValueObject(), content.getValueObject(), contentVersionVO);
+            ConstraintExceptionBuffer ceb = contentVersionVO.validateAdvanced(contentTypeDefinition.getValueObject());
             ceb.throwIfNotEmpty();
             
             ContentVersion contentVersion = null;

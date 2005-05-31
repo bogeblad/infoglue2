@@ -80,10 +80,8 @@ public class ContentVersionValidator {
 	private InputStream readValidatorXML(ContentTypeDefinitionVO contentTypeDefinition) throws Exception
 	{
 		String xml = contentTypeDefinition.getSchemaValue();
-		System.out.println("xml:" + xml);
 		String validationSchema = xml.substring(xml.indexOf("<form-validation>"), xml.indexOf("</form-validation>") + 18);
-		System.out.println("validationSchema:" + validationSchema);
-
+		
 		return new ByteArrayInputStream(validationSchema.getBytes("UTF-8"));		 
 	}
 }

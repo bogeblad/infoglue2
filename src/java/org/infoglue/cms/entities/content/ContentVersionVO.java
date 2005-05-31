@@ -23,8 +23,11 @@
 
 package org.infoglue.cms.entities.content;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.validators.ContentVersionValidator;
 
 import java.util.Date;
 
@@ -157,9 +160,17 @@ public class ContentVersionVO implements BaseEntityVO
 	public ConstraintExceptionBuffer validate() 
 	{ 
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		
 		return ceb;
 	}
 
+	public ConstraintExceptionBuffer validateAdvanced(ContentTypeDefinitionVO contentTypeDefinition) 
+	{ 
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		ceb.add(new ContentVersionValidator().validate(contentTypeDefinition, this));
+		
+		return ceb;
+	}
         
 	public Integer getLanguageId()
 	{
