@@ -521,7 +521,6 @@ public class ContentTypeDefinitionController extends BaseController
 				for(int j=0; j < validatorNodeList.getLength(); j++)
 				{
 					Element validatorNode = (Element)validatorNodeList.item(j);
-					System.out.println("validatorNode:" + validatorNode);
 					if (validatorNode != null)
 					{
 					    Map arguments = new HashMap();
@@ -530,8 +529,7 @@ public class ContentTypeDefinitionController extends BaseController
 					    for(int k=0; k < varNodeList.getLength(); k++)
 						{
 							Element varNode = (Element)varNodeList.item(k);
-							System.out.println("varNode:" + varNode);
-
+							
 							String varName = getElementValue(varNode, "var-name");
 							String varValue = getElementValue(varNode, "var-value");
 
@@ -539,12 +537,11 @@ public class ContentTypeDefinitionController extends BaseController
 						}	    
 					    
 					    String attribute = ((Element)validatorNode).getAttribute("depends");
-					    System.out.println("attribute: " + attribute);
 					    String[] depends = attribute.split(",");
 					    for(int dependsIndex=0; dependsIndex < depends.length; dependsIndex++)
 					    {
 					        String name = depends[dependsIndex];
-					        System.out.println("Name:" + name);
+
 					        ContentTypeAttributeValidator contentTypeAttributeValidator = new ContentTypeAttributeValidator();
 					        contentTypeAttributeValidator.setName(name);
 					        contentTypeAttributeValidator.setArguments(arguments);
@@ -1046,7 +1043,6 @@ public class ContentTypeDefinitionController extends BaseController
 					//Now we deal with adding the validation part if not existent
 					String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']";
 					Node formNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), validatorsXPath);
-					System.out.println("formNode:" + formNode);
 					if(formNode == null)
 					{
 					    String schemaXPath = "/xs:schema";
@@ -1060,8 +1056,6 @@ public class ContentTypeDefinitionController extends BaseController
 						DOMParser parser2 = new DOMParser();
 						parser2.parse(validationXMLSource);
 						Document document2 = parser2.getDocument();
-
-						System.out.println("formNode:" + formNode);
 
 						Node node = document.importNode(document2.getDocumentElement(), true);
 						element.appendChild(node);

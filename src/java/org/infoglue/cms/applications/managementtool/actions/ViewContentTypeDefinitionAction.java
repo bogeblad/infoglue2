@@ -538,8 +538,6 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 
 			String validatorName = this.getRequest().getParameter("validatorName");
 			
-			System.out.println("validatorName:" + validatorName);
-			
 			if(validatorName != null && !validatorName.equalsIgnoreCase(""))
 			{
 			    String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form";
@@ -613,12 +611,9 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 			String attributeValidatorName = this.getRequest().getParameter("attributeValidatorName");
 			String argumentName = this.getRequest().getParameter(i + "_argumentName");
 			
-			System.out.println("attributeValidatorName:" + attributeValidatorName);
-			System.out.println("argumentName:" + argumentName);
 			while(argumentName != null && !argumentName.equalsIgnoreCase(""))
 			{
 			    String argumentValue = this.getRequest().getParameter(i + "_argumentValue");
-				System.out.println("argumentValue:" + argumentValue);
 			    
 			    String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '" + attributeName + "'][@depends = '" + attributeValidatorName + "']";
 				Node fieldNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), validatorsXPath);
@@ -667,7 +662,6 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 
 			int i = 0;
 			String attributeValidatorName = this.getRequest().getParameter("attributeValidatorName");
-			System.out.println("attributeValidatorName:" + attributeValidatorName);
 			if(attributeValidatorName != null && !attributeValidatorName.equalsIgnoreCase(""))
 			{
 			    String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '" + attributeName + "'][@depends = '" + attributeValidatorName + "']";

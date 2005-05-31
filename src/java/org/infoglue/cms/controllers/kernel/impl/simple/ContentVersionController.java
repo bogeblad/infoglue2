@@ -698,7 +698,8 @@ public class ContentVersionController extends BaseController
 	/**
 	 * 
 	 */
-	private ConstraintExceptionBuffer validate(ContentTypeDefinitionVO contentType, ContentVO contentVO, ContentVersionVO contentVersionVO) {
+	public ConstraintExceptionBuffer validate(ContentTypeDefinitionVO contentType, ContentVO contentVO, ContentVersionVO contentVersionVO) 
+	{
 		ConstraintExceptionBuffer ceb = contentVO.validate();
 		ceb.add(contentVersionVO.validate());
 		ceb.add(new ContentVersionValidator().validate(contentType, contentVersionVO));
