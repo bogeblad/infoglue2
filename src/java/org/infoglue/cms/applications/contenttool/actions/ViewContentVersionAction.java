@@ -45,12 +45,14 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.Bug;
@@ -173,8 +175,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
         this.contentVO = contentVO;
         this.contentVersionVO = contentVersionVO;
     }
-    
+
     protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId) throws Exception
+    {
+        initialize(contentVersionId, contentId, languageId, false);
+    }
+    
+    protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId, boolean fallBackToMasterLanguage) throws Exception
     {
         this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
 		    
@@ -187,6 +194,18 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			//this.contentVersionVO = ContentVersionControllerProxy.getController().getACLatestActiveContentVersionVO(this.getInfoGluePrincipal(), contentId, languageId);
 			//this.contentVersionVO = ContentVersionController.getLatestActiveContentVersionVO(contentId, languageId);
 			this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+			if(this.contentVersionVO == null && fallBackToMasterLanguage)
+			{
+			    //System.out.println("repositoryId:" + repositoryId);
+			    Integer usedRepositoryId = this.repositoryId;
+			    if(this.repositoryId == null && this.contentVO != null)
+			        usedRepositoryId = this.contentVO.getRepositoryId();
+			    
+			    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(usedRepositoryId);
+			    //System.out.println("MasterLanguage: " + masterLanguageVO);
+			    this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
+			}
+			
 			if(this.contentVersionVO != null)
 				contentVersionId = contentVersionVO.getContentVersionId();
 		}
@@ -269,9 +288,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		if(getContentId() != null && getContentId().intValue() != -1)
 		{
-		    this.initialize(getContentVersionId(), getContentId(), this.languageId);
+		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true);
 		}
-		
+
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
 
 		return "viewAssets";
@@ -281,9 +300,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		if(getContentId() != null && getContentId().intValue() != -1)
 		{
-		    this.initialize(getContentVersionId(), getContentId(), this.languageId);
+		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true);
 		}
-		
+
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
 
 		return "viewAssetsForFCKEditor";

@@ -230,7 +230,9 @@
 <tr>
 	<td>
 		<br/>
+		#if($contentVersionVO.id)
 		<a href="javascript:openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');">Upload new image</a>
+		#end
 	</td>
 </tr>
 
