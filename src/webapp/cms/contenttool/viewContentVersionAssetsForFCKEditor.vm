@@ -56,14 +56,14 @@
 			//alert("assetKey: $assetKey");
 			#if($assetKey && $assetKey != "")
 				assetKey = "$assetKey";
-				contentId = "$contentId";
+				contentId = "$!contentId";
 				//alert("assetKey:" + assetKey);
 				//alert("contentId:" + contentId);
 				//if(selectedAssetElement)
 					selectedAssetElement = document.getElementById("digitalAsset" + assetKey);
 				//alert("selectedAssetElement:" + selectedAssetElement);
 			#else
-				markAsset(this, $contentId, firstAssetKey);
+				markAsset(this, '$!contentId', firstAssetKey);
 			#end
 		};
 		
@@ -101,13 +101,13 @@
 <tr>
 	<td id="digitalAsset$digitalAsset.assetKey" valign="bottom" align="center" class="bordered" #if($assetKey == $digitalAsset.assetKey) style="background-color: #C2D0E2;" #end>
 		<input type="hidden" id="digitalAsset$digitalAsset.assetKey" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
-		<a href="javascript:markAsset(this, $contentId, '$digitalAsset.assetKey');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
+		<a href="javascript:markAsset(this, $!contentId, '$digitalAsset.assetKey');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
 		<br/>$digitalAsset.assetKey</a><br/>
 	</td>
 	#if($counter == 0)
 		<script type="text/javascript">
 		<!--
-			//markAsset(this, $contentId, '$digitalAsset.assetKey');
+			//markAsset(this, $!contentId, '$digitalAsset.assetKey');
 			firstAssetKey = '$digitalAsset.assetKey';
 		-->
 		</script>

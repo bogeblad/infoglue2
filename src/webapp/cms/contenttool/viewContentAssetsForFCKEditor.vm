@@ -86,15 +86,16 @@
 
       		var txtUrl 		= top.opener.document.getElementById("txtUrl").value;
 			contentId 		= getRequestParameter(txtUrl, "contentId");
+			//alert("contentId:" + contentId);
 			if(!contentId || contentId == "")
-				contentId = "$contentId";
+				contentId = "$!contentId";
 			languageId 		= getRequestParameter(txtUrl, "languageId");
 			assetKey 		= getRequestParameter(txtUrl, "assetKey");
 			
 			//alert("contentId:" + contentId);
 			document.getElementById("entityId").value = contentId;
 		  	
-			document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
+			document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
 			
 			document.getElementById("contentVersionAssetsFrame").src = "ViewContentVersion!viewAssetsForFCKEditor.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink";
 		};
@@ -182,13 +183,6 @@
 				#else
 					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="370" height="540" align="baseline"></IFRAME>
 				#end
-				#*
-				#if($oldContentId > 0)
-					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="ViewContentVersion!viewAssetsForFCKEditor.action?contentId=$contentId&languageId=$languageId&oldContentId=$oldContentId&assetKey=$assetKey&treatAsLink=$treatAsLink" width="370" height="540" align="baseline"></IFRAME>
-				#else
-					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="ViewContentVersion!viewAssetsForFCKEditor.action?contentId=$contentId&languageId=$languageId&treatAsLink=$treatAsLink" width="370" height="540" align="baseline"></IFRAME>
-				#end
-				*#
 			</td>
 		</tr>
 		</table>

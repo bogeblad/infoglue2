@@ -176,7 +176,7 @@
 							#set($oldContentId = "")
 							#set($exp = "")
 						#end
-						<IFRAME frameborder="0" name="itreeFrameContent" id="itreeFrameContent" src="ViewContentHtmlTree.action?repositoryId=$repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId&bodyClass=contenttooledit" width="350" height="510" align="baseline"></IFRAME>
+						<IFRAME frameborder="0" name="itreeFrameContent" id="itreeFrameContent" src="ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId&bodyClass=contenttooledit" width="350" height="510" align="baseline"></IFRAME>
 					#end
 				</td>
 			</tr>	

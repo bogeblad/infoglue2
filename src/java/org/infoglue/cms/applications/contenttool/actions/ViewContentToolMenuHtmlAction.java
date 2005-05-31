@@ -28,9 +28,12 @@ import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.TreeViewAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageController;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.treeservice.ss.ContentNodeSupplier;
 import org.infoglue.cms.treeservice.ss.ContentNodeVersionSupplier;
+import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import com.frovi.ss.Tree.BaseNode;
@@ -125,6 +128,22 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	 */
 	public Integer getRepositoryId()
 	{
+	    if(this.repositoryId == null)
+	    {
+	        try
+	        {
+		        List repositoryVOList = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		        if(repositoryVOList != null && repositoryVOList.size() > 0)
+		        {
+		            this.repositoryId = ((RepositoryVO)repositoryVOList.get(0)).getId();
+		        }
+	        }
+	        catch(Exception e)
+	        {
+	            CmsLogger.logSevere("Could not fetch the master repository for the principal:" + e.getMessage(), e);
+	        }
+	    }
+	        
 		return repositoryId;
 	}
 

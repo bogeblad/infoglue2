@@ -73,7 +73,7 @@
 				{
 					oldAssetContentId = getRequestParameter(txtUrl, "contentId");
 					if(!oldAssetContentId || oldAssetContentId == "")
-						oldAssetContentId = "$contentId";
+						oldAssetContentId = "$!contentId";
 					languageId 		= getRequestParameter(txtUrl, "languageId");
 					oldAssetKey		= getRequestParameter(txtUrl, "assetKey");
 				}
@@ -105,11 +105,11 @@
 			
 			//alert("src" + document.getElementById("internalAssetFrame").src);
 			if(id == "internalLink" && document.getElementById("internalLinkFrame").src.indexOf("ViewStructureTreeForInlineLink!useFCKEditor.action") == -1)
-				document.getElementById("internalLinkFrame").src = "ViewStructureTreeForInlineLink!useFCKEditor.action?contentId=$contentId&languageId=$languageId&textAreaId=$!textAreaId&oldSiteNodeId=" + oldSiteNodeId + "&oldContentId=" + oldContentId;
-				//document.getElementById("internalLinkFrame").src = "ViewStructureTreeForInlineLink!useFCKEditor.action?contentId=$contentId&languageId=$languageId&textAreaId=$!textAreaId&oldSiteNodeId=$!oldSiteNodeId&oldContentId=$!oldContentId";
+				document.getElementById("internalLinkFrame").src = "ViewStructureTreeForInlineLink!useFCKEditor.action?contentId=$!contentId&languageId=$!languageId&textAreaId=$!textAreaId&oldSiteNodeId=" + oldSiteNodeId + "&oldContentId=" + oldContentId;
+				//document.getElementById("internalLinkFrame").src = "ViewStructureTreeForInlineLink!useFCKEditor.action?contentId=$!contentId&languageId=$languageId&textAreaId=$!textAreaId&oldSiteNodeId=$!oldSiteNodeId&oldContentId=$!oldContentId";
 			else if(id == "internalAsset" && document.getElementById("internalAssetFrame").src.indexOf("ViewContentVersion!viewAssetsDialogForFCKEditor.action") == -1)
-				document.getElementById("internalAssetFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId&treatAsLink=true&textAreaId=$!textAreaId&oldContentId=" + oldAssetContentId + "&assetKey=" + oldAssetKey;
-				//document.getElementById("internalAssetFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId&treatAsLink=true&textAreaId=$!textAreaId&oldContentId=$!oldContentId&assetKey=$!assetKey";
+				document.getElementById("internalAssetFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&treatAsLink=true&textAreaId=$!textAreaId&oldContentId=" + oldAssetContentId + "&assetKey=" + oldAssetKey;
+				//document.getElementById("internalAssetFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&treatAsLink=true&textAreaId=$!textAreaId&oldContentId=$!oldContentId&assetKey=$!assetKey";
 			
 			previousTabId = id;
 		}
