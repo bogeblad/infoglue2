@@ -6,6 +6,32 @@
     <shortname>infoglue-content</shortname>
     <info>Tags for Structure operations</info>
 	<tag>
+        <name>pageUrl</name>
+        <tagclass>org.infoglue.deliver.taglib.structure.PageUrlTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateController.getPageUrl(Integer, Integer, Integer)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>siteNodeId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>languageId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>contentId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+	<tag>
         <name>relatedPages</name>
         <tagclass>org.infoglue.deliver.taglib.structure.RelatedPagesTag</tagclass>
         <bodycontent>empty</bodycontent>
