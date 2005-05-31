@@ -54,6 +54,7 @@
 	function showAddValidatorFormDiv(attributeName)
 	{
 		document.newValidatorForm.attributeName.value = attributeName;
+		document.newValidatorForm.attributeToExpand.value = attributeName;
 		showDiv('newValidatorFormLayer');
 	}
 -->
@@ -72,7 +73,6 @@
 		<td><b>Validation Type</b></td>
 		<td>
 			<select size="1" name="validatorName" class="sitedropbox">
-			    <option value="">Choose validator type</option>
 			    <option value="required">Required</option>
 			    <option value="requiredif">Required If</option>
 			    <option value="matchRegexp">Match Regexp</option>
