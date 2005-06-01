@@ -21,26 +21,30 @@
 * ===============================================================================
 */
 
-package org.infoglue.deliver.taglib.component;
+package org.infoglue.deliver.taglib.structure;
 
 import javax.servlet.jsp.JspException;
 
-public class BoundPagesTag extends ComponentLogicTag {
+import org.infoglue.deliver.taglib.component.ComponentLogicTag;
+
+public class BoundPageTag extends ComponentLogicTag {
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private String propertyName;
 	private boolean useInheritance = true;
 	
-		
-    public BoundPagesTag()
+	
+	
+    public BoundPageTag()
     {
         super();
     }
 
 	public int doEndTag() throws JspException
     {
-		setResultAttribute(getComponentLogic().getBoundPages(propertyName, useInheritance));
-        return EVAL_PAGE;
+        setResultAttribute(getComponentLogic().getBoundPage(propertyName, useInheritance));
+	    
+		return EVAL_PAGE;
     }
 
 	public void setPropertyName(String name) 

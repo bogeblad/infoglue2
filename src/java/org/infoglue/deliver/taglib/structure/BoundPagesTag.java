@@ -21,52 +21,37 @@
 * ===============================================================================
 */
 
-package org.infoglue.deliver.taglib.page;
+package org.infoglue.deliver.taglib.structure;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-/**
- * Tag for org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController.getBoundFolderContents(String, boolean, String, String);
- */
-public class BoundFolderContentsTag extends TemplateControllerTag
-{
-	private static final long serialVersionUID = 3905242346756059449L;
+public class BoundPagesTag extends ComponentLogicTag {
+	private static final long serialVersionUID = 4050206323348354355L;
 
-	private String structureBindningName;
-	private String sortAttribute;
-	private String sortOrder = "asc";
-	private boolean searchRecursive = false;
+	private String propertyName;
+	private boolean useInheritance = true;
 	
-    public BoundFolderContentsTag()
+		
+    public BoundPagesTag()
     {
         super();
     }
 
 	public int doEndTag() throws JspException
     {
-		setResultAttribute(getController().getBoundFolderContents(structureBindningName, searchRecursive, sortAttribute, sortOrder));
+		setResultAttribute(getComponentLogic().getBoundPages(propertyName, useInheritance));
         return EVAL_PAGE;
     }
+
+	public void setPropertyName(String name) 
+	{
+		this.propertyName = name;
+	}
 	
-	public void setStructureBindningName(String name)
+	public void setUseInheritence(boolean useInheritance)
 	{
-		this.structureBindningName = name;
-	}
-
-	public void setSortAttribute(String sortAttribute)
-	{
-		this.sortAttribute = sortAttribute;
-	}
-
-	public void setSortOrder(String sortOrder)
-	{
-		this.sortOrder = sortOrder;
-	}
-
-	public void setSearchRecursive(boolean searchRecursive)
-	{
-		this.searchRecursive = searchRecursive;
+		this.useInheritance = useInheritance;
 	}
 }

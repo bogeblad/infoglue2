@@ -19,33 +19,6 @@
     </tag>
 
 	<tag>
-        <name>contentAttribute</name>
-        <tagclass>org.infoglue.deliver.taglib.page.ContentAttributeTag</tagclass>
-        <bodycontent>empty</bodycontent>
-        <info>TemplateLogic.getContentAttribute(String, String, boolean)</info>
-        <attribute>
-    	    <name>id</name>
-        	<required>false</required>
-	        <rtexprvalue>false</rtexprvalue>
-    	</attribute>
-        <attribute>
-            <name>propertyName</name>
-            <required>false</required>
-            <rtexprvalue>false</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>attributeName</name>
-            <required>true</required>
-            <rtexprvalue>false</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>clean</name>
-            <required>false</required>
-            <rtexprvalue>false</rtexprvalue>
-        </attribute>
-    </tag>
-
-	<tag>
         <name>boundFolderContents</name>
         <tagclass>org.infoglue.deliver.taglib.page.BoundFolderContentsTag</tagclass>
         <bodycontent>empty</bodycontent>
@@ -74,23 +47,6 @@
     	    <name>searchRecursive</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
-    	</attribute>
-    </tag>
-
-	<tag>
-        <name>isSiteNodeParentToCurrentSiteNode</name>
-        <tagclass>org.infoglue.deliver.taglib.page.IsSiteNodeParentToCurrentSiteNodeTag</tagclass>
-        <bodycontent>empty</bodycontent>
-        <info>TemplateLogic.getIsParentToCurrent(Integer siteNodeId)</info>
-        <attribute>
-    	    <name>id</name>
-        	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
-    	</attribute>
-        <attribute>
-    	    <name>siteNodeId</name>
-        	<required>true</required>
-	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
     </tag>
 

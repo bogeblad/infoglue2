@@ -21,54 +21,50 @@
 * ===============================================================================
 */
 
-package org.infoglue.deliver.taglib.page;
+package org.infoglue.deliver.taglib.structure;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-/**
- * Tag for org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController.getContentAttribute(<String>, <Sring>, <boolean>);
- */
-public class ContentAttributeTag extends TemplateControllerTag
-{
-	private static final long serialVersionUID = 3258135773294113587L;
+public class ChildPagesTag extends ComponentLogicTag {
+	private static final long serialVersionUID = 4050206323348354355L;
 
+	private Integer siteNodeId;
 	private String propertyName;
-    private String attributeName;
-	private boolean clean = false;
-    
-    public ContentAttributeTag()
+	private boolean useInheritance = true;
+	
+	
+	
+    public ChildPagesTag()
     {
         super();
     }
-    
-    public int doEndTag() throws JspException
+
+	public int doEndTag() throws JspException
     {
-		produceResult(getContentAttributeValue());
-        return EVAL_PAGE;
+	    if(this.siteNodeId != null)
+	        setResultAttribute(this.getController().getChildPages(this.siteNodeId));
+        else if(this.propertyName != null)
+            setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance));
+        else
+            throw new JspException("You must state either propertyName or siteNodeId");
+	    
+	    return EVAL_PAGE;
     }
 
-	private String getContentAttributeValue() throws JspException
+	public void setPropertyName(String name) 
 	{
-		if(propertyName == null)
-			return getController().getContentAttribute(attributeName, clean);
-		else
-			return getController().getContentAttribute(propertyName, attributeName, clean);
+		this.propertyName = name;
 	}
 	
-	public void setPropertyName(String propertyName)
+    public void setSiteNodeId(Integer siteNodeId)
     {
-        this.propertyName = propertyName;
+        this.siteNodeId = siteNodeId;
     }
     
-    public void setAttributeName(String attributeName)
+    public void setUseInheritance(boolean useInheritance)
     {
-        this.attributeName = attributeName;
-    }
-
-    public void setClean(boolean clean)
-    {
-        this.clean = clean;
+        this.useInheritance = useInheritance;
     }
 }

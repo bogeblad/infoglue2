@@ -58,4 +58,90 @@
         </attribute>
     </tag>
 
+	<tag>
+		<name>boundPage</name>
+		<tagclass>org.infoglue.deliver.taglib.structure.BoundPageTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info>ComponentLogic.getBoundPage(String, boolean)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyName</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useInheritance</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>	 
+	<tag>
+		<name>boundPages</name>
+		<tagclass>org.infoglue.deliver.taglib.structure.BoundPagesTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info>ComponentLogic.getBoundPages(String, boolean)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyName</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useInheritance</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>	 
+	<tag>
+		<name>childPages</name>
+		<tagclass>org.infoglue.deliver.taglib.structure.ChildPagesTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info>ComponentLogic.getChildPages(String, boolean)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>siteNodeId</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useInheritance</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>	 
+
+	<tag>
+        <name>isSiteNodeParentToCurrentSiteNode</name>
+        <tagclass>org.infoglue.deliver.taglib.structure.IsSiteNodeParentToCurrentSiteNodeTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateLogic.getIsParentToCurrent(Integer siteNodeId)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>siteNodeId</name>
+        	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>
+
 </taglib>

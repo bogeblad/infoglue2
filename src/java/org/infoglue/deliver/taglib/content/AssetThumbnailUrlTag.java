@@ -21,9 +21,11 @@
 * ===============================================================================
 */
 
-package org.infoglue.deliver.taglib.component;
+package org.infoglue.deliver.taglib.content;
 
 import javax.servlet.jsp.JspException;import javax.servlet.jsp.JspTagException;
+
+import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 /**
  * This is an attempt to make an TagLib for attempts to get a AssetThumbnailUrl:s from a content referenced by a component

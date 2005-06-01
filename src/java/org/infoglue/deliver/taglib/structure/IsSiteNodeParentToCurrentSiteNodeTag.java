@@ -21,48 +21,30 @@
 * ===============================================================================
 */
 
-package org.infoglue.deliver.taglib.component;
+package org.infoglue.deliver.taglib.structure;
 
 import javax.servlet.jsp.JspException;
 
-public class ChildPagesTag extends ComponentLogicTag {
+import org.infoglue.deliver.taglib.TemplateControllerTag;
+
+public class IsSiteNodeParentToCurrentSiteNodeTag extends TemplateControllerTag {
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private Integer siteNodeId;
-	private String propertyName;
-	private boolean useInheritance = true;
 	
-	
-	
-    public ChildPagesTag()
+    public IsSiteNodeParentToCurrentSiteNodeTag()
     {
         super();
     }
 
 	public int doEndTag() throws JspException
     {
-	    if(this.siteNodeId != null)
-	        setResultAttribute(this.getController().getChildPages(this.siteNodeId));
-        else if(this.propertyName != null)
-            setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance));
-        else
-            throw new JspException("You must state either propertyName or siteNodeId");
-	    
-	    return EVAL_PAGE;
+		setResultAttribute(new Boolean(this.getController().getIsParentToCurrent(siteNodeId)));
+        return EVAL_PAGE;
     }
 
-	public void setPropertyName(String name) 
-	{
-		this.propertyName = name;
-	}
-	
     public void setSiteNodeId(Integer siteNodeId)
     {
         this.siteNodeId = siteNodeId;
-    }
-    
-    public void setUseInheritance(boolean useInheritance)
-    {
-        this.useInheritance = useInheritance;
     }
 }
