@@ -115,7 +115,7 @@
         <attribute>
 			<name>idAttr</name>
 			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
 			<name>name</name>
@@ -136,7 +136,7 @@
         <attribute>
 			<name>idAttr</name>
 			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
+			<rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
 			<name>name</name>
