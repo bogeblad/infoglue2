@@ -49,7 +49,11 @@ public abstract class TemplateControllerTag extends TagSupport {
 
 	protected void setResultAttribute(Object value)
 	{
-		pageContext.setAttribute(id, value);
+		if(value == null)
+			pageContext.removeAttribute(id);
+		else
+			pageContext.setAttribute(id, value);
+		
 	}
 	
 	protected void produceResult(Object value) throws JspTagException
