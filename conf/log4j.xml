@@ -47,6 +47,10 @@
 		<priority value="ERROR"/>
 	</category>
 
+	<category name="org.exolab.castor.jdo">
+      <priority value="WARN" />
+    </category>
+	
 	<category name="webwork">
 		<priority value="WARN"/>
 	</category>
@@ -58,7 +62,7 @@
 
 	<!-- Anyhing not caught by the above categories will be caught here -->
 	<root>
-		<priority value="WARN"/>
+		<priority value="DEBUG"/>
 		<appender-ref ref="CONSOLE"/>
 	</root>
 
