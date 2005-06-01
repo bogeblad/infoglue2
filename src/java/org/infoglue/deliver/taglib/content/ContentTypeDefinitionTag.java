@@ -29,8 +29,8 @@ public class ContentTypeDefinitionTag extends TemplateControllerTag {
 		return getController().getContentTypeDefinitionVO(contentId);
 	}
 
-    public void setContentId(Integer contentId)
+    public void setContentId(String contentId) throws JspException
     {
-        this.contentId = contentId;
+        this.contentId = evaluateInteger("contentTypeDefinition", "contentId", contentId);
     }
 }

@@ -26,14 +26,13 @@ package org.infoglue.deliver.taglib;
 import java.io.IOException;
 
 import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 /**
  * Base class for all Tags operating on the TemplateController.
  */
-public abstract class TemplateControllerTag extends TagSupport {
+public abstract class TemplateControllerTag extends AbstractTag {
 	private String id;
 	
 	

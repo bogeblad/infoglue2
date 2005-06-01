@@ -120,7 +120,7 @@
 	    <attribute>
 		    <name>contentId</name>
 	    	<required>true</required>
-	        <rtexprvalue>true</rtexprvalue>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>
 
@@ -137,12 +137,12 @@
 	    <attribute>
 		    <name>contentId</name>
 	    	<required>true</required>
-	        <rtexprvalue>true</rtexprvalue>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
 		    <name>attributeName</name>
 	    	<required>true</required>
-	        <rtexprvalue>true</rtexprvalue>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
 		    <name>onlyFirst</name>

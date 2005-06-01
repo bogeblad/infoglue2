@@ -5,6 +5,11 @@ import javax.servlet.jsp.JspException;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 public class PageUrlTag extends TemplateControllerTag {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4050485595074016051L;
+	
 	private Integer siteNodeId;
 	private Integer languageId;
 	private Integer contentId;
@@ -25,18 +30,18 @@ public class PageUrlTag extends TemplateControllerTag {
 		return getController().getPageUrl(siteNodeId, languageId, contentId);
 	}
 
-	public void setSiteNodeId(Integer siteNodeId)
+	public void setSiteNodeId(final String siteNodeId) throws JspException
     {
-        this.siteNodeId = siteNodeId;
+        this.siteNodeId = evaluateInteger("groupForContent", "siteNodeId", siteNodeId);
     }
 
-    public void setLanguageId(Integer languageId)
+    public void setLanguageId(final String languageId) throws JspException
     {
-        this.languageId = languageId;
+        this.languageId = evaluateInteger("groupForContent", "languageId", languageId);
     }
 
-    public void setContentId(Integer contentId)
+    public void setContentId(final String contentId) throws JspException
     {
-        this.contentId = contentId;
+        this.contentId = evaluateInteger("groupForContent", "contentId", contentId);
     }
 }

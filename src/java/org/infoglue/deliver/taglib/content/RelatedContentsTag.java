@@ -7,6 +7,11 @@ import javax.servlet.jsp.JspException;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 public class RelatedContentsTag extends TemplateControllerTag {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3761686771326530105L;
+	
 	private Integer contentId;
 	private boolean onlyFirst;
 	private String attributeName;
@@ -28,9 +33,9 @@ public class RelatedContentsTag extends TemplateControllerTag {
 		return (onlyFirst && !related.isEmpty()) ? related.get(0) : related;
 	}
 
-    public void setContentId(Integer contentId)
+    public void setContentId(String contentId) throws JspException
     {
-        this.contentId = contentId;
+        this.contentId = evaluateInteger("groupForContent", "contentId", contentId);
     }
 
     public void setOnlyFirst(boolean onlyFirst)
