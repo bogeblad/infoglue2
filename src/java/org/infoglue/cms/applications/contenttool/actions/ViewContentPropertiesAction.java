@@ -92,12 +92,15 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
     
     public String doSave() throws Exception
     {
-        String allowedContentTypeNames = "";
+        String allowedContentTypeNames = null;
         String[] allowedContentTypeNameArray = getRequest().getParameterValues("allowedContentTypeName");
-        CmsLogger.logInfo("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
-        for(int i=0; i<allowedContentTypeNameArray.length; i++)
+        if(allowedContentTypeNameArray != null)
         {
-            allowedContentTypeNames += allowedContentTypeNameArray[i] + ","; 
+	        CmsLogger.logInfo("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
+	        for(int i=0; i<allowedContentTypeNameArray.length; i++)
+	        {
+	            allowedContentTypeNames += allowedContentTypeNameArray[i] + ","; 
+	        }
         }
         
     	Map args = new HashMap();

@@ -586,8 +586,8 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 		this.name = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentTypeDefinitionId).getName();
 		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteContentTypeDefinition.header&yesDestination=" + URLEncoder.encode("DeleteContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListContentTypeDefinition.action?title=ContentTypeDefinitions", "UTF-8") + "&message=tool.managementtool.deleteContentTypeDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteContentTypeDefinition"), "tool.managementtool.deleteContentTypeDefinition.header"));
 		
-		String protectCategories = CmsPropertyHandler.getProperty("protectCategories");
-		if(protectCategories != null && protectCategories.equalsIgnoreCase("true"))
+		String protectContentTypes = CmsPropertyHandler.getProperty("protectContentTypes");
+		if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
 		{
 			String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8"), "UTF-8");
 			buttons.add(getAccessRightsButton("ContentTypeDefinition", this.contentTypeDefinitionId.toString(), returnAddress));

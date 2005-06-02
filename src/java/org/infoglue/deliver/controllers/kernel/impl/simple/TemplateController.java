@@ -914,7 +914,7 @@ public interface TemplateController
 	 * This method searches for all contents matching
 	 */
 	
-	public List getMatchingContents(String contentTypeDefinitionNamesString, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems);
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryNames, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems);
 
     /**
      * The method returns the ContentTypeVO-objects of the given contentId. 

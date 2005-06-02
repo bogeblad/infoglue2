@@ -25,6 +25,7 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -40,6 +41,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -2928,7 +2930,7 @@ public class BasicTemplateController implements TemplateController
 	 * This method searches for all contents matching
 	 */
 	
-	public List getMatchingContents(String contentTypeDefinitionNamesString, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems)
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryNames, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems)
 	{
 		try
 		{
@@ -2939,10 +2941,30 @@ public class BasicTemplateController implements TemplateController
 		        ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(contentTypeDefinitionNames[i], getDatabase());
 		        contentTypeDefinitionVOList.add(contentTypeDefinition.getValueObject());
 		    }
+		 
+		    Map categories = null;
+		    if(categoryNames != null && categoryNames.length() > 0)		    
+		    {
+		        categories = new HashMap();
+			    String[] pairs = categoryNames.split("&");
+			    for(int i=0; i<pairs.length; i++)
+			    {
+			        String[] keyValue = pairs[i].split("=");
+			        String attributeName = keyValue[0];
+			        String categoryName = keyValue[1];
+			        System.out.println("attributeName:" + attributeName);
+			        System.out.println("categoryName:" + categoryName);
+			        
+			        CategoryVO categoryVO = CategoryController.getController().findByPath(categoryName);
+			        System.out.println("categoryVO:" + categoryVO);
+			        if(categoryVO != null)
+						categories.put(attributeName, categoryVO);
+			    }
+		    }
 		    
 		    List contents = new ArrayList();
 		    
-		    List contentVersionVOList = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), null, getDatabase());
+		    List contentVersionVOList = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categories, getDatabase());
 		    Iterator contentVersionVOListIterator = contentVersionVOList.iterator();
 		    while(contentVersionVOListIterator.hasNext())
 		    {

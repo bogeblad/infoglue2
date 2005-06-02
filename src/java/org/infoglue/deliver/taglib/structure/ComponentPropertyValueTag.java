@@ -21,48 +21,48 @@
 * ===============================================================================
 */
 
-package org.infoglue.deliver.taglib.content;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.infoglue.deliver.taglib.structure;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-public class MatchingContentsTag extends TemplateControllerTag {
+public class ComponentPropertyValueTag extends ComponentLogicTag {
 	private static final long serialVersionUID = 4050206323348354355L;
 
-	private String contentTypeDefinitionNames;
-	private String categoryNames;
-	private int numberOfItems = 2;
+	private String propertyName;
+	private boolean useLanguageFallback = true;
+	private boolean useInheritance = true;
 	
-    public MatchingContentsTag()
+	
+    public ComponentPropertyValueTag()
     {
         super();
     }
 
 	public int doEndTag() throws JspException
     {
-	    System.out.println("categoryNames:" + categoryNames);
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryNames, "publishDateTime", "desc", true, numberOfItems));
-        return EVAL_PAGE;
+	    try
+	    {
+	        String propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance);
+	        System.out.println("propertyValue:" + propertyValue);
+	        setResultAttribute(propertyValue);
+	    }
+	    catch(Exception e)
+	    {
+	        e.printStackTrace();
+	    }
+	    
+		return EVAL_PAGE;
     }
 
-    public void setContentTypeDefinitionNames(String contentTypeDefinitionNames)
-    {
-        this.contentTypeDefinitionNames = contentTypeDefinitionNames;
-    }
-
-    public void setCategoryNames(String categoryNames)
-    {
-        this.categoryNames = categoryNames;
-    }
-    
-    public void setNumberOfItems(int numberOfItems)
-    {
-        this.numberOfItems = numberOfItems;
-    }
-    
+	public void setPropertyName(String name) 
+	{
+		this.propertyName = name;
+	}
+	
+	public void setUseInheritence(boolean useInheritance)
+	{
+		this.useInheritance = useInheritance;
+	}
 }

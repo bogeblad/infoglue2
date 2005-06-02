@@ -238,6 +238,11 @@
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
+    	    <name>categoryNames</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
     	    <name>numberOfItems</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
