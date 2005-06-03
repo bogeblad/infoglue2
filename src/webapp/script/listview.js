@@ -248,6 +248,12 @@ function refreshContentToolBar(title, toolbarKey, arguments, unrefreshedContentI
 	}
 }
 
+var cmsContext = "";
+function setCMSContext(context)
+{
+	cmsContext = context;
+}
+
 //-----------------------------------------------
 // This function reloads the toolbar above the current 
 // active action so that buttons related to the view 
@@ -262,7 +268,11 @@ function refreshStructureToolBar(title, toolbarKey, arguments, unrefreshedNodeId
 	if(parent.frames["toolbar"].document.getElementById("lockLayer"))
 		parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
 	
-	parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	if(cmsContext != "")
+		parent.frames["toolbar"].location.href = cmsContext + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	else
+		parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	
 	//alert("unrefreshedNodeId:" + unrefreshedNodeId);
 	if(unrefreshedNodeId > 0)
 	{

@@ -10,6 +10,8 @@
 	
 	<script type="text/javascript" language="JavaScript">
 	<!-- 
+		setCMSContext('$this.getCMSBaseUrl()');
+		
 		var exp;
 		function treeView()
 		{

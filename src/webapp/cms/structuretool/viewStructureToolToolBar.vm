@@ -16,7 +16,7 @@
 			parent.frames["main"].location.href = '' + url;
 			if(url.indexOf("ViewPage") > -1)
 			{
-				this.location.href = "ViewStructureToolToolBar.action?title=tool.structuretool.siteNodeComponentsHeader&toolbarKey=tool.structuretool.siteNodeComponentsHeader&siteNodeId=$siteNodeId&repositoryId=$repositoryId&isBranch=true";
+				this.location.href = "$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?title=tool.structuretool.siteNodeComponentsHeader&toolbarKey=tool.structuretool.siteNodeComponentsHeader&siteNodeId=$siteNodeId&repositoryId=$repositoryId&isBranch=true";
 				//document.getElementById("Site Node Components").style.display = "none";
 				//document.getElementById("SiteNode Cover").style.display = "block";
 			}
@@ -25,7 +25,7 @@
 		function reload(url, title)
 		{
 			//alert('url:' + url);
-			this.location.href = 'ViewStructureToolToolBar.action?url=' + url + '&title=' + title;
+			this.location.href = '$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?url=' + url + '&title=' + title;
 		}
 		
 		
