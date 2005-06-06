@@ -120,8 +120,7 @@ public class BasicURLComposer extends URLComposer
 	            if (contentId != null && contentId.intValue() != -1)
 	                sb.append("?contentId=").append(String.valueOf(contentId));
 	     
-	            //CmsLogger.logInfo("sb:" + sb);
-	            return sb.toString();
+	            return (!sb.toString().equals("") ? sb.toString() : "/");
 	        } 
 	        catch (Exception e) 
 			{
