@@ -95,7 +95,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		Integer repositoryId = nodeDeliveryController.getSiteNode(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
-		//System.out.println("componentXML:" + componentXML);
+		//CmsLogger.logInfo("componentXML:" + componentXML);
 		
 		timer.printElapsedTime("After getPageComponentsString");
 		
@@ -303,7 +303,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 			    templateController.getDeliveryContext().setContentType("text/html");
 			    templateController.getDeliveryContext().setDisablePageCache(true);
-			    System.out.println("Sat the content type...");
 			    componentString = "<html><head></head><body onload=\"toggleDiv('pageComponents');\">" + componentString + "</body></html>";
 			}
 			

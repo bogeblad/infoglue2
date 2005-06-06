@@ -196,13 +196,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
 			if(this.contentVersionVO == null && fallBackToMasterLanguage)
 			{
-			    //System.out.println("repositoryId:" + repositoryId);
+			    //CmsLogger.logInfo("repositoryId:" + repositoryId);
 			    Integer usedRepositoryId = this.repositoryId;
 			    if(this.repositoryId == null && this.contentVO != null)
 			        usedRepositoryId = this.contentVO.getRepositoryId();
 			    
 			    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(usedRepositoryId);
-			    //System.out.println("MasterLanguage: " + masterLanguageVO);
+			    //CmsLogger.logInfo("MasterLanguage: " + masterLanguageVO);
 			    this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
 			}
 			

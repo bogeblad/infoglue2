@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.13 2005/05/29 20:43:26 mattias Exp $
+ * $Id: RegistryController.java,v 1.14 2005/06/06 11:53:12 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -171,17 +171,17 @@ public class RegistryController extends BaseController
 	    
 	    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 	    {
-	        System.out.println("It was a meta info so lets check it for other stuff as well");
+	        CmsLogger.logInfo("It was a meta info so lets check it for other stuff as well");
 		    
 	        List siteNodeVersions = getSiteNodeVersionsWhichUsesContentVersionAsMetaInfo(oldContentVersion, db);
-	        System.out.println("siteNodeVersions:" + siteNodeVersions.size());
+	        CmsLogger.logInfo("siteNodeVersions:" + siteNodeVersions.size());
 	        Iterator siteNodeVersionsIterator = siteNodeVersions.iterator();
 	        while(siteNodeVersionsIterator.hasNext())
 	        {
 		        SiteNodeVersion siteNodeVersion = (SiteNodeVersion)siteNodeVersionsIterator.next();
 			    if(siteNodeVersion != null)
 			    {
-				    System.out.println("Going to use " + siteNodeVersion.getId() + " as reference");
+			        CmsLogger.logInfo("Going to use " + siteNodeVersion.getId() + " as reference");
 			        clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
 				    
 				    getComponents(siteNodeVersion, versionValue, db);
@@ -700,7 +700,7 @@ public class RegistryController extends BaseController
 			//throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
 		}
 		
-		System.out.println("referenceBeanList:" + referenceBeanList.size());
+		CmsLogger.logInfo("referenceBeanList:" + referenceBeanList.size());
 		
         return referenceBeanList;
     }

@@ -2952,11 +2952,11 @@ public class BasicTemplateController implements TemplateController
 			        String[] keyValue = pairs[i].split("=");
 			        String attributeName = keyValue[0];
 			        String categoryName = keyValue[1];
-			        System.out.println("attributeName:" + attributeName);
-			        System.out.println("categoryName:" + categoryName);
+			        CmsLogger.logInfo("attributeName:" + attributeName);
+			        CmsLogger.logInfo("categoryName:" + categoryName);
 			        
 			        CategoryVO categoryVO = CategoryController.getController().findByPath(categoryName);
-			        System.out.println("categoryVO:" + categoryVO);
+			        CmsLogger.logInfo("categoryVO:" + categoryVO);
 			        if(categoryVO != null)
 						categories.put(attributeName, categoryVO);
 			    }

@@ -45,7 +45,6 @@ public class ComponentPropertyValueTag extends ComponentLogicTag {
 	    try
 	    {
 	        String propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance);
-	        System.out.println("propertyValue:" + propertyValue);
 	        setResultAttribute(propertyValue);
 	    }
 	    catch(Exception e)

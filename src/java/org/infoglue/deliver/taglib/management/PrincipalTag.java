@@ -53,7 +53,6 @@ public class PrincipalTag extends TemplateControllerTag {
 
     public void setUserName(String userName)
     {
-        System.out.println("userName:" + userName);
         this.userName = userName;
     }
     

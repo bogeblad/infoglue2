@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: StoreRequestParamsInPropertySet.java,v 1.1 2005/01/18 19:12:45 jed Exp $
+ * $Id: StoreRequestParamsInPropertySet.java,v 1.2 2005/06/06 11:53:12 mattias Exp $
  */
 package org.infoglue.cms.applications.workflowtool.functions;
 
@@ -31,22 +31,12 @@ import com.opensymphony.workflow.FunctionProvider;
 import com.opensymphony.module.propertyset.PropertySet;
 
 /**
- * @version $Revision: 1.1 $ $Date: 2005/01/18 19:12:45 $
+ * @version $Revision: 1.2 $ $Date: 2005/06/06 11:53:12 $
  */
 public class StoreRequestParamsInPropertySet implements FunctionProvider
 {
 	public void execute(Map transientVars, Map args, PropertySet propertySet)
 	{
-		System.out.println("transientVars:" + transientVars.getClass().getName());
-		Iterator iterator = transientVars.keySet().iterator();
-		while (iterator.hasNext())
-		{
-			Object key = iterator.next();
-			System.out.println("key:" + key);
-			Object value = transientVars.get(key);
-			System.out.println("value:" + value.getClass().getName());
-		}
-
 		ServletRequest request = (ServletRequest)transientVars.get("request");
 
 		String name = request.getParameter("name");
@@ -55,12 +45,6 @@ public class StoreRequestParamsInPropertySet implements FunctionProvider
 		String leadIn = request.getParameter("leadIn");
 		String fullText = request.getParameter("fullText");
 
-		System.out.println("Caller - ${caller}");
-		System.out.println("name:" + name);
-		System.out.println("title:" + title);
-		System.out.println("navigationTitle:" + navigationTitle);
-		System.out.println("leadIn:" + leadIn);
-		System.out.println("fullText:" + fullText);
 		propertySet.setString("name", name);
 		propertySet.setString("title", title);
 		propertySet.setString("navigationTitle", navigationTitle);

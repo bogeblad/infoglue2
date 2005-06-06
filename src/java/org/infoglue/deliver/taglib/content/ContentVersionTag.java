@@ -61,7 +61,6 @@ public class ContentVersionTag extends TemplateControllerTag
 	
     public void setContent(Object content)
     {
-        System.out.println("Object:" + content.getClass().getName());
         this.content = (ContentVO) content;
     }
     

@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: InitializeCreateNews.java,v 1.4 2005/05/26 09:13:02 mattias Exp $
+ * $Id: InitializeCreateNews.java,v 1.5 2005/06/06 11:53:12 mattias Exp $
  */
 package org.infoglue.cms.applications.workflowtool.functions;
 
@@ -34,7 +34,7 @@ import org.infoglue.cms.util.CmsLogger;
 
 /**
  * THIS IS VERY TEMPORARY SOLUTION FOR ASSESSING WHERE TO PUT THE NEWS ITEMS.
- * @version $Revision: 1.4 $ $Date: 2005/05/26 09:13:02 $
+ * @version $Revision: 1.5 $ $Date: 2005/06/06 11:53:12 $
  */
 public class InitializeCreateNews implements FunctionProvider
 {
@@ -44,33 +44,15 @@ public class InitializeCreateNews implements FunctionProvider
 
 		try
 		{
-		    /*
-			List repositories = RepositoryController.getController().getRepositoryVOList();
-			Integer repositoryId = ((RepositoryVO)repositories.iterator().next()).getId();
-
-			System.out.println("Found repositoryId when trying to assess where to put the news: " + repositoryId);
-
-			ContentVO rootContentVO = ContentController.getContentController().getRootContentVO(repositoryId, "${caller}");
-			System.out.println("rootContentVO: " + rootContentVO.getName());
-
-			List children = ContentController.getContentController().getContentChildrenVOList(rootContentVO.getId());
-			ContentVO childContentVO = (ContentVO)children.iterator().next();
-			System.out.println("childContentVO: " + childContentVO.getName());
-			Integer parentContentId = childContentVO.getId();
-
-			Integer contentTypeDefinitionId = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Article").getContentTypeDefinitionId();
-			System.out.println("contentTypeDefintionId: " + contentTypeDefinitionId);
-			*/
-		    
 		    Integer repositoryId 	= new Integer(((String[])transientVars.get("repositoryId"))[0]);
 		    Integer parentContentId = new Integer(((String[])transientVars.get("parentContentId"))[0]);
 		    Integer languageId 		= new Integer(((String[])transientVars.get("languageId"))[0]);
 		    Integer contentTypeDefinitionId = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Article").getContentTypeDefinitionId();
 			
-			System.out.println("parentContentId:" + parentContentId);
-			System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
-			System.out.println("repositoryId:" + repositoryId);
-			System.out.println("languageId:" + languageId);
+		    CmsLogger.logInfo("parentContentId:" + parentContentId);
+		    CmsLogger.logInfo("contentTypeDefinitionId:" + contentTypeDefinitionId);
+		    CmsLogger.logInfo("repositoryId:" + repositoryId);
+		    CmsLogger.logInfo("languageId:" + languageId);
 
 			propertySet.setString("parentContentId", parentContentId.toString());
 			propertySet.setString("contentTypeDefinitionId", contentTypeDefinitionId.toString());

@@ -111,7 +111,6 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 	            siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionId, db));
 
 			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeVO.getSiteNodeId()).getValueObject();
-			//System.out.println("latestSiteNodeVersionVO:" + latestSiteNodeVersionVO);
 			
 			latestSiteNodeVersionVO.setContentType(updatedSiteNodeVersionVO.getContentType());
 			latestSiteNodeVersionVO.setDisableEditOnSight(updatedSiteNodeVersionVO.getDisableEditOnSight());
@@ -119,8 +118,6 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
 			latestSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
 			latestSiteNodeVersionVO.setModifiedDateTime(new java.sql.Date(System.currentTimeMillis()));
-			
-			//System.out.println("latestSiteNodeVersionVO:" + latestSiteNodeVersionVO);
 			
 			SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(infoGluePrincipal, latestSiteNodeVersionVO, db);
 

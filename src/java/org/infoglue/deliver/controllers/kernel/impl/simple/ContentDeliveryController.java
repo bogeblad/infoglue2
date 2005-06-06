@@ -258,10 +258,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 				attribute = "";
 
 			CacheController.cacheObject("contentAttributeCache", attributeKey, attribute);
-		    //System.out.println("Added in content attribute..." + versionKey + ":" + contentVersionId);
+		    //CmsLogger.logInfo("Added in content attribute..." + versionKey + ":" + contentVersionId);
 			CacheController.cacheObject("contentAttributeCache", versionKey, contentVersionId);
 		}
-		//System.out.println("Adding contentVersion:" + contentVersionId);
+		//CmsLogger.logInfo("Adding contentVersion:" + contentVersionId);
 		deliveryContext.addUsedContentVersion("contentVersion:" + contentVersionId);
 		
 		return (attribute == null) ? "" : attribute;

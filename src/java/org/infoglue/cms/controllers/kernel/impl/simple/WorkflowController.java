@@ -147,10 +147,6 @@ public class WorkflowController extends BaseController
 		CmsLogger.logInfo("workflowId:" + workflowId);
 		CmsLogger.logInfo("actionId:" + actionId);
 
-		System.out.println("invokeAction.............");
-		System.out.println("workflowId:" + workflowId);
-		System.out.println("actionId:" + actionId);
-
 		try
 		{
 			Map parameters = new HashMap();
