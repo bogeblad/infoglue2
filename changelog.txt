@@ -9,34 +9,34 @@ Thanx to all involved!!
 The InfoGlue Team
 
 
-
 Abbreviated Changelog from 1.3.2 
 ---------------------------------------
 
 New features
 - Better support for Java 5. Xalan is now included by default.
-- We now have support for JSR 168 thanx to the guys at "Myndigheten för skolutveckling" (Ja, Robert, Göran). Apache Pluto is incorporated nicely.
+- We now have support for JSR 168 thanx to the guys at "Myndigheten för skolutveckling" (Jan, Robert, Göran). Apache Pluto is incorporated nicely.
 - Categorization is implemented nicely. Brings a lot of possibilities to how to build a site and personalize it.
 - Added a new concept called "Groups" to complement users and roles in the security model. 
 - The component editor and edit on sight is now somewhat the same.
 - One can add workflow options on components so the options (like "Create News") turns up on the edit on sight menu for the news component. 
-- Support of component restricting thatonly contents of certain content type(s) are available to users in a particular component binding dialog
+- Support of component restricting that only contents of certain content type(s) are available to users in a particular component binding dialog
 - Support for restricting what content types a role/group can create content of
 - Support for restricting what kind of contents are allowed below a certain folder
 - Support for assigning default content type for new contents below a certain folder
 - Support for assigning a default forlder content type
-- Added possibility to move multiple contents and sitenodes at ones.
+- Added possibility to move multiple contents and sitenodes at once.
 - Added direct publishing/unpublishing feature for publishers.
 - A new registry feature keeps track of what happens and what contents/sitenodes depend on what so that the user gets a warning when he does something that will result in inconsistency or broken links. 
-- When publishing dependent changes are also listed as proposed items to publish.
-- Validation on content versions are now added at long last. Required, Required If and Match RegularExpression is available but more can be added.
+- When publishing, dependent changes are also listed as proposed items to publish.
+- Validation on content versions are now added at long last. Required, Required If and Match RegularExpression is available from the start but more can be added.
 - The internal search feature has been much improved and also equipped with a multiple replace feature. Whohoo..
 - The possibility to move components on a page within a slot.
-- The ability to set session timeout for real.
+- The ability to set session timeout for tool users.
 - Improved JSP support and some InfoGlue taglibs added. More to come in later versions.
 - Webservices support added with some examples. Not to many API:s exposed yet though.
 - Added component cache and selective cache updates on that.
-- Added a simple view of the component editor for cases where the html breakes down. 
+- Added a simple view of the component editor for cases where the html breaks down. 
+- Thanx to Frank and Jed the project has gotten some better cvs structure and much improved workflow api:s. 
 
 Improvments
 - Much better performance and less memory consumption for all applications. Better db-pooling and more advanced caches to reduce load on dbserver.
