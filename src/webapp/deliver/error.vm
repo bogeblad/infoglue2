@@ -89,7 +89,7 @@
 
 </head>
 
-<body onLoad="javascript:document.loginForm.userName.focus();">
+<body>
 
 <div class="fullymarginalized">
 

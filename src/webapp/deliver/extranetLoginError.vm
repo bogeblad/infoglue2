@@ -70,7 +70,7 @@
 
 </head>
 
-<body onLoad="javascript:document.loginForm.userName.focus();">
+<body onLoad="javascript:document.loginForm.j_userName.focus();">
 
 <div class="fullymarginalized">
 <form name="loginForm" method="POST" action="ExtranetLogin!authenticateUser.action">
