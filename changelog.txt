@@ -1,0 +1,69 @@
+Release notes
+---------------------------------------
+The InfoGlue Team is very pleased to finally announce the first Release Candidate of version 2.0.
+This release is by far the largest effort yet and since we incorporated JSR 168 and enhanced workflow support the platform has taken a big leap into the portal and enterprise content management area. As a comment we are also very happy to see that the user community is growing fast even though we have neglected marketing at the moment. 
+Quite a few large organisations are now in the last stages of launching InfoGlue-based sites and the release of 2.0 will hopefully get even more companies to consider it.
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
+
+
+Abbreviated Changelog from 1.3.2 
+---------------------------------------
+
+New features
+- Better support for Java 5. Xalan is now included by default.
+- We now have support for JSR 168 thanx to the guys at "Myndigheten för skolutveckling" (Ja, Robert, Göran). Apache Pluto is incorporated nicely.
+- Categorization is implemented nicely. Brings a lot of possibilities to how to build a site and personalize it.
+- Added a new concept called "Groups" to complement users and roles in the security model. 
+- The component editor and edit on sight is now somewhat the same.
+- One can add workflow options on components so the options (like "Create News") turns up on the edit on sight menu for the news component. 
+- Support of component restricting thatonly contents of certain content type(s) are available to users in a particular component binding dialog
+- Support for restricting what content types a role/group can create content of
+- Support for restricting what kind of contents are allowed below a certain folder
+- Support for assigning default content type for new contents below a certain folder
+- Support for assigning a default forlder content type
+- Added possibility to move multiple contents and sitenodes at ones.
+- Added direct publishing/unpublishing feature for publishers.
+- A new registry feature keeps track of what happens and what contents/sitenodes depend on what so that the user gets a warning when he does something that will result in inconsistency or broken links. 
+- When publishing dependent changes are also listed as proposed items to publish.
+- Validation on content versions are now added at long last. Required, Required If and Match RegularExpression is available but more can be added.
+- The internal search feature has been much improved and also equipped with a multiple replace feature. Whohoo..
+- The possibility to move components on a page within a slot.
+- The ability to set session timeout for real.
+- Improved JSP support and some InfoGlue taglibs added. More to come in later versions.
+- Webservices support added with some examples. Not to many API:s exposed yet though.
+- Added component cache and selective cache updates on that.
+- Added a simple view of the component editor for cases where the html breakes down. 
+
+Improvments
+- Much better performance and less memory consumption for all applications. Better db-pooling and more advanced caches to reduce load on dbserver.
+- Selective cache updates on page cache.
+- Added a new WYSIWYG (FCKEditor) which is far superior to the old HTMLArea we used (which is discontinued by the way). FCKEditor is now the default editor.
+- Improved dialogs in WYSIWYG and also better possibilities to customaize the toolbar etc on the WYSIWYG toolbar / css etc.
+- Possibility to link to assets and to pages with content as argument from WYSIWYG.
+- Possibility to change password easier.
+- Made workflows definitions part of the data model so it's easy to manage and distribute. Also changed to Hibernate for it's data layer.
+- The user is now directly taken to the master content version when clicking on a content. A new button shows the cover.
+- The user is now directly taken to the page component view when clicking a sitenode. A new button shows the cover.
+- Refactored the views a bit so there is only one view in management. No dropdown to repository settings.
+- SystemUser-, Group- and Role properties now has full support for assets, categories and relations just like content versions.
+- A much improved asset upload is in place. It shows direct feedback on upload and real error messages if failed. 
+- You can restrict asset size very detailed on size, width and height in the content types.
+- Made all interfaces much better and more robust. A lot of improvments and the possibility to move and resize much of the items in the component editor.
+- The tool-tree now remembers branches you used from before which helps a lot.
+- Publishing-tool now shows only 10 publications at a time.
+- Support for ImageMagic added as thumbnail generator instead of Javas own. 
+- Easier to add new languages to the gui.
+- Much improved support for Mozilla Firefox - now the primary development browser and highly recommended over IE.
+
+Bug fixes
+- 1090285	nice-uri URLComposer bug
+- 1119067	Adding Users to Roles
+- 1047710	Installation Error-FileNotFound
+- 947633	HTMLFormular drops attributes
+- 1078314	1.3: Javascript error on "Extranet login"
+- 1108936	Editing an object problem Tomcat 4.1 Java 1.5
+- 1110545	filenames with # doesn't supports
