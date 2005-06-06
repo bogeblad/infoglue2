@@ -63,7 +63,19 @@
 		<priority value="WARN"/>
 	</category>
 
+	<category name="org.apache.pluto">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.apache.catalina">
+		<priority value="WARN"/>
+	</category>
+
 	<category name="org.quartz.xml">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="net.sf.hibernate">
 		<priority value="WARN"/>
 	</category>
 
