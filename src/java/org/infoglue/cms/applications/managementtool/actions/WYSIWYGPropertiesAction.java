@@ -117,20 +117,32 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 		    }
 		     
 		    CmsLogger.logWarning("this.WYSIWYGProperties:" + this.WYSIWYGProperties);
-		    
-		    Map parameters = new HashMap();
-		    parameters.put("request", this.getRequest());
-		    
-			StringWriter tempString = new StringWriter();
-			PrintWriter pw = new PrintWriter(tempString);
-			new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties);
-			this.WYSIWYGProperties = tempString.toString();
 	    }
 	    catch(Exception e)
 	    {
 	        CmsLogger.logSevere("Could not fetch WYSIWYG Configuration: " + e.getMessage(), e);
-	        this.WYSIWYGProperties = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/contenttool/WYSIWYGConfig.js"));
 	    }
+	    finally
+	    {
+	        try
+            {
+                if(this.WYSIWYGProperties == null || this.WYSIWYGProperties.equals(""))
+                    this.WYSIWYGProperties = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/contenttool/WYSIWYGConfig.js"));
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+            }
+	        
+	    }
+
+	    Map parameters = new HashMap();
+	    parameters.put("request", this.getRequest());
+	    
+		StringWriter tempString = new StringWriter();
+		PrintWriter pw = new PrintWriter(tempString);
+		new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties);
+		this.WYSIWYGProperties = tempString.toString();
 
 	    this.getResponse().setContentType("text/javascript");
 	    
@@ -141,7 +153,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	 * This method gets the Styles XML
 	 */
 	
-	public String getStylesXML() throws Exception
+	public String getStylesXML()
 	{
 	    try
 	    {
@@ -164,10 +176,20 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	    catch(Exception e)
 	    {
 	        CmsLogger.logSevere("Could not fetch Styles XML: " + e.getMessage(), e);
-	        this.StylesXML = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/contenttool/StylesXML.xml"));
-	        System.out.println("StylesXML:" + StylesXML);
 	    }
-
+	    finally
+	    {
+	        try
+            {
+	            if(this.StylesXML == null || this.StylesXML.equals(""))
+	                this.StylesXML = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/contenttool/StylesXML.xml"));
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+            }
+	    }
+	    
 	    this.getResponse().setContentType("text/xml");
 	    return this.StylesXML;
 	}
