@@ -55,6 +55,18 @@
 		<priority value="WARN"/>
 	</category>
 
+	<category name="com.opensymphony.oscache">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.apache.commons">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.quartz.xml">
+		<priority value="WARN"/>
+	</category>
+
 	<!-- For builds xdoclet is noisy and I'm not interested -->
 	<category name="xdoclet">
 		<priority value="FATAL"/>
