@@ -44,7 +44,7 @@ import net.sf.hibernate.cfg.Configuration;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.13 $ $Date: 2005/05/26 09:14:53 $
+ * @version $Revision: 1.14 $ $Date: 2005/06/07 21:11:01 $
  */
 public class WorkflowFacade
 {
@@ -84,18 +84,26 @@ public class WorkflowFacade
 	 * the workflow ID.
 	 * @param userPrincipal an InfoGluePrincipal representing a system user
 	 * @param name the name of the workflow to create
-	 * @param initialAction thr ID of the initial action to perform to get the workflow started.
+	 * @param initialAction the ID of the initial action to perform to get the workflow started.
 	 */
 	public WorkflowFacade(InfoGluePrincipal userPrincipal, String name, int initialAction) throws SystemException
 	{
-		this(userPrincipal);
-		initialize(name, initialAction);
+		this(userPrincipal, name, initialAction, new HashMap());
 	}
 
-	public WorkflowFacade(InfoGluePrincipal userPrincipal, String name, int initialAction, Map map) throws SystemException
+	/**
+	 * Constructs a WorkflowFacade with the given user principal representing an initialized instance of the workflow
+	 * with the given name.  "Initialized" in this context means that the initial action has been executed and we have
+	 * the workflow ID.
+	 * @param userPrincipal an InfoGluePrincipal representing a system user
+	 * @param name the name of the workflow to create
+	 * @param initialAction the ID of the initial action to perform to get the workflow started.
+	 * @param inputs a map of inputs to use to initialize the workflow.
+	 */
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, String name, int initialAction, Map inputs) throws SystemException
 	{
 		this(userPrincipal);
-		initialize(name, initialAction, map);
+		initialize(name, initialAction, inputs);
 	}
 
 	/**
@@ -131,13 +139,15 @@ public class WorkflowFacade
 	/**
 	 * Initializes the workflow, setting workflowId as a side-effect.
 	 * @param name the name of the workflow to initialize
+	 * @param initialAction the ID of the initial action to perform to get the workflow started.
+	 * @param inputs a map of inputs to use to initialize the workflow.
 	 * @throws SystemException if a workflow error occurs.
 	 */
-	private void initialize(String name, int initialAction) throws SystemException
+	private void initialize(String name, int initialAction, Map inputs) throws SystemException
 	{
 		try
 		{
-			setWorkflowIdAndDescriptor(workflow.initialize(name, initialAction, new HashMap()));
+			setWorkflowIdAndDescriptor(workflow.initialize(name, initialAction, inputs));
 		}
 		catch (Exception e)
 		{
@@ -146,32 +156,18 @@ public class WorkflowFacade
 	}
 
 	/**
-	 * Initializes the workflow, setting workflowId as a side-effect.
-	 * @param name the name of the workflow to initialize
-	 * @throws SystemException if a workflow error occurs.
-	 */
-	private void initialize(String name, int initialAction, Map map) throws SystemException
-	{
-		try
-		{
-			setWorkflowIdAndDescriptor(workflow.initialize(name, initialAction, map));
-		}
-		catch (Exception e)
-		{
-			throw new SystemException(e);
-		}
-	}
-	
-	/**
 	 * Performs an action using the given inputs
 	 * @param actionId the ID of the action to perform
 	 * @param inputs a map of inputs to the action
-	 * @throws SystemException if a workflow error occurs
+	 * @throws SystemException if a workflow error occurs, or if the underlying workflow is not active
 	 */
 	public void doAction(int actionId, Map inputs) throws SystemException
 	{
 		try
 		{
+			if (!isActive())
+				throw new SystemException("Workflow " + workflowId + " is no longer active");
+
 			workflow.doAction(workflowId, actionId, inputs);
 		}
 		catch (Exception e)
@@ -190,12 +186,30 @@ public class WorkflowFacade
 	}
 
 	/**
+	 * Returns the state of the underlying workflow entry
+	 * @return the state of the underlying workflow entry
+	 */
+	private int getEntryState()
+	{
+		return workflow.getEntryState(workflowId);
+	}
+
+	/**
+	 * Indicates whether the underlying workflow is active
+	 * @return true if the underlying workflow's state is WorkflowEntry.ACTIVATED, otherwise returns false.
+	 */
+	private boolean isActive()
+	{
+		return getEntryState() == WorkflowEntry.ACTIVATED;
+	}
+
+	/**
 	 * Returns a list of all declared workflows, i.e., workflows defined in workflows.xml
 	 * @return a list WorkflowVOs representing all declared workflows
 	 */
 	public List getDeclaredWorkflows()
 	{
-		String workflowNames[] = workflow.getWorkflowNames();
+		String[] workflowNames = workflow.getWorkflowNames();
 		List availableWorkflows = new ArrayList();
 
 		for (int i = 0; i < workflowNames.length; i++)
@@ -215,16 +229,9 @@ public class WorkflowFacade
 
 		for (Iterator workflows = findActiveWorkflows().iterator(); workflows.hasNext();)
 		{
-		    try
-		    {
-				setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
-				CmsLogger.logInfo("workflowId:" + workflowId);
-				workflowVOs.add(createWorkflowVO());
-		    }
-		    catch(Exception e)
-		    {
-		        e.printStackTrace();
-		    }
+			setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
+			CmsLogger.logInfo("workflowId:" + workflowId);
+			workflowVOs.add(createWorkflowVO());
 		}
 
 		return workflowVOs;
@@ -240,7 +247,7 @@ public class WorkflowFacade
 		try
 		{
 			return workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.STATE,
-										FieldExpression.ENTRY, FieldExpression.EQUALS, new Integer(WorkflowEntry.ACTIVATED))));
+						FieldExpression.ENTRY, FieldExpression.EQUALS, new Integer(WorkflowEntry.ACTIVATED))));
 		}
 		catch (WorkflowException e)
 		{
@@ -252,7 +259,6 @@ public class WorkflowFacade
 	 * Returns all current steps for the workflow, i.e., steps that could be performed in the workflow's current state
 	 * Steps are filtered according to ownership; if a step has an owner, it is only included if the ownser matches
 	 * the caller or if the current user is an administrator.
-	 * TODO: Make this configurable for either roles or users
 	 * @return a list of WorkflowStepVOs representing the current steps of the workflow with workflowId
 	 */
 	public List getCurrentSteps()
@@ -377,7 +383,7 @@ public class WorkflowFacade
 	 */
 	private WorkflowStepVO createStepVO(Step step)
 	{
-		CmsLogger.logInfo("step:" + step + ":" + step.getId());
+		CmsLogger.logInfo("step:" + step + ':' + step.getId());
 		CmsLogger.logInfo("Owner:" + step.getOwner());
 
 		WorkflowStepVO stepVO = new WorkflowStepVO();
@@ -424,8 +430,8 @@ public class WorkflowFacade
 	 */
 	private WorkflowActionVO createActionVO(ActionDescriptor actionDescriptor)
 	{
-		CmsLogger.logInfo("Action:" + actionDescriptor.getId() + ":" + actionDescriptor.getName()
-								+ ":" + actionDescriptor.getParent().getClass());
+		CmsLogger.logInfo("Action:" + actionDescriptor.getId() + ':' + actionDescriptor.getName()
+					+ ':' + actionDescriptor.getParent().getClass());
 
 		WorkflowActionVO actionVO = new WorkflowActionVO(new Integer(actionDescriptor.getId()));
 		actionVO.setWorkflowId(new Long(workflowId));
