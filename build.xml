@@ -364,6 +364,15 @@
 	</target>
 
 
+	<target name="touch-filtered-files" depends="" description="Touch all files having filter values.">
+		<touch file="${conf}/cms.properties"/>
+		<touch file="${conf}/database.xml"/>
+		<touch file="${conf}/deliver.properties"/>
+		<touch file="${conf}/hibernate.cfg.xml"/>
+		<touch file="${conf}/oscache.properties"/>
+		<touch file="${conf}/propertyset.xml"/>
+	</target>
+	
 	<!--
 	* Deploys the deliver live app, replacing deliver.properties with one that
 	* has context.root.deliver and operatingMode.deliver set appropriately.
