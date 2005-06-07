@@ -365,12 +365,19 @@
 
 
 	<target name="touch-filtered-files" depends="" description="Touch all files having filter values.">
-		<touch file="${conf}/cms.properties"/>
-		<touch file="${conf}/database.xml"/>
-		<touch file="${conf}/deliver.properties"/>
-		<touch file="${conf}/hibernate.cfg.xml"/>
-		<touch file="${conf}/oscache.properties"/>
-		<touch file="${conf}/propertyset.xml"/>
+		<delete file="${deploy.dir.cms}/WEB-INF/classes/cms.properties"/>
+		<delete file="${deploy.dir.cms}/WEB-INF/classes/database.xml"/>
+		<delete file="${deploy.dir.cms}/WEB-INF/classes/deliver.properties"/>
+		<delete file="${deploy.dir.cms}/WEB-INF/classes/hibernate.cfg.xml"/>
+		<delete file="${deploy.dir.cms}/WEB-INF/classes/oscache.properties"/>
+		<delete file="${deploy.dir.cms}/WEB-INF/classes/propertyset.xml"/>
+
+		<delete file="${deploy.dir.working}/WEB-INF/classes/cms.properties"/>
+		<delete file="${deploy.dir.working}/WEB-INF/classes/database.xml"/>
+		<delete file="${deploy.dir.working}/WEB-INF/classes/deliver.properties"/>
+		<delete file="${deploy.dir.working}/WEB-INF/classes/hibernate.cfg.xml"/>
+		<delete file="${deploy.dir.working}/WEB-INF/classes/oscache.properties"/>
+		<delete file="${deploy.dir.working}/WEB-INF/classes/propertyset.xml"/>
 	</target>
 	
 	<!--
