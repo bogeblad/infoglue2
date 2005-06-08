@@ -23,19 +23,18 @@
 
 package org.infoglue.deliver.taglib.content;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.TemplateControllerTag;
-import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 public class MatchingContentsTag extends TemplateControllerTag {
-	private static final long serialVersionUID = 4050206323348354355L;
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3833470599837135666L;
+	
 	private String contentTypeDefinitionNames;
-	private String categoryNames;
+	private String categoryCondition;
 	private int numberOfItems = 2;
 	
     public MatchingContentsTag()
@@ -45,7 +44,8 @@ public class MatchingContentsTag extends TemplateControllerTag {
 
 	public int doEndTag() throws JspException
     {
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryNames, "publishDateTime", "desc", true, numberOfItems));
+		System.out.println("categoryCondition=[" + categoryCondition + "]");
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, "publishDateTime", "desc", true, numberOfItems));
         return EVAL_PAGE;
     }
 
@@ -54,9 +54,9 @@ public class MatchingContentsTag extends TemplateControllerTag {
         this.contentTypeDefinitionNames = contentTypeDefinitionNames;
     }
 
-    public void setCategoryNames(String categoryNames)
+    public void setCategoryCondition(String categoryCondition) throws JspException
     {
-        this.categoryNames = categoryNames;
+        this.categoryCondition = evaluateString("matchingContentsTag", "categoryCondition", categoryCondition);
     }
     
     public void setNumberOfItems(int numberOfItems)

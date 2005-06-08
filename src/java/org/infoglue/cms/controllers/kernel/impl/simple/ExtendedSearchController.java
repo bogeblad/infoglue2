@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -17,7 +19,6 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
@@ -50,7 +51,7 @@ public class ExtendedSearchController extends BaseController {
 	/**
 	 * 
 	 */
-	public List search(final Integer stateId, final ContentTypeDefinitionVO contentTypeDefinitionVO, final LanguageVO languageVO, final Map categories) throws SystemException
+	public Set search(final Integer stateId, final ContentTypeDefinitionVO contentTypeDefinitionVO, final LanguageVO languageVO, final CategoryConditions categories) throws SystemException
 	{
 		return search(stateId, contentTypeDefinitionVO, languageVO, categories, Collections.EMPTY_LIST, null);
 	}
@@ -58,7 +59,7 @@ public class ExtendedSearchController extends BaseController {
 	/**
 	 * 
 	 */
-	public List search(final Integer stateId, final ContentTypeDefinitionVO contentTypeDefinitionVO, final LanguageVO languageVO, final Map categories, final Database db) throws SystemException
+	public Set search(final Integer stateId, final ContentTypeDefinitionVO contentTypeDefinitionVO, final LanguageVO languageVO, final CategoryConditions categories, final Database db) throws SystemException
 	{
 		final List contentTypeDefintionVOs = new ArrayList();
 		contentTypeDefintionVOs.add(contentTypeDefinitionVO);
@@ -68,7 +69,7 @@ public class ExtendedSearchController extends BaseController {
 	/**
 	 * 
 	 */
-	public List search(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final Map categories) throws SystemException
+	public Set search(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final CategoryConditions categories) throws SystemException
 	{
 		return search(stateId, contentTypeDefinitionVOs, languageVO, categories, Collections.EMPTY_LIST, null);
 	}
@@ -76,7 +77,7 @@ public class ExtendedSearchController extends BaseController {
 	/**
 	 * 
 	 */
-	public List search(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final Map categories, final Database db) throws SystemException
+	public Set search(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final CategoryConditions categories, final Database db) throws SystemException
 	{
 		return search(stateId, contentTypeDefinitionVOs, languageVO, categories, Collections.EMPTY_LIST, null, db);
 	}
@@ -84,7 +85,7 @@ public class ExtendedSearchController extends BaseController {
 	/**
 	 * 
 	 */
-	public List search(final Integer stateId, final ContentTypeDefinitionVO contentTypeDefinitionVO, final LanguageVO languageVO, final Map categories, final List xmlAttributes, final String freetext) throws SystemException
+	public Set search(final Integer stateId, final ContentTypeDefinitionVO contentTypeDefinitionVO, final LanguageVO languageVO, final CategoryConditions categories, final List xmlAttributes, final String freetext) throws SystemException
 	{
 		final List contentTypeDefintionVOs = new ArrayList();
 		contentTypeDefintionVOs.add(contentTypeDefinitionVO);
@@ -94,12 +95,12 @@ public class ExtendedSearchController extends BaseController {
 	/**
 	 * 
 	 */
-	public List search(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final Map categories, final List xmlAttributes, final String freetext) throws SystemException
+	public Set search(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final CategoryConditions categories, final List xmlAttributes, final String freetext) throws SystemException
 	{
 		final Database db = beginTransaction();
 		try
 		{
-			final List result = search(stateId, contentTypeDefinitionVOs, languageVO, categories, xmlAttributes, freetext, db);
+			final Set result = search(stateId, contentTypeDefinitionVOs, languageVO, categories, xmlAttributes, freetext, db);
 			commitTransaction(db);
 			return result;
 		}
@@ -113,7 +114,7 @@ public class ExtendedSearchController extends BaseController {
 	/**
 	 * 
 	 */
-	public List search(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final Map categories, final List xmlAttributes, final String freetext, final Database db) throws SystemException
+	public Set search(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final CategoryConditions categories, final List xmlAttributes, final String freetext, final Database db) throws SystemException
 	{
 		try 
 		{
@@ -133,8 +134,8 @@ public class ExtendedSearchController extends BaseController {
 	/**
 	 * 
 	 */
-	private List createResults(final QueryResults qr) throws PersistenceException, SystemException {
-		final List results = new ArrayList();
+	private Set createResults(final QueryResults qr) throws PersistenceException, SystemException {
+		final Set results = new HashSet();
 		while(qr.hasMore()) {
 			final ContentVersion contentVersion = (ContentVersion) qr.next();
 			results.add(contentVersion.getValueObject());
@@ -163,14 +164,10 @@ class SqlBuilder {
 	private static final String OR                            = "OR";
 	
 	//
-	private static final String CATEGORY_ALIAS_PREFIX         = "cat";
 	private static final String CONTENT_ALIAS                 = "c";
-	private static final String CONTENT_CATEGORY_ALIAS_PREFIX = "ccat";
 	private static final String CONTENT_VERSION_ALIAS         = "cv";
 
 	//
-	private static final String CATEGORY_TABLE                = "cmcategory";
-	private static final String CONTENT_CATEGORY_TABLE        = "cmcontentcategory";
 	private static final String CONTENT_TABLE                 = "cmCont";
 	//private static final String CONTENT_TABLE                 = "cmcontent";
 	private static final String CONTENT_VERSION_TABLE         = "cmContVer";
@@ -180,7 +177,7 @@ class SqlBuilder {
 	private static final String CV_ACTIVE_CLAUSE              = CONTENT_VERSION_ALIAS + ".isActive=1";
 	private static final String CV_LANGUAGE_CLAUSE            = CONTENT_VERSION_ALIAS + ".languageId={0}";
 	//private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId={0}";
-	private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId>=" + ContentVersionVO.PUBLISHED_STATE;
+	private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId>={0}";
 	private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".ContId=" + CONTENT_VERSION_ALIAS + ".ContId";
 	//private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".contentId=" + CONTENT_VERSION_ALIAS + ".contentId";
 	private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".ContVerId in (select max(ContVerId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.ContId=" + CONTENT_VERSION_ALIAS + ".ContId)";
@@ -195,13 +192,9 @@ class SqlBuilder {
 	//private static final String FREETEXT_EXPRESSION           = CONTENT_VERSION_ALIAS + ".versionValue like {0}";
 	private static final String FREETEXT_EXPRESSION_VARIABLE  = "%<{0}><![CDATA[%{1}%]]></{0}>%";
 	
-	//
-	private static final String CATEGORY_CLAUSE               = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContVerId=" + CONTENT_VERSION_ALIAS + ".ContVerId)";
-	//private static final String CATEGORY_CLAUSE               = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.contentVersionId=" + CONTENT_VERSION_ALIAS + ".contentVersionId)";
-	
 	private final List contentTypeDefinitionVOs;
 	private final LanguageVO languageVO;
-	private final Map categories; // <ContentCategory.attributeName> -> <Category>
+	private final CategoryConditions categories;
 	private final List xmlAttributes;
 	private final String freetext;
 	private Integer stateId;
@@ -218,7 +211,7 @@ class SqlBuilder {
 	/**
 	 *
 	 */
-	public SqlBuilder(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final Map categories, final List xmlAttributes, final String freetext) {
+	public SqlBuilder(final Integer stateId, final List contentTypeDefinitionVOs, final LanguageVO languageVO, final CategoryConditions categories, final List xmlAttributes, final String freetext) {
 		super();
 		this.stateId                  = stateId;
 		this.languageVO               = languageVO;
@@ -226,13 +219,13 @@ class SqlBuilder {
 		this.categories               = categories;
 		this.xmlAttributes            = xmlAttributes;
 		this.freetext                 = freetext;
-		
-		initializeUniqueCategoryTableKeys();
-		
-		this.bindings = new ArrayList();
-		bindingsCounter = 1;
+		this.bindings                 = new ArrayList();
 		
 		this.sql = generate();
+		System.out.println("this.stateId=" + this.stateId);
+		System.out.println("======================================================================");
+		System.out.println("#" + sql + "#");
+		System.out.println("======================================================================");
 	}
 
 	/**
@@ -247,23 +240,6 @@ class SqlBuilder {
 	 */
 	public List getBindings() {
 		return bindings;
-	}
-	
-	/**
-	 * 
-	 */
-	private void initializeUniqueCategoryTableKeys() {
-		int uniqueKey=0;
-		if(categories != null)
-			for(final Iterator names=categories.keySet().iterator(); names.hasNext(); ++uniqueKey)
-				uniqueCategoryTableKeys.put(names.next(), new Integer(uniqueKey));
-	}
-	
-	/**
-	 * 
-	 */
-	private String getUniqueCategoryTableKey(String attributeName) { 
-		return uniqueCategoryTableKeys.get(attributeName).toString(); 
 	}
 	
 	/**
@@ -337,9 +313,8 @@ class SqlBuilder {
 		clauses.add(CV_ACTIVE_CLAUSE);
 		clauses.add(CV_LATEST_VERSION_CLAUSE);
 		clauses.add(CV_CONTENT_JOIN);
-		clauses.add(CV_STATE_CLAUSE);
-		//clauses.add(MessageFormat.format(CV_STATE_CLAUSE, new Object[] { getBindingVariable() }));
-		//bindings.add(stateId);
+		clauses.add(MessageFormat.format(CV_STATE_CLAUSE, new Object[] { getBindingVariable() }));
+		bindings.add(stateId);
 
 		if(languageVO != null) {
 			clauses.add(MessageFormat.format(CV_LANGUAGE_CLAUSE, new Object[] { getBindingVariable() }));
@@ -369,23 +344,11 @@ class SqlBuilder {
 	 */
 	private List getCategoriesWhereClauses() {
 		final List clauses = new ArrayList();
-		if(categories != null)
-			for(Iterator names=categories.keySet().iterator(); names.hasNext(); )
-				clauses.add(getCategoriesWhereClause((String) names.next()));
+		if(categories != null && categories.hasCondition())
+			clauses.add(categories.getWhereClauseOQL(bindings));
 		return clauses;
 	}
 
-	/**
-	 * 
-	 */
-	private String getCategoriesWhereClause(final String attributeName) {
-		final CategoryVO categoryVO = (CategoryVO) categories.get(attributeName);
-		final String alias          = getUniqueCategoryTableKey(attributeName);
-		bindings.add(categoryVO.getId());
-		bindings.add(attributeName);
-		return MessageFormat.format(CATEGORY_CLAUSE, new Object[] { alias, getBindingVariable(), getBindingVariable() });
-	}
-	
 	/**
 	 * 
 	 */
@@ -409,12 +372,7 @@ class SqlBuilder {
 	private List getCategoryTables() {
 		final List tables = new ArrayList();
 		if(categories != null)
-			for(Iterator i=categories.keySet().iterator(); i.hasNext(); ) {
-				final String attributeName  = (String) i.next();
-				final String uniqueKey      = getUniqueCategoryTableKey(attributeName);
-				tables.add(CATEGORY_TABLE + SPACE + CATEGORY_ALIAS_PREFIX + uniqueKey);
-				tables.add(CONTENT_CATEGORY_TABLE + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + uniqueKey);
-			}
+			tables.addAll(categories.getFromClauseTables());
 		return tables;
 	}
 	
@@ -434,6 +392,6 @@ class SqlBuilder {
 	 * 
 	 */
 	private String getBindingVariable() {
-		return "$" + bindingsCounter++;
+		return "$" + (bindings.size() + 1);
 	}
 }

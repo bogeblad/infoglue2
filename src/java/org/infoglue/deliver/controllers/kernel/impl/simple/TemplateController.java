@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
@@ -914,7 +913,7 @@ public interface TemplateController
 	 * This method searches for all contents matching
 	 */
 	
-	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryNames, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems);
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems);
 
     /**
      * The method returns the ContentTypeVO-objects of the given contentId. 

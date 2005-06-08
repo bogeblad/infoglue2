@@ -238,7 +238,7 @@
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
-    	    <name>categoryNames</name>
+    	    <name>categoryCondition</name>
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
