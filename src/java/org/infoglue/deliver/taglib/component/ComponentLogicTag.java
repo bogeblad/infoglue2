@@ -31,7 +31,8 @@ import org.infoglue.deliver.taglib.TemplateControllerTag;
 /**
  * Base class for all Tags operating on ComponentLogic.
  */
-public abstract class ComponentLogicTag extends TemplateControllerTag {
+public abstract class ComponentLogicTag extends TemplateControllerTag 
+{
 	protected ComponentLogicTag()
 	{
 		super();
