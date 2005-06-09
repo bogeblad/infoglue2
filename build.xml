@@ -116,6 +116,13 @@
 		<delete dir="${build}" quiet="true"/>
 	</target>
 
+    <!-- =================================================================== -->
+    <!--Fetches the latest code from cvs before building it                  -->
+    <!-- =================================================================== -->
+    <target name="fetchInfoGlue">
+        <cvs command="update -P -d" cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"/>
+    </target>    
+
 	<!--
 	* Compiles Java source files and copies resources to the build output directory
 	* that need to be on the classpath.  Also copies the Velocity templates required by
