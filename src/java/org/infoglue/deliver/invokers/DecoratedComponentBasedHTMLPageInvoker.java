@@ -457,16 +457,17 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 		
 		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden;\">");
-		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Properties</td><td align=\"right\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\">close</a></td></tr></table></div>");
+		//sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><table class=\"igtable\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Properties</td><td align=\"right\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\">close</a></td></tr></table></div>");
+		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandle\">Properties</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\">close</a></div></div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
 		
 		sb.append("	<form id=\"component" + componentId + "PropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
-		sb.append("		<table border=\"0\" cellpadding=\"4\" cellspacing=\"0\">");
+		sb.append("		<table class=\"igPropertiesTable\" border=\"0\" cellpadding=\"4\" cellspacing=\"0\">");
 
 		sb.append("		<tr>");
-		sb.append("			<td class=\"propertylabel\">Choose language</td>");  //$ui.getString("tool.contenttool.languageVersionsLabel")
-		sb.append("			<td>&nbsp;</td>");
-		sb.append("			<td class=\"propertyvalue\">");
+		sb.append("			<td class=\"igpropertylabel\" align=\"left\">Choose language</td>");  //$ui.getString("tool.contenttool.languageVersionsLabel")
+		sb.append("			<td class=\"igtd\">&nbsp;</td>");
+		sb.append("			<td class=\"igpropertyvalue\" align=\"left\">");
 	
 		sb.append("			");
 		sb.append("			<select class=\"mediumdrop\" name=\"languageId\" onChange=\"javascript:changeLanguage(" + siteNodeId + ", this, " + contentId + ");\">");
@@ -502,7 +503,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("			-->");
 
 		sb.append("			</td>");
-		sb.append("			<td>&nbsp;</td>");
+		sb.append("			<td class=\"igtd\">&nbsp;</td>");
 		sb.append("		</tr>");
 		
 		//CmsLogger.logInfo("componentPropertiesString:" + componentPropertiesString);
@@ -588,30 +589,30 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 				StringBuffer helpSB = new StringBuffer();
 				helpSB.append("<div style=\"border: 1px solid black; visibility: hidden; z-index: 200000; position: absolute;\" id=\"helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "\">");
-				helpSB.append("<table bgcolor=\"white\" width=\"200\"><tr><td>" + (componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "</td></tr></table>");
+				helpSB.append("<table class=\"igtable\" bgcolor=\"white\" width=\"200\"><tr><td class=\"igtd\">" + (componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "</td></tr></table>");
 				helpSB.append("</div>");
 				
 				sb.append("		<tr>");
-				sb.append("			<td class=\"propertylabel\" valign=\"top\">" + componentProperty.getName() + "</td>");
-				sb.append("			<td><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" onMouseOver=\"javascript:showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
-				sb.append("			<td class=\"propertyvalue\"><a href=\"javascript:window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5');\">" + (componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()) + "</a></td>");
+				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" onMouseOver=\"javascript:showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+				sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><a class=\"componentEditorLink\" href=\"javascript:window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5');\">" + (componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()) + "</a></td>");
 				//sb.append("			<td class=\"propertyvalue\"><a href=\"" + assignUrl + "\">" + componentProperty.getValue() + "</a></td>");
 				
 				if(componentProperty.getValue().equalsIgnoreCase("Undefined"))
 					//sb.append("			<td><a href=\"" + createUrl + "\"><img src=\"" + componentEditorUrl + "/images/createContent.gif\" border=\"0\" alt=\"Create new content to show\"></a></td>");
-					sb.append("			<td><!--<a href=\"" + createUrl + "\"><img src=\"" + componentEditorUrl + "/images/createContent.gif\" border=\"0\" alt=\"Create new content to show\"></a>--></td>");
+					sb.append("			<td class=\"igtd\" width=\"16\"><!--<a class=\"componentEditorLink\" href=\"" + createUrl + "\"><img src=\"" + componentEditorUrl + "/images/createContent.gif\" border=\"0\" alt=\"Create new content to show\"></a>--></td>");
 				else
-					sb.append("			<td><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
+					sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
 		
 				sb.append("		</tr>");
 			}
 			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 			{
 				sb.append("		<tr>");
-				sb.append("			<td class=\"propertylabel\" valign=\"top\">" + componentProperty.getName() + "<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"></td>");
-				sb.append("			<td><img src=\"" + componentEditorUrl + "/images/questionMark.gif\"></td>");
-				sb.append("			<td class=\"propertyvalue\"><input type=\"text\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\"></td>");
-				sb.append("			<td><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
+				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"></td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\"></td>");
+				sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"text\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\"></td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
 				sb.append("			<!--<td>&nbsp;</td>-->");
 				sb.append("		</tr>");
 				
@@ -622,10 +623,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		timer.printElapsedTime("getComponentPropertiesDiv: 5");
 
 		sb.append("		<tr>");
-		sb.append("			<td colspan=\"3\"><img src=\"images/trans.gif\" height=\"5\" width=\"1\"></td>");
+		sb.append("			<td colspan=\"4\"><img src=\"images/trans.gif\" height=\"5\" width=\"1\"></td>");
 		sb.append("		</tr>");
 		sb.append("		<tr>");
-		sb.append("			<td colspan=\"3\">");
+		sb.append("			<td colspan=\"4\">");
 		sb.append("				<a href=\"javascript:submitForm('component" + componentId + "PropertiesForm');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getWebworkAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
 		sb.append("				<a href=\"javascript:hideDiv('component" + componentId + "Properties');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getWebworkAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
 		sb.append("			</td>");
@@ -692,16 +693,16 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    view = view.replaceAll("\\$siteNodeId", siteNodeId.toString());
 		    view = view.replaceAll("\\$languageId", languageId.toString());
 		    view = view.replaceAll("\\$componentId", componentId.toString());
-		    sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"executeTask('" + view + "');\">" + componentTask.getName() + "</div>");
+		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"executeTask('" + view + "');\">" + componentTask.getName() + "</div>");
 		}
 		
-		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">Edit</div>");
-		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">Add&nbsp;component</div>");
-		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponent();\">Delete&nbsp;component</div>");
-		sb.append("<div class=\"menudivider\"><img src=\"images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
-		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponent();\">Properties</div>");
-		sb.append("<div class=\"menudivider\"><img src=\"images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
-		sb.append("<div class=\"menuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">View&nbsp;Source</div>");
+		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">Edit</div>");
+		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">Add&nbsp;component</div>");
+		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponent();\">Delete&nbsp;component</div>");
+		sb.append("<div class=\"igmenudivider\"><img src=\"images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
+		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponent();\">Properties</div>");
+		sb.append("<div class=\"igmenudivider\"><img src=\"images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
+		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">View&nbsp;Source</div>");
 		sb.append("</div>");
 				
 		return sb.toString();
@@ -721,11 +722,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		sb.append("	<div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
 			
-		sb.append("		<div id=\"pageComponentsHandle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Page components</td><td align=\"right\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\">close</a></td></tr></table></div>");
-		sb.append("		<div id=\"pageComponentsBody\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+		//sb.append("		<div id=\"pageComponentsHandle\"><table class=\"igtable\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Page components</td><td align=\"right\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\">close</a></td></tr></table></div>");
+		sb.append("		<div id=\"pageComponentsHandle\"><div id=\"leftPaletteHandle\">Page components</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\">close</a></div></div>");
+		sb.append("		<div id=\"pageComponentsBody\"><table class=\"igtable\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
 		
 		sb.append("		<tr>");
-		sb.append("			<td colspan=\"20\">");
+		sb.append("			<td class=\"igtd\" colspan=\"20\">");
 		sb.append("<img src=\"images/tcross.png\" width=\"19\" height=\"16\"><span id=\"" + component.getId() + "\" class=\"label\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" +  component.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=base&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '');</script></td>");
 		sb.append("		</tr>");
 		
@@ -734,7 +736,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		<tr>");
 		for(int i=0; i<20; i++)
 		{
-			sb.append("<td width=\"19\"><img src=\"images/trans.gif\" width=\"19\" height=\"1\"></td>");
+			sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/trans.gif\" width=\"19\" height=\"1\"></td>");
 		}
 		sb.append("		</tr>");
 		sb.append("		</table>");
@@ -765,13 +767,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		int colspan = 20 - level;
 		
 		sb.append("		<tr>");
-		sb.append("			<td><img src=\"images/trans.gif\" width=\"19\" height=\"16\"></td>");
+		sb.append("			<td class=\"igtd\"><img src=\"images/trans.gif\" width=\"19\" height=\"16\"></td>");
 		for(int i=0; i<level; i++)
 		{
-			sb.append("<td width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
+			sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
 		
-		sb.append("<td width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td><img src=\"images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"clickableLabel\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "');</script>");
+		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"clickableLabel\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "');</script>");
 		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
 		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
 		
@@ -786,21 +788,21 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		//Properties
 		sb.append("		<tr>");
-		sb.append("			<td><img src=\"images/trans.gif\" width=\"19\" height=\"1\"></td><td><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
+		sb.append("			<td class=\"igtd\"><img src=\"images/trans.gif\" width=\"19\" height=\"1\"></td><td class=\"igtd\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		for(int i=0; i<level; i++)
 		{
-			sb.append("<td><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
+			sb.append("<td class=\"igtd\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
-		sb.append("<td><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/propertiesIcon.gif\" width=\"16\" height=\"16\" border=\"0\"></td><td colspan=\"" + (colspan - 3) + "\"><span onclick=\"javascript:showComponentProperties('component" + component.getId() + "Properties');\" class=\"label\">Properties</span></td>");
+		sb.append("<td class=\"igtd\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"images/propertiesIcon.gif\" width=\"16\" height=\"16\" border=\"0\"></td><td class=\"igtd\" colspan=\"" + (colspan - 3) + "\"><span onclick=\"javascript:showComponentProperties('component" + component.getId() + "Properties');\" class=\"label\">Properties</span></td>");
 		sb.append("		</tr>");
 		
 		sb.append("		<tr>");
-		sb.append("			<td width=\"19\"><img src=\"images/trans.gif\" width=\"19\" height=\"1\"></td><td width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
+		sb.append("			<td class=\"igtd\" width=\"19\"><img src=\"images/trans.gif\" width=\"19\" height=\"1\"></td><td class=\"igtd\" width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		for(int i=0; i<level; i++)
 		{
-			sb.append("<td><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
+			sb.append("<td class=\"igtd\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
-		sb.append("<td width=\"19\"><img src=\"images/endline.png\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/containerIcon.gif\" width=\"16\" height=\"16\"></td><td colspan=\"" + (colspan - 4) + "\"><span class=\"label\">Slots</span></td>");
+		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/endline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"images/containerIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span class=\"label\">Slots</span></td>");
 		sb.append("</tr>");
 
 		Iterator slotIterator = component.getSlotList().iterator();
@@ -809,18 +811,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			Slot slot = (Slot)slotIterator.next();
 	
 			sb.append("		<tr>");
-			sb.append("			<td width=\"19\"><img src=\"images/trans.gif\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td><td><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
+			sb.append("			<td class=\"igtd\" width=\"19\"><img src=\"images/trans.gif\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 			for(int i=0; i<level; i++)
 			{
-				sb.append("<td width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
+				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 			}
 			if(slot.getComponents().size() > 0)
-				sb.append("<td width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
+				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
 			else
-				sb.append("<td width=\"19\"><img src=\"images/endline.png\" width=\"19\" height=\"16\"></td><td width=\"19\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
+				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/endline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
 
 //			sb.append("<td colspan=\"" + (colspan - 4) + "\"><span id=\"" + component.getId() + "\" class=\"label\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" +  component.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&componentId=" + component.getId() + "&contentId=" + -1 + "&slotId=" + slot.getId() + "', '');</script></td>");
-			sb.append("<td colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"label\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + slot.getId() + "ClickableDiv', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=" + slot.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '');</script></td>");
+			sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"label\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + slot.getId() + "ClickableDiv', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=" + slot.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '');</script></td>");
 			
 			sb.append("		</tr>");
 
@@ -857,10 +859,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	private String getComponentPaletteDiv(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
 	{		
-	    CmsLogger.logInfo("siteNodeId:" + siteNodeId);
-	    CmsLogger.logInfo("siteNodeId2:" + templateController.getSiteNodeId());
 		ContentVO contentVO = templateController.getBoundContent(BasicTemplateController.META_INFO_BINDING_NAME);
-		CmsLogger.logInfo("contentVO:" + contentVO.getName());
 
 		if(componentPaletteDiv != null && (templateController.getRequestParameter("refresh") == null || !templateController.getRequestParameter("refresh").equalsIgnoreCase("true")))
 		{
@@ -880,7 +879,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("<div id=\"paletteDiv\">");
 		 
 		sb.append("<div id=\"paletteHandle\">");
-		sb.append("	<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Component palette</td><td align=\"right\"><a href=\"javascript:hideDiv('paletteDiv');\" class=\"white\">close</a></td></tr></table>");
+		//sb.append("	<table class=\"igtable\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Component palette</td><td align=\"right\"><a href=\"javascript:hideDiv('paletteDiv');\" class=\"white\">close</a></td></tr></table>");
+		sb.append("	<div id=\"leftPaletteHandle\">Component palette</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('paletteDiv');\" class=\"white\">close</a></div>");
 		sb.append("</div>");
 				
 		//sb.append("<div id=\"componentPalette\" style=\"background:#999999; height:20px; width:100%; left:0px; top:0px;\">");
@@ -908,7 +908,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 			index++;
 		}
-		sb.append("  <td width=\"90%\" style=\"border-right: solid thin gray; border-bottom: solid thin white\" align=\"right\">&nbsp;<a href=\"javascript:refreshComponents(document.location.href);\" class=\"white\"><img src=\"images/refresh.gif\" alt=\"Refresh palette\" border=\"0\"></a>&nbsp;<a href=\"javascript:moveDivDown('paletteDiv');\" class=\"white\"><img src=\"images/arrowDown.gif\" alt=\"Move down\" border=\"0\"></a>&nbsp;<a href=\"javascript:moveDivUp('paletteDiv');\" class=\"white\"><img src=\"images/arrowUp.gif\" alt=\"Move up\" border=\"0\"></a>&nbsp;<a href=\"javascript:toggleDiv('pageComponents');\" class=\"white\"><img src=\"images/pageStructure.gif\" alt=\"Toggle page structure\" border=\"0\"></a>&nbsp;<a href=\"javascript:saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + contentVO.getId() + "');\" class=\"white\"><img src=\"images/saveComponentStructure.gif\" alt=\"Save the page as a template page\" border=\"0\"></a>&nbsp;<a href=\"javascript:window.open(document.location.href, 'PageComponents', '');\"><img src=\"images/fullscreen.gif\" alt=\"Pop up in a large window\" border=\"0\"></a>&nbsp;</td>");
+		sb.append("  <td class=\"igtd\" width=\"90%\" style=\"text-align: right; border-right: solid thin gray; border-bottom: solid thin white\" align=\"right\">&nbsp;<a href=\"javascript:refreshComponents(document.location.href);\" class=\"white\"><img src=\"images/refresh.gif\" alt=\"Refresh palette\" border=\"0\"></a>&nbsp;<a href=\"javascript:moveDivDown('paletteDiv');\" class=\"white\"><img src=\"images/arrowDown.gif\" alt=\"Move down\" border=\"0\"></a>&nbsp;<a href=\"javascript:moveDivUp('paletteDiv');\" class=\"white\"><img src=\"images/arrowUp.gif\" alt=\"Move up\" border=\"0\"></a>&nbsp;<a href=\"javascript:toggleDiv('pageComponents');\" class=\"white\"><img src=\"images/pageStructure.gif\" alt=\"Toggle page structure\" border=\"0\"></a>&nbsp;<a href=\"javascript:saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + contentVO.getId() + "');\" class=\"white\"><img src=\"images/saveComponentStructure.gif\" alt=\"Save the page as a template page\" border=\"0\"></a>&nbsp;<a href=\"javascript:window.open(document.location.href, 'PageComponents', '');\"><img src=\"images/fullscreen.gif\" alt=\"Pop up in a large window\" border=\"0\"></a>&nbsp;</td>");
 		sb.append(" </tr>");
 		sb.append("</table>");
 		sb.append("</div>");
@@ -935,7 +935,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			    sb.append("<div id=\"" + groupName + "ComponentsBg\" class=\"componentsBackground\" style=\"zIndex:2; visibility: inherited;\">");	
 			
 			sb.append("<div id=\"" + groupName + "Components\" style=\"visibility:inherit; position:absolute; top:1px; left:5px; height:50px; \">");
-			sb.append("	<table style=\"width:100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
+			sb.append("	<table class=\"igtable\" style=\"width:100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
 			sb.append("	<tr>");
 			//sb.append("	<td width=\"100%\"><nobr>");
 			
@@ -950,7 +950,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				//String imageUrlTemp = getDigitalAssetUrl(componentContentVO.getId(), "thumbnail");
 				//if(imageUrlTemp != null && imageUrlTemp.length() > 0)
 				//	imageUrl = imageUrlTemp;
-				sb.append("	<td>");
+				sb.append("	<td class=\"igtd\">");
 				sb.append("		<div id=\"" + componentIndex + "\" style=\"display: block; visibility: inherited;\"><nobr><img src=\"" + imageUrl + "\" width=\"16\" height=\"16\" border=\"0\">");
 				sb.append("		<span onMouseDown=\"grabIt(event);\" onmouseover=\"showDetails('" + componentContentVO.getName() + "');\" id=\""+ componentContentVO.getId() + "\" class=\"draggableItem\" nowrap=\"1\">" + ((componentContentVO.getName().length() > 22) ? componentContentVO.getName().substring(0, 17) : componentContentVO.getName()) + "...</span>");
 				sb.append("     </nobr></div>"); 
@@ -958,7 +958,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 				imageUrl = "images/componentIcon.gif";
 			}
-			sb.append("  <td width=\"90%\">&nbsp;</td>");
+			sb.append("  <td class=\"igtd\" width=\"90%\">&nbsp;</td>");
 			
 			//sb.append("	</nobr></td>");
 			sb.append("	</tr>");
@@ -974,11 +974,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		
 		sb.append("<div id=\"statusListBg\">");
-		sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
+		sb.append("<table class=\"igtable\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
 		sb.append("<tr>");
-		sb.append("	<td align=\"left\" width=\"15px\">&nbsp;<a href=\"#\" onclick=\"moveLeft(currentGroup)\" return false\" onfocus=\"if(this.blur)this.blur()\"><img src=\"images/arrowleft.gif\" alt=\"previous\" border=\"0\"></a></td>");
-		sb.append("	<td align=\"left\" width=\"95%\"><span class=\"componentsStatusText\">Details: </span><span id=\"statusText\" class=\"componentsStatusText\">&nbsp;</span></td>");
-		sb.append("	<td align=\"right\"><a href=\"#\" onclick=\"moveRight(currentGroup)\" return false\" onfocus=\"if(this.blur)this.blur()\"><img src=\"images/arrowright.gif\" alt=\"next\" border=\"0\"></a>&nbsp;</td>");
+		sb.append("	<td class=\"igtd\" align=\"left\" width=\"15px\">&nbsp;<a href=\"#\" onclick=\"moveLeft(currentGroup)\" return false\" onfocus=\"if(this.blur)this.blur()\"><img src=\"images/arrowleft.gif\" alt=\"previous\" border=\"0\"></a></td>");
+		sb.append("	<td class=\"igtd\" align=\"left\" width=\"95%\"><span class=\"componentsStatusText\">Details: </span><span id=\"statusText\" class=\"componentsStatusText\">&nbsp;</span></td>");
+		sb.append("	<td class=\"igtd\" align=\"right\"><a href=\"#\" onclick=\"moveRight(currentGroup)\" return false\" onfocus=\"if(this.blur)this.blur()\"><img src=\"images/arrowright.gif\" alt=\"next\" border=\"0\"></a>&nbsp;</td>");
 		sb.append("</tr>");
 		sb.append("</table>");
 		sb.append("</div>");

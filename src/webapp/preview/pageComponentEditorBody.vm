@@ -1,23 +1,23 @@
 <div id="emptySlotMenu" class="skin0">
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">Add component</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">Add component</div>
 <hr>
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">View Source</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">View Source</div>
 </div>
 
 <div id="componentMenu" class="skin0">
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="edit();">Edit</div>
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();"><nobr>Add component</nobr></div>
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();"><nobr>Delete component</nobr></div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="edit();">Edit</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();"><nobr>Add component</nobr></div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();"><nobr>Delete component</nobr></div>
 <hr>
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
 <hr>
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();"><nobr>View Source</nobr></div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();"><nobr>View Source</nobr></div>
 </div>
 
 <div id="componentInTreeMenu" class="skin0">
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">Delete component</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">Delete component</div>
 <hr>
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
 <hr>
-<div class="menuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">View Source</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">View Source</div>
 </div>

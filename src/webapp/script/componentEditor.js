@@ -537,7 +537,7 @@ function highlightie5(event)
 	var layer = event.srcElement || event.currentTarget || event.target;
 	//alert("layer:" + layer.className);
 	
-	if (layer.className == "menuitems") 
+	if (layer.className == "igmenuitems") 
 	{
 		layer.style.backgroundColor = "#B6BDD2";
 		layer.style.border = "1px solid black";
@@ -551,7 +551,7 @@ function lowlightie5(event)
 {
 	var layer=event.srcElement || event.currentTarget || event.target;
 	
-	if (layer.className == "menuitems") 
+	if (layer.className == "igmenuitems") 
 	{
 		layer.style.backgroundColor = "";
 		layer.style.border = "0px solid white";
