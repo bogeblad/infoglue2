@@ -144,16 +144,16 @@ public class PortalServletDispatcher extends ServletDispatcher {
     public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         if (log.isDebugEnabled()) {
             log.debug("\n******************************************** infogluePortal service()");
-            Enumeration enum = req.getParameterNames();
-            while (enum.hasMoreElements()) {
-                String name = (String) enum.nextElement();
+            Enumeration enumeration = req.getParameterNames();
+            while (enumeration.hasMoreElements()) {
+                String name = (String) enumeration.nextElement();
                 Object o = req.getParameter(name);
                 log.debug(name + "=" + o);
             }
 
-            enum = req.getAttributeNames();
-            while (enum.hasMoreElements()) {
-                String name = (String) enum.nextElement();
+            enumeration = req.getAttributeNames();
+            while (enumeration.hasMoreElements()) {
+                String name = (String) enumeration.nextElement();
                 Object o = req.getAttribute(name);
                 log.debug(name + "=" + o);
             }

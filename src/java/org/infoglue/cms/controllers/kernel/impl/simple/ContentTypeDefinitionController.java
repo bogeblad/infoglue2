@@ -416,14 +416,14 @@ public class ContentTypeDefinitionController extends BaseController
 		List keys = new ArrayList();
 		for(int i = 0; i < nodes.getLength(); i++)
 		{
-			Node enum = nodes.item(i);
-			String value = enum.getAttributes().getNamedItem("value").getNodeValue();
+			Node enumeration = nodes.item(i);
+			String value = enumeration.getAttributes().getNamedItem("value").getNodeValue();
 			try
 			{
 				CategoryAttribute category = new CategoryAttribute(value);
 				keys.add(category);
 
-				Element params = (Element)XPathAPI.selectSingleNode(enum, attributesXPath);
+				Element params = (Element)XPathAPI.selectSingleNode(enumeration, attributesXPath);
 				if(params != null)
 				{
 					category.setTitle(getElementValue(params, "title"));

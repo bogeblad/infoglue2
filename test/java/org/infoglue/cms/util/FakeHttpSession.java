@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpSession.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: FakeHttpSession.java,v 1.2 2005/06/09 16:52:44 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -69,9 +69,9 @@ public class FakeHttpSession implements HttpSession
 	public String[] getValueNames()
 	{
 		String[] names = new String[attributes.size()];
-		Enumeration enum = getAttributeNames();
-		for (int i = 0; i < names.length && enum.hasMoreElements(); ++i)
-			names[i] = (String)enum.nextElement();
+		Enumeration enumeration = getAttributeNames();
+		for (int i = 0; i < names.length && enumeration.hasMoreElements(); ++i)
+			names[i] = (String)enumeration.nextElement();
 
 		return names;
 	}

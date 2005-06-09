@@ -80,10 +80,10 @@ public class CmsPropertyHandler
 			else
 			    cachedProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + applicationName + ".properties"));
 			
-			Enumeration enum = cachedProperties.keys();
-			while(enum.hasMoreElements())
+			Enumeration enumeration = cachedProperties.keys();
+			while(enumeration.hasMoreElements())
 			{
-				String key = (String)enum.nextElement();
+				String key = (String)enumeration.nextElement();
 				if(key.indexOf("webwork.") > 0)
 				{
 					webwork.config.Configuration.set(key, cachedProperties.getProperty(key)); 

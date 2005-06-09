@@ -63,8 +63,6 @@ import org.w3c.dom.CDATASection;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.sun.rsasign.r;
-
 /**
  * @author Mattias Bogeblad
  *

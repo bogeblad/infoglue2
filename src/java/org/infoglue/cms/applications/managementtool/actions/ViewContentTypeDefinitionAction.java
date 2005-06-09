@@ -760,13 +760,13 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		try
 		{
 			Document document = createDocumentFromDefinition();
-			Element enum = createNewEnumerationKey(document, ContentTypeDefinitionController.CATEGORY_KEYS);
+			Element enumeration = createNewEnumerationKey(document, ContentTypeDefinitionController.CATEGORY_KEYS);
 
 			Element annotation = document.createElement("xs:annotation");
 			Element appinfo = document.createElement("xs:appinfo");
 			Element params = document.createElement("params");
 
-			enum.appendChild(annotation);
+			enumeration.appendChild(annotation);
 			annotation.appendChild(appinfo);
 			appinfo.appendChild(params);
 			params.appendChild(createTextElement(document, "title", getRandomName()));
@@ -811,17 +811,17 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		try
 		{
 			Document document = createDocumentFromDefinition();
-			Element enum = updateEnumerationKey(document, ContentTypeDefinitionController.CATEGORY_KEYS, getCategoryKey(), getNewCategoryKey());
+			Element enumeration = updateEnumerationKey(document, ContentTypeDefinitionController.CATEGORY_KEYS, getCategoryKey(), getNewCategoryKey());
 
-			if(enum != null)
+			if(enumeration != null)
 			{
-				Element title = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/title");
+				Element title = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/title");
 				setTextElement(title, getSingleParameter("title"));
 
-				Element description = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/description");
+				Element description = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/description");
 				setTextElement(description, getSingleParameter("description"));
 
-				Element categoryId = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/categoryId");
+				Element categoryId = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/categoryId");
 				setTextElement(categoryId, getSingleParameter("categoryId"));
 			}
 
@@ -921,7 +921,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	 */
 	private Element createNewEnumerationKey(Document document, String keyType) throws TransformerException
 	{
-		Element enum = null;
+		Element enumeration = null;
 		String assetKeysXPath = "/xs:schema/xs:simpleType[@name = '" + keyType + "']/xs:restriction";
 		NodeList anl = XPathAPI.selectNodeList(document.getDocumentElement(), assetKeysXPath);
 
@@ -951,10 +951,10 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 			}
 		}
 
-		enum = document.createElement("xs:enumeration");
-		enum.setAttribute("value", getRandomName());
-		keyRestriction.appendChild(enum);
-		return enum;
+		enumeration = document.createElement("xs:enumeration");
+		enumeration.setAttribute("value", getRandomName());
+		keyRestriction.appendChild(enumeration);
+		return enumeration;
 	}
 
 	/**
@@ -967,9 +967,9 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		NodeList anl = XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
 		if(anl != null && anl.getLength() > 0)
 		{
-			Element enum = (Element)anl.item(0);
-			enum.setAttribute("value", newKey);
-			return enum;
+			Element enumeration = (Element)anl.item(0);
+			enumeration.setAttribute("value", newKey);
+			return enumeration;
 		}
 
 		return null;
@@ -997,14 +997,14 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		NodeList anl = XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
 		if(anl != null && anl.getLength() > 0)
 		{
-			Element enum = (Element)anl.item(0);
-			enum.setAttribute("value", newKey);
+			Element enumeration = (Element)anl.item(0);
+			enumeration.setAttribute("value", newKey);
 			
-			Element descriptionElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/description");
-			Element maximumSizeElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/maximumSize");
-			Element allowedContentTypesElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/allowedContentTypes");
-			Element imageWidthElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/imageWidth");
-			Element imageHeightElement = (Element)XPathAPI.selectSingleNode(enum, "xs:annotation/xs:appinfo/params/imageHeight");
+			Element descriptionElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/description");
+			Element maximumSizeElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/maximumSize");
+			Element allowedContentTypesElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/allowedContentTypes");
+			Element imageWidthElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/imageWidth");
+			Element imageHeightElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/imageHeight");
 
 			if(descriptionElement == null)
 			{
@@ -1012,7 +1012,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				Element appinfo = document.createElement("xs:appinfo");
 				Element params = document.createElement("params");
 	
-				enum.appendChild(annotation);
+				enumeration.appendChild(annotation);
 				annotation.appendChild(appinfo);
 				appinfo.appendChild(params);
 				
@@ -1037,7 +1037,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				setTextElement(imageHeightElement, imageHeight);
 			}
 			
-			return enum;
+			return enumeration;
 		}
 
 		return null;

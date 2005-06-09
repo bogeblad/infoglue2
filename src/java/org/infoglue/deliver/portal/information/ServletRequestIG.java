@@ -131,11 +131,11 @@ public class ServletRequestIG extends HttpServletRequestWrapper {
         for (Iterator iter = attributeMap.keySet().iterator(); iter.hasNext();) {
             v.add(iter.next());
         }
-        for (Enumeration enum = super.getAttributeNames(); enum.hasMoreElements();) {
-            v.add(enum.nextElement());
+        for (Enumeration enumeration = super.getAttributeNames(); enumeration.hasMoreElements();) {
+            v.add(enumeration.nextElement());
         }
-        for (Enumeration enum = super.getRequest().getAttributeNames(); enum.hasMoreElements();) {
-            v.add(enum.nextElement());
+        for (Enumeration enumeration = super.getRequest().getAttributeNames(); enumeration.hasMoreElements();) {
+            v.add(enumeration.nextElement());
         }
         return v.elements();
     }
