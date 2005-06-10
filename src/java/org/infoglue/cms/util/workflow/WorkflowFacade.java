@@ -44,7 +44,7 @@ import net.sf.hibernate.cfg.Configuration;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.14 $ $Date: 2005/06/07 21:11:01 $
+ * @version $Revision: 1.15 $ $Date: 2005/06/10 14:36:11 $
  */
 public class WorkflowFacade
 {
@@ -159,21 +159,14 @@ public class WorkflowFacade
 	 * Performs an action using the given inputs
 	 * @param actionId the ID of the action to perform
 	 * @param inputs a map of inputs to the action
-	 * @throws SystemException if a workflow error occurs, or if the underlying workflow is not active
+	 * @throws WorkflowException if a workflow error occurs, or if the underlying workflow is not active
 	 */
-	public void doAction(int actionId, Map inputs) throws SystemException
+	public void doAction(int actionId, Map inputs) throws WorkflowException
 	{
-		try
-		{
-			if (!isActive())
-				throw new SystemException("Workflow " + workflowId + " is no longer active");
+		if (!isActive())
+			throw new InvalidActionException("Workflow " + workflowId + " is no longer active");
 
-			workflow.doAction(workflowId, actionId, inputs);
-		}
-		catch (Exception e)
-		{
-			throw new SystemException(e);
-		}
+		workflow.doAction(workflowId, actionId, inputs);
 	}
 
 	/**
