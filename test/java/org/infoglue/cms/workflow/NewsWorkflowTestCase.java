@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: NewsWorkflowTestCase.java,v 1.4 2005/06/10 17:23:27 jed Exp $
+ * $Id: NewsWorkflowTestCase.java,v 1.5 2005/06/10 18:32:43 jed Exp $
  */
 package org.infoglue.cms.workflow;
 
@@ -30,7 +30,7 @@ import org.infoglue.cms.util.*;
 
 /**
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
- * @version $Revision: 1.4 $ $Date: 2005/06/10 17:23:27 $
+ * @version $Revision: 1.5 $ $Date: 2005/06/10 18:32:43 $
  */
 public class NewsWorkflowTestCase extends WorkflowTestCase
 {
@@ -63,6 +63,15 @@ public class NewsWorkflowTestCase extends WorkflowTestCase
 	protected void invokeCreateNews() throws Exception
 	{
 		invokeAction(new FakeHttpServletRequest(getCreateNewsParams()), 4);
+	}
+
+	/**
+	 * Invokes the "Preview News and Approve" workflow action
+	 * @throws Exception if an error occurs
+	 */
+	protected void invokePreviewNewsAndApprove() throws Exception
+	{
+		invokeAction(new FakeHttpServletRequest(), 5);
 	}
 
 	protected Map getCreateNewsParams()
