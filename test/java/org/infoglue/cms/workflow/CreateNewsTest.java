@@ -20,23 +20,78 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsTest.java,v 1.4 2005/01/18 22:13:14 jed Exp $
+ * $Id: CreateNewsTest.java,v 1.5 2005/06/10 14:42:47 jed Exp $
  */
 package org.infoglue.cms.workflow;
 
 import java.util.*;
 
 import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.*;
+import org.infoglue.cms.util.*;
 
 /**
  * Tests the Create News sample workflow
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
  */
-public class CreateNewsTest extends NewsWorkflowTestCase
+public class CreateNewsTest extends WorkflowTestCase
 {
-	public void testWorkflow() throws Exception
+	protected String getWorkflowName()
+	{
+		return "Create News";
+	}
+
+	/**
+	 * Returns the number of global actions
+	 * @return the number of global actions
+	 */
+	protected int getNumberOfGlobalActions()
+	{
+		return 2;
+	}
+
+	protected void setUp() throws Exception
+	{
+		super.setUp();
+		setUserPrincipal(getAdminPrincipal());
+		startWorkflow(0);
+		checkWorkflow(1, 0, 1);
+	}
+
+	public void testCreateNewsAndApprove() throws Exception
 	{
 		checkCreateNews();
+		checkPreviewNewsAndApprove();
+	}
+
+	public void testCreateNewsAndApproveInactive() throws Exception
+	{
+		testCreateNewsAndApprove();
+
+		try
+		{
+			invokeCreateNews();
+			fail("InvalidActionException should have been thrown");
+		}
+		catch (InvalidActionException e)
+		{
+			// Expected
+		}
+	}
+
+	public void testCreateNewsTwice() throws Exception
+	{
+		checkCreateNews();
+
+		try
+		{
+			invokeCreateNews();
+			fail("InvalidActionException should have been thrown");
+		}
+		catch (InvalidActionException e)
+		{
+			// Expected
+		}
 	}
 
 	private void checkCreateNews() throws Exception
@@ -49,7 +104,43 @@ public class CreateNewsTest extends NewsWorkflowTestCase
 		for (Iterator names = params.keySet().iterator(); names.hasNext();)
 		{
 			String name = (String)names.next();
-			assertEquals("Wrong " + name + ":", params.get(name), propertySet.getString(name));
+			assertEquals("Wrong " + name + ':', params.get(name), propertySet.getString(name));
 		}
+	}
+
+	private void checkPreviewNewsAndApprove() throws Exception
+	{
+		invokePreviewNewsAndApprove();
+		assertWorkflowFinished();
+	}
+
+	/**
+	 * Invokes the "Create News" workflow action
+	 * @throws Exception if an error occurs
+	 */
+	private void invokeCreateNews() throws Exception
+	{
+		invokeAction(new FakeHttpServletRequest(getCreateNewsParams()), 4);
+	}
+
+	/**
+	 * Invokes the "Preview News and Approve" workflow action
+	 * @throws Exception if an error occurs
+	 */
+	private void invokePreviewNewsAndApprove() throws Exception
+	{
+		invokeAction(new FakeHttpServletRequest(), 5);
+	}
+
+	private Map getCreateNewsParams()
+	{
+		Map params = new HashMap();
+		params.put("name", getName());
+		params.put("title", getName());
+		params.put("navigationTitle", getName());
+		params.put("leadIn", getName());
+		params.put("fullText", getName());
+
+		return params;
 	}
 }
