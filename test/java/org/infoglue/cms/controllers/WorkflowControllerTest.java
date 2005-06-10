@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowControllerTest.java,v 1.1 2005/01/18 21:48:04 jed Exp $
+ * $Id: WorkflowControllerTest.java,v 1.2 2005/06/10 19:53:18 jed Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -32,10 +32,15 @@ import org.infoglue.cms.workflow.NewsWorkflowTestCase;
 
 /**
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
- * @version $Revision: 1.1 $ $Date: 2005/01/18 21:48:04 $
+ * @version $Revision: 1.2 $ $Date: 2005/06/10 19:53:18 $
  */
 public class WorkflowControllerTest extends NewsWorkflowTestCase
 {
+	protected void tearDown() throws Exception
+	{
+		finishWorkflow();
+	}
+	
 	public void testGetAvailableWorkflowVOList() throws Exception
 	{
 		List workflows = WorkflowController.getController().getAvailableWorkflowVOList(getUserPrincipal());
