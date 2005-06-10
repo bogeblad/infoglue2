@@ -20,36 +20,60 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsTest.java,v 1.6 2005/06/10 17:23:27 jed Exp $
+ * $Id: NewsWorkflowTestCase.java,v 1.4 2005/06/10 17:23:27 jed Exp $
  */
 package org.infoglue.cms.workflow;
 
 import java.util.*;
 
-import com.opensymphony.module.propertyset.PropertySet;
+import org.infoglue.cms.util.*;
 
 /**
- * Tests the Create News sample workflow
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
+ * @version $Revision: 1.4 $ $Date: 2005/06/10 17:23:27 $
  */
-public class CreateNewsTest extends NewsWorkflowTestCase
+public class NewsWorkflowTestCase extends WorkflowTestCase
 {
-	public void testWorkflow() throws Exception
+	protected void setUp() throws Exception
 	{
-		checkCreateNews();
+		super.setUp();
+		setUserPrincipal(getAdminPrincipal());
+		startWorkflow(0);
+		checkWorkflow(1, 0, 1);
 	}
 
-	private void checkCreateNews() throws Exception
+	protected String getWorkflowName()
 	{
-		invokeCreateNews();
-		checkWorkflow(1, 1, 1);
+		return "Create News";
+	}
 
-		PropertySet propertySet = getPropertySet();
-		Map params = getCreateNewsParams();
-		for (Iterator names = params.keySet().iterator(); names.hasNext();)
-		{
-			String name = (String)names.next();
-			assertEquals("Wrong " + name + ":", params.get(name), propertySet.getString(name));
-		}
+	/**
+	 * Returns the number of global actions
+	 * @return the number of global actions
+	 */
+	protected int getNumberOfGlobalActions()
+	{
+		return 2;
+	}
+
+	/**
+	 * Invokes the "Create News" workflow action
+	 * @throws java.lang.Exception if an error occurs
+	 */
+	protected void invokeCreateNews() throws Exception
+	{
+		invokeAction(new FakeHttpServletRequest(getCreateNewsParams()), 4);
+	}
+
+	protected Map getCreateNewsParams()
+	{
+		Map params = new HashMap();
+		params.put("name", getName());
+		params.put("title", getName());
+		params.put("navigationTitle", getName());
+		params.put("leadIn", getName());
+		params.put("fullText", getName());
+
+		return params;
 	}
 }
