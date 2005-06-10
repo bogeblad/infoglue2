@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.6 2005/01/13 23:37:39 jed Exp $
+ * $Id: WorkflowTestCase.java,v 1.7 2005/06/10 14:40:42 jed Exp $
  */
 package org.infoglue.cms.util;
 
@@ -48,23 +48,11 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 * The ID of the global action "Finish Workflow".  Since this ID is the same for both Create News and Create User,
 	 * we can get away with hard-coding it for now.
 	 */
-	protected static final int FINISH_WORKFLOW = 201;
+	public static final int FINISH_WORKFLOW = 201;
 
 	private static final WorkflowController controller = WorkflowController.getController();
 
 	private WorkflowVO workflow;
-
-	/**
-	 * Finishes, but does not delete.  Clearing the tables is tricky due to FK constraints in the OSWorkflow tables,
-	 * although we should eventually figure out how to do it.  For now we'll have to live with finishing the workflow
-	 * but leaving all the dead ones we create behind in the DB.  For mysql, periodically use the script
-	 * testsrc/etc/clean-workflows.sql to clean up.
-	 * @throws Exception
-	 */
-	protected void tearDown() throws Exception
-	{
-		finishWorkflow();
-	}
 
 	/**
 	 * Subclasses must supply the workflow name
@@ -133,7 +121,10 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	}
 
 	/**
-	 * Invokes the "Finish Workflow" action
+	 * Invokes the "Finish Workflow" action.  Does not delete.  Clearing the tables is tricky due to FK constraints in
+	 * the OSWorkflow tables, although we should eventually figure out how to do it.  For now we'll have to live with
+	 * finishing the workflow but leaving all the dead ones we create behind in the DB.  For mysql, periodically use the
+	 * script testsrc/etc/clean-workflows.sql to clean up.
 	 * @throws Exception if an error occurs
 	 */
 	protected void finishWorkflow() throws Exception
@@ -217,9 +208,9 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	{
 		for (Iterator i = workflows.iterator(); i.hasNext();)
 		{
-			WorkflowVO workflow = (WorkflowVO)i.next();
-			if (getWorkflowId() == workflow.getWorkflowId().longValue())
-				return workflow;
+			WorkflowVO wf = (WorkflowVO)i.next();
+			if (getWorkflowId() == wf.getWorkflowId().longValue())
+				return wf;
 		}
 
 		return null;
@@ -234,9 +225,9 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	{
 		for (Iterator i = workflows.iterator(); i.hasNext();)
 		{
-			WorkflowVO workflow = (WorkflowVO)i.next();
-			if (getWorkflowName().equals(workflow.getName()))
-				return workflow;
+			WorkflowVO wf = (WorkflowVO)i.next();
+			if (getWorkflowName().equals(wf.getName()))
+				return wf;
 		}
 
 		return null;
@@ -274,7 +265,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 */
 	protected static void printAvailableActions(WorkflowVO workflow)
 	{
-		System.out.println("\n*** DEBUG: available actions for workflow " + workflow.getId() + " " + workflow.getName() +":");
+		System.out.println("\n*** DEBUG: available actions for workflow " + workflow.getId() + ' ' + workflow.getName() + ':');
 		printActions(workflow.getAvailableActions());
 	}
 
