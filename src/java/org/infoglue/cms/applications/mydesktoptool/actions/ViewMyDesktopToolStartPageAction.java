@@ -35,6 +35,7 @@ import org.infoglue.cms.util.workflow.StepFilter;
 import org.infoglue.cms.exception.SystemException;
 
 import webwork.action.ActionContext;
+import com.opensymphony.workflow.*;
 
 /**
  * This class implements the action class for the startpage in the mydesktop tool.
@@ -43,6 +44,8 @@ import webwork.action.ActionContext;
  */
 public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 {
+	protected static final String INVALID_ACTION = "invalidAction";
+
 	private static final WorkflowController controller = WorkflowController.getController();
 
 	private List availableWorkflowVOList;
@@ -139,7 +142,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	public String doStartWorkflow() throws SystemException
 	{
-		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), getWorkflowName(), actionId, this.getRequest().getParameterMap());
+		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), getWorkflowName(), actionId, getRequest().getParameterMap());
 		return redirectToView();
 	}
 
@@ -162,8 +165,19 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		CmsLogger.logInfo("actionId:" + actionId);
 		CmsLogger.logInfo("****************************************");
 
-		workflow = controller.invokeAction(getInfoGluePrincipal(), ActionContext.getRequest(), getWorkflowId(), actionId);
-		return redirectToView();
+		try
+		{
+			workflow = controller.invokeAction(getInfoGluePrincipal(), ActionContext.getRequest(), getWorkflowId(), actionId);
+			return redirectToView();
+		}
+		catch (InvalidActionException e)
+		{
+			return INVALID_ACTION;
+		}
+		catch (WorkflowException e)
+		{
+			throw new SystemException(e);
+		}
 	}
 
 	/**
@@ -234,7 +248,8 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 			buffer.append('?');
 
 		return buffer.append("workflowId=").append(getWorkflowId()).append("&actionId=").append(action.getId())
-				.append("&returnAddress=").append(getReturnAddress()).append("&" + this.getRequest().getQueryString()).toString();
+				.append("&returnAddress=").append(getReturnAddress()).append('&')
+				.append(getRequest().getQueryString()).toString();
 	}
 
 	private static boolean containsQuestionMark(String s)
