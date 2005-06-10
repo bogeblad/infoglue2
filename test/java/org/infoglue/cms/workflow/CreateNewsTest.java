@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsTest.java,v 1.7 2005/06/10 18:34:35 jed Exp $
+ * $Id: CreateNewsTest.java,v 1.8 2005/06/10 19:51:05 jed Exp $
  */
 package org.infoglue.cms.workflow;
 
@@ -68,6 +68,10 @@ public class CreateNewsTest extends NewsWorkflowTestCase
 		catch (InvalidActionException e)
 		{
 			// Expected
+		}
+		finally
+		{
+			finishWorkflow();
 		}
 	}
 
