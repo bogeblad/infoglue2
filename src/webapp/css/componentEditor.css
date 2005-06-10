@@ -189,8 +189,10 @@
 	vertical-align: top;
 }
 .componentEditorLink {
-	font-family: verdana, arial, sans-serif;
-	color: blue;
+	font-family	     : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	font-color		 : #333333;
+	color			 : navy;
 }
 .igpropertylabel {
 	text-align 	 	 : left;

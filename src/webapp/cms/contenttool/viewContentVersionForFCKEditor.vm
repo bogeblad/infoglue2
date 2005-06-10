@@ -62,7 +62,7 @@
 	#set($readonly = "")
 #end
 
-<body class="contenttooledit" onload="javascript:refreshContentToolBar('tool.contenttool.contentVersionHeader', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '$!unrefreshedContentId', '$!changeTypeId', '$!newContentId'); generateWYSIWYGS();" onkeypress="hotKeys(event);">
+<body class="contenttooledit" onload="javascript:refreshContentToolBar('tool.contenttool.contentVersionHeader', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '$!unrefreshedContentId', '$!changeTypeId', '$!newContentId'); /*generateWYSIWYGS();*/" onkeypress="hotKeys(event);">
 #set( $lvColor = "green")
 
 <script type="text/javascript">
@@ -946,5 +946,9 @@
 </form>
 
 </div>
+
+<script type="text/javascript">
+	generateWYSIWYGS();
+</script>
 
 #endContentTool()

@@ -49,7 +49,7 @@
 	#set($readonly = "")
 #end
 
-<body class="contenttooledit" onload="javascript:#if($closeOnLoad == "true")refreshCaller(); #else generateWYSIWYGS(); #end" onkeypress="hotKeys(event);">
+<body class="contenttooledit" onload="javascript:#if($closeOnLoad == "true")refreshCaller(); #else /*generateWYSIWYGS();*/ #end" onkeypress="hotKeys(event);">
 
 <script language="javascript" src="script/jsrsClient.js"></script>
 
@@ -959,7 +959,10 @@
 	<input type="hidden" name="languageId" value="$languageId">
 </form>
 
-
 </div>
+
+<script type="text/javascript">
+	generateWYSIWYGS();
+</script>
  
 #endContentTool()
