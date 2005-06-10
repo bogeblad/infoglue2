@@ -20,13 +20,14 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsTest.java,v 1.6 2005/06/10 17:23:27 jed Exp $
+ * $Id: CreateNewsTest.java,v 1.7 2005/06/10 18:34:35 jed Exp $
  */
 package org.infoglue.cms.workflow;
 
 import java.util.*;
 
 import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.InvalidActionException;
 
 /**
  * Tests the Create News sample workflow
@@ -34,9 +35,46 @@ import com.opensymphony.module.propertyset.PropertySet;
  */
 public class CreateNewsTest extends NewsWorkflowTestCase
 {
-	public void testWorkflow() throws Exception
+	public void testCreateNewsAndApprove() throws Exception
 	{
 		checkCreateNews();
+		checkPreviewNewsAndApprove();
+	}
+
+	public void testCreateNewsAndApproveInactive() throws Exception
+	{
+		testCreateNewsAndApprove();
+
+		try
+		{
+			invokeCreateNews();
+			fail("InvalidActionException should have been thrown");
+		}
+		catch (InvalidActionException e)
+		{
+			// Expected
+		}
+	}
+
+	public void testCreateNewsTwice() throws Exception
+	{
+		checkCreateNews();
+
+		try
+		{
+			invokeCreateNews();
+			fail("InvalidActionException should have been thrown");
+		}
+		catch (InvalidActionException e)
+		{
+			// Expected
+		}
+	}
+
+	private void checkPreviewNewsAndApprove() throws Exception
+	{
+		invokePreviewNewsAndApprove();
+		assertWorkflowFinished();
 	}
 
 	private void checkCreateNews() throws Exception
@@ -49,7 +87,7 @@ public class CreateNewsTest extends NewsWorkflowTestCase
 		for (Iterator names = params.keySet().iterator(); names.hasNext();)
 		{
 			String name = (String)names.next();
-			assertEquals("Wrong " + name + ":", params.get(name), propertySet.getString(name));
+			assertEquals("Wrong " + name + ':', params.get(name), propertySet.getString(name));
 		}
 	}
 }
