@@ -37,6 +37,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.WorkflowException;
 
 /**
  * This controller acts as the api towards the OSWorkflow Workflow-engine.
@@ -139,31 +140,24 @@ public class WorkflowController extends BaseController
 	 * @param workflowId the ID of the desired workflow
 	 * @param actionId the ID of the desired action
 	 * @return a WorkflowVO representing the current state of the workflow identified by workflowId
-	 * @throws SystemException if a workflow error occurs
+	 * @throws WorkflowException if a workflow error occurs
 	 */
-	public WorkflowVO invokeAction(InfoGluePrincipal principal, HttpServletRequest request, long workflowId, int actionId) throws SystemException
+	public WorkflowVO invokeAction(InfoGluePrincipal principal, HttpServletRequest request, long workflowId, int actionId)
+			throws WorkflowException
 	{
 		CmsLogger.logInfo("invokeAction.............");
 		CmsLogger.logInfo("workflowId:" + workflowId);
 		CmsLogger.logInfo("actionId:" + actionId);
 
-		try
-		{
-			Map parameters = new HashMap();
-			parameters.putAll(request.getParameterMap());
-			parameters.put("request", request);
+		Map parameters = new HashMap();
+		parameters.putAll(request.getParameterMap());
+		parameters.put("request", request);
 
-			WorkflowFacade workflow = new WorkflowFacade(principal, workflowId);
-			workflow.doAction(actionId, parameters);
+		WorkflowFacade workflow = new WorkflowFacade(principal, workflowId);
+		workflow.doAction(actionId, parameters);
 
-			CmsLogger.logInfo("invokeAction end.............");
-			return workflow.createWorkflowVO();
-		}
-		catch (Exception e)
-		{
-		    e.printStackTrace();
-			throw new SystemException(e);
-		}
+		CmsLogger.logInfo("invokeAction end.............");
+		return workflow.createWorkflowVO();
 	}
 
 	/**
