@@ -27,7 +27,7 @@
 	<property name="test.java" value="${test}/java"/>
 	<property name="test.classes" value="${build}/test-classes"/>
 
-	<property name="year" value="2003"/>
+	<property name="year" value="2005"/>
 
 	<!--
 	* The master filterset, created from build.properties
@@ -679,5 +679,13 @@
 			<sysproperty key="webapp.dir" value="${deploy.dir.cms}"/>
 			<arg line="-c ${test.class}"/>
 		</java>
+	</target>
+	
+	<target name="changelog" depends="init">
+		<cvschangelog
+					dir="src"
+					cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"
+	                destfile="changelog.xml"
+	                start="5 Jun 2005"/>
 	</target>
 </project>
