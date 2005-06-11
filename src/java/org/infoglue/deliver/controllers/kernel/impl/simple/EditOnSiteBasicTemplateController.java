@@ -32,6 +32,7 @@ import org.infoglue.cms.exception.*;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.WebPage;
 
+import java.io.File;
 import java.util.List;
 import java.util.Iterator;
 
@@ -71,13 +72,16 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		
 		try
 		{
-			String extraHeader = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteHeader.vm"));
+		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/editOnSiteHeader.vm"));
+		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/editOnSiteBody.vm"));
+		    
+			//String extraHeader = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteHeader.vm"));
+		    //String extraBody   = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteBody.vm"));
 			String servletContext = request.getContextPath();
-			//CmsLogger.logInfo("extraHeader:" + extraHeader);
 			extraHeader = extraHeader.replaceAll("\\{applicationContext\\}", servletContext);
 			//CmsLogger.logInfo("extraHeader:" + extraHeader);
-			String extraBody   = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteBody.vm"));
-		
+			//CmsLogger.logInfo("extraHeader:" + extraHeader);
+			
 			StringBuffer modifiedTemplate = new StringBuffer(page);
 			
 			//Adding stuff in the header
@@ -87,6 +91,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 			
 			if(indexOfHeadEndTag > -1)
 			{
+			    System.out.println("modifiedTemplate:" + modifiedTemplate.substring(indexOfHeadEndTag, modifiedTemplate.indexOf(">", indexOfHeadEndTag) + 1));
+			    System.out.println("extraHeader:" + extraHeader);
 				modifiedTemplate = modifiedTemplate.replace(indexOfHeadEndTag, modifiedTemplate.indexOf(">", indexOfHeadEndTag) + 1, extraHeader);
 			}
 			else
