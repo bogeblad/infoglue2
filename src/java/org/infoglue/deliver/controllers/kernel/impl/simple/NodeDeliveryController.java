@@ -882,6 +882,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		String pageUrl = "";
 		
+		/*
 		if(siteNodeId == null)
 			siteNodeId = new Integer(-1);
 
@@ -891,7 +892,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		if(contentId == null)
 			contentId = new Integer(-1);
 		
-		String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
+		//String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
 		
 		SiteNode siteNode = getSiteNode(db, siteNodeId);
 		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
@@ -899,7 +900,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 			dnsName = siteNode.getRepository().getDnsName();
 			
 		//pageUrl = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
-		pageUrl = urlComposer.composePageUrl(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId, deliveryContext); 
+		*/
+
+		pageUrl = urlComposer.composePageUrl(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext); 
 		
 		return pageUrl;
 	}
@@ -907,12 +910,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 	public String getPageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
     {
-		SiteNode siteNode = getSiteNode(db, siteNodeId);
+		/*
+	    SiteNode siteNode = getSiteNode(db, siteNodeId);
 		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
-		
-        return urlComposer.composePageUrlAfterLanguageChange(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId, deliveryContext);
+		*/
+        return urlComposer.composePageUrlAfterLanguageChange(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext);
     } 
 	
 	/**

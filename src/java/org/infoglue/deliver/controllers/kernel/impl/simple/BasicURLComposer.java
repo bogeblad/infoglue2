@@ -24,6 +24,9 @@
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -93,7 +96,7 @@ public class BasicURLComposer extends URLComposer
         return assetUrl;
     }
     
-    public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext)
+    public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
     {
         /*
         String disableEmptyUrls = CmsPropertyHandler.getProperty("disableEmptyUrls");
@@ -142,6 +145,12 @@ public class BasicURLComposer extends URLComposer
 	    			contentId = new Integer(-1);
 	
 	            String arguments = "siteNodeId=" + siteNodeId + getRequestArgumentDelimiter() + "languageId=" + languageId + getRequestArgumentDelimiter() + "contentId=" + contentId;
+
+	            SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db, true);
+	    		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+	    		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+	    			dnsName = siteNode.getRepository().getDnsName();
+
 	            String url = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
 	            //CmsLogger.logInfo("url:" + url);
 	            return url;
@@ -169,9 +178,9 @@ public class BasicURLComposer extends URLComposer
         }
     }
 
-    public String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext)
+    public String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
     {
-        String pageUrl = composePageUrl(db, infoGluePrincipal, dnsName, siteNodeId, languageId, contentId, deliveryContext);
+        String pageUrl = composePageUrl(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext);
 
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
@@ -203,7 +212,15 @@ public class BasicURLComposer extends URLComposer
 
     public String composePageBaseUrl(String dnsName)
     {
-        // return dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction");
+        String useDNSNameInUrls = CmsPropertyHandler.getProperty("useDNSNameInURI");
+        if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
+            useDNSNameInUrls = "false";
+
+        if(!useDNSNameInUrls.equalsIgnoreCase("false"))
+        {
+            return dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction");
+        }
+        
         return "/" + CmsPropertyHandler.getProperty("applicationBaseAction");
     }
 
