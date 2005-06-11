@@ -254,6 +254,17 @@ td.value {
 .inheritedslot {
 	filter			 : gray;
 }
+.inheritedComponentDiv {
+    border			 : dotted 1px #0070FF;
+	filter			 : gray;
+}
+.componentDiv {
+    border			 : dotted 1px #0070FF; 
+}
+.componentDiv:hover {
+    border : solid 1px red; 
+}
+
 input.normaltextfield {
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 8pt;

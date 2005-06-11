@@ -353,9 +353,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 				//TODO - test
 				if(component.getIsInherited())
-				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" style=\"border: dotted 1px #0070FF; width: 100%;\");\">";
+				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" class=\"inheritedComponentDiv\");\">";
 				else
-				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" style=\"border: dotted 1px #0070FF; width: 100%;\" onmouseup=\"javascript:assignComponent('" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "');\">";
+				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" class=\"componentDiv\" onmouseup=\"javascript:assignComponent('" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "');\">";
 				    
 				List subComponents = getInheritedComponents(getDatabase(), templateController, component, templateController.getSiteNodeId(), id);
 
