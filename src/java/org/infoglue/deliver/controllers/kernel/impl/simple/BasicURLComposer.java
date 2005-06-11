@@ -92,7 +92,7 @@ public class BasicURLComposer extends URLComposer
         
         return assetUrl;
     }
-
+    
     public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, String dnsName, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext)
     {
         /*
@@ -129,7 +129,7 @@ public class BasicURLComposer extends URLComposer
 	        return null;
         }
         else
-        {
+        {           
             if(!useDNSNameInUrls.equalsIgnoreCase("false"))
             {
 	    		if(siteNodeId == null)
@@ -141,7 +141,7 @@ public class BasicURLComposer extends URLComposer
 	    		if(contentId == null)
 	    			contentId = new Integer(-1);
 	
-	            String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
+	            String arguments = "siteNodeId=" + siteNodeId + getRequestArgumentDelimiter() + "languageId=" + languageId + getRequestArgumentDelimiter() + "contentId=" + contentId;
 	            String url = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
 	            //CmsLogger.logInfo("url:" + url);
 	            return url;
@@ -159,7 +159,7 @@ public class BasicURLComposer extends URLComposer
 	    		if(contentId == null)
 	    			contentId = new Integer(-1);
 	
-	            String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
+	            String arguments = "siteNodeId=" + siteNodeId + getRequestArgumentDelimiter() + "languageId=" + languageId + getRequestArgumentDelimiter() + "contentId=" + contentId;
 	            CmsLogger.logInfo("servletContext:" + servletContext);
 	            String url = servletContext + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
 	            CmsLogger.logInfo("url:" + url);
@@ -185,13 +185,21 @@ public class BasicURLComposer extends URLComposer
 	        } 
 	        else 
 	        {
-	            pageUrl += "&languageId=" + String.valueOf(languageId);
+	            pageUrl += getRequestArgumentDelimiter() + "languageId=" + String.valueOf(languageId);
 	        }
         }
         
         return pageUrl;
     }
 
+    private String getRequestArgumentDelimiter()
+    {
+        String requestArgumentDelimiter = CmsPropertyHandler.getProperty("requestArgumentDelimiter");
+        if(requestArgumentDelimiter == null || requestArgumentDelimiter.equalsIgnoreCase("") || (!requestArgumentDelimiter.equalsIgnoreCase("&") && !requestArgumentDelimiter.equalsIgnoreCase("&amp;")))
+            requestArgumentDelimiter = "&";
+
+        return requestArgumentDelimiter;
+    }
 
     public String composePageBaseUrl(String dnsName)
     {
