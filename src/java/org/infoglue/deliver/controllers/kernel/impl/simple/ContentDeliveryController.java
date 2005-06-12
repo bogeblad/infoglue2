@@ -1215,6 +1215,23 @@ public class ContentDeliveryController extends BaseDeliveryController
 			*/
 		}
     			
+		if(isValidContent && !content.getExpireDateTime().before(new Date()))
+		{
+		    Date expireDateTimeCandidate = content.getExpireDateTime();
+		    if(CacheController.expireDateTime == null || expireDateTimeCandidate.before(CacheController.expireDateTime))
+			{
+			    CacheController.expireDateTime = expireDateTimeCandidate;
+			}
+		}
+		else if(content.getPublishDateTime().after(new Date())) //If it's a publish date to come we consider it
+		{
+		    Date publishDateTimeCandidate = content.getPublishDateTime();
+		    if(CacheController.publishDateTime == null || publishDateTimeCandidate.after(CacheController.publishDateTime))
+			{
+			    CacheController.publishDateTime = publishDateTimeCandidate;
+			}
+		}
+		
 		return isValidContent;					
 	}
 

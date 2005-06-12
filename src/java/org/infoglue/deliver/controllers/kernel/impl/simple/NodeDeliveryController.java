@@ -1343,7 +1343,24 @@ public class NodeDeliveryController extends BaseDeliveryController
 					isValidContent = true;
 			}
 		}
-    			
+		
+		if(isValidContent && !siteNode.getExpireDateTime().before(new Date()))
+		{
+		    Date expireDateTimeCandidate = siteNode.getExpireDateTime();
+		    if(CacheController.expireDateTime == null || expireDateTimeCandidate.before(CacheController.expireDateTime))
+			{
+			    CacheController.expireDateTime = expireDateTimeCandidate;
+			}
+		}
+		else if(siteNode.getPublishDateTime().after(new Date())) //If it's a publish date to come we consider it
+		{
+		    Date publishDateTimeCandidate = siteNode.getPublishDateTime();
+		    if(CacheController.publishDateTime == null || publishDateTimeCandidate.after(CacheController.publishDateTime))
+			{
+			    CacheController.publishDateTime = publishDateTimeCandidate;
+			}
+		}    	
+		
 		return isValidContent;					
 	}
 	

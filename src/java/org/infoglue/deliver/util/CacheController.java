@@ -27,6 +27,7 @@ package org.infoglue.deliver.util;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.impl.simple.*;
 import org.infoglue.cms.entities.structure.impl.simple.*;
@@ -41,6 +42,7 @@ import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,6 +57,9 @@ public class CacheController extends Thread
 	
 	private static GeneralCacheAdministrator generalCache = new GeneralCacheAdministrator();
 	
+    public static Date expireDateTime = null;
+    public static Date publishDateTime = null;
+
 	public CacheController()
 	{
 		super();
@@ -398,6 +403,16 @@ public class CacheController extends Thread
 		    manager.expireCache(type, ids);
 		    //Class[] types = {type};
 		    //db.expireCache(types, ids);
+		    
+		    if(type.getName().equalsIgnoreCase(SmallContentImpl.class.getName()) || 
+		       type.getName().equalsIgnoreCase(MediumContentImpl.class.getName()) ||
+		       type.getName().equalsIgnoreCase(ContentImpl.class.getName()) ||
+		       type.getName().equalsIgnoreCase(SmallSiteNodeImpl.class.getName()) || 
+			   type.getName().equalsIgnoreCase(SiteNodeImpl.class.getName()))
+		    {
+		        expireDateTime = null;
+		        publishDateTime = null;
+		    }
 		}
 		catch(Exception e)
 		{
@@ -420,6 +435,17 @@ public class CacheController extends Thread
 			CacheManager manager = db.getCacheManager();
 			manager.expireCache(types);
 			//db.expireCache(types, null);
+			
+		    if(c.getName().equalsIgnoreCase(SmallContentImpl.class.getName()) || 
+		       c.getName().equalsIgnoreCase(MediumContentImpl.class.getName()) ||
+		       c.getName().equalsIgnoreCase(ContentImpl.class.getName()) ||
+		       c.getName().equalsIgnoreCase(SmallSiteNodeImpl.class.getName()) || 
+			   c.getName().equalsIgnoreCase(SiteNodeImpl.class.getName()))
+		    {
+		        expireDateTime = null;
+		        publishDateTime = null;
+		    }
+
 		}
 		catch(Exception e)
 		{
