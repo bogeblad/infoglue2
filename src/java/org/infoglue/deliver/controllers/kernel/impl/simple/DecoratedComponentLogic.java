@@ -41,7 +41,7 @@ public class DecoratedComponentLogic extends ComponentLogic
 	/**
 	 * This method returns a url to the given page. The url is composed of siteNode, language and content
 	 */
-
+	/*
 	public String getPageUrl(Integer siteNodeId, Integer languageId, Integer contentId)
 	{
 		String pageUrl = "";
@@ -60,8 +60,11 @@ public class DecoratedComponentLogic extends ComponentLogic
 			String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
 			
 			String dnsName = CmsPropertyHandler.getProperty("componentRendererUrl");
-				
-			pageUrl = dnsName + "/" + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
+			
+			if(dnsName.endsWith("/"))
+			    pageUrl = dnsName + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
+			else
+			    pageUrl = dnsName + "/" + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
 		}
 		catch(Exception e)
 		{
@@ -70,4 +73,5 @@ public class DecoratedComponentLogic extends ComponentLogic
 		
 		return pageUrl;
 	}
+	*/
 }

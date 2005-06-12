@@ -34,6 +34,8 @@ import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.filters.FilterConstants;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 
+import webwork.action.ActionContext;
+
 /**
  * Created by IntelliJ IDEA.
  * User: lbj
@@ -152,6 +154,16 @@ public class BasicURLComposer extends URLComposer
 	    			dnsName = siteNode.getRepository().getDnsName();
 
 	            String url = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
+
+				if(deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
+				{
+		            String componentRendererUrl = CmsPropertyHandler.getProperty("componentRendererUrl");
+					if(componentRendererUrl.endsWith("/"))
+					    componentRendererUrl += "/";
+					
+					url = componentRendererUrl + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
+				}
+				
 	            //CmsLogger.logInfo("url:" + url);
 	            return url;
             }
@@ -171,6 +183,16 @@ public class BasicURLComposer extends URLComposer
 	            String arguments = "siteNodeId=" + siteNodeId + getRequestArgumentDelimiter() + "languageId=" + languageId + getRequestArgumentDelimiter() + "contentId=" + contentId;
 	            CmsLogger.logInfo("servletContext:" + servletContext);
 	            String url = servletContext + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
+	            
+				if(deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
+				{
+		            //String componentRendererUrl = CmsPropertyHandler.getProperty("componentRendererUrl");
+				    //if(componentRendererUrl.endsWith("/"))
+				    //   componentRendererUrl += "/";
+					
+					url = servletContext + "/" + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
+				}
+
 	            CmsLogger.logInfo("url:" + url);
 	            //CmsLogger.logInfo("url:" + url);
 	            return url;            
@@ -220,6 +242,15 @@ public class BasicURLComposer extends URLComposer
         {
             return dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction");
         }
+        
+        if(ActionContext.getRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
+		{
+            //String componentRendererUrl = CmsPropertyHandler.getProperty("componentRendererUrl");
+		    //if(componentRendererUrl.endsWith("/"))
+		    //   componentRendererUrl += "/";
+			
+			return "/" + CmsPropertyHandler.getProperty("componentRendererUrl");
+		}
         
         return "/" + CmsPropertyHandler.getProperty("applicationBaseAction");
     }
