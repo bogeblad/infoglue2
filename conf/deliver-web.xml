@@ -57,6 +57,14 @@
 		<listener-class>org.infoglue.deliver.util.DeliverContextListener</listener-class>
 	</listener>
 
+	<!-- Start Quarz -->
+	<servlet>
+		<servlet-name>QuartzInitializer</servlet-name>
+		<display-name>Quartz Initializer Servlet</display-name>
+		<servlet-class>org.infoglue.deliver.jobs.QuartzInitializerServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
 	<!-- Start WebWork -->
 	<servlet>
         <servlet-name>action</servlet-name>
@@ -80,6 +88,7 @@
 		<servlet-name>dispatch</servlet-name>
 		<servlet-class>webwork.dispatcher.ClientServletDispatcher</servlet-class>
 	</servlet>
+		
 	<!-- ************************************* -->
 	<!-- This part is for webworks / velocity  -->
 	<!-- ************************************* -->
