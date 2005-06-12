@@ -39,7 +39,7 @@
 		{
 			margin-left	: 50;
 			margin-right: 50;
-			margin-top	: 20%;
+			margin-top	: 10%;
 		}
 	-->
 	</style>
@@ -52,36 +52,67 @@
 
 <table class="fullymarginalized" border="0" cellpadding="2" cellspacing="0">
   <tr>
-    <td colspan="2" class="header">InfoGlue Delivery Status</td>
+    <td colspan="3" class="header">InfoGlue Delivery Status</td>
   </tr>
   <tr>
-    <td colspan="2"><hr/></td>
+    <td colspan="3"><hr/></td>
   </tr>
   <tr>
-    <td class="label" bgcolor="gray">Test case:</td>
-    <td class="label" bgcolor="gray">Ok?</td>
+    <td class="label" bgcolor="gray">Memory</td>
+    <td class="label" colspan="2" bgcolor="gray">Value</td>
+  </tr>
+  #foreach($state in $states)
+  <tr>
+    <td class="text">$state.get(0)</td>
+    <td class="text" colspan="2">$state.get(1)</td>
+  </tr>
+  #end
+  <tr>
+    <td colspan="3"><hr/></td>
+  </tr>
+  <tr>
+    <td class="label" bgcolor="gray">Test case</td>
+    <td class="label" colspan="2" bgcolor="gray">Ok?</td>
   </tr>
   <tr>
     <td class="text">Database connection</td>
-    <td class="text$isDatabaseConnectionOk">$isDatabaseConnectionOk</td>
+    <td class="text$isDatabaseConnectionOk" colspan="2">$isDatabaseConnectionOk</td>
   </tr>
   <tr>
     <td class="text">Application settings</td>
-    <td class="text$isApplicationSettingsOk">$isApplicationSettingsOk</td>
+    <td class="text$isApplicationSettingsOk" colspan="2">$isApplicationSettingsOk</td>
   </tr>
   <tr>
     <td class="text">Test queries</td>
-    <td class="text$isTestQueriesOk">$isTestQueriesOk</td>
+    <td class="text$isTestQueriesOk" colspan="2">$isTestQueriesOk</td>
   </tr>
   <tr>
     <td class="text">Disk permissions</td>
-    <td class="text$isDiskPermissionOk">$isDiskPermissionOk</td>
+    <td class="text$isDiskPermissionOk" colspan="2">$isDiskPermissionOk</td>
   </tr>
   <tr>
-    <td colspan="2"><hr/></td>
+    <td colspan="3"><hr/></td>
   </tr>
   <tr>
-    <td colspan="2" class="text" align="center"><a href="ViewApplicationSettings.action">Click here for delivery settings</a></td>
+    <td class="label" bgcolor="gray">InfoGlue cache name</td>
+    <td class="label" bgcolor="gray">Cached items</td>
+    <td class="label" bgcolor="gray">Actions</td>
+  </tr>
+  #foreach($cacheName in $caches.keySet())
+  <tr>
+    <td class="text">$cacheName</td>
+    <td class="text">#if($caches.get($cacheName).class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") Unkown #else $caches.get($cacheName).size() #end</td>
+    <td class="text"><a href="ViewApplicationState!clearCache.action?cacheName=$cacheName">Clear</a></td>
+  </tr>
+  #end
+  <tr>
+    <td colspan="3" class="text"><a href="ViewApplicationState!clearCaches.action">Clear All</a></td>
+  </tr>
+  <tr>
+    <td colspan="3"><hr/></td>
+  </tr>
+  <tr>
+    <td colspan="3" class="text" align="center"><a href="ViewApplicationSettings.action">Click here for delivery settings</a></td>
   </tr>
 </table>
 </center>

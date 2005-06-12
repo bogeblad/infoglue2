@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.3 2005/06/10 19:59:47 jed Exp $ -->
+<!-- $Id: actions.xml,v 1.4 2005/06/12 10:46:37 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -1141,6 +1141,7 @@
 
 	<!-- Application state action - used to monitor the delivery engine -->
 	<action name="org.infoglue.deliver.applications.actions.ViewApplicationStateAction" alias="ViewApplicationState">
+		<view name="cleared">ExtendedRedirect.action?url=ViewApplicationState.action</view>
 		<view name="success">/deliver/viewApplicationState.vm</view>
 		<view name="error">/deliver/error.vm</view>
 	</action>

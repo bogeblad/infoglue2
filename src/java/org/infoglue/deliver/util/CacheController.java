@@ -138,9 +138,17 @@ public class CacheController extends Thread
 		CmsLogger.logInfo("Clearing the cache called " + cacheName);
 		if(caches.containsKey(cacheName))
 		{
-			Map cacheInstance = (Map)caches.get(cacheName);
-			cacheInstance.clear();
-			//cache.remove(cacheName);
+		    Object object = caches.get(cacheName);
+		    if(object instanceof Map)
+			{
+				Map cacheInstance = (Map)object;
+				cacheInstance.clear();
+			}
+			else
+			{
+			    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
+		    	cacheInstance.flushAll();
+			}
 		}
 	}
 		
@@ -154,8 +162,17 @@ public class CacheController extends Thread
 			{
 				Map.Entry e = (Map.Entry) i.next();
 				CmsLogger.logInfo("e:" + e.getKey());
-				Map cacheInstance = (Map)e.getValue();
-				cacheInstance.clear();
+				Object object = e.getValue();
+				if(object instanceof Map)
+				{
+					Map cacheInstance = (Map)e.getValue();
+					cacheInstance.clear();
+				}
+				else
+				{
+				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
+			    	cacheInstance.flushAll();
+				}
 			}
 		}
 		else
@@ -447,4 +464,14 @@ public class CacheController extends Thread
 	{
 		this.expireCacheAutomatically = expireCacheAutomatically;
 	}
+	
+    public static Map getCaches()
+    {
+        return caches;
+    }
+    
+    public static GeneralCacheAdministrator getGeneralCache()
+    {
+        return generalCache;
+    }
 }

@@ -91,9 +91,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 			
 			if(indexOfHeadEndTag > -1)
 			{
-			    System.out.println("modifiedTemplate:" + modifiedTemplate.substring(indexOfHeadEndTag, modifiedTemplate.indexOf(">", indexOfHeadEndTag) + 1));
-			    System.out.println("extraHeader:" + extraHeader);
-				modifiedTemplate = modifiedTemplate.replace(indexOfHeadEndTag, modifiedTemplate.indexOf(">", indexOfHeadEndTag) + 1, extraHeader);
+			    modifiedTemplate = modifiedTemplate.replace(indexOfHeadEndTag, modifiedTemplate.indexOf(">", indexOfHeadEndTag) + 1, extraHeader);
 			}
 			else
 			{

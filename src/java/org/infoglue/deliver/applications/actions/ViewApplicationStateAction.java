@@ -28,10 +28,15 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
+import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.io.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.io.File;
 
 /**
@@ -45,11 +50,15 @@ import java.io.File;
 
 public class ViewApplicationStateAction extends InfoGlueAbstractAction 
 {
+    private List states 					= new ArrayList();
+    
 	private boolean databaseConnectionOk 	= false;
 	private boolean applicationSettingsOk 	= false;
 	private boolean testQueriesOk			= false;
 	private boolean diskPermissionOk 		= false;
 	
+	private String cacheName				= "";
+
 	/**
 	 * The constructor for this action - contains nothing right now.
 	 */
@@ -59,7 +68,35 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	
     }
     
-    
+    /**
+     * This action allows clearing of the given cache manually.
+     */
+    public String doClearCache() throws Exception
+    {
+        CacheController.clearCache(cacheName);
+        
+        return "cleared";
+    }
+
+    /**
+     * This action allows clearing of the caches manually.
+     */
+    public String doClearCaches() throws Exception
+    {
+        CacheController.clearCastorCaches();
+        CacheController.clearCaches(null, null);
+        
+        return "cleared";
+    }
+
+    private List getList(String key, String value)
+    {
+        List list = new ArrayList();
+        list.add(key);
+        list.add(value);
+
+        return list;
+    }
     /**
      * This method is the application entry-point. The method does a lot of checks to see if infoglue
      * is installed correctly and if all resources needed are available.
@@ -67,6 +104,10 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+        states.add(getList("Maximum memory", "" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + " MB"));
+        states.add(getList("Free memory", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB"));
+        states.add(getList("Total memory", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB"));
+        
         Database db = CastorDatabaseService.getDatabase();
 		
 		beginTransaction(db);
@@ -131,4 +172,18 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		return testQueriesOk;
 	}
 
+	public Map getCaches()
+	{
+		return CacheController.getCaches();
+	}
+
+    public List getStates()
+    {
+        return states;
+    }
+    
+    public void setCacheName(String cacheName)
+    {
+        this.cacheName = cacheName;
+    }
 }
