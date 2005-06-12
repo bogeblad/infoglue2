@@ -28,20 +28,6 @@ function ruSure(txt, url)
 	}
 }
 
-function checkAllBoxes()
-{
- 	var field = document.listForm.sel;
- 	for (i = 0; i < field.length; i++)
-		field[i].checked = true;
-}
-
-function uncheckAllBoxes()
-{
-	var field = document.listForm.sel;
-	for (i = 0; i < field.length; i++)
-		field[i].checked = false;
-}
-
 </script>
 
 #macro(PreparePublication $p)
@@ -137,11 +123,11 @@ function uncheckAllBoxes()
 
 #if($cnt > 1)
 <br>
-<a href="javascript:checkAllBoxes();">
+<a href="javascript:checkAllBoxes(document.listForm.sel);">
 <img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0">
 </a>
 
-<a href="javascript:uncheckAllBoxes();">
+<a href="javascript:uncheckAllBoxes(document.listForm.sel);">
 <img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0">
 </a>
 #end

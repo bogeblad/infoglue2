@@ -195,49 +195,7 @@
 			document.replaceForm.searchString.value = "";
 			document.replaceForm.replaceString.value = "";
 		}
-		
-		function checkAllBoxes()
-		{
-			var length = document.listForm.sel.length;
-		  	if(length == null)
-		  	{
-		  		document.listForm.sel.checked = true;
-		  		rowId = document.listForm.sel.getAttribute("rowId");
-				listRowMarked(document.getElementById(rowId));
-		  	}
-		  	else
-		  	{	
-			 	var field = document.listForm.sel;
-			 	for (i = 0; i < field.length; i++)
-				{
-					field[i].checked = true;
-					rowId = field[i].getAttribute("rowId");
-					//alert("rowId:" + rowId);
-					listRowMarked(document.getElementById(rowId));
-				}
-			}
-		}
-		
-		function uncheckAllBoxes()
-		{
-			var length = document.listForm.sel.length;
-		  	if(length == null)
-		  	{
-		  		document.listForm.sel.checked = false;
-		  		rowId = document.listForm.sel.getAttribute("rowId");
-				listRowUnMarked(document.getElementById(rowId));
-		  	}
-		  	else
-		  	{	
-			 	var field = document.listForm.sel;
-			 	for (i = 0; i < field.length; i++)
-			 	{
-					field[i].checked = false;
-					rowId = field[i].getAttribute("rowId");
-					listRowUnMarked(document.getElementById(rowId));
-				}
-			}
-		}
+
 	-->
 	</script>
 	
@@ -308,17 +266,14 @@
 		<p>
 		#editTextField3($ui.getString("tool.contenttool.findString.label") "tool.contenttool.findString.label" "searchString" $searchString "30" "normaltextfield")
 		<a href="javascript:showSearchDialog();">$ui.getString("tool.contenttool.backToSearch")</a>
-		</p>
-		<p>
+		<br/>
 		#editTextField3($ui.getString("tool.contenttool.replaceString.label") "tool.contenttool.replaceString.label" "replaceString" $replaceString "30" "normaltextfield")
 		</p>
 	</td>
 	<td align="right">
 		<p>
-		<a href="javascript:checkAllBoxes();"><img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0"></a>
-		</p>
-		<p>		
-		<a href="javascript:uncheckAllBoxes();"><img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0"></a>
+		<a href="javascript:checkAllBoxes(document.listForm.sel);"><img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0"></a><br/>
+		<a href="javascript:uncheckAllBoxes(document.listForm.sel);"><img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0"></a>
 		</p>
 	</td>	
 </tr>
@@ -342,7 +297,7 @@
 </form>
 </div>
 
-<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 100px; #else 350px; #end">
+<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 80px; #else 350px; #end">
 
 <table tableborder=0 border=0 bgcolor=#C7D1B3 width=100% cellpadding="1" cellspacing="0"><tr><td>
 #set($lvConstraint = -1) 
