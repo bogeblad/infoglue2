@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.SystemException;
 
+// TODO: cleanup
 
 /**
  * 
@@ -59,11 +60,13 @@ interface ICategoryContainerCondition extends ICategoryCondition {
 /**
  * 
  */
-class CategoryCondition implements ICategoryCondition {
-	private static final String SPACE  = " ";
-	private static final String COMMA  = ",";
-	private static final String AND    = "AND";
-	private static final String OR     = "OR";
+abstract class AbstractCategoryCondition implements ICategoryCondition {
+	protected static final String LEFT   = "(";
+	protected static final String RIGHT  = ")";
+	protected static final String SPACE  = " ";
+	protected static final String COMMA  = ",";
+	protected static final String AND    = "AND";
+	protected static final String OR     = "OR";
 	
 	private static final String CATEGORY_ALIAS_PREFIX         = "cat";
 	private static final String CONTENT_CATEGORY_ALIAS_PREFIX = "ccat";
@@ -72,23 +75,14 @@ class CategoryCondition implements ICategoryCondition {
 	private static final String CATEGORY_TABLE                = "cmcategory";
 	private static final String CONTENT_CATEGORY_TABLE        = "cmcontentcategory";
 
-	private static final String CATEGORY_CLAUSE   = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContVerId=" + CONTENT_VERSION_ALIAS + ".ContVerId)";
+	protected static final String ONE_CATEGORY_CLAUSE = SPACE + LEFT + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2}" + RIGHT + SPACE;
+	protected static final String CATEGORY_CLAUSE   = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + " {1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContVerId=" + CONTENT_VERSION_ALIAS + ".ContVerId)";
 	//private static final String CATEGORY_CLAUSE = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.contentVersionId=" + CONTENT_VERSION_ALIAS + ".contentVersionId)";
 
 	/**
 	 * 
 	 */
 	private static int counter;
-	
-	/**
-	 * 
-	 */
-	private String attributeName;
-	
-	/**
-	 * 
-	 */
-	private CategoryVO categoryVO;
 	
 	/**
 	 * 
@@ -108,28 +102,21 @@ class CategoryCondition implements ICategoryCondition {
 	/**
 	 * 
 	 */
-	CategoryCondition(final String attributeName, final CategoryVO categoryVO) {
-		this.attributeName = attributeName;
-		this.categoryVO    = categoryVO;
-		this.uniqueID      = createUniqueId(); 
+	AbstractCategoryCondition() {
+		this.uniqueID = createUniqueId(); 
 	}
 
 	/**
 	 * 
 	 */
-	public String getWhereClauseOQL(final List bindings) {
-		final String categoryVariable = getBindingVariable(bindings);
-		bindings.add(categoryVO.getId());
-		final String nameVariable = getBindingVariable(bindings);
-		bindings.add(attributeName);
-
-		return MessageFormat.format(CATEGORY_CLAUSE, new Object[] { uniqueID, categoryVariable, nameVariable });
+	protected Integer getUniqueID() {
+		return uniqueID;
 	}
 	
 	/**
 	 * 
 	 */
-	private String getBindingVariable(final Collection bindings) {
+	protected String getBindingVariable(final Collection bindings) {
 		return "$" + (bindings.size() + 1);
 	}
 
@@ -146,7 +133,99 @@ class CategoryCondition implements ICategoryCondition {
 	/**
 	 * 
 	 */
+	protected String getOneCategoryClause(final String attributeName, final CategoryVO categoryVO, final List bindings) {
+		final String categoryVariable = getBindingVariable(bindings);
+		bindings.add(categoryVO.getId());
+		final String nameVariable = getBindingVariable(bindings);
+		bindings.add(attributeName);
+		return MessageFormat.format(ONE_CATEGORY_CLAUSE, new Object[] { getUniqueID(), categoryVariable, nameVariable });
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean hasCondition() { return true; }
+}
+
+/**
+ * 
+ */
+class CategoryAndCondition extends AbstractCategoryCondition {
+	/**
+	 * 
+	 */
+	private String attributeName;
+	
+	/**
+	 * 
+	 */
+	private CategoryVO categoryVO;
+	
+
+	
+	/**
+	 * 
+	 */
+	CategoryAndCondition(final String attributeName, final CategoryVO categoryVO) {
+		this.attributeName = attributeName;
+		this.categoryVO    = categoryVO;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getWhereClauseOQL(final List bindings) {
+		final String categoryClause = getOneCategoryClause(attributeName, categoryVO, bindings);
+		return MessageFormat.format(CATEGORY_CLAUSE, new Object[] { getUniqueID(), categoryClause });
+	}
+}
+
+/**
+ * 
+ */
+class CategoryOrCondition extends AbstractCategoryCondition {
+	/**
+	 * 
+	 */
+	private List names = new ArrayList();
+
+	/**
+	 * 
+	 */
+	private List categories = new ArrayList();
+	
+	
+	/**
+	 * 
+	 */
+	CategoryOrCondition(final String attributeName, final CategoryVO categoryVO) {
+		addCategory(attributeName, categoryVO);
+	}
+	
+	/**
+	 * 
+	 */
+	void addCategory(final String attributeName, final CategoryVO categoryVO) {
+		names.add(attributeName);
+		categories.add(categoryVO);
+	}
+	
+	/**
+	 * 
+	 */
+	public String getWhereClauseOQL(final List bindings) {
+		final StringBuffer categoryClauses = new StringBuffer();
+		for(int i=0; i<names.size(); ++i) {
+			final String attributeName  = (String) names.get(i);
+			final CategoryVO categoryVO = (CategoryVO) categories.get(i); 
+			
+			if(i > 0)
+				categoryClauses.append(SPACE + OR + SPACE);
+			categoryClauses.append(getOneCategoryClause(attributeName, categoryVO, bindings));
+		}
+
+		return MessageFormat.format(CATEGORY_CLAUSE, new Object[] { getUniqueID(), LEFT + categoryClauses.toString() + RIGHT });
+	}
 }
 
 /**
@@ -174,7 +253,7 @@ public class CategoryConditions implements ICategoryContainerCondition {
 	/**
 	 * 
 	 */
-	private CategoryConditions(final String delimiter) {
+	protected CategoryConditions(final String delimiter) {
 		this.delimiter = delimiter;
 	}
 	
@@ -190,7 +269,7 @@ public class CategoryConditions implements ICategoryContainerCondition {
 	 * 
 	 */
 	public void addCategory(final String attributeName, final CategoryVO categoryVO) {
-		children.add(new CategoryCondition(attributeName, categoryVO));
+		children.add(new CategoryAndCondition(attributeName, categoryVO));
 	}
 	
 	/**
@@ -214,12 +293,12 @@ public class CategoryConditions implements ICategoryContainerCondition {
 	/**
 	 * 
 	 */
-	public static CategoryConditions createAndConditions() { return new CategoryConditions(AND); }
+	public static CategoryConditions createAndConditions() { return new CategoryAndConditions(); }
 	
 	/**
 	 * 
 	 */
-	public static CategoryConditions createOrConditions() { return new CategoryConditions(OR); }
+	public static CategoryConditions createOrConditions() { return new CategoryOrConditions(); }
 	
 	/**
 	 * 
@@ -265,6 +344,47 @@ public class CategoryConditions implements ICategoryContainerCondition {
 				return true;
 		}
 		return false;
+	}
+}
+
+/**
+ * 
+ */
+class CategoryAndConditions extends CategoryConditions {
+	/**
+	 * 
+	 */
+	CategoryAndConditions() {
+		super("AND");
+	}
+}
+
+/**
+ * 
+ */
+class CategoryOrConditions extends CategoryConditions {
+	/**
+	 * 
+	 */
+	private CategoryOrCondition compound;
+	
+	/**
+	 * 
+	 */
+	CategoryOrConditions() {
+		super("OR");
+	}
+
+	/**
+	 * 
+	 */
+	public void addCategory(final String attributeName, final CategoryVO categoryVO) {
+		if(compound == null) {
+			compound = new CategoryOrCondition(attributeName, categoryVO);
+			super.add(compound);
+		}
+		else
+			compound.addCategory(attributeName, categoryVO);
 	}
 }
 
