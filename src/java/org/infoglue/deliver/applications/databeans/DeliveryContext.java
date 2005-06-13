@@ -332,7 +332,6 @@ public class DeliveryContext implements UsageListener
     
     public void setDisablePageCache(boolean disablePageCache)
     {
-        System.out.println("Setting disabling pagecache...");
         this.disablePageCache = disablePageCache;
     }
 }
