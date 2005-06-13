@@ -112,7 +112,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 			    CmsLogger.logInfo("WYSIWYGConfigBytes:" + WYSIWYGConfigBytes);
 			    if(WYSIWYGConfigBytes != null)
 			    {
-			    	this.WYSIWYGProperties = new String(WYSIWYGConfigBytes);
+			    	this.WYSIWYGProperties = new String(WYSIWYGConfigBytes, "UTF-8");
 			    }
 		    }
 		     
@@ -169,7 +169,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 			    byte[] StylesXMLBytes = ps.getData("repository_" + this.repositoryId + "_StylesXML");
 			    if(StylesXMLBytes != null)
 			    {
-			    	this.StylesXML = new String(StylesXMLBytes);
+			    	this.StylesXML = new String(StylesXMLBytes, "UTF-8");
 			    }
 		    }
 	    }
