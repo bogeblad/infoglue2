@@ -102,8 +102,8 @@ public class ContentAttributeTag extends ComponentLogicTag
         this.parse = parse;
     }
     
-    public void setContentId(Integer contentId)
+    public void setContentId(final String contentId) throws JspException
     {
-        this.contentId = contentId;
+        this.contentId = evaluateInteger("contentAttribute", "contentId", contentId);
     }
 }
