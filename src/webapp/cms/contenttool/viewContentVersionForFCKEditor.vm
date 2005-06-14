@@ -326,7 +326,13 @@
 		#if($attributeDescription != "")
 			#set($attributeDescription = "- $attributeDescription")
 		#end
-	
+
+		#set($attributeInitialData = "")
+		#set($attributeInitialData = $!attribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label"))
+		#if($attributeInitialData != "")
+			#set($attributeInitialData = "$attributeInitialData")
+		#end
+		
 		#set($class = "")
 		#set($class = $!attribute.getContentTypeAttribute("class").getContentTypeAttributeParameterValue().getValue("label"))
 		#if($class == "")
@@ -397,11 +403,15 @@
 		</tr>
 		<tr>
 			<td colspan="3">
+				#set($value = "$!this.getAttributeValue($attribute.name)")
+				#if("$!contentVersionId" == "")
+					#set($value = $attributeInitialData)
+				#end
 				
 				#if($attribute.inputType == "textfield")
 					$attributeTitle ("$attribute.name") $attributeDescription
 					#printError("ContentVersion.$attribute.name")
-					<input $readonly type="text" length="50" class="$class" maxlength="" id="$attribute.name" name="$attribute.name" value="$this.getAttributeValue($attribute.name)" $onchange/>
+					<input $readonly type="text" length="50" class="$class" maxlength="" id="$attribute.name" name="$attribute.name" value="$value" $onchange/>
 				#elseif($attribute.inputType == "textarea")
 					
 					<table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -443,7 +453,7 @@
 					#if($width >= 700)
 						#set($wysiwygHeight = $height - 20)
 					#end
-					<textarea $readonly rows="$rows" cols="$cols" style="visibility: visible; width:${width}px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="$attribute.name" name="$attribute.name" $readonly $onchange>$this.getAttributeValue($attribute.name)</textarea>
+					<textarea $readonly rows="$rows" cols="$cols" style="visibility: visible; width:${width}px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="$attribute.name" name="$attribute.name" $readonly $onchange>$value</textarea>
 					
 					#if($enableWYSIWYG == "true")
 						<!-- Here comes the WYSIWYG-editor layer -->

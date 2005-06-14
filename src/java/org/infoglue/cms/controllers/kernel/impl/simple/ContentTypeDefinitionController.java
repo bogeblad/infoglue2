@@ -645,6 +645,7 @@ public class ContentTypeDefinitionController extends BaseController
 
 				addParameterElement(params, "title", "0");
 				addParameterElement(params, "description", "0");
+				addParameterElement(params, "initialData", "");
 				addParameterElement(params, "class", "0");
 
 				newAttribute.appendChild(annotation);
@@ -1060,6 +1061,39 @@ public class ContentTypeDefinitionController extends BaseController
 						Node node = document.importNode(document2.getDocumentElement(), true);
 						element.appendChild(node);
 					}
+				}
+				else if(schemaElement.getAttribute("version") != null && schemaElement.getAttribute("version").equalsIgnoreCase("2.2"))
+				{
+					isModified = true;
+					schemaElement.setAttribute("version", "2.3");
+
+					//Now we deal with the individual attributes and parameters
+					String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
+					NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
+					for(int k=0; k < anl.getLength(); k++)
+					{
+						Element childElement = (Element)anl.item(k);
+
+						String inputTypeId = childElement.getAttribute("type");
+
+						NodeList annotationNodeList = childElement.getElementsByTagName("xs:annotation");
+						if(annotationNodeList != null && annotationNodeList.getLength() > 0)
+						{
+							NodeList appinfoNodeList = childElement.getElementsByTagName("xs:appinfo");
+							if(appinfoNodeList != null && appinfoNodeList.getLength() > 0)
+							{
+								NodeList paramsNodeList = childElement.getElementsByTagName("params");
+								if(paramsNodeList != null && paramsNodeList.getLength() > 0)
+								{
+									Element paramsElement = (Element)paramsNodeList.item(0);
+
+									addParameterElementIfNotExists(paramsElement, "initialData", "0", "");
+									isModified = true;
+								}
+							}
+						}
+					}
+
 				}
 
 				
