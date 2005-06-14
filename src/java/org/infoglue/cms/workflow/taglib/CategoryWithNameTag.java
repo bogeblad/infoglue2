@@ -30,6 +30,11 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.entities.management.CategoryVO;
 
 public class CategoryWithNameTag extends TagSupport {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3257566204712270135L;
+	
 	private String id;
 	private String name;
 	

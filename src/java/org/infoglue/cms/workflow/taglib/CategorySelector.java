@@ -13,6 +13,11 @@ import org.infoglue.cms.entities.management.CategoryVO;
  * 
  */
 public class CategorySelector extends ContentInputTag {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3256721792767703093L;
+	
 	private static final String SELECT_FIELD    = "<select id=\"{0}\" name=\"{0}\">{1}</select>";
 	private static final String OPTION_DEFAULT  = "<option value=\"\">{0}</option>";
 	private static final String OPTION          = "<option value=\"{0}\">{1}</option>";
