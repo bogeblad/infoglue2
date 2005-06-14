@@ -1,5 +1,7 @@
 package org.infoglue.deliver.taglib;
 
+import java.util.Collection;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -25,5 +27,10 @@ public abstract class AbstractTag extends TagSupport
 	protected String evaluateString(String tagName, String attributeName, String expression) throws JspException
 	{
 		return (String) evaluate(tagName, attributeName, expression, String.class);
+	}
+
+	protected Collection evaluateCollection(String tagName, String attributeName, String expression) throws JspException
+	{
+		return (Collection) evaluate(tagName, attributeName, expression, Collection.class);
 	}
 }
