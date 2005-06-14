@@ -44,8 +44,7 @@ public class MatchingContentsTag extends TemplateControllerTag {
 
 	public int doEndTag() throws JspException
     {
-		System.out.println("categoryCondition=[" + categoryCondition + "]");
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, "publishDateTime", "desc", true, numberOfItems));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, true, numberOfItems));
         return EVAL_PAGE;
     }
 
