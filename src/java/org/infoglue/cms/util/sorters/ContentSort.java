@@ -1,5 +1,6 @@
 package org.infoglue.cms.util.sorters;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -122,8 +123,35 @@ class SortStruct implements Comparable {
 	/**
 	 * 
 	 */
-	public void addContentVersionAttribute(final String name, final boolean ascending) {
-		add(controller.getContentAttribute(getContentVersionVO().getContentId(), controller.getLanguageId(), name), ascending);
+	public void addContentVersionAttribute(final String name, final Class clazz, final boolean ascending) {
+		final Integer contentId  = getContentId();
+		final String stringValue = controller.getContentAttribute(contentId, controller.getLanguageId(), name); 
+		
+		add(castAttribute(name, clazz, stringValue), ascending);
+	}
+
+	/**
+	 * 
+	 */
+	private Comparable castAttribute(final String name, final Class clazz, final String stringValue) {
+		if(String.class.equals(clazz))
+			return stringValue;
+		try {
+			if(clazz.isAssignableFrom(Comparable.class))
+				throw new IllegalArgumentException(clazz.getName() + " is not comparable.");
+			final Constructor ctor = clazz.getConstructor(new Class[] { String.class });
+			return (Comparable) ctor.newInstance(new Object[] { stringValue });
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException("Unable to cast [" + name + "] to [" + clazz.getName() + "].");
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private Integer getContentId() {
+		return (contentVO != null) ? getContentVO().getContentId() : getContentVersionVO().getContentId();
 	}
 	
 	/**
@@ -177,7 +205,7 @@ class SortStruct implements Comparable {
 /**
  * 
  */
-public class ContentSorter {
+public class ContentSort {
 	/**
 	 * 
 	 */
@@ -192,15 +220,15 @@ public class ContentSorter {
 	/**
 	 * 
 	 */
-	private ContentSorter(final TemplateController controller) {
+	private ContentSort(final TemplateController controller) {
 		this.controller = controller;
 	}
 	
 	/**
 	 * 
 	 */
-	public static final ContentSorter createUsingContentVO(final TemplateController controller, final List contentVOList) {
-		final ContentSorter sorter = new ContentSorter(controller);
+	public static final ContentSort createUsingContentVO(final TemplateController controller, final List contentVOList) {
+		final ContentSort sorter = new ContentSort(controller);
 		for(final Iterator i=contentVOList.iterator(); i.hasNext(); )
 			sorter.add((ContentVO) i.next());
 		return sorter;
@@ -209,8 +237,8 @@ public class ContentSorter {
 	/**
 	 * 
 	 */
-	public static final ContentSorter createUsingContentVersionVO(final TemplateController controller, final List contentVersionVOList) {
-		final ContentSorter sorter = new ContentSorter(controller);
+	public static final ContentSort createUsingContentVersionVO(final TemplateController controller, final List contentVersionVOList) {
+		final ContentSort sorter = new ContentSort(controller);
 		for(final Iterator i=contentVersionVOList.iterator(); i.hasNext(); )
 			sorter.add((ContentVersionVO) i.next());
 		return sorter;
@@ -236,10 +264,29 @@ public class ContentSorter {
 	 * 
 	 */
 	public void addContentVersionAttribute(final String name, final boolean ascending) {
-		for(final Iterator i=structs.iterator(); i.hasNext(); )
-			((SortStruct) i.next()).addContentVersionAttribute(name, ascending);
+		addContentVersionAttribute(name, String.class, ascending);
 	}
 	
+	/**
+	 * 
+	 */
+	public void addContentVersionAttribute(final String name, final String className, final boolean ascending) {
+		try {
+			addContentVersionAttribute(name, Class.forName(className), ascending);
+		} catch(ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public void addContentVersionAttribute(final String name, final Class c, final boolean ascending) {
+		for(final Iterator i=structs.iterator(); i.hasNext(); )
+			((SortStruct) i.next()).addContentVersionAttribute(name, c, ascending);
+	}
+
 	/**
 	 * 
 	 */
