@@ -2,12 +2,15 @@ package org.infoglue.cms.util.sorters;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
@@ -220,28 +223,58 @@ public class ContentSort {
 	/**
 	 * 
 	 */
-	private ContentSort(final TemplateController controller) {
+	public ContentSort(final TemplateController controller, final Collection elements) {
 		this.controller = controller;
+		addElements(elements);
 	}
 	
 	/**
 	 * 
 	 */
-	public static final ContentSort createUsingContentVO(final TemplateController controller, final List contentVOList) {
-		final ContentSort sorter = new ContentSort(controller);
-		for(final Iterator i=contentVOList.iterator(); i.hasNext(); )
-			sorter.add((ContentVO) i.next());
-		return sorter;
+	private final void addElements(final Collection elements) {
+		if(elements == null || elements.isEmpty())
+			return;
+		final Object element = elements.toArray()[0];
+		if(element instanceof Content)
+			initializeWithContent(elements);
+		if(element instanceof ContentVO)
+			initializeWithContentVO(elements);
+		if(element instanceof ContentVersion)
+			initializeWithContentVersion(elements);
+		if(element instanceof ContentVersionVO)
+			initializeWithContentVersionVO(elements);
 	}
 	
 	/**
 	 * 
 	 */
-	public static final ContentSort createUsingContentVersionVO(final TemplateController controller, final List contentVersionVOList) {
-		final ContentSort sorter = new ContentSort(controller);
-		for(final Iterator i=contentVersionVOList.iterator(); i.hasNext(); )
-			sorter.add((ContentVersionVO) i.next());
-		return sorter;
+	private final void initializeWithContent(final Collection elements) {
+		for(final Iterator i=elements.iterator(); i.hasNext(); )
+			addElement(((Content) i.next()).getValueObject());
+	}
+	
+	/**
+	 * 
+	 */
+	private final void initializeWithContentVO(final Collection elements) {
+		for(final Iterator i=elements.iterator(); i.hasNext(); )
+			addElement((ContentVO) i.next());
+	}
+	
+	/**
+	 * 
+	 */
+	private final void  initializeWithContentVersion(final Collection elements) {
+		for(final Iterator i=elements.iterator(); i.hasNext(); )
+			addElement(((ContentVersion) i.next()).getValueObject());
+	}
+	
+	/**
+	 * 
+	 */
+	private final void  initializeWithContentVersionVO(final Collection elements) {
+		for(final Iterator i=elements.iterator(); i.hasNext(); )
+			addElement((ContentVersionVO) i.next());
 	}
 	
 	/**
@@ -290,14 +323,14 @@ public class ContentSort {
 	/**
 	 * 
 	 */
-	private void add(final ContentVO contentVO) {
+	private void addElement(final ContentVO contentVO) {
 		structs.add(new SortStruct(controller, contentVO));
 	}
 	
 	/**
 	 * 
 	 */
-	private void add(final ContentVersionVO contentVersionVO) {
+	private void addElement(final ContentVersionVO contentVersionVO) {
 		structs.add(new SortStruct(controller, contentVersionVO));
 	}
 	
