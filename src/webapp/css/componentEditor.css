@@ -182,11 +182,18 @@
 	text-align: left;
 	height: 10px;
 }
+.igtr {
+	text-align: left;
+}
+.igtr.hover {
+}
 .igtd {
 	abackground-color: blue;
 	text-align: left;
 	height: 10px;
 	vertical-align: top;
+}
+.igtd.hover {
 }
 .componentEditorLink {
 	font-family	     : verdana, arial, sans-serif;
@@ -382,7 +389,7 @@ A.white:active {
 	font-size:10px;
 	}
 
-.label {
+.iglabel {
 	margin:0px;
 	padding:0px;
 	font-family:verdana, sans-serif;
@@ -390,6 +397,12 @@ A.white:active {
 	font-weight:normal;
 	height:12px;
 	}
+select.mediumdrop {
+	awidth : 142px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	font-weight:normal;
+}
 
 .clickableLabel {
 	margin:0px;
