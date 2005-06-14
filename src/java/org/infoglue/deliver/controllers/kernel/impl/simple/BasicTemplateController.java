@@ -23,33 +23,60 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.MatchResult;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternCompiler;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.PatternMatcherInput;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
-import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
-import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
-
-import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
@@ -57,8 +84,6 @@ import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.PageComparator;
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
@@ -77,32 +102,6 @@ import org.infoglue.deliver.util.graphics.FontHelper;
 import org.infoglue.deliver.util.graphics.ImageRenderer;
 import org.infoglue.deliver.util.webservices.InfoGlueWebServices;
 import org.infoglue.deliver.util.webservices.WebServiceHelper;
-
-import java.security.Principal;
-import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Vector;
-import java.io.*;
-import java.awt.Color;
-import java.awt.Font; 
-
-import org.apache.oro.text.regex.*; 
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.exolab.castor.jdo.Database;
-
-import com.opensymphony.module.propertyset.PropertySet;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * This is the most basic template controller supplying the templates using it with
@@ -2932,7 +2931,7 @@ public class BasicTemplateController implements TemplateController
 	 * This method searches for all contents matching
 	 */
 	
-	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String sortAttributeName, String sortOrder, boolean useLanguageFallback, int numberOfItems)
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, boolean useLanguageFallback, int numberOfItems)
 	{
 		try
 		{
@@ -2946,29 +2945,16 @@ public class BasicTemplateController implements TemplateController
 
 			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
 		    
-		    List contents = new ArrayList();
-		    
 		    Set contentVersionVOList = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase());
-			System.out.println("FOUND " + contentVersionVOList.size());
-		    Iterator contentVersionVOListIterator = contentVersionVOList.iterator();
+
+		    List contents = new ArrayList();
+			Iterator contentVersionVOListIterator = contentVersionVOList.iterator();
 		    while(contentVersionVOListIterator.hasNext())
 		    {
 		        ContentVersionVO contentVersionVO = (ContentVersionVO)contentVersionVOListIterator.next();
 		        contents.add(ContentController.getContentController().getContentWithId(contentVersionVO.getContentId(), this.getDatabase()));
 		    }
-		    
-		    contents = ContentDeliveryController.getContentDeliveryController().sortContents(getDatabase(), contents, languageId, siteNodeId, sortAttributeName, sortOrder, useLanguageFallback, true, deliveryContext);
-		    List filteredContents = new ArrayList();
-		    for(int i=0; i<numberOfItems; i++)
-		    {
-		        if(contents.size() > i)
-		        {
-		            Content content = (Content)contents.get(i);
-		            filteredContents.add(content.getVO());
-		        }
-		    }
-		    
-		    return filteredContents;
+			return contents;
 		}
 		catch(Exception e)
 		{
