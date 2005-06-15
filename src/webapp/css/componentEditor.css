@@ -259,17 +259,18 @@ td.value {
 	font-color		 : #333333;
 }
 .inheritedslot {
-	filter			 : gray;
 }
 .inheritedComponentDiv {
     border			 : dotted 1px #0070FF;
-	filter			 : gray;
+}
+.inheritedComponentDiv:hover {
+    border 			 : solid 1px red;
 }
 .componentDiv {
     border			 : dotted 1px #0070FF; 
 }
 .componentDiv:hover {
-    border : solid 1px red; 
+    border 			 : solid 1px red;
 }
 
 input.normaltextfield {
