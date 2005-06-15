@@ -910,9 +910,9 @@ public class SiteNodeVersionController extends BaseController
 	 * Updates the SiteNodeVersion within a transaction.
 	 */
 	
-	public SiteNodeVersionVO update(SiteNodeVersionVO siteNodeVersionVO, Database db) throws ConstraintException, SystemException
+	public SiteNodeVersionVO update(SiteNodeVersionVO siteNodeVersionVO, Database db) throws ConstraintException, SystemException, Exception
 	{
-    	registryController.updateSiteNodeVersion(siteNodeVersionVO);
+    	registryController.updateSiteNodeVersion(getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db), db);
 
 		return (SiteNodeVersionVO) updateEntity(SiteNodeVersionImpl.class, (BaseEntityVO)siteNodeVersionVO, db);
 	}    

@@ -116,7 +116,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 			    }
 		    }
 		     
-		    CmsLogger.logWarning("this.WYSIWYGProperties:" + this.WYSIWYGProperties);
+		    CmsLogger.logInfo("this.WYSIWYGProperties:" + this.WYSIWYGProperties);
 	    }
 	    catch(Exception e)
 	    {

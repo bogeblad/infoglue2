@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.15 2005/06/12 20:53:07 mattias Exp $
+ * $Id: RegistryController.java,v 1.16 2005/06/15 21:30:17 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -269,7 +269,7 @@ public class RegistryController extends BaseController
 			            if(name.equalsIgnoreCase("contentId"))
 				        {
 			                Content content = ContentController.getContentController().getContentWithId(new Integer(value), db);
-			                
+			            
 			                registryVO.setEntityId(value);
 				            registryVO.setEntityName(Content.class.getName());
 				            
@@ -277,6 +277,15 @@ public class RegistryController extends BaseController
 				            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
 				            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
 				            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+				        
+				            Collection contentVersions = content.getContentVersions();
+				            Iterator contentVersionIterator = contentVersions.iterator();
+				            while(contentVersionIterator.hasNext())
+				            {
+				                ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
+				                getComponents(siteNodeVersion, contentVersion.getVersionValue(), db);
+				                getComponentBindings(siteNodeVersion, contentVersion.getVersionValue(), db);
+				            }
 				        }
 			            else if(name.equalsIgnoreCase("siteNodeId"))
 				        {
