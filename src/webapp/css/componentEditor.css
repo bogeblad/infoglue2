@@ -11,6 +11,7 @@
 	top:0px;
 	margin: 0px 0px 0px 0px; 
 	padding: 0px 0px 0px 0px;
+	line-height:100%;
 	}
 
 #paletteHandle {
@@ -173,6 +174,7 @@
 	padding-bottom: 5px;
 }
 .igPropertiesTable {
+	border:0px solid #FFFFFF;
 	text-align: left;
 	width: 100%;
 	height: 10px;
@@ -181,19 +183,43 @@
 	abackground-color: red;
 	text-align: left;
 	height: 10px;
+	border:0px solid #FFFFFF;
 }
 .igtr {
+	border:0px solid #FFFFFF;
 	text-align: left;
 }
-.igtr.hover {
+.igtr:hover {
+	background-color: #F9F9F9;
+	color			: #000000;
+}
+.igpalettetd {
+	background-color: #CCCCCC;
+	text-align: left;
+	height: 10px;
+	vertical-align: top;
+	border:0px solid blue;
+	awidth:1px;
+}
+.igpalettetd:hover {
+	background-color: #CCCCCC;
+	color			: #000000;
 }
 .igtd {
 	abackground-color: blue;
 	text-align: left;
 	height: 10px;
 	vertical-align: top;
+	border:0px solid red;
+	awidth:1px;
 }
-.igtd.hover {
+.igtd:hover {
+	abackground-color: blue;
+	text-align: left;
+	height: 10px;
+	vertical-align: top;
+	border:0px solid red;
+	awidth:1px;
 }
 .componentEditorLink {
 	font-family	     : verdana, arial, sans-serif;
@@ -202,14 +228,13 @@
 	color			 : navy;
 }
 .igpropertylabel {
+	abackground-color : white;
 	text-align 	 	 : left;
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 8pt;
 	font-color		 : #333333;
 	font-weight		 : bold;
-	border-style	 : solid;
-	border-width	 : 1px;	
-	border-color     : #F4F4F4;
+	border	 		 : 0px solid #FFFFFF;
 	width			 : 40%;
 }
 .igpropertyvalue {
@@ -427,6 +452,7 @@ select.mediumdrop {
 	border-top: solid thin white;
 	border-right: solid thin none;
 	border-left: solid thin white;
+	border-bottom: solid 0px white;
 	cursor:pointer;
 	visibility:inherited;
 	z-index:1;
