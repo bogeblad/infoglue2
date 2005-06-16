@@ -60,8 +60,8 @@ public class ComponentPropertyValueTag extends ComponentLogicTag {
 		this.propertyName = name;
 	}
 	
-	public void setUseInheritence(boolean useInheritance)
-	{
-		this.useInheritance = useInheritance;
-	}
+	public void setUseInheritance(boolean useInheritance)
+    {
+        this.useInheritance = useInheritance;
+    }
 }
