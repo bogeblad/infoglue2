@@ -486,7 +486,7 @@
 <!--  Mapping for Qualifyer  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" identity="qualifyerId" key-generator="IDENTITY">
     <description>Qualifyer</description>
-    <cache-type type="unlimited"/>
+	<cache-type type="unlimited"/>
     <map-to table="cmQualifyer"/>
     <field name="qualifyerId" type="java.lang.Integer">
       <sql name="qualifyerId" type="integer" dirty="check" />
