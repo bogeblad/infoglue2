@@ -558,6 +558,37 @@ public class ComponentLogic
 		return pages;
 	}
 
+	/**
+	 * This method returns a list of childContents using inheritence as default.
+	 */
+
+	public List getChildContents(String propertyName)
+	{
+	    return getChildContents(propertyName, this.useInheritance, false, "id", "asc", false);
+	}
+	
+	/**
+	 * This method returns a list of childcontents.
+	 */
+
+	public List getChildContents(String propertyName, boolean useInheritance, boolean searchRecursive, String sortAttribute, String sortOrder, boolean includeFolders)
+	{
+	    List childContents = new ArrayList();
+	    
+	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer contentId = new Integer((String)bindingsIterator.next());
+				childContents.addAll(this.templateController.getChildContents(contentId, searchRecursive, sortAttribute, sortOrder, includeFolders));
+			}
+		}	
+		return childContents;
+	}
+
 	
 	/**
 	 * This method returns a list of childpages using inheritence as default.
