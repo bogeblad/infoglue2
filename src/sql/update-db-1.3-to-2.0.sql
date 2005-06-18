@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.12 2005/04/21 21:27:38 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.13 2005/06/18 17:23:10 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -173,6 +173,8 @@ INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, descriptio
   (28,'Category','Category.Read','This point checks access to read/use a category',1);
 INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
   (28, 1);
+INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, description, usesExtraDataForAccessControl) VALUES 
+  (29,'Publication','Publication.Write','This point intercepts a new publication',1);
 
 
   
