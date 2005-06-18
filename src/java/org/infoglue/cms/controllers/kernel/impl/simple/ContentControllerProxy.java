@@ -59,7 +59,7 @@ public class ContentControllerProxy extends ContentController
 		return new ContentControllerProxy();
 	}
 	
-
+	/*
 	private void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Bug, Exception
 	{
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName);
@@ -83,8 +83,8 @@ public class ContentControllerProxy extends ContentController
 				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
-
 	}
+	*/
 
 	/**
 	 * This method returns a specific content-object after checking that it is accessable by the given user

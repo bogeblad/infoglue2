@@ -96,7 +96,7 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
 		    publicationVO.setDescription(getVersionComment());
 		    publicationVO.setRepositoryId(repositoryId);
-		    publicationVO = PublicationController.createAndPublish(publicationVO, events, this.getInfoGluePrincipal());
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.getInfoGluePrincipal());
 		}
 		
        	return "success";

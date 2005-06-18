@@ -59,7 +59,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		return new SiteNodeControllerProxy();
 	}
 	
-	
+	/*
 	private void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Bug, Exception
 	{
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName);
@@ -85,6 +85,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		}
 
 	}
+	*/
 	
 	private void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal, Database db) throws ConstraintException, SystemException, Bug, Exception
 	{

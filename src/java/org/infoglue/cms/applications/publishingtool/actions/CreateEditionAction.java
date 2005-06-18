@@ -108,7 +108,7 @@ public class CreateEditionAction extends ViewPublicationsAction
 
     	ceb.throwIfNotEmpty();		
 
-    	this.publicationVO = PublicationController.createAndPublish(this.publicationVO, events, this.getInfoGluePrincipal());
+    	this.publicationVO = PublicationController.getController().createAndPublish(this.publicationVO, events, this.getInfoGluePrincipal());
     	
         return "success";
     }

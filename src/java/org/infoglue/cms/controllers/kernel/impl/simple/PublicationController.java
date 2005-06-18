@@ -57,6 +57,11 @@ public class PublicationController extends BaseController
 	public static final int OVERIDE_WORKING = 1;
 	public static final int LEAVE_WORKING   = 2;
 
+	public static PublicationController getController()
+	{
+		return new PublicationController();
+	}
+
 	/**
 	 * This method just returns the publication with the given id within the given transaction.
 	 */
@@ -354,7 +359,7 @@ public class PublicationController extends BaseController
 	/**
 	 * This method creates a new publication with the concerned events carried out.
 	 */
-	public static PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal) throws SystemException
+	public PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal) throws SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
 
@@ -378,7 +383,7 @@ public class PublicationController extends BaseController
 	/**
 	 * This method creates a new publication with the concerned events carried out.
 	 */
-	public static PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
+	public PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
     {
 	   	CmsLogger.logInfo("*********************************");
     	CmsLogger.logInfo("Creating edition ");
@@ -404,6 +409,19 @@ public class PublicationController extends BaseController
 	    	CmsLogger.logInfo("Starting replication...");
 			ReplicationMySqlController.updateSlaveServer();
 	    	CmsLogger.logInfo("Finished replication...");
+		}
+		catch (Exception e)
+		{
+			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
+		}
+
+        // Notify the listeners!!!
+        try
+		{
+            Map hashMap = new HashMap();
+        	hashMap.put("publicationId", publicationVO.getId());
+        	
+    		intercept(hashMap, "Publication.Write", infoGluePrincipal);
 		}
 		catch (Exception e)
 		{

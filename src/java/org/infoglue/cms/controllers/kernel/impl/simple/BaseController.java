@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -36,9 +37,13 @@ import org.exolab.castor.jdo.QueryException;
 import org.exolab.castor.jdo.QueryResults;
 
 import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.validators.Constants;
@@ -66,7 +71,45 @@ import org.infoglue.cms.util.validators.StringValidator;
 
 public abstract class BaseController
 {
+    /**
+     * This method is called by the controllers to let interceptors listen to events.
+     * 
+     * @param hashMap
+     * @param InterceptionPointName
+     * @param infogluePrincipal
+     * @throws ConstraintException
+     * @throws SystemException
+     * @throws Bug
+     * @throws Exception
+     */
 
+    protected void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Bug, Exception
+	{
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName);
+    	
+		if(interceptionPointVO == null)
+			throw new SystemException("The InterceptionPoint " + InterceptionPointName + " was not found. The system will not work unless you restore it.");
+
+		List interceptors = InterceptionPointController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId());
+		Iterator interceptorsIterator = interceptors.iterator();
+		while(interceptorsIterator.hasNext())
+		{
+			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
+			CmsLogger.logInfo("Adding interceptorVO:" + interceptorVO.getName());
+			try
+			{
+				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap);
+			}
+			catch(ClassNotFoundException e)
+			{
+				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+			}
+		}
+
+	}
+
+	
 	private static Integer getEntityId(Object entity) throws Bug
 	{
 		Integer entityId = new Integer(-1);

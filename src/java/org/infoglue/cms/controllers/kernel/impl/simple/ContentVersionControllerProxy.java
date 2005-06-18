@@ -58,7 +58,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		return new ContentVersionControllerProxy();
 	}
 	
-
+	/*
 	private void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Bug, Exception
 	{
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName);
@@ -84,6 +84,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		}
 
 	}
+	*/
 
 	/**
 	 * This method returns a specific content-object after checking that it is accessable by the given user
