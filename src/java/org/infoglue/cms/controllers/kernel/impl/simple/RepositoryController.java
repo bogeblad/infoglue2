@@ -25,6 +25,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
@@ -183,6 +184,75 @@ public class RepositoryController extends BaseController
 		return  (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId);        
     }
 	
+    
+	/**
+	 * Returns the RepositoryVO with the given name.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public RepositoryVO getRepositoryVOWithName(String name) throws SystemException, Bug
+	{
+		RepositoryVO repositoryVO = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			Repository repository = getRepositoryWithName(name, db);
+			if(repository != null)
+				repositoryVO = repository.getValueObject();
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return repositoryVO;	
+	}
+	
+	/**
+	 * Returns the Repository with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public Repository getRepositoryWithName(String name, Database db) throws SystemException, Bug
+	{
+		Repository repository = null;
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl f WHERE f.name = $1");
+			oql.bind(name);
+			
+			QueryResults results = oql.execute();
+			if (results.hasMore()) 
+			{
+				repository = (Repository)results.next();
+			}
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a named repository. Reason:" + e.getMessage(), e);    
+		}
+		
+		return repository;		
+	}
+
 	/**
 	 * This method can be used by actions and use-case-controllers that only need to have simple access to the
 	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
