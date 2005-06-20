@@ -77,7 +77,7 @@ public class SublistTag extends TemplateControllerTag {
 	{
 		if(list == null)
 			throw new JspTagException("List is null.");
-		if(startIndex < 0 || startIndex >= list.size())
+		if(startIndex < 0 || (!list.isEmpty() && startIndex >= list.size()))
 			throw new JspTagException("Illegal startIndex [0<=" + startIndex + "<" + list.size() + "].");
 		if(count < 0)
 			throw new JspTagException("Illegal count; must be a non-negative integer.");
