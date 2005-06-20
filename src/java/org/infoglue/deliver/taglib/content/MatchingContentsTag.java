@@ -35,7 +35,6 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	
 	private String contentTypeDefinitionNames;
 	private String categoryCondition;
-	private int numberOfItems = 2;
 	
     public MatchingContentsTag()
     {
@@ -44,7 +43,7 @@ public class MatchingContentsTag extends TemplateControllerTag {
 
 	public int doEndTag() throws JspException
     {
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, true, numberOfItems));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, true));
         return EVAL_PAGE;
     }
 
@@ -57,10 +56,4 @@ public class MatchingContentsTag extends TemplateControllerTag {
     {
         this.categoryCondition = evaluateString("matchingContentsTag", "categoryCondition", categoryCondition);
     }
-    
-    public void setNumberOfItems(int numberOfItems)
-    {
-        this.numberOfItems = numberOfItems;
-    }
-    
 }

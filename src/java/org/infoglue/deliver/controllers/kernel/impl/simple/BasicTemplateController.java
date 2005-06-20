@@ -2931,7 +2931,7 @@ public class BasicTemplateController implements TemplateController
 	 * This method searches for all contents matching
 	 */
 	
-	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, boolean useLanguageFallback, int numberOfItems)
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, boolean useLanguageFallback)
 	{
 		try
 		{
