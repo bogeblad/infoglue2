@@ -8,27 +8,27 @@
     <info>Misc infoglue tags</info>
 
 	<tag>
-	    <name>contentVersion</name>
-	    <tagclass>org.infoglue.deliver.taglib.common.ContentVersionTag</tagclass>
+	    <name>sublist</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.SublistTag</tagclass>
 	    <bodycontent>empty</bodycontent>
-	    <info>TemplateLogic.getContentVersion(Integer contentId)</info>
+	    <info></info>
 	    <attribute>
 		    <name>id</name>
 	    	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
-		    <name>contentId</name>
+		    <name>list</name>
 	    	<required>true</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
-		    <name>languageId</name>
+		    <name>startIndex</name>
 	    	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
-		    <name>useLanguageFallback</name>
+		    <name>count</name>
 	    	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
