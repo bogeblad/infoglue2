@@ -36,13 +36,17 @@ import org.infoglue.cms.entities.management.impl.simple.*;
 import org.infoglue.cms.entities.workflow.impl.simple.*;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,6 +54,8 @@ import java.util.Iterator;
 
 public class CacheController extends Thread
 { 
+    public static List notifications = new ArrayList();
+    
 	private static Map caches = new HashMap();
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
@@ -285,7 +291,7 @@ public class CacheController extends Thread
 				
 				if(clear)
 				{	
-					CmsLogger.logWarning("clearing:" + e.getKey());
+					CmsLogger.logInfo("clearing:" + e.getKey());
 					Object object = e.getValue();
 					if(object instanceof Map)
 					{
@@ -500,4 +506,94 @@ public class CacheController extends Thread
     {
         return generalCache;
     }
+    
+    public static List getNotifications()
+    {
+        return notifications;
+    }
+    
+    public static void evictWaitingCache() throws Exception
+    {
+        synchronized(notifications)
+        {
+			Iterator i = notifications.iterator();
+			while(i.hasNext())
+			{
+			    CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)i.next();
+		        
+			    String className = cacheEvictionBean.getClassName();
+			    String objectId = cacheEvictionBean.getObjectId();
+			    String objectName = cacheEvictionBean.getObjectName();
+				String typeId = cacheEvictionBean.getTypeId();
+				
+			    CmsLogger.logInfo("className:" + className);
+				CmsLogger.logInfo("objectId:" + objectId);
+			    //Should contain permissioncontrol later...
+		
+			    boolean isDependsClass = false;
+			    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
+			        isDependsClass = true;
+		
+			    CacheController.clearCaches(className, objectId);
+		
+			    CmsLogger.logInfo("Updating className with id:" + className + ":" + objectId);
+				if(className != null)
+				{
+				    //Class[] types = {Class.forName(className)};
+				    Class type = Class.forName(className);
+				    
+				    if(!isDependsClass && className.equalsIgnoreCase(SystemUserImpl.class.getName()) || className.equalsIgnoreCase(RoleImpl.class.getName()) || className.equalsIgnoreCase(GroupImpl.class.getName()))
+				    {
+				        Object[] ids = {objectId};
+				        CacheController.clearCache(type, ids);
+					}
+				    else if(!isDependsClass)
+				    {
+				        Object[] ids = {new Integer(objectId)};
+					    CacheController.clearCache(type, ids);
+				    }
+				    
+					//If it's an contentVersion we should delete all images it might have generated from attributes.
+					/*
+					if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+					{
+					    CmsLogger.logInfo("We should delete all images with contentVersionId " + objectId);
+						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
+					}
+					else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
+					{
+					    CmsLogger.logInfo("We clear all small contents as well " + objectId);
+						Class typesExtra = SmallContentImpl.class;
+						Object[] idsExtra = {new Integer(objectId)};
+						CacheController.clearCache(typesExtra, idsExtra);
+		
+						CmsLogger.logInfo("We clear all medium contents as well " + objectId);
+						Class typesExtraMedium = MediumContentImpl.class;
+						Object[] idsExtraMedium = {new Integer(objectId)};
+						CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+					}
+					else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
+					{
+					    Class typesExtra = SmallAvailableServiceBindingImpl.class;
+						Object[] idsExtra = {new Integer(objectId)};
+						CacheController.clearCache(typesExtra, idsExtra);
+					}
+					else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
+					{
+					    Class typesExtra = SmallSiteNodeImpl.class;
+						Object[] idsExtra = {new Integer(objectId)};
+						CacheController.clearCache(typesExtra, idsExtra);
+					}
+					else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
+					{
+					    CmsLogger.logInfo("We should delete all images with digitalAssetId " + objectId);
+						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+					}
+				}
+				
+				i.remove();
+			}
+        }
+    }
+
 }

@@ -124,13 +124,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+    	//CacheController.evictWaitingCache();
+
     	long start			= new Date().getTime();
     	long elapsedTime 	= 0;
     	
     	CmsLogger.logInfo("************************************************");
     	CmsLogger.logInfo("* ViewPageAction was called....                *");
     	CmsLogger.logInfo("************************************************");
-    	
+    	    	
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
 		

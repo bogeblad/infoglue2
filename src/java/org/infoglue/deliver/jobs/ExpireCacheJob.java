@@ -51,6 +51,15 @@ public class ExpireCacheJob implements Job
 
     public void execute(JobExecutionContext context) throws JobExecutionException
     {
+        try
+        {
+            CacheController.evictWaitingCache();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
         CmsLogger.logInfo("---" + context.getJobDetail().getFullName() + " executing.[" + new Date() + "]");
         
         try

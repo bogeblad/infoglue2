@@ -24,6 +24,8 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.util.Iterator;
+
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.util.*;
 
@@ -40,6 +42,7 @@ import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
+import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.util.CacheController;
 
@@ -123,7 +126,13 @@ public class UpdateCacheAction extends WebworkAbstractAction
 			{			
 				//Hardcoded some stuff to clear.... not nice. Instead have some register which 
 				//different caches can register to.
-
+		        synchronized(CacheController.getNotifications())
+		        {
+				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(this.className, this.typeId, this.objectId, this.objectName);
+				    CacheController.getNotifications().add(cacheEvictionBean);
+				    System.out.println("Added a cacheEvictionBean....");
+		        }
+			    /*
 			    CacheController.clearCaches(className, objectId);
 
 			    CmsLogger.logInfo("Updating className with id:" + className + ":" + objectId);
@@ -150,7 +159,10 @@ public class UpdateCacheAction extends WebworkAbstractAction
 					    CmsLogger.logInfo("We should delete all images with contentVersionId " + objectId);
 						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
 					}
-					else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
+					else */
+			    
+			    	/*
+			    	if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 					{
 					    CmsLogger.logInfo("We clear all small contents as well " + objectId);
 						Class typesExtra = SmallContentImpl.class;
@@ -180,6 +192,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 					}
 				}
+				*/
 			}		
 			
 			CmsLogger.logInfo("UpdateCache finished...");
@@ -198,8 +211,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
         return NONE;
     }
     
-
-
+    
 	/**
 	 * Setters and getters for all things sent to the page in the request
 	 */
