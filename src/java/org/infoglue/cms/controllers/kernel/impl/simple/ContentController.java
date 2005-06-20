@@ -42,6 +42,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.services.*;
 import org.infoglue.deliver.util.CacheController;
 
@@ -49,6 +50,7 @@ import org.infoglue.deliver.util.CacheController;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Collection;
@@ -1290,6 +1292,67 @@ public class ContentController extends BaseController
         }
 		
 		return contents;    	
+	}
+	
+	/**
+	 * Returns the content belonging to the specified repository and with the specified path.
+	 * Note! If a folder contains more than one child with a requested name, then one of the children
+	 *       will be used (non-deterministic).
+	 *
+	 * Example:
+	 *   If we have the following repository (id=100):
+	 *     <root id="1">
+	 *       <news id="2">
+	 *         <imported id="3">
+	 *       <calendar id="4">
+	 *   then:
+	 *     getContentVOWithPath(100, "", true, db)              => returns content "1"
+	 *     getContentVOWithPath(100, "news", true, db)          => returns content "2"
+	 *     getContentVOWithPath(100, "news/imported", true, db) => returns content "3"
+	 *     getContentVOWithPath(100, "news/other", true, db)    => will create a new content with the name "other" with content "2" as parent
+	 *     getContentVOWithPath(100, "news/other", false, db)   => will throw an exception
+	 * 
+	 * @param repositoryId the repository identifier
+	 * @param path the path of the content starting from the root of the repository 
+	 * @param forceFolders if true then non-existing folders will be created; otherwise an exception will be thrown
+	 * @param db the database to use
+	 */
+	public ContentVO getContentVOWithPath(Integer repositoryId, String path, boolean forceFolders, InfoGluePrincipal creator, Database db) throws SystemException, Exception 
+	{
+		Content content = getRootContent(repositoryId, db);
+		final String paths[] = path.split("/");
+		for(int i=0; i<paths.length; ++i) {
+			final String name = paths[i];
+			final Content childContent = getChildWithName(content, name);
+			if(childContent != null)
+				content = childContent;
+			else if(childContent == null && !forceFolders)
+				throw new SystemException("There exists no content with the path [" + path + "].");
+			else 
+			{
+				System.out.println("   CREATE " + name);
+				ContentVO contentVO = new ContentVO();
+				contentVO.setIsBranch(Boolean.TRUE);
+				contentVO.setCreatorName(creator.getName());
+				contentVO.setName(name);
+				content = create(db, content.getId(), null, repositoryId, contentVO);
+			}
+		}
+		return content.getValueObject();
+	}
+	
+	/**
+	 * 
+	 */
+	private Content getChildWithName(Content content, String name)
+	{
+		for(Iterator i=content.getChildren().iterator(); i.hasNext(); )
+		{
+			final Content childContent = (Content) i.next();
+			if(childContent.getName().equals(name))
+				return childContent;
+		}
+		return null;
 	}
 	
 	/**
