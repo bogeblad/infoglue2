@@ -997,6 +997,11 @@ public interface TemplateController
     public abstract String replace(String originalString, String substring,
             String stringToReplace, String newString);
 
+	/**
+	 * This method helps us find out if the current site node is the same as the one sent in.
+	 */
+    public boolean getIsCurrentSiteNode(Integer siteNodeId);
+
     /**
      * This method helps us find out if the current site node is the same or a child to the sent in one.
      * So if the current page is a child(in the entire hierarchy below) below the siteNode sent in the 

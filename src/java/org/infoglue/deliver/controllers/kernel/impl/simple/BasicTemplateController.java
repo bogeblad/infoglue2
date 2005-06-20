@@ -4228,6 +4228,14 @@ public class BasicTemplateController implements TemplateController
 	}
 	
 	
+	/**
+	 * This method helps us find out if the current site node is the same as the one sent in.
+	 */
+	
+	public boolean getIsCurrentSiteNode(Integer siteNodeId)
+	{
+		return this.siteNodeId.equals(siteNodeId);
+	}	
 		
 	/**
 	 * This method helps us find out if the current site node is the same or a child to the sent in one.
