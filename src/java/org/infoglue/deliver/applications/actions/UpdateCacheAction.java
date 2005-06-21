@@ -130,7 +130,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 		        {
 				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(this.className, this.typeId, this.objectId, this.objectName);
 				    CacheController.getNotifications().add(cacheEvictionBean);
-				    System.out.println("Added a cacheEvictionBean....");
+				    CmsLogger.logInfo("Added a cacheEvictionBean....");
 		        }
 			    /*
 			    CacheController.clearCaches(className, objectId);
