@@ -645,7 +645,7 @@ public class ComponentLogic
 	    return getPageUrl(propertyName, this.useInheritance);
 	}
 
-	public String getPageUrl(String propertyName, boolean useInheritance) throws Exception
+	public String getPageUrl(String propertyName, boolean useInheritance)
 	{
 		String pageUrl = "";
 
@@ -689,6 +689,24 @@ public class ComponentLogic
 			{
 				Integer siteNodeId = new Integer((String)bindings.get(0));
 				pageUrl = this.getPageUrl(siteNodeId, templateController.getLanguageId(), contentId);
+			}
+		}
+
+		return pageUrl;
+	}
+
+	public String getPageUrl(String propertyName, Integer contentId, Integer languageId, boolean useInheritance)
+	{
+		String pageUrl = "";
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer siteNodeId = new Integer((String)bindings.get(0));
+				pageUrl = this.getPageUrl(siteNodeId, languageId, contentId);
 			}
 		}
 

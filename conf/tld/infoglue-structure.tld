@@ -5,6 +5,19 @@
     <jspversion>1.1</jspversion>
     <shortname>infoglue-content</shortname>
     <info>Tags for Structure operations</info>
+    
+    <tag>
+        <name>currentPageUrl</name>
+        <tagclass>org.infoglue.deliver.taglib.structure.CurrentPageUrlTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateController.getCurrentPageUrl()</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    </tag>
+    
 	<tag>
         <name>pageUrl</name>
         <tagclass>org.infoglue.deliver.taglib.structure.PageUrlTag</tagclass>
@@ -12,12 +25,22 @@
         <info>TemplateController.getPageUrl(Integer, Integer, Integer)</info>
         <attribute>
     	    <name>id</name>
-        	<required>true</required>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useInheritance</name>
+        	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
             <name>siteNodeId</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
