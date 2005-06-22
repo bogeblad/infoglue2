@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.16 2005/06/15 21:30:17 mattias Exp $
+ * $Id: RegistryController.java,v 1.17 2005/06/22 06:47:52 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -221,8 +221,11 @@ public class RegistryController extends BaseController
 		{
 			beginTransaction(db);
 		
+			CmsLogger.logInfo("Starting RegistryController.updateSiteNodeVersion...");
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
+			CmsLogger.logInfo("Before RegistryController.updateSiteNodeVersion...");
 			updateSiteNodeVersion(siteNodeVersion, db);
+			CmsLogger.logInfo("Before commit RegistryController.updateSiteNodeVersion...");
 		    
 			commitTransaction(db);
 		}
@@ -246,7 +249,9 @@ public class RegistryController extends BaseController
 	    SiteNodeVersion oldSiteNodeVersion = siteNodeVersion;
 	    SiteNode oldSiteNode = oldSiteNodeVersion.getOwningSiteNode();
 	    
+	    CmsLogger.logInfo("Before clearing old registry...");
 	    clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
+	    CmsLogger.logInfo("After clearing old registry...");
 	    
 		Collection serviceBindings = siteNodeVersion.getServiceBindings();
 		Iterator serviceBindingIterator = serviceBindings.iterator();
@@ -300,6 +305,8 @@ public class RegistryController extends BaseController
 				            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
 				        }
 			            
+			    	    CmsLogger.logInfo("Before creating registry entry...");
+
 			            this.create(registryVO, db);
 	                }
 	                catch(Exception e)
