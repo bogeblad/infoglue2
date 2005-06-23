@@ -66,6 +66,7 @@ public class RemoteCacheUpdater implements NotificationListener
 		{
 			CmsLogger.logInfo("Update Remote caches....");
 			updateRemoteCaches(notificationMessage);
+			CmsLogger.logInfo("Done updating remote caches....");
 		}
 		catch(Exception e)
 		{
