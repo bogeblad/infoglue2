@@ -59,7 +59,6 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
@@ -2944,17 +2943,7 @@ public class BasicTemplateController implements TemplateController
 		    }
 
 			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
-		    
-		    Set contentVersionVOList = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase());
-
-		    List contents = new ArrayList();
-			Iterator contentVersionVOListIterator = contentVersionVOList.iterator();
-		    while(contentVersionVOListIterator.hasNext())
-		    {
-		        ContentVersionVO contentVersionVO = (ContentVersionVO)contentVersionVOListIterator.next();
-		        contents.add(ContentController.getContentController().getContentWithId(contentVersionVO.getContentId(), this.getDatabase()));
-		    }
-			return contents;
+			return new ArrayList(ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase()));
 		}
 		catch(Exception e)
 		{
