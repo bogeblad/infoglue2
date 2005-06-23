@@ -1050,7 +1050,7 @@ public class NodeDeliveryController extends BaseDeliveryController
                     LanguageVO language = (LanguageVO) languages.get(i);
                     //CmsLogger.logInfo("Language : "+language.getLanguageCode());
                     navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext);
-                    //CmsLogger.logInfo("NavTitle ["+navTitle+"]");
+                    CmsLogger.logInfo("NavTitle ["+navTitle+"]==[" + navigationTitle + "]");
                     if (navTitle != null && navTitle.equals(navigationTitle)) 
                     {
                         return siteNode.getSiteNodeId();
