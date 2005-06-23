@@ -66,6 +66,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControll
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
@@ -2943,7 +2944,13 @@ public class BasicTemplateController implements TemplateController
 		    }
 
 			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
-			return new ArrayList(ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase()));
+			final Set set = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase());
+			final List result = new ArrayList();
+			for(Iterator i = set.iterator(); i.hasNext(); ) {
+				final Content content = (Content) i.next();
+				result.add(content.getValueObject());
+			}
+			return result;
 		}
 		catch(Exception e)
 		{
