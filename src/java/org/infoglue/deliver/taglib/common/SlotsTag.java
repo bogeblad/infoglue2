@@ -151,7 +151,7 @@ public class SlotsTag extends AbstractTag {
 	 */
 	public void setCurrentSlot(final String currentSlot) throws JspException
 	{
-		this.currentSlot = evaluateInteger("slotsTag", "currentSlot", currentSlot).intValue();
+		this.currentSlot = Math.max(1, evaluateInteger("slotsTag", "currentSlot", currentSlot).intValue());
 	}
 
 	/**
