@@ -15,8 +15,11 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -135,10 +138,8 @@ public class ExtendedSearchController extends BaseController {
 	 */
 	private Set createResults(final QueryResults qr) throws PersistenceException, SystemException {
 		final Set results = new HashSet();
-		while(qr.hasMore()) {
-			final ContentVersion contentVersion = (ContentVersion) qr.next();
-			results.add(contentVersion.getValueObject());
-		}
+		while(qr.hasMore())
+			results.add(qr.next());
 		return results;
 	}
 	
@@ -245,7 +246,7 @@ class SqlBuilder {
 	 * 
 	 */
 	private String generate() {
-		return "CALL SQL" + SPACE + generateSelectClause() + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + ContentVersionImpl.class.getName();
+		return "CALL SQL" + SPACE + generateSelectClause() + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + ContentImpl.class.getName();
 	}
 	
 	/**
@@ -253,22 +254,18 @@ class SqlBuilder {
 	 */
 	private String generateSelectClause() {
 		return 	SELECT_KEYWORD + SPACE + 
-		CONTENT_VERSION_ALIAS + ".ContVerId" +
-		//CONTENT_VERSION_ALIAS + ".contentVersionId" +
-		COMMA + CONTENT_VERSION_ALIAS + ".stateId" +
-		COMMA + CONTENT_VERSION_ALIAS + ".modifiedDateTime" +
-		COMMA + CONTENT_VERSION_ALIAS + ".VerComment" +
-		//COMMA + CONTENT_VERSION_ALIAS + ".versionComment" +
-		COMMA + CONTENT_VERSION_ALIAS + ".isCheckedOut" +
-		COMMA + CONTENT_VERSION_ALIAS + ".isActive" +
-		COMMA + CONTENT_VERSION_ALIAS + ".ContID" +
-		//COMMA + CONTENT_VERSION_ALIAS + ".contentId" +
-		COMMA + CONTENT_VERSION_ALIAS + ".languageId" +
-		COMMA + CONTENT_VERSION_ALIAS + ".versionModifier" +
-		COMMA + CONTENT_VERSION_ALIAS + ".ContVerId" +
-		//COMMA + CONTENT_VERSION_ALIAS + ".contentVersionId" +
-		//COMMA + CONTENT_VERSION_ALIAS + ".versionValue";
-		COMMA + CONTENT_VERSION_ALIAS + ".VerValue";
+		CONTENT_ALIAS + ".ContId" +
+		COMMA + CONTENT_ALIAS + ".name" +
+		COMMA + CONTENT_ALIAS + ".publishDateTime" +
+		COMMA + CONTENT_ALIAS + ".expireDateTime" +
+		COMMA + CONTENT_ALIAS + ".isBranch" +
+		COMMA + CONTENT_ALIAS + ".isProtected" +
+		COMMA + CONTENT_ALIAS + ".contentTypeDefId" +
+		COMMA + CONTENT_ALIAS + ".parentContId" +
+		COMMA + CONTENT_ALIAS + ".repositoryId" +
+		COMMA + CONTENT_ALIAS + ".parentContId" +
+		COMMA + CONTENT_ALIAS + ".ContId" +
+		COMMA + CONTENT_ALIAS + ".creator";
 	}
 
 	/**
