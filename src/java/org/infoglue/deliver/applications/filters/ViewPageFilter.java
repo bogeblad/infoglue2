@@ -114,16 +114,16 @@ public class ViewPageFilter implements Filter {
             //CmsLogger.logInfo("LanguageId...: "+languageId);
             //CmsLogger.logInfo("RequestURI...: "+requestURI);
 
-            try {
-                InfoGluePrincipal infoGluePrincipal =
-                    (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
-                if (infoGluePrincipal == null) {
-                    try {
-                        infoGluePrincipal =
-                            (InfoGluePrincipal) CacheController.getCachedObject(
-                                "userCache",
-                                "anonymous");
-                        if (infoGluePrincipal == null) {
+            try 
+            {
+                InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
+                if (infoGluePrincipal == null) 
+                {
+                    try 
+                    {
+                        infoGluePrincipal = (InfoGluePrincipal) CacheController.getCachedObject("userCache", "anonymous");
+                        if (infoGluePrincipal == null) 
+                        {
            				    Map arguments = new HashMap();
         				    arguments.put("j_username", "anonymous");
         				    arguments.put("j_password", "anonymous");
@@ -135,45 +135,35 @@ public class ViewPageFilter implements Filter {
                         }
                         //this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
 
-                    } catch (Exception e) {
-                        throw new SystemException(
-                            "There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.",
-                            e);
+                    } 
+                    catch (Exception e) 
+                    {
+                        throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
                     }
                 }
 
-                siteNodeId =
-                    NodeDeliveryController.getSiteNodeIdFromPath(
-                        infoGluePrincipal,
-                        repositoryId,
-                        nodeNames,
-                        languageId, DeliveryContext.getDeliveryContext());
+                siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryId, nodeNames, languageId, DeliveryContext.getDeliveryContext());
 
                 end = System.currentTimeMillis();
 
-                CmsLogger.logInfo(
-                    "Mapped URI "
-                        + requestURI
-                        + " --> "
-                        + siteNodeId
-                        + " in "
-                        + (end - start)
-                        + "ms");
+                CmsLogger.logInfo("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
 
-                HttpServletRequest wrappedHttpRequest =
-                    prepareRequest(httpRequest, siteNodeId, languageId);
+                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId);
                 //CmsLogger.logInfo("wrappedHttpRequest:" + wrappedHttpRequest.getRequestURI() + "?" + wrappedHttpRequest.getQueryString());
-                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(
-                    wrappedHttpRequest,
-                    httpResponse);
-
-            } catch (SystemException e) {
+                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
+            } 
+            catch (SystemException e) 
+            {
                 CmsLogger.logSevere("Failed to resolve siteNodeId", e);
                 throw new ServletException(e);
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 throw new ServletException(e);
             }
-        } else {
+        } 
+        else 
+        {
             filterChain.doFilter(httpRequest, httpResponse);
         }
     }

@@ -1070,10 +1070,17 @@ public class NodeDeliveryController extends BaseDeliveryController
         if (parentSiteNode != null)
         {
             path = getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null, deliveryContext) + "/";
-        } else {
+        } 
+        else 
+        {
             return "";
         }
-        path += URLEncoder.encode(this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true, deliveryContext), "UTF-8");
+        
+        String niceURIEncoding = CmsPropertyHandler.getProperty("niceURIEncoding");
+        if(niceURIEncoding == null || niceURIEncoding.length() == 0)
+            niceURIEncoding = "UTF-8";
+        
+        path += URLEncoder.encode(this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true, deliveryContext), niceURIEncoding);
      
         return path;
     }
