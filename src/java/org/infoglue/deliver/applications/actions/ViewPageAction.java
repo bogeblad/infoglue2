@@ -203,15 +203,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				if(siteNode == null)
 				    throw new SystemException("There was no page with this id.");
 				
-				String invokerClassName = siteNode.getSiteNodeTypeDefinition().getInvokerClassName();
-				if(invokerClassName == null && invokerClassName.equals(""))
+				if(siteNode.getSiteNodeTypeDefinition() == null || siteNode.getSiteNodeTypeDefinition().getInvokerClassName() == null || siteNode.getSiteNodeTypeDefinition().getInvokerClassName().equals(""))
 				{
-				    throw new SystemException("There was no page invoker class assigned to this page type.");
+				    throw new SystemException("There was no page invoker class assigned to the site node " + siteNode.getName());
 				}
 				else
 				{
 				    try
 				    {
+						String invokerClassName = siteNode.getSiteNodeTypeDefinition().getInvokerClassName();
 				        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
 				        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), this.templateController, deliveryContext);
 				        pageInvoker.deliverPage();
