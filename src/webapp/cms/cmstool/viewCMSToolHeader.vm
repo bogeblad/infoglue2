@@ -60,12 +60,12 @@
 
 <body onLoad="javascript:changeToolArea($toolId);" class="cmstool">
 
-<div style="LEFT:23px; position:absolute; TOP:5px; visibility:visble; z-index:0">
+<div style="LEFT:23px; position:absolute; TOP:5px; visibility:visible; z-index:0">
 	<image src="images/logotypeInfoGlue.gif" width="300" height="14">
 </div>
 
 
-<div style="LEFT:0px; position:absolute; TOP:35px; visibility:visble; z-index:0">
+<div style="LEFT:0px; position:absolute; TOP:35px; visibility:visible; z-index:1">
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
 	#set($toolcount = 0)
@@ -169,10 +169,10 @@
 </div>
 
 
-<div style="RIGHT:15px; position:absolute; TOP:7px; visibility:visble; z-index:0">
-<table border="0" cellspacing="0" cellpadding="0">
+<div style="RIGHT:15px; position:absolute; TOP:7px; visibility: visible; z-index:0; border:0px solid black;">
+<table border="0" cellspacing="0" cellpadding="0" width="200">
 <tr>
-	<td align="right" colspan="5" valign="top">
+	<td align="right" colspan="5" valign="top" nowrap="1">
 		<a href="ViewCMSTool.action?languageCode=sv" target="_top" class="whitelabel">Svenska</a> |
 		<a href="ViewCMSTool.action?languageCode=en" target="_top" class="whitelabel">English</a>
 		#foreach($toolLocale in $toolLocales)
