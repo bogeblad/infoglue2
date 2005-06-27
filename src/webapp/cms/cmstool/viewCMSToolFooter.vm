@@ -19,7 +19,7 @@
 </tr>
 <tr>
 	<td><image src="images/trans.gif" width="4" height="1"></td>
-	<td><b>$ui.getString("footer.application.name") Version build:</b> 2.0 RC2 (2005-06-20)</td>
+	<td><b>$ui.getString("footer.application.name") Version build:</b> 2.0 RC2 (2005-06-28)</td>
 	<td><image src="images/trans.gif" width="4" height="1"></td>
 </tr>
 </table>
