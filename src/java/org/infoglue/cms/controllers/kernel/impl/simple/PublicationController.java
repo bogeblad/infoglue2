@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 import org.exolab.castor.jdo.Database;
@@ -38,12 +41,14 @@ import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.workflow.*;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.mail.*;
+import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 
 /**
@@ -338,24 +343,38 @@ public class PublicationController extends BaseController
 	 */
 	private static void mailNotification(Event event, String editorName, String recipient, String referenceUrl)
 	{
-		StringBuffer sb = new StringBuffer();
-		sb.append("CMS notification: The changes you wanted published concerning \"" + event.getName() + "\" was rejected by " + editorName + ". \n");
-		sb.append("\n");
-		sb.append("You can go to the application now by clicking here: " + referenceUrl + "\n");
-		sb.append("\n");
-		sb.append("Please revise your changes and retry. \n");
-		sb.append("\n");
-		sb.append("-----------------------------------------------------------------------\n");
-		sb.append("This email was automatically generated and the sender is the CMS-system. \n");
-		sb.append("Do not reply to this email. \n");
-
-		try
-		{
+	    String email = "";
+	    
+	    try
+	    {
+	        String template;
+	        
+	        String contentType = CmsPropertyHandler.getProperty("mail.contentType");
+	        if(contentType == null || contentType.length() == 0)
+	            contentType = "text/html";
+	        
+	        if(contentType.equalsIgnoreCase("text/plain"))
+	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/publishingtool/deniedPublication_plain.vm"));
+		    else
+	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/publishingtool/deniedPublication_html.vm"));
+		        
+		    Map parameters = new HashMap();
+		    parameters.put("event", event);
+		    parameters.put("editorName", editorName);
+		    parameters.put("recipient", recipient);
+		    parameters.put("referenceUrl", referenceUrl);
+			
+			StringWriter tempString = new StringWriter();
+			PrintWriter pw = new PrintWriter(tempString);
+			new VelocityTemplateProcessor().renderTemplate(parameters, pw, template);
+			email = tempString.toString();
+	    
 			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
 			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
 				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
 
-			MailServiceFactory.getService().send(systemEmailSender, recipient, "CMS - Publishing was denied!!", sb.toString(), "text/plain", "UTF-8");
+			System.out.println("email:" + email);
+			MailServiceFactory.getService().send(systemEmailSender, recipient, "CMS - Publishing was denied!!", email, contentType, "UTF-8");
 		}
 		catch(Exception e)
 		{
