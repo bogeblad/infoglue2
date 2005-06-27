@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.4 2005/06/12 10:46:37 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.5 2005/06/27 18:52:19 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -697,8 +697,8 @@
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ChangeContentStateAction" alias="ChangeContentState">
-		<view name="success">ViewContentVersion.action</view>
-		<view name="successStandalone">ViewContentVersion!standalone.action</view>
+		<view name="success">ExtendedRedirect.action?url=ViewContentVersion.action#contentId#languageId</view>
+		<view name="successStandalone">ExtendedRedirect.action?url=ViewContentVersion!standalone.action#contentId#languageId</view>
 		<view name="commentVersion">/cms/contenttool/viewContentVersionComment.vm</view>
 		<view name="commentVersionStandalone">/cms/contenttool/viewContentVersionCommentStandalone.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
