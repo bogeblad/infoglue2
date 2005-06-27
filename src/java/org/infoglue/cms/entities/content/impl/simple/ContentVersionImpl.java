@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.entities.content.impl.simple;
 
+import java.util.ArrayList;
+
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -74,8 +76,8 @@ public class ContentVersionImpl implements ContentVersion
 
     private org.infoglue.cms.entities.content.impl.simple.ContentImpl owningContent;
     private org.infoglue.cms.entities.management.impl.simple.LanguageImpl language;
-    private java.util.Collection publications;
-	private java.util.Collection digitalAssets; 
+    private java.util.Collection publications = new ArrayList();
+	private java.util.Collection digitalAssets = new ArrayList();; 
     
     public java.lang.Integer getContentVersionId()
     {

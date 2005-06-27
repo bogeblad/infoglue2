@@ -27,6 +27,7 @@ package org.infoglue.deliver.applications.actions;
 import java.util.Iterator;
 
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.util.*;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
@@ -39,6 +40,7 @@ import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.publishing.PublicationDetailVO;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
@@ -100,7 +102,10 @@ public class UpdateCacheAction extends WebworkAbstractAction
 			String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
 			if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 			{
-				//Hardcoded some stuff to clear.... not nice. Instead have some register which 
+			    System.out.println("className:" + className);
+			    System.out.println("objectId:" + objectId);
+			    
+			    //Hardcoded some stuff to clear.... not nice. Instead have some register which 
 				//different caches can register to.
 				CacheController.clearCaches(null, null);
 				
@@ -110,17 +115,28 @@ public class UpdateCacheAction extends WebworkAbstractAction
 				
 				//If it's an contentVersion we should delete all images it might have generated from attributes.
 				/*
-				if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+				if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
 				{
-					CmsLogger.logInfo("We should delete all images with contentVersionId " + objectId);
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
+				    PublicationDetailVO publicationDetailVO = PublicationController.getController().getPublicationDetailVOWithId(new Integer(objectId));
+					String innerClassName = publicationDetailVO.getEntityClass();
+					Integer innerObjectId  = publicationDetailVO.getEntityId();
+					System.out.println("innerClassName:" + innerClassName);
+				    System.out.println("innerObjectId:" + innerObjectId);
+				    	
+				    if(Class.forName(innerClassName).getName().equals(ContentVersionImpl.class.getName()))
+					{
+						CmsLogger.logInfo("We should delete all images with contentVersionId " + objectId);
+						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
+					}
 				}
-				else*/
-				if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
+				*/	
+				/*
+				else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
 				{
 					CmsLogger.logInfo("We should delete all images with digitalAssetId " + objectId);
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 				}
+				*/
 			}			
 			else
 			{			

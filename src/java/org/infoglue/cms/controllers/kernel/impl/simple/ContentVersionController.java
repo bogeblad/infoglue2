@@ -37,6 +37,7 @@ import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -598,7 +599,8 @@ public class ContentVersionController extends BaseController
 		contentVersion.setOwningContent((ContentImpl)content);
 		
 		if(oldContentVersionId != null)
-			contentVersion.setDigitalAssets(getContentVersionWithId(oldContentVersionId, db).getDigitalAssets());
+		    copyDigitalAssets(getContentVersionWithId(oldContentVersionId, db), contentVersion, db);
+		    //contentVersion.setDigitalAssets(getContentVersionWithId(oldContentVersionId, db).getDigitalAssets());
 		
 		contentVersion.setValueObject(contentVersionVO);
         db.create(contentVersion); 
@@ -953,6 +955,31 @@ public class ContentVersionController extends BaseController
         digitalAsset.getContentVersions().remove(contentVersion);
     }
     
+	
+	/**
+	 * This method assigns the same digital assets the old content-version has.
+	 * It's ofcourse important that noone deletes the digital asset itself for then it's lost to everyone.
+	 */
+	
+	public void copyDigitalAssets(ContentVersion originalContentVersion, ContentVersion newContentVersion, Database db) throws ConstraintException, SystemException, Exception
+	{
+	    Collection digitalAssets = originalContentVersion.getDigitalAssets();	
+
+		//List newDigitalAssets = new ArrayList();
+	    Iterator digitalAssetsIterator = digitalAssets.iterator();
+		while(digitalAssetsIterator.hasNext())
+		{
+		    DigitalAsset digitalAsset = (DigitalAsset)digitalAssetsIterator.next();
+		    System.out.println("Copying digitalAssets " + digitalAsset.getAssetKey());
+		    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
+		    
+		    DigitalAssetController.create(digitalAssetVO, digitalAsset.getAssetBlob(), newContentVersion, db);
+		    System.out.println("digitalAssets:" + digitalAssets.size());
+		}
+		//newContentVersion.setDigitalAssets(digitalAssets);
+	}	
+
+	
 	/**
 	 * This method fetches a value from the xml that is the contentVersions Value. If the 
 	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.

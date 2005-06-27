@@ -28,6 +28,7 @@ import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.content.*;
+import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.workflow.*;
 
 import org.infoglue.cms.exception.ConstraintException;
@@ -36,6 +37,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsLogger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -108,7 +110,8 @@ public class ContentStateController extends BaseController
 				newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
-				copyDigitalAssets(oldContentVersion, newContentVersion, db);
+				
+				//ContentVersionController.getContentVersionController().copyDigitalAssets(oldContentVersion, newContentVersion, db);
 				copyAccessRights(oldContentVersion, newContentVersion, db);
 				copyContentCategories(oldContentVersion, newContentVersion, db);
 			}
@@ -129,7 +132,8 @@ public class ContentStateController extends BaseController
 				newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
-				copyDigitalAssets(oldContentVersion, newContentVersion, db);
+				
+				//ContentVersionController.getContentVersionController().copyDigitalAssets(oldContentVersion, newContentVersion, db);
 				copyAccessRights(oldContentVersion, newContentVersion, db);
 				copyContentCategories(oldContentVersion, newContentVersion, db);
 
@@ -163,16 +167,6 @@ public class ContentStateController extends BaseController
 		return newContentVersion;
 	}
 
-	/**
-	 * This method assigns the same digital assets the old content-version has.
-	 * It's ofcourse important that noone deletes the digital asset itself for then it's lost to everyone.
-	 */
-	
-	private static void copyDigitalAssets(ContentVersion originalContentVersion, ContentVersion newContentVersion, Database db) throws ConstraintException, SystemException, Exception
-	{
-		Collection digitalAssets = originalContentVersion.getDigitalAssets();	
-		newContentVersion.setDigitalAssets(digitalAssets);
-	}	
 
 	/**
 	 * This method assigns the same access rights as the old content-version has.

@@ -23,7 +23,9 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.*;
@@ -251,6 +253,30 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		}
 	}
 	*/
+
+	/**
+	 * This method removes all images in the digitalAsset directory which belongs to a certain content version.
+	 */
+
+	public void deleteContentVersionAssets(Integer contentVersionId) throws SystemException, Exception
+	{
+		try
+		{
+		    List digitalAssetVOList = DigitalAssetController.getController().getDigitalAssetVOList(contentVersionId);
+			Iterator assetIterator = digitalAssetVOList.iterator();
+			while(assetIterator.hasNext())
+			{
+			    DigitalAssetVO digitalAssetVO = (DigitalAssetVO)assetIterator.next();
+			    this.deleteDigitalAssets(digitalAssetVO.getId());
+			}
+		}
+		catch(Exception e)
+		{
+			CmsLogger.logSevere("Could not delete the assets for the contentVersion " + contentVersionId + ":" + e.getMessage(), e);
+		}
+	}
+
+	
 	
 	/**
 	 * This method removes all images in the digitalAsset directory which belongs to a certain digital asset.

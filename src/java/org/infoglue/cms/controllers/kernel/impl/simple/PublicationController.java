@@ -71,6 +71,14 @@ public class PublicationController extends BaseController
 	}
 
 	/**
+	 * This method just returns the publication detail with the given id.
+	 */
+	public PublicationDetailVO getPublicationDetailVOWithId(Integer publicationDetailId) throws SystemException
+	{
+		return (PublicationDetailVO) getVOWithId(PublicationDetailImpl.class, publicationDetailId);
+	}
+
+	/**
 	 * This method returns a list of those events that are publication events and
 	 * concerns this repository
 	 */

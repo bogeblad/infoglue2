@@ -95,19 +95,9 @@ public class DigitalAssetController extends BaseController
 		try
 		{
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, db);
-			Collection contentVersions = new ArrayList();
-			contentVersions.add(contentVersion);
-			CmsLogger.logInfo("Added contentVersion:" + contentVersion.getId());
-   		
-			digitalAsset = new DigitalAssetImpl();
-			digitalAsset.setValueObject(digitalAssetVO);
-			digitalAsset.setAssetBlob(is);
-			digitalAsset.setContentVersions(contentVersions);
 
-			db.create(digitalAsset);
-        
-			contentVersion.getDigitalAssets().add(digitalAsset);
-		
+			create(digitalAssetVO, is, contentVersion, db);
+		    
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -121,6 +111,34 @@ public class DigitalAssetController extends BaseController
    	}
 
    	/**
+   	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
+   	 * The asset is send in as an InputStream which castor inserts automatically.
+   	 */
+
+   	public static DigitalAssetVO create(DigitalAssetVO digitalAssetVO, InputStream is, ContentVersion contentVersion, Database db) throws SystemException, Exception
+   	{
+		DigitalAsset digitalAsset = null;
+		
+		Collection contentVersions = new ArrayList();
+		contentVersions.add(contentVersion);
+		CmsLogger.logInfo("Added contentVersion:" + contentVersion.getId());
+	
+		digitalAsset = new DigitalAssetImpl();
+		digitalAsset.setValueObject(digitalAssetVO.createCopy());
+		digitalAsset.setAssetBlob(is);
+		digitalAsset.setContentVersions(contentVersions);
+
+		db.create(digitalAsset);
+        
+		//if(contentVersion.getDigitalAssets() == null)
+		//    contentVersion.setDigitalAssets(new ArrayList());
+		
+		contentVersion.getDigitalAssets().add(digitalAsset);
+						
+        return digitalAsset.getValueObject();
+   	}
+
+  	/**
    	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
    	 * The asset is send in as an InputStream which castor inserts automatically.
    	 */
