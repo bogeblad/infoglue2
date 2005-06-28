@@ -163,9 +163,11 @@
 				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
 			</filterset>
 		</copy>
+		<!--
 		<copy todir="${build.classes}">
 			<fileset dir="${conf}/cms" includes="mapping.xml,oracle_mapping.xml,webwork.properties,actions.xml,jobs.xml"/>
 		</copy>
+		-->
 		<copy todir="${build.classes}">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
@@ -241,7 +243,7 @@
 			<lib refid="jdbc.libs"/>
 			<zipfileset dir="${conf}/cms"
                         prefix="WEB-INF/classes"
-                        includes="webwork.properties,actions.xml,jobs.xml"/>
+				        includes="webwork.properties,actions.xml,jobs.xml,mapping.xml,oracle_mapping.xml,db2_mapping.xml"/>
 			<zipfileset dir="${conf}/data/xml"
                         prefix="WEB-INF/classes"
                         includes="*.xml"/>
@@ -276,7 +278,7 @@
 			<lib refid="jdbc.libs"/>
 			<zipfileset dir="${conf}/deliver"
                         prefix="WEB-INF/classes"
-                        includes="webwork.properties,actions.xml,jobs.xml"/>
+                        includes="webwork.properties,actions.xml,jobs.xml,mapping.xml,oracle_mapping.xml,db2_mapping.xml"/>
 			<zipfileset dir="${conf}/data/xml"
                         prefix="WEB-INF/classes"
                         includes="*.xml"/>
