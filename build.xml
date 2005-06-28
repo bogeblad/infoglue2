@@ -163,11 +163,9 @@
 				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
 			</filterset>
 		</copy>
-		<!--
 		<copy todir="${build.classes}">
 			<fileset dir="${conf}/cms" includes="mapping.xml,oracle_mapping.xml,webwork.properties,actions.xml,jobs.xml"/>
 		</copy>
-		-->
 		<copy todir="${build.classes}">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
@@ -228,6 +226,10 @@
 	* purpose of this target is to organize the files required to deploy.
 	-->
 	<target name="war-cms" depends="compile,jar-apps" description="Creates the CMS war file">
+		<delete>
+		    <fileset dir="${build.classes}" includes="mapping.xml,oracle_mapping.xml,webwork.properties,actions.xml,jobs.xml"/>
+        </delete>
+
 		<war warfile="${cms.war.file}" webxml="${conf}/cms-web.xml">
 			<fileset dir="${webapp}"/>
 			<fileset dir="${build.applets}"/>
@@ -264,6 +266,11 @@
 	* purpose of this target is to organize the files required to deploy.
 	-->
 	<target name="war-deliver" depends="compile" description="Creates the deliver war file">
+
+		<delete>
+		    <fileset dir="${build.classes}" includes="mapping.xml,oracle_mapping.xml,webwork.properties,actions.xml,jobs.xml"/>
+        </delete>
+
 		<war warfile="${deliver.war.file}" webxml="${conf}/deliver-web.xml">
 			<fileset dir="${webapp}"/>
 			<classes dir="${build.classes}"/>
