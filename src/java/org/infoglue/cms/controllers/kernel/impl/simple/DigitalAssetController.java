@@ -88,15 +88,13 @@ public class DigitalAssetController extends BaseController
    	{
 		Database db = CastorDatabaseService.getDatabase();
 
-		DigitalAsset digitalAsset = null;
-		
 		beginTransaction(db);
 		
 		try
 		{
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, db);
 
-			create(digitalAssetVO, is, contentVersion, db);
+			digitalAssetVO = create(digitalAssetVO, is, contentVersion, db);
 		    
 			commitTransaction(db);
 		}
@@ -107,7 +105,7 @@ public class DigitalAssetController extends BaseController
 			throw new SystemException(e.getMessage());
 		}		
 				
-        return digitalAsset.getValueObject();
+        return digitalAssetVO;
    	}
 
    	/**
