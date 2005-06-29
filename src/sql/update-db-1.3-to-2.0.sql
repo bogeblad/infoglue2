@@ -20,7 +20,7 @@
 --
 -- ===============================================================================
 --
--- $Id: update-db-1.3-to-2.0.sql,v 1.13 2005/06/18 17:23:10 mattias Exp $
+-- $Id: update-db-1.3-to-2.0.sql,v 1.14 2005/06/29 08:52:46 mattias Exp $
 --
 -- This script contains the database updates required to go from 1.3 to 2.0.
 ----------------------------------------------------------------------------------
@@ -175,6 +175,12 @@ INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) 
   (28, 1);
 INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, description, usesExtraDataForAccessControl) VALUES 
   (29,'Publication','Publication.Write','This point intercepts a new publication',1);
+INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
+  (29, 1);
+INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, description, usesExtraDataForAccessControl) VALUES 
+  (30,'Repository','Repository.ReadForBinding','This point intercepts when a user tries to read the repository in a binding dialog',1);
+INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
+  (30, 1);
 
 
   
