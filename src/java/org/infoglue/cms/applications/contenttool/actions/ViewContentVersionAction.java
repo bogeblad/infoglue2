@@ -261,7 +261,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
 		}
 		
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
 		return "viewAssetsDialog";
 	}
@@ -278,7 +278,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
 		}
 		
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
 		return "viewAssetsDialogForFCKEditor";
 	}
@@ -291,7 +291,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true);
 		}
 
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
 		return "viewAssets";
 	}
@@ -303,7 +303,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true);
 		}
 
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
 		return "viewAssetsForFCKEditor";
 	}

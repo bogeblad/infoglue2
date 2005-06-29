@@ -288,7 +288,7 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
 
     	if(repositoryId == null)
     	{
-    	    List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+    	    List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
     	    for(Iterator i=repositories.iterator();i.hasNext();)
     	    {
     	        RepositoryVO r = (RepositoryVO) i.next();

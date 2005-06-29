@@ -132,7 +132,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	    {
 	        try
 	        {
-		        List repositoryVOList = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		        List repositoryVOList = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 		        if(repositoryVOList != null && repositoryVOList.size() > 0)
 		        {
 		            this.repositoryId = ((RepositoryVO)repositoryVOList.get(0)).getId();

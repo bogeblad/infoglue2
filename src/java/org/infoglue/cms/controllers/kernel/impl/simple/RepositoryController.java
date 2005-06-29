@@ -282,16 +282,16 @@ public class RepositoryController extends BaseController
 	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
 	 */	
 	
-	public List getAuthorizedRepositoryVOList(InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Bug
+	public List getAuthorizedRepositoryVOList(InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog) throws ConstraintException, SystemException, Bug
 	{    	
 		List accessableRepositories = new ArrayList();
     	
-		List allRepositories = this.getRepositoryVOList(); //getAllVOObjects(RepositoryImpl.class, "repositoryId");
+		List allRepositories = this.getRepositoryVOList();
 		Iterator i = allRepositories.iterator();
 		while(i.hasNext())
 		{
 			RepositoryVO repositoryVO = (RepositoryVO)i.next();
-			if(getIsAccessApproved(repositoryVO.getRepositoryId(), infoGluePrincipal))
+			if(getIsAccessApproved(repositoryVO.getRepositoryId(), infoGluePrincipal, isBindingDialog))
 			{
 				accessableRepositories.add(repositoryVO);
 			}
@@ -356,9 +356,9 @@ public class RepositoryController extends BaseController
 	 * This method returns true if the user should have access to the repository sent in.
 	 */
     
-	public boolean getIsAccessApproved(Integer repositoryId, InfoGluePrincipal infoGluePrincipal) throws SystemException
+	public boolean getIsAccessApproved(Integer repositoryId, InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog) throws SystemException
 	{
-		CmsLogger.logInfo("getIsAccessApproved for " + repositoryId + " AND " + infoGluePrincipal);
+		CmsLogger.logInfo("getIsAccessApproved for " + repositoryId + " AND " + infoGluePrincipal + " AND " + isBindingDialog);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -367,8 +367,11 @@ public class RepositoryController extends BaseController
 
 		try
 		{ 
-			hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString());
-		
+		    if(isBindingDialog)
+		        hasAccess = (AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()) || AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.ReadForBinding", repositoryId.toString()));
+		    else
+		        hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()); 
+		        
 			commitTransaction(db);
 		}
 		catch(Exception e)

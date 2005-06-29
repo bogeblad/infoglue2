@@ -96,7 +96,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		this.currentAction = currentAction;
 		
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 		
 		if(this.repositoryId == null)
 			this.repositoryId = RepositoryController.getController().getFirstRepositoryVO().getRepositoryId();
@@ -124,7 +124,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		CmsLogger.logInfo("queryString:" + this.getRequest().getQueryString());
 		initialize();
 
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
 		return "listComponents";
 	}

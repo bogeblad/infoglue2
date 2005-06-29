@@ -70,7 +70,7 @@ public class CreateContentWizardChooseParentAction extends CreateContentWizardAb
 	
 	public Integer getTopRepositoryId() throws ConstraintException, SystemException, Bug
 	{
-		List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 		
 		Integer topRepositoryId = null;
 

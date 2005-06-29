@@ -85,7 +85,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
     
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.12 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.13 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -316,7 +316,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 
     	if(repositoryId == null)
     	{
-    	    List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+    	    List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
     	    for(Iterator i=repositories.iterator();i.hasNext();)
     	    {
     	        RepositoryVO r = (RepositoryVO) i.next();

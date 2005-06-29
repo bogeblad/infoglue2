@@ -96,7 +96,7 @@ public class ViewContentToolHeaderAction extends WebworkAbstractAction
 		if (showVersions == null)
 			setShowVersions("no");
 		    	
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 
         return "success";
     }

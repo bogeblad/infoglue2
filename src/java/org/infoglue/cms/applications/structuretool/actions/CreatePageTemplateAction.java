@@ -80,7 +80,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 	
     public String doInput() throws Exception
     {
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 
         return Action.INPUT;
     }
@@ -195,7 +195,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
     
 	public Integer getTopRepositoryId() throws ConstraintException, SystemException, Bug
 	{
-		List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 		
 		Integer topRepositoryId = null;
 

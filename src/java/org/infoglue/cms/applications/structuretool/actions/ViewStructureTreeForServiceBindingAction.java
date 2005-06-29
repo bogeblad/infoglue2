@@ -156,7 +156,7 @@ public class ViewStructureTreeForServiceBindingAction extends WebworkAbstractAct
 	
     public String doExecute() throws Exception
     {
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 		
 		if(this.repositoryId == null)
 			this.repositoryId = RepositoryController.getController().getFirstRepositoryVO().getRepositoryId();

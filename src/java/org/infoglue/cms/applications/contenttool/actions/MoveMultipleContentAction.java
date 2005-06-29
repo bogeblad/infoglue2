@@ -134,7 +134,7 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
      
     public String doInput() throws Exception
     {    	
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 
 		if(this.qualifyerXML != null && !this.qualifyerXML.equals(""))
         {
@@ -153,7 +153,7 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
     {
         if(this.newParentContentId == null)
         {
-    		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+    		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
             return "chooseDestination";
         }
         

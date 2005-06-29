@@ -63,7 +63,7 @@ public abstract class ViewCMSAbstractToolAction extends WebworkAbstractAction
 	    		
 	    		if(this.repositoryId == null)
 	    		{
-					List authorizedRepositoryVOList = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+					List authorizedRepositoryVOList = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 					if(authorizedRepositoryVOList.size() > 0)
 					{
 						RepositoryVO repositoryVO = (RepositoryVO)authorizedRepositoryVOList.get(0);

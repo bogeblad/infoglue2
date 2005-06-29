@@ -41,7 +41,7 @@ public class ViewPublishingToolStartPageAction extends WebworkAbstractAction
     
     public String doExecute() throws Exception
     {
-    	this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+    	this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
     	
         return "success";
     }

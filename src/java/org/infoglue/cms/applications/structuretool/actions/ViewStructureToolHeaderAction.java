@@ -75,7 +75,7 @@ public class ViewStructureToolHeaderAction extends WebworkAbstractAction
 		if (tree == null)
 			setTree("applet");
     	
-    	this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+    	this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
     	
         return "success";
     }

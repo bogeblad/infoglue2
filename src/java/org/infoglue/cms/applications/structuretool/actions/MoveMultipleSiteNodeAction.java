@@ -93,7 +93,7 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
 	
    public String doInput() throws Exception
     {    	
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 
         if(this.qualifyerXML != null && !this.qualifyerXML.equals(""))
         {
@@ -112,7 +112,7 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
     {
         if(this.newParentSiteNodeId == null)
         {
-    		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal());
+    		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
             return "chooseDestination";
         }
         
