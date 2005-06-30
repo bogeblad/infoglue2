@@ -286,16 +286,16 @@ td.value {
 .inheritedslot {
 }
 .inheritedComponentDiv {
-    border			 : dotted 1px #0070FF;
+    border			 : dotted 0px #0070FF;
 }
 .inheritedComponentDiv:hover {
-    border 			 : solid 1px red;
+    border 			 : solid 0px red;
 }
 .componentDiv {
-    border			 : dotted 1px #0070FF; 
+    border			 : dotted 0px #0070FF; 
 }
 .componentDiv:hover {
-    border 			 : solid 1px red;
+    border 			 : solid 0px red;
 }
 
 input.normaltextfield {
