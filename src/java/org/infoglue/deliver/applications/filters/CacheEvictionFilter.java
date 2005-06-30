@@ -70,9 +70,16 @@ import org.infoglue.deliver.util.CacheController;
 
 public class CacheEvictionFilter implements Filter 
 {
-
+    private static String FILTER_URIS_PARAMETER = "FilterURIs";
+    
+    private FilterConfig filterConfig = null;
+    private URIMatcher uriMatcher = null;
+    
     public void init(FilterConfig filterConfig) throws ServletException 
     {
+        this.filterConfig = filterConfig;
+        String filterURIs = filterConfig.getInitParameter(FILTER_URIS_PARAMETER);
+        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","));
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException 
@@ -82,17 +89,51 @@ public class CacheEvictionFilter implements Filter
         
         try
         {
-            CacheController.evictWaitingCache();
+            String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
+
+            if (!uriMatcher.matches(requestURI)) 
+            {
+                //System.out.println("CacheEvictionFilter called: " + httpRequest.getRequestURI());
+                CacheController.evictWaitingCache();
+            }
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
+        
         filterChain.doFilter(httpRequest, httpResponse);
     }
 
     public void destroy() 
     {
+    }
+
+    private String getContextRelativeURI(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        if (contextPath != null && requestURI.length() > 0) {
+            requestURI = requestURI.substring(contextPath.length(), requestURI.length());
+        }
+        if (requestURI.length() == 0)
+            return "/";
+        return requestURI;
+    }
+    
+    private String[] splitString(String str, String delimiter) {
+        List list = new ArrayList();
+        StringTokenizer st = new StringTokenizer(str, delimiter);
+        while (st.hasMoreTokens()) {
+            // Updated to handle portal-url:s
+            String t = st.nextToken();
+            if (t.startsWith("_")) {
+                break;
+            } else {
+                // Not related to portal - add
+                list.add(t.trim());
+            }
+        }
+        return (String[]) list.toArray(new String[list.size()]);
     }
 
 }

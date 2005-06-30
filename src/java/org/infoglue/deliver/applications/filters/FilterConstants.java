@@ -36,7 +36,8 @@ public abstract class FilterConstants
     public final static String REPOSITORY_NAME_PARAMETER                    = "RepositoryName";
     public final static String LANGUAGE_ID_PARAMETER                        = "LanguageId";
     public final static String FILTER_URIS_PARAMETER                        = "FilterURIs";
-
+    public final static String ATTRIBUTE_NAME_PARAMETER						= "AttributeName";
+    
     public final static String REPOSITORY_NAME_REQUEST_PARAMETER            = "repositoryName";
     public final static String LANGUAGE_ID_REQUEST_PARAMETER                = "languageId";
 

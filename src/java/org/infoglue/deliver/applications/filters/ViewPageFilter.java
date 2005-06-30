@@ -72,11 +72,16 @@ public class ViewPageFilter implements Filter {
     private FilterConfig filterConfig = null;
     private URIMatcher uriMatcher = null;
     private URIMapperCache uriCache = null;
+    public static String attributeName = null;
 
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
         String filterURIs = filterConfig.getInitParameter(FilterConstants.FILTER_URIS_PARAMETER);
         uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","));
+        attributeName = filterConfig.getInitParameter(FilterConstants.ATTRIBUTE_NAME_PARAMETER);
+        CmsLogger.logInfo("attributeName:" + attributeName);
+        if(attributeName == null || attributeName.equals(""))
+            attributeName = "NavigationTitle";
         uriCache = new URIMapperCache();
     }
 
@@ -142,7 +147,7 @@ public class ViewPageFilter implements Filter {
                     }
                 }
 
-                siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryId, nodeNames, languageId, DeliveryContext.getDeliveryContext());
+                siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryId, nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
 
                 end = System.currentTimeMillis();
 

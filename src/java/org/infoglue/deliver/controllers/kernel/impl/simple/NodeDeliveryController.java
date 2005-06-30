@@ -46,6 +46,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.applications.filters.URIMapperCache;
+import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 
@@ -985,7 +986,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	}
 
 
-    public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String navigationTitle, Integer parentSiteNodeId, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
+    public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String path, String attributeName, Integer parentSiteNodeId, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         /*
         CmsLogger.logInfo("repositoryId:" + repositoryId);
@@ -1034,7 +1035,7 @@ public class NodeDeliveryController extends BaseDeliveryController
         while (results.hasMore()) 
         {
             SiteNode siteNode = (SiteNode) results.next();
-            if (navigationTitle == null || navigationTitle.length() == 0) 
+            if (path == null || path.length() == 0) 
             {
                 return siteNode.getSiteNodeId();
             }
@@ -1044,14 +1045,24 @@ public class NodeDeliveryController extends BaseDeliveryController
             if(content != null) 
             {
                 //CmsLogger.logInfo("Content "+content.getContentId());
-                String navTitle = null;
+                String pathCandidate = null;
                 for (int i=0;i<languages.size();i++) 
                 {
                     LanguageVO language = (LanguageVO) languages.get(i);
                     //CmsLogger.logInfo("Language : "+language.getLanguageCode());
-                    navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext);
-                    CmsLogger.logInfo("NavTitle ["+navTitle+"]==[" + navigationTitle + "]");
-                    if (navTitle != null && navTitle.equals(navigationTitle)) 
+                    
+                    if(attributeName.equals("SiteNode.name"))
+                        pathCandidate = siteNode.getName();
+                    else
+                    {
+	                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNode.getSiteNodeId(), true, deliveryContext);
+	                    
+	                    if((pathCandidate == null || pathCandidate.equals("")) && !attributeName.equals(NAV_TITLE_ATTRIBUTE_NAME))
+	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext);
+                    }
+                    
+                    CmsLogger.logInfo(attributeName + " ["+pathCandidate+"]==[" + path + "]");
+                    if (pathCandidate != null && pathCandidate.equals(path)) 
                     {
                         return siteNode.getSiteNodeId();
                     }
@@ -1080,13 +1091,29 @@ public class NodeDeliveryController extends BaseDeliveryController
         if(niceURIEncoding == null || niceURIEncoding.length() == 0)
             niceURIEncoding = "UTF-8";
         
-        path += URLEncoder.encode(this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true, deliveryContext), niceURIEncoding);
+        String attributeName = ViewPageFilter.attributeName;
+        
+        String pathPart;
+        
+        if(attributeName.equals("SiteNode.name"))
+        {
+            SiteNode siteNode = this.getSiteNode(db, siteNodeId);
+            pathPart = siteNode.getName();
+        }
+        else
+        {
+	        pathPart = this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, attributeName, true, deliveryContext);
+	        if((pathPart == null || pathPart.equals("")) && !attributeName.equals(NAV_TITLE_ATTRIBUTE_NAME))
+	            pathPart = this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true, deliveryContext);
+        }
+        
+        path += URLEncoder.encode(pathPart, niceURIEncoding);
      
         return path;
     }
 
 
-    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, String attributeName, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         Integer siteNodeId = null;
         URIMapperCache uriCache = URIMapperCache.getInstance();
@@ -1105,11 +1132,11 @@ public class NodeDeliveryController extends BaseDeliveryController
         {
             if (i < 0) 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, null, languageId, deliveryContext);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, attributeName, null, languageId, deliveryContext);
             } 
             else 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], siteNodeId, languageId, deliveryContext);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], attributeName, siteNodeId, languageId, deliveryContext);
             }
             
             if (siteNodeId != null)
@@ -1119,7 +1146,7 @@ public class NodeDeliveryController extends BaseDeliveryController
         return siteNodeId;
     }
     
-    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, String attributeName, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         Integer siteNodeId = null;
 
@@ -1145,11 +1172,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        {
 	            if (i < 0) 
 	            {
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, null, languageId, deliveryContext);
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, attributeName, null, languageId, deliveryContext);
 	            } 
 	            else 
 	            {
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], siteNodeId, languageId, deliveryContext);
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], attributeName, siteNodeId, languageId, deliveryContext);
 	            }
 	            
 	            if (siteNodeId != null)

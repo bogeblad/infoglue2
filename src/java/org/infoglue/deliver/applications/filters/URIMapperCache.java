@@ -41,13 +41,11 @@ import java.util.Collections;
 public class URIMapperCache
 {
     private static URIMapperCache instance = null;
-    private Map cache = null;
     
     private final String CACHE_NAME = "NavigationCache";
     
     public URIMapperCache()
     {
-        cache = Collections.synchronizedMap(new LRUMap(10000));
     }
 
     public synchronized static URIMapperCache getInstance()
@@ -60,7 +58,6 @@ public class URIMapperCache
 
     public void clear()
     {
-        cache.clear();
     }
 
     public Integer getCachedSiteNodeId(Integer repositoryId, String[] path, int upToIndex)
