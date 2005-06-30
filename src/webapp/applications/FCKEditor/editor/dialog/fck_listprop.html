@@ -30,6 +30,7 @@ var oDOM = oEditor.FCK.EditorDocument ;
 
 var oActiveEl = oEditor.FCKSelection.MoveToAncestorNode( 'UL' ) ;
 var oActiveSel ;
+var oActiveSelStyle;
 
 window.onload = function()
 {
@@ -37,12 +38,18 @@ window.onload = function()
 	oEditor.FCKLanguageManager.TranslatePage(document) ;
 
 	if ( oActiveEl )
+	{
 		oActiveSel = GetE('selBulleted') ;
+		oActiveSelStyle = GetE('selStyle') ;
+	}
 	else
 	{
 		oActiveEl = oEditor.FCKSelection.MoveToAncestorNode( 'OL' ) ;
 		if ( oActiveEl )
+		{
 			oActiveSel = GetE('selNumbered') ;
+			oActiveSelStyle = GetE('selStyle') ;
+		}
 	}
 
 	oActiveSel.style.display = '' ;
@@ -51,6 +58,8 @@ window.onload = function()
 	{
 		if ( oActiveEl.getAttribute('type') )
 			oActiveSel.value = oActiveEl.getAttribute('type').toLowerCase() ;
+		if ( oActiveEl.getAttribute('class'))
+			oActiveSelStyle.value = oActiveEl.getAttribute('class').toLowerCase() ;
 	}
 
 	window.parent.SetOkButton( true ) ;
@@ -59,8 +68,11 @@ window.onload = function()
 function Ok()
 {
 	if ( oActiveEl )
+	{
 		SetAttribute( oActiveEl, 'type'	, oActiveSel.value ) ;
-
+		SetAttribute( oActiveEl, 'class', oActiveSelStyle.value ) ;
+	}
+	
 	return true ;
 }
 
@@ -87,6 +99,17 @@ function Ok()
 									<option value="A" fckLang="DlgLstTypeUCase">Uppercase Letters (A, B, C)</option>
 									<option value="i" fckLang="DlgLstTypeSRoman">Small Roman Numerals (i, ii, iii)</option>
 									<option value="I" fckLang="DlgLstTypeLRoman">Large Roman Numerals (I, II, III)</option>
+								</select>
+								&nbsp;
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>List style</span><br>
+								<select id="selStyle" style="DISPLAY: block">
+									<option value="normallist" selected>Normal</option>
+									<option value="linklist">Punktlista med l&auml;nkar</option>
+									<option value="textlist">Punktlista utan l&auml;nkar</option>
 								</select>
 								&nbsp;
 							</td>
