@@ -43,8 +43,8 @@ public class IsCurrentSiteNodeTag extends TemplateControllerTag {
         return EVAL_PAGE;
     }
 
-    public void setSiteNodeId(Integer siteNodeId)
+    public void setSiteNodeId(String siteNodeId) throws JspException
     {
-        this.siteNodeId = siteNodeId;
+        this.siteNodeId = evaluateInteger("IsCurrentSiteNodeTag", "siteNodeId", siteNodeId);
     }
 }

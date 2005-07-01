@@ -43,8 +43,8 @@ public class IsSiteNodeParentToCurrentSiteNodeTag extends TemplateControllerTag 
         return EVAL_PAGE;
     }
 
-    public void setSiteNodeId(Integer siteNodeId)
+    public void setSiteNodeId(String siteNodeId) throws JspException
     {
-        this.siteNodeId = siteNodeId;
+        this.siteNodeId = evaluateInteger("isSiteNodeParentToCurrentSiteNode", "siteNodeId", siteNodeId);
     }
 }
