@@ -127,7 +127,7 @@
 					    #end
 					</td>
 					#*<td align="middle">$content.id</td>*#
-					<td align="middle">$content.extraProperties.get("GroupName")</td>
+					<td valign="middle">$content.extraProperties.get("GroupName")</td>
 				</tr>	
 				#set($imageUrl = "")
 			#end
