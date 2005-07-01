@@ -124,6 +124,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(ContentImpl.class.getName()))
 			{
 				CacheController.clearCache("childContentCache");
+				CacheController.clearCache("componentContentsCache");
 				clearCache(SmallContentImpl.class);
 				clearCache(MediumContentImpl.class);
 			}
