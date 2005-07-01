@@ -51,10 +51,12 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	private RepositoryVO repositoryVO 			= new RepositoryVO();
 	private PropertySet propertySet				= null; 
 	private List contentTypeDefinitionVOList 	= null;
+	private List repositoryVOList				= null;
 	
 	private String WYSIWYGConfig 				= null;
 	private String stylesXML					= null;
 	private String defaultFolderContentTypeName = null;	
+	private String defaultTemplateRepository 	= null;	
 
 	
     public ViewRepositoryPropertiesAction()
@@ -65,6 +67,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
     {
         this.repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
         this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.CONTENT);
+        this.repositoryVOList = RepositoryController.getController().getRepositoryVOList();
             
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
@@ -78,7 +81,8 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    if(StylesXMLBytes != null)
 	    	this.stylesXML = new String(StylesXMLBytes, "utf-8");
 
-	    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
+	    this.defaultFolderContentTypeName 	= ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
+	    this.defaultTemplateRepository	 	= ps.getString("repository_" + this.getRepositoryId() + "_defaultTemplateRepository");
     } 
 
     /**
@@ -105,6 +109,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    ps.setData("repository_" + this.getRepositoryId() + "_WYSIWYGConfig", WYSIWYGConfig.getBytes("utf-8"));
 	    ps.setData("repository_" + this.getRepositoryId() + "_StylesXML", stylesXML.getBytes("utf-8"));
 	    ps.setString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", defaultFolderContentTypeName);
+	    ps.setString("repository_" + this.getRepositoryId() + "_defaultTemplateRepository", defaultTemplateRepository);
 	    
     	return "save";
     }
@@ -168,8 +173,23 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
         this.defaultFolderContentTypeName = defaultFolderContentTypeName;
     }
     
+    public String getDefaultTemplateRepository()
+    {
+        return defaultTemplateRepository;
+    }
+    
+    public void setDefaultTemplateRepository(String defaultTemplateRepository)
+    {
+        this.defaultTemplateRepository = defaultTemplateRepository;
+    }
+
     public List getContentTypeDefinitionVOList()
     {
         return contentTypeDefinitionVOList;
     }    
+
+    public List getRepositoryVOList()
+    {
+        return repositoryVOList;
+    }
 }

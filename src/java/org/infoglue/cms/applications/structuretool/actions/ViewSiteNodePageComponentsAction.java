@@ -44,6 +44,9 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryControlle
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
 
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
+
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -85,7 +88,17 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		Integer currentRepositoryId = SiteNodeController.getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
 		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);		
 		if(filterRepositoryId == null)
-		    filterRepositoryId = currentRepositoryId;
+		{
+			Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+		    String defaultTemplateRepository = ps.getString("repository_" + currentRepositoryId + "_defaultTemplateRepository");
+		    if(defaultTemplateRepository != null && !defaultTemplateRepository.equals(""))
+		        filterRepositoryId = new Integer(defaultTemplateRepository);
+		    else
+		        filterRepositoryId = currentRepositoryId;
+		}
 	}
 
 	/**

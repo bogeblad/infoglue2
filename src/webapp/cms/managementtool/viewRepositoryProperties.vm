@@ -20,6 +20,14 @@
 				#end
 				</select>				
 			</p>
+			<p>
+				$ui.getString("entity.Repository.property.defaultTemplateRepository.label")<br/>
+				<select class="siteNodetypes" name="defaultTemplateRepository">
+				#foreach ($repositoryVO in $repositoryVOList)
+					<option value="$repositoryVO.getId()" #if($defaultTemplateRepository == "$repositoryVO.getId()")selected="1"#end>$repositoryVO.getName()</option>
+				#end
+				</select>				
+			</p>
 		</td>
 	</tr>
 	<tr>
