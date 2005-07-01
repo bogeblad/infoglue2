@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.6 2005/05/17 16:01:36 mattias Exp $
+ * $Id: CategoryController.java,v 1.7 2005/07/01 14:43:35 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -146,7 +146,8 @@ public class CategoryController extends BaseController
         while(categoryVOListIterator.hasNext())
         {
             CategoryVO currentCategoryVO = (CategoryVO)categoryVOListIterator.next();
-	        if(currentCategoryVO.getName().equalsIgnoreCase(name))
+	        CmsLogger.logInfo("currentCategoryVO:" + currentCategoryVO.getName() + "=" + name);
+            if(currentCategoryVO.getName().equalsIgnoreCase(name))
             {
                 categoryVO = currentCategoryVO;
             	break;
