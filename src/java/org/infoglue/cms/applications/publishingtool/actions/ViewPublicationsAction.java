@@ -45,8 +45,10 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 {
 	private int startIndex = 0;
 	private Integer repositoryId;
+	private Integer publicationId;
 	private RepositoryVO repositoryVO;
 	private List publicationEvents;
+	private List publicationDetailVOList;
 	private EditionBrowser editionBrowser;
 
 	public int getStartIndex()			{ return startIndex; }
@@ -66,12 +68,20 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 		return this;
 	}
 
-	protected String doExecute() throws Exception
+	public String doExecute() throws Exception
 	{
 		repositoryVO		= RepositoryController.getController().getRepositoryVOWithId(repositoryId);
 		publicationEvents	= PublicationController.getPublicationEvents(repositoryId);
 		editionBrowser		= PublicationController.getEditionPage(repositoryId, startIndex);
 		return SUCCESS;
+	}
+	
+	public String doShowPublicationDetails() throws Exception
+	{
+	    System.out.println("Kalle:" + publicationId);
+		publicationDetailVOList = PublicationController.getPublicationDetailVOList(publicationId);
+	    System.out.println("publicationDetailVOList:" + publicationDetailVOList);
+		return "showPublicationDetails";
 	}
 
 	public static List getPublicationDetails(Integer publicationId) throws SystemException
@@ -96,4 +106,14 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 	{
 		return string.replace('\'', '´');
 	}
+	
+    public void setPublicationId(Integer publicationId)
+    {
+        this.publicationId = publicationId;
+    }
+    
+    public List getPublicationDetailVOList()
+    {
+        return publicationDetailVOList;
+    }
 }

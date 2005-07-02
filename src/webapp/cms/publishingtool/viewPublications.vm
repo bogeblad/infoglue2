@@ -4,8 +4,9 @@
 <script Language=JavaScript>
 function showHide(a)
 {
-	var theDiv=document.getElementById("e"+a);
-	var theImg=document.getElementById("i"+a);
+	/*
+	var theDiv=document.getElementById("e" + a);
+	var theImg=document.getElementById("i" + a);
 
 	if(theDiv.style.display == '')
 	{
@@ -17,6 +18,12 @@ function showHide(a)
 		theImg.src = "images/tree/smallminus.gif";
 		theDiv.style.display ='';
 	}
+	*/
+	
+	//var theFrame = document.getElementById(a + "IFrame");
+	//theFrame.src = "ViewPublications!showPublicationDetails.action?publicationId=" + a;
+	openPopup("ViewPublications!showPublicationDetails.action?publicationId=" + a, "PublicationDetails", "width=600,height=500,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
+	
 }
 
 function ruSure(txt, url)
@@ -177,11 +184,13 @@ function ruSure(txt, url)
 		#set( $chkbox = "<input type='checkbox' disabled='true'/>")
 	#end
 
-	#set( $row = "<a onclick=showHide('$publicationVO.getPublicationId()');><img id='i$publicationVO.getPublicationId()' src='images/tree/smallplus.gif' border=0></a><a href=JavaScript:showHide('$publicationVO.getPublicationId()');>$publicationVO.getName()</a>")
+	#set( $row = "<a onclick=showHide('$publicationVO.getPublicationId()');><!--<img id='i$publicationVO.getPublicationId()' src='images/tree/smallplus.gif' border=0>--></a><a href=JavaScript:showHide('$publicationVO.getPublicationId()');>$publicationVO.getName()</a>")
 
-	#set( $row = "$row <div id='e$publicationVO.getPublicationId()' style='display:none;'>")
-
+	##set( $row = "$row <div id='e$publicationVO.getPublicationId()' style='width: 300px; display:none;'>")
+	##set( $row = "$row <iframe frameborder='0' id='$publicationVO.getPublicationId()IFrame' src='' width='300' height='100' align='baseline' style='width:100%; height=100%; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;'></iframe> ")
+	
 	## PUBLICATION_DETAILS
+	#*
 	#set( $versions = $publicationVO.publicationDetails )
 	#foreach ($publicationEvent in $versions)
 
@@ -210,8 +219,9 @@ function ruSure(txt, url)
 		#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
 		#set( $row = "$row$tree $publicationEvent.name ($publicationEvent.description) $newLine <font color=669999><small>modified: $modifiedDate </small></font> <br>")
 	#end
-
-	#set( $row = "$row </div>")
+	*#
+	
+	##set( $row = "$row </div>")
 
 	#set($modifiedDate = $formatter.formatDate($publicationVO.getPublicationDateTime(), "yyyy-MM-dd HH:mm"))
 	#set( $roww = ["$chkbox $row","$publicationVO.getDescription()", "$modifiedDate"] )

@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.5 2005/06/27 18:52:19 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.6 2005/07/02 23:06:00 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -1082,6 +1082,7 @@
 
 	<action name="org.infoglue.cms.applications.publishingtool.actions.ViewPublicationsAction" alias="ViewPublications">
 		<view name="success">/cms/publishingtool/viewPublications.vm</view>
+		<view name="showPublicationDetails">/cms/publishingtool/viewPublicationDetails.vm</view>
 		<view name="error">/cms/publishingtool/error.vm</view>
 	</action>
 

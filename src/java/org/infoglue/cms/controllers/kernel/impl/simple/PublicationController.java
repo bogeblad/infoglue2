@@ -150,7 +150,7 @@ public class PublicationController extends BaseController
 			{
 				Publication pub = (Publication) iter.next();
 				PublicationVO pubVO = pub.getValueObject();
-				pubVO.setPublicationDetails(toVOList(pub.getPublicationDetails()));
+				//pubVO.setPublicationDetails(toVOList(pub.getPublicationDetails()));
 				editionVOs.add(pubVO);
 			}
 
