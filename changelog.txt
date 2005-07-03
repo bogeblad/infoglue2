@@ -1,3 +1,54 @@
+-------------------------------------------------------------------------------------
+- InfoGlue 2.0 RC2
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+The second release candidate for version 2.0 of InfoGlue is released.
+This release contains many bugfixes compared to 2.0RC1 and is probably the last candidate before we release 2.0 Final.
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.0RC1 
+---------------------------------------
+
+New features
+- Made it possible to choose URI request parameter delimiter (& normally). To support XHTML better. 
+- Added two new interception points: 
+	* Publication.Write which notifies interceptors upon a publication taking place and 
+	* Repository.ReadForBinding which is a part of the new possibility to allow sharing of info between repositories without having access to the repository in other ways.
+- A new feature in content types which lets you initialize attributes with prestated values.
+- Made ViewApplicationState.action much more informative and made it possible to empty caches from there.
+- Made hotkey Alt+S save in content editing screens - not in WYSIWYG fields though.
+- You can now add more tool-language-links in the tool interface from the cms.properties file.
+
+Improvements
+- An improved cache update strategy which does not require database access during that reqest but rather que it up.
+- Improved registry consistency on updates all over.
+- Now allows spaces in workflow names
+- Much better expire cache strategy with Quartz jobs handling it on all applications.
+- Improved NiceURI a lot so it now handles linking between repositories, component editor and some other issues. You can now also choose which attribute/sitenode name it should work with. 
+- Cleaned up and fixed so site css does not mess up the component editors gui.
+- You can now navigate directly in component editor and still be in decorated mode.
+- Changed so the publication details of a publication is now not allways fetched. Only fetched on request and popped up in it's own window.
+- We moved email rendering out of the code as proposed by Frank Febbraro so now it's possible to style this in a velocity template. You can also choose html or plain format.
+
+Bug fixes
+- Huge bug fixed in asset copy on state change. Made all version of a content work with the same asset.
+- Preview button was not included in install
+- Settings not done correct in install, affects propertyset.xml and hibernate.conf
+- Login filter got wrong parameter which resulted in blank page after login.
+1216331 - "Check all" and "Uncheck all" does not work
+
+
+
+-------------------------------------------------------------------------------------
+- InfoGlue 2.0 RC1
+-------------------------------------------------------------------------------------
+
 Release notes
 ---------------------------------------
 The InfoGlue Team is very pleased to finally announce the first Release Candidate of version 2.0.
