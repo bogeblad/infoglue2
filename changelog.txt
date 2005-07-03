@@ -24,6 +24,7 @@ New features
 - Made ViewApplicationState.action much more informative and made it possible to empty caches from there.
 - Made hotkey Alt+S save in content editing screens - not in WYSIWYG fields though.
 - You can now add more tool-language-links in the tool interface from the cms.properties file.
+- It's now possible to state that template-choosing dialog should be by default listing components in a different repository than the user are working in. For sharing setups.
 
 Improvements
 - An improved cache update strategy which does not require database access during that reqest but rather que it up.
