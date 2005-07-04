@@ -598,7 +598,7 @@ public class ContentVersionController extends BaseController
 		CmsLogger.logInfo("Content:" + content.getContentId() + ":" + db.isPersistent(content));
 		contentVersion.setOwningContent((ContentImpl)content);
 		
-		if(oldContentVersionId != null)
+		if(oldContentVersionId != null && oldContentVersionId.intValue() != -1)
 		    copyDigitalAssets(getContentVersionWithId(oldContentVersionId, db), contentVersion, db);
 		    //contentVersion.setDigitalAssets(getContentVersionWithId(oldContentVersionId, db).getDigitalAssets());
 		
