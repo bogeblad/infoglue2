@@ -278,7 +278,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			    object = new NullObject();
 			*/
 			
-		    OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.siteNodeVersion.owningSiteNode = $1 AND sb.availableServiceBinding = $2 AND sb.siteNodeVersion.isActive = $3 AND sb.siteNodeVersion.stateId = $4 order by sb.siteNodeVersion.siteNodeVersionId DESC");
+		    OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.siteNodeVersion.owningSiteNode = $1 AND sb.availableServiceBinding = $2 AND sb.siteNodeVersion.isActive = $3 AND sb.siteNodeVersion.stateId >= $4 order by sb.siteNodeVersion.siteNodeVersionId DESC");
 			oql.bind(siteNode);
 			oql.bind(availableServiceBindingVO.getId());
 			oql.bind(new Boolean(true));
