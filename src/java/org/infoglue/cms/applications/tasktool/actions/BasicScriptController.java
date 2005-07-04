@@ -348,4 +348,49 @@ public class BasicScriptController implements ScriptController
 	}
 
 
+	/**
+	 * This is a logmethod used to debug scripts.
+	 */
+	
+	public void logWarning(String info)
+	{
+	    CmsLogger.logWarning(info);
+	}
+	
+	/**
+	 * This is a logmethod used to debug scripts.
+	 */
+	
+	public void logWarning(String header, String info)
+	{
+		CmsLogger.logWarning(header + ": " + info);
+	}
+	
+	/**
+	 * This is a logmethod used to debug scripts.
+	 */
+	
+	public void logWarning(String header, boolean info)
+	{
+		CmsLogger.logWarning(header + ": " + info);
+	}
+
+	/**
+	 * This is a logmethod used to debug scripts.
+	 */
+	
+	public void logWarning(String header, int info)
+	{
+		CmsLogger.logInfo(header + ": " + info);
+	}
+	
+	/**
+	 * This is a logmethod used to debug scripts.
+	 */
+	
+	public void logWarning(String header, Object info)
+	{
+		CmsLogger.logWarning(header + ": " + info);
+	}
+
 }

@@ -68,11 +68,11 @@ public class ViewExecuteTaskAction extends WebworkAbstractAction
 		if(contentVersionVO == null)
 			contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getId(), ((LanguageVO)LanguageController.getController().getLanguageVOList().get(0)).getId());
 		
-		CmsLogger.logInfo("contentVersionVO:" + contentVersionVO);
+		//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO);
 		
 		String userInputHTML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO.getId(), "UserInputHTML", false);
 	
-		CmsLogger.logInfo("Found userInputHTML:" + userInputHTML);
+		//CmsLogger.logInfo("Found userInputHTML:" + userInputHTML);
 			 
 		ScriptController scriptController = getScriptController();
 		scriptController.setRequest(this.getRequest());
@@ -94,7 +94,7 @@ public class ViewExecuteTaskAction extends WebworkAbstractAction
 		out.flush();
 		out.close();
 		
-		return "";
+		return NONE;
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class ViewExecuteTaskAction extends WebworkAbstractAction
 		out.flush();
 		out.close();
 				
-		return "";
+		return NONE;
 	}
 
 	/**

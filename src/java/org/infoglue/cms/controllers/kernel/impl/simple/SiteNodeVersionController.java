@@ -308,6 +308,26 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersionVO;
     }
     
+	
+	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+    	SiteNodeVersionVO siteNodeVersionVO = null;
+
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
+    	oql.bind(siteNodeId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+        {
+        	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+        	CmsLogger.logInfo("found one:" + siteNodeVersion.getValueObject());
+        	siteNodeVersionVO = siteNodeVersion.getValueObject();
+        }
+    	
+		return siteNodeVersionVO;
+    }
+
 	/**
 	 * This is a method used to get the latest site node version of a sitenode within a given transaction.
 	 */
