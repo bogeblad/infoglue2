@@ -299,8 +299,8 @@ public class SiteNodeStateController extends BaseController
 					
 					CmsLogger.logInfo("language:" + language.getId());
 					
-					if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
-						throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
+					//if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
+					//	throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
 	
 					if(contentVersion != null)
 					{
