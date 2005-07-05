@@ -45,6 +45,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PageTemplateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
@@ -53,6 +54,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionCon
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -178,30 +180,16 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 	
 	public List getSortedPageTemplates(String sortProperty) throws Exception
 	{
-		List components = getPageTemplates();
+		SiteNodeVO parentSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.parentSiteNodeId);
+		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(parentSiteNodeVO.getRepositoryId());
+
+		List components = PageTemplateController.getController().getPageTemplates(masterLanguageVO.getId());
+		
 		Collections.sort(components, new ReflectionComparator(sortProperty));
 		
 		return components;
 	}
-	
-	/**
-	 * This method returns the contents that are of contentTypeDefinition "PageTemplate"
-	 */
-	
-	public List getPageTemplates() throws Exception
-	{
-		HashMap arguments = new HashMap();
-		arguments.put("method", "selectListOnContentTypeName");
 		
-		List argumentList = new ArrayList();
-		HashMap argument = new HashMap();
-		argument.put("contentTypeDefinitionName", "PageTemplate");
-		argumentList.add(argument);
-		arguments.put("arguments", argumentList);
-		
-		return ContentController.getContentController().getContentVOList(arguments);
-	}
-	
 	
 	/**
 	 * This method fetches an url to the asset for the component.

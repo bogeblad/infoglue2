@@ -70,6 +70,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private String url			= null;
 	private Integer direction 	= null;
 	private boolean showSimple 	= false;
+	private Integer pageTemplateContentId;
 	
 	LanguageVO masterLanguageVO = null;
 	
@@ -241,6 +242,55 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		return attribute;
 	}	
 	
+	
+	/**
+	 * This method adds a page template to a sitenode. 
+	 */
+    
+	public String doAddPageTemplate() throws Exception
+	{
+		CmsLogger.logInfo("************************************************************");
+		CmsLogger.logInfo("* ADDING PAGE TEMPLATE                                     *");
+		CmsLogger.logInfo("************************************************************");
+		CmsLogger.logInfo("siteNodeId:" + this.siteNodeId);
+		CmsLogger.logInfo("languageId:" + this.languageId);
+		CmsLogger.logInfo("contentId:" + this.contentId);
+		CmsLogger.logInfo("pageTemplateContentId:" + this.pageTemplateContentId);
+		CmsLogger.logInfo("specifyBaseTemplate:" + this.specifyBaseTemplate);
+
+		initialize();
+
+		Integer newComponentId = new Integer(0);
+
+		boolean USE_LANGUAGE_FALLBACK        			= true;
+		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
+		
+		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
+		
+		if(this.pageTemplateContentId != null)
+		{
+		    Integer languageId = LanguageController.getController().getMasterLanguage(this.repositoryId).getId();
+			ContentVersionVO pageTemplateContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.pageTemplateContentId, languageId);
+			
+		    String componentXML = ContentVersionController.getContentVersionController().getAttributeValue(pageTemplateContentVersionVO.getId(), "ComponentStructure", false);
+		
+			ContentVO pageMetaInfoContentVO = nodeDeliveryController.getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information", DeliveryContext.getDeliveryContext());
+			//ContentVO templateContentVO = nodeDeliveryController.getBoundContent(siteNodeId, "Meta information");		
+			
+			//CmsLogger.logInfo("templateContentVO:" + templateContentVO);
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(pageMetaInfoContentVO.getId(), languageId);
+			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", componentXML, new InfoGluePrincipal("ComponentEditor", "none", "none", "none", new ArrayList(), new ArrayList(), true));
+		}
+		
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + newComponentId + "&showSimple=" + this.showSimple;
+		//this.getResponse().sendRedirect(url);		
+		
+		this.url = this.getResponse().encodeURL(url);
+		this.getResponse().sendRedirect(url);
+	    return NONE; 
+	}
+
 	/**
 	 * This method shows the user a list of Components(HTML Templates). 
 	 */
@@ -1353,5 +1403,15 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
     public void setShowSimple(boolean showSimple)
     {
         this.showSimple = showSimple;
+    }
+    
+    public Integer getPageTemplateContentId()
+    {
+        return pageTemplateContentId;
+    }
+    
+    public void setPageTemplateContentId(Integer pageTemplateContentId)
+    {
+        this.pageTemplateContentId = pageTemplateContentId;
     }
 }
