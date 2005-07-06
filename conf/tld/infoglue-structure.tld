@@ -206,4 +206,37 @@
     	</attribute>   	
     </tag>
 
+	<tag>
+        <name>hasDefinedProperty</name>
+        <tagclass>org.infoglue.deliver.taglib.structure.HasDefinedPropertyTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>ComponentLogic.getHasDefinedProperty(Integer siteNodeId, Integer languageId, String propertyName, boolean useInheritance)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>siteNodeId</name>
+        	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>languageId</name>
+        	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyName</name>
+        	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useInheritance</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>   	
+    </tag>
+
+
 </taglib>

@@ -32,8 +32,13 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class RepositoryDeliveryController extends BaseDeliveryController
@@ -142,6 +147,17 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 		return repositoryVOList;	
 	}
 
+	/**
+	 * This method fetches a property for a repository.
+	 */
 	
+	public String getPropertyValue(Integer repositoryId, String propertyName) 
+	{
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    return ps.getString("repository_" + repositoryId + "_" + propertyName);
+	}
 
 }

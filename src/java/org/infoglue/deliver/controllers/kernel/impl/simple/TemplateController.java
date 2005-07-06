@@ -640,6 +640,30 @@ public interface TemplateController
      */
     public abstract String getDigitalAssetBaseUrl() throws Exception;
 
+	/**
+	 * This method returns the parent repositoryId if any for the given repository.
+	 */
+	
+	public Integer getParentRepositoryId(Integer repositoryId);
+
+	/**
+	 * This method returns the parent repositoryId if any for the given repository.
+	 */
+	
+	public Integer getParentRepositoryId();
+
+	/**
+	 * This method returns the root node for the current repository.
+	 */
+	
+	public SiteNodeVO getRepositoryRootSiteNode() throws Exception;
+
+	/**
+	 * This method returns the root node for the current repository.
+	 */
+	
+	public SiteNodeVO getRepositoryRootSiteNode(Integer repositoryId) throws Exception;
+
     /**
      * This method returns the base url for the digital assets.
      */
@@ -673,6 +697,18 @@ public interface TemplateController
      * Getter for bound contentId for a binding
      */
     public abstract Integer getContentId(String contentBindningName);
+
+	/**
+	 * This method gets the meta information of the current sitenode.
+	 */
+	
+	public Integer getMetaInformationContentId();
+	
+	/**
+	 * This method gets the meta information of a particular sitenode.
+	 */
+	
+	public Integer getMetaInformationContentId(Integer siteNodeId);
 
     /**
      * This method gets the children of a content.

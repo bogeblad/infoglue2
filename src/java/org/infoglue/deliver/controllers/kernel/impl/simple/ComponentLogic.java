@@ -316,6 +316,81 @@ public class ComponentLogic
 	}
 	*/
 	
+	public Integer getContentId(Map property)
+	{
+	    Integer contentId = null;
+
+	    if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				contentId = new Integer((String)bindings.get(0));
+			}
+		}
+
+		return contentId;
+	}
+
+	public List getBoundContents(Map property)
+	{
+	    List contents = new ArrayList();
+
+	    if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer contentId = new Integer((String)bindingsIterator.next());
+				contents.add(this.templateController.getContent(contentId));
+			}
+		}
+
+		return contents;
+	}
+
+	public Integer getSiteNodeId(Map property)
+	{
+	    Integer siteNodeId = null;
+
+	    if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+			    siteNodeId = new Integer((String)bindings.get(0));
+			}
+		}
+
+		return siteNodeId;
+	}
+
+	public List getBoundPages(Map property)
+	{
+		List pages = new ArrayList();
+
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				WebPage webPage = new WebPage();						
+				webPage.setSiteNodeId(siteNodeId);
+				webPage.setLanguageId(templateController.getLanguageId());
+				webPage.setContentId(null);
+				webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+				webPage.setMetaInfoContentId(templateController.getContentId(siteNodeId, DeliveryContext.META_INFO_BINDING_NAME));
+				webPage.setUrl(getPageUrl(siteNodeId));
+				pages.add(webPage);
+			}
+		}
+
+		return pages;
+	}
+
 	
 	public String getContentAttribute(String propertyName, String attributeName, boolean disableEditOnSight, boolean useInheritance)
 	{
@@ -781,6 +856,118 @@ public class ComponentLogic
 	}
 	
 	/**
+	 * This method gets if a property is defined and available in the given page.
+	 */
+
+	public boolean getHasDefinedProperty(Integer siteNodeId, Integer languageId, String propertyName, boolean useInheritance)
+	{
+	    Map property = getComponentProperty(siteNodeId, languageId, propertyName, useInheritance);
+	    
+	    return property == null ? false : true;
+	}   
+
+	
+	/**
+	 * This method gets a property from the sitenode given and also looks recursively upwards.
+	 */
+
+	public Map getComponentProperty(Integer siteNodeId, Integer languageId, String propertyName, boolean useInheritance)
+	{
+	    Map componentProperty = getComponentProperty(siteNodeId, languageId, propertyName);
+	    
+	    SiteNodeVO parentSiteNodeVO = this.templateController.getParentSiteNode(siteNodeId);
+	    while(componentProperty == null && useInheritance && parentSiteNodeVO != null)
+	    {
+	        componentProperty = getComponentProperty(parentSiteNodeVO.getId(), languageId, propertyName);
+	        parentSiteNodeVO = this.templateController.getParentSiteNode(parentSiteNodeVO.getId());
+	    }
+	    
+	    return componentProperty;
+	}   
+	    
+	/**
+	 * This method gets a property from the sitenode given	.
+	 */
+
+	public Map getComponentProperty(Integer siteNodeId, Integer languageId, String propertyName)
+	{
+	    try
+		{
+	        String componentPropertiesXML = getPageComponentsString(this.templateController, siteNodeId, languageId, new Integer(-1));
+	        //System.out.println("componentPropertiesXML:" + componentPropertiesXML);
+	        
+	        HashMap property = null;
+			
+			if(componentPropertiesXML != null && componentPropertiesXML.length() > 0)
+			{
+				Document document = XMLHelper.readDocumentFromByteArray(componentPropertiesXML.getBytes("UTF-8"));
+				String propertyXPath = "//component/properties/property[@name='" + propertyName + "']";
+				//System.out.println("propertyXPath:" + propertyXPath);
+				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
+				//System.out.println("*********************************************************anl:" + anl.getLength());
+								
+				for(int i=0; i < anl.getLength(); i++)
+				{
+					Element propertyElement = (Element)anl.item(i);
+
+					String name		= propertyElement.getAttribute("name");
+					String type		= propertyElement.getAttribute("type");
+					String entity 	= propertyElement.getAttribute("entity");
+					boolean isMultipleBinding = new Boolean(propertyElement.getAttribute("multiple")).booleanValue();
+					
+					String value = null;
+					
+					if(type.equalsIgnoreCase("textfield"))
+					{
+					    value = propertyElement.getAttribute("path");
+
+					    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
+
+					    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
+						    value = propertyElement.getAttribute("path_" + locale.getLanguage());
+					}
+					
+					property = new HashMap();
+					property.put("name", name);
+					property.put("path", value);
+					property.put("type", type);
+					
+					List bindings = new ArrayList();
+					NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
+					//CmsLogger.logInfo("bindingNodeList:" + bindingNodeList.getLength());
+					for(int j=0; j < bindingNodeList.getLength(); j++)
+					{
+						Element bindingElement = (Element)bindingNodeList.item(j);
+						String entityName = bindingElement.getAttribute("entity");
+						String entityId = bindingElement.getAttribute("entityId");
+						//CmsLogger.logInfo("Binding found:" + entityName + ":" + entityId);
+						if(entityName.equalsIgnoreCase("Content"))
+						{
+							//CmsLogger.logInfo("Content added:" + entityName + ":" + entityId);
+							bindings.add(entityId);
+						}
+						else
+						{
+							//CmsLogger.logInfo("SiteNode added:" + entityName + ":" + entityId);
+							bindings.add(entityId); 
+						} 
+					}
+
+					property.put("bindings", bindings);
+				}
+			}
+			
+			return property;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	/**
 	 * This method returns a url to the given page. The url is composed of siteNode, language and content
 	 * TODO - temporary dev solution
 	 */
@@ -821,7 +1008,20 @@ public class ComponentLogic
 				while(property == null && parentSiteNodeVO != null)
 				{
 				    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
-					parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(templateController.getDatabase(), parentSiteNodeVO.getId());
+					
+				    SiteNodeVO newParentSiteNodeVO = nodeDeliveryController.getParentSiteNode(templateController.getDatabase(), parentSiteNodeVO.getId());
+					if(newParentSiteNodeVO == null)
+					{
+					    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
+					    //System.out.println("parentRepositoryId:" + parentRepositoryId);
+					    if(parentRepositoryId != null)
+					    {
+					        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
+					        //System.out.println("Found parentSiteNodeVO:" + newParentSiteNodeVO);
+					    }
+					}
+					
+					parentSiteNodeVO = newParentSiteNodeVO;
 				}
 			}
 			catch(Exception e)
@@ -829,7 +1029,9 @@ public class ComponentLogic
 				e.printStackTrace();
 			}
 		}
-		
+
+        //System.out.println("Done..." + propertyName);
+
 		return property;
 	}
 	
@@ -949,7 +1151,7 @@ public class ComponentLogic
     	
 		try
 		{
-			template = templateController.getContentAttribute(contentId, "ComponentProperties", true);
+			template = templateController.getContentAttribute(contentId, "ComponentStructure", true);
 
 			if(template == null)
 				throw new SystemException("There was no component properties bound to this page which makes it impossible to render.");	

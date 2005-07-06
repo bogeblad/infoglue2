@@ -1248,31 +1248,43 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * If the repositoryName is null we fetch the name of the master repository.
 	 */
 	
-	public static SiteNodeVO getRootSiteNode(Database db, Integer repositoryId) throws SystemException, Exception
+	public SiteNodeVO getRootSiteNode(Database db, Integer repositoryId) throws SystemException, Exception
 	{
-		if(repositoryId == null)
-		{
-			repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
-			CmsLogger.logInfo("Fetched name of master repository as none were given:" + repositoryId);
-		}
-		 
-        SiteNode siteNode = null;
+	    SiteNodeVO siteNodeVO = null;
 
-        CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryId);
-		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.id = $1");
-		oql.bind(repositoryId);
-		
-    	QueryResults results = oql.execute();
-		
-		if (results.hasMore()) 
-        {
-        	siteNode = (SiteNode)results.next();
-			CmsLogger.logInfo("The root node was found:" + siteNode.getName());
-        }
-        
-		CmsLogger.logInfo("siteNode:" + siteNode);
-		
-        return (siteNode == null) ? null : siteNode.getValueObject();	
+        String key = "" + repositoryId;
+		CmsLogger.logInfo("key in getRootSiteNode:" + key);
+		siteNodeVO = (SiteNodeVO)CacheController.getCachedObject("rootSiteNodeCache", key);
+		if(siteNodeVO != null)
+		{
+		    CmsLogger.logInfo("There was an cached master root siteNode:" + siteNodeVO.getName());
+		}
+		else
+		{
+			if(repositoryId == null)
+			{
+				repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
+				CmsLogger.logInfo("Fetched name of master repository as none were given:" + repositoryId);
+			}
+			
+	        CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryId);
+			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository = $1");
+			oql.bind(repositoryId);
+			
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			
+	    	if (results.hasMore()) 
+	        {
+	        	siteNodeVO = ((SiteNode)results.next()).getValueObject();
+				CmsLogger.logInfo("The root node was found:" + siteNodeVO.getName());
+	        }
+
+			CmsLogger.logInfo("siteNodeVO:" + siteNodeVO);
+
+			CacheController.cacheObject("rootSiteNodeCache", key, siteNodeVO);
+		}
+
+        return siteNodeVO;	
 	}
 
 

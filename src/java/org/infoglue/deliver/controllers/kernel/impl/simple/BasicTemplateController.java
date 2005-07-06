@@ -2710,7 +2710,52 @@ public class BasicTemplateController implements TemplateController
 		
 		return url;
 	}
+
+	/**
+	 * This method returns the root node for the current repository.
+	 */
 	
+	public SiteNodeVO getRepositoryRootSiteNode() throws Exception
+	{
+	    Integer repositoryId = this.getSiteNode(this.siteNodeId).getRepositoryId();
+	    SiteNodeVO siteNodeVO = getRepositoryRootSiteNode(repositoryId);		
+
+	    return siteNodeVO;
+	}
+
+	/**
+	 * This method returns the root node for the current repository.
+	 */
+	
+	public SiteNodeVO getRepositoryRootSiteNode(Integer repositoryId) throws Exception
+	{
+	    SiteNodeVO siteNodeVO = this.nodeDeliveryController.getRootSiteNode(getDatabase(), repositoryId);		
+
+	    return siteNodeVO;
+	}
+
+	/**
+	 * This method returns the parent repositoryId if any for the given repository.
+	 */
+	
+	public Integer getParentRepositoryId(Integer repositoryId)
+	{
+	    String parentRepository = RepositoryDeliveryController.getRepositoryDeliveryController().getPropertyValue(repositoryId, "parentRepository");
+	    if(parentRepository != null && !parentRepository.equalsIgnoreCase(""))
+	        return new Integer(parentRepository);
+	    else
+	        return null;
+	}
+
+	/**
+	 * This method returns the parent repositoryId if any for the given repository.
+	 */
+	
+	public Integer getParentRepositoryId()
+	{
+	    Integer repositoryId = this.getSiteNode(this.siteNodeId).getRepositoryId();
+	    return getParentRepositoryId(repositoryId);
+	}
 
 	/**
 	 * This method deliveres a String with the URL to the page asked for.
