@@ -60,16 +60,16 @@ public class AssetUrlTag extends ComponentLogicTag
             if(contentId != null)
             {
 	            if(assetKey != null)
-	                write(getController().getAssetUrl(contentId, assetKey));
+	                produceResult(getController().getAssetUrl(contentId, assetKey));
 	            else
-	                write(getController().getAssetUrl(contentId));    
+	                produceResult(getController().getAssetUrl(contentId));    
             }
             else if(propertyName != null)
             {
 	            if(assetKey != null)
-	                write(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance));
+	                produceResult(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance));
 	            else
-	                write(getComponentLogic().getAssetUrl(propertyName, useInheritance));                    
+	                produceResult(getComponentLogic().getAssetUrl(propertyName, useInheritance));                    
             }
             else
             {
@@ -99,8 +99,8 @@ public class AssetUrlTag extends ComponentLogicTag
         this.useInheritance = useInheritance;
     }
     
-    public void setContentId(Integer contentId)
+    public void setContentId(String contentId) throws JspException
     {
-        this.contentId = contentId;
+        this.contentId = evaluateInteger("assetUrl", "contentId", contentId);
     }
 }
