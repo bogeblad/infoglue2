@@ -288,6 +288,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("rootSiteNodeCache") && entity.indexOf("SiteNode") > 0)
+				{
+					clear = true;
+				}
 				
 				if(clear)
 				{	
