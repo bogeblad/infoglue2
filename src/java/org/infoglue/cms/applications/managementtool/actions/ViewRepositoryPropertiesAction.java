@@ -57,6 +57,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	private String stylesXML					= null;
 	private String defaultFolderContentTypeName = null;	
 	private String defaultTemplateRepository 	= null;	
+	private String parentRepository 			= null;	
 
 	
     public ViewRepositoryPropertiesAction()
@@ -83,6 +84,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 
 	    this.defaultFolderContentTypeName 	= ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
 	    this.defaultTemplateRepository	 	= ps.getString("repository_" + this.getRepositoryId() + "_defaultTemplateRepository");
+	    this.parentRepository	 			= ps.getString("repository_" + this.getRepositoryId() + "_parentRepository");
     } 
 
     /**
@@ -110,6 +112,12 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    ps.setData("repository_" + this.getRepositoryId() + "_StylesXML", stylesXML.getBytes("utf-8"));
 	    ps.setString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", defaultFolderContentTypeName);
 	    ps.setString("repository_" + this.getRepositoryId() + "_defaultTemplateRepository", defaultTemplateRepository);
+	    ps.setString("repository_" + this.getRepositoryId() + "_parentRepository", parentRepository);
+	    
+	    //TODO - hack to get the caches to be updated when properties are affected..
+	    RepositoryVO repositoryVO = RepositoryController.getController().getFirstRepositoryVO();
+	    repositoryVO.setDescription(repositoryVO.getDescription() + ".");
+	    RepositoryController.getController().update(repositoryVO);
 	    
     	return "save";
     }
@@ -181,6 +189,16 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
     public void setDefaultTemplateRepository(String defaultTemplateRepository)
     {
         this.defaultTemplateRepository = defaultTemplateRepository;
+    }
+
+    public String getParentRepository()
+    {
+        return parentRepository;
+    }
+    
+    public void setParentRepository(String parentRepository)
+    {
+        this.parentRepository = parentRepository;
     }
 
     public List getContentTypeDefinitionVOList()

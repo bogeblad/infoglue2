@@ -23,8 +23,18 @@
 			<p>
 				$ui.getString("entity.Repository.property.defaultTemplateRepository.label")<br/>
 				<select class="siteNodetypes" name="defaultTemplateRepository">
+					<option value="">None</option>
 				#foreach ($repositoryVO in $repositoryVOList)
 					<option value="$repositoryVO.getId()" #if($defaultTemplateRepository == "$repositoryVO.getId()")selected="1"#end>$repositoryVO.getName()</option>
+				#end
+				</select>				
+			</p>
+			<p>
+				$ui.getString("entity.Repository.property.parentRepository.label")<br/>
+				<select class="siteNodetypes" name="parentRepository">
+					<option value="">None</option>
+				#foreach ($repositoryVO in $repositoryVOList)
+					<option value="$repositoryVO.getId()" #if($parentRepository == "$repositoryVO.getId()")selected="1"#end>$repositoryVO.getName()</option>
 				#end
 				</select>				
 			</p>
