@@ -58,9 +58,9 @@ public class ChildPagesTag extends ComponentLogicTag {
 		this.propertyName = name;
 	}
 	
-    public void setSiteNodeId(Integer siteNodeId)
+    public void setSiteNodeId(String siteNodeId) throws JspException
     {
-        this.siteNodeId = siteNodeId;
+        this.siteNodeId = evaluateInteger("ChildPagesTag", "siteNodeId", siteNodeId);
     }
     
     public void setUseInheritance(boolean useInheritance)

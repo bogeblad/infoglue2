@@ -74,9 +74,9 @@ public class RelatedPagesTag extends ComponentLogicTag {
         this.attributeName = attributeName;
     }
     
-    public void setContentId(Integer contentId)
+    public void setContentId(String contentId) throws JspException
     {
-        this.contentId = contentId;
+        this.contentId = evaluateInteger("RelatedPagesTag", "contentId", contentId);
     }
     
     public void setUseInheritance(boolean useInheritance)
