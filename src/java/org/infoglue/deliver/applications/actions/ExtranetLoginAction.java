@@ -72,10 +72,8 @@ public final class ExtranetLoginAction extends WebworkAbstractAction
 	// To check access 
 	public String doCheckUser() throws Exception
 	{
-	    Map arguments = new HashMap();
-	    arguments.put("userName", userName);
-	    arguments.put("password", password);
-	    
+	    Map arguments = HttpUtilities.requestToHashtable((HttpServletRequest)this.getRequest());
+
 		if(ExtranetController.getController().getAuthenticatedPrincipal(arguments)!=null)
 			return "granted";
 		else
