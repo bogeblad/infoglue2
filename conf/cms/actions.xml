@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.6 2005/07/02 23:06:00 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.7 2005/07/07 21:33:49 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -828,6 +828,10 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewStructureRelationEditorAction" alias="ViewStructureRelationEditor">
 		<view name="success">/cms/contenttool/viewStructureRelationEditor.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.contenttool.actions.ViewComponentPropertiesEditorAction" alias="ViewComponentPropertiesEditor">
+		<view name="success">/cms/contenttool/viewComponentPropertiesEditor.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 

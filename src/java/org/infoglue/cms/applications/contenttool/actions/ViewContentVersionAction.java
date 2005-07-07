@@ -37,6 +37,7 @@ import org.dom4j.Element;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ComponentPropertyDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -129,6 +130,12 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	    return parseQualifyersFromXML(qualifyerXML, "siteNodeId");
 	}
 
+	public List getComponentPropertyDefinitions(String componentPropertiesXML)
+	{
+	    return ComponentPropertyDefinitionController.getController().parseComponentPropertyDefinitions(componentPropertiesXML);
+	}
+    
+	
 	private List parseQualifyersFromXML(String qualifyerXML, String currentEntityIdentifyer)
 	{
 		List qualifyers = new ArrayList(); 
