@@ -45,7 +45,6 @@ public class ViewComponentPropertiesEditorAction extends InfoGlueAbstractAction
     private void initialize() throws Exception
     {
         String componentPropertiesXML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionId, attributeName, false);
-        System.out.println("componentPropertiesXML:" + componentPropertiesXML);
         this.componentPropertyDefinitions = ComponentPropertyDefinitionController.getController().parseComponentPropertyDefinitions(componentPropertiesXML);        
         this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.CONTENT);
     }

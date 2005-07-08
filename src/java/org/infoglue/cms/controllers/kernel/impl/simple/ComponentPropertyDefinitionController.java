@@ -101,10 +101,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String multiple 				= propertyElement.getAttribute("multiple");
 				    String allowedContentTypeNames 	= propertyElement.getAttribute("allowedContentTypeDefinitionNames");
 				    String description				= propertyElement.getAttribute("description");
-				    
-				    System.out.println("name:" + name);
-				    System.out.println("allowedContentTypeNames:" + allowedContentTypeNames);
-				    
+				    				    
 				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), allowedContentTypeNames, description);
 				    
 				    componentPropertyDefinitions.add(cpd);

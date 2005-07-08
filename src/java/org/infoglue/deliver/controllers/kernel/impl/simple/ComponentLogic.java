@@ -30,6 +30,7 @@ import org.infoglue.cms.exception.*;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
 
@@ -1197,7 +1198,47 @@ public class ComponentLogic
 		
 		return value;
 	}
+
+	/**
+	 * This method returns all components which are on slots under the current component.
+	 */
 	
+	public List getChildComponents()
+	{
+	    return getChildComponents(this.getInfoGlueComponent(), null);
+	}
+	
+	/**
+	 * This method returns all components which are on a given slots under the current component.
+	 */
+	
+	public List getChildComponents(String slotId)
+	{
+	    return getChildComponents(this.getInfoGlueComponent(), slotId);
+	}
+	
+	/**
+	 * This method returns all components which are on slots under the current component.
+	 */
+	
+	public List getChildComponents(InfoGlueComponent component, String slotId)
+	{
+        List childComponents = new ArrayList();
+        
+	    List slotList = component.getSlotList();
+        
+        Iterator slotListIterator = slotList.iterator();
+        while(slotListIterator.hasNext())
+        {
+            Slot slot = (Slot)slotListIterator.next();
+            if(slotId == null || slotId.equalsIgnoreCase(slot.getId()))
+            {
+                childComponents.addAll(slot.getComponents());
+            }
+        }
+        
+        return childComponents;
+	}
 	
 	/**
 	 * This method fetches the pageComponent structure from the metainfo content.
