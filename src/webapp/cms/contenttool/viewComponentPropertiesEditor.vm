@@ -13,7 +13,7 @@
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
 	<script language="JavaScript"> 
-		window.resizeTo(700,600);
+		window.resizeTo(800,600);
 	</script> 
 		
 	<script type="text/javascript" language="JavaScript">
@@ -38,7 +38,9 @@
 				propertyType   	= property.getType();
 				propertyEntity 	= property.getEntity();
 				propertyMultiple= property.getMultiple();
-				propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "'/>";
+				propertyDescription= property.getDescription();
+				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
+				propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -55,7 +57,7 @@
 		   	propertiesXML = createXML();
 			document.inputForm.propertiesXML.value = propertiesXML;
 		    showDiv("savingLayer");
-			alert("propertiesXML:" + propertiesXML);
+			//alert("propertiesXML:" + propertiesXML);
 			document.inputForm.submit();
 		}
 	
@@ -103,22 +105,50 @@
 
 			var componentPropertyDefinition = propertyVector.getElementAt(index);
 
-			document.getElementById("componentPropertyDefinition_name").value = componentPropertyDefinition.name;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_name.value = componentPropertyDefinition.name;
 			
 			if(componentPropertyDefinition.type == "binding")
-				document.getElementById("componentPropertyDefinition_type").options[0].selected = 1;
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[0].selected = 1;
 			else
-				document.getElementById("componentPropertyDefinition_type").options[1].selected = 1;
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[1].selected = 1;
 
 			if(componentPropertyDefinition.entity == "Content")
-				document.getElementById("componentPropertyDefinition_entity").options[0].selected = 1;
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_entity.options[0].selected = 1;
 			else
-				document.getElementById("componentPropertyDefinition_entity").options[1].selected = 1;
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_entity.options[1].selected = 1;
 			
 			if(componentPropertyDefinition.multiple == "false")
-				document.getElementById("componentPropertyDefinition_multiple").options[0].selected = 1;
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_multiple.options[0].selected = 1;
 			else
-				document.getElementById("componentPropertyDefinition_multiple").options[1].selected = 1;
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_multiple.options[1].selected = 1;
+
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_description.value = componentPropertyDefinition.description;
+			
+			var allowedContentTypeNamesArray = componentPropertyDefinition.getAllowedContentTypeNames().split(",");
+			var selObject = document.componentPropertyDefinitionForm.componentPropertyDefinition_allowedContentTypeNames;
+
+			var length = selObject.options.length - 1;
+			for(i=0; i<length; i++)
+			{
+				isAllowed = false;
+				for(j=0; j<allowedContentTypeNamesArray.length; j++)
+				{
+					if(allowedContentTypeNamesArray[j] == selObject.options[i].value)
+					{
+						//alert("" + allowedContentTypeNamesArray[j] + " == " + selObject.options[i].value);
+						isAllowed = true;
+					}
+				}
+				
+				if (isAllowed) 
+				{
+					selObject.options[i].selected = "true";
+				}
+				else
+				{
+					selObject.options[i].selected = null;
+				}
+			}
 			
 			componentPropertyDefinitionDiv.style.visibility = 'visible';
 		}
@@ -131,18 +161,33 @@
 		
 		function updateProperties()
 		{
-			alert("Updating property");
+			//alert("Updating property");
 			componentPropertyDefinitionDiv = document.getElementById("componentPropertyDefinition");
 
 			var componentPropertyDefinition = propertyVector.getElementAt(itemIndex);
-			alert("componentPropertyDefinition:" + componentPropertyDefinition.getName());
+			//alert("componentPropertyDefinition:" + componentPropertyDefinition.getName());
 
 			componentPropertyDefinition.setName(document.getElementById("componentPropertyDefinition_name").value);
 			componentPropertyDefinition.setType(document.getElementById("componentPropertyDefinition_type").value);
 			componentPropertyDefinition.setEntity(document.getElementById("componentPropertyDefinition_entity").value);
 			componentPropertyDefinition.setMultiple(document.getElementById("componentPropertyDefinition_multiple").value);
-
-			componentPropertyDefinition.setAllowedContentTypeNames(document.getElementById("componentPropertyDefinition_allowedContentTypeNames").value);
+			componentPropertyDefinition.setDescription(document.getElementById("componentPropertyDefinition_description").value);
+			
+			var selObject = document.getElementById("componentPropertyDefinition_allowedContentTypeNames");
+			var length = selObject.options.length - 1;
+			var allowedContentTypeNames = "";
+			for(i=0; i<length; i++)
+			{
+				if (selObject.options[i].selected) 
+				{
+			      	if(allowedContentTypeNames != "")
+						allowedContentTypeNames += ",";
+						
+					allowedContentTypeNames = allowedContentTypeNames + selObject.options[i].value;
+				}
+			}
+			
+			componentPropertyDefinition.setAllowedContentTypeNames(allowedContentTypeNames);
 			
 			hideProperties();
 		}
@@ -162,7 +207,7 @@
 			mytable.setAttribute("id", "properties");
 			mytable.setAttribute("border", "0");
 			mytable.setAttribute("width", "100%");
-			mytable.setAttribute("cellpadding", "0");
+			mytable.setAttribute("cellpadding", "2");
 			mytable.setAttribute("cellspacing", "0");
 	        mytablebody = document.createElement("TBODY");
 	        for (var i=0; i<propertyVector.getSize(); i++)
@@ -172,6 +217,7 @@
 				var myTR = document.createElement("TR");
 				var actionTD = document.createElement("TD");
 				actionTD.setAttribute("width", "50");
+				actionTD.setAttribute("valign", "top");
 				addImageLink(actionTD, "javascript:movePropertyDown(" + i + ");", "images/downArrow.gif");
 				addImageLink(actionTD, "javascript:movePropertyUp(" + i + ");", "images/upArrow.gif");
 				addImageLink(actionTD, "javascript:deleteProperty(" + i + ");", "images/delete.gif");
@@ -182,6 +228,7 @@
 				addTD(myTR, componentPropertyDefinition.entity)
 				addTD(myTR, componentPropertyDefinition.multiple)
 				addTD(myTR, componentPropertyDefinition.allowedContentTypeNames)
+				addTD(myTR, componentPropertyDefinition.description)
 
 				var actionTD = document.createElement("TD");
 				addImageLink(actionTD, "javascript:showProperties(" + i + ");", "images/properties.gif");
@@ -198,6 +245,7 @@
 		{
 			var propertyTD = document.createElement("TD");
 			propertyTD.setAttribute("align", "left");
+			propertyTD.setAttribute("valign", "top");
 			var propertyText = document.createTextNode(text);
 			propertyTD.appendChild(propertyText);
 			tr.appendChild(propertyTD);
@@ -220,7 +268,7 @@
 
 		function addProperty()
 		{
-			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false");
+			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false", "", "No description yet");
 			propertyVector.addElement(property);
 				
 			drawList();
@@ -241,16 +289,22 @@
 				type		= property.getType();
 				entity		= property.getEntity();
 				multiple 	= property.getMultiple();
+				allowedContentTypeNames = property.getAllowedContentTypeNames();
+				description = property.getDescription();
 				
-				property.setName(previousProperty.getName())
-				property.setType(previousProperty.getType())
-				property.setEntity(previousProperty.getEntity())
-				property.setMultiple(previousProperty.getMultiple())
-			
+				property.setName(previousProperty.getName());
+				property.setType(previousProperty.getType());
+				property.setEntity(previousProperty.getEntity());
+				property.setMultiple(previousProperty.getMultiple());
+				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
+				property.setDescription(previousProperty.getDescription());
+				
 				previousProperty.setName(name)
 				previousProperty.setType(type)
 				previousProperty.setEntity(entity)
 				previousProperty.setMultiple(multiple)
+				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
+				previousProperty.setDescription(description);
 				
 				drawList();
 			}			
@@ -271,16 +325,22 @@
 				type		= property.getType();
 				entity		= property.getEntity();
 				multiple 	= property.getMultiple();
+				allowedContentTypeNames = property.getAllowedContentTypeNames();
+				description = property.getDescription();
 				
 				property.setName(previousProperty.getName())
 				property.setType(previousProperty.getType())
 				property.setEntity(previousProperty.getEntity())
 				property.setMultiple(previousProperty.getMultiple())
-			
+				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
+				property.setDescription(previousProperty.getDescription());
+				
 				previousProperty.setName(name)
 				previousProperty.setType(type)
 				previousProperty.setEntity(entity)
 				previousProperty.setMultiple(multiple)
+				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
+				previousProperty.setDescription(description);
 			
 				drawList();
 			}
@@ -295,7 +355,7 @@
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
 				//alert("$propertyDefinition");
 				
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.allowedContentTypeNames");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description");
 				propertyVector.addElement(property);
 			#end
 	
@@ -318,6 +378,7 @@
 </div>
 
 <div id="componentPropertyDefinition" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:150px; visibility:hidden; z-index:1">
+	<form name="componentPropertyDefinitionForm">
 	<table border="0" cellpadding="4" cellspacing="0">
 	<tr>
 		<td colspan="2" class="propertiesheader">Edit component property</td>
@@ -328,14 +389,20 @@
 	<tr>
 		<td><b>Name</b></td>
 		<td>
-			<input type="textfield" id="componentPropertyDefinition_name" value=""/>
+			<input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/>
+		</td>
+	</tr>
+	<tr>
+		<td><b>Description</b></td>
+		<td>
+			<input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/>
 		</td>
 	</tr>
 	<tr>
 		<td><b>Property type</b></td>
 		<td>
-			<select size="1" id="componentPropertyDefinition_type" class="sitedropbox">
-			    <option value="bidning">binding</option>
+			<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox">
+			    <option value="binding">binding</option>
 			    <option value="textfield">textfield</option>
 			 </select>
 		</td>
@@ -343,7 +410,7 @@
 	<tr>
 		<td><b>Entity</b></td>
 		<td>
-			<select size="1" id="componentPropertyDefinition_entity" class="sitedropbox">
+			<select size="1" name="componentPropertyDefinition_entity" id="componentPropertyDefinition_entity" class="sitedropbox">
 			    <option value="Content">Content</option>
 			    <option value="SiteNode">SiteNode</option>
 			 </select>
@@ -352,7 +419,7 @@
 	<tr>
 		<td><b>Multiple</b></td>
 		<td>
-			<select size="1" id="componentPropertyDefinition_multiple" class="sitedropbox">
+			<select size="1" name="componentPropertyDefinition_multiple" id="componentPropertyDefinition_multiple" class="sitedropbox">
 			    <option value="false">No</option>
 			    <option value="true">Yes</option>
 			 </select>
@@ -361,7 +428,7 @@
 	<tr>
 		<td><b>Allowed content type(s)</b></td>
 		<td>
-			<select id="componentPropertyDefinition_allowedContentTypeNames" class="sitedropbox" multiple="true" size="5">
+			<select name="componentPropertyDefinition_allowedContentTypeNames" id="componentPropertyDefinition_allowedContentTypeNames" class="sitedropbox" multiple="true" size="5">
 			    <option value="">Select 0..n</option>
 			    #foreach($contentTypeDefinition in $contentTypeDefinitions)
 			    <option value="$contentTypeDefinition.name">$contentTypeDefinition.name</option>
@@ -382,6 +449,7 @@
 		</td>
 	</tr>
 	</table>
+	</form>
 </div>
 
 <table class="contenttooledit" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -398,6 +466,9 @@
 		<tr>
 			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
+		<tr>
+			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
+		</tr>		
 		<tr>
 			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
 		</tr>		

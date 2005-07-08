@@ -12,25 +12,28 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, type, entity, multiple, allowedContentTypeNames)
+function ComponentPropertyDefinition(name, type, entity, multiple, allowedContentTypeNames, description)
 {
-	this.name 		= name;
-	this.type 		= type;
-	this.entity		= entity;
-	this.multiple	= multiple;
-	this.allowedContentTypeNames = allowedContentTypeNames;
+	this.name 						= name;
+	this.type 						= type;
+	this.entity						= entity;
+	this.multiple					= multiple;
+	this.allowedContentTypeNames 	= allowedContentTypeNames;
+	this.description				= description;
   
   	this.getName 					= getName;
   	this.getType 					= getType;
   	this.getEntity 					= getEntity;
   	this.getMultiple				= getMultiple;
   	this.getAllowedContentTypeNames = getAllowedContentTypeNames;
-
+	this.getDescription				= getDescription;
+	
   	this.setName 					= setName;
   	this.setType 					= setType;
   	this.setEntity 					= setEntity;
   	this.setMultiple				= setMultiple;
   	this.setAllowedContentTypeNames = setAllowedContentTypeNames;
+	this.setDescription				= setDescription;
 }
   
 function getName()
@@ -58,6 +61,11 @@ function getAllowedContentTypeNames()
 	return this.allowedContentTypeNames;
 }
 
+function getDescription()
+{
+	return this.description;
+}
+
 function setName(name)
 {
   	this.name = name;
@@ -81,4 +89,9 @@ function setMultiple(multiple)
 function setAllowedContentTypeNames(allowedContentTypeNames)
 {
 	this.allowedContentTypeNames = allowedContentTypeNames;
+}
+
+function setDescription(description)
+{
+	this.description = description;
 }

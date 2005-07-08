@@ -37,22 +37,21 @@ public class ComponentPropertyDefinition
     private String name;
     private String type;
     private String entity;
-    private String allowedContentTypeNames;
     private Boolean multiple;
+    private String allowedContentTypeNames;
+    private String description;
+
     
-    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple)
+    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, String allowedContentTypeNames, String description)
     {
-        this.name 		= name;
-        this.type 		= type;
-        this.entity 	= entity;
-        this.multiple 	= multiple;
+        this.name 						= name;
+        this.type 						= type;
+        this.entity 					= entity;
+        this.multiple 					= multiple;
+        this.allowedContentTypeNames 	= allowedContentTypeNames;
+        this.description				= description;
     }
-    
-    public String getAllowedContentTypeNames()
-    {
-        return allowedContentTypeNames;
-    }
-    
+        
     public String getEntity()
     {
         return entity;
@@ -71,5 +70,15 @@ public class ComponentPropertyDefinition
     public String getType()
     {
         return type;
+    }
+    
+    public String getAllowedContentTypeNames()
+    {
+        return allowedContentTypeNames;
+    }
+
+    public String getDescription()
+    {
+        return description;
     }
 }

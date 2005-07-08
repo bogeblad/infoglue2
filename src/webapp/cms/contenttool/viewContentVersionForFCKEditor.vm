@@ -653,6 +653,12 @@
 											<td valign="middle">
 											Allow multiple items
 											</td>
+											<td valign="middle">
+											Allowed content types
+											</td>
+											<td valign="middle">
+											Description
+											</td>
 										</tr>
 									#foreach($propertyDefinition in $componentProperties)
 										<tr>
@@ -666,6 +672,12 @@
 											</td>
 											<td valign="middle">
 											$propertyDefinition.multiple
+											</td>
+											<td valign="middle">
+											$propertyDefinition.allowedContentTypeNames
+											</td>
+											<td valign="middle">
+											$propertyDefinition.description
 											</td>
 										</tr>
 									#end

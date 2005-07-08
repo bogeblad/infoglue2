@@ -95,14 +95,17 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    Node propertyNode = propertyNodeList.item(j);
 				    Element propertyElement = (Element)propertyNode;
 				    
-				    String name 	= propertyElement.getAttribute("name");
-				    String type 	= propertyElement.getAttribute("type");
-				    String entity 	= propertyElement.getAttribute("entity");
-				    String multiple = propertyElement.getAttribute("multiple");
-				
-				    System.out.println("name:" + name);
+				    String name 					= propertyElement.getAttribute("name");
+				    String type 					= propertyElement.getAttribute("type");
+				    String entity 					= propertyElement.getAttribute("entity");
+				    String multiple 				= propertyElement.getAttribute("multiple");
+				    String allowedContentTypeNames 	= propertyElement.getAttribute("allowedContentTypeDefinitionNames");
+				    String description				= propertyElement.getAttribute("description");
 				    
-				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple));
+				    System.out.println("name:" + name);
+				    System.out.println("allowedContentTypeNames:" + allowedContentTypeNames);
+				    
+				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), allowedContentTypeNames, description);
 				    
 				    componentPropertyDefinitions.add(cpd);
 				}
