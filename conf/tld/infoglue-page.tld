@@ -18,36 +18,4 @@
     	</attribute>
     </tag>
 
-	<tag>
-        <name>boundFolderContents</name>
-        <tagclass>org.infoglue.deliver.taglib.page.BoundFolderContentsTag</tagclass>
-        <bodycontent>empty</bodycontent>
-        <info>TemplateLogic.getBoundFolderContents(String, boolean, String, String)</info>
-        <attribute>
-    	    <name>id</name>
-        	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
-    	</attribute>
-        <attribute>
-    	    <name>structureBindningName</name>
-        	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
-    	</attribute>
-        <attribute>
-    	    <name>sortAttribute</name>
-        	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
-    	</attribute>
-        <attribute>
-    	    <name>sortOrder</name>
-        	<required>false</required>
-	        <rtexprvalue>false</rtexprvalue>
-    	</attribute>
-        <attribute>
-    	    <name>searchRecursive</name>
-        	<required>false</required>
-	        <rtexprvalue>false</rtexprvalue>
-    	</attribute>
-    </tag>
-
 </taglib>

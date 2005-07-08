@@ -35,6 +35,23 @@
 	</tag>
 
 	<tag>
+	    <name>size</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.SizeTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>list</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 	    <name>slots</name>
 	    <tagclass>org.infoglue.deliver.taglib.common.SlotsTag</tagclass>
 	    <bodycontent>empty</bodycontent>
@@ -91,5 +108,5 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
-
+  	 
 </taglib>

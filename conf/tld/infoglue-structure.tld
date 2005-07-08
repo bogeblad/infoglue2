@@ -238,5 +238,22 @@
     	</attribute>   	
     </tag>
 
+	<tag>
+        <name>childComponents</name>
+        <tagclass>org.infoglue.deliver.taglib.structure.ChildComponentsTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateLogic.getChildComponents()</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>slotId</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    </tag>
+
 
 </taglib>
