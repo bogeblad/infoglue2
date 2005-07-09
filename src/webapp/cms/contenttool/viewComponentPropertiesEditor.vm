@@ -150,6 +150,8 @@
 				}
 			}
 			
+			validateTypeChoice();
+			
 			componentPropertyDefinitionDiv.style.visibility = 'visible';
 		}
 
@@ -168,26 +170,35 @@
 			//alert("componentPropertyDefinition:" + componentPropertyDefinition.getName());
 
 			componentPropertyDefinition.setName(document.getElementById("componentPropertyDefinition_name").value);
-			componentPropertyDefinition.setType(document.getElementById("componentPropertyDefinition_type").value);
-			componentPropertyDefinition.setEntity(document.getElementById("componentPropertyDefinition_entity").value);
-			componentPropertyDefinition.setMultiple(document.getElementById("componentPropertyDefinition_multiple").value);
 			componentPropertyDefinition.setDescription(document.getElementById("componentPropertyDefinition_description").value);
-			
-			var selObject = document.getElementById("componentPropertyDefinition_allowedContentTypeNames");
-			var length = selObject.options.length - 1;
-			var allowedContentTypeNames = "";
-			for(i=0; i<length; i++)
+			componentPropertyDefinition.setType(document.getElementById("componentPropertyDefinition_type").value);
+			if(componentPropertyDefinition.getType() == "binding")
 			{
-				if (selObject.options[i].selected) 
+				componentPropertyDefinition.setEntity(document.getElementById("componentPropertyDefinition_entity").value);
+				componentPropertyDefinition.setMultiple(document.getElementById("componentPropertyDefinition_multiple").value);
+				
+				var selObject = document.getElementById("componentPropertyDefinition_allowedContentTypeNames");
+				var length = selObject.options.length - 1;
+				var allowedContentTypeNames = "";
+				for(i=0; i<length; i++)
 				{
-			      	if(allowedContentTypeNames != "")
-						allowedContentTypeNames += ",";
-						
-					allowedContentTypeNames = allowedContentTypeNames + selObject.options[i].value;
+					if (selObject.options[i].selected) 
+					{
+				      	if(allowedContentTypeNames != "")
+							allowedContentTypeNames += ",";
+							
+						allowedContentTypeNames = allowedContentTypeNames + selObject.options[i].value;
+					}
 				}
-			}
 			
-			componentPropertyDefinition.setAllowedContentTypeNames(allowedContentTypeNames);
+				componentPropertyDefinition.setAllowedContentTypeNames(allowedContentTypeNames);
+			}		
+			else
+			{
+				componentPropertyDefinition.setEntity("");
+				componentPropertyDefinition.setMultiple("");
+				componentPropertyDefinition.setAllowedContentTypeNames("");
+			}
 			
 			hideProperties();
 		}
@@ -346,6 +357,24 @@
 			}
 		}
 		
+		function validateTypeChoice()
+		{
+			selectBox = document.componentPropertyDefinitionForm.componentPropertyDefinition_type;
+			if(selectBox.value == "textfield")
+			{
+				document.getElementById("entityParagraph").style.display = "none";
+				document.getElementById("multipleParagraph").style.display = "none";
+				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+			}
+			else
+			{
+				document.getElementById("entityParagraph").style.display = "block";
+				document.getElementById("multipleParagraph").style.display = "block";
+				document.getElementById("allowedContentTypeNamesParagraph").style.display = "block";
+			}
+		}
+		
+		
 		/**
 		 * This function initializes the vector of previous properties.
 		 */
@@ -366,6 +395,8 @@
 		var propertyVector = new Vector(0);
 	
 	
+		
+	
 	</script>
 	
 </head>
@@ -377,79 +408,58 @@
 	<div class="infobody">Processing input - please wait!</div>
 </div>
 
-<div id="componentPropertyDefinition" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:150px; visibility:hidden; z-index:1">
-	<form name="componentPropertyDefinitionForm">
-	<table border="0" cellpadding="4" cellspacing="0">
-	<tr>
-		<td colspan="2" class="propertiesheader">Edit component property</td>
-	</tr>
-	<tr>
-		<td colspan="2"><img src="images/trans.gif" height="5" width="1"></td>
-	</tr>
-	<tr>
-		<td><b>Name</b></td>
-		<td>
-			<input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/>
-		</td>
-	</tr>
-	<tr>
-		<td><b>Description</b></td>
-		<td>
-			<input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/>
-		</td>
-	</tr>
-	<tr>
-		<td><b>Property type</b></td>
-		<td>
-			<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox">
-			    <option value="binding">binding</option>
-			    <option value="textfield">textfield</option>
-			 </select>
-		</td>
-	</tr>
-	<tr>
-		<td><b>Entity</b></td>
-		<td>
-			<select size="1" name="componentPropertyDefinition_entity" id="componentPropertyDefinition_entity" class="sitedropbox">
-			    <option value="Content">Content</option>
-			    <option value="SiteNode">SiteNode</option>
-			 </select>
-		</td>
-	</tr>
-	<tr>
-		<td><b>Multiple</b></td>
-		<td>
-			<select size="1" name="componentPropertyDefinition_multiple" id="componentPropertyDefinition_multiple" class="sitedropbox">
-			    <option value="false">No</option>
-			    <option value="true">Yes</option>
-			 </select>
-		</td>
-	</tr>
-	<tr>
-		<td><b>Allowed content type(s)</b></td>
-		<td>
-			<select name="componentPropertyDefinition_allowedContentTypeNames" id="componentPropertyDefinition_allowedContentTypeNames" class="sitedropbox" multiple="true" size="5">
-			    <option value="">Select 0..n</option>
-			    #foreach($contentTypeDefinition in $contentTypeDefinitions)
-			    <option value="$contentTypeDefinition.name">$contentTypeDefinition.name</option>
-			    #end
-			 </select>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">
-			<img src="images/trans.gif" width="80" height="25" border="0">
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-			<a href="javascript:updateProperties();"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="javascript:hideDiv('componentPropertyDefinition');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
-		</td>
-	</tr>
-	</table>
-	</form>
+
+<div id="componentPropertyDefinition" class="smallPropDiv" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:150px; visibility:hidden; z-index:1">
+<div id="componentPropertyDefinitionHandle" class="smallPropDivHandle">
+	Edit component property
+</div>
+<div id="componentPropertyDefinitionBody" class="smallPropDivBody">	
+
+<form name="componentPropertyDefinitionForm">
+<p>
+	<b>Name:</b>
+	<input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/>
+</p>
+<p>
+	<b>Description:</b>
+	<input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/>
+</p>
+<p>
+	<b>Property type:</b>
+	<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox" onchange="validateTypeChoice();">
+		<option value="binding">binding</option>
+		<option value="textfield">textfield</option>
+	</select>
+</p>
+<p id="entityParagraph" style="display: block;">
+	<b>Entity:</b>
+	<select size="1" name="componentPropertyDefinition_entity" id="componentPropertyDefinition_entity" class="sitedropbox">
+	    <option value="Content">Content</option>
+	    <option value="SiteNode">SiteNode</option>
+	</select>
+</p>
+<p id="multipleParagraph" style="display: block;">
+	<b>Multiple:</b>
+	<select size="1" name="componentPropertyDefinition_multiple" id="componentPropertyDefinition_multiple" class="sitedropbox">
+	    <option value="false">No</option>
+	    <option value="true">Yes</option>
+	</select>
+</p>
+<p id="allowedContentTypeNamesParagraph" style="display: block;">
+	<b>Allowed content type(s):</b>
+	<select name="componentPropertyDefinition_allowedContentTypeNames" id="componentPropertyDefinition_allowedContentTypeNames" class="sitedropbox" multiple="true" size="5">
+	    <option value="">Select 0..n</option>
+	    #foreach($contentTypeDefinition in $contentTypeDefinitions)
+	    <option value="$contentTypeDefinition.name">$contentTypeDefinition.name</option>
+	    #end
+ 	</select>
+</p>
+<p>
+	<a href="javascript:updateProperties();"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+	<a href="javascript:hideDiv('componentPropertyDefinition');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+</p>
+</form>
+</div>
 </div>
 
 <table class="contenttooledit" cellpadding="0" cellspacing="0" border="0" width="100%">
