@@ -33,7 +33,7 @@ import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.NotificationMessage;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -111,7 +111,7 @@ public class TransactionHistoryController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -143,13 +143,13 @@ public class TransactionHistoryController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -165,14 +165,14 @@ public class TransactionHistoryController extends BaseController
 	
 	public Integer create(NotificationMessage notificationMessage) throws SystemException
 	{
-		CmsLogger.logInfo("Creating a transactionHistory object...");
+		getLogger().info("Creating a transactionHistory object...");
         Database db = CastorDatabaseService.getDatabase();
         TransactionHistory transactionHistory = null;
 
         try
         {
 	        beginTransaction(db);
-			CmsLogger.logInfo("Began transaction...");
+			getLogger().info("Began transaction...");
 	        
           	TransactionHistoryVO transVO = new TransactionHistoryVO();  
             transactionHistory = new TransactionHistoryImpl();
@@ -185,30 +185,30 @@ public class TransactionHistoryController extends BaseController
             transVO.setTransactionObjectName(notificationMessage.getObjectName());
             
 			transactionHistory.setValueObject(transVO);	
-			CmsLogger.logInfo("Created the transaction object and filled it with values...");
-			CmsLogger.logInfo("transactionHistory.getId():" + transactionHistory.getId());
-			CmsLogger.logInfo("transactionHistory.getName():" + transactionHistory.getName());
-			CmsLogger.logInfo("transactionHistory.getSystemUserName():" + transactionHistory.getSystemUserName());
-			CmsLogger.logInfo("transactionHistory.getTransactionDateTime():" + transactionHistory.getTransactionDateTime());
-			CmsLogger.logInfo("transactionHistory.getTransactionObjectId():" + transactionHistory.getTransactionObjectId());
-			CmsLogger.logInfo("transactionHistory.getTransactionObjectName():" + transactionHistory.getTransactionObjectName());
-			CmsLogger.logInfo("transactionHistory.getTransactionTypeId():" + transactionHistory.getTransactionTypeId());
-			CmsLogger.logInfo("isActive=" + db.isActive());
+			getLogger().info("Created the transaction object and filled it with values...");
+			getLogger().info("transactionHistory.getId():" + transactionHistory.getId());
+			getLogger().info("transactionHistory.getName():" + transactionHistory.getName());
+			getLogger().info("transactionHistory.getSystemUserName():" + transactionHistory.getSystemUserName());
+			getLogger().info("transactionHistory.getTransactionDateTime():" + transactionHistory.getTransactionDateTime());
+			getLogger().info("transactionHistory.getTransactionObjectId():" + transactionHistory.getTransactionObjectId());
+			getLogger().info("transactionHistory.getTransactionObjectName():" + transactionHistory.getTransactionObjectName());
+			getLogger().info("transactionHistory.getTransactionTypeId():" + transactionHistory.getTransactionTypeId());
+			getLogger().info("isActive=" + db.isActive());
 
 			db.create(transactionHistory);
-			CmsLogger.logInfo("Created the transaction object in the database..");
+			getLogger().info("Created the transaction object in the database..");
             
             commitTransaction(db);
-            CmsLogger.logInfo("Committed the transaction..");
+            getLogger().info("Committed the transaction..");
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
         }
 
-		CmsLogger.logInfo("TransactionHistory object all done..");
+		getLogger().info("TransactionHistory object all done..");
 
         return transactionHistory.getValueObject().getTransactionHistoryId();
 	}

@@ -29,7 +29,7 @@ import org.infoglue.cms.entities.management.Interceptor;
 import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
 import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import org.exolab.castor.jdo.Database;
@@ -87,7 +87,7 @@ public class InterceptorController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -129,7 +129,7 @@ public class InterceptorController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -173,7 +173,7 @@ public class InterceptorController extends BaseController
 			ConstraintExceptionBuffer ceb = interceptorVO.validate();
 			ceb.throwIfNotEmpty();
 			
-			CmsLogger.logInfo("InterceptorId:" + interceptorVO.getInterceptorId());
+			getLogger().info("InterceptorId:" + interceptorVO.getInterceptorId());
 			Interceptor interceptor = this.getInterceptorWithId(interceptorVO.getInterceptorId(), db);
 
 			interceptor.setValueObject(interceptorVO);
@@ -204,7 +204,7 @@ public class InterceptorController extends BaseController
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

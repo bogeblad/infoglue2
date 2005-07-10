@@ -26,14 +26,13 @@ package org.infoglue.cms.applications.contenttool.actions;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.exception.AccessConstraintException;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -48,7 +47,7 @@ import java.util.Map;
  * This action represents the CreateContent Usecase.
  */
 
-public class CreateContentAction extends WebworkAbstractAction
+public class CreateContentAction extends InfoGlueAbstractAction
 {
 
 	private Integer parentContentId;
@@ -139,13 +138,11 @@ public class CreateContentAction extends WebworkAbstractAction
     	
     public void setPublishDateTime(String publishDateTime)
     {
-       	CmsLogger.logInfo("publishDateTime:" + publishDateTime);
    		this.contentVO.setPublishDateTime(new VisualFormatter().parseDate(publishDateTime, "yyyy-MM-dd HH:mm"));
     }
 
     public void setExpireDateTime(String expireDateTime)
     {
-       	CmsLogger.logInfo("expireDateTime:" + expireDateTime);
        	this.contentVO.setExpireDateTime(new VisualFormatter().parseDate(expireDateTime, "yyyy-MM-dd HH:mm"));
 	}
  

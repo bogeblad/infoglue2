@@ -36,7 +36,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.deliver.util.CacheController;
 
 import org.exolab.castor.jdo.Database;
@@ -103,13 +103,13 @@ public class RepositoryController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not completes the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -159,13 +159,13 @@ public class RepositoryController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not completes the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -212,7 +212,7 @@ public class RepositoryController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -261,11 +261,11 @@ public class RepositoryController extends BaseController
     public List getRepositoryVOList() throws ConstraintException, SystemException, Bug
     {   
 		String key = "repositoryVOList";
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		List cachedRepositoryVOList = (List)CacheController.getCachedObject("repositoryCache", key);
 		if(cachedRepositoryVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached authorization:" + cachedRepositoryVOList.size());
+			getLogger().info("There was an cached authorization:" + cachedRepositoryVOList.size());
 			return cachedRepositoryVOList;
 		}
 				
@@ -358,7 +358,7 @@ public class RepositoryController extends BaseController
     
 	public boolean getIsAccessApproved(Integer repositoryId, InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog) throws SystemException
 	{
-		CmsLogger.logInfo("getIsAccessApproved for " + repositoryId + " AND " + infoGluePrincipal + " AND " + isBindingDialog);
+		getLogger().info("getIsAccessApproved for " + repositoryId + " AND " + infoGluePrincipal + " AND " + isBindingDialog);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -376,7 +376,7 @@ public class RepositoryController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

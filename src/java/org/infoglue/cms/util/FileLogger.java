@@ -38,9 +38,8 @@ import java.util.logging.Logger;
  */
 public class FileLogger implements NotificationListener
 {	
+    private final static Logger logger = Logger.getLogger(FileLogger.class.getName());
 
-	private Logger logger = null;
-	
 	/**
 	 * Default Constructor	
 	 */
@@ -67,7 +66,7 @@ public class FileLogger implements NotificationListener
 	{
 		String hostName = "tempHost.se";
 		String message = "[" + Calendar.getInstance().getTime().toString() + "] - [" + notificationMessage.getSystemUserName() + "@" + hostName + "]:[" + notificationMessage.getName() + "]";
-		CmsLogger.logInfo(message);		
+		logger.info(message);		
 	}
 
 }

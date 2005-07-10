@@ -41,7 +41,8 @@ import com.opensymphony.workflow.spi.jdbc.JDBCWorkflowStore;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+
 
 import java.sql.*;
 
@@ -87,9 +88,7 @@ import javax.sql.DataSource;
  */
 public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore 
 {
-    //~ Static fields/initializers /////////////////////////////////////////////
-
-    private static final Log log = LogFactory.getLog(InfoGlueJDBCWorkflowStore.class);
+    private final static Logger logger = Logger.getLogger(InfoGlueJDBCWorkflowStore.class.getName());
 
     //~ Instance fields ////////////////////////////////////////////////////////
     /*
@@ -162,7 +161,7 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
 
         Connection conn = null;
 		
-        CmsLogger.logInfo("Establishing connection to database '" + this.url + "'");
+        logger.info("Establishing connection to database '" + this.url + "'");
 
 		try 
 		{
@@ -222,8 +221,8 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
 
             String sql = "INSERT INTO " + entryTable + " (" + entryId + ", " + entryName + ", " + entryState + ") VALUES (?,?,?)";
 
-            if (log.isDebugEnabled()) {
-                log.debug("Executing SQL statement: " + sql);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Executing SQL statement: " + sql);
             }
 
             stmt = conn.prepareStatement(sql);
@@ -255,14 +254,14 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
             String sql = "SELECT " + stepId + ", " + stepStepId + ", " + stepActionId + ", " + stepOwner + ", " + stepStartDate + ", " + stepDueDate + ", " + stepFinishDate + ", " + stepStatus + ", " + stepCaller + " FROM " + currentTable + " WHERE " + stepEntryId + " = ?";
             String sql2 = "SELECT " + stepPreviousId + " FROM " + currentPrevTable + " WHERE " + stepId + " = ?";
 
-            if (log.isDebugEnabled()) {
-                log.debug("Executing SQL statement: " + sql);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Executing SQL statement: " + sql);
             }
 
             stmt = conn.prepareStatement(sql);
 
-            if (log.isDebugEnabled()) {
-                log.debug("Executing SQL statement: " + sql2);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Executing SQL statement: " + sql2);
             }
 
             stmt2 = conn.prepareStatement(sql2);
@@ -326,8 +325,8 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
 
             String sql = "SELECT " + entryName + ", " + entryState + " FROM " + entryTable + " WHERE " + entryId + " = ?";
 
-            if (log.isDebugEnabled()) {
-                log.debug("Executing SQL statement: " + sql);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Executing SQL statement: " + sql);
             }
 
             stmt = conn.prepareStatement(sql);
@@ -359,14 +358,14 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
             String sql = "SELECT " + stepId + ", " + stepStepId + ", " + stepActionId + ", " + stepOwner + ", " + stepStartDate + ", " + stepDueDate + ", " + stepFinishDate + ", " + stepStatus + ", " + stepCaller + " FROM " + historyTable + " WHERE " + stepEntryId + " = ? ORDER BY " + stepId + " DESC";
             String sql2 = "SELECT " + stepPreviousId + " FROM " + historyPrevTable + " WHERE " + stepId + " = ?";
 
-            if (log.isDebugEnabled()) {
-                log.debug("Executing SQL statement: " + sql);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Executing SQL statement: " + sql);
             }
 
             stmt = conn.prepareStatement(sql);
 
-            if (log.isDebugEnabled()) {
-                log.debug("Executing SQL statement: " + sql2);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Executing SQL statement: " + sql2);
             }
 
             stmt2 = conn.prepareStatement(sql2);
@@ -431,16 +430,16 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
 
             String sql = "UPDATE " + currentTable + " SET " + stepStatus + " = ?, " + stepActionId + " = ?, " + stepFinishDate + " = ?, " + stepCaller + " = ? WHERE " + stepId + " = ?";
 
-            CmsLogger.logInfo("Executing SQL statement: " + sql);
-            CmsLogger.logInfo("status: " + status);
-            CmsLogger.logInfo("actionId: " + actionId);
-            CmsLogger.logInfo("new Timestamp(finishDate.getTime()): " + new Timestamp(finishDate.getTime()));
-            CmsLogger.logInfo("caller: " + caller);
-            CmsLogger.logInfo("step.getId(): " + step.getId());
+            logger.info("Executing SQL statement: " + sql);
+            logger.info("status: " + status);
+            logger.info("actionId: " + actionId);
+            logger.info("new Timestamp(finishDate.getTime()): " + new Timestamp(finishDate.getTime()));
+            logger.info("caller: " + caller);
+            logger.info("step.getId(): " + step.getId());
             
-            if (log.isDebugEnabled()) 
+            if (logger.isDebugEnabled()) 
             {
-                log.debug("Executing SQL statement: " + sql);
+                logger.debug("Executing SQL statement: " + sql);
             }
 
             stmt = conn.prepareStatement(sql);
@@ -480,17 +479,17 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
 
             String sql = "INSERT INTO " + historyTable + " (" + stepId + "," + stepEntryId + ", " + stepStepId + ", " + stepActionId + ", " + stepOwner + ", " + stepStartDate + ", " + stepFinishDate + ", " + stepStatus + ", " + stepCaller + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            CmsLogger.logInfo("Executing SQL statement: " + sql);
-            CmsLogger.logInfo("step.getId(): " + step.getId());
-            CmsLogger.logInfo("step.getEntryId(): " + step.getEntryId());
-            CmsLogger.logInfo("step.getStepId(): " + step.getStepId());
-            CmsLogger.logInfo("step.getActionId(): " + step.getActionId());
-            CmsLogger.logInfo("step.getOwner(): " + step.getOwner());
-            CmsLogger.logInfo("new Timestamp(step.getStartDate().getTime()): " + new Timestamp(step.getStartDate().getTime()));
+            logger.info("Executing SQL statement: " + sql);
+            logger.info("step.getId(): " + step.getId());
+            logger.info("step.getEntryId(): " + step.getEntryId());
+            logger.info("step.getStepId(): " + step.getStepId());
+            logger.info("step.getActionId(): " + step.getActionId());
+            logger.info("step.getOwner(): " + step.getOwner());
+            logger.info("new Timestamp(step.getStartDate().getTime()): " + new Timestamp(step.getStartDate().getTime()));
             
-            if (log.isDebugEnabled()) 
+            if (logger.isDebugEnabled()) 
             {
-                log.debug("Executing SQL statement: " + sql);
+                logger.debug("Executing SQL statement: " + sql);
             }
 
             stmt = conn.prepareStatement(sql);
@@ -519,7 +518,7 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
             if ((previousIds != null) && (previousIds.length > 0)) 
             {
                 sql = "INSERT INTO " + historyPrevTable + " (" + stepId + ", " + stepPreviousId + ") VALUES (?, ?)";
-                log.debug("Executing SQL statement: " + sql);
+                logger.debug("Executing SQL statement: " + sql);
                 cleanup(null, stmt, null);
                 stmt = conn.prepareStatement(sql);
 
@@ -534,9 +533,9 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
 
             sql = "DELETE FROM " + currentPrevTable + " WHERE " + stepId + " = ?";
 
-            if (log.isDebugEnabled()) 
+            if (logger.isDebugEnabled()) 
             {
-                log.debug("Executing SQL statement: " + sql);
+                logger.debug("Executing SQL statement: " + sql);
             }
 
             cleanup(null, stmt, null);
@@ -546,9 +545,9 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
 
             sql = "DELETE FROM " + currentTable + " WHERE " + stepId + " = ?";
 
-            if (log.isDebugEnabled()) 
+            if (logger.isDebugEnabled()) 
             {
-                log.debug("Executing SQL statement: " + sql);
+                logger.debug("Executing SQL statement: " + sql);
             }
 
             cleanup(null, stmt, null);
@@ -595,8 +594,8 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
         sel = "SELECT DISTINCT(" + stepEntryId + ") FROM " + table + " WHERE ";
         sel += queryWhere(query);
 
-        if (log.isDebugEnabled()) {
-            log.debug(sel);
+        if (logger.isDebugEnabled()) {
+            logger.debug(sel);
         }
 
         Connection conn = null;
@@ -624,8 +623,8 @@ public class InfoGlueJDBCWorkflowStore extends JDBCWorkflowStore
 
 
     private List doExpressionQuery(String sel, String columnName, List values) throws StoreException {
-        if (log.isDebugEnabled()) {
-            log.debug(sel);
+        if (logger.isDebugEnabled()) {
+            logger.debug(sel);
         }
 
         Connection conn = null;

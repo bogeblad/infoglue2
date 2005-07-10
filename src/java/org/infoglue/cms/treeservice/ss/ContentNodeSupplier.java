@@ -30,12 +30,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
@@ -49,8 +50,10 @@ import com.frovi.ss.Tree.BaseNodeSupplier;
  * @author Stefan Sik, ss@frovi.com 
  * @author Frank Febbraro (frank@phase2technology.com) Refactoring and Sorting
  */
+
 public class ContentNodeSupplier extends BaseNodeSupplier
 {
+    private final static Logger logger = Logger.getLogger(ContentNodeSupplier.class.getName());
 
 	private ArrayList cacheLeafs;
 	private boolean showLeafs = true;
@@ -102,11 +105,11 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		}
 		catch (ConstraintException e)
 		{
-			CmsLogger.logWarning("Error getting Content Children", e);
+			logger.warn("Error getting Content Children", e);
 		}
 		catch (SystemException e)
 		{
-			CmsLogger.logWarning("Error getting Content Children", e);
+			logger.warn("Error getting Content Children", e);
 		}
 		
 		//Filter list on content type names if set such is stated
@@ -149,7 +152,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		}
 		catch(Exception e)
 		{
-		    CmsLogger.logWarning("Error filtering Content Children", e);
+		    logger.warn("Error filtering Content Children", e);
 		}
 		
 		//Sort the tree nodes if setup to do so

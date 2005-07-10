@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
@@ -41,7 +41,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
   * @author Mattias Bogeblad
   */
 
-public class UpdateAccessRightsAction extends WebworkAbstractAction
+public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 {
 	private Integer interceptionPointId;
 	private Integer accessRightId;

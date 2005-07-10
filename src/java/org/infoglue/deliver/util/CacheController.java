@@ -24,8 +24,10 @@
 package org.infoglue.deliver.util;
 
 //import org.exolab.castor.jdo.CacheManager;
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
@@ -34,7 +36,7 @@ import org.infoglue.cms.entities.structure.impl.simple.*;
 import org.infoglue.cms.entities.publishing.impl.simple.*;
 import org.infoglue.cms.entities.management.impl.simple.*;
 import org.infoglue.cms.entities.workflow.impl.simple.*;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
@@ -54,6 +56,8 @@ import java.util.Iterator;
 
 public class CacheController extends Thread
 { 
+    private final static Logger logger = Logger.getLogger(CacheController.class.getName());
+
     public static List notifications = new ArrayList();
     
 	private static Map caches = new HashMap();
@@ -98,10 +102,10 @@ public class CacheController extends Thread
 	    if(!caches.containsKey(cacheName))
 		    caches.put(cacheName, new GeneralCacheAdministrator());
 		
-	    CmsLogger.logInfo("Putting " + cacheName + " with key: " + key + " in relation to:");
+	    logger.info("Putting " + cacheName + " with key: " + key + " in relation to:");
 	    for(int i=0; i<groups.length; i++)
 	    {
-	        CmsLogger.logInfo("group:" + groups[i]);
+	        logger.info("group:" + groups[i]);
 	    }
 	    
 		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
@@ -146,7 +150,7 @@ public class CacheController extends Thread
 
 	public static void clearCache(String cacheName)
 	{
-		CmsLogger.logInfo("Clearing the cache called " + cacheName);
+		logger.info("Clearing the cache called " + cacheName);
 		if(caches.containsKey(cacheName))
 		{
 		    Object object = caches.get(cacheName);
@@ -167,12 +171,12 @@ public class CacheController extends Thread
 	{
 		if(entity == null)
 		{	
-			CmsLogger.logInfo("Clearing the caches");
-			CmsLogger.logInfo("caches.entrySet().size:" + caches.entrySet().size());
+			logger.info("Clearing the caches");
+			logger.info("caches.entrySet().size:" + caches.entrySet().size());
 			for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
 			{
 				Map.Entry e = (Map.Entry) i.next();
-				CmsLogger.logInfo("e:" + e.getKey());
+				logger.info("e:" + e.getKey());
 				Object object = e.getValue();
 				if(object instanceof Map)
 				{
@@ -188,12 +192,12 @@ public class CacheController extends Thread
 		}
 		else
 		{
-			CmsLogger.logInfo("Clearing some caches");
-			CmsLogger.logInfo("entity:" + entity);
+			logger.info("Clearing some caches");
+			logger.info("entity:" + entity);
 			for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
 			{
 				Map.Entry e = (Map.Entry) i.next();
-				CmsLogger.logInfo("e:" + e.getKey());
+				logger.info("e:" + e.getKey());
 				boolean clear = false;
 				boolean selectiveCacheUpdate = false;
 				String cacheName = e.getKey().toString();
@@ -295,7 +299,7 @@ public class CacheController extends Thread
 				
 				if(clear)
 				{	
-					CmsLogger.logInfo("clearing:" + e.getKey());
+					logger.info("clearing:" + e.getKey());
 					Object object = e.getValue();
 					if(object instanceof Map)
 					{
@@ -314,30 +318,30 @@ public class CacheController extends Thread
 					    if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
 					    {
 					    	cacheInstance.flushAll();
-					    	CmsLogger.logInfo("clearing:" + e.getKey());
+					    	logger.info("clearing:" + e.getKey());
 					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
 					    {
 					    	cacheInstance.flushGroup("contentVersion:" + entityId);
 					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-					    	CmsLogger.logInfo("clearing " + e.getKey() + " with group " + "contentVersion:" + entityId);
+					    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion:" + entityId);
 					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("Content") > 0 && useSelectivePageCacheUpdate)
 					    {
 					    	cacheInstance.flushGroup("content:" + entityId);
 					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-					    	CmsLogger.logInfo("clearing " + e.getKey() + " with group " + "content:" + entityId);
+					    	logger.info("clearing " + e.getKey() + " with group " + "content:" + entityId);
 					    }
 					    else
 					    {
 							cacheInstance.flushAll();
-							CmsLogger.logInfo("clearing:" + e.getKey());
+							logger.info("clearing:" + e.getKey());
 					    }
 					}
 				}
 				else
 				{
-					CmsLogger.logInfo("Did not clear " + e.getKey());
+					logger.info("Did not clear " + e.getKey());
 				}
 			}
 		}
@@ -345,7 +349,7 @@ public class CacheController extends Thread
 	
 	public static void clearCastorCaches()
 	{
-		CmsLogger.logInfo("Emptying the Castor Caches");
+		logger.info("Emptying the Castor Caches");
 		
 		try
 		{
@@ -472,11 +476,11 @@ public class CacheController extends Thread
 	{
 		while(this.continueRunning && expireCacheAutomatically)
 		{
-			CmsLogger.logWarning("Clearing caches");
+			logger.warn("Clearing caches");
 			clearCastorCaches();
-			CmsLogger.logInfo("Castor cache cleared");
+			logger.info("Castor cache cleared");
 			clearCaches(null, null);
-			CmsLogger.logInfo("All other caches cleared");
+			logger.info("All other caches cleared");
 			
 			try
 			{
@@ -530,8 +534,8 @@ public class CacheController extends Thread
 			    String objectName = cacheEvictionBean.getObjectName();
 				String typeId = cacheEvictionBean.getTypeId();
 				
-			    CmsLogger.logInfo("className:" + className);
-				CmsLogger.logInfo("objectId:" + objectId);
+			    logger.info("className:" + className);
+				logger.info("objectId:" + objectId);
 			    //Should contain permissioncontrol later...
 		
 			    boolean isDependsClass = false;
@@ -540,7 +544,7 @@ public class CacheController extends Thread
 		
 			    CacheController.clearCaches(className, objectId);
 		
-			    CmsLogger.logInfo("Updating className with id:" + className + ":" + objectId);
+			    logger.info("Updating className with id:" + className + ":" + objectId);
 				if(className != null)
 				{
 				    //Class[] types = {Class.forName(className)};
@@ -561,17 +565,17 @@ public class CacheController extends Thread
 					/*
 					if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
 					{
-					    CmsLogger.logInfo("We should delete all images with contentVersionId " + objectId);
+					    logger.info("We should delete all images with contentVersionId " + objectId);
 						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
 					}
 					else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 					{
-					    CmsLogger.logInfo("We clear all small contents as well " + objectId);
+					    logger.info("We clear all small contents as well " + objectId);
 						Class typesExtra = SmallContentImpl.class;
 						Object[] idsExtra = {new Integer(objectId)};
 						CacheController.clearCache(typesExtra, idsExtra);
 		
-						CmsLogger.logInfo("We clear all medium contents as well " + objectId);
+						logger.info("We clear all medium contents as well " + objectId);
 						Class typesExtraMedium = MediumContentImpl.class;
 						Object[] idsExtraMedium = {new Integer(objectId)};
 						CacheController.clearCache(typesExtraMedium, idsExtraMedium);
@@ -590,7 +594,7 @@ public class CacheController extends Thread
 					}
 					else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
 					{
-					    CmsLogger.logInfo("We should delete all images with digitalAssetId " + objectId);
+					    logger.info("We should delete all images with digitalAssetId " + objectId);
 						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 					}
 				}

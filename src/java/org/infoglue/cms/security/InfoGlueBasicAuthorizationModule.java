@@ -44,7 +44,7 @@ import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -138,7 +138,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				} 
 				catch (Exception e) 
 				{
-					CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+					getLogger().info("An error occurred so we should not complete the transaction:" + e);
 					rollbackTransaction(db);
 					throw new SystemException(e.getMessage());
 				}
@@ -359,7 +359,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 
     public List getRoleUsers(String roleName) throws Exception
     {
-        CmsLogger.logInfo("roleName:" + roleName);
+        getLogger().info("roleName:" + roleName);
 		List users = new ArrayList();
 		
 		List systemUserVOList = RoleController.getController().getRoleSystemUserVOList(roleName);
@@ -376,7 +376,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 
     public List getGroupUsers(String groupName) throws Exception
     {
-        CmsLogger.logInfo("groupName:" + groupName);
+        getLogger().info("groupName:" + groupName);
 		List users = new ArrayList();
 		
 		List systemUserVOList = GroupController.getController().getGroupSystemUserVOList(groupName);

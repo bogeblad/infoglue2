@@ -29,7 +29,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import webwork.action.ActionContext;
@@ -124,7 +123,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 						is = new FileInputStream(file);    	
 						
 						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
-						CmsLogger.logInfo("fileUploadMaximumSize:" + fileUploadMaximumSize);
+						getLogger().info("fileUploadMaximumSize:" + fileUploadMaximumSize);
 						
 						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
 						{
@@ -214,7 +213,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
     		}
     		else
     		{
-    			CmsLogger.logSevere("File upload failed for some reason.");
+    		    getLogger().error("File upload failed for some reason.");
     		}
     		
     		updatedDigitalAssetVO = DigitalAssetController.update(digitalAssetVO, is);
@@ -223,7 +222,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
       	} 
       	catch (Exception e) 
       	{
-      		CmsLogger.logSevere("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+      	  getLogger().error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
       	}
 		finally
 		{
@@ -252,7 +251,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+		    getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 		}
 		
 		return imageHref;
@@ -267,7 +266,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the thumbnail: " + e.getMessage(), e);
+		    getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 		}
 		
 		return imageHref;

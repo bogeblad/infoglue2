@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -34,7 +35,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.workflow.CustomClassExecutor;
+
 import org.infoglue.deliver.util.CacheController;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -48,6 +50,7 @@ import org.quartz.JobExecutionException;
 
 public class ExpireCacheJob implements Job
 {
+    private final static Logger logger = Logger.getLogger(ExpireCacheJob.class.getName());
 
     public void execute(JobExecutionContext context) throws JobExecutionException
     {
@@ -60,12 +63,12 @@ public class ExpireCacheJob implements Job
             e.printStackTrace();
         }
 
-        CmsLogger.logInfo("---" + context.getJobDetail().getFullName() + " executing.[" + new Date() + "]");
+        logger.info("---" + context.getJobDetail().getFullName() + " executing.[" + new Date() + "]");
         
         try
         {
             Date firstExpireDateTime = CacheController.expireDateTime;
-            CmsLogger.logInfo("firstExpireDateTime:" + firstExpireDateTime);
+            logger.info("firstExpireDateTime:" + firstExpireDateTime);
             Date now = new Date();
             
             if(firstExpireDateTime != null && now.after(firstExpireDateTime))
@@ -75,7 +78,7 @@ public class ExpireCacheJob implements Job
             }
 
             Date firstPublishDateTime = CacheController.publishDateTime;
-            CmsLogger.logInfo("firstPublishDateTime:" + firstPublishDateTime);
+            logger.info("firstPublishDateTime:" + firstPublishDateTime);
             
             if(firstPublishDateTime != null && now.after(firstPublishDateTime))
             {

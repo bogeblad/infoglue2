@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.invokers;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PageTemplateController;
@@ -64,6 +65,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.exolab.castor.jdo.Database;
 
@@ -76,6 +78,8 @@ import org.exolab.castor.jdo.Database;
 
 public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPageInvoker
 {
+    private final static Logger logger = Logger.getLogger(DecoratedComponentBasedHTMLPageInvoker.class.getName());
+
 	private String propertiesDivs 	= "";
 	private String tasksDivs 		= "";
 	
@@ -97,7 +101,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		Integer repositoryId = nodeDeliveryController.getSiteNode(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
-		//CmsLogger.logInfo("componentXML:" + componentXML);
+		//logger.info("componentXML:" + componentXML);
 		
 		timer.printElapsedTime("After getPageComponentsString");
 		
@@ -208,7 +212,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		 }
 		 catch(Exception e)
 		 {
-		     CmsLogger.logWarning("A problem arouse when getting the page templates:" + e.getMessage(), e);
+		     logger.warn("A problem arouse when getting the page templates:" + e.getMessage(), e);
 		 }
 		 
 		 this.getTemplateController().getDeliveryContext().setContentType("text/html");
@@ -276,7 +280,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 				else
 				{
-					CmsLogger.logWarning("The current template is not a valid document. It does not comply with the simplest standards such as having a correct header.");
+					logger.warn("The current template is not a valid document. It does not comply with the simplest standards such as having a correct header.");
 				}
 			}
 
@@ -299,7 +303,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			}
 			else
 			{
-				CmsLogger.logWarning("The current template is not a valid document. It does not comply with the simplest standards such as having a correct body.");
+				logger.warn("The current template is not a valid document. It does not comply with the simplest standards such as having a correct body.");
 			}
 			
 			timer.printElapsedTime("Body handled");
@@ -308,7 +312,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred when deliver tried to decorate your template to enable onSiteEditing. Reason " + e.getMessage(), e);
+			logger.warn("An error occurred when deliver tried to decorate your template to enable onSiteEditing. Reason " + e.getMessage(), e);
 		}
 		
 		return decoratedTemplate;
@@ -319,9 +323,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	{
 		String decoratedComponent = "";
 		
-		//CmsLogger.logInfo("decorateComponent.contentId:" + contentId);
+		//logger.info("decorateComponent.contentId:" + contentId);
 
-		//CmsLogger.logInfo("decorateComponent:" + component.getName());
+		//logger.info("decorateComponent:" + component.getName());
 		
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 
@@ -369,17 +373,17 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, component.getId(), componentTasksDocument);
 			}
 	
-			////CmsLogger.logInfo("Before:" + componentString);
+			////logger.info("Before:" + componentString);
 			int offset = 0;
 			int slotStartIndex = componentString.indexOf("<ig:slot", offset);
-			//CmsLogger.logInfo("slotStartIndex:" + slotStartIndex);
+			//logger.info("slotStartIndex:" + slotStartIndex);
 			while(slotStartIndex > -1)
 			{
 				decoratedComponent += componentString.substring(offset, slotStartIndex);
 				int slotStopIndex = componentString.indexOf("</ig:slot>", slotStartIndex);
 				
 				String slot = componentString.substring(slotStartIndex, slotStopIndex + 10);
-				//CmsLogger.logInfo("Slot:" + slot);
+				//logger.info("Slot:" + slot);
 				String id = slot.substring(slot.indexOf("id") + 4, slot.indexOf("\"", slot.indexOf("id") + 4));
 				
 				String subComponentString = "";
@@ -394,10 +398,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 				timer.printElapsedTime("4");
 	
-				//CmsLogger.logInfo("subComponents for " + id + ":" + subComponents);
+				//logger.info("subComponents for " + id + ":" + subComponents);
 				if(subComponents != null && subComponents.size() > 0)
 				{
-					//CmsLogger.logInfo("SUBCOMPONENTS:" + subComponents.size());
+					//logger.info("SUBCOMPONENTS:" + subComponents.size());
 					int index = 0;
 					Iterator subComponentsIterator = subComponents.iterator();
 					while(subComponentsIterator.hasNext())
@@ -406,13 +410,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						if(subComponent != null)
 						{
 							component.getComponents().put(subComponent.getSlotName(), subComponent);
-							//CmsLogger.logInfo("Adding subcomponent:" + subComponent.getName() + " to " + component.getName());
-							//CmsLogger.logInfo("");
-							//CmsLogger.logInfo("Is it inherited: " + subComponent.getIsInherited());
-							//CmsLogger.logInfo("");
+							//logger.info("Adding subcomponent:" + subComponent.getName() + " to " + component.getName());
+							//logger.info("");
+							//logger.info("Is it inherited: " + subComponent.getIsInherited());
+							//logger.info("");
 							if(subComponent.getIsInherited())
 							{
-								//CmsLogger.logInfo("Inherited..." + contentId);
+								//logger.info("Inherited..." + contentId);
 								String childComponentsString = decorateComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId/*, metainfoContentId*/);
 								if(!this.getTemplateController().getDeliveryContext().getShowSimple())
 								    subComponentString += "<span id=\""+ id + index + "Comp\" class=\"inheritedslot\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\">" + childComponentsString + "</span>";
@@ -428,9 +432,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							}
 							else
 							{
-								//CmsLogger.logInfo("Not inherited..." + contentId);
+								//logger.info("Not inherited..." + contentId);
 								String childComponentsString = decorateComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId/*, metainfoContentId*/);
-								//CmsLogger.logInfo("childComponentsString:" + childComponentsString);
+								//logger.info("childComponentsString:" + childComponentsString);
 								
 								if(!this.getTemplateController().getDeliveryContext().getShowSimple())
 									subComponentString += "<span id=\""+ id + index + "_" + subComponent.getId() + "Comp\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + subComponent.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "');</script></span>";
@@ -446,7 +450,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						}
 						index++;
 					}
-					//CmsLogger.logInfo("-------------------------------------------");
+					//logger.info("-------------------------------------------");
 				}
 				else
 				{
@@ -464,12 +468,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				slotStartIndex = componentString.indexOf("<ig:slot", offset);
 			}
 			
-			//CmsLogger.logInfo("offset:" + offset);
+			//logger.info("offset:" + offset);
 			decoratedComponent += componentString.substring(offset);
 		}
 		catch(Exception e)
 		{		
-			CmsLogger.logWarning("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+			logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
 		}
 		
 		return decoratedComponent;
@@ -485,8 +489,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    if(templateController.getRequestParameter("skipPropertiesDiv") != null && templateController.getRequestParameter("skipPropertiesDiv").equalsIgnoreCase("true"))
 	        return "";
 
-		//CmsLogger.logInfo("***************************************************************");
-		//CmsLogger.logInfo("componentId:" + componentId);
+		//logger.info("***************************************************************");
+		//logger.info("componentId:" + componentId);
 
 		StringBuffer sb = new StringBuffer();
 		Timer timer = new Timer();
@@ -544,17 +548,17 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("			<td class=\"igtd\">&nbsp;</td>");
 		sb.append("		</tr>");
 		
-		//CmsLogger.logInfo("componentPropertiesString:" + componentPropertiesString);
+		//logger.info("componentPropertiesString:" + componentPropertiesString);
 		Collection componentProperties = getComponentProperties(componentId, document /*componentPropertiesString*/);
 		timer.printElapsedTime("getComponentPropertiesDiv: 4");
 
 		int propertyIndex = 0;
-		//CmsLogger.logInfo("componentProperties:" + componentProperties.size());
+		//logger.info("componentProperties:" + componentProperties.size());
 		Iterator componentPropertiesIterator = componentProperties.iterator();
 		while(componentPropertiesIterator.hasNext())
 		{
 			ComponentProperty componentProperty = (ComponentProperty)componentPropertiesIterator.next();
-			//CmsLogger.logInfo("componentProperty type:" + componentProperty.getType());
+			//logger.info("componentProperty type:" + componentProperty.getType());
 			if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.BINDING))
 			{
 				String assignUrl = "";
@@ -573,7 +577,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					    if(componentProperty.getAllowedContentTypeNamesArray() != null && componentProperty.getAllowedContentTypeNamesArray().length > 0)
 					    {
 					        allowedContentTypeNamesParameters = "&" + componentProperty.getAllowedContentTypeNamesAsUrlEncodedString();
-					        CmsLogger.logInfo("allowedContentTypeNamesParameters:" + allowedContentTypeNamesParameters);
+					        logger.info("allowedContentTypeNamesParameters:" + allowedContentTypeNamesParameters);
 					    }
 					    
 						if(componentProperty.getIsMultipleBinding())
@@ -665,8 +669,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		</tr>");
 		sb.append("		<tr class=\"igtr\">");
 		sb.append("			<td colspan=\"4\">");
-		sb.append("				<a href=\"javascript:submitForm('component" + componentId + "PropertiesForm');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getWebworkAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
-		sb.append("				<a href=\"javascript:hideDiv('component" + componentId + "Properties');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getWebworkAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
+		sb.append("				<a href=\"javascript:submitForm('component" + componentId + "PropertiesForm');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getInfoGlueAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
+		sb.append("				<a href=\"javascript:hideDiv('component" + componentId + "Properties');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getInfoGlueAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
 		sb.append("			</td>");
 		sb.append("		</tr>");
 		sb.append("		</table>");
@@ -868,7 +872,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			sb.append("		</tr>");
 
 			List slotComponents = slot.getComponents();
-			//CmsLogger.logInfo("Number of components in slot " + slot.getId() + ":" + slotComponents.size());
+			//logger.info("Number of components in slot " + slot.getId() + ":" + slotComponents.size());
 
 			if(slotComponents != null)
 			{
@@ -1113,7 +1117,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		try
 		{
 			String xml = this.getComponentPropertiesString(templateController, siteNodeId, languageId, contentId);
-			//CmsLogger.logInfo("xml: " + xml);
+			//logger.info("xml: " + xml);
 			if(xml != null && xml.length() > 0)
 			{
 				componentPropertiesDocument = XMLHelper.readDocumentFromByteArray(xml.getBytes("UTF-8"));
@@ -1123,7 +1127,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 		
@@ -1147,7 +1151,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		try
 		{
 		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
-		    //CmsLogger.logInfo("masterLanguageId:" + masterLanguageId);
+		    //logger.info("masterLanguageId:" + masterLanguageId);
 		    componentPropertiesString = templateController.getContentAttribute(contentId, masterLanguageId, "ComponentProperties", true);
 
 			if(componentPropertiesString == null)
@@ -1157,7 +1161,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 
@@ -1191,7 +1195,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 		
@@ -1224,7 +1228,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 
@@ -1237,7 +1241,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 
 	private List getComponentProperties(Integer componentId, org.w3c.dom.Document document/*String componentPropertiesXML*/) throws Exception
 	{
-		//CmsLogger.logInfo("componentPropertiesXML:" + componentPropertiesXML);
+		//logger.info("componentPropertiesXML:" + componentPropertiesXML);
 		List componentProperties = new ArrayList();
 		Timer timer = new Timer();
 		timer.setActive(false);
@@ -1253,10 +1257,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				timer.printElapsedTime("Read document");
 
 				String propertyXPath = "//property";
-				//CmsLogger.logInfo("propertyXPath:" + propertyXPath);
+				//logger.info("propertyXPath:" + propertyXPath);
 				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
 				timer.printElapsedTime("Set property xpath");
-				//CmsLogger.logInfo("*********************************************************anl:" + anl.getLength());
+				//logger.info("*********************************************************anl:" + anl.getLength());
 				for(int i=0; i < anl.getLength(); i++)
 				{
 					org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
@@ -1267,8 +1271,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					String allowedContentTypeNamesString = binding.getAttribute("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.getAttribute("visualizingAction");
 					String createAction 				 = binding.getAttribute("createAction");
-					//CmsLogger.logInfo("name:" + name);
-					//CmsLogger.logInfo("type:" + type);
+					//logger.info("name:" + name);
+					//logger.info("type:" + type);
 
 					ComponentProperty property = new ComponentProperty();
 					property.setComponentId(componentId);
@@ -1300,7 +1304,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property2");
 
-						//CmsLogger.logInfo("value:" + value);
+						//logger.info("value:" + value);
 						property.setValue(value);
 					}
 					
@@ -1311,7 +1315,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			CmsLogger.logWarning("The component with id " + componentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
+			logger.warn("The component with id " + componentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
 		}
 							
 		return componentProperties;
@@ -1335,7 +1339,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				timer.printElapsedTime("Read document");
 
 				String propertyXPath = "//task";
-				//CmsLogger.logInfo("propertyXPath:" + propertyXPath);
+				//logger.info("propertyXPath:" + propertyXPath);
 				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
 				timer.printElapsedTime("Set property xpath");
 				for(int i=0; i < anl.getLength(); i++)
@@ -1344,8 +1348,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					
 					String name		= binding.getAttribute("name");
 					String view		= binding.getAttribute("view");
-					CmsLogger.logInfo("name:" + name);
-					CmsLogger.logInfo("view:" + view);
+					logger.info("name:" + name);
+					logger.info("view:" + view);
 
 					ComponentTask task = new ComponentTask();
 					task.setName(name);
@@ -1359,7 +1363,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			CmsLogger.logWarning("The component with id " + componentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
+			logger.warn("The component with id " + componentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
 		}
 							
 		return componentTasks;
@@ -1398,7 +1402,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		/*
 		String componentXML = getPageComponentsString(this.getTemplateController(), siteNodeId, languageId, contentId);			
-		////CmsLogger.logInfo("componentXML:" + componentXML);
+		////logger.info("componentXML:" + componentXML);
 
 		timer.printElapsedTime("AAA2");
 
@@ -1409,7 +1413,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		timer.printElapsedTime("AAA3");
 
 		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
-		//CmsLogger.logInfo("componentXPath:" + componentXPath);
+		//logger.info("componentXPath:" + componentXPath);
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
 		for(int i=0; i < anl.getLength(); i++)
 		{
@@ -1417,11 +1421,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			String id 			= property.getAttribute("type");
 			String path 		= property.getAttribute("path");
-			//CmsLogger.logInfo("path:" + path);
-			//CmsLogger.logInfo("path:" + "path_" + locale.getLanguage() + ":" + property.hasAttribute("path_" + locale.getLanguage()));
+			//logger.info("path:" + path);
+			//logger.info("path:" + "path_" + locale.getLanguage() + ":" + property.hasAttribute("path_" + locale.getLanguage()));
 			if(property.hasAttribute("path_" + locale.getLanguage()))
 				path = property.getAttribute("path_" + locale.getLanguage());
-			//CmsLogger.logInfo("path:" + path);
+			//logger.info("path:" + path);
 				
 			value 				= path;
 		}
@@ -1451,24 +1455,24 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);			
-		////CmsLogger.logInfo("componentXML:" + componentXML);
+		////logger.info("componentXML:" + componentXML);
 
 		org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentXPath = "//component[@id=" + componentId + "]/bindings/binding";
-		//CmsLogger.logInfo("componentXPath:" + componentXPath);
+		//logger.info("componentXPath:" + componentXPath);
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
 		for(int i=0; i < anl.getLength(); i++)
 		{
 			org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
-			//CmsLogger.logInfo(XMLHelper.serializeDom(binding, new StringBuffer()));
-			//CmsLogger.logInfo("YES - we read the binding properties...");		
+			//logger.info(XMLHelper.serializeDom(binding, new StringBuffer()));
+			//logger.info("YES - we read the binding properties...");		
 			
 			String id 			= binding.getAttribute("id");
 			String entityClass 	= binding.getAttribute("entity");
 			String entityId 	= binding.getAttribute("entityId");
-			//CmsLogger.logInfo("id:" + id);
-			//CmsLogger.logInfo("entityClass:" + entityClass);
-			//CmsLogger.logInfo("entityId:" + entityId);
+			//logger.info("id:" + id);
+			//logger.info("entityClass:" + entityClass);
+			//logger.info("entityId:" + entityId);
 			
 			if(entityClass.equalsIgnoreCase("Content"))
 			{
@@ -1498,7 +1502,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			for(int i=0; i<level; i++)
 				System.out.print(" ");
 			
-			CmsLogger.logInfo("  component:" + tempComponent.getName());
+			logger.info("  component:" + tempComponent.getName());
 			
 			Iterator slotIterator = tempComponent.getSlotList().iterator();
 			while(slotIterator.hasNext())
@@ -1506,9 +1510,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				Slot slot = (Slot)slotIterator.next();
 				
 				for(int i=0; i<level; i++)
-					CmsLogger.logInfo(" ");
+					logger.info(" ");
 					
-				CmsLogger.logInfo(" slot for " + tempComponent.getName() + ":" + slot.getId());
+				logger.info(" slot for " + tempComponent.getName() + ":" + slot.getId());
 				printComponentHierarchy(slot.getComponents(), level + 1);
 			}
 		}			

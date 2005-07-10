@@ -26,14 +26,14 @@ package org.infoglue.cms.applications.structuretool.actions;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  * This action represents the CreateSiteNode Usecase.
  */
 
-public class DeleteServiceBindingAction extends WebworkAbstractAction
+public class DeleteServiceBindingAction extends InfoGlueAbstractAction
 {
 
     private Integer siteNodeVersionId;

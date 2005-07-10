@@ -31,7 +31,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +58,8 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 
 	protected String doExecute() throws Exception 
 	{
-		CmsLogger.logInfo("siteNodeId:" + this.siteNodeId);
-		CmsLogger.logInfo("siteNodeVersionId:" + this.siteNodeVersionId);
+		getLogger().info("siteNodeId:" + this.siteNodeId);
+		getLogger().info("siteNodeVersionId:" + this.siteNodeVersionId);
 		if(this.siteNodeVersionId == null)
 		{
 		    SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);

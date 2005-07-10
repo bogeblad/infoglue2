@@ -24,8 +24,8 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
 import org.infoglue.cms.io.*;
 
 import java.util.List;
@@ -44,7 +44,7 @@ import org.xml.sax.InputSource;
  * @author Mattias Bogeblad  
  */
 
-public class ViewFormEditorAction extends WebworkAbstractAction //extends ViewContentTypeDefinitionAction
+public class ViewFormEditorAction extends InfoGlueAbstractAction //extends ViewContentTypeDefinitionAction
 { 
 	private Integer contentVersionId;
 	private String contentVersionAttributeName;
@@ -72,7 +72,7 @@ public class ViewFormEditorAction extends WebworkAbstractAction //extends ViewCo
 	protected void initialize() throws Exception
 	{
 		this.formDefinition = ContentVersionController.getContentVersionController().getAttributeValue(getContentVersionId(), getContentVersionAttributeName(), false);
-		CmsLogger.logInfo("this.formDefinition:" + this.formDefinition);
+		getLogger().info("this.formDefinition:" + this.formDefinition);
 		
 		boolean isFormDefinitionValid = true;
 		try
@@ -90,7 +90,7 @@ public class ViewFormEditorAction extends WebworkAbstractAction //extends ViewCo
 		
 		if(this.formDefinition == null || this.formDefinition.equals("") || isFormDefinitionValid == false)
 		{
-			CmsLogger.logInfo("Trying to get the default definition...");
+			getLogger().info("Trying to get the default definition...");
 			String schemaValue = "";
 			try
 			{
@@ -100,7 +100,7 @@ public class ViewFormEditorAction extends WebworkAbstractAction //extends ViewCo
 			}
 			catch(Exception e)
 			{
-				CmsLogger.logSevere("The system could not find the default content type definition:" + e.getMessage(), e);
+				getLogger().error("The system could not find the default content type definition:" + e.getMessage(), e);
 			}
 		}
 		

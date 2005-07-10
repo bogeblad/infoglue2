@@ -30,7 +30,7 @@ import org.infoglue.cms.entities.structure.impl.simple.*;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.List;
 import java.util.Iterator;
@@ -38,12 +38,13 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.io.*;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource; 
+import org.xml.sax.InputSource;
 
 /**
  * @author Mattias Bogeblad
@@ -51,7 +52,8 @@ import org.xml.sax.InputSource;
 
 public class QualifyerController extends BaseController 
 {
-   	
+    private final static Logger logger = Logger.getLogger(QualifyerController.class.getName());
+
 	public static Qualifyer getQualifyerWithId(Integer qualifyerId, Database db) throws SystemException, Bug
 	{
 		return (Qualifyer) getObjectWithId(QualifyerImpl.class, qualifyerId, db);
@@ -111,7 +113,7 @@ public class QualifyerController extends BaseController
 	        qualifyer.setValueObject(qualifyerVO);
 	 		qualifyer.setServiceBinding((ServiceBindingImpl)serviceBinding);
 	        qualifyers.add(qualifyer);
-	        CmsLogger.logInfo("ADDED:" + qualifyerVO.getValue());
+	        logger.info("ADDED:" + qualifyerVO.getValue());
 	 		//qualifyer = (Qualifyer) createEntity(qualifyer, db);			
    		}
    		        
@@ -154,7 +156,7 @@ public class QualifyerController extends BaseController
 		while(results.hasMore()) 
         {
             Qualifyer qualifyer = (Qualifyer)results.next();
-            CmsLogger.logInfo("qualifyer:" + qualifyer.getQualifyerId());
+            logger.info("qualifyer:" + qualifyer.getQualifyerId());
         }
 		
 		
@@ -196,10 +198,10 @@ public class QualifyerController extends BaseController
 				{
 					QualifyerVO sortedQualifyerVO = (QualifyerVO)newListIterator.next();
 					if(sortedQualifyerVO.getSortOrder().intValue() < qualifyerVO.getSortOrder().intValue())	
-						CmsLogger.logInfo("The old copy was before me... lets not do anything..");
+						logger.info("The old copy was before me... lets not do anything..");
 					else
 					{
-						CmsLogger.logInfo("The old copy was after me... lets insert the new one before it..");
+						logger.info("The old copy was after me... lets insert the new one before it..");
 						qualifyers.add(index, qualifyerVO);
 						isAdded = true;
 						break;
@@ -215,7 +217,7 @@ public class QualifyerController extends BaseController
        	catch(Exception e)
         {
             e.printStackTrace();
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -232,7 +234,7 @@ public class QualifyerController extends BaseController
 		{
 			try
 	        {
-		        CmsLogger.logInfo("qualifyerXML:" + qualifyerXML);
+		        logger.info("qualifyerXML:" + qualifyerXML);
 		        InputSource inputSource = new InputSource(new StringReader(qualifyerXML));
 				
 				DOMParser parser = new DOMParser();
@@ -245,8 +247,8 @@ public class QualifyerController extends BaseController
 					Node n = nl.item(i);
 					String name  = n.getNodeName();
 					String value = n.getFirstChild().getNodeValue();
-					CmsLogger.logInfo("name:" + name);
-					CmsLogger.logInfo("value:" + value);
+					logger.info("name:" + name);
+					logger.info("value:" + value);
 					
 					QualifyerVO qualifyerVO = new QualifyerVO();
 					qualifyerVO.setName(name);

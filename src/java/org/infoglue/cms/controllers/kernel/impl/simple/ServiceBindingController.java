@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Collection;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -41,7 +42,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * @author ss
@@ -53,6 +54,8 @@ import org.infoglue.cms.util.CmsLogger;
  */
 public class ServiceBindingController extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(ServiceBindingController.class.getName());
+
     public static ServiceBindingController getController()
     {
         return new ServiceBindingController();
@@ -82,13 +85,13 @@ public class ServiceBindingController extends BaseController
 
     public static ServiceBindingVO create(ServiceBindingVO serviceBindingVO, String qualifyerXML, Integer availableServiceBindingId, Integer siteNodeVersionId, Integer serviceDefinitionId) throws ConstraintException, SystemException
     {
-    	CmsLogger.logInfo("Creating a serviceBinding with the following...");
+    	logger.info("Creating a serviceBinding with the following...");
 
-    	CmsLogger.logInfo("name:" + serviceBindingVO.getName());
-    	CmsLogger.logInfo("bindingTypeId:" + serviceBindingVO.getBindingTypeId());
-    	CmsLogger.logInfo("availableServiceBindingId:" + availableServiceBindingId);
-    	CmsLogger.logInfo("siteNodeVersionId:" + siteNodeVersionId);
-    	CmsLogger.logInfo("serviceDefinitionId:" + serviceDefinitionId);
+    	logger.info("name:" + serviceBindingVO.getName());
+    	logger.info("bindingTypeId:" + serviceBindingVO.getBindingTypeId());
+    	logger.info("availableServiceBindingId:" + availableServiceBindingId);
+    	logger.info("siteNodeVersionId:" + siteNodeVersionId);
+    	logger.info("serviceDefinitionId:" + serviceDefinitionId);
 
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -108,7 +111,7 @@ public class ServiceBindingController extends BaseController
 			
 			//siteNodeVersion.getServiceBindings().add(serviceBinding);
 			
-	        CmsLogger.logInfo("createEntity: " + serviceBinding.getSiteNodeVersion().getSiteNodeVersionId());
+	        logger.info("createEntity: " + serviceBinding.getSiteNodeVersion().getSiteNodeVersionId());
 	                    
             serviceBinding.setBindingQualifyers(QualifyerController.createQualifyers(qualifyerXML, serviceBinding));
 	        db.create(serviceBinding);
@@ -121,7 +124,7 @@ public class ServiceBindingController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -136,13 +139,13 @@ public class ServiceBindingController extends BaseController
 	
 	public ServiceBindingVO create(Database db, ServiceBindingVO serviceBindingVO, String qualifyerXML, Integer availableServiceBindingId, Integer siteNodeVersionId, Integer serviceDefinitionId) throws ConstraintException, SystemException
 	{
-		CmsLogger.logInfo("Creating a serviceBinding with the following...");
+		logger.info("Creating a serviceBinding with the following...");
 
-		CmsLogger.logInfo("name:" + serviceBindingVO.getName());
-		CmsLogger.logInfo("bindingTypeId:" + serviceBindingVO.getBindingTypeId());
-		CmsLogger.logInfo("availableServiceBindingId:" + availableServiceBindingId);
-		CmsLogger.logInfo("siteNodeVersionId:" + siteNodeVersionId);
-		CmsLogger.logInfo("serviceDefinitionId:" + serviceDefinitionId);
+		logger.info("name:" + serviceBindingVO.getName());
+		logger.info("bindingTypeId:" + serviceBindingVO.getBindingTypeId());
+		logger.info("availableServiceBindingId:" + availableServiceBindingId);
+		logger.info("siteNodeVersionId:" + siteNodeVersionId);
+		logger.info("serviceDefinitionId:" + serviceDefinitionId);
 
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 		
@@ -159,7 +162,7 @@ public class ServiceBindingController extends BaseController
 			
 			//siteNodeVersion.getServiceBindings().add(serviceBinding);
 			
-			CmsLogger.logInfo("createEntity: " + serviceBinding.getSiteNodeVersion().getSiteNodeVersionId());
+			logger.info("createEntity: " + serviceBinding.getSiteNodeVersion().getSiteNodeVersionId());
 	                    
 			serviceBinding.setBindingQualifyers(QualifyerController.createQualifyers(qualifyerXML, serviceBinding));
 			db.create((ServiceBinding)serviceBinding);
@@ -170,7 +173,7 @@ public class ServiceBindingController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			e.printStackTrace();
 			throw new SystemException(e.getMessage());
 		}
@@ -181,13 +184,13 @@ public class ServiceBindingController extends BaseController
 
     protected static ServiceBinding create(ServiceBindingVO serviceBindingVO, Integer availableServiceBindingId, Integer siteNodeVersionId, Integer serviceDefinitionId, Database db) throws ConstraintException, SystemException, Exception
     {
-    	CmsLogger.logInfo("Creating a serviceBinding with the following...");
+    	logger.info("Creating a serviceBinding with the following...");
 
-    	CmsLogger.logInfo("name:" + serviceBindingVO.getName());
-    	CmsLogger.logInfo("bindingTypeId:" + serviceBindingVO.getBindingTypeId());
-    	CmsLogger.logInfo("availableServiceBindingId:" + availableServiceBindingId);
-    	CmsLogger.logInfo("siteNodeVersionId:" + siteNodeVersionId);
-    	CmsLogger.logInfo("serviceDefinitionId:" + serviceDefinitionId);
+    	logger.info("name:" + serviceBindingVO.getName());
+    	logger.info("bindingTypeId:" + serviceBindingVO.getBindingTypeId());
+    	logger.info("availableServiceBindingId:" + availableServiceBindingId);
+    	logger.info("siteNodeVersionId:" + siteNodeVersionId);
+    	logger.info("serviceDefinitionId:" + serviceDefinitionId);
 
     	SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
     	
@@ -199,7 +202,7 @@ public class ServiceBindingController extends BaseController
         serviceBinding.setServiceDefinition((ServiceDefinitionImpl)ServiceDefinitionController.getController().getServiceDefinitionWithId(serviceDefinitionId, db));
         serviceBinding.setSiteNodeVersion((SiteNodeVersionImpl)siteNodeVersion);
 
-        CmsLogger.logInfo("createEntity: " + serviceBinding.getSiteNodeVersion().getSiteNodeVersionId());
+        logger.info("createEntity: " + serviceBinding.getSiteNodeVersion().getSiteNodeVersionId());
         
         db.create(serviceBinding);
             
@@ -212,10 +215,10 @@ public class ServiceBindingController extends BaseController
 
     public static ServiceBindingVO update(ServiceBindingVO serviceBindingVO, String qualifyerXML) throws ConstraintException, SystemException
     {
-    	CmsLogger.logInfo("Updating a serviceBinding with the following...");
+    	logger.info("Updating a serviceBinding with the following...");
 
-    	CmsLogger.logInfo("name:" + serviceBindingVO.getName());
-    	CmsLogger.logInfo("bindingTypeId:" + serviceBindingVO.getBindingTypeId());
+    	logger.info("name:" + serviceBindingVO.getName());
+    	logger.info("bindingTypeId:" + serviceBindingVO.getBindingTypeId());
     	
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -238,7 +241,7 @@ public class ServiceBindingController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -262,24 +265,24 @@ public class ServiceBindingController extends BaseController
 		while(results.hasMore()) 
 		{
 			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();
-			//CmsLogger.logInfo("serviceBinding:" + serviceBinding.getServiceBindingId());
+			//logger.info("serviceBinding:" + serviceBinding.getServiceBindingId());
 			Collection qualifyers = serviceBinding.getBindingQualifyers();
 			Iterator qualifyersIterator = qualifyers.iterator();
 			while(qualifyersIterator.hasNext())
 			{	
 				Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
-				//CmsLogger.logInfo("qualifyer:" + qualifyer.getName() + ":" + qualifyer.getValue() + " == " + qualifyer.getValue().equals(content.getContentId().toString()));
+				//logger.info("qualifyer:" + qualifyer.getName() + ":" + qualifyer.getValue() + " == " + qualifyer.getValue().equals(content.getContentId().toString()));
 				if(qualifyer.getName().equalsIgnoreCase("contentId") && qualifyer.getValue().equals(content.getContentId().toString()))
 				{
 					//db.remove(qualifyer);
 					qualifyersIterator.remove();
-					//CmsLogger.logInfo("Qualifyers:" + serviceBinding.getBindingQualifyers().size());
+					//logger.info("Qualifyers:" + serviceBinding.getBindingQualifyers().size());
 					serviceBinding.getBindingQualifyers().remove(qualifyer);
 
-					//CmsLogger.logInfo("Qualifyers2:" + serviceBinding.getBindingQualifyers().size());
+					//logger.info("Qualifyers2:" + serviceBinding.getBindingQualifyers().size());
 					if(serviceBinding.getBindingQualifyers() == null || serviceBinding.getBindingQualifyers().size() == 0)
 					{
-						//CmsLogger.logInfo("Removing service binding...");
+						//logger.info("Removing service binding...");
 						db.remove(serviceBinding);
 					}
 				}
@@ -302,24 +305,24 @@ public class ServiceBindingController extends BaseController
 		while(results.hasMore()) 
 		{
 			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();
-			//CmsLogger.logInfo("serviceBinding:" + serviceBinding.getServiceBindingId());
+			//logger.info("serviceBinding:" + serviceBinding.getServiceBindingId());
 			Collection qualifyers = serviceBinding.getBindingQualifyers();
 			Iterator qualifyersIterator = qualifyers.iterator();
 			while(qualifyersIterator.hasNext())
 			{	
 				Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
-				//CmsLogger.logInfo("qualifyer:" + qualifyer.getName() + ":" + qualifyer.getValue() + " == " + qualifyer.getValue().equals(content.getContentId().toString()));
+				//logger.info("qualifyer:" + qualifyer.getName() + ":" + qualifyer.getValue() + " == " + qualifyer.getValue().equals(content.getContentId().toString()));
 				if(qualifyer.getName().equalsIgnoreCase("siteNodeId") && qualifyer.getValue().equals(siteNode.getSiteNodeId().toString()))
 				{
 					//db.remove(qualifyer);
 					qualifyersIterator.remove();
-					//CmsLogger.logInfo("Qualifyers:" + serviceBinding.getBindingQualifyers().size());
+					//logger.info("Qualifyers:" + serviceBinding.getBindingQualifyers().size());
 					serviceBinding.getBindingQualifyers().remove(qualifyer);
 
-					//CmsLogger.logInfo("Qualifyers2:" + serviceBinding.getBindingQualifyers().size());
+					//logger.info("Qualifyers2:" + serviceBinding.getBindingQualifyers().size());
 					if(serviceBinding.getBindingQualifyers() == null || serviceBinding.getBindingQualifyers().size() == 0)
 					{
-						//CmsLogger.logInfo("Removing service binding...");
+						//logger.info("Removing service binding...");
 						db.remove(serviceBinding);
 					}
 				}
@@ -399,13 +402,13 @@ public class ServiceBindingController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

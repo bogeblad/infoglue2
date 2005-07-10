@@ -44,7 +44,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.Iterator;
 import java.util.Collection;
@@ -52,11 +52,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 
 public class SiteNodeStateController extends BaseController 
 {
-    
+    private final static Logger logger = Logger.getLogger(SiteNodeStateController.class.getName());
+
     /**
 	 * Factory method
 	 */
@@ -83,7 +85,7 @@ public class SiteNodeStateController extends BaseController
 		try
 		{	
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getSiteNodeVersionWithIdAsReadOnly(oldSiteNodeVersionId, db);
-			CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getStateId());
+			logger.info("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getStateId());
 			
 			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, infoGluePrincipal, siteNodeId, db, resultingEvents);
         				
@@ -112,11 +114,11 @@ public class SiteNodeStateController extends BaseController
 			if(serviceBindingId != null)
 			{
 				List boundContents = ContentController.getBoundContents(serviceBindingId); 
-				CmsLogger.logInfo("boundContents:" + boundContents.size());
+				logger.info("boundContents:" + boundContents.size());
 				if(boundContents.size() > 0)
 				{
 					ContentVO contentVO = (ContentVO)boundContents.get(0);
-					CmsLogger.logInfo("contentVO:" + contentVO.getId());
+					logger.info("contentVO:" + contentVO.getId());
 					
 					Iterator languageIterator = languages.iterator();
 					while(languageIterator.hasNext())
@@ -124,15 +126,15 @@ public class SiteNodeStateController extends BaseController
 						Language language = (Language)languageIterator.next();
 						ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
 						
-						CmsLogger.logInfo("language:" + language.getId());
-						CmsLogger.logInfo("contentVersion:" + contentVersion);
+						logger.info("language:" + language.getId());
+						logger.info("contentVersion:" + contentVersion);
 	
 						if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
 							throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
 		
 						if(contentVersion != null && contentVersion.getStateId().equals(siteNodeVersion.getStateId()))
 						{
-							CmsLogger.logInfo("changing state on contentVersion:" + contentVersion.getId());
+							getLogger().info("changing state on contentVersion:" + contentVersion.getId());
 							List events = new ArrayList();
 							ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, infoGluePrincipal, contentVO.getId(), db, events);
 						}
@@ -145,7 +147,7 @@ public class SiteNodeStateController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -171,7 +173,7 @@ public class SiteNodeStateController extends BaseController
             //Here we create a new version if it was a state-change back to working, it's a copy of the publish-version
 	    	if(stateId.intValue() == SiteNodeVersionVO.WORKING_STATE.intValue())
 	    	{
-	    		CmsLogger.logInfo("About to create a new working version");
+	    		getLogger().info("About to create a new working version");
 	    	    
 				if (siteNodeId == null)
 					siteNodeId = new Integer(oldSiteNodeVersion.getOwningSiteNode().getId().intValue());
@@ -195,7 +197,7 @@ public class SiteNodeStateController extends BaseController
 	    	//If the user changes the state to publish we create a copy and set that copy to publish.
 	    	if(stateId.intValue() == SiteNodeVersionVO.PUBLISH_STATE.intValue())
 	    	{
-	    		CmsLogger.logInfo("About to copy the working copy to a publish-one");
+	    		getLogger().info("About to copy the working copy to a publish-one");
 	    		//First we update the old working-version so it gets a comment
 	    		
 				if (siteNodeId == null)
@@ -233,7 +235,7 @@ public class SiteNodeStateController extends BaseController
 	
 	    	if(stateId.intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())
 	    	{
-	    		CmsLogger.logInfo("About to publish an existing version");
+	    		getLogger().info("About to publish an existing version");
 	    		oldSiteNodeVersion.setStateId(stateId);
 				oldSiteNodeVersion.setIsActive(new Boolean(true));
 				newSiteNodeVersion = oldSiteNodeVersion;
@@ -243,7 +245,7 @@ public class SiteNodeStateController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             e.printStackTrace();
             throw new SystemException(e.getMessage());
         }    	  
@@ -285,11 +287,11 @@ public class SiteNodeStateController extends BaseController
 		if(serviceBindingId != null)
 		{
 			List boundContents = ContentController.getBoundContents(serviceBindingId); 
-			CmsLogger.logInfo("boundContents:" + boundContents.size());
+			getLogger().info("boundContents:" + boundContents.size());
 			if(boundContents.size() > 0)
 			{
 				ContentVO contentVO = (ContentVO)boundContents.get(0);
-				CmsLogger.logInfo("contentVO:" + contentVO.getId());
+				getLogger().info("contentVO:" + contentVO.getId());
 				
 				Iterator languageIterator = languages.iterator();
 				while(languageIterator.hasNext())
@@ -297,21 +299,21 @@ public class SiteNodeStateController extends BaseController
 					Language language = (Language)languageIterator.next();
 					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
 					
-					CmsLogger.logInfo("language:" + language.getId());
+					getLogger().info("language:" + language.getId());
 					
 					//if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
 					//	throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
 	
 					if(contentVersion != null)
 					{
-					    CmsLogger.logInfo("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getStateId());
-					    CmsLogger.logInfo("State wanted:" + stateId);
+					    getLogger().info("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getStateId());
+					    getLogger().info("State wanted:" + stateId);
 					}
 					
 					if(contentVersion != null && contentVersion.getStateId().intValue() == siteNodeVersion.getStateId().intValue())
 					{
-					    CmsLogger.logInfo("State on current:" + contentVersion.getStateId());
-					    CmsLogger.logInfo("changing state on contentVersion:" + contentVersion.getId());
+					    getLogger().info("State on current:" + contentVersion.getStateId());
+					    getLogger().info("changing state on contentVersion:" + contentVersion.getId());
 						ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, infoGluePrincipal, contentVO.getId(), db, events);
 					}
 				}
@@ -372,18 +374,18 @@ public class SiteNodeStateController extends BaseController
 	private static void copyAccessRights(SiteNodeVersion originalSiteNodeVersion, SiteNodeVersion newSiteNodeVersion, Database db) throws ConstraintException, SystemException, Exception
 	{
 		List interceptionPointList = InterceptionPointController.getController().getInterceptionPointList("SiteNodeVersion", db);
-		CmsLogger.logInfo("interceptionPointList:" + interceptionPointList.size());
+		logger.info("interceptionPointList:" + interceptionPointList.size());
 		Iterator interceptionPointListIterator = interceptionPointList.iterator();
 		while(interceptionPointListIterator.hasNext())
 		{
 			InterceptionPoint interceptionPoint = (InterceptionPoint)interceptionPointListIterator.next();
 			List accessRightList = AccessRightController.getController().getAccessRightListForEntity(interceptionPoint.getId(), originalSiteNodeVersion.getId().toString(), db);
-			CmsLogger.logInfo("accessRightList:" + accessRightList.size());
+			logger.info("accessRightList:" + accessRightList.size());
 			Iterator accessRightListIterator = accessRightList.iterator();
 			while(accessRightListIterator.hasNext())
 			{
 				AccessRight accessRight = (AccessRight)accessRightListIterator.next();
-				CmsLogger.logInfo("accessRight:" + accessRight.getId());
+				logger.info("accessRight:" + accessRight.getId());
 				
 				AccessRightVO copiedAccessRight = accessRight.getValueObject().createCopy();
 				copiedAccessRight.setParameters(newSiteNodeVersion.getId().toString());

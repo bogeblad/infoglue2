@@ -36,7 +36,7 @@ import webwork.util.ServletValueStack;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class ConfirmRedirect extends WebworkAbstractAction {
+public class ConfirmRedirect extends InfoGlueAbstractAction {
 
   	private String unparsedURL;
 

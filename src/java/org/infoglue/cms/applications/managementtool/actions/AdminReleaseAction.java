@@ -25,15 +25,18 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import java.io.IOException;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  */
 
-public class AdminReleaseAction extends WebworkAbstractAction
+public class AdminReleaseAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(AdminReleaseAction.class.getName());
+
  	private String adminCommand = "";
  	private String output = "";
  
@@ -45,36 +48,36 @@ public class AdminReleaseAction extends WebworkAbstractAction
 
 	private static String executeUnix(String unixCmd) throws IOException
 	{
-			Process pr = Runtime.getRuntime().exec(unixCmd); 
-			String str;
-			String op ="";
+		Process pr = Runtime.getRuntime().exec(unixCmd); 
+		String str;
+		String op ="";
 
-			try { 
-				   java.io.InputStream is = pr.getInputStream();
-				   java.io.InputStreamReader isr = new java.io.InputStreamReader(is);
-				   java.io.BufferedReader br = new java.io.BufferedReader(isr);
-				   while ((str = br.readLine()) != null) {
-				   	CmsLogger.logInfo(str);
-						op+=str +"<br>";
-				   }
-				   is.close();
-					op+="<font color='red'>";
-				   is = pr.getErrorStream();
-				   isr = new java.io.InputStreamReader(is);
-				   br = new java.io.BufferedReader(isr);
-				   
-				   while ((str = br.readLine()) != null) {
-				   	CmsLogger.logInfo(str);
-						op+=str +"<br>";
-				   }
-				   is.close();
-					op+="</font>";
-				   
-			} 
-			catch (Exception e) { 
-				CmsLogger.logInfo("InterruptedException raised: "+e.getMessage()); 
-				op += e.getMessage();
-			} 
+		try { 
+			   java.io.InputStream is = pr.getInputStream();
+			   java.io.InputStreamReader isr = new java.io.InputStreamReader(is);
+			   java.io.BufferedReader br = new java.io.BufferedReader(isr);
+			   while ((str = br.readLine()) != null) {
+			   	logger.info(str);
+					op+=str +"<br>";
+			   }
+			   is.close();
+				op+="<font color='red'>";
+			   is = pr.getErrorStream();
+			   isr = new java.io.InputStreamReader(is);
+			   br = new java.io.BufferedReader(isr);
+			   
+			   while ((str = br.readLine()) != null) {
+			   	logger.info(str);
+					op+=str +"<br>";
+			   }
+			   is.close();
+				op+="</font>";
+			   
+		} 
+		catch (Exception e) { 
+		    logger.info("InterruptedException raised: "+e.getMessage()); 
+			op += e.getMessage();
+		} 
 			
 		
 		return op;
@@ -90,20 +93,20 @@ public class AdminReleaseAction extends WebworkAbstractAction
 		String dbRelease = CmsPropertyHandler.getProperty("dbRelease");
 		String dbScriptPath = CmsPropertyHandler.getProperty("dbScriptPath");
 
-		CmsLogger.logInfo("admin tools: " + admin_tools);
-		CmsLogger.logInfo("cmd: " + cmd);
+		logger.info("admin tools: " + admin_tools);
+		logger.info("cmd: " + cmd);
 		
 		if (admin_tools == null) return "error: cant find admintools";
 		
 		if (cmd.compareTo("MAKEDEFAULT")==0)
 		{
-			CmsLogger.logInfo("Executing makedefault ");
+		    logger.info("Executing makedefault ");
 			String unixCmd = "sh " + admin_tools + "/makedefaultrelease.sh " + buildName;
 			try { 
 				op+=executeUnix(unixCmd);
 			} 
 			catch (Exception e) { 
-				CmsLogger.logInfo("Exception raised: "+e.getMessage()); 
+			    logger.info("Exception raised: "+e.getMessage()); 
 				op += e.getMessage();
 			} 			
 		}
@@ -113,13 +116,13 @@ public class AdminReleaseAction extends WebworkAbstractAction
 			// String unixCmd[] = {"sh", admin_tools + "/reloaddata.sh", dbScriptPath};
 			String unixCmd = "sh " + admin_tools + "/reloaddata.sh " + dbScriptPath;
 
-			CmsLogger.logInfo("Executing reloaddata ");
+			logger.info("Executing reloaddata ");
 
 			try { 
 				op+=executeUnix(unixCmd);
 			} 
 			catch (Exception e) { 
-				CmsLogger.logInfo("Exception raised: "+e.getMessage()); 
+			    logger.info("Exception raised: "+e.getMessage()); 
 				op += e.getMessage();
 			} 
 			

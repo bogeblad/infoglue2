@@ -25,9 +25,10 @@ package org.infoglue.cms.util.workflow;
 
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.entities.mydesktop.*;
 import com.opensymphony.workflow.*;
 import com.opensymphony.workflow.spi.*;
@@ -44,10 +45,12 @@ import net.sf.hibernate.cfg.Configuration;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.15 $ $Date: 2005/06/10 14:36:11 $
+ * @version $Revision: 1.16 $ $Date: 2005/07/10 21:05:50 $
  */
 public class WorkflowFacade
 {
+    private final static Logger logger = Logger.getLogger(WorkflowFacade.class.getName());
+
 	private static SessionFactory hibernateSessionFactory;
 
 	static
@@ -223,7 +226,7 @@ public class WorkflowFacade
 		for (Iterator workflows = findActiveWorkflows().iterator(); workflows.hasNext();)
 		{
 			setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
-			CmsLogger.logInfo("workflowId:" + workflowId);
+			logger.info("workflowId:" + workflowId);
 			workflowVOs.add(createWorkflowVO());
 		}
 
@@ -376,8 +379,8 @@ public class WorkflowFacade
 	 */
 	private WorkflowStepVO createStepVO(Step step)
 	{
-		CmsLogger.logInfo("step:" + step + ':' + step.getId());
-		CmsLogger.logInfo("Owner:" + step.getOwner());
+		logger.info("step:" + step + ':' + step.getId());
+		logger.info("Owner:" + step.getOwner());
 
 		WorkflowStepVO stepVO = new WorkflowStepVO();
 		stepVO.setId(new Integer((int)step.getId()));// Hope it doesn't get too big; we are stuck with int thanks to BaseEntityVO
@@ -423,7 +426,7 @@ public class WorkflowFacade
 	 */
 	private WorkflowActionVO createActionVO(ActionDescriptor actionDescriptor)
 	{
-		CmsLogger.logInfo("Action:" + actionDescriptor.getId() + ':' + actionDescriptor.getName()
+		logger.info("Action:" + actionDescriptor.getId() + ':' + actionDescriptor.getName()
 					+ ':' + actionDescriptor.getParent().getClass());
 
 		WorkflowActionVO actionVO = new WorkflowActionVO(new Integer(actionDescriptor.getId()));

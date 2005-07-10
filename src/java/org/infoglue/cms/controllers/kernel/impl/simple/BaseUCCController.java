@@ -31,10 +31,20 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 
 public abstract class BaseUCCController
 {
+    /**
+     * Gets a logger for the action class.
+     */
+
+	protected Logger getLogger() 
+	{
+	    return Logger.getLogger(this.getClass().getName());
+	}
+
     /**
      * Begins a transaction on the named database
      */

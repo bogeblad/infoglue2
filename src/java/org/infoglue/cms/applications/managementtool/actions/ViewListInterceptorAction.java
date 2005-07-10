@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
  *  @author Mattias Bogeblad
  */
 
-public class ViewListInterceptorAction extends WebworkAbstractAction 
+public class ViewListInterceptorAction extends InfoGlueAbstractAction 
 {
 
 	private List interceptorVOList;

@@ -32,13 +32,13 @@ import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletApplicationEntityList;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 
 /**
  * @author jand
  */
-public class ViewListPortletAction extends WebworkAbstractAction 
+public class ViewListPortletAction extends InfoGlueAbstractAction 
 {
 
 	private Hashtable portlets = new Hashtable();

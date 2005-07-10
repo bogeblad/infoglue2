@@ -25,12 +25,10 @@ package org.infoglue.cms.applications.cmstool.actions;
 
 import java.util.List;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.management.RepositoryVO;
-
-import org.infoglue.cms.util.CmsLogger;
 
 /**
  * This class implements the base class for a tool.
@@ -38,7 +36,7 @@ import org.infoglue.cms.util.CmsLogger;
  * @author Mattias Bogeblad  
  */
 
-public abstract class ViewCMSAbstractToolAction extends WebworkAbstractAction
+public abstract class ViewCMSAbstractToolAction extends InfoGlueAbstractAction
 {
     private Integer repositoryId = null;
     
@@ -58,7 +56,7 @@ public abstract class ViewCMSAbstractToolAction extends WebworkAbstractAction
     	{
 	    	if(this.repositoryId == null)
 	    	{	
-	    		CmsLogger.logInfo("The repositoryId was null in ViewContentToolAction so we fetch it from the session");
+	    		getLogger().info("The repositoryId was null in ViewContentToolAction so we fetch it from the session");
 	    		this.repositoryId = (Integer)getHttpSession().getAttribute("repositoryId");
 	    		
 	    		if(this.repositoryId == null)
@@ -69,20 +67,20 @@ public abstract class ViewCMSAbstractToolAction extends WebworkAbstractAction
 						RepositoryVO repositoryVO = (RepositoryVO)authorizedRepositoryVOList.get(0);
 						this.repositoryId = repositoryVO.getId();
 			    		getHttpSession().setAttribute("repositoryId", this.repositoryId);		
-			    		CmsLogger.logInfo("We set the defaultRepositoryId in the users session to " + this.repositoryId);
+			    		getLogger().info("We set the defaultRepositoryId in the users session to " + this.repositoryId);
 					}
 		    		else
 		    		{
 		    		    this.repositoryId = new Integer(-1);
 			    		//getHttpSession().setAttribute("repositoryId", this.repositoryId);		
-			    		CmsLogger.logInfo("We set the defaultRepositoryId in the users session to " + this.repositoryId);
+		    		    getLogger().info("We set the defaultRepositoryId in the users session to " + this.repositoryId);
 		    		}
 		    	}
 	    	}
     	}
     	catch(Exception e)
     	{
-    		CmsLogger.logSevere("The master repository could not be fetched due to an error:" + e.getMessage(), e);
+    	    getLogger().error("The master repository could not be fetched due to an error:" + e.getMessage(), e);
     	}
     	    		
     	return this.repositoryId;

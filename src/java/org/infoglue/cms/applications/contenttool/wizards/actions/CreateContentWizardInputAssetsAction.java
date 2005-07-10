@@ -28,7 +28,6 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import webwork.action.ActionContext;
@@ -102,11 +101,6 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					String contentType    = mpr.getContentType(name);
 					String fileSystemName = mpr.getFilesystemName(name);
 					
-					CmsLogger.logInfo("digitalAssetKey:" + digitalAssetKey);
-					CmsLogger.logInfo("name:" + name);
-					CmsLogger.logInfo("contentType:" + contentType);
-					CmsLogger.logInfo("fileSystemName:" + fileSystemName);
-	            	
 					File file = mpr.getFile(name);
 					String fileName = digitalAssetKey + "_" + System.currentTimeMillis() + "_" + fileSystemName;
 					String tempFileName = "tmp_" + fileName;
@@ -116,10 +110,8 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 					fileSystemName = filePath + File.separator + tempFileName;
 	            	
-					CmsLogger.logInfo("New fileSystemName:" + fileSystemName);
 					renamedFile = new File(fileSystemName);
 					boolean isRenamed = file.renameTo(renamedFile);
-					CmsLogger.logInfo("isRenamed:" + isRenamed);
 	            	
 					DigitalAssetVO newAsset = new DigitalAssetVO();
 					newAsset.setAssetContentType(contentType);
@@ -138,12 +130,12 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 			}
 			else
 			{
-				CmsLogger.logSevere("File upload failed for some reason.");
+				getLogger().error("File upload failed for some reason.");
 			}
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logSevere("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+		    getLogger().error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
 		}
 		finally
 		{

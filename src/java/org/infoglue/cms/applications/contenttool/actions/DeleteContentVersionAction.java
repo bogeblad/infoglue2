@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 
@@ -33,7 +33,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
  * @author Stefan Sik
  */
 
-public class DeleteContentVersionAction extends WebworkAbstractAction
+public class DeleteContentVersionAction extends InfoGlueAbstractAction
 {
 	private ContentVersionVO contentVersionVO;
 	private Integer contentId;

@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  *
  * @author <a href="mailto:meat_for_the_butcher@yahoo.com">Patrik Nyborg</a>
  */
-public abstract class AbstractAction extends WebworkAbstractAction 
+public abstract class AbstractAction extends InfoGlueAbstractAction 
 {
 
     /**

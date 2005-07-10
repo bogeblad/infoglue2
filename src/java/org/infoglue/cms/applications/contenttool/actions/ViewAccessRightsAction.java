@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.AccessRight;
@@ -33,7 +33,6 @@ import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +43,7 @@ import java.util.List;
  * This class shows which roles has access to the siteNode.
  */
 
-public class ViewAccessRightsAction extends WebworkAbstractAction
+public class ViewAccessRightsAction extends InfoGlueAbstractAction
 {
 	private Integer interceptionPointId = null;
 	private String interceptionPointName = null;
@@ -98,23 +97,17 @@ public class ViewAccessRightsAction extends WebworkAbstractAction
     	return "success";
     }
     
-    public ViewAccessRightsAction getThis()
-	{
-		return this;
-	}
-	
 	public boolean getHasAccessRight(Integer interceptionPointId, String extraParameters, String roleName) throws SystemException, Bug
 	{
 	    try
 	    {
 			List accessRights = AccessRightController.getController().getAccessRightVOList(interceptionPointId, extraParameters, roleName);
 			boolean hasAccessRight = (accessRights.size() > 0) ? true : false;
-			CmsLogger.logInfo("hasAccessRight:" + hasAccessRight);
 			return hasAccessRight;
 	    }
 	    catch(Exception e)
 	    {
-	        e.printStackTrace();
+	        getLogger().warn(e);
 	        throw new SystemException(e);
 	    }
 	}

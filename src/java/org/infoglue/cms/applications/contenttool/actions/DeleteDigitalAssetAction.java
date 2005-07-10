@@ -25,7 +25,6 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.util.CmsLogger;
 
 /**
  * This action removes a content from the system.

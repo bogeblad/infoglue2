@@ -27,11 +27,11 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import org.infoglue.cms.services.BaseService;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.List;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import java.util.HashMap;
  * This action represents the CreateSiteNode Usecase.
  */
 
-public class ViewListTemplateAction extends WebworkAbstractAction
+public class ViewListTemplateAction extends InfoGlueAbstractAction
 {
 
     private Integer siteNodeVersionId;
@@ -168,7 +168,7 @@ public class ViewListTemplateAction extends WebworkAbstractAction
     	{
     		ServiceDefinitionVO serviceDefinitionVO = ServiceDefinitionController.getController().getServiceDefinitionVOWithId(serviceDefinitionId);
 			String serviceDefinitionClassName = serviceDefinitionVO.getClassName();
-			CmsLogger.logInfo("serviceDefinitionClassName:" + serviceDefinitionClassName);
+			getLogger().info("serviceDefinitionClassName:" + serviceDefinitionClassName);
 			
 			BaseService service = (BaseService)Class.forName(serviceDefinitionClassName).newInstance();
     		response = service.selectMatchingEntities(arguments);
@@ -191,19 +191,19 @@ public class ViewListTemplateAction extends WebworkAbstractAction
     	List serviceDefinitions = AvailableServiceBindingController.getController().getServiceDefinitionVOList(this.availableServiceBindingId);
     	if(serviceDefinitions == null || serviceDefinitions.size() == 0)
     	{
-	    	CmsLogger.logInfo("Returning error");
+	    	getLogger().info("Returning error");
     		//throw new SystemException();
 	        return "error";
 	    }
     	else if(serviceDefinitions.size() == 1)
     	{
-	    	CmsLogger.logInfo("Returning success");
+	    	getLogger().info("Returning success");
 	        this.singleServiceDefinitionVO = (ServiceDefinitionVO)serviceDefinitions.get(0);	    
 	        return "success"; 
     	} 
     	else
     	{
-	    	CmsLogger.logInfo("Returning chooseService");
+	    	getLogger().info("Returning chooseService");
     		return "chooseService";
     	}
     }

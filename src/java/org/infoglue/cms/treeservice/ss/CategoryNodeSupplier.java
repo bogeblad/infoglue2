@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: CategoryNodeSupplier.java,v 1.1 2004/12/01 23:37:18 frank Exp $
+ * $Id: CategoryNodeSupplier.java,v 1.2 2005/07/10 21:05:50 mattias Exp $
  */
 package org.infoglue.cms.treeservice.ss;
 
@@ -29,10 +29,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.treeservice.SiteNodeService;
+
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.BaseNodeSupplier;
@@ -42,6 +44,8 @@ import com.frovi.ss.Tree.BaseNodeSupplier;
  */
 public class CategoryNodeSupplier extends BaseNodeSupplier
 {
+    private final static Logger logger = Logger.getLogger(CategoryNodeSupplier.class.getName());
+
 	public static final Integer ROOT = new Integer(-1);
 
 	private CategoryController controller = CategoryController.getController();
@@ -77,7 +81,7 @@ public class CategoryNodeSupplier extends BaseNodeSupplier
 		}
 		catch (SystemException e)
 		{
-			CmsLogger.logWarning("Error getting Category Children", e);
+			logger.warn("Error getting Category Children", e);
 		}
 
 		for (Iterator i = children.iterator(); i.hasNext();)

@@ -26,11 +26,11 @@ package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import java.util.List;
 
-public class ViewSiteNodeTypeDefinitionAction extends WebworkAbstractAction
+public class ViewSiteNodeTypeDefinitionAction extends InfoGlueAbstractAction
 {
 
     private SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO;

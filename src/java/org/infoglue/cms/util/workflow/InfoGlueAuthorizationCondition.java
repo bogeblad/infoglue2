@@ -6,10 +6,12 @@ import com.opensymphony.workflow.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.util.charts.ChartHelper;
+
 
 import java.util.*;
 
@@ -21,7 +23,7 @@ import java.util.*;
 
 public class InfoGlueAuthorizationCondition implements Condition 
 {
-    private static final Log log = LogFactory.getLog(InfoGlueAuthorizationCondition.class);
+    private final static Logger logger = Logger.getLogger(InfoGlueAuthorizationCondition.class.getName());
 
     public boolean passesCondition(Map transientVars, Map args, PropertySet ps) 
     {
@@ -33,10 +35,10 @@ public class InfoGlueAuthorizationCondition implements Condition
             String roleName = (String)args.get("roleName");
             String userName = (String)args.get("userName");
             
-            CmsLogger.logInfo("passesCondition.............");
-            CmsLogger.logInfo("caller:" + context.getCaller());
-            CmsLogger.logInfo("roleName:" + roleName);
-            CmsLogger.logInfo("userName:" + userName);
+            logger.info("passesCondition.............");
+            logger.info("caller:" + context.getCaller());
+            logger.info("roleName:" + roleName);
+            logger.info("userName:" + userName);
             
             InfoGluePrincipal principal = UserControllerProxy.getController().getUser(context.getCaller());
             
@@ -61,7 +63,7 @@ public class InfoGlueAuthorizationCondition implements Condition
         } 
         catch (Exception e) 
         {
-            CmsLogger.logSevere("A severe error occurred when checking workflow authorization:" + e.getMessage(), e);
+            logger.error("A severe error occurred when checking workflow authorization:" + e.getMessage(), e);
         }
         
         return passesCondition;

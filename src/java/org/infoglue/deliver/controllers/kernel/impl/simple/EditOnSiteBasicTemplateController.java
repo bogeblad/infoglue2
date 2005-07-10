@@ -23,7 +23,9 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
@@ -46,6 +48,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public class EditOnSiteBasicTemplateController extends BasicTemplateController
 {
+    private final static Logger logger = Logger.getLogger(EditOnSiteBasicTemplateController.class.getName());
+
     public EditOnSiteBasicTemplateController(DatabaseWrapper databaseWrapper, InfoGluePrincipal infoGluePrincipal)
     {
         super(databaseWrapper, infoGluePrincipal);
@@ -79,8 +83,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		    //String extraBody   = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteBody.vm"));
 			String servletContext = request.getContextPath();
 			extraHeader = extraHeader.replaceAll("\\{applicationContext\\}", servletContext);
-			//CmsLogger.logInfo("extraHeader:" + extraHeader);
-			//CmsLogger.logInfo("extraHeader:" + extraHeader);
+			//logger.info("extraHeader:" + extraHeader);
+			//logger.info("extraHeader:" + extraHeader);
 			
 			StringBuffer modifiedTemplate = new StringBuffer(page);
 			
@@ -105,7 +109,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 				}
 				else
 				{
-					CmsLogger.logWarning("The current template is not a valid document. It does not comply with the simplest standards such as having a correct header.");
+					logger.warn("The current template is not a valid document. It does not comply with the simplest standards such as having a correct header.");
 				}
 			}
 
@@ -120,14 +124,14 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 			}
 			else
 			{
-				CmsLogger.logWarning("The current template is not a valid document. It does not comply with the simplest standards such as having a correct body.");
+				logger.warn("The current template is not a valid document. It does not comply with the simplest standards such as having a correct body.");
 			}
 			
 			decoratedTemplate = modifiedTemplate.toString();
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred when deliver tried to decorate your template to enable onSiteEditing. Reason " + e.getMessage(), e);
+			logger.warn("An error occurred when deliver tried to decorate your template to enable onSiteEditing. Reason " + e.getMessage(), e);
 		}
 		
 		return decoratedTemplate;
@@ -166,7 +170,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -264,7 +268,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;

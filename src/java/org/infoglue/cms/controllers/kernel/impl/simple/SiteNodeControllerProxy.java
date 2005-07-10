@@ -40,7 +40,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * @author Mattias Bogeblad
@@ -72,7 +72,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			CmsLogger.logInfo("Adding interceptorVO:" + interceptorVO.getName());
+			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -80,7 +80,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 			}
 			catch(ClassNotFoundException e)
 			{
-				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 
@@ -96,7 +96,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			CmsLogger.logInfo("Adding interceptorVO:" + interceptorVO.getName());
+			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -104,7 +104,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 			}
 			catch(ClassNotFoundException e)
 			{
-				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 

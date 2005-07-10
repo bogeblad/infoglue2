@@ -33,7 +33,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageControl
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.treeservice.ss.ContentNodeSupplier;
 import org.infoglue.cms.treeservice.ss.ContentNodeVersionSupplier;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import com.frovi.ss.Tree.BaseNode;
@@ -140,7 +140,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	        }
 	        catch(Exception e)
 	        {
-	            CmsLogger.logSevere("Could not fetch the master repository for the principal:" + e.getMessage(), e);
+	            getLogger().error("Could not fetch the master repository for the principal:" + e.getMessage(), e);
 	        }
 	    }
 	        

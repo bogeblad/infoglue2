@@ -27,8 +27,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import java.util.List;
@@ -142,7 +142,7 @@ public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("Expansion not possible:" + e.getMessage(), e);
+	        getLogger().warn("Expansion not possible:" + e.getMessage(), e);
 	    }
 	    
 	    return expansion;
@@ -166,7 +166,7 @@ public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("Expansion not possible:" + e.getMessage(), e);
+	        getLogger().warn("Expansion not possible:" + e.getMessage(), e);
 	    }
 	    
 	    return expansion;

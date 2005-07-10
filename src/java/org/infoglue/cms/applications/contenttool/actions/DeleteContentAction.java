@@ -27,13 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.util.CmsLogger;
 
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 /**
  * This action removes a content from the system.
@@ -80,7 +76,7 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 			}
 			catch(Exception e)
 			{
-				CmsLogger.logInfo("The content must have been a root-content because we could not find a parent.");
+				getLogger().info("The content must have been a root-content because we could not find a parent.");
 			}
 
 	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
@@ -104,7 +100,7 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 			}
 			catch(Exception e)
 			{
-				CmsLogger.logInfo("The content must have been a root-content because we could not find a parent.");
+			    getLogger().info("The content must have been a root-content because we could not find a parent.");
 			}
 
 	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    

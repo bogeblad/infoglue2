@@ -40,8 +40,8 @@ import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
 
 import java.util.List;
 
@@ -74,7 +74,7 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
     
     public ViewDigitalAssetAction(ContentVersionVO contentVersionVO) 
     {
-		CmsLogger.logInfo("Construction ViewDigitalAssetAction");
+		getLogger().info("Construction ViewDigitalAssetAction");
         this.contentVersionVO = contentVersionVO;
     }
     

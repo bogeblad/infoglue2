@@ -25,7 +25,7 @@ package org.infoglue.cms.applications.publishingtool.actions;
 
 import java.util.List;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -41,7 +41,7 @@ import org.infoglue.cms.exception.SystemException;
  * @author Stefan Sik, ss@frovi.com
  * @author Frank Febbraro, frank@phase2technology.com
  */
-public class ViewPublicationsAction extends WebworkAbstractAction
+public class ViewPublicationsAction extends InfoGlueAbstractAction
 {
 	private int startIndex = 0;
 	private Integer repositoryId;
@@ -63,10 +63,6 @@ public class ViewPublicationsAction extends WebworkAbstractAction
 	public EditionBrowser getEditionBrowser()		{ return editionBrowser; }
 	public void setEditionBrowser(EditionBrowser b)	{ editionBrowser = b; }
 
-	public ViewPublicationsAction getThis()
-	{
-		return this;
-	}
 
 	public String doExecute() throws Exception
 	{

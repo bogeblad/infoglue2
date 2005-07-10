@@ -42,7 +42,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -115,7 +115,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -153,7 +153,7 @@ public class GroupPropertiesController extends BaseController
     	
 		if(groupPropertiesVO.getId() == null)
 		{
-			CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
+			getLogger().info("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
 			realGroupPropertiesVO = create(languageId, contentTypeDefinitionId, groupPropertiesVO);
 		}
 
@@ -182,13 +182,13 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -222,13 +222,13 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -291,7 +291,7 @@ public class GroupPropertiesController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to fetch the list of digitalAssets belonging to this groupProperties:" + e);
+            getLogger().info("An error occurred when we tried to fetch the list of digitalAssets belonging to this groupProperties:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -341,13 +341,13 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -415,13 +415,13 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -441,9 +441,9 @@ public class GroupPropertiesController extends BaseController
 		{
 			try
 			{
-				CmsLogger.logInfo("attributeName:"  + attributeName);
-				CmsLogger.logInfo("versionValue:"   + groupPropertiesVO.getValue());
-				CmsLogger.logInfo("attributeValue:" + attributeValue);
+				getLogger().info("attributeName:"  + attributeName);
+				getLogger().info("versionValue:"   + groupPropertiesVO.getValue());
+				getLogger().info("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(groupPropertiesVO.getValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -486,7 +486,7 @@ public class GroupPropertiesController extends BaseController
 				
 				StringBuffer sb = new StringBuffer();
 				org.infoglue.cms.util.XMLHelper.serializeDom(document.getDocumentElement(), sb);
-				CmsLogger.logInfo("sb:" + sb);
+				getLogger().info("sb:" + sb);
 				groupPropertiesVO.setValue(sb.toString());
 				update(groupPropertiesVO.getLanguageId(), groupPropertiesVO.getContentTypeDefinitionId(), groupPropertiesVO);
 			}
@@ -528,7 +528,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -633,7 +633,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -675,7 +675,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -795,7 +795,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return relatedCategories;

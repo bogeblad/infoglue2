@@ -23,14 +23,14 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 
 /**
  * This action represents the CreateContent Usecase.
  */
 
-public class ViewCalendarAction extends WebworkAbstractAction
+public class ViewCalendarAction extends InfoGlueAbstractAction
 {
 	private String formPath;
 	private String date;

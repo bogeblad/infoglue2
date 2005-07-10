@@ -28,7 +28,7 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
@@ -44,7 +44,7 @@ import org.infoglue.deliver.portal.dispatcher.PortalServletDispatcher;
  * @author jand
  *  
  */
-public class DeployPortletAction extends WebworkAbstractAction {
+public class DeployPortletAction extends InfoGlueAbstractAction {
     private static final Log log = LogFactory.getLog(DeployPortletAction.class);
 
     // TODO fixme;

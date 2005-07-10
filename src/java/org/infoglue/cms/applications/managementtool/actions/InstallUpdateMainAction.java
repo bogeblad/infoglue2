@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
 
 
@@ -32,7 +32,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
  *
  * 
  */
-public class InstallUpdateMainAction extends WebworkAbstractAction {
+public class InstallUpdateMainAction extends InfoGlueAbstractAction 
+{
 
 	UpdateController uc;
 	private String updatePackageId;
@@ -46,11 +47,6 @@ public class InstallUpdateMainAction extends WebworkAbstractAction {
 		// uc = new UpdateController(url, path);
 		
         return "success";
-	}
-	
-	public InstallUpdateMainAction getThis()
-	{
-		return this;
 	}
 
 	

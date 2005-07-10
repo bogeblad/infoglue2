@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+import org.infoglue.cms.util.css.CSSHelper;
+
+
 
 /**
  * ConstraintRuleList.java
@@ -40,6 +43,8 @@ import org.infoglue.cms.util.CmsLogger;
  */
 public class ConstraintRuleList
 {
+    private final static Logger logger = Logger.getLogger(ConstraintRuleList.class.getName());
+
 	private Collection rules = new ArrayList();
 	private Class entityClass;
 		
@@ -86,7 +91,7 @@ public class ConstraintRuleList
 	public void setEntityClass(Class entityClass)
 	{
 		this.entityClass = entityClass;
-		CmsLogger.logInfo("RULELIST:: ENTITYCLASS : " + entityClass.getName());
+		logger.info("RULELIST:: ENTITYCLASS : " + entityClass.getName());
 	}
 
 }

@@ -25,10 +25,10 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
-public class ViewServiceDefinitionAction extends WebworkAbstractAction
+
+public class ViewServiceDefinitionAction extends InfoGlueAbstractAction
 {
 
     private ServiceDefinitionVO serviceDefinitionVO;
@@ -50,9 +50,9 @@ public class ViewServiceDefinitionAction extends WebworkAbstractAction
 
     public String doExecute() throws Exception
     {
-        CmsLogger.logInfo("Executing doExecute on ViewServiceDefinitionAction..");
+        getLogger().info("Executing doExecute on ViewServiceDefinitionAction..");
         this.initialize(getServiceDefinitionId());
-        CmsLogger.logInfo("Finished executing doExecute on ViewServiceDefinitionAction..");
+        getLogger().info("Finished executing doExecute on ViewServiceDefinitionAction..");
         return "success";
     }
         

@@ -23,10 +23,10 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.workflow.*;
@@ -47,7 +47,7 @@ import java.net.URLEncoder;
  * @author Mattias Bogeblad  
  */
 
-public class ViewContentToolToolBarAction extends WebworkAbstractAction
+public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 {
 	private String title = "";
 	private String name  = "";
@@ -176,8 +176,8 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 
 	public List getButtons()
 	{
-		CmsLogger.logInfo("Title:" + this.title);
-		CmsLogger.logInfo("toolbarKey:" + this.toolbarKey);
+		getLogger().info("Title:" + this.title);
+		getLogger().info("toolbarKey:" + this.toolbarKey);
 		
 		if(this.toolbarKey.equalsIgnoreCase("content details"))
 		{
@@ -299,7 +299,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("Exception when generating buttons:" + e.getMessage(), e);
+			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 		
 		return buttons;
@@ -328,7 +328,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("Exception when generating buttons:" + e.getMessage(), e);
+			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 
 		return buttons;				
@@ -367,7 +367,7 @@ public class ViewContentToolToolBarAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("Exception when generating buttons:" + e.getMessage(), e);
+			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 
 		return buttons;				

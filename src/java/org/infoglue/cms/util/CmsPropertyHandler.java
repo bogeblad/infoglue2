@@ -26,7 +26,9 @@ package org.infoglue.cms.util;
 import java.util.Properties;
 import java.io.*;
 import java.util.Enumeration;
-import org.infoglue.cms.util.CmsLogger;
+
+import org.apache.log4j.Logger;
+
 
 
 /**
@@ -41,6 +43,8 @@ import org.infoglue.cms.util.CmsLogger;
 
 public class CmsPropertyHandler
 {
+    private final static Logger logger = Logger.getLogger(CmsPropertyHandler.class.getName());
+
 	private static Properties cachedProperties = null;
 	private static Properties cachedUserProperties = null;
 	
@@ -94,7 +98,7 @@ public class CmsPropertyHandler
 		catch(Exception e)
 		{
 			cachedProperties = null;
-			CmsLogger.logSevere("Error loading properties from file " + "/" + applicationName + ".properties" + ". Reason:" + e.getMessage());
+			logger.error("Error loading properties from file " + "/" + applicationName + ".properties" + ". Reason:" + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -114,7 +118,7 @@ public class CmsPropertyHandler
 		}	
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("Error loading properties:" + e.getMessage());
+			logger.error("Error loading properties:" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -189,7 +193,7 @@ public class CmsPropertyHandler
 			cachedUserProperties.store(new FileOutputStream(new File(getProperty("UserPropertiesFile"))), "Properties File");
 		}
 		catch (FileNotFoundException e){
-			CmsLogger.logSevere("properties file not found");
+			logger.error("properties file not found");
 			e.printStackTrace();
 		}
 		catch (IOException e){
@@ -200,7 +204,7 @@ public class CmsPropertyHandler
 			e.printStackTrace();
 		}
 		
-		CmsLogger.logInfo("Saving Key:" + key + " rendered " + value);
+		logger.info("Saving Key:" + key + " rendered " + value);
 	}	
 
 		

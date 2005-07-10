@@ -42,6 +42,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class IISLogger extends Logger
 {
+    private final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(IISLogger.class.getName());
+
 	protected static final String monthnames[] = 
 	{
 	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -230,7 +232,7 @@ public class IISLogger extends Logger
 			}
 			catch(Exception e)
 			{
-				CmsLogger.logSevere(e.getMessage(), e);
+				logger.error(e.getMessage(), e);
 			}
 			finally
 			{
@@ -280,7 +282,7 @@ public class IISLogger extends Logger
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
     	
 		hostAddress = address;
@@ -301,7 +303,7 @@ public class IISLogger extends Logger
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
     	
 		hostName = name;

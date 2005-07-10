@@ -25,11 +25,11 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.exception.ConstraintException;
 
-public class CreateSiteNodeTypeDefinitionAction extends WebworkAbstractAction
+public class CreateSiteNodeTypeDefinitionAction extends InfoGlueAbstractAction
 {
 
 	private SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO;

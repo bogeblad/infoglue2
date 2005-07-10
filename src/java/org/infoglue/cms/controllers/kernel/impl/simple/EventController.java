@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -39,7 +40,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -55,6 +56,7 @@ import java.util.ArrayList;
 
 public class EventController extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(EventController.class.getName());
 
     /**
      * Gets the eventVO in a readonly transaction.
@@ -103,7 +105,7 @@ public class EventController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             throw new SystemException(e.getMessage());
         }
         
@@ -136,7 +138,7 @@ public class EventController extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -213,7 +215,7 @@ public class EventController extends BaseController
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -274,7 +276,7 @@ public class EventController extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

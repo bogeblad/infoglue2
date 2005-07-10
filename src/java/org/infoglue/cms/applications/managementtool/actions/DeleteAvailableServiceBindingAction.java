@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
@@ -35,7 +35,7 @@ import org.infoglue.cms.exception.*;
  * @author Mattias Bogeblad
  */
 
-public class DeleteAvailableServiceBindingAction extends WebworkAbstractAction
+public class DeleteAvailableServiceBindingAction extends InfoGlueAbstractAction
 {
 	private AvailableServiceBindingVO availableServiceBindingVO;
 	private Integer availableServiceBindingId;

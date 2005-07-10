@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 
 import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInfoBean;
@@ -41,7 +42,8 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.workflow.InfoGlueAuthorizationCondition;
+
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.services.*;
 import org.infoglue.deliver.util.CacheController;
@@ -63,6 +65,8 @@ import java.util.HashMap;
 
 public class ContentController extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(ContentController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -113,7 +117,7 @@ public class ContentController extends BaseController
 			while (it.hasNext()) 
 			{
 				Integer languageId = (Integer)it.next();
-				CmsLogger.logInfo("languageId:" + languageId);
+				logger.info("languageId:" + languageId);
 				ContentVersionVO contentVersionVO = (ContentVersionVO)createContentWizardInfoBean.getContentVersions().get(languageId);
 				ContentVersionController.getContentVersionController().create(content.getContentId(), languageId, contentVersionVO, null, db);
 			}
@@ -126,13 +130,13 @@ public class ContentController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -163,13 +167,13 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -223,7 +227,7 @@ public class ContentController extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+        	logger.error("An error occurred so we should not complete the transaction:" + e, e);
         	e.printStackTrace();
         	//rollbackTransaction(db);
             throw new SystemException(e.getMessage());    
@@ -249,13 +253,13 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-        	CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + ce, ce);
+        	logger.error("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -341,7 +345,7 @@ public class ContentController extends BaseController
         	ContentVersion contentVersion = (ContentVersion)versionIterator.next();
         	if(contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
         	{
-        		CmsLogger.logInfo("The content had a published version so we cannot delete it..");
+        		logger.info("The content had a published version so we cannot delete it..");
 				isDeletable = false;
         		break;
         	}
@@ -380,7 +384,7 @@ public class ContentController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -453,7 +457,7 @@ public class ContentController extends BaseController
 	
     public static ContentVO getParentContent(Integer contentId) throws SystemException, Bug
     {
-    	CmsLogger.logInfo("Coming in with:" + contentId);
+    	logger.info("Coming in with:" + contentId);
         Database db = CastorDatabaseService.getDatabase();
 		ContentVO parentContentVO = null;
 		
@@ -462,7 +466,7 @@ public class ContentController extends BaseController
         try
         {
 			Content content = (Content) getObjectWithId(ContentImpl.class, contentId, db);
-			CmsLogger.logInfo("CONTENT:" + content.getName());
+			logger.info("CONTENT:" + content.getName());
 			Content parent = content.getParentContent();
 			if(parent != null)
 				parentContentVO = parent.getValueObject();
@@ -471,7 +475,7 @@ public class ContentController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -499,13 +503,13 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -532,13 +536,13 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -567,7 +571,7 @@ public class ContentController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -593,13 +597,13 @@ public class ContentController extends BaseController
 		
 		if(newParentContentId == null)
         {
-        	CmsLogger.logWarning("You must specify the new parent-content......");
+        	logger.warn("You must specify the new parent-content......");
         	throw new ConstraintException("Content.parentContentId", "3303");
         }
 
         if(contentVO.getId().intValue() == newParentContentId.intValue())
         {
-        	CmsLogger.logWarning("You cannot have the content as it's own parent......");
+        	logger.warn("You cannot have the content as it's own parent......");
         	throw new ConstraintException("Content.parentContentId", "3301");
         }
 		
@@ -609,7 +613,7 @@ public class ContentController extends BaseController
                     
         if(oldParentContent.getId().intValue() == newParentContentId.intValue())
         {
-        	CmsLogger.logWarning("You cannot specify the same folder as it originally was located in......");
+        	logger.warn("You cannot specify the same folder as it originally was located in......");
         	throw new ConstraintException("Content.parentContentId", "3304");
         }
 
@@ -618,7 +622,7 @@ public class ContentController extends BaseController
 		{
 			if(tempContent.getId().intValue() == content.getId().intValue())
 			{
-				CmsLogger.logWarning("You cannot move the content to a child under it......");
+				logger.warn("You cannot move the content to a child under it......");
         		throw new ConstraintException("Content.parentContentId", "3302");
 			}
 			tempContent = tempContent.getParentContent();
@@ -648,7 +652,7 @@ public class ContentController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -692,26 +696,26 @@ public class ContentController extends BaseController
     	List contents = null;
     	
     	String method = (String)argumentHashMap.get("method");
-    	CmsLogger.logInfo("method:" + method);
+    	logger.info("method:" + method);
     	
     	if(method.equalsIgnoreCase("selectContentListOnIdList"))
     	{
 			contents = new ArrayList();
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			logger.info("Arguments:" + arguments.size());  
 			Iterator argumentIterator = arguments.iterator();
 			while(argumentIterator.hasNext())
 			{ 		
 				HashMap argument = (HashMap)argumentIterator.next(); 
 				Integer contentId = new Integer((String)argument.get("contentId"));
-				CmsLogger.logInfo("Getting the content with Id:" + contentId);
+				logger.info("Getting the content with Id:" + contentId);
 				contents.add(getContentVOWithId(contentId));
 			}
     	}
         else if(method.equalsIgnoreCase("selectListOnContentTypeName"))
     	{
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());   		
+			logger.info("Arguments:" + arguments.size());   		
 			contents = getContentVOListByContentTypeNames(arguments);
     	}
         return contents;
@@ -727,26 +731,26 @@ public class ContentController extends BaseController
     	List contents = null;
     	
     	String method = (String)argumentHashMap.get("method");
-    	CmsLogger.logInfo("method:" + method);
+    	logger.info("method:" + method);
     	
     	if(method.equalsIgnoreCase("selectContentListOnIdList"))
     	{
 			contents = new ArrayList();
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			logger.info("Arguments:" + arguments.size());  
 			Iterator argumentIterator = arguments.iterator();
 			while(argumentIterator.hasNext())
 			{ 		
 				HashMap argument = (HashMap)argumentIterator.next(); 
 				Integer contentId = new Integer((String)argument.get("contentId"));
-				CmsLogger.logInfo("Getting the content with Id:" + contentId);
+				logger.info("Getting the content with Id:" + contentId);
 				contents.add(getSmallContentVOWithId(contentId, db));
 			}
     	}
         else if(method.equalsIgnoreCase("selectListOnContentTypeName"))
     	{
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());   		
+			logger.info("Arguments:" + arguments.size());   		
 			contents = getContentVOListByContentTypeNames(arguments, db);
     	}
         return contents;
@@ -791,7 +795,7 @@ public class ContentController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -868,7 +872,7 @@ public class ContentController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -893,7 +897,7 @@ public class ContentController extends BaseController
 
         try
         {
-            CmsLogger.logInfo("Fetching the root content for the repository " + repositoryId);
+            logger.info("Fetching the root content for the repository " + repositoryId);
 			//OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl c WHERE is_undefined(c.parentContent) AND c.repository.repositoryId = $1");
 			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c WHERE is_undefined(c.parentContentId) AND c.repositoryId = $1");
 			oql.bind(repositoryId);
@@ -906,7 +910,7 @@ public class ContentController extends BaseController
             else
             {
 				//None found - we create it and give it the name of the repository.
-				CmsLogger.logInfo("Found no rootContent so we create a new....");
+				logger.info("Found no rootContent so we create a new....");
 				ContentVO rootContentVO = new ContentVO();
 				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
 				rootContentVO.setCreatorName(userName);
@@ -922,13 +926,13 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -963,13 +967,13 @@ public class ContentController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -987,7 +991,7 @@ public class ContentController extends BaseController
 	{
 		Content content = null;
 
-		CmsLogger.logInfo("Fetching the root content for the repository " + repositoryId);
+		logger.info("Fetching the root content for the repository " + repositoryId);
 		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl c WHERE is_undefined(c.parentContent) AND c.repository.repositoryId = $1");
 		oql.bind(repositoryId);
 			
@@ -1001,7 +1005,7 @@ public class ContentController extends BaseController
 			if(createIfNonExisting)
 			{
 				//None found - we create it and give it the name of the repository.
-				CmsLogger.logInfo("Found no rootContent so we create a new....");
+				logger.info("Found no rootContent so we create a new....");
 				ContentVO rootContentVO = new ContentVO();
 				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
 				rootContentVO.setCreatorName(userName);
@@ -1043,11 +1047,11 @@ public class ContentController extends BaseController
    	public List getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
     {
    		String key = "" + parentContentId;
-		CmsLogger.logInfo("key:" + key);
+		logger.info("key:" + key);
 		List cachedChildContentVOList = (List)CacheController.getCachedObject("childContentCache", key);
 		if(cachedChildContentVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached childContentVOList:" + cachedChildContentVOList.size());
+			logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
 			return cachedChildContentVOList;
 		}
 		
@@ -1071,13 +1075,13 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1113,13 +1117,13 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1151,13 +1155,13 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1226,7 +1230,7 @@ public class ContentController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -1266,7 +1270,7 @@ public class ContentController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("The sorting of qualifyers failed:" + e.getMessage(), e);
+			logger.warn("The sorting of qualifyers failed:" + e.getMessage(), e);
 		}
 			
 		return sortedQualifyers;

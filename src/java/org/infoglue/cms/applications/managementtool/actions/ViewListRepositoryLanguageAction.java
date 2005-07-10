@@ -23,13 +23,13 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageController;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ import java.util.List;
  *  @author Mattias Bogeblad
  */
 
-public class ViewListRepositoryLanguageAction extends WebworkAbstractAction 
+public class ViewListRepositoryLanguageAction extends InfoGlueAbstractAction 
 {
 
 	private RepositoryVO repositoryVO;
@@ -74,11 +74,6 @@ public class ViewListRepositoryLanguageAction extends WebworkAbstractAction
 	public void setRepositoryId(Integer repositoryId)
 	{
 		this.repositoryId = repositoryId;		
-	}
-
-	public ViewListRepositoryLanguageAction getThis()
-	{
-		return this;
 	}
 
 	public LanguageVO getLanguage(Integer repositoryLanguageId) throws Exception

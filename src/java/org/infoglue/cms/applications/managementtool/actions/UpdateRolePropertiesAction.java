@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -34,7 +34,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
   * @author Mattias Bogeblad
   */
 
-public class UpdateRolePropertiesAction extends WebworkAbstractAction 
+public class UpdateRolePropertiesAction extends InfoGlueAbstractAction 
 {
 	private RolePropertiesVO rolePropertiesVO;
 	private Integer languageId;

@@ -24,7 +24,7 @@
 package org.infoglue.cms.applications.tasktool.actions;
 
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
@@ -37,7 +37,7 @@ import org.apache.velocity.*;
 import java.io.*;
 import java.util.*;
 
-public class ViewExecuteTaskAction extends WebworkAbstractAction
+public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 {
 	private Integer taskContentId = null;
 	private Integer contentId = null;
@@ -60,7 +60,7 @@ public class ViewExecuteTaskAction extends WebworkAbstractAction
 	{
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.getTaskContentId());
 		
-		CmsLogger.logInfo("Language:" + LanguageController.getController().getMasterLanguage((Integer)getHttpSession().getAttribute("repositoryId")).getId());
+		getLogger().info("Language:" + LanguageController.getController().getMasterLanguage((Integer)getHttpSession().getAttribute("repositoryId")).getId());
 		
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getId(), LanguageController.getController().getMasterLanguage((Integer)getHttpSession().getAttribute("repositoryId")).getId());
 
@@ -68,11 +68,11 @@ public class ViewExecuteTaskAction extends WebworkAbstractAction
 		if(contentVersionVO == null)
 			contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getId(), ((LanguageVO)LanguageController.getController().getLanguageVOList().get(0)).getId());
 		
-		//CmsLogger.logInfo("contentVersionVO:" + contentVersionVO);
+		//getLogger().info("contentVersionVO:" + contentVersionVO);
 		
 		String userInputHTML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO.getId(), "UserInputHTML", false);
 	
-		//CmsLogger.logInfo("Found userInputHTML:" + userInputHTML);
+		//getLogger().info("Found userInputHTML:" + userInputHTML);
 			 
 		ScriptController scriptController = getScriptController();
 		scriptController.setRequest(this.getRequest());

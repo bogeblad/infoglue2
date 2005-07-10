@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.security.InfoGlueRole;
@@ -40,7 +40,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
  */
 
 
-public class CreateRoleAction extends WebworkAbstractAction
+public class CreateRoleAction extends InfoGlueAbstractAction
 {
 	private RoleVO roleVO;
 	private InfoGlueRole infoGlueRole;

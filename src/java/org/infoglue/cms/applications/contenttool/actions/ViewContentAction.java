@@ -28,14 +28,14 @@ import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
@@ -225,7 +225,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
 		}
 		
 		return contentVersionVO;
@@ -245,7 +245,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
 		
 		return eventVO;
@@ -262,7 +262,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
 		
 		return eventVO;
@@ -276,7 +276,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logSevere("Unable to get master language for repository", e);	
+			getLogger().error("Unable to get master language for repository", e);	
 		}
 		return null;
 	}

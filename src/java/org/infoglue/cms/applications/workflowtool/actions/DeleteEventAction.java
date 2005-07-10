@@ -24,7 +24,7 @@
 package org.infoglue.cms.applications.workflowtool.actions;
 
 import org.infoglue.cms.entities.workflow.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
@@ -34,7 +34,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
  * This action deletes a given event.
  */
 
-public class DeleteEventAction extends WebworkAbstractAction
+public class DeleteEventAction extends InfoGlueAbstractAction
 {
 
    	private ConstraintExceptionBuffer ceb;

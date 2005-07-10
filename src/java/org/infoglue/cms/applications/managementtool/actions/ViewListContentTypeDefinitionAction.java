@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import java.util.List;
  *  @author Mattias Bogeblad
  */
 
-public class ViewListContentTypeDefinitionAction extends WebworkAbstractAction 
+public class ViewListContentTypeDefinitionAction extends InfoGlueAbstractAction 
 {
 
 	private List contentTypeDefinitions;
@@ -44,7 +44,7 @@ public class ViewListContentTypeDefinitionAction extends WebworkAbstractAction
 	protected String doExecute() throws Exception 
 	{
 		this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
-    	CmsLogger.logInfo("contentTypeDefinitions:" + contentTypeDefinitions.size());
+    	getLogger().info("contentTypeDefinitions:" + contentTypeDefinitions.size());
     	return "success";
 	}
 	

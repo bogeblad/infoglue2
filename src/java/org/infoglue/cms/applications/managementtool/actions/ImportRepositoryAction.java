@@ -42,7 +42,7 @@ import org.exolab.castor.jdo.TransactionNotInProgressException;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -75,7 +75,7 @@ import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.FileUploadHelper;
 
 import webwork.action.ActionContext;
@@ -86,7 +86,7 @@ import webwork.action.ActionContext;
  * @author mattias
  */
 
-public class ImportRepositoryAction extends WebworkAbstractAction
+public class ImportRepositoryAction extends InfoGlueAbstractAction
 {
 	
 	/**
@@ -111,7 +111,7 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 		try 
 		{
 			Mapping map = new Mapping();
-			CmsLogger.logInfo("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+			getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
 			map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
 
 			// All ODMG database access requires a transaction
@@ -131,12 +131,12 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 			unmarshaller.setWhitespacePreserve(true);
 			InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
 			SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
-			CmsLogger.logInfo(readSiteNode.getName());
+			getLogger().info(readSiteNode.getName());
 			Content readContent = infoGlueExportImplRead.getRootContent();
-			CmsLogger.logInfo(readContent.getName());
+			getLogger().info(readContent.getName());
 
 			Repository repositoryRead = readSiteNode.getRepository();
-			CmsLogger.logInfo(repositoryRead.getName());
+			getLogger().info(repositoryRead.getName());
 			readContent.setRepository((RepositoryImpl)repositoryRead);
 
 			db.create(repositoryRead);
@@ -160,8 +160,8 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 
 				db.create(repositoryLanguage);
 				
-				CmsLogger.logInfo("language:" + language);
-				CmsLogger.logInfo("language.getRepositoryLanguages():" + language.getRepositoryLanguages());
+				getLogger().info("language:" + language);
+				getLogger().info("language.getRepositoryLanguages():" + language.getRepositoryLanguages());
 				language.getRepositoryLanguages().add(repositoryLanguage);
 			}
 			
@@ -191,11 +191,11 @@ public class ImportRepositoryAction extends WebworkAbstractAction
             } 
 			catch (TransactionNotInProgressException e1)
             {
-                CmsLogger.logSevere("An error occurred when importing a repository: " + e.getMessage(), e);
+                getLogger().error("An error occurred when importing a repository: " + e.getMessage(), e);
     			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
             }
 			
-			CmsLogger.logSevere("An error occurred when importing a repository: " + e.getMessage(), e);
+			getLogger().error("An error occurred when importing a repository: " + e.getMessage(), e);
 			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
 		}
 		
@@ -212,7 +212,7 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 	 */
 	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, List allSiteNodes, Database db) throws Exception
 	{
-		CmsLogger.logInfo("siteNode:" + siteNode.getName());
+		getLogger().info("siteNode:" + siteNode.getName());
 
 		Integer originalSiteNodeId = siteNode.getSiteNodeId();
 		
@@ -231,7 +231,7 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 		allSiteNodes.add(siteNode);
 		    
 		Integer newSiteNodeId = siteNode.getSiteNodeId();
-		CmsLogger.logInfo(originalSiteNodeId + ":" + newSiteNodeId);
+		getLogger().info(originalSiteNodeId + ":" + newSiteNodeId);
 		siteNodeIdMap.put(originalSiteNodeId.toString(), newSiteNodeId.toString());
 		
 		Collection childSiteNodes = siteNode.getChildSiteNodes();
@@ -263,7 +263,7 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 			while(serviceBindingsIterator.hasNext())
 			{
 				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingsIterator.next();
-				CmsLogger.logInfo("serviceBinding:" + serviceBinding.getName());
+				getLogger().info("serviceBinding:" + serviceBinding.getName());
 				
 				ServiceDefinition originalServiceDefinition = serviceBinding.getServiceDefinition();
 				String serviceDefinitionName = originalServiceDefinition.getName();
@@ -279,15 +279,15 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 
 				AvailableServiceBinding originalAvailableServiceBinding = serviceBinding.getAvailableServiceBinding();
 				String availableServiceBindingName = originalAvailableServiceBinding.getName();
-				CmsLogger.logInfo("availableServiceBindingName:" + availableServiceBindingName);
+				getLogger().info("availableServiceBindingName:" + availableServiceBindingName);
 				AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName(availableServiceBindingName, db, false);
 				if(availableServiceBinding == null)
 				{
-				    CmsLogger.logInfo("There was no availableServiceBinding registered under:" + availableServiceBindingName);
-				    CmsLogger.logInfo("originalAvailableServiceBinding:" + originalAvailableServiceBinding.getName() + ":" + originalAvailableServiceBinding.getIsInheritable());
+				    getLogger().info("There was no availableServiceBinding registered under:" + availableServiceBindingName);
+				    getLogger().info("originalAvailableServiceBinding:" + originalAvailableServiceBinding.getName() + ":" + originalAvailableServiceBinding.getIsInheritable());
 				    db.create(originalAvailableServiceBinding);
 				    availableServiceBinding = originalAvailableServiceBinding;
-				    CmsLogger.logInfo("Notifying:" + siteNodeTypeDefinition.getName() + " about the new availableServiceBinding " + availableServiceBinding.getName());
+				    getLogger().info("Notifying:" + siteNodeTypeDefinition.getName() + " about the new availableServiceBinding " + availableServiceBinding.getName());
 				    siteNodeTypeDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
 				    serviceDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
 				    availableServiceBinding.getSiteNodeTypeDefinitions().add((SiteNodeTypeDefinitionImpl)siteNodeTypeDefinition);
@@ -426,13 +426,13 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 	 */
 	private void updateContentVersions(List allContents, Map contentIdMap, Map siteNodeIdMap)
 	{
-	    CmsLogger.logInfo("allContents:" + allContents.size());
+	    getLogger().info("allContents:" + allContents.size());
 	    Iterator allContentsIterator = allContents.iterator();
 	    while(allContentsIterator.hasNext())
 	    {
 	        Content content = (Content)allContentsIterator.next();
 	        
-	        CmsLogger.logInfo("content:" + content);
+	        getLogger().info("content:" + content);
 	        
 	        Iterator contentVersionIterator = content.getContentVersions().iterator();
 	        while(contentVersionIterator.hasNext())
@@ -440,7 +440,7 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 	            ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
 	            String contentVersionValue = contentVersion.getVersionValue();
 	            
-	            CmsLogger.logInfo("contentVersionValue before:" + contentVersionValue);
+	            getLogger().info("contentVersionValue before:" + contentVersionValue);
                 
 	            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
 	            while (contentIdMapIterator.hasNext()) 
@@ -448,7 +448,7 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 	                String oldContentId = (String)contentIdMapIterator.next();
 	                String newContentId = (String)contentIdMap.get(oldContentId);
 	                
-	                CmsLogger.logInfo("Replacing all:" + oldContentId + " with " + newContentId);
+	                getLogger().info("Replacing all:" + oldContentId + " with " + newContentId);
 	                
 	                contentVersionValue = contentVersionValue.replaceAll("contentId=\"" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
@@ -461,16 +461,16 @@ public class ImportRepositoryAction extends WebworkAbstractAction
 	                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
 	                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
 	                
-	                CmsLogger.logInfo("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
+	                getLogger().info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
 	                
 	                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
 	            }
 	            
-	            CmsLogger.logInfo("contentVersionValue after:" + contentVersionValue);
+	            getLogger().info("contentVersionValue after:" + contentVersionValue);
 
-	            CmsLogger.logInfo("new contentVersionValue:" + contentVersionValue);
+	            getLogger().info("new contentVersionValue:" + contentVersionValue);
 	            contentVersion.setVersionValue(contentVersionValue);
 	        }
 	    }

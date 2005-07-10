@@ -23,8 +23,6 @@
 
 package org.infoglue.cms.entities.management;
 
-import org.infoglue.cms.util.CmsLogger;
-
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Locale;
@@ -106,7 +104,6 @@ public class ContentTypeAttributeParameterValue
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("The attribute key could not be found or was not an integer:" + e.getMessage(), e);
 			return 0;
 		}
 	}
@@ -123,7 +120,6 @@ public class ContentTypeAttributeParameterValue
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("The attribute key could not be found or was not an integer:" + e.getMessage(), e);
 			return 0;
 		}
 

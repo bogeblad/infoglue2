@@ -71,7 +71,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
 
         try
         {
-            CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryId);
+            getLogger().info("Fetching the root siteNode for the repository " + repositoryId);
 			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.repositoryId = $1");
 			oql.bind(repositoryId);
 			
@@ -84,7 +84,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
             else
             {
 				//None found - we create it and give it the name of the repository.
-				CmsLogger.logInfo("Found no rootSiteNode so we create a new....");
+				getLogger().info("Found no rootSiteNode so we create a new....");
 				SiteNodeVO rootSiteNodeVO = new SiteNodeVO();
 				Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
 				rootSiteNodeVO.setName(repository.getName());
@@ -142,7 +142,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
         				Content child = (Content)childrenIterator.next();
         				if(child.getName().equalsIgnoreCase("Meta info folder"))
         				{
-        					CmsLogger.logInfo("Found the metainfo folder..");
+        					getLogger().info("Found the metainfo folder..");
         					parentFolderContent = child;
         					break;
         				}
@@ -181,18 +181,18 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
         		
         			String qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?><qualifyer><contentId>" + contentVO.getId() + "</contentId></qualifyer>";
         		
-        			CmsLogger.logInfo("serviceBindingVO:" + serviceBindingVO);
-        			CmsLogger.logInfo("qualifyerXML:" + qualifyerXML);
-        			CmsLogger.logInfo("availableServiceBindingId:" + availableServiceBindingId);
-        			CmsLogger.logInfo("siteNodeVersion:" + siteNodeVersion);
-        			CmsLogger.logInfo("singleServiceDefinitionVO:" + singleServiceDefinitionVO);
+        			getLogger().info("serviceBindingVO:" + serviceBindingVO);
+        			getLogger().info("qualifyerXML:" + qualifyerXML);
+        			getLogger().info("availableServiceBindingId:" + availableServiceBindingId);
+        			getLogger().info("siteNodeVersion:" + siteNodeVersion);
+        			getLogger().info("singleServiceDefinitionVO:" + singleServiceDefinitionVO);
         			
         			ServiceBindingController.getController().create(db, serviceBindingVO, qualifyerXML, availableServiceBindingId, siteNodeVersion.getId(), singleServiceDefinitionVO.getId());	
         		}
         		//End creation of metainfo
         		
             }
-           	CmsLogger.logInfo("Did we find anything?");
+           	getLogger().info("Did we find anything?");
             
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
@@ -201,13 +201,13 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -237,13 +237,13 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -275,13 +275,13 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

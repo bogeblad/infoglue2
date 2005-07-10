@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.common;
 
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import java.util.Date;
@@ -34,61 +34,51 @@ import java.util.TimeZone;
 
 public class VisualFormatter
 {
+    private final static Logger logger = Logger.getLogger(VisualFormatter.class.getName());
+    
     public VisualFormatter()
     {
     }
     
     public String formatDate(Date date, String pattern)
     {	
-    	CmsLogger.logInfo("About to convert " + date + " with the pattern " + pattern);
         if(date == null)
             return "";
             
-        //CmsLogger.logInfo( TimeZone.getDefault().getID() );      
-        /*
-        SimpleTimeZone pdt = new SimpleTimeZone(-8 * 60 * 60 * 1000, "PST");
-        pdt.setStartRule(Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000);
-        pdt.setEndRule(Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-        */
-        // Format the current time.
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
         String dateString = formatter.format(date);
-		CmsLogger.logInfo("dateString: " + dateString);
+
         return dateString;
     }
 
 	public String formatDate(Date date, Locale locale, String pattern)
 	{	
-		CmsLogger.logInfo("About to convert " + date + " with the pattern " + pattern);
 		if(date == null)
 			return "";
             
 		// Format the current time.
 		SimpleDateFormat formatter = new SimpleDateFormat(pattern, locale);
 		String dateString = formatter.format(date);
-		CmsLogger.logInfo("dateString: " + dateString);
+
 		return dateString;
 	}
 	
     public Date parseDate(String dateString, String pattern)
     {	
-    	CmsLogger.logInfo("About to convert " + dateString + " with the pattern " + pattern);
-        if(dateString == null)
+    	if(dateString == null)
             return new Date();
         
         Date date = new Date();    
         
         try
         {
-	        CmsLogger.logInfo( TimeZone.getDefault().getID() );      
 	        // Format the current time.
 	        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
 	        date = formatter.parse(dateString);
-			CmsLogger.logInfo("date: " + date);
-        }
+	    }
         catch(Exception e)
         {
-        	CmsLogger.logInfo("Error parsing date:" + dateString);
+            logger.info("Error parsing date:" + dateString);
         }
         
         return date;
@@ -96,7 +86,6 @@ public class VisualFormatter
 
 	public Date parseDate(String dateString, Locale locale, String pattern)
 	 {	
-		 CmsLogger.logInfo("About to convert " + dateString + " with the pattern " + pattern);
 		 if(dateString == null)
 			 return new Date();
         
@@ -104,15 +93,13 @@ public class VisualFormatter
         
 		 try
 		 {
-			 CmsLogger.logInfo( TimeZone.getDefault().getID() );      
 			 // Format the current time.
 			 SimpleDateFormat formatter = new SimpleDateFormat(pattern, locale);
 			 date = formatter.parse(dateString);
-			 CmsLogger.logInfo("date: " + date);
 		 }
 		 catch(Exception e)
 		 {
-			 CmsLogger.logInfo("Error parsing date:" + dateString);
+		     logger.info("Error parsing date:" + dateString);
 		 }
         
 		 return date;

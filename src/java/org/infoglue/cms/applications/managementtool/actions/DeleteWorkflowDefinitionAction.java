@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.*;
@@ -34,7 +34,7 @@ import org.infoglue.cms.exception.*;
  * @author Mattias Bogeblad
  */
 
-public class DeleteWorkflowDefinitionAction extends WebworkAbstractAction
+public class DeleteWorkflowDefinitionAction extends InfoGlueAbstractAction
 {
 	private WorkflowDefinitionVO workflowDefinitionVO = new WorkflowDefinitionVO();
 	private Integer workflowDefinitionId;

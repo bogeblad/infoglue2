@@ -41,7 +41,7 @@ import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.ContentComparator;
 import org.infoglue.cms.util.sorters.ReflectionComparator;

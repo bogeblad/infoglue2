@@ -357,7 +357,7 @@ public class GifEncoder
                 }
                 catch(NumberFormatException numberformatexception)
                 {
-                    CmsLogger.logInfo("Parameter: 'colors' is malformated...");
+                    getLogger().info("Parameter: 'colors' is malformated...");
                     return;
                 }
             }

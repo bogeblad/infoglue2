@@ -28,7 +28,6 @@ import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
-import org.infoglue.cms.util.CmsLogger;
 
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -101,9 +100,7 @@ public class VelocityServlet extends WebWorkVelocityServlet
 
 	protected Template handleRequest(HttpServletRequest request, HttpServletResponse response, Context context) throws Exception
 	{
-		CmsLogger.logInfo("handleRequest in VelocityServlet");
 		final HttpSession httpSession = request.getSession();
-		CmsLogger.logInfo("httpSession:" + httpSession);
 		final Session session = new Session(httpSession);
 
 		//<todo>this should definitely not be placed here

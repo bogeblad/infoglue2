@@ -23,13 +23,15 @@
 
 package org.infoglue.cms.treeservice;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.net.*;
+import org.infoglue.cms.security.interceptors.InfoGlueOSWorkflowInterceptor;
 
 import javax.servlet.*;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.List;
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ import java.util.Iterator;
 
 public class ContentService extends JServiceBuilder
 {
+    private final static Logger logger = Logger.getLogger(ContentService.class.getName());
+
     public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
@@ -51,7 +55,7 @@ public class ContentService extends JServiceBuilder
 		try
         {  
             String action = envelope.getAction();
-            CmsLogger.logInfo("ACTION:" + action);
+            logger.info("ACTION:" + action);
             
             if(action.equals("selectRootNode"))
             {
@@ -79,7 +83,7 @@ public class ContentService extends JServiceBuilder
                 responseEnvelope = deleteContent(envelope);
             }
             */
-            CmsLogger.logInfo("Executing in ContentService...");
+            logger.info("Executing in ContentService...");
         }
         catch (Exception e)
         {
@@ -99,13 +103,13 @@ public class ContentService extends JServiceBuilder
 		try
         {  
         	List arguments = (List)envelope.getNodes();
-        	CmsLogger.logInfo("arguments:" + arguments.size());
+        	logger.info("arguments:" + arguments.size());
         	Integer repositoryId = ((Node)arguments.get(0)).getId();
-			CmsLogger.logInfo("repositoryId:" + repositoryId);
+			logger.info("repositoryId:" + repositoryId);
             
             ContentVO contentVO = ContentControllerProxy.getController().getRootContentVO(repositoryId, this.request.getRemoteUser());
             
-            CmsLogger.logInfo("contentVO:" + contentVO.getContentId() + " " + contentVO.getName());
+            logger.info("contentVO:" + contentVO.getContentId() + " " + contentVO.getName());
             Node node = new Node();
             node.setId(contentVO.getContentId());
             node.setName(contentVO.getName());
@@ -134,9 +138,9 @@ public class ContentService extends JServiceBuilder
         {  
 			List arguments = (List)envelope.getNodes();
         	Integer contentId = ((Node)arguments.get(0)).getId();
-			CmsLogger.logInfo("contentId:" + contentId);
+			logger.info("contentId:" + contentId);
             ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
-            CmsLogger.logInfo("contentVO:" + contentVO.getContentId() + " " + contentVO.getName());
+            logger.info("contentVO:" + contentVO.getContentId() + " " + contentVO.getName());
             Node node = new Node();
             node.setId(contentVO.getContentId());
             node.setName(contentVO.getName());
@@ -166,7 +170,7 @@ public class ContentService extends JServiceBuilder
         {  
 			List arguments = (List)envelope.getNodes();
         	Integer contentId = ((Node)arguments.get(0)).getId();
-			CmsLogger.logInfo("contentId:" + contentId);
+			logger.info("contentId:" + contentId);
             
             List childContents = ContentController.getContentController().getContentChildrenVOList(contentId);
 			

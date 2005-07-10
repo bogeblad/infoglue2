@@ -23,8 +23,9 @@
 
 package org.infoglue.cms.util;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import webwork.multipart.MultiPartRequestWrapper;
@@ -41,7 +42,8 @@ import java.io.*;
 
 public class FileUploadHelper
 {
-	
+    private final static Logger logger = Logger.getLogger(FileUploadHelper.class.getName());
+
 	public File getUploadedFile(MultiPartRequestWrapper mpr)
 	{
 		File renamedFile = null;
@@ -74,13 +76,13 @@ public class FileUploadHelper
 			}
 			else
 			{
-				CmsLogger.logSevere("File upload failed for some reason.");
+				logger.error("File upload failed for some reason.");
 			}
  
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logSevere("An error occurred when we get and rename an uploaded file:" + e.getMessage(), e);
+			logger.error("An error occurred when we get and rename an uploaded file:" + e.getMessage(), e);
 		}
 		
 		return renamedFile;

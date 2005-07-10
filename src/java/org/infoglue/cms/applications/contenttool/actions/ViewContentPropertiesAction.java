@@ -25,12 +25,12 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -71,8 +71,8 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 
 	    this.allowedContentTypeNames 	= ps.getString("content_" + this.getContentId() + "_allowedContentTypeNames");
 	    this.defaultContentTypeName		= ps.getString("content_" + this.getContentId() + "_defaultContentTypeName");
-	    CmsLogger.logInfo("allowedContentTypeNames:" + allowedContentTypeNames);
-	    CmsLogger.logInfo("defaultContentTypeName:" + defaultContentTypeName);
+	    getLogger().info("allowedContentTypeNames:" + allowedContentTypeNames);
+	    getLogger().info("defaultContentTypeName:" + defaultContentTypeName);
     } 
 
     /**
@@ -96,7 +96,7 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
         String[] allowedContentTypeNameArray = getRequest().getParameterValues("allowedContentTypeName");
         if(allowedContentTypeNameArray != null)
         {
-	        CmsLogger.logInfo("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
+	        getLogger().info("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
 	        for(int i=0; i<allowedContentTypeNameArray.length; i++)
 	        {
 	            allowedContentTypeNames += allowedContentTypeNameArray[i] + ","; 

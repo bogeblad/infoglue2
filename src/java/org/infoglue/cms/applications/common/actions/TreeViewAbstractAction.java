@@ -10,7 +10,7 @@ import com.frovi.ss.Tree.MakeTree;
  *  
  */
 
-public abstract class TreeViewAbstractAction extends WebworkAbstractAction
+public abstract class TreeViewAbstractAction extends InfoGlueAbstractAction
 {
 	private Collection nodes;
 	private String exp="";

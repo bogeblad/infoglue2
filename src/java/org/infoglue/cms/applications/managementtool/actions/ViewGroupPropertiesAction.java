@@ -30,7 +30,7 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.security.InfoGlueGroup;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import java.net.URLEncoder;
@@ -65,7 +65,7 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 	{
 	    super.initialize();
 				
-		CmsLogger.logInfo("groupName:" + groupName);
+		getLogger().info("groupName:" + groupName);
 
 		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(groupName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
@@ -83,12 +83,12 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 			this.setContentTypeDefinitionId(this.getContentTypeDefinitionVO().getContentTypeDefinitionId());
 		}
 		
-		CmsLogger.logInfo("this.groupPropertiesVO:" + this.groupPropertiesVO);
+		getLogger().info("this.groupPropertiesVO:" + this.groupPropertiesVO);
 		
 		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
 	
-		CmsLogger.logInfo("attributes:" + this.getContentTypeAttributes().size());		
-		CmsLogger.logInfo("availableLanguages:" + this.getAvailableLanguages().size());		
+		getLogger().info("attributes:" + this.getContentTypeAttributes().size());		
+		getLogger().info("availableLanguages:" + this.getAvailableLanguages().size());		
 		
 	} 
 
@@ -117,7 +117,7 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
 		return digitalAssets;
@@ -141,7 +141,7 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;

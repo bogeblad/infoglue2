@@ -28,10 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 
-import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -57,7 +54,6 @@ public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
 
 	public String getUserName()
 	{
-		CmsLogger.logInfo("Getting a username for the authenticated user........");
 		return this.getInfoGluePrincipal().getName();
 	}
   	

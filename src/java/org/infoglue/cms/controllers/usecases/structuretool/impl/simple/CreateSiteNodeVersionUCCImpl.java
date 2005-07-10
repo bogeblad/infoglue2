@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
+import org.infoglue.cms.controllers.usecases.common.impl.simple.LoginUCCImpl;
 import org.infoglue.cms.controllers.usecases.structuretool.CreateSiteNodeVersionUCC;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
@@ -35,11 +36,12 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.*;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 
 public class CreateSiteNodeVersionUCCImpl extends BaseUCCController implements CreateSiteNodeVersionUCC
 {
-        
+       
     public SiteNodeVersionVO createSiteNodeVersion(SiteNodeVersionVO siteNodeVersionVO) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
@@ -61,13 +63,13 @@ public class CreateSiteNodeVersionUCCImpl extends BaseUCCController implements C
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

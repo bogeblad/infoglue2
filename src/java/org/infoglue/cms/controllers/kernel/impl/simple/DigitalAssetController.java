@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.management.GroupProperties;
@@ -37,7 +38,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.graphics.*;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 
 import java.util.List;
@@ -53,7 +54,8 @@ import java.net.URLEncoder;
 
 public class DigitalAssetController extends BaseController 
 {
-	
+    private final static Logger logger = Logger.getLogger(DigitalAssetController.class.getName());
+
     public static DigitalAssetController getController()
     {
         return new DigitalAssetController();
@@ -100,7 +102,7 @@ public class DigitalAssetController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}		
@@ -119,7 +121,7 @@ public class DigitalAssetController extends BaseController
 		
 		Collection contentVersions = new ArrayList();
 		contentVersions.add(contentVersion);
-		CmsLogger.logInfo("Added contentVersion:" + contentVersion.getId());
+		logger.info("Added contentVersion:" + contentVersion.getId());
 	
 		digitalAsset = new DigitalAssetImpl();
 		digitalAsset.setValueObject(digitalAssetVO.createCopy());
@@ -157,7 +159,7 @@ public class DigitalAssetController extends BaseController
 				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(entityId, db);
 				Collection contentVersions = new ArrayList();
 				contentVersions.add(contentVersion);
-				CmsLogger.logInfo("Added contentVersion:" + contentVersion.getId());
+				logger.info("Added contentVersion:" + contentVersion.getId());
 	   		
 				digitalAsset = new DigitalAssetImpl();
 				digitalAsset.setValueObject(digitalAssetVO);
@@ -173,7 +175,7 @@ public class DigitalAssetController extends BaseController
 				UserProperties userProperties = UserPropertiesController.getController().getUserPropertiesWithId(entityId, db);
 				Collection userPropertiesList = new ArrayList();
 				userPropertiesList.add(userProperties);
-				CmsLogger.logInfo("Added userProperties:" + userProperties.getId());
+				logger.info("Added userProperties:" + userProperties.getId());
 	   		
 				digitalAsset = new DigitalAssetImpl();
 				digitalAsset.setValueObject(digitalAssetVO);
@@ -189,7 +191,7 @@ public class DigitalAssetController extends BaseController
 		        RoleProperties roleProperties = RolePropertiesController.getController().getRolePropertiesWithId(entityId, db);
 				Collection rolePropertiesList = new ArrayList();
 				rolePropertiesList.add(roleProperties);
-				CmsLogger.logInfo("Added roleProperties:" + roleProperties.getId());
+				logger.info("Added roleProperties:" + roleProperties.getId());
 	   		
 				digitalAsset = new DigitalAssetImpl();
 				digitalAsset.setValueObject(digitalAssetVO);
@@ -205,7 +207,7 @@ public class DigitalAssetController extends BaseController
 		        GroupProperties groupProperties = GroupPropertiesController.getController().getGroupPropertiesWithId(entityId, db);
 				Collection groupPropertiesList = new ArrayList();
 				groupPropertiesList.add(groupProperties);
-				CmsLogger.logInfo("Added groupProperties:" + groupProperties.getId());
+				logger.info("Added groupProperties:" + groupProperties.getId());
 	   		
 				digitalAsset = new DigitalAssetImpl();
 				digitalAsset.setValueObject(digitalAssetVO);
@@ -221,7 +223,7 @@ public class DigitalAssetController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}		
@@ -252,11 +254,11 @@ public class DigitalAssetController extends BaseController
 
 	public DigitalAssetVO createByCopy(Integer originalContentVersionId, String oldAssetKey, Integer newContentVersionId, String newAssetKey, Database db) throws ConstraintException, SystemException
 	{
-		CmsLogger.logInfo("Creating by copying....");
-		CmsLogger.logInfo("originalContentVersionId:" + originalContentVersionId);
-		CmsLogger.logInfo("oldAssetKey:" + oldAssetKey);
-		CmsLogger.logInfo("newContentVersionId:" + newContentVersionId);
-		CmsLogger.logInfo("newAssetKey:" + newAssetKey);
+		logger.info("Creating by copying....");
+		logger.info("originalContentVersionId:" + originalContentVersionId);
+		logger.info("oldAssetKey:" + oldAssetKey);
+		logger.info("newContentVersionId:" + newContentVersionId);
+		logger.info("newAssetKey:" + newAssetKey);
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 		
 		DigitalAsset oldDigitalAsset = getDigitalAsset(originalContentVersionId, oldAssetKey, db);
@@ -264,7 +266,7 @@ public class DigitalAssetController extends BaseController
 		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersionId, db);
 		Collection contentVersions = new ArrayList();
 		contentVersions.add(contentVersion);
-		CmsLogger.logInfo("Added contentVersion:" + contentVersion.getId());
+		logger.info("Added contentVersion:" + contentVersion.getId());
    		
 		DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
 		digitalAssetVO.setAssetContentType(oldDigitalAsset.getAssetContentType());
@@ -284,7 +286,7 @@ public class DigitalAssetController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			throw new SystemException(e.getMessage());
 		}
 		//contentVersion.getDigitalAssets().add(digitalAsset);
@@ -365,7 +367,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -391,7 +393,7 @@ public class DigitalAssetController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("Could not delete the assets for the digitalAsset " + digitalAssetId + ":" + e.getMessage(), e);
+			logger.error("Could not delete the assets for the digitalAsset " + digitalAssetId + ":" + e.getMessage(), e);
 		}
 	}
 	
@@ -420,7 +422,7 @@ public class DigitalAssetController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -457,7 +459,7 @@ public class DigitalAssetController extends BaseController
         catch(Exception e)
         {
         	e.printStackTrace();
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -466,7 +468,7 @@ public class DigitalAssetController extends BaseController
 		while(i.hasNext())
 		{
 			DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
-			CmsLogger.logInfo("Deleting digitalAsset:" + digitalAssetVO.getDigitalAssetId());
+			logger.info("Deleting digitalAsset:" + digitalAssetVO.getDigitalAssetId());
 			delete(digitalAssetVO.getDigitalAssetId());
 		}    	
 
@@ -499,7 +501,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to fetch the list of digitalAssets belonging to this contentVersion:" + e);
+            logger.info("An error occurred when we tried to fetch the list of digitalAssets belonging to this contentVersion:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -531,7 +533,7 @@ public class DigitalAssetController extends BaseController
         catch(Exception e)
         {
             e.printStackTrace();
-            CmsLogger.logInfo("An error occurred when we tried to cache and show the digital asset:" + e);
+            logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -548,19 +550,19 @@ public class DigitalAssetController extends BaseController
 	    List digitalAssetVOList = new ArrayList();
 
     	Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	CmsLogger.logInfo("content:" + content.getName());
-    	CmsLogger.logInfo("repositoryId:" + content.getRepository().getId());
-    	CmsLogger.logInfo("languageId:" + languageId);
+    	logger.info("content:" + content.getName());
+    	logger.info("repositoryId:" + content.getRepository().getId());
+    	logger.info("languageId:" + languageId);
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
     	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
 		
-    	CmsLogger.logInfo("contentVersion:" + contentVersion);
+    	logger.info("contentVersion:" + contentVersion);
 		if(contentVersion != null)
 		{
 		    Collection digitalAssets = contentVersion.getDigitalAssets();
 			digitalAssetVOList = toModifiableVOList(digitalAssets);
 			
-			CmsLogger.logInfo("digitalAssetVOList:" + digitalAssetVOList.size());
+			logger.info("digitalAssetVOList:" + digitalAssetVOList.size());
 			if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 			{
 			    List masterDigitalAssetVOList = getDigitalAssetVOList(contentId, masterLanguageVO.getId(), useLanguageFallback, db);
@@ -584,7 +586,7 @@ public class DigitalAssetController extends BaseController
 		{
 		    contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
 	    	
-	    	CmsLogger.logInfo("contentVersion:" + contentVersion);
+	    	logger.info("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{
 			    Collection digitalAssets = contentVersion.getDigitalAssets();
@@ -616,7 +618,7 @@ public class DigitalAssetController extends BaseController
 						
 			if(digitalAsset != null)
 			{
-				CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
+				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				//String filePath = digitalAsset.getAssetFilePath();
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
@@ -628,7 +630,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to cache and show the digital asset:" + e);
+            logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -649,7 +651,7 @@ public class DigitalAssetController extends BaseController
 					
 		if(digitalAsset != null)
 		{
-			CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
+			logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			dumpDigitalAsset(digitalAsset, fileName, filePath);
@@ -681,27 +683,27 @@ public class DigitalAssetController extends BaseController
 			
 			if(digitalAsset != null)
 			{
-				CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
+				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String contentType = digitalAsset.getAssetContentType();
 				
 				if(contentType.equalsIgnoreCase("image/gif") || contentType.equalsIgnoreCase("image/jpg") || contentType.equalsIgnoreCase("image/pjpeg") || contentType.equalsIgnoreCase("image/jpeg"))
 				{
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-					CmsLogger.logInfo("fileName:" + fileName);
+					logger.info("fileName:" + fileName);
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
-					CmsLogger.logInfo("filePath:" + filePath);
+					logger.info("filePath:" + filePath);
 					String thumbnailFileName = digitalAsset.getDigitalAssetId() + "_thumbnail_" + digitalAsset.getAssetFileName();
 					//String thumbnailFileName = "thumbnail_" + fileName;
 					File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
 					if(!thumbnailFile.exists())
 					{
-						CmsLogger.logInfo("transforming...");
+						logger.info("transforming...");
 						ThumbnailGenerator tg = new ThumbnailGenerator();
 						tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, 75, 75, 100);
-						CmsLogger.logInfo("transform done...");
+						logger.info("transform done...");
 					}
 					assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
-					CmsLogger.logInfo("assetUrl:" + assetUrl);
+					logger.info("assetUrl:" + assetUrl);
 				}
 				else
 				{
@@ -732,7 +734,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
+            logger.info("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -763,7 +765,7 @@ public class DigitalAssetController extends BaseController
 				
 				if(digitalAsset != null)
 				{
-					CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
+					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					//String filePath = digitalAsset.getAssetFilePath();
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
@@ -777,7 +779,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to cache and show the digital asset:" + e);
+            logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -807,7 +809,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to cache and show the digital asset:" + e);
+            logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -825,21 +827,21 @@ public class DigitalAssetController extends BaseController
     	String assetUrl = null;
 
     	Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	CmsLogger.logInfo("content:" + content.getName());
-    	CmsLogger.logInfo("repositoryId:" + content.getRepository().getId());
-    	CmsLogger.logInfo("languageId:" + languageId);
-    	CmsLogger.logInfo("assetKey:" + assetKey);
+    	logger.info("content:" + content.getName());
+    	logger.info("repositoryId:" + content.getRepository().getId());
+    	logger.info("languageId:" + languageId);
+    	logger.info("assetKey:" + assetKey);
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
     	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
-		CmsLogger.logInfo("contentVersion:" + contentVersion);
+		logger.info("contentVersion:" + contentVersion);
 		if(contentVersion != null)
 		{
 			DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion, assetKey);
-			CmsLogger.logInfo("digitalAsset:" + digitalAsset);
+			logger.info("digitalAsset:" + digitalAsset);
 			if(digitalAsset != null)
 			{
-				CmsLogger.logInfo("digitalAsset:" + digitalAsset.getAssetKey());
-				CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
+				logger.info("digitalAsset:" + digitalAsset.getAssetKey());
+				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 				
@@ -857,15 +859,15 @@ public class DigitalAssetController extends BaseController
 		{
 		    contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
 	    	
-	    	CmsLogger.logInfo("contentVersion:" + contentVersion);
+	    	logger.info("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{
 			    DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion, assetKey);
-				CmsLogger.logInfo("digitalAsset:" + digitalAsset);
+				logger.info("digitalAsset:" + digitalAsset);
 				if(digitalAsset != null)
 				{
-					CmsLogger.logInfo("digitalAsset:" + digitalAsset.getAssetKey());
-					CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
+					logger.info("digitalAsset:" + digitalAsset.getAssetKey());
+					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 					
@@ -899,7 +901,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to get a digitalAssetVO:" + e);
+            logger.info("An error occurred when we tried to get a digitalAssetVO:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -962,7 +964,7 @@ public class DigitalAssetController extends BaseController
 				
 				if(digitalAsset != null)
 				{
-					CmsLogger.logInfo("Found a digital asset:" + digitalAsset.getAssetFileName());
+					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 					String contentType = digitalAsset.getAssetContentType();
 					
 					if(contentType.equalsIgnoreCase("image/gif") || contentType.equalsIgnoreCase("image/jpg"))
@@ -1014,7 +1016,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
+            logger.info("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1074,7 +1076,7 @@ public class DigitalAssetController extends BaseController
 		File outputFile = new File(filePath + File.separator + fileName);
 		if(outputFile.exists())
 		{
-			CmsLogger.logInfo("The file allready exists so we don't need to dump it again..");
+			logger.info("The file allready exists so we don't need to dump it again..");
 			return;
 		}
 		
@@ -1093,7 +1095,7 @@ public class DigitalAssetController extends BaseController
 		bis.close();
 		fis.close();
 		bos.close();
-		CmsLogger.logInfo("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 	}
 
 	/**

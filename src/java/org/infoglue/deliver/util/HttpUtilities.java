@@ -30,7 +30,9 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+
+
 
 /**
  * URL utility class. Used for tasks involving getting url-contents from remote addresses 
@@ -44,6 +46,7 @@ import org.infoglue.cms.util.CmsLogger;
 
 public class HttpUtilities 
 {            
+    private final static Logger logger = Logger.getLogger(HttpUtilities.class.getName());
 
     /*
      *
@@ -175,8 +178,8 @@ public class HttpUtilities
 				argString = "?" + toEncodedString(inHash);
 	    }
 
-		CmsLogger.logInfo("Getting content from url: " + urlAddress + argString);
-		CmsLogger.logWarning("Getting content from url: " + urlAddress + argString);
+		logger.info("Getting content from url: " + urlAddress + argString);
+		logger.warn("Getting content from url: " + urlAddress + argString);
 		
 	    URL url = new URL(urlAddress + argString);
 	    URLConnection connection = url.openConnection();
@@ -209,7 +212,7 @@ public class HttpUtilities
 				argString = "?" + toEncodedString(inHash);
 		}
 
-		CmsLogger.logInfo("Getting content from url: " + urlAddress + argString);
+		logger.info("Getting content from url: " + urlAddress + argString);
 		
 		URL url = new URL(urlAddress + argString);
 		URLConnection connection = url.openConnection();

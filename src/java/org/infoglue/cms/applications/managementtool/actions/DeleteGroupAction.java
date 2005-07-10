@@ -22,7 +22,7 @@
  */
 
 package org.infoglue.cms.applications.managementtool.actions;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
@@ -30,7 +30,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
  * @author Mattias Bogeblad
  */
 
-public class DeleteGroupAction extends WebworkAbstractAction
+public class DeleteGroupAction extends InfoGlueAbstractAction
 {
 	private String groupName;
 	

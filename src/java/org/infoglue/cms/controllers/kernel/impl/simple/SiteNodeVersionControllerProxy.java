@@ -43,7 +43,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * @author Mattias Bogeblad
@@ -84,7 +84,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			CmsLogger.logInfo("Adding interceptorVO:" + interceptorVO.getName());
+			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -92,7 +92,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 			}
 			catch(ClassNotFoundException e)
 			{
-				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}		    
 	}
@@ -110,7 +110,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			CmsLogger.logInfo("Adding interceptorVO:" + interceptorVO.getName());
+			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -118,7 +118,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 			}
 			catch(ClassNotFoundException e)
 			{
-				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 	}
@@ -224,13 +224,13 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 
 	public Integer getProtectedSiteNodeVersionId(Integer siteNodeVersionId)
 	{
-		CmsLogger.logInfo("siteNodeVersionId:" + siteNodeVersionId);
+		getLogger().info("siteNodeVersionId:" + siteNodeVersionId);
 		Integer protectedSiteNodeVersionId = null;
 		
 		try
 		{
 			SiteNodeVersionVO siteNodeVersionVO = getSiteNodeVersionVOWithId(siteNodeVersionId);
-			CmsLogger.logInfo("Is Protected: " + siteNodeVersionVO.getIsProtected());
+			getLogger().info("Is Protected: " + siteNodeVersionVO.getIsProtected());
 			if(siteNodeVersionVO != null)
 			{	
 				if(siteNodeVersionVO.getIsProtected() != null)
@@ -253,7 +253,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
 		}
 			
 		return protectedSiteNodeVersionId;
@@ -265,13 +265,13 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 
 	public Integer getProtectedSiteNodeVersionId(Integer siteNodeVersionId, Database db)
 	{
-		CmsLogger.logInfo("siteNodeVersionId:" + siteNodeVersionId);
+		getLogger().info("siteNodeVersionId:" + siteNodeVersionId);
 		Integer protectedSiteNodeVersionId = null;
 		
 		try
 		{
 			SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionId, db);
-			CmsLogger.logInfo("Is Protected: " + siteNodeVersion.getIsProtected());
+			getLogger().info("Is Protected: " + siteNodeVersion.getIsProtected());
 			if(siteNodeVersion != null)
 			{	
 				if(siteNodeVersion.getIsProtected() != null)
@@ -294,7 +294,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
 		}
 			
 		return protectedSiteNodeVersionId;
@@ -306,13 +306,13 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 
 	public boolean getIsSiteNodeVersionProtected(Integer siteNodeVersionId)
 	{
-		CmsLogger.logInfo("siteNodeVersionId:" + siteNodeVersionId);
+		getLogger().info("siteNodeVersionId:" + siteNodeVersionId);
 		boolean isSiteNodeVersionProtected = false;
 	
 		try
 		{
 			SiteNodeVersionVO siteNodeVersionVO = getSiteNodeVersionVOWithId(siteNodeVersionId);
-			CmsLogger.logInfo("Is Protected: " + siteNodeVersionVO.getIsProtected());
+			getLogger().info("Is Protected: " + siteNodeVersionVO.getIsProtected());
 			if(siteNodeVersionVO != null)
 			{	
 				if(siteNodeVersionVO.getIsProtected() != null)
@@ -335,7 +335,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
 		}
 			
 		return isSiteNodeVersionProtected;
@@ -347,13 +347,13 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 
 	public boolean getIsSiteNodeVersionProtected(Integer siteNodeVersionId, Database db)
 	{
-		CmsLogger.logInfo("siteNodeVersionId:" + siteNodeVersionId);
+		getLogger().info("siteNodeVersionId:" + siteNodeVersionId);
 		boolean isSiteNodeVersionProtected = false;
 	
 		try
 		{
 			SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionId, db);
-			CmsLogger.logInfo("Is Protected: " + siteNodeVersion.getIsProtected());
+			getLogger().info("Is Protected: " + siteNodeVersion.getIsProtected());
 			if(siteNodeVersion != null)
 			{	
 				if(siteNodeVersion.getIsProtected() != null)
@@ -376,7 +376,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
 		}
 			
 		return isSiteNodeVersionProtected;

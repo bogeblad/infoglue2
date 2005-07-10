@@ -23,10 +23,10 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ import java.util.List;
  *  @author Mattias Bogeblad
  */
 
-public class ViewListWorkflowDefinitionAction extends WebworkAbstractAction 
+public class ViewListWorkflowDefinitionAction extends InfoGlueAbstractAction 
 {
 	private List workflowDefinitions;
 	

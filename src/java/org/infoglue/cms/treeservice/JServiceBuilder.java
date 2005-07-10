@@ -23,8 +23,9 @@
 
 package org.infoglue.cms.treeservice;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.net.*;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.io.*;
 import java.util.*;
@@ -36,6 +37,8 @@ import java.util.Hashtable;
 
 public abstract class JServiceBuilder extends HttpServlet
 {
+    private final static Logger logger = Logger.getLogger(JServiceBuilder.class.getName());
+
 	protected HttpServletRequest request;
 	 
 	public void init(ServletConfig config) throws ServletException
@@ -47,7 +50,7 @@ public abstract class JServiceBuilder extends HttpServlet
 	{
 		this.request = request;
 		Hashtable inHash = requestToHashtable(request);
-		CmsLogger.logInfo("Got request...");
+		logger.info("Got request...");
 		
 		PrintWriter out = null;
         
@@ -63,12 +66,12 @@ public abstract class JServiceBuilder extends HttpServlet
 			String responseString = toEncodedString(serializeEnvelope(reponseEnvelope));
 	        	        
 	        // send back a confirmation message to the applet
-            CmsLogger.logInfo("Sending the string to the applet:" + responseString);
+            logger.info("Sending the string to the applet:" + responseString);
 	        out.println(responseString);
 	            
 	        out.flush();	        
 	        out.close();
-	        CmsLogger.logInfo("Complete.");
+	        logger.info("Complete.");
         }
         catch (Exception e)
         {
@@ -107,8 +110,8 @@ public abstract class JServiceBuilder extends HttpServlet
 		CommunicationEnvelope communicationEnvelope = new CommunicationEnvelope();
 		communicationEnvelope.setAction("" + hash.get("action"));
 		communicationEnvelope.setStatus("" + hash.get("status"));
-		CmsLogger.logInfo("Action:" + communicationEnvelope.getAction());
-		CmsLogger.logInfo("Status:" + communicationEnvelope.getStatus());
+		logger.info("Action:" + communicationEnvelope.getAction());
+		logger.info("Status:" + communicationEnvelope.getStatus());
 		
 		List nodes = new ArrayList();
 		int i = 0;
@@ -120,7 +123,7 @@ public abstract class JServiceBuilder extends HttpServlet
 			n.setName((String)hash.get("nodeList." + i + ".name"));
 			n.setIsBranch(new Boolean((String)hash.get("nodeList." + i + ".isBranch")));
 			nodes.add(n);
-			CmsLogger.logInfo("Node:" + n);
+			logger.info("Node:" + n);
 			i++;
 			id = (String)hash.get("nodeList." + i + ".id");
 		}	
@@ -133,7 +136,7 @@ public abstract class JServiceBuilder extends HttpServlet
 	private Hashtable serializeEnvelope(CommunicationEnvelope requestEnvelope)
 	{
 		Hashtable hash = new Hashtable();
-		CmsLogger.logInfo("Serializing:" + requestEnvelope);
+		logger.info("Serializing:" + requestEnvelope);
 		hash.put("action", requestEnvelope.getAction());
 		hash.put("status", requestEnvelope.getStatus());
 		

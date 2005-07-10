@@ -95,11 +95,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 		try
 		{
 			operatingMode = new Integer(CmsPropertyHandler.getProperty("operatingMode"));
-			//CmsLogger.logInfo("Operating mode is:" + operatingMode);
+			//getLogger().info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
+			getLogger().warn("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
 		}
 		return operatingMode;
 	}
@@ -143,12 +143,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
 		String contentVersionKey = "" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
-		CmsLogger.logInfo("contentVersionKey:" + contentVersionKey);
+		getLogger().info("contentVersionKey:" + contentVersionKey);
 		contentVersionVO = (ContentVersionVO)CacheController.getCachedObject("contentVersionCache", contentVersionKey);
 		
 		if(contentVersionVO != null)
 		{
-			CmsLogger.logInfo("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
+			getLogger().info("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
 		}
 		else
 		{
@@ -181,7 +181,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		if(contentVersion == null && useLanguageFallback)
 		{
-			CmsLogger.logInfo("Did not find it in requested languge... lets check the masterlanguage....");
+			getLogger().info("Did not find it in requested languge... lets check the masterlanguage....");
 			
 			Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
 			if(!languageId.equals(masterLanguageId))
@@ -200,9 +200,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext) throws Exception
 	{
-	    CmsLogger.logInfo("content:" + content.getId());
-	    CmsLogger.logInfo("operatingMode:" + operatingMode);
-	    CmsLogger.logInfo("languageId:" + languageId);
+	    getLogger().info("content:" + content.getId());
+	    getLogger().info("operatingMode:" + operatingMode);
+	    getLogger().info("languageId:" + languageId);
 		
 		ContentVersion contentVersion = null;
 		
@@ -244,19 +244,19 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback;
 	    String versionKey = attributeKey + "_contentVersionId";
-		CmsLogger.logInfo("attributeKey:" + attributeKey);
+		getLogger().info("attributeKey:" + attributeKey);
 		String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
 		Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
 		if(attribute != null)
 		{
-			CmsLogger.logInfo("There was an cached content attribute:" + attribute);
+			getLogger().info("There was an cached content attribute:" + attribute);
 		}
 		else
 		{
         	ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext);
 			if (contentVersionVO != null) 
 			{
-			    CmsLogger.logInfo("found one:" + contentVersionVO);
+			    getLogger().info("found one:" + contentVersionVO);
 				attribute = getAttributeValue(db, contentVersionVO, attributeName);	
 				contentVersionId = contentVersionVO.getId();
 			}
@@ -264,10 +264,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 				attribute = "";
 
 			CacheController.cacheObject("contentAttributeCache", attributeKey, attribute);
-		    //CmsLogger.logInfo("Added in content attribute..." + versionKey + ":" + contentVersionId);
+		    //getLogger().info("Added in content attribute..." + versionKey + ":" + contentVersionId);
 			CacheController.cacheObject("contentAttributeCache", versionKey, contentVersionId);
 		}
-		//CmsLogger.logInfo("Adding contentVersion:" + contentVersionId);
+		//getLogger().info("Adding contentVersion:" + contentVersionId);
 		deliveryContext.addUsedContentVersion("contentVersion:" + contentVersionId);
 		
 		return (attribute == null) ? "" : attribute;
@@ -382,7 +382,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		//Content content = version.getOwningContent();
 	    Integer contentId = version.getValueObject().getContentId();
-	    CmsLogger.logInfo("contentId:" + contentId);
+	    getLogger().info("contentId:" + contentId);
 	    
 	    Content content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
 	    //Content content = ContentController.getContentController().getContentWithId(contentId, db);
@@ -534,12 +534,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getAssetUrl(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + useLanguageFallback;
-		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
+		getLogger().info("assetCacheKey:" + assetCacheKey);
 		String cacheName = "assetUrlCache";
 		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
 		if(cachedAssetUrl != null)
 		{
-			CmsLogger.logInfo("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			getLogger().info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
 			return cachedAssetUrl;
 		}
 		
@@ -587,12 +587,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getAssetUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback;
-		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
+		getLogger().info("assetCacheKey:" + assetCacheKey);
 		String cacheName = "assetUrlCache";
 		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
 		if(cachedAssetUrl != null)
 		{
-			CmsLogger.logInfo("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			getLogger().info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
 			return cachedAssetUrl;
 		}
 		
@@ -631,7 +631,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    	contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		    //contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
 	    	
-	    	CmsLogger.logInfo("contentVersion:" + contentVersion);
+	    	getLogger().info("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{
             	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
@@ -674,12 +674,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getAssetThumbnailUrl(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + useLanguageFallback + "_" + width + "_" + height;
-		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
+		getLogger().info("assetCacheKey:" + assetCacheKey);
 		String cacheName = "assetThumbnailUrlCache";
 		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
 		if(cachedAssetUrl != null)
 		{
-			CmsLogger.logInfo("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			getLogger().info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
 			return cachedAssetUrl;
 		}
 		
@@ -729,12 +729,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getAssetThumbnailUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, int width, int height, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + width + "_" + height;
-		CmsLogger.logInfo("assetCacheKey:" + assetCacheKey);
+		getLogger().info("assetCacheKey:" + assetCacheKey);
 		String cacheName = "assetThumbnailUrlCache";
 		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
 		if(cachedAssetUrl != null)
 		{
-			CmsLogger.logInfo("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			getLogger().info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
 			return cachedAssetUrl;
 		}
 
@@ -949,7 +949,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					if(n.getNodeName().equalsIgnoreCase(key))
 					{
 						value = n.getFirstChild().getNodeValue();
-						CmsLogger.logWarning("Getting value: " + value);
+						getLogger().warn("Getting value: " + value);
 
 						break;
 					}
@@ -958,7 +958,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        } 
 	        catch(Exception e)
 	        {
-	        	CmsLogger.logSevere("An error occurred so we should not return the attribute value:" + e, e);
+	        	getLogger().error("An error occurred so we should not return the attribute value:" + e, e);
 	        }
 		}
 
@@ -988,12 +988,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		
 		String sortedChildContentsKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + searchRecursive + "_" + maximumNumberOfLevels + "_" + sortAttribute + "_" + sortOrder + "_" + useLanguageFallback + "_" + includeFolders;
-		CmsLogger.logInfo("sortedChildContentsKey:" + sortedChildContentsKey);
+		getLogger().info("sortedChildContentsKey:" + sortedChildContentsKey);
 		String cacheName = "sortedChildContentsCache";
 		List cachedSortedContentVOList = (List)CacheController.getCachedObject(cacheName, sortedChildContentsKey);
 		if(cachedSortedContentVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached content cachedSortedContentVOList:" + cachedSortedContentVOList.size());
+			getLogger().info("There was an cached content cachedSortedContentVOList:" + cachedSortedContentVOList.size());
 			return cachedSortedContentVOList;
 		}
 		
@@ -1181,10 +1181,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(infoGluePrincipal == null)
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
 		
-		CmsLogger.logInfo("content:" + content.getName());
+		getLogger().info("content:" + content.getName());
 		
 		Integer protectedContentId = getProtectedContentId(db, content);
-		CmsLogger.logInfo("IsProtected:" + protectedContentId);
+		getLogger().info("IsProtected:" + protectedContentId);
 		
 		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 		{
@@ -1268,7 +1268,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		try
 		{
-			CmsLogger.logInfo("content:" + content.getId() + ":" + content.getIsProtected());
+			getLogger().info("content:" + content.getId() + ":" + content.getIsProtected());
 			if(content != null && content.getIsProtected() != null)
 			{	
 				if(content.getIsProtected().intValue() == ContentVO.NO.intValue())
@@ -1286,7 +1286,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return protectedContentId;
@@ -1365,7 +1365,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("The sorting of contents failed:" + e.getMessage(), e);
+			getLogger().warn("The sorting of contents failed:" + e.getMessage(), e);
 		}
 			
 		return sortedContents;

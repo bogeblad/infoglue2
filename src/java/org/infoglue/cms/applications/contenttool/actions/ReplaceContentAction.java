@@ -23,21 +23,8 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
-import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.util.CmsLogger;
 
-import webwork.action.Action;
-
-import java.util.List;
 
 
 /**
@@ -75,17 +62,6 @@ public class ReplaceContentAction extends SearchContentAction
             this.contentVersionId = contentVersionId.substring(1);
     }
 
-    /*
-	public void setSearchString(String s)
-	{
-    	this.searchString = s.replaceAll("'","");
-	}
-	
-	public String getSearchString()
-	{
-		return this.searchString;	
-	}
-	*/
     public String getReplaceString()
     {
         return replaceString;
@@ -95,15 +71,4 @@ public class ReplaceContentAction extends SearchContentAction
     {
         this.replaceString = replaceString;
     }
-    /*
-    public Integer getRepositoryId()
-    {
-        return repositoryId;
-    }
-    
-    public void setRepositoryId(Integer repositoryId)
-    {
-        this.repositoryId = repositoryId;
-    }
-    */
 }

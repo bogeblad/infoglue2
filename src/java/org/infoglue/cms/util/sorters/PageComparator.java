@@ -1,8 +1,9 @@
 package org.infoglue.cms.util.sorters;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 
 import java.util.Comparator;
@@ -14,6 +15,8 @@ import java.util.Comparator;
  */
 public class PageComparator implements Comparator
 {
+    private final static Logger logger = Logger.getLogger(PageComparator.class.getName());
+
 	private String sortProperty;
 	private String sortOrder;
 	private BasicTemplateController basicTemplateController;
@@ -60,7 +63,7 @@ public class PageComparator implements Comparator
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logInfo(getClass().getName() + " Error finding property " + property, e);
+			logger.info(getClass().getName() + " Error finding property " + property, e);
 			return null;
 		}
 	}

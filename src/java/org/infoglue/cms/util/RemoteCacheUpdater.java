@@ -27,6 +27,8 @@ import java.util.*;
 import java.io.*; 
 import java.net.*;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * This class is a class that sends a update-message to all registered instances of delivery-engine.
@@ -37,6 +39,8 @@ import java.net.*;
 
 public class RemoteCacheUpdater implements NotificationListener
 {	
+    private final static Logger logger = Logger.getLogger(RemoteCacheUpdater.class.getName());
+
 
 	/**
 	 * Default Constructor	
@@ -64,9 +68,9 @@ public class RemoteCacheUpdater implements NotificationListener
 	{
 		try
 		{
-			CmsLogger.logInfo("Update Remote caches....");
+			logger.info("Update Remote caches....");
 			updateRemoteCaches(notificationMessage);
-			CmsLogger.logInfo("Done updating remote caches....");
+			logger.info("Done updating remote caches....");
 		}
 		catch(Exception e)
 		{
@@ -95,7 +99,7 @@ public class RemoteCacheUpdater implements NotificationListener
 		while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
 		{ 
 			String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
-			CmsLogger.logInfo("Updating cache at " + address);
+			logger.info("Updating cache at " + address);
 			String response = postToUrl(address, hashedMessage);
 			i++;
 		}
@@ -106,7 +110,7 @@ public class RemoteCacheUpdater implements NotificationListener
 	{
 		Hashtable hash = new Hashtable();
 
-		CmsLogger.logInfo("Serializing:" + notificationMessage);
+		logger.info("Serializing:" + notificationMessage);
 		
 		hash.put("className", notificationMessage.getClassName());
 		hash.put("objectId", notificationMessage.getObjectId());

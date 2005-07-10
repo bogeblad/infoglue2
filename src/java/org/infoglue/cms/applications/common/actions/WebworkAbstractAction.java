@@ -28,9 +28,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConfigurationError;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
 
 import java.lang.reflect.Method;
 
@@ -62,6 +60,8 @@ import java.net.URLEncoder;
 
 public abstract class WebworkAbstractAction implements Action, ServletRequestAware, ServletResponseAware, CommandDriven 
 {
+    private final static Logger logger = Logger.getLogger(WebworkAbstractAction.class.getName());
+
 	private final String ACCESS_DENIED = "accessDenied";
 	
 	private Error error;
@@ -77,7 +77,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
      */
   	public Error getError() 
   	{
-		CmsLogger.logInfo("Fetching error from error-template:" + this.error);
+		logger.info("Fetching error from error-template:" + this.error);
     	return this.error;
   	}
 
@@ -86,7 +86,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
      */
   	public Errors getErrors() 
   	{
-    	CmsLogger.logInfo("Errors:" + this.errors);
+    	logger.info("Errors:" + this.errors);
     	return errors;
   	}
   
@@ -111,42 +111,42 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         } 
         catch(ResultException e) 
         {
-        	CmsLogger.logSevere("ResultException " + e, e);
+        	logger.error("ResultException " + e, e);
             return e.getResult();
         } 
 		catch(AccessConstraintException e) 
 		{
-			CmsLogger.logWarning("AccessConstraintException " + e, e);
+			logger.warn("AccessConstraintException " + e, e);
 			setErrors(e);
 			return ACCESS_DENIED;
 		} 
         catch(ConstraintException e) 
         {
-        	CmsLogger.logWarning("ConstraintException " + e, e);
+        	logger.warn("ConstraintException " + e, e);
             setErrors(e);
             return INPUT;
         } 
         catch(Bug e) 
         {
-        	CmsLogger.logSevere("Bug " + e);
+        	logger.error("Bug " + e);
             setError(e, e.getCause());
             return ERROR;
         } 
         catch(ConfigurationError e) 
         {
-         	CmsLogger.logSevere("ConfigurationError " + e);
+         	logger.error("ConfigurationError " + e);
              setError(e, e.getCause());
             return ERROR;
         } 
         catch(SystemException e) 
         {
-            CmsLogger.logSevere("SystemException " + e, e);
+            logger.error("SystemException " + e, e);
             setError(e, e.getCause());
             return ERROR;
         } 
         catch(Throwable e) 
         {
-            CmsLogger.logSevere("Throwable " + e, new Exception(e));
+            logger.error("Throwable " + e, new Exception(e));
             final Bug bug = new Bug("Uncaught exception!", e);
             setError(bug, bug.getCause());
             return ERROR;
@@ -269,7 +269,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
     	catch(Exception ie) 
     	{
 			//ie.printStackTrace();
-    	    CmsLogger.logSevere("Exception " + ie, ie);
+    	    logger.error("Exception " + ie, ie);
     	    
 			try 
 			{
@@ -278,48 +278,48 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			catch(ResultException e) 
 			{
 				//e.printStackTrace();
-				CmsLogger.logSevere("ResultException " + e, e);
+				logger.error("ResultException " + e, e);
 				return e.getResult();
 			} 
 			catch(AccessConstraintException e) 
 			{
 				//e.printStackTrace();
-				CmsLogger.logWarning("AccessConstraintException " + e, e);
+				logger.warn("AccessConstraintException " + e, e);
 				setErrors(e);
 				return ACCESS_DENIED;
 			} 
 			catch(ConstraintException e) 
 			{
 				//e.printStackTrace();
-				CmsLogger.logWarning("ConstraintException " + e, e);
+				logger.warn("ConstraintException " + e, e);
 				setErrors(e);
 				return INPUT;
 			} 
 			catch(Bug e) 
 			{
 				//e.printStackTrace();
-				CmsLogger.logSevere("Bug " + e);
+				logger.error("Bug " + e);
 				setError(e, e.getCause());
 				return ERROR;
 			} 
 			catch(ConfigurationError e) 
 			{
 				//e.printStackTrace();
-				CmsLogger.logSevere("ConfigurationError " + e);
+				logger.error("ConfigurationError " + e);
 				setError(e, e.getCause());
 				return ERROR;
 			} 
 			catch(SystemException e) 
 			{
 				//e.printStackTrace();
-				CmsLogger.logSevere("SystemException " + e, e);
+				logger.error("SystemException " + e, e);
 				setError(e, e.getCause());
 				return ERROR;
 			} 
 			catch(Throwable e) 
 			{
 				//e.printStackTrace();
-				CmsLogger.logSevere("Throwable " + e);
+				logger.error("Throwable " + e);
 				final Bug bug = new Bug("Uncaught exception!", e);
 				setError(bug, bug.getCause());
 				return ERROR;

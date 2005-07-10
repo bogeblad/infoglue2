@@ -35,7 +35,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,11 +43,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
 
 public class ContentStateController extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(ContentStateController.class.getName());
+
 	public static final ContentCategoryController contentCategoryController = ContentCategoryController.getController();
 	
 	public static final int OVERIDE_WORKING = 1;
@@ -73,7 +76,7 @@ public class ContentStateController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }    	    	
@@ -101,7 +104,7 @@ public class ContentStateController extends BaseController
 			//Here we create a new version if it was a state-change back to working, it's a copy of the publish-version
 			if (stateId.intValue() == ContentVersionVO.WORKING_STATE.intValue())
 			{
-				CmsLogger.logInfo("About to create a new working version");
+				logger.info("About to create a new working version");
 
 				ContentVersionVO newContentVersionVO = new ContentVersionVO();
 				newContentVersionVO.setStateId(stateId);
@@ -119,7 +122,7 @@ public class ContentStateController extends BaseController
 			//If the user changes the state to publish we create a copy and set that copy to publish.
 			if (stateId.intValue() == ContentVersionVO.PUBLISH_STATE.intValue())
 			{
-				CmsLogger.logInfo("About to copy the working copy to a publish-one");
+				logger.info("About to copy the working copy to a publish-one");
 
 				//First we update the old working-version so it gets a comment
 				oldContentVersion.setVersionComment(versionComment);
@@ -151,7 +154,7 @@ public class ContentStateController extends BaseController
 			//If the user in the publish-app publishes a publish-version we change state to published.
 			if (stateId.intValue() == ContentVersionVO.PUBLISHED_STATE.intValue())
 			{
-				CmsLogger.logInfo("About to publish an existing version");
+				logger.info("About to publish an existing version");
 				oldContentVersion.setStateId(stateId);
 				oldContentVersion.setIsActive(new Boolean(true));
 				newContentVersion = oldContentVersion;
@@ -160,7 +163,7 @@ public class ContentStateController extends BaseController
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			throw new SystemException(e.getMessage());
 		}
 
@@ -175,18 +178,18 @@ public class ContentStateController extends BaseController
 	private static void copyAccessRights(ContentVersion originalContentVersion, ContentVersion newContentVersion, Database db) throws ConstraintException, SystemException, Exception
 	{
 		List interceptionPointList = InterceptionPointController.getController().getInterceptionPointList("ContentVersion", db);
-		CmsLogger.logInfo("interceptionPointList:" + interceptionPointList.size());
+		logger.info("interceptionPointList:" + interceptionPointList.size());
 		Iterator interceptionPointListIterator = interceptionPointList.iterator();
 		while(interceptionPointListIterator.hasNext())
 		{
 			InterceptionPoint interceptionPoint = (InterceptionPoint)interceptionPointListIterator.next();
 			List accessRightList = AccessRightController.getController().getAccessRightListForEntity(interceptionPoint.getId(), originalContentVersion.getId().toString(), db);
-			CmsLogger.logInfo("accessRightList:" + accessRightList.size());
+			logger.info("accessRightList:" + accessRightList.size());
 			Iterator accessRightListIterator = accessRightList.iterator();
 			while(accessRightListIterator.hasNext())
 			{
 				AccessRight accessRight = (AccessRight)accessRightListIterator.next();
-				CmsLogger.logInfo("accessRight:" + accessRight.getId());
+				logger.info("accessRight:" + accessRight.getId());
 				
 				AccessRightVO copiedAccessRight = accessRight.getValueObject().createCopy(); //.getValueObject();
 				copiedAccessRight.setParameters(newContentVersion.getId().toString());

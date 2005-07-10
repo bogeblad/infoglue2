@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
@@ -35,7 +35,7 @@ import java.util.List;
  * @author Mattias Bogeblad  
  */
 
-public class ViewPublishingToolStartPageAction extends WebworkAbstractAction
+public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
 {
     private List repositories;
     

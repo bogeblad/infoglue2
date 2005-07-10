@@ -49,7 +49,7 @@ public class NodeService //extends JServiceBuilder
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("Error trying to initialize db");
+            getLogger().info("Error trying to initialize db");
         }
 	}
 	
@@ -61,7 +61,7 @@ public class NodeService //extends JServiceBuilder
 		try
         {  
             String action = envelope.getAction();
-            CmsLogger.logInfo("ACTION:" + action);
+            getLogger().info("ACTION:" + action);
             
             if(action.equals("selectRootNode"))
             {
@@ -83,7 +83,7 @@ public class NodeService //extends JServiceBuilder
                 responseEnvelope = deleteNode(envelope);
             }
             
-            CmsLogger.logInfo("Executing in NodeService...");
+            getLogger().info("Executing in NodeService...");
         }
         catch (Exception e)
         {
@@ -106,15 +106,15 @@ public class NodeService //extends JServiceBuilder
             Node node = null;
             
             String oqlString = "SELECT n FROM Node n WHERE is_undefined(parent)";
-            CmsLogger.logInfo("oqlString:" + oqlString);
+            getLogger().info("oqlString:" + oqlString);
             OQLQuery oql = db.getOQLQuery(oqlString);
-            CmsLogger.logInfo("oql prepared");
+            getLogger().info("oql prepared");
             QueryResults results = oql.execute();
-            CmsLogger.logInfo("results fetched");
+            getLogger().info("results fetched");
             if(results.hasMore())
                 node = (Node)results.next();
 
-            CmsLogger.logInfo("Fetched a node:" + node);
+            getLogger().info("Fetched a node:" + node);
             responseEnvelope.setData(node);
             
             db.commit();
@@ -139,7 +139,7 @@ public class NodeService //extends JServiceBuilder
             db.begin();
             
             Node updatedNode = (Node)envelope.getData();
-            CmsLogger.logInfo("Node to update:" + updatedNode);
+            getLogger().info("Node to update:" + updatedNode);
             
             //Kan man ändra så att den sparas direkt kanske?
             Node node = (Node)db.load(Node.class, updatedNode.getId());
@@ -147,7 +147,7 @@ public class NodeService //extends JServiceBuilder
             node.setName(updatedNode.getName());
             node.setParent(updatedNode.getParent());
 
-            CmsLogger.logInfo("Executing in NodeService...");
+            getLogger().info("Executing in NodeService...");
             responseEnvelope.setData(node);
 
             db.commit();
@@ -172,7 +172,7 @@ public class NodeService //extends JServiceBuilder
             db.begin();
             
             Node newNode = (Node)envelope.getData();
-            CmsLogger.logInfo("Node to create:" + newNode);
+            getLogger().info("Node to create:" + newNode);
             
             //Kan man ändra så att den sparas direkt kanske?
             Node node = new Node();
@@ -183,7 +183,7 @@ public class NodeService //extends JServiceBuilder
             node.setChildren(newNode.getChildren());
             db.create(node);
 
-            CmsLogger.logInfo("Executing in NodeService...");
+            getLogger().info("Executing in NodeService...");
             responseEnvelope.setData(node);
 
             db.commit();
@@ -208,13 +208,13 @@ public class NodeService //extends JServiceBuilder
             
             Node deleteNode = (Node)envelope.getData();
             Node parent = deleteNode.getParent();
-            CmsLogger.logInfo("Node to delete:" + deleteNode);
+            getLogger().info("Node to delete:" + deleteNode);
             
             //Kan man ändra så att den sparas direkt kanske?
             Node node = (Node)db.load(Node.class, deleteNode.getId());
             db.remove(node);
 
-            CmsLogger.logInfo("Executing in NodeService...");
+            getLogger().info("Executing in NodeService...");
             responseEnvelope.setData(parent);
 
             db.commit();

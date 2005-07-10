@@ -25,10 +25,13 @@ package org.infoglue.cms.util;
 
 import java.util.*;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.treeservice.ss.SiteNodeNodeSupplier;
+
 public class ChangeNotificationController
 {
 
-//-------------------- The class stuff ---------------------//
+    private final static Logger logger = Logger.getLogger(ChangeNotificationController.class.getName());
 
 	//The singleton
 	private static ChangeNotificationController instance = null;
@@ -93,7 +96,7 @@ public class ChangeNotificationController
 	 */
 	public void addNotificationMessage(NotificationMessage notificationMessage)
 	{
-		CmsLogger.logInfo("Got a new notification:" + notificationMessage.getName() + ":" + notificationMessage.getType() + ":" + notificationMessage.getObjectId() + ":" + notificationMessage.getObjectName());
+		logger.info("Got a new notification:" + notificationMessage.getName() + ":" + notificationMessage.getType() + ":" + notificationMessage.getObjectId() + ":" + notificationMessage.getObjectName());
 		Iterator i = listeners.iterator();
 		while(i.hasNext())
 		{
@@ -102,13 +105,13 @@ public class ChangeNotificationController
 				NotificationListener nl = (NotificationListener)i.next();
 				if(!unregisteredlisteners.contains(nl))
 				{
-					CmsLogger.logInfo("Notifying the listener:" + nl.getClass().getName());
+					logger.info("Notifying the listener:" + nl.getClass().getName());
 					nl.notify(notificationMessage);
 				}
 			}
 			catch(Exception e)
 			{
-				CmsLogger.logSevere("One of the listeners threw an exception but we carry on with the others. Error: " + e.getMessage(), e);
+				logger.error("One of the listeners threw an exception but we carry on with the others. Error: " + e.getMessage(), e);
 			}
 		}
 		listeners.removeAll(unregisteredlisteners);

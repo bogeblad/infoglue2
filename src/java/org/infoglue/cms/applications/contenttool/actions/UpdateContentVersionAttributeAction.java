@@ -96,7 +96,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 		{
 			try
 	        {
-		        CmsLogger.logInfo("VersionValue:" + this.contentVersionVO.getVersionValue());
+		        getLogger().info("VersionValue:" + this.contentVersionVO.getVersionValue());
 		        InputSource inputSource = new InputSource(new StringReader(this.contentVersionVO.getVersionValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -112,7 +112,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 					n = nl.item(i);
 					if(n.getNodeName().equalsIgnoreCase(attributeName))
 					{
-						CmsLogger.logInfo("Setting attributeValue: " + attributeValue);
+					    getLogger().info("Setting attributeValue: " + attributeValue);
 						Node valueNode = n.getFirstChild();
 						n.getFirstChild().setNodeValue(attributeValue);
 						break;

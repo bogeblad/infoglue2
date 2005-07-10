@@ -32,7 +32,7 @@ import org.infoglue.cms.entities.management.impl.simple.*;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.PasswordGenerator;
 import org.infoglue.cms.util.mail.MailServiceFactory;
 
@@ -91,7 +91,7 @@ public class SystemUserController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -119,7 +119,7 @@ public class SystemUserController extends BaseController
 			if (results.hasMore()) 
             {
             	systemUser = (SystemUser)results.next();
-            	CmsLogger.logInfo("found one:" + systemUser.getFirstName());
+            	getLogger().info("found one:" + systemUser.getFirstName());
             }
         }
         catch(Exception e)
@@ -149,7 +149,7 @@ public class SystemUserController extends BaseController
 			if (results.hasMore()) 
             {
             	systemUser = (SystemUser)results.next();
-            	CmsLogger.logInfo("found one:" + systemUser.getFirstName());
+            	getLogger().info("found one:" + systemUser.getFirstName());
             }
         }
         catch(Exception e)
@@ -177,7 +177,7 @@ public class SystemUserController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -200,7 +200,7 @@ public class SystemUserController extends BaseController
 		{
 			SystemUser systemUser = (SystemUser)results.next();
 			systemUserVO = systemUser.getValueObject();
-			CmsLogger.logInfo("found one:" + systemUserVO.getFirstName());
+			getLogger().info("found one:" + systemUserVO.getFirstName());
 		}
 
 		return systemUserVO;		
@@ -219,7 +219,7 @@ public class SystemUserController extends BaseController
 		if (results.hasMore()) 
 		{
 			systemUser = (SystemUser)results.next();
-			CmsLogger.logInfo("found one:" + systemUser.getFirstName());
+			getLogger().info("found one:" + systemUser.getFirstName());
 		}
 
 		return systemUser;		
@@ -300,7 +300,7 @@ public class SystemUserController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException("An error occurred so we should not complete the transaction:" + e, e);
 		}
@@ -356,13 +356,13 @@ public class SystemUserController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not completes the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -424,13 +424,13 @@ public class SystemUserController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not completes the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -480,13 +480,13 @@ public class SystemUserController extends BaseController
     		}
     		catch(Exception e)
     		{
-    			CmsLogger.logSevere("The notification was not sent. Reason:" + e.getMessage(), e);
+    			getLogger().error("The notification was not sent. Reason:" + e.getMessage(), e);
     		}
 
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -522,7 +522,7 @@ public class SystemUserController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

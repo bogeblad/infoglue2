@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.treeservice;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.net.*;
 
 import javax.servlet.*;
@@ -32,7 +33,7 @@ import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCCFa
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.List;
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ import java.util.Iterator;
 
 public class SiteNodeService extends JServiceBuilder
 {
+    private final static Logger logger = Logger.getLogger(SiteNodeService.class.getName());
+
     public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
@@ -54,7 +57,7 @@ public class SiteNodeService extends JServiceBuilder
 		try
         {  
             String action = envelope.getAction();
-            CmsLogger.logInfo("ACTION:" + action);
+            logger.info("ACTION:" + action);
             
             if(action.equals("selectRootNode"))
             {
@@ -82,7 +85,7 @@ public class SiteNodeService extends JServiceBuilder
                 responseEnvelope = deleteSiteNode(envelope);
             }
             */
-            CmsLogger.logInfo("Executing in SiteNodeService...");
+            logger.info("Executing in SiteNodeService...");
         }
         catch (Exception e)
         {
@@ -103,10 +106,10 @@ public class SiteNodeService extends JServiceBuilder
         {  
          	List arguments = (List)envelope.getNodes();
         	Integer repositoryId = ((Node)arguments.get(0)).getId();
-			CmsLogger.logInfo("repositoryId:" + repositoryId);
+			logger.info("repositoryId:" + repositoryId);
             ViewSiteNodeTreeUCC viewSiteNodeTreeUCC = ViewSiteNodeTreeUCCFactory.newViewSiteNodeTreeUCC();
             SiteNodeVO siteNodeVO = viewSiteNodeTreeUCC.getRootSiteNode(repositoryId, getInfoGluePrincipal());
-            CmsLogger.logInfo("siteNodeVO:" + siteNodeVO.getSiteNodeId() + " " + siteNodeVO.getName());
+            logger.info("siteNodeVO:" + siteNodeVO.getSiteNodeId() + " " + siteNodeVO.getName());
             Node node = new Node();
             node.setId(siteNodeVO.getSiteNodeId());
             node.setName(siteNodeVO.getName());
@@ -135,10 +138,10 @@ public class SiteNodeService extends JServiceBuilder
         {  
         	List arguments = (List)envelope.getNodes();
         	Integer siteNodeId = ((Node)arguments.get(0)).getId();
-			CmsLogger.logInfo("siteNodeId:" + siteNodeId);
+			logger.info("siteNodeId:" + siteNodeId);
             ViewSiteNodeTreeUCC viewSiteNodeTreeUCC = ViewSiteNodeTreeUCCFactory.newViewSiteNodeTreeUCC();
             SiteNodeVO siteNodeVO = viewSiteNodeTreeUCC.getSiteNode(siteNodeId);
-            CmsLogger.logInfo("siteNodeVO:" + siteNodeVO.getSiteNodeId() + " " + siteNodeVO.getName());
+            logger.info("siteNodeVO:" + siteNodeVO.getSiteNodeId() + " " + siteNodeVO.getName());
             Node node = new Node();
             node.setId(siteNodeVO.getSiteNodeId());
             node.setName(siteNodeVO.getName());
@@ -168,7 +171,7 @@ public class SiteNodeService extends JServiceBuilder
         {  
             List arguments = (List)envelope.getNodes();
         	Integer siteNodeId = ((Node)arguments.get(0)).getId();
-			CmsLogger.logInfo("siteNodeId:" + siteNodeId);
+			logger.info("siteNodeId:" + siteNodeId);
             
             ViewSiteNodeTreeUCC viewSiteNodeTreeUCC = ViewSiteNodeTreeUCCFactory.newViewSiteNodeTreeUCC();
             List childSiteNodes = viewSiteNodeTreeUCC.getSiteNodeChildren(siteNodeId);

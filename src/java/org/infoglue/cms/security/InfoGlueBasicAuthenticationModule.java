@@ -34,9 +34,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -47,6 +48,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 {
+    private final static Logger logger = Logger.getLogger(InfoGlueBasicAuthenticationModule.class.getName());
+
 	private String loginUrl 			= null;
 	private String invalidLoginUrl 		= null;
 	private String successLoginUrl		= null;
@@ -93,7 +96,7 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 			else
 			    requestQueryString = "";
 			
-			CmsLogger.logInfo("requestQueryString:" + requestQueryString);
+			logger.info("requestQueryString:" + requestQueryString);
 
 			String redirectUrl = "";			    
 			    
@@ -102,14 +105,14 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 			else
 				redirectUrl = loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
 	
-			CmsLogger.logInfo("redirectUrl:" + redirectUrl);
+			logger.info("redirectUrl:" + redirectUrl);
 			response.sendRedirect(redirectUrl);
 
 			return null;
 		} 
 	   	
 		boolean isAuthenticated = authenticate(userName, password, new HashMap());
-		CmsLogger.logInfo("authenticated:" + isAuthenticated);
+		logger.info("authenticated:" + isAuthenticated);
 		authenticatedUserName = userName;
 		
 		if(!isAuthenticated)
@@ -124,7 +127,7 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 			else
 			    requestQueryString = "";
 			
-			CmsLogger.logInfo("requestQueryString:" + requestQueryString);
+			logger.info("requestQueryString:" + requestQueryString);
 
 			String redirectUrl = "";
 
@@ -134,7 +137,7 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 				redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "?errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
 			
 			//String redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
-			CmsLogger.logInfo("redirectUrl:" + redirectUrl);
+			logger.info("redirectUrl:" + redirectUrl);
 			response.sendRedirect(redirectUrl);
 			return null;
    		}
@@ -156,7 +159,7 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 		String userName = (String)request.get("j_username");
 		String password = (String)request.get("j_password");
 
-		CmsLogger.logInfo("authenticateUser:userName:" + userName);
+		logger.info("authenticateUser:userName:" + userName);
 		
 		// no userName?  abort request processing and redirect
 		if (userName == null || userName.equals("")) 
@@ -165,7 +168,7 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 		} 
 	   	
 		boolean isAuthenticated = authenticate(userName, password, new HashMap());
-		CmsLogger.logInfo("authenticated:" + isAuthenticated);
+		logger.info("authenticated:" + isAuthenticated);
 		
 		if(!isAuthenticated)
    		{
@@ -187,10 +190,10 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 		
 		String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
 		String administratorPassword = CmsPropertyHandler.getProperty("administratorPassword");
-		//CmsLogger.logInfo("administratorUserName:" + administratorUserName);
-		//CmsLogger.logInfo("administratorPassword:" + administratorPassword);
-		//CmsLogger.logInfo("userName:" + userName);
-		//CmsLogger.logInfo("password:" + password);
+		//logger.info("administratorUserName:" + administratorUserName);
+		//logger.info("administratorPassword:" + administratorPassword);
+		//logger.info("userName:" + userName);
+		//logger.info("password:" + password);
 		boolean isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
 		
 		if(this.transactionObject != null)

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
@@ -34,7 +35,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 
@@ -60,6 +60,16 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	{
 		return this;
 	}
+	
+    /**
+     * Gets a logger for the action class.
+     */
+
+	protected Logger getLogger() 
+	{
+	    return Logger.getLogger(this.getClass().getName());
+	}
+
 
 	/**
 	 * This method returns the actions url base.
@@ -109,9 +119,9 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	
 	public String getPrincipalPropertyValue(String propertyName, boolean escapeSpecialCharacters, boolean findLargestValue)
 	{
-		CmsLogger.logInfo("propertyName: " + propertyName);
-		CmsLogger.logInfo("escapeSpecialCharacters: " + escapeSpecialCharacters);
-		CmsLogger.logInfo("findLargestValue: " + findLargestValue);
+		getLogger().info("propertyName: " + propertyName);
+		getLogger().info("escapeSpecialCharacters: " + escapeSpecialCharacters);
+		getLogger().info("findLargestValue: " + findLargestValue);
 	    
 		String value = "";
 		
@@ -123,7 +133,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		    getLogger().warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -147,7 +157,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		    getLogger().warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -163,7 +173,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	 */
 	public boolean hasAccessTo(String interceptionPointName)
 	{
-		CmsLogger.logInfo("Checking if " + getUserName() + " has access to " + interceptionPointName);
+		getLogger().info("Checking if " + getUserName() + " has access to " + interceptionPointName);
 
 		try
 		{
@@ -171,7 +181,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch (SystemException e)
 		{
-			CmsLogger.logWarning("Error checking access rights", e);
+		    getLogger().warn("Error checking access rights", e);
 			return false;
 		}
 	}
@@ -185,7 +195,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	 */
 	public boolean hasAccessTo(String interceptionPointName, String extraParameter)
 	{
-		CmsLogger.logInfo("Checking if " + getUserName() + " has access to " + interceptionPointName + " with extraParameter " + extraParameter);
+		getLogger().info("Checking if " + getUserName() + " has access to " + interceptionPointName + " with extraParameter " + extraParameter);
 
 		try
 		{
@@ -193,7 +203,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch (SystemException e)
 		{
-			CmsLogger.logWarning("Error checking access rights", e);
+		    getLogger().warn("Error checking access rights", e);
 			return false;
 		}
 	}
@@ -330,7 +340,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logInfo("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+			getLogger().info("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
 		}
 	}
 

@@ -28,13 +28,13 @@ import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.XMLHelper;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.exception.*;
 
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.CategoryAttribute;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import java.util.List;
 import java.util.Iterator;
@@ -104,7 +104,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
     protected void initialize(Integer contentTypeDefinitionId) throws Exception
     {
         this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
-    	//CmsLogger.logInfo("Initializing:" + this.contentTypeDefinitionVO.getSchemaValue());
+    	//getLogger().info("Initializing:" + this.contentTypeDefinitionVO.getSchemaValue());
 
 		this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
         this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
@@ -746,7 +746,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("Error adding asset key: ", e);
+			getLogger().warn("Error adding asset key: ", e);
 		}
 
 		this.initialize(getContentTypeDefinitionId());
@@ -777,7 +777,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("Error adding categories key: ", e);
+			getLogger().warn("Error adding categories key: ", e);
 		}
 
 		this.initialize(getContentTypeDefinitionId());
@@ -797,7 +797,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("Error updating asset key: ", e);
+			getLogger().warn("Error updating asset key: ", e);
 		}
 
 		initialize(getContentTypeDefinitionId());
@@ -829,7 +829,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("Error updating category key: ", e);
+			getLogger().warn("Error updating category key: ", e);
 		}
 
 		initialize(getContentTypeDefinitionId());
@@ -866,7 +866,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("Error updating key: " + keyType, e);
+			getLogger().warn("Error updating key: " + keyType, e);
 		}
 
 		this.initialize(getContentTypeDefinitionId());

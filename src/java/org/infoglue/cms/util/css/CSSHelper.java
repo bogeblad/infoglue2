@@ -29,7 +29,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.infoglue.cms.util.CmsLogger;
+
+import org.apache.log4j.Logger;
 import org.w3c.css.sac.InputSource;
 import org.w3c.dom.css.CSSRule;
 import org.w3c.dom.css.CSSRuleList;
@@ -45,6 +46,8 @@ import com.steadystate.css.parser.CSSOMParser;
 
 public class CSSHelper 
 {
+    private final static Logger logger = Logger.getLogger(CSSHelper.class.getName());
+
     private String cssUrl = null;
     
 	public static CSSHelper getHelper()
@@ -80,7 +83,7 @@ public class CSSHelper
 	    }
 	    catch(Exception e)
 	    {
-	    	CmsLogger.logWarning("An error occurred when reading css-rules: " + e.getMessage(), e);
+	    	logger.warn("An error occurred when reading css-rules: " + e.getMessage(), e);
 	    }
 			
 		return list;

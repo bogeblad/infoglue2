@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
@@ -44,7 +45,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.validators.Constants;
 import org.infoglue.cms.util.validators.ConstraintRule;
@@ -71,6 +72,17 @@ import org.infoglue.cms.util.validators.StringValidator;
 
 public abstract class BaseController
 {
+    private final static Logger logger = Logger.getLogger(BaseController.class.getName());
+
+    /**
+     * Gets a logger for the action class.
+     */
+
+	protected Logger getLogger() 
+	{
+	    return Logger.getLogger(this.getClass().getName());
+	}
+
     /**
      * This method is called by the controllers to let interceptors listen to events.
      * 
@@ -95,7 +107,7 @@ public abstract class BaseController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			CmsLogger.logInfo("Adding interceptorVO:" + interceptorVO.getName());
+			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -103,7 +115,7 @@ public abstract class BaseController
 			}
 			catch(ClassNotFoundException e)
 			{
-				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 
@@ -157,7 +169,7 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             //CmsSystem.log(entity,"Failed to create object", CmsSystem.DBG_LOW);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -178,7 +190,7 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             //CmsSystem.log(entity,"Failed to create object", CmsSystem.DBG_LOW);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -207,7 +219,7 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -234,7 +246,7 @@ public abstract class BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -253,7 +265,7 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             throw new SystemException(e.getMessage());
         }
     }        
@@ -276,7 +288,7 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -318,7 +330,7 @@ public abstract class BaseController
 		        for (int i=0; i < manyIds.length; i++)
 	            {
 	            	IBaseEntity manyEntity = (IBaseEntity) getObjectWithId(manyClass, new Integer(manyIds[i]), db);
-	            	CmsLogger.logInfo("!!Using experimental code: BaseController::update. getting " + manyEntity.toString());
+	            	logger.info("!!Using experimental code: BaseController::update. getting " + manyEntity.toString());
 	            	manyList.add(manyEntity);
 	            }
 			}
@@ -343,13 +355,13 @@ public abstract class BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -675,7 +687,7 @@ public abstract class BaseController
 		try
 		{
         	
-			CmsLogger.logInfo("BaseHelper::GetAllObjects for " + arg.getName());
+			logger.info("BaseHelper::GetAllObjects for " + arg.getName());
 			oql = db.getOQLQuery( "SELECT u FROM " + arg.getName() + " u ORDER BY u." + orderByField + " " + direction);
 			QueryResults results = oql.execute(Database.ReadOnly);
 			
@@ -789,7 +801,7 @@ public abstract class BaseController
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logSevere("Error executing " + query, e);
+			logger.error("Error executing " + query, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage(), e);
 		}
@@ -839,7 +851,7 @@ public abstract class BaseController
     	{
     		ConstraintRule cr = (ConstraintRule) iterator.next();
     		Integer intId = vo.getId();
-    		CmsLogger.logInfo("Validating object id: " + intId);
+    		logger.info("Validating object id: " + intId);
 
 			// an ugly switch for now.    		
     		switch (cr.getConstraintType())
@@ -930,7 +942,7 @@ public abstract class BaseController
     {
         try
         {
-            //CmsLogger.logInfo("Opening a new Transaction in cms...");
+            //logger.info("Opening a new Transaction in cms...");
             db.begin();
         }
         catch(Exception e)
@@ -948,7 +960,7 @@ public abstract class BaseController
     {
         try
         {
-            //CmsLogger.logInfo("Closing a transaction in cms...");
+            //logger.info("Closing a transaction in cms...");
 
             db.commit();
 		    db.close();
@@ -969,7 +981,7 @@ public abstract class BaseController
     {
         try
         {
-            //CmsLogger.logInfo("rollbackTransaction a transaction in cms...");
+            //logger.info("rollbackTransaction a transaction in cms...");
 
         	if (db.isActive())
         	{
@@ -980,7 +992,7 @@ public abstract class BaseController
         catch(Exception e)
         {
 			//e.printStackTrace();
-            CmsLogger.logInfo("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+            logger.info("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
             //throw new SystemException("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage(), e);    
         }
     }

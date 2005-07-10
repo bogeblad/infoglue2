@@ -34,7 +34,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Marshaller;
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -45,7 +45,7 @@ import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 
@@ -55,7 +55,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * @author mattias
  */
 
-public class ExportRepositoryAction extends WebworkAbstractAction
+public class ExportRepositoryAction extends InfoGlueAbstractAction
 {
 	private Integer repositoryId = null;
 	
@@ -84,7 +84,7 @@ public class ExportRepositoryAction extends WebworkAbstractAction
 		try 
 		{
 			Mapping map = new Mapping();
-			CmsLogger.logInfo("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+			getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
 			map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
 
 			// All ODMG database access requires a transaction
@@ -128,7 +128,7 @@ public class ExportRepositoryAction extends WebworkAbstractAction
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logSevere("An error was found exporting a repository: " + e.getMessage(), e);
+			getLogger().error("An error was found exporting a repository: " + e.getMessage(), e);
 			db.rollback();
 		}
 		

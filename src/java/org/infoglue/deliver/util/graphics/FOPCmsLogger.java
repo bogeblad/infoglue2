@@ -24,7 +24,8 @@
 package org.infoglue.deliver.util.graphics;
 
 import org.apache.avalon.framework.logger.Logger;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+
 
 /**
  * @author Stefan Sik
@@ -32,14 +33,16 @@ import org.infoglue.cms.util.CmsLogger;
  * Mapping Avalon Logger to CmsLogger.
  * 
  */
-public class FOPCmsLogger implements Logger {
+public class FOPCmsLogger implements Logger 
+{
+    private final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(FOPCmsLogger.class.getName());
 
 	public void debug(String arg0) {
-		CmsLogger.logInfo(arg0);
+		logger.info(arg0);
 	}
 
 	public void debug(String arg0, Throwable arg1) {
-		CmsLogger.logInfo(arg0, (Exception) arg1);
+		logger.info(arg0, (Exception) arg1);
 	}
 
 	public boolean isDebugEnabled() {
@@ -48,11 +51,11 @@ public class FOPCmsLogger implements Logger {
 	}
 
 	public void info(String arg0) {
-		CmsLogger.logInfo(arg0);
+		logger.info(arg0);
 	}
 
 	public void info(String arg0, Throwable arg1) {
-		CmsLogger.logInfo(arg0, (Exception) arg1);
+		logger.info(arg0, (Exception) arg1);
 	}
 
 	public boolean isInfoEnabled() {
@@ -61,11 +64,11 @@ public class FOPCmsLogger implements Logger {
 	}
 
 	public void warn(String arg0) {
-		CmsLogger.logWarning(arg0);
+		logger.warn(arg0);
 	}
 
 	public void warn(String arg0, Throwable arg1) {
-		CmsLogger.logWarning(arg0, (Exception) arg1);
+		logger.warn(arg0, (Exception) arg1);
 		
 	}
 
@@ -75,12 +78,12 @@ public class FOPCmsLogger implements Logger {
 	}
 
 	public void error(String arg0) {
-		CmsLogger.logSevere(arg0);
+		logger.error(arg0);
 		
 	}
 
 	public void error(String arg0, Throwable arg1) {
-		CmsLogger.logSevere(arg0, (Exception) arg1);
+		logger.error(arg0, (Exception) arg1);
 		
 	}
 
@@ -90,12 +93,12 @@ public class FOPCmsLogger implements Logger {
 	}
 
 	public void fatalError(String arg0) {
-		CmsLogger.logSevere(arg0);
+		logger.error(arg0);
 		
 	}
 
 	public void fatalError(String arg0, Throwable arg1) {
-		CmsLogger.logSevere(arg0, (Exception) arg1);
+		logger.error(arg0, (Exception) arg1);
 	}
 
 	public boolean isFatalErrorEnabled() {

@@ -29,7 +29,9 @@ import com.opensymphony.workflow.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+import org.infoglue.cms.util.css.CSSHelper;
+
 
 import webwork.action.ActionContext;
 
@@ -58,28 +60,24 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class CustomClassExecutor implements FunctionProvider 
 {
-    //~ Static fields/initializers /////////////////////////////////////////////
-
-    private static final Log log = LogFactory.getLog(CustomClassExecutor.class);
-
-    //~ Methods ////////////////////////////////////////////////////////////////
+    private final static Logger logger = Logger.getLogger(CustomClassExecutor.class.getName());
 
     public void execute(Map transientVars, Map args, PropertySet ps) throws WorkflowException 
     {
-    	CmsLogger.logInfo("CustomClassExecutor.execute........");
+    	logger.info("CustomClassExecutor.execute........");
         final WorkflowContext wfContext = (WorkflowContext) transientVars.get("context");
 
         String className = (String) args.get("customClass.name");
         HttpServletRequest request = (HttpServletRequest) transientVars.get("request");
-        CmsLogger.logInfo("className:" + className);
+        logger.info("className:" + className);
         
         Iterator paramsIterator = transientVars.keySet().iterator();
 	    while(paramsIterator.hasNext())
 	    {
 	        String key = (String)paramsIterator.next();
-	        CmsLogger.logInfo("transientVars key:" + key);
+	        logger.info("transientVars key:" + key);
 	        Object value = args.get(key);
-	        CmsLogger.logInfo("transientVars value:" + value);
+	        logger.info("transientVars value:" + value);
 	    }
 	    
         Map params = new HashMap(transientVars);
@@ -91,7 +89,7 @@ public class CustomClassExecutor implements FunctionProvider
             customWorkflowAction.invokeAction(wfContext.getCaller(), request, Collections.unmodifiableMap(params), ps);        
         else
         {
-            CmsLogger.logWarning("Could not find custom class " + className + ". Is it in the classpath?");
+            logger.warn("Could not find custom class " + className + ". Is it in the classpath?");
             throw new WorkflowException("Could not find custom class " + className + ". Is it in the classpath?");
         }
     }

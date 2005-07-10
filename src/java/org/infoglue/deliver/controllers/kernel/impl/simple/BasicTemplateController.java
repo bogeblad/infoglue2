@@ -45,6 +45,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.MatchResult;
 import org.apache.oro.text.regex.Pattern;
@@ -58,6 +59,7 @@ import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
@@ -80,7 +82,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.PageComparator;
@@ -111,6 +113,8 @@ import org.infoglue.deliver.util.webservices.WebServiceHelper;
 
 public class BasicTemplateController implements TemplateController
 {
+    private final static Logger logger = Logger.getLogger(BasicTemplateController.class.getName());
+
 	private URLComposer urlComposer = null; 
 	
 	public static final String META_INFO_BINDING_NAME 					= "Meta information";
@@ -199,7 +203,7 @@ public class BasicTemplateController implements TemplateController
 		{
 		    this.databaseWrapper.getDatabase().commit();
 			//this.db.close();
-		    CmsLogger.logInfo("Closed transaction...");
+		    logger.info("Closed transaction...");
 		}
 		catch(Exception e)
 		{
@@ -217,7 +221,7 @@ public class BasicTemplateController implements TemplateController
 	    try
 		{
 			this.databaseWrapper.getDatabase().begin();
-			CmsLogger.logInfo("Started new transaction...");
+			logger.info("Started new transaction...");
 		}
 		catch(Exception e)
 		{
@@ -499,7 +503,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get the current content:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the current content:" + e.getMessage(), e);
 		}
 
 		return content;
@@ -519,7 +523,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get the content with id " + contentId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the content with id " + contentId + ":" + e.getMessage(), e);
 		}
 
 		return content;
@@ -539,7 +543,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get the contentVersion with contentId " + contentId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the contentVersion with contentId " + contentId + ":" + e.getMessage(), e);
 		}
 
 		return contentVersionVO;
@@ -559,7 +563,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get the contentVersion with contentId " + contentId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the contentVersion with contentId " + contentId + ":" + e.getMessage(), e);
 		}
 
 		return contentVersionVO;
@@ -593,7 +597,7 @@ public class BasicTemplateController implements TemplateController
         }
         catch(Exception e)
         {
-            CmsLogger.logWarning("An error occurred when getting principal:" + e.getMessage(), e);
+            logger.warn("An error occurred when getting principal:" + e.getMessage(), e);
         }
         
         return infoGluePrincipal;
@@ -662,7 +666,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -685,7 +689,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -710,7 +714,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -735,7 +739,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -759,7 +763,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -784,7 +788,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -831,7 +835,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return contents;
@@ -877,14 +881,14 @@ public class BasicTemplateController implements TemplateController
 					}
 					catch(Exception e)
 					{
-					    CmsLogger.logInfo("An error occurred when looking up one of the related pages:" + e.getMessage(), e);
+					    logger.info("An error occurred when looking up one of the related pages:" + e.getMessage(), e);
 					}
 				}
 		    }
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return pages;
@@ -914,7 +918,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return categories;
@@ -961,7 +965,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return contents;
@@ -1007,14 +1011,14 @@ public class BasicTemplateController implements TemplateController
 					}
 					catch(Exception e)
 					{
-					    CmsLogger.logInfo("An error occurred when looking up one of the related pages:" + e.getMessage(), e);
+					    logger.info("An error occurred when looking up one of the related pages:" + e.getMessage(), e);
 					}
 				}
 		    }
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return pages;
@@ -1044,7 +1048,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return categories;
@@ -1083,7 +1087,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get parameterName " + parameterName + " from request:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get parameterName " + parameterName + " from request:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -1101,7 +1105,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get parameterName " + parameterName + " from request:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get parameterName " + parameterName + " from request:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -1182,7 +1186,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1208,7 +1212,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1233,7 +1237,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1257,7 +1261,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1274,7 +1278,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on content version" + version.getId() + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content version" + version.getId() + ":" + e.getMessage(), e);
 		}
 	
 		return "";
@@ -1287,7 +1291,7 @@ public class BasicTemplateController implements TemplateController
 
 	public String getContentAttributeUsingLanguageFallback(Integer contentId, String attributeName, boolean disableEditOnSight) 
 	{
-	    CmsLogger.logInfo("getContentAttributeUsingLanguageFallback: " + contentId + ":" + attributeName + ":" + disableEditOnSight);
+	    logger.info("getContentAttributeUsingLanguageFallback: " + contentId + ":" + attributeName + ":" + disableEditOnSight);
 		String attributeValue = "";
 		
 		try
@@ -1301,7 +1305,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1322,7 +1326,7 @@ public class BasicTemplateController implements TemplateController
 			if(this.contentId != null)
 			{
 				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
-				CmsLogger.logInfo("Found unparsedAttributeValue:" + unparsedAttributeValue);
+				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
 				
 				templateLogicContext.put("inlineContentId", this.contentId);
 				
@@ -1337,12 +1341,12 @@ public class BasicTemplateController implements TemplateController
 				PrintWriter cachedStream = new PrintWriter(cacheString);
 				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue);
 				attributeValue = cacheString.toString();
-				//CmsLogger.logInfo("result:" + result);
+				//logger.info("result:" + result);
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on sent in content with id:" + this.contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on sent in content with id:" + this.contentId + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1357,7 +1361,7 @@ public class BasicTemplateController implements TemplateController
 	 
 	public String getParsedContentAttribute(String contentBindningName, String attributeName) 
 	{
-		CmsLogger.logInfo("getParsedContentAttribute:" + contentBindningName + ":" + attributeName);
+		logger.info("getParsedContentAttribute:" + contentBindningName + ":" + attributeName);
 		
 		String attributeValue = "";
 		
@@ -1366,10 +1370,10 @@ public class BasicTemplateController implements TemplateController
 			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 			if(contentVO != null)
 			{
-				CmsLogger.logInfo("contentVO:" + contentVO.getContentId());
+				logger.info("contentVO:" + contentVO.getContentId());
 		
 				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
-				CmsLogger.logInfo("Found unparsedAttributeValue:" + unparsedAttributeValue);
+				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
 							
 				templateLogicContext.put("inlineContentId", contentVO.getId());
 				
@@ -1388,7 +1392,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1410,7 +1414,7 @@ public class BasicTemplateController implements TemplateController
 			if(contentId != null)
 			{
 				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
-				CmsLogger.logInfo("Found unparsedAttributeValue:" + unparsedAttributeValue);
+				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
 				
 				templateLogicContext.put("inlineContentId", contentId);
 				
@@ -1429,7 +1433,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1480,7 +1484,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return assetKeys;
@@ -1500,7 +1504,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return assetKeys;
@@ -1520,7 +1524,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return assetKeys;
@@ -1541,7 +1545,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetThumbnailUrl on contentId " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetThumbnailUrl on contentId " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return assetThumbnailUrl;
@@ -1562,7 +1566,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetThumbnailUrl on contentId " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetThumbnailUrl on contentId " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return assetThumbnailUrl;
@@ -1585,7 +1589,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1608,7 +1612,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return assetThumbnailUrl;
@@ -1631,7 +1635,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1647,7 +1651,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch (UnsupportedEncodingException e) 
 		{
-			CmsLogger.logSevere("An error occurred trying to encode the url: " + s + " with encoding: " + enc + ": " + e.getMessage(), e);
+			logger.error("An error occurred trying to encode the url: " + s + " with encoding: " + enc + ": " + e.getMessage(), e);
 		}		
 		return ret;
 	}
@@ -1666,7 +1670,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1687,7 +1691,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1715,7 +1719,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1739,7 +1743,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + " with assetKey " + assetKey + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1762,7 +1766,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on principal " + principal.getName() + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on principal " + principal.getName() + " with assetKey " + assetKey + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1784,7 +1788,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on principal " + principal.getName() + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on principal " + principal.getName() + " with assetKey " + assetKey + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1806,12 +1810,12 @@ public class BasicTemplateController implements TemplateController
 		    if(inlineContentId == null || inlineContentId.intValue() == -1)
 		        inlineContentId = (Integer)this.templateLogicContext.get("inlineContentId");
 		        
-			CmsLogger.logInfo("getInlineAssetUrl:" + inlineContentId + ":" + this.languageId + ":" + assetKey + ":" + this.siteNodeId);
+			logger.info("getInlineAssetUrl:" + inlineContentId + ":" + this.languageId + ":" + assetKey + ":" + this.siteNodeId);
 			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), inlineContentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1831,12 +1835,12 @@ public class BasicTemplateController implements TemplateController
 		try
 		{	
 		    Integer inlineContentId = contentId;
-			CmsLogger.logInfo("getInlineAssetUrl:" + inlineContentId + ":" + this.languageId + ":" + assetKey + ":" + this.siteNodeId);
+			logger.info("getInlineAssetUrl:" + inlineContentId + ":" + this.languageId + ":" + assetKey + ":" + this.siteNodeId);
 			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), inlineContentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -1857,7 +1861,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get AssetFileSize on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get AssetFileSize on content with id: " + contentId + ":" + e.getMessage(), e);
 		}
 		return AssetFileSize;
 	}
@@ -1871,7 +1875,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get AssetFileSize on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage(), e);
+			logger.error("An error occurred trying to get AssetFileSize on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage(), e);
 		}
 		return AssetFileSize;
 	}
@@ -1890,7 +1894,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get AssetFileSize on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get AssetFileSize on contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
 		}
 		return AssetFileSize;
 	}
@@ -1905,7 +1909,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get AssetFileSize on contentBindningName " + contentBindningName + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get AssetFileSize on contentBindningName " + contentBindningName + " with assetKey " + assetKey + ":" + e.getMessage(), e);
 		}
 		return AssetFileSize;
 	}
@@ -1927,7 +1931,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents from qualifyer: " + qualifyerXML + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents from qualifyer: " + qualifyerXML + ":" + e.getMessage(), e);
 		}
 		
 		return relatedContentVOList;
@@ -1951,7 +1955,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedContentVOList;
@@ -1975,7 +1979,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedContentVOList;
@@ -2001,7 +2005,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedContentVOList;
@@ -2023,7 +2027,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedContentVOList;
@@ -2062,7 +2066,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
 		}
 
 		return relatedContentVOList;
@@ -2109,14 +2113,14 @@ public class BasicTemplateController implements TemplateController
 					}
 					catch(Exception e)
 					{
-					    CmsLogger.logInfo("An error occurred when looking up one of the related Pages FromXML:" + e.getMessage(), e);
+					    logger.info("An error occurred when looking up one of the related Pages FromXML:" + e.getMessage(), e);
 					}
 				}	
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
 		}
 
 		return relatedPages;
@@ -2139,7 +2143,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedPages;
@@ -2163,7 +2167,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedPages;
@@ -2188,7 +2192,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedPages;
@@ -2212,7 +2216,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get related pages on infogluePrincipal " + infogluePrincipal + " with relationName " + attributeName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get related pages on infogluePrincipal " + infogluePrincipal + " with relationName " + attributeName + ":" + e.getMessage(), e);
 		}
 		
 		return relatedPages;
@@ -2235,7 +2239,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + " with assetKey " + assetKey + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -2257,7 +2261,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on content with id " + contentId + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id " + contentId + " with assetKey " + assetKey + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -2273,7 +2277,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on content with id " + contentId + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id " + contentId + " with assetKey " + assetKey + ":" + e.getMessage(), e);
 		}
 				
 		return entries;
@@ -2300,7 +2304,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on contentBindningName " + contentBindningName + " with assetKey " + assetKey + ":" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -2330,7 +2334,7 @@ public class BasicTemplateController implements TemplateController
 			File pdfFile = new File(filePath + java.io.File.separator + fileName);
 			if(!pdfFile.exists())
 			{
-				CmsLogger.logInfo("Creating a foprenderer");
+				logger.info("Creating a foprenderer");
 				FOPHelper fop = new FOPHelper();
 				fop.generatePDF(template, pdfFile);
 			}
@@ -2345,7 +2349,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get ContentAttribute As PDFUrl:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get ContentAttribute As PDFUrl:" + e.getMessage(), e);
 		}
 		
 		return pdfUrl;
@@ -2374,7 +2378,7 @@ public class BasicTemplateController implements TemplateController
 			File pdfFile = new File(filePath + java.io.File.separator + fileName);
 			if(!pdfFile.exists())
 			{
-				CmsLogger.logInfo("Creating a foprenderer");
+				logger.info("Creating a foprenderer");
 				FOPHelper fop = new FOPHelper();
 				fop.generatePDF(template, pdfFile);
 			}
@@ -2389,7 +2393,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get ContentAttribute As PDFUrl:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get ContentAttribute As PDFUrl:" + e.getMessage(), e);
 		}
 		
 		return pdfUrl;
@@ -2461,7 +2465,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e) 
 		{
-			CmsLogger.logSevere("An error occurred trying to get ContentAttribute As ImageUrl:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get ContentAttribute As ImageUrl:" + e.getMessage(), e);
 		}
 		
 		return assetUrl;
@@ -2479,7 +2483,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e) 
 		{
-			CmsLogger.logSevere("An error occurred trying to get ContentAttribute As ImageUrl:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get ContentAttribute As ImageUrl:" + e.getMessage(), e);
 		}
 	
 		return assetUrl;
@@ -2518,7 +2522,7 @@ public class BasicTemplateController implements TemplateController
 			File imageFile = new File(filePath + java.io.File.separator + fileName);
 			if(!imageFile.exists())
 			{
-				CmsLogger.logInfo("Creating a imagerenderer");
+				logger.info("Creating a imagerenderer");
 				ImageRenderer imageRenderer = new ImageRenderer();
 				imageRenderer.setCanvasWidth(canvasWidth);
     			imageRenderer.setCanvasHeight(canvasHeight);
@@ -2533,9 +2537,9 @@ public class BasicTemplateController implements TemplateController
 				imageRenderer.setBackgroundColor(backgroundColor);
 				imageRenderer.setBackgroundImageUrl(backgroundImageUrl);
 				
-				CmsLogger.logInfo("Created imageRenderer and printing to " + filePath + java.io.File.separator + fileName);					
+				logger.info("Created imageRenderer and printing to " + filePath + java.io.File.separator + fileName);					
 				imageRenderer.generateGifImageFromText(filePath + java.io.File.separator + fileName, attribute, LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.languageId).getCharset());
-				CmsLogger.logInfo("Rendered in getContentAttributeAsImageUrl");
+				logger.info("Rendered in getContentAttributeAsImageUrl");
 			}
 			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
@@ -2548,7 +2552,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get ContentAttribute As ImageUrl:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get ContentAttribute As ImageUrl:" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -2645,7 +2649,7 @@ public class BasicTemplateController implements TemplateController
 			File imageFile = new File(filePath + java.io.File.separator + fileName);
 			if(!imageFile.exists())
 			{
-				CmsLogger.logInfo("Creating a imagerenderer");
+				logger.info("Creating a imagerenderer");
 				ImageRenderer imageRenderer = new ImageRenderer();
 				imageRenderer.setCanvasWidth(canvasWidth);
     			imageRenderer.setCanvasHeight(canvasHeight);
@@ -2660,9 +2664,9 @@ public class BasicTemplateController implements TemplateController
 				imageRenderer.setBackgroundColor(backgroundColor);
 				imageRenderer.setBackgroundImageUrl(backgroundImageUrl);
 				
-				CmsLogger.logInfo("Created imageRenderer and printing to " + filePath + java.io.File.separator + fileName);					
+				logger.info("Created imageRenderer and printing to " + filePath + java.io.File.separator + fileName);					
 				imageRenderer.generateGifImageFromText(filePath + java.io.File.separator + fileName, text, LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.languageId).getCharset());
-				CmsLogger.logInfo("Rendered in getContentAttributeAsImageUrl");
+				logger.info("Rendered in getContentAttributeAsImageUrl");
 			}
 			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
@@ -2675,7 +2679,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to render string as an image:" + e.getMessage(), e);
+			logger.error("An error occurred trying to render string as an image:" + e.getMessage(), e);
 		}
 				
 		return assetUrl;
@@ -2775,7 +2779,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -2796,7 +2800,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the transformed page url " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the transformed page url " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -2819,7 +2823,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -2840,7 +2844,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get the siteNode with id " + siteNodeId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the siteNode with id " + siteNodeId + ":" + e.getMessage(), e);
 		}
 
 		return siteNodeVO;
@@ -2861,7 +2865,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get siteNodeId for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get siteNodeId for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return siteNodeId;
@@ -2886,7 +2890,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get contentId for contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get contentId for contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return contentId;
@@ -2924,7 +2928,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get childContents for contentId " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get childContents for contentId " + contentId + ":" + e.getMessage(), e);
 		}
 				
 		return childContents;
@@ -2949,7 +2953,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get contentId for contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get contentId for contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return contentId;
@@ -2966,7 +2970,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get Content for categoryId " + categoryId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get Content for categoryId " + categoryId + ":" + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;
@@ -2999,7 +3003,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;
@@ -3016,11 +3020,11 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			operatingMode = new Integer(CmsPropertyHandler.getProperty("operatingMode"));
-			//CmsLogger.logInfo("Operating mode is:" + operatingMode);
+			//logger.info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
+			logger.warn("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
 		}
 		return operatingMode;
 	}
@@ -3043,7 +3047,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -3068,7 +3072,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -3094,7 +3098,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get page url for structureBindningName " + structureBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -3116,7 +3120,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get current page url:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get current page url:" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -3137,7 +3141,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get current page url:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get current page url:" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -3158,7 +3162,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get current page url:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get current page url:" + e.getMessage(), e);
 		}
 				
 		return pagePath;
@@ -3178,7 +3182,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get parent siteNode:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get parent siteNode:" + e.getMessage(), e);
 		}
 				
 		return siteNodeVO;
@@ -3201,7 +3205,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the new page-url after language-change:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the new page-url after language-change:" + e.getMessage(), e);
 		}
 				
 		return pageUrl;
@@ -3223,7 +3227,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
 		}
 				
 		return navTitle;
@@ -3243,12 +3247,12 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName);
-			CmsLogger.logInfo(siteNodeVO.getName());
+			logger.info(siteNodeVO.getName());
 			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
 		}
 				
 		return navTitle;
@@ -3269,7 +3273,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
 		}
 				
 		return navTitle;
@@ -3288,12 +3292,12 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName, index);
-			CmsLogger.logInfo(siteNodeVO.getName());
+			logger.info(siteNodeVO.getName());
 			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
 		}
 				
 		return navTitle;
@@ -3315,7 +3319,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return isPageCacheDisabled;
@@ -3337,7 +3341,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get the content type of the page:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the content type of the page:" + e.getMessage(), e);
 		}
 				
 		return pageContentType;
@@ -3358,7 +3362,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has protect page:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has protect page:" + e.getMessage(), e);
 		}
 				
 		return isPageProtected;
@@ -3379,7 +3383,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled editOnSight:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled editOnSight:" + e.getMessage(), e);
 		}
 				
 		return isEditOnSightDisabled;
@@ -3400,7 +3404,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get all available languages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get all available languages:" + e.getMessage(), e);
 		}
 				
 		return availableLanguages;
@@ -3437,14 +3441,14 @@ public class BasicTemplateController implements TemplateController
 				
 				if(contentVO == null || contentVersionVO == null)		
 				{	
-					CmsLogger.logWarning("The meta-info did not have a version of " + languageVO.getName());
+					logger.warn("The meta-info did not have a version of " + languageVO.getName());
 					languageIterator.remove();
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get all available languages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get all available languages:" + e.getMessage(), e);
 		}
 				
 		return availableLanguages;
@@ -3479,13 +3483,13 @@ public class BasicTemplateController implements TemplateController
 				}
 				catch(Exception e)
 				{
-				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the page childPages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page childPages:" + e.getMessage(), e);
 		}
 		
 		return childPages;
@@ -3520,13 +3524,13 @@ public class BasicTemplateController implements TemplateController
 				}
 				catch(Exception e)
 				{
-				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the page childPages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page childPages:" + e.getMessage(), e);
 		}
 		
 		return childPages;
@@ -3560,13 +3564,13 @@ public class BasicTemplateController implements TemplateController
 				}
 				catch(Exception e)
 				{
-				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the page childPages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page childPages:" + e.getMessage(), e);
 		}
 		
 		return childPages;
@@ -3601,13 +3605,13 @@ public class BasicTemplateController implements TemplateController
 				}
 				catch(Exception e)
 				{
-				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the page childPages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page childPages:" + e.getMessage(), e);
 		}
 		
 		return childPages;
@@ -3649,13 +3653,13 @@ public class BasicTemplateController implements TemplateController
 				}
 				catch(Exception e)
 				{
-				    CmsLogger.logInfo("An error occurred when looking up one of the bound pages:" + e.getMessage(), e);
+				    logger.info("An error occurred when looking up one of the bound pages:" + e.getMessage(), e);
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound pages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound pages:" + e.getMessage(), e);
 		}
 		
 		//Caching bindings
@@ -3697,13 +3701,13 @@ public class BasicTemplateController implements TemplateController
 				}
 				catch(Exception e)
 				{
-				    CmsLogger.logInfo("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
+				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound pages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound pages:" + e.getMessage(), e);
 		}
 		
 		//Caching bindings
@@ -3754,13 +3758,13 @@ public class BasicTemplateController implements TemplateController
 				}
 				catch(Exception e)
 				{
-				    CmsLogger.logInfo("An error occurred when looking up one of the getLocalizedBoundPages:" + e.getMessage(), e);
+				    logger.info("An error occurred when looking up one of the getLocalizedBoundPages:" + e.getMessage(), e);
 				}
 			}
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound pages:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound pages:" + e.getMessage(), e);
 		}
 		
 		//Caching bindings
@@ -3807,7 +3811,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound contents:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound contents:" + e.getMessage(), e);
 		}
 		
 		//Caching bindings
@@ -3833,7 +3837,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound contents:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound contents:" + e.getMessage(), e);
 		}
 		
 		return boundContents;
@@ -3856,7 +3860,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound contents:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound contents:" + e.getMessage(), e);
 		}
 		
 		return boundContents;
@@ -3891,7 +3895,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound contents:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound contents:" + e.getMessage(), e);
 		}
 		
 		return childContents;
@@ -3913,7 +3917,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound contents:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound contents:" + e.getMessage(), e);
 		}
 		
 		return contentTypeDefinition;
@@ -3933,7 +3937,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get the bound contents:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the bound contents:" + e.getMessage(), e);
 		}
 		
 		return contentTypeDefinition;
@@ -3981,7 +3985,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to do an include:" + e.getMessage(), e);
+			logger.error("An error occurred trying to do an include:" + e.getMessage(), e);
 		}
 			
 		return result;
@@ -4012,11 +4016,11 @@ public class BasicTemplateController implements TemplateController
 	public String include(String contentBindningName, String attributeName, boolean cacheInclude, String cName, Object cObject) 
 	{
 		String includeKey = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + contentBindningName + "_" + attributeName;
-		CmsLogger.logInfo("includeKey:" + includeKey);
+		logger.info("includeKey:" + includeKey);
 		String result = (String)CacheController.getCachedObject("includeCache", includeKey);
 		if(result != null)
 		{
-			CmsLogger.logInfo("There was an cached include:" + result);
+			logger.info("There was an cached include:" + result);
 		}
 		else
 		{
@@ -4026,7 +4030,7 @@ public class BasicTemplateController implements TemplateController
 				if(contentVO != null)
 				{
 					String includedTemplate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, "Template", this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext);
-					CmsLogger.logInfo("Found included template:" + includedTemplate);
+					logger.info("Found included template:" + includedTemplate);
 					
 					Map context = new HashMap();
 					context.put("inheritedTemplateLogic", this);
@@ -4044,7 +4048,7 @@ public class BasicTemplateController implements TemplateController
 					new VelocityTemplateProcessor().renderTemplate(context, cachedStream, includedTemplate);
 					result = cacheString.toString();
 					
-					CmsLogger.logInfo("result:" + result);
+					logger.info("result:" + result);
 	
 					if(cacheInclude)
 						CacheController.cacheObject("includeCache", includeKey, result);
@@ -4052,7 +4056,7 @@ public class BasicTemplateController implements TemplateController
 			}
 			catch(Exception e)
 			{
-				CmsLogger.logSevere("An error occurred trying to do an include:" + e.getMessage(), e);
+				logger.error("An error occurred trying to do an include:" + e.getMessage(), e);
 			}
 		}
 		
@@ -4071,13 +4075,13 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			CmsLogger.logInfo("We are going to do an include on an external webpage: " + url);
+			logger.info("We are going to do an include on an external webpage: " + url);
 			contents = this.integrationDeliveryController.getUrlContent(url, request, true);
-			//CmsLogger.logInfo("The respons was: " + contents);
+			//logger.info("The respons was: " + contents);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to do an include the url:" + url, e);
+			logger.error("An error occurred trying to do an include the url:" + url, e);
 		}
 		
 		return contents;
@@ -4094,13 +4098,13 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			CmsLogger.logInfo("We are going to do an include on an external webpage: " + url);
+			logger.info("We are going to do an include on an external webpage: " + url);
 			contents = this.integrationDeliveryController.getUrlContent(url, request, includeRequest);
-			//CmsLogger.logInfo("The respons was: " + contents);
+			//logger.info("The respons was: " + contents);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to do an include the url:" + url, e);
+			logger.error("An error occurred trying to do an include the url:" + url, e);
 		}
 		
 		return contents;
@@ -4117,13 +4121,13 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			CmsLogger.logInfo("We are going to do an include on an external webpage: " + url);
+			logger.info("We are going to do an include on an external webpage: " + url);
 			contents = this.integrationDeliveryController.getUrlContent(url, request, true, encoding);
-			//CmsLogger.logInfo("The respons was: " + contents);
+			//logger.info("The respons was: " + contents);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to do an include the url:" + url, e);
+			logger.error("An error occurred trying to do an include the url:" + url, e);
 		}
 		
 		return contents;
@@ -4140,13 +4144,13 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			CmsLogger.logInfo("We are going to do an include on an external webpage: " + url);
+			logger.info("We are going to do an include on an external webpage: " + url);
 			contents = this.integrationDeliveryController.getUrlContent(url, request, includeRequest, encoding);
-			//CmsLogger.logInfo("The respons was: " + contents);
+			//logger.info("The respons was: " + contents);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to do an include the url:" + url, e);
+			logger.error("An error occurred trying to do an include the url:" + url, e);
 		}
 		
 		return contents;
@@ -4222,7 +4226,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("The replace function experienced an error:" + e.getMessage(), e);
+			logger.error("The replace function experienced an error:" + e.getMessage(), e);
 		}
 		
 		return result.toString();
@@ -4312,7 +4316,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred:" + e.getMessage(), e);
+			logger.error("An error occurred:" + e.getMessage(), e);
 		}
 		
 		return isParentToCurrent;
@@ -4331,7 +4335,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
 		}
 		return ret;
 	}
@@ -4349,14 +4353,14 @@ public class BasicTemplateController implements TemplateController
 		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId);
 			if(protectedSiteNodeVersionId == null)
 			{
-				CmsLogger.logInfo("The page was not protected...");
+				logger.info("The page was not protected...");
 				hasUserPageAccess = true;
 			}
 			else
 			{
-				CmsLogger.logInfo("The page was protected...");
+				logger.info("The page was protected...");
 				Principal principal = this.getPrincipal();
-				CmsLogger.logInfo("Principal:" + principal);
+				logger.info("Principal:" + principal);
 				
 				if(principal != null)
 				{
@@ -4368,14 +4372,14 @@ public class BasicTemplateController implements TemplateController
 		    /*
 			if(!this.nodeDeliveryController.getIsPageProtected(siteNodeId))
 			{
-				CmsLogger.logInfo("The page was not protected...");
+				logger.info("The page was not protected...");
 				hasUserPageAccess = true;
 			}
 			else
 			{
-				CmsLogger.logInfo("The page was protected...");
+				logger.info("The page was protected...");
 				Principal principal = this.getPrincipal();
-				CmsLogger.logInfo("Principal:" + principal);
+				logger.info("Principal:" + principal);
 				
 				if(principal != null)
 				{
@@ -4388,7 +4392,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
 		}
 		
 		return hasUserPageAccess;
@@ -4408,7 +4412,7 @@ public class BasicTemplateController implements TemplateController
 		    if(contentId != null)
 		    {
 				Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(getDatabase(), contentId);
-				CmsLogger.logInfo("IsProtected:" + protectedContentId);
+				logger.info("IsProtected:" + protectedContentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 				{
 				    hasUserContentAccess = false;
@@ -4417,7 +4421,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
 		}
 		
 		return hasUserContentAccess;
@@ -4435,7 +4439,7 @@ public class BasicTemplateController implements TemplateController
 		try 
 		{
 			Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(getDatabase(), contentId);
-			CmsLogger.logInfo("IsProtected:" + protectedContentId);
+			logger.info("IsProtected:" + protectedContentId);
 			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, action, protectedContentId.toString()))
 			{
 			    hasUserContentAccess = false;
@@ -4443,7 +4447,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
 		}
 		
 		return hasUserContentAccess;
@@ -4462,14 +4466,14 @@ public class BasicTemplateController implements TemplateController
 		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId);
 			if(protectedSiteNodeVersionId == null)
 			{
-				CmsLogger.logInfo("The page was not protected...");
+				logger.info("The page was not protected...");
 				hasUserPageWriteAccess = true;
 			}
 			else
 			{
-				CmsLogger.logInfo("The page was protected...");
+				logger.info("The page was protected...");
 				Principal principal = this.getPrincipal();
-				CmsLogger.logInfo("Principal:" + principal);
+				logger.info("Principal:" + principal);
 				
 				if(principal != null)
 				{
@@ -4479,14 +4483,14 @@ public class BasicTemplateController implements TemplateController
 		    /*
 			if(!this.nodeDeliveryController.getIsPageProtected(siteNodeId))
 			{
-				CmsLogger.logInfo("The page was not protected...");
+				logger.info("The page was not protected...");
 				hasUserPageWriteAccess = true;
 			}
 			else
 			{
-				CmsLogger.logInfo("The page was protected...");
+				logger.info("The page was protected...");
 				Principal principal = (Principal)this.request.getSession().getAttribute("infogluePrincipal");
-				CmsLogger.logInfo("Principal:" + principal);
+				logger.info("Principal:" + principal);
 				if(principal != null)
 				{
 					SiteNodeVersionVO siteNodeVersionVO = this.nodeDeliveryController.getActiveSiteNodeVersionVO(siteNodeId);
@@ -4498,7 +4502,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred trying to find out if the user had write access to page:" + siteNodeId + ": " + e.getMessage(), e);
+			logger.error("An error occurred trying to find out if the user had write access to page:" + siteNodeId + ": " + e.getMessage(), e);
 		}
 		
 		return hasUserPageWriteAccess;
@@ -4548,13 +4552,13 @@ public class BasicTemplateController implements TemplateController
 	        }
 	        
 			WorkflowController workflowController = WorkflowController.getController();
-			CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal);
-			CmsLogger.logInfo("workflowId:" + workflowId);
+			logger.info("infoGluePrincipal:" + infoGluePrincipal);
+			logger.info("workflowId:" + workflowId);
 			workflowSteps = workflowController.getAllSteps(infoGluePrincipal, new Long(workflowId).longValue());
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("An error occurred when trying to get the steps available: " + e.getMessage(), e);
+	        logger.warn("An error occurred when trying to get the steps available: " + e.getMessage(), e);
 	    }
 	    
 		return workflowSteps;
@@ -4585,7 +4589,7 @@ public class BasicTemplateController implements TemplateController
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("An error occurred when trying to get the steps available: " + e.getMessage(), e);
+	        logger.warn("An error occurred when trying to get the steps available: " + e.getMessage(), e);
 	    }
 	    
 		return workflowSteps;
@@ -4616,7 +4620,7 @@ public class BasicTemplateController implements TemplateController
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("An error occurred when trying to get the steps available: " + e.getMessage(), e);
+	        logger.warn("An error occurred when trying to get the steps available: " + e.getMessage(), e);
 	    }
 	    
 		return workflowSteps;
@@ -4648,7 +4652,7 @@ public class BasicTemplateController implements TemplateController
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("An error occurred when trying to get the actions available: " + e.getMessage(), e);
+	        logger.warn("An error occurred when trying to get the actions available: " + e.getMessage(), e);
 	    }
 	    
 		return workflowActionVOList;
@@ -4681,7 +4685,7 @@ public class BasicTemplateController implements TemplateController
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("An error occurred when trying to get the actions available: " + e.getMessage(), e);
+	        logger.warn("An error occurred when trying to get the actions available: " + e.getMessage(), e);
 	    }
 	    
 		return properties;
@@ -4713,7 +4717,7 @@ public class BasicTemplateController implements TemplateController
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("An error occurred when trying to get the propertySet available: " + e.getMessage(), e);
+	        logger.warn("An error occurred when trying to get the propertySet available: " + e.getMessage(), e);
 	    }
 	    
 		return propertySet;
@@ -4743,7 +4747,7 @@ public class BasicTemplateController implements TemplateController
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logWarning("An error occurred when trying to get the actions available: " + e.getMessage(), e);
+	        logger.warn("An error occurred when trying to get the actions available: " + e.getMessage(), e);
 	    }
 	}
 	*/

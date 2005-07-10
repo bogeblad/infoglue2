@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.management.RepositoryVO;
 
@@ -33,7 +33,7 @@ import org.infoglue.cms.entities.management.RepositoryVO;
  * @author Mattias Bogeblad  
  */
 
-public class ViewManagementToolMenuAction extends WebworkAbstractAction
+public class ViewManagementToolMenuAction extends InfoGlueAbstractAction
 {
     private RepositoryVO repositoryVO;
     private Integer repositoryId;

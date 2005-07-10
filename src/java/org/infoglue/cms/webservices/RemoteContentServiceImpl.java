@@ -26,11 +26,12 @@ package org.infoglue.cms.webservices;
 import java.math.BigInteger;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * This class is responsible for letting an external application call InfoGlue
@@ -41,6 +42,8 @@ import org.infoglue.cms.util.CmsLogger;
 
 public class RemoteContentServiceImpl 
 {
+    private final static Logger logger = Logger.getLogger(RemoteContentServiceImpl.class.getName());
+
     private static ContentController contentController = ContentController.getContentController();
     private static ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
     
@@ -52,9 +55,9 @@ public class RemoteContentServiceImpl
     {
         int newContentId = 0;
         
-        CmsLogger.logInfo("***************************************");
-        CmsLogger.logInfo("Creating content through webservice....");
-        CmsLogger.logInfo("***************************************");
+        logger.info("***************************************");
+        logger.info("Creating content through webservice....");
+        logger.info("***************************************");
         
         try
         {
@@ -77,9 +80,9 @@ public class RemoteContentServiceImpl
     {
         int newContentVersionId = 0;
         
-        CmsLogger.logInfo("***************************************");
-        CmsLogger.logInfo("Creating content through webservice....");
-        CmsLogger.logInfo("***************************************");
+        logger.info("***************************************");
+        logger.info("Creating content through webservice....");
+        logger.info("***************************************");
         
         try
         {

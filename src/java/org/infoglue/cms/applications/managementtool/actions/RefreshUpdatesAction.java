@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 
@@ -34,13 +34,14 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  *
  * 
  */
-public class RefreshUpdatesAction extends WebworkAbstractAction {
+public class RefreshUpdatesAction extends InfoGlueAbstractAction 
+{
 
 	UpdateController uc;
 	
 
 	protected String doExecute() throws Exception {
-		CmsLogger.logInfo("Executing doExecute on RefreshUpdates..");
+		getLogger().info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
 		String url = CmsPropertyHandler.getProperty("up2dateUrl");	
 	
@@ -50,10 +51,5 @@ public class RefreshUpdatesAction extends WebworkAbstractAction {
         return "success";
 	}
 	
-	public RefreshUpdatesAction getThis()
-	{
-		return this;
-	}
-
 	
 }

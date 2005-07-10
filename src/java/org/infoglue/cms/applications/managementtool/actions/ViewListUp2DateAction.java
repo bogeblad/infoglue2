@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.catalina.util.URL;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 
@@ -39,7 +39,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * @author ss
  *
  */
-public class ViewListUp2DateAction extends WebworkAbstractAction {
+public class ViewListUp2DateAction extends InfoGlueAbstractAction {
 
 	UpdateController uc;
 	private String currentUpdateServer = "";
@@ -60,8 +60,8 @@ public class ViewListUp2DateAction extends WebworkAbstractAction {
 		
 		uc = new UpdateController(url, path);
 		
-	    CmsLogger.logInfo("Executing doExecute on ViewListUp2Date..");
-	    CmsLogger.logInfo("Finished executing doExecute on ViewListUp2Date..");
+	    getLogger().info("Executing doExecute on ViewListUp2Date..");
+	    getLogger().info("Finished executing doExecute on ViewListUp2Date..");
         return "success";
 	}
 	
@@ -82,11 +82,6 @@ public class ViewListUp2DateAction extends WebworkAbstractAction {
 	public Date getLatestRefresh()
 	{
 		return uc.getLatestRefresh();
-	}
-
-	public ViewListUp2DateAction getThis()
-	{
-		return this;
 	}
 
 	

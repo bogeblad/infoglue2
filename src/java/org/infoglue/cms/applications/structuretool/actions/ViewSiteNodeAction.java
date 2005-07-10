@@ -33,11 +33,11 @@ import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import java.util.Date;
@@ -75,7 +75,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     
     public ViewSiteNodeAction(SiteNodeVO siteNodeVO, SiteNodeVersionVO siteNodeVersionVO)
     {
-		CmsLogger.logInfo("Construction ViewSiteNodeAction");
+		getLogger().info("Construction ViewSiteNodeAction");
         this.siteNodeVO = siteNodeVO;
         this.siteNodeVersionVO = siteNodeVersionVO;
     }
@@ -83,7 +83,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	protected void initialize(Integer siteNodeId) throws Exception
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
-		CmsLogger.logInfo("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
+		getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
 		this.repositoryId = this.siteNodeVO.getRepositoryId();
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
@@ -98,7 +98,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		try
 		{
 		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId);
-		    CmsLogger.logInfo("referenceBeanList:" + referenceBeanList.size());
+		    getLogger().info("referenceBeanList:" + referenceBeanList.size());
 		}
 		catch(Exception e)
 		{
@@ -186,7 +186,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     
     public String doChangeState() throws Exception
     {
-    	CmsLogger.logInfo("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
+    	getLogger().info("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
     	SiteNodeVersionController.getController().updateStateId(this.siteNodeVersionVO.getSiteNodeVersionId(), getStateId(), this.siteNodeVersionVO.getVersionComment(), this.getInfoGluePrincipal(), this.getSiteNodeId());
     	this.initialize(getSiteNodeId());
         return "success";
@@ -194,7 +194,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
         
     public String doCommentVersion() throws Exception
     { 
-    	CmsLogger.logInfo("Gonna show the comment-view");
+    	getLogger().info("Gonna show the comment-view");
         return "commentVersion";
     }
         	
@@ -529,7 +529,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
 		
 		return eventVO;
@@ -546,7 +546,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get any events for this siteNode:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get any events for this siteNode:" + e.getMessage(), e);
 		}
 		
 		return eventVO;

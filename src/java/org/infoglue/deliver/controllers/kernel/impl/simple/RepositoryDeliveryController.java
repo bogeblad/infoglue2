@@ -96,12 +96,12 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         while (results.hasMore()) 
         {
             Repository repository = (Repository) results.next();
-            CmsLogger.logInfo("repository:" + repository.getDnsName());
+            getLogger().info("repository:" + repository.getDnsName());
             String[] dnsNames = splitStrings(repository.getDnsName());
-            CmsLogger.logInfo("dnsNames:" + dnsNames);
+            getLogger().info("dnsNames:" + dnsNames);
             for (int i=0;i<dnsNames.length;i++) 
             {
-            	CmsLogger.logInfo("dnsNames[i]:" + dnsNames[i]);
+            	getLogger().info("dnsNames[i]:" + dnsNames[i]);
                 if((dnsNames[i].indexOf(":") == -1 && dnsNames[i].indexOf(serverName) != -1) || dnsNames[i].indexOf(serverName + ":" + portNumber) != -1) 
                 {
                     return repository.getValueObject();

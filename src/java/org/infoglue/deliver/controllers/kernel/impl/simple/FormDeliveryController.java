@@ -23,10 +23,12 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.entities.management.*;
 
-import org.infoglue.cms.util.CmsLogger;
 
+
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -41,6 +43,8 @@ import java.io.*;
 
 public class FormDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(FormDeliveryController.class.getName());
+
 	/**
 	 * Private constructor to enforce factory-use
 	 */
@@ -64,7 +68,7 @@ public class FormDeliveryController
 		
 	public List getContentTypeAttributes(String schemaValue)
 	{
-		CmsLogger.logInfo("schemaValue:" + schemaValue);
+		logger.info("schemaValue:" + schemaValue);
 		List attributes = new ArrayList();
 			
 		try
@@ -142,7 +146,7 @@ public class FormDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);	
+			logger.error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);	
 		}
 		    		
 		return attributes;

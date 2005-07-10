@@ -26,6 +26,7 @@ package org.infoglue.cms.security.interceptors;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -42,7 +43,8 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.applications.filters.ViewPageFilter;
+
 
 import com.opensymphony.workflow.Workflow;
 import com.opensymphony.workflow.basic.BasicWorkflow;
@@ -56,6 +58,8 @@ import com.opensymphony.workflow.loader.WorkflowDescriptor;
 
 public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 {
+    private final static Logger logger = Logger.getLogger(InfoGlueOSWorkflowInterceptor.class.getName());
+
 	/**
 	 * This method will be called when a interceptionPoint is reached.
 	 * 
@@ -67,7 +71,7 @@ public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata) throws ConstraintException, SystemException, Exception
 	{
-		CmsLogger.logInfo("interceptionPointVO:" + interceptionPointVO.getName());
+		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
 		
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
@@ -76,22 +80,22 @@ public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 			Workflow workflowInit = new BasicWorkflow(infoGluePrincipal.getName());
 			
 			long id = workflowInit.initialize("MattiasWF", 1, new HashMap());
-			CmsLogger.logInfo("Workflow initialized....");
-			CmsLogger.logInfo("id:" + id);
-			CmsLogger.logInfo("name:" + workflowInit.getWorkflowName(id));
+			logger.info("Workflow initialized....");
+			logger.info("id:" + id);
+			logger.info("name:" + workflowInit.getWorkflowName(id));
 			
 			
 			Workflow workflow = workflowInit; //new BasicWorkflow(infoGluePrincipal.getName());
 			
 			int[] actions = workflow.getAvailableActions(id, null);
-			CmsLogger.logInfo("actions:" + actions.length);
+			logger.info("actions:" + actions.length);
 			WorkflowDescriptor wd = workflow.getWorkflowDescriptor(workflow.getWorkflowName(id));
 
 			for (int i = 0; i < actions.length; i++) 
 			{
 				int availableActionId = actions[i];
 				String name = wd.getAction(availableActionId).getName();
-				CmsLogger.logInfo("Action:" + availableActionId + ":" + name);
+				logger.info("Action:" + availableActionId + ":" + name);
 				
 				//workflow.doAction(id, availableActionId, Collections.EMPTY_MAP);
 			}
@@ -101,14 +105,14 @@ public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 			workflow.doAction(id, 1, map);
 
 			actions = workflow.getAvailableActions(id, null);
-			CmsLogger.logInfo("actions:" + actions.length);
+			logger.info("actions:" + actions.length);
 			wd = workflow.getWorkflowDescriptor(workflow.getWorkflowName(id));
 
 			for (int i = 0; i < actions.length; i++) 
 			{
 				int availableActionId = actions[i];
 				String name = wd.getAction(availableActionId).getName();
-				CmsLogger.logInfo("Action:" + availableActionId + ":" + name);
+				logger.info("Action:" + availableActionId + ":" + name);
 				
 				//workflow.doAction(id, availableActionId, Collections.EMPTY_MAP);
 			}
@@ -125,7 +129,7 @@ public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 			List workflows = workflow.query(query);
 			for (Iterator iterator = workflows.iterator(); iterator.hasNext();) {
 				Long wfId = (Long) iterator.next();
-				CmsLogger.logInfo(wfId);
+				logger.info(wfId);
 				} 
 			*/		
 		}
@@ -258,7 +262,7 @@ public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, Database db) throws ConstraintException, SystemException, Exception
 	{
-		CmsLogger.logInfo("interceptionPointVO:" + interceptionPointVO.getName());
+		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
 		
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
@@ -353,12 +357,12 @@ public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 		}
 		else*/ if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Write"))
 		{
-			CmsLogger.logInfo("******************************************************");
-			CmsLogger.logInfo("SiteNodeVersion.ChangeAccessRights");
+			logger.info("******************************************************");
+			logger.info("SiteNodeVersion.ChangeAccessRights");
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
-			CmsLogger.logInfo("VersionModifier:" + siteNodeVersion.getVersionModifier());
-			CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
+			logger.info("VersionModifier:" + siteNodeVersion.getVersionModifier());
+			logger.info("infoGluePrincipal:" + infoGluePrincipal.getName());
 			if(!siteNodeVersion.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);

@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.util.dom;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -33,7 +34,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.xml.sax.InputSource;
 
 import java.io.*;
@@ -48,6 +49,8 @@ import java.util.Map;
 
 public class DOMBuilder
 {
+    private final static Logger logger = Logger.getLogger(DOMBuilder.class.getName());
+
  	/**
  	 * This method creates a new Document.
  	 */
@@ -272,7 +275,7 @@ public class DOMBuilder
 		out.write(element);
 		out.flush();
 		String s = bao.toString();
-		CmsLogger.logInfo("OUT: " + s);
+		logger.info("OUT: " + s);
 		return s;
 	}
 	

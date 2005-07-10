@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 
@@ -36,7 +36,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
  * Window>Preferences>Java>Code Generation.
  */
 
-public class PreviewContentVersionAction  extends WebworkAbstractAction 
+public class PreviewContentVersionAction  extends InfoGlueAbstractAction 
 {
 	private Integer contentVersionId;
 	private ContentVersionVO contentVersionVO;

@@ -38,7 +38,9 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+
+
 
 
 /**
@@ -49,6 +51,8 @@ import org.infoglue.cms.util.CmsLogger;
 
 public class OpenLDAPJNDIBasicAuthorizationModule extends JNDIBasicAuthorizationModule
 {
+    private final static Logger logger = Logger.getLogger(OpenLDAPJNDIBasicAuthorizationModule.class.getName());
+
 	public Properties getExtraProperties()
 	{
 		return this.extraProperties;
@@ -73,10 +77,10 @@ public class OpenLDAPJNDIBasicAuthorizationModule extends JNDIBasicAuthorization
 	
 	protected List getRoles(String userName) throws NamingException 
 	{
-		CmsLogger.logInfo("**************************************************");
-		CmsLogger.logInfo("*In OpenLDAP version							*");
-		CmsLogger.logInfo("**************************************************");
-		CmsLogger.logInfo("userName:" + userName);
+		logger.info("**************************************************");
+		logger.info("*In OpenLDAP version							*");
+		logger.info("**************************************************");
+		logger.info("userName:" + userName);
 		
 		List roles = new ArrayList();
 		
@@ -90,11 +94,11 @@ public class OpenLDAPJNDIBasicAuthorizationModule extends JNDIBasicAuthorization
 		String userSearch			= this.extraProperties.getProperty("userSearch");
 		String memberOfAttribute	= this.extraProperties.getProperty("memberOfAttribute");
 
-		CmsLogger.logInfo("connectionURL:" + connectionURL);
-		CmsLogger.logInfo("connectionName:" + connectionName);
-		CmsLogger.logInfo("connectionPassword:" + connectionPassword);
-		CmsLogger.logInfo("roleBase:" + roleBase);
-		CmsLogger.logInfo("userBase:" + userBase);
+		logger.info("connectionURL:" + connectionURL);
+		logger.info("connectionName:" + connectionName);
+		logger.info("connectionPassword:" + connectionPassword);
+		logger.info("roleBase:" + roleBase);
+		logger.info("userBase:" + userBase);
 		
 		// Create a Hashtable object.
 		Hashtable env = new Hashtable();
@@ -120,9 +124,9 @@ public class OpenLDAPJNDIBasicAuthorizationModule extends JNDIBasicAuthorization
 			
 			String[] attrID = memberfAttributeFilter.split(",");
 			
-			CmsLogger.logInfo("baseDN:" + baseDN);
-			CmsLogger.logInfo("searchFilter:" + searchFilter);
-			CmsLogger.logInfo("attrID" + attrID);
+			logger.info("baseDN:" + baseDN);
+			logger.info("searchFilter:" + searchFilter);
+			logger.info("attrID" + attrID);
 			
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -135,15 +139,15 @@ public class OpenLDAPJNDIBasicAuthorizationModule extends JNDIBasicAuthorization
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				CmsLogger.logInfo("Person:" + sr.toString() + "\n");
+				logger.info("Person:" + sr.toString() + "\n");
 				Attributes attributes = sr.getAttributes();
 				Attribute attribute = attributes.get("memberof");
-				CmsLogger.logInfo("attribute:" + attribute.toString());
+				logger.info("attribute:" + attribute.toString());
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
 					String groupName = (String)allEnum.next();
-					CmsLogger.logInfo("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
 					InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "");
 					roles.add(infoGlueRole);
 				}
@@ -153,7 +157,7 @@ public class OpenLDAPJNDIBasicAuthorizationModule extends JNDIBasicAuthorization
 		}
 		catch (Exception e) 
 		{
-			CmsLogger.logWarning("Could not find Group for empID: " +userName +e);
+			logger.warn("Could not find Group for empID: " +userName +e);
 			e.printStackTrace();
 		}
 

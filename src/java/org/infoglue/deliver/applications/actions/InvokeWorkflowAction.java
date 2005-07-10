@@ -66,14 +66,14 @@ public class InvokeWorkflowAction extends InfoGlueAbstractAction
         
     public String doExecute() throws Exception
     {
-        CmsLogger.logInfo("****************************************");
-        CmsLogger.logInfo("*     DELIVER InvokeWorkflowAction     *");
-        CmsLogger.logInfo("workflowId:" + workflowId);
-        CmsLogger.logInfo("actionId:" + actionId);
-        CmsLogger.logInfo("email:" + ActionContext.getParameters().get("email"));
-        CmsLogger.logInfo("****************************************");
+        getLogger().info("****************************************");
+        getLogger().info("*     DELIVER InvokeWorkflowAction     *");
+        getLogger().info("workflowId:" + workflowId);
+        getLogger().info("actionId:" + actionId);
+        getLogger().info("email:" + ActionContext.getParameters().get("email"));
+        getLogger().info("****************************************");
        
-        CmsLogger.logInfo("Redirecting Invokation of workflow action to cms instead as that is where the original is");
+        getLogger().info("Redirecting Invokation of workflow action to cms instead as that is where the original is");
         
         InfoGluePrincipal infoGluePrincipal = this.getInfoGluePrincipal();
         if(infoGluePrincipal == null)
@@ -85,14 +85,14 @@ public class InvokeWorkflowAction extends InfoGlueAbstractAction
             infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
         }
         
-        CmsLogger.logInfo("Starting remote invokation");
+        getLogger().info("Starting remote invokation");
         HttpClient client = new HttpClient();
         //HttpURL destination = new HttpURL("http://localhost:8080/infoglueCMS2Dev/InvokeWorkflow.action");
         HttpRequestForwarder method = new HttpRequestForwarder(this.getRequest(), "http://localhost:8080/infoglueCMS2Dev/InvokeWorkflow.action");
         int status = client.executeMethod(method);
-        CmsLogger.logInfo(status + "\n" + method.getResponseBodyAsString());
+        getLogger().info(status + "\n" + method.getResponseBodyAsString());
         method.releaseConnection();
-        CmsLogger.logInfo("Ending remote invokation");
+        getLogger().info("Ending remote invokation");
 
         //HttpUtilities.postToUrl("http://localhost:8080/infoglueCMS2Dev/InvokeWorkflow.action", HttpUtilities.requestToHashtable(this.getRequest()));
         
@@ -109,14 +109,14 @@ public class InvokeWorkflowAction extends InfoGlueAbstractAction
             else
                 url = workflowActionVO.getView() + "?workflowId=" + workflowId + "&actionId=" + workflowActionVO.getId() + "&returnAddress=" + URLEncoder.encode(this.getURLBase() + "/InvokeWorkflow.action", "UTF-8");
                 
-            CmsLogger.logInfo("Url in doInvoke:" + url);
+            getLogger().info("Url in doInvoke:" + url);
             getResponse().sendRedirect(url);
            
             return NONE;
         }
         */
         
-       	CmsLogger.logInfo("No new action...");
+       	getLogger().info("No new action...");
        
 		return "workflowDone";   
 		

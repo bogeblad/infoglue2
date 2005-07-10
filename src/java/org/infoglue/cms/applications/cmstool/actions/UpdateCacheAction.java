@@ -24,8 +24,7 @@
 
 package org.infoglue.cms.applications.cmstool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
@@ -44,7 +43,7 @@ import org.infoglue.deliver.util.CacheController;
  * @author Mattias Bogeblad
  */
 
-public class UpdateCacheAction extends WebworkAbstractAction 
+public class UpdateCacheAction extends InfoGlueAbstractAction 
 {
 	private String className = null;
 	private String objectId = null;
@@ -78,7 +77,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 		{  
 			CacheController.clearCaches(className, objectId);
 			
-			CmsLogger.logInfo("Updating className with id:" + className + ":" + objectId);
+			getLogger().info("Updating className with id:" + className + ":" + objectId);
 			
 			if(className != null)
 			{
@@ -91,7 +90,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 				/*
 				if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
 				{
-					CmsLogger.logInfo("We should delete all images with contentVersionId " + objectId);
+					getLogger().info("We should delete all images with contentVersionId " + objectId);
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
 				}		
 				*/
@@ -99,7 +98,6 @@ public class UpdateCacheAction extends WebworkAbstractAction
 				//If it's an ContentImpl we update SmallContentImpl as well.
 				if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 				{
-					CmsLogger.logInfo("We update SmallContentImpl as well");
 					CacheController.clearCache(SmallContentImpl.class, new Object[]{new Integer(objectId)});
 				}
 				
@@ -135,7 +133,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+		    getLogger().error(e.getMessage(), e);
 		}
                 
         return "success";

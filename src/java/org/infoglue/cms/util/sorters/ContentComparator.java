@@ -1,6 +1,7 @@
 package org.infoglue.cms.util.sorters;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -12,7 +13,8 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.util.graphics.ThumbnailGenerator;
+
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 
 import java.util.Comparator;
@@ -24,6 +26,8 @@ import java.util.Comparator;
  */
 public class ContentComparator implements Comparator
 {
+    private final static Logger logger = Logger.getLogger(ContentComparator.class.getName());
+
 	private String sortProperty;
 	private String sortOrder;
 	private BasicTemplateController basicTemplateController;
@@ -86,7 +90,7 @@ public class ContentComparator implements Comparator
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logInfo(getClass().getName() + " Error finding property " + property, e);
+			logger.info(getClass().getName() + " Error finding property " + property, e);
 			return null;
 		}
 	}

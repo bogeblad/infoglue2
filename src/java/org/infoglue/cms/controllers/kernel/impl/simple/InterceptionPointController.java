@@ -30,7 +30,7 @@ import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Interceptor;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
 
@@ -97,7 +97,7 @@ public class InterceptionPointController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -118,11 +118,11 @@ public class InterceptionPointController extends BaseController
 	public List getInterceptorsVOList(Integer interceptionPointId, Database db)  throws SystemException, Bug
 	{
 		String key = "" + interceptionPointId;
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		List cachedInterceptorVOList = (List)CacheController.getCachedObject("interceptorsCache", key);
 		if(cachedInterceptorVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached InterceptorVOList:" + cachedInterceptorVOList.size());
+			getLogger().info("There was an cached InterceptorVOList:" + cachedInterceptorVOList.size());
 			return cachedInterceptorVOList;
 		}
 		
@@ -158,7 +158,7 @@ public class InterceptionPointController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -207,7 +207,7 @@ public class InterceptionPointController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -265,7 +265,7 @@ public class InterceptionPointController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -335,13 +335,13 @@ public class InterceptionPointController extends BaseController
 				}
 			}
 			
-	    	CmsLogger.logInfo("Interceptors:" + interceptionPoint.getInterceptors().size());
+	    	getLogger().info("Interceptors:" + interceptionPoint.getInterceptors().size());
 			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -373,7 +373,7 @@ public class InterceptionPointController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

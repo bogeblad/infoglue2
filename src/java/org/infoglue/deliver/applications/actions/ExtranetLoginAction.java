@@ -31,7 +31,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.HttpUtilities;
 
@@ -40,7 +40,7 @@ import org.infoglue.deliver.util.HttpUtilities;
  * It has methods for login-forms, authenticate-methods and much more.
  */
  
-public final class ExtranetLoginAction extends WebworkAbstractAction
+public final class ExtranetLoginAction extends InfoGlueAbstractAction
 {
 	private String userName     	= null;
 	private String password     	= null;
@@ -90,7 +90,7 @@ public final class ExtranetLoginAction extends WebworkAbstractAction
 		//Principal principal = (Principal)this.getHttpSession().getAttribute("infoglueExtranetPrincipal");
 		//if(principal == null) 
 		//{
-			//CmsLogger.logInfo("Authenticating username '" + userName + "'");
+			//getLogger().info("Authenticating username '" + userName + "'");
 			Principal principal = null;
 			try
 			{
@@ -110,20 +110,20 @@ public final class ExtranetLoginAction extends WebworkAbstractAction
 		//}
 		//else
 		//{	
-			//CmsLogger.logInfo("Already authenticated '" + principal.getName() + "'");
+			//getLogger().info("Already authenticated '" + principal.getName() + "'");
 		//	isAuthenticated = true;
 		//}
 		
-		//CmsLogger.logInfo("isAuthenticated:" + isAuthenticated);		
+		//getLogger().info("isAuthenticated:" + isAuthenticated);		
 		if(isAuthenticated)
 		{
-			//CmsLogger.logInfo("Yes - we try to send the user back to:" + this.returnAddress);		
+			//getLogger().info("Yes - we try to send the user back to:" + this.returnAddress);		
 			this.getHttpSession().setAttribute("infogluePrincipal", principal);
 			this.getResponse().sendRedirect(this.returnAddress);
 		}
 		else
 		{
-			//CmsLogger.logInfo("No - we try to send the back to the lofin screen.");		
+			//getLogger().info("No - we try to send the back to the lofin screen.");		
 			errorMessage = "The logon information given was incorrect, please verify and try again.";
 			return "invalidLogin";
 		}
@@ -137,12 +137,7 @@ public final class ExtranetLoginAction extends WebworkAbstractAction
 		this.getResponse().sendRedirect(this.returnAddress);
 		return NONE;
 	}
-	
-	public ExtranetLoginAction getThis()
-	{
-		return this;
-	}
-	
+		
 	public String urlEncode(String string, String encoding)
 	{
 		String endodedString = string;

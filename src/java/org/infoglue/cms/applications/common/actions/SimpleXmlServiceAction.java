@@ -28,7 +28,6 @@
 
 package org.infoglue.cms.applications.common.actions;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,9 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.axis.message.SOAPEnvelope;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
@@ -69,23 +66,17 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ChangeNotificationController;
-import org.infoglue.cms.util.CmsLogger;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.NotificationListener;
-import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.XMLNotificationWriter;
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.INodeSupplier;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.Dom4JDriver;
 
-public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
+public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 {
-    
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.13 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.14 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -117,7 +108,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 		return ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 	}      
 	
-	private String encode(String text)
+	public String encode(String text)
 	{
 		return text;
 	}
@@ -277,7 +268,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 		
 		XMLNotificationWriter streamWriter = new XMLNotificationWriter(new OutputStreamWriter(out), ENCODING, boundary, thread, true, false);
 		
-		CmsLogger.logInfo("Notification stream listen started from:"  + remoteId);
+		getLogger().info("Notification stream listen started from:"  + remoteId);
         ChangeNotificationController.getInstance().registerListener(streamWriter);
         
 		while(open)
@@ -293,7 +284,7 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
             }
 		}
         ChangeNotificationController.getInstance().unregisterListener(streamWriter);
-        CmsLogger.logInfo("Notification stream listen ended from:"  + remoteId);
+        getLogger().info("Notification stream listen ended from:"  + remoteId);
         return null;
     }
 
@@ -326,15 +317,16 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
 				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
-				CmsLogger.logInfo("allowedContentTypeNamesUrlEncodedString1:" + allowedContentTypeNamesUrlEncodedString);
-				if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+				getLogger().info("allowedContentTypeNamesUrlEncodedString1:" + allowedContentTypeNamesUrlEncodedString);
+				if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) 
+				    src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
     	        
-				CmsLogger.logInfo("src1:" + src);
+				getLogger().info("src:" + src);
     			
 				String text=r.getName();
     	        Element element = root.addElement("tree");
     	        element
-	        	.addAttribute("id", "" + r.getId())
+	        		.addAttribute("id", "" + r.getId())
     	        	.addAttribute("repositoryId", "" + r.getId())
     	        	.addAttribute("text", encode(text))
     	        	.addAttribute("src", src)
@@ -356,10 +348,11 @@ public abstract class SimpleXmlServiceAction extends WebworkAbstractAction
 			if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 			if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
 			String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
-			CmsLogger.logInfo("allowedContentTypeNamesUrlEncodedString2:" + allowedContentTypeNamesUrlEncodedString);
-			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+			getLogger().info("allowedContentTypeNamesUrlEncodedString2:" + allowedContentTypeNamesUrlEncodedString);
+			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) 
+			    src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
 	        
-			CmsLogger.logInfo("src2:" + src);
+			getLogger().info("src2:" + src);
 
 	        Element elm = root.addElement("tree");
 	        elm

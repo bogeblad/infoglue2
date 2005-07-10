@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 
@@ -37,7 +37,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
  */
 
 
-public class PreviewSiteNodeVersionAction  extends WebworkAbstractAction 
+public class PreviewSiteNodeVersionAction  extends InfoGlueAbstractAction 
 {
 	private Integer siteNodeVersionId;
 	private SiteNodeVersionVO siteNodeVersionVO;

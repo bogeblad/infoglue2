@@ -25,6 +25,7 @@ package org.infoglue.deliver.invokers;
 
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -51,6 +52,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
@@ -66,6 +68,8 @@ import org.exolab.castor.jdo.Database;
 public class ComponentBasedHTMLPageInvoker extends PageInvoker
 {
    
+    private final static Logger logger = Logger.getLogger(ComponentBasedHTMLPageInvoker.class.getName());
+
    /**
 	 * This method should return an instance of the class that should be used for page editing inside the tools or in working. 
 	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
@@ -146,8 +150,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		if(cachedPageComponentsString != null)
 		{
-		    //CmsLogger.logInfo("Returning cached...");
-		    //CmsLogger.logInfo("First added..." + versionKey + ":" + "contentVersion:" + contentVersionId);
+		    //logger.info("Returning cached...");
+		    //logger.info("First added..." + versionKey + ":" + "contentVersion:" + contentVersionId);
 		    templateController.getDeliveryContext().addUsedContentVersion("contentVersion:" + contentVersionId);
 		    return cachedPageComponentsString;
 		}
@@ -157,14 +161,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
 		
-		//CmsLogger.logInfo("contentVO in getPageComponentsString: " + contentVO.getContentId());
+		//logger.info("contentVO in getPageComponentsString: " + contentVO.getContentId());
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 	    pageComponentsString = templateController.getContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);
 		
 		if(pageComponentsString == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
 				    
-		CmsLogger.logInfo("pageComponentsString: " + pageComponentsString);
+		logger.info("pageComponentsString: " + pageComponentsString);
 	
 		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
 		
@@ -195,7 +199,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 		
@@ -236,13 +240,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			component.setParentComponent(parentComponent);
 
 			List propertiesNodeList = child.selectNodes("properties");
-			//CmsLogger.logInfo("propertiesNodeList:" + propertiesNodeList.getLength());
+			//logger.info("propertiesNodeList:" + propertiesNodeList.getLength());
 			if(propertiesNodeList.size() > 0)
 			{
 				Element propertiesElement = (Element)propertiesNodeList.get(0);
 				
 				List propertyNodeList = propertiesElement.selectNodes("property");
-				//CmsLogger.logInfo("propertyNodeList:" + propertyNodeList.getLength());
+				//logger.info("propertyNodeList:" + propertyNodeList.getLength());
 				Iterator propertyNodeListIterator = propertyNodeList.iterator();
 				while(propertyNodeListIterator.hasNext())
 				{
@@ -259,10 +263,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							path = propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode());
 					}
 
-					//CmsLogger.logInfo("path:" + "path_" + locale.getLanguage() + ":" + propertyElement.attributeValue("path_" + locale.getLanguage()));
+					//logger.info("path:" + "path_" + locale.getLanguage() + ":" + propertyElement.attributeValue("path_" + locale.getLanguage()));
 					if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null)
 						path = propertyElement.attributeValue("path_" + locale.getLanguage());
-					//CmsLogger.logInfo("path:" + path);
+					//logger.info("path:" + path);
 
 					Map property = new HashMap();
 					property.put("name", propertyName);
@@ -271,14 +275,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					
 					List bindings = new ArrayList();
 					List bindingNodeList = propertyElement.selectNodes("binding");
-					//CmsLogger.logInfo("bindingNodeList:" + bindingNodeList.getLength());
+					//logger.info("bindingNodeList:" + bindingNodeList.getLength());
 					Iterator bindingNodeListIterator = bindingNodeList.iterator();
 					while(bindingNodeListIterator.hasNext())
 					{
 						Element bindingElement = (Element)bindingNodeListIterator.next();
 						String entity = bindingElement.attributeValue("entity");
 						String entityId = bindingElement.attributeValue("entityId");
-						//CmsLogger.logInfo("Binding found:" + entity + ":" + entityId);
+						//logger.info("Binding found:" + entity + ":" + entityId);
 						if(entity.equalsIgnoreCase("Content"))
 						{
 							bindings.add(entityId);
@@ -298,8 +302,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			
 			//Getting slots for the component
 			String componentString = this.getComponentString(templateController, contentId, component);
-			//CmsLogger.logInfo("Getting the slots for component.......");
-			//CmsLogger.logInfo("componentString:" + componentString);
+			//logger.info("Getting the slots for component.......");
+			//logger.info("componentString:" + componentString);
 			int offset = 0;
 			int slotStartIndex = componentString.indexOf("<ig:slot", offset);
 			while(slotStartIndex > -1)
@@ -341,7 +345,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	protected Map getComponent(Database db, Element element, String componentName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
 	{
-		//CmsLogger.logInfo("Getting component with name:" + componentName);
+		//logger.info("Getting component with name:" + componentName);
 		InfoGlueComponent component = null;
 
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
@@ -350,7 +354,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		String componentXPath = getComponentXPath(parentComponent) + "/components/component[@name='" + componentName + "']";
 		
-		//CmsLogger.logInfo("componentXPath:" + componentXPath);
+		//logger.info("componentXPath:" + componentXPath);
 		List componentNodeList = element.selectNodes(componentXPath);
 		Iterator componentNodeListIterator = componentNodeList.iterator();
 		while(componentNodeListIterator.hasNext())
@@ -369,16 +373,16 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			//component.setName(name);
 			component.setSlotName(name);
 			component.setParentComponent(parentComponent);
-			////CmsLogger.logInfo("Name:" + name);
+			////logger.info("Name:" + name);
 
 			List propertiesNodeList = child.selectNodes("properties");
-			////CmsLogger.logInfo("propertiesNodeList:" + propertiesNodeList.getLength());
+			////logger.info("propertiesNodeList:" + propertiesNodeList.getLength());
 			if(propertiesNodeList.size() > 0)
 			{
 				Element propertiesElement = (Element)propertiesNodeList.get(0);
 				
 				List propertyNodeList = propertiesElement.selectNodes("property");
-				////CmsLogger.logInfo("propertyNodeList:" + propertyNodeList.getLength());
+				////logger.info("propertyNodeList:" + propertyNodeList.getLength());
 				Iterator propertyNodeListIterator = propertyNodeList.iterator();
 				while(propertyNodeListIterator.hasNext())
 				{
@@ -395,10 +399,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							path = propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode());
 					}
 
-					//CmsLogger.logInfo("path:" + "path_" + locale.getLanguage() + ":" + propertyElement.attributeValue("path_" + locale.getLanguage()));
+					//logger.info("path:" + "path_" + locale.getLanguage() + ":" + propertyElement.attributeValue("path_" + locale.getLanguage()));
 					if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null)
 						path = propertyElement.attributeValue("path_" + locale.getLanguage());
-					//CmsLogger.logInfo("path:" + path);
+					//logger.info("path:" + path);
 
 					Map property = new HashMap();
 					property.put("name", propertyName);
@@ -407,22 +411,22 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					
 					List bindings = new ArrayList();
 					List bindingNodeList = propertyElement.selectNodes("binding");
-					////CmsLogger.logInfo("bindingNodeList:" + bindingNodeList.getLength());
+					////logger.info("bindingNodeList:" + bindingNodeList.getLength());
 					Iterator bindingNodeListIterator = bindingNodeList.iterator();
 					while(bindingNodeListIterator.hasNext())
 					{
 						Element bindingElement = (Element)bindingNodeListIterator.next();
 						String entity = bindingElement.attributeValue("entity");
 						String entityId = bindingElement.attributeValue("entityId");
-						////CmsLogger.logInfo("Binding found:" + entity + ":" + entityId);
+						////logger.info("Binding found:" + entity + ":" + entityId);
 						if(entity.equalsIgnoreCase("Content"))
 						{
-							////CmsLogger.logInfo("Content added:" + entity + ":" + entityId);
+							////logger.info("Content added:" + entity + ":" + entityId);
 							bindings.add(entityId);
 						}
 						else
 						{
-							////CmsLogger.logInfo("SiteNode added:" + entity + ":" + entityId);
+							////logger.info("SiteNode added:" + entity + ":" + entityId);
 							bindings.add(entityId); 
 						} 
 					}
@@ -434,7 +438,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 			
 			List anl = child.selectNodes("components");
-			////CmsLogger.logInfo("Components NL:" + anl.getLength());
+			////logger.info("Components NL:" + anl.getLength());
 			if(anl.size() > 0)
 			{
 				Element componentsElement = (Element)anl.get(0);
@@ -486,7 +490,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    
 	    if(!renderComponent)
 	    {
-            //CmsLogger.logInfo("ComponentKey:" + templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
+            //logger.info("ComponentKey:" + templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
 	        if(updateInterval != null && !updateInterval.equals("") && !updateInterval.equals("-1"))
 	            decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), new Integer(updateInterval).intValue());
 		    else
@@ -496,7 +500,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		        renderComponent = true;
 		}
 	    
-	    //CmsLogger.logInfo("Will we render component:" + component.getName() + ":" + renderComponent);
+	    //logger.info("Will we render component:" + component.getName() + ":" + renderComponent);
 	    
 		if(renderComponent)
 	    {
@@ -534,7 +538,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					while(subComponentsIterator.hasNext())
 					{
 						InfoGlueComponent subComponent = (InfoGlueComponent)subComponentsIterator.next();
-						//CmsLogger.logInfo(component.getName() + " had subcomponent " + subComponent.getName() + ":" + subComponent.getId());
+						//logger.info(component.getName() + " had subcomponent " + subComponent.getName() + ":" + subComponent.getId());
 						String subComponentString = "";
 						if(subComponent != null)
 						{
@@ -558,7 +562,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 		        if(cacheComponent)
 		        {
-		            CmsLogger.logInfo("The component used: " + templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities().length);
+		            logger.info("The component used: " + templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities().length);
 		            CacheController.cacheObjectInAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities());
 		        }	    
 
@@ -566,13 +570,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			catch(Exception e)
 			{		
 			    e.printStackTrace();
-				CmsLogger.logWarning("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+				logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
 			}    	
 
 		}
 		
 		templateController.getDeliveryContext().getUsageListeners().remove(templateController.getComponentLogic().getComponentDeliveryContext());
-		//CmsLogger.logInfo("decoratedComponent:" + decoratedComponent);
+		//logger.info("decoratedComponent:" + decoratedComponent);
 		
 		return decoratedComponent;
 	}
@@ -612,7 +616,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 
@@ -625,28 +629,28 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    
 	protected List getInheritedComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
 	{
-	    //CmsLogger.logInfo("slotId");
-	    //CmsLogger.logInfo("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
+	    //logger.info("slotId");
+	    //logger.info("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
 		
 		List inheritedComponents = new ArrayList();
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
 		
-		//CmsLogger.logInfo("AAAAAAAAAAAAAA " + component.getSlotList().size());
+		//logger.info("AAAAAAAAAAAAAA " + component.getSlotList().size());
 			
 		Iterator slotIterator = component.getSlotList().iterator();
 		while(slotIterator.hasNext())
 		{
 			Slot slot = (Slot)slotIterator.next();
-			//CmsLogger.logInfo("Slot for component " + component.getName() + ":" + slot.getId());
-			//CmsLogger.logInfo("Slot for component " + id + ":" + slot.getId() + ":" + slot.getName());
+			//logger.info("Slot for component " + component.getName() + ":" + slot.getId());
+			//logger.info("Slot for component " + id + ":" + slot.getId() + ":" + slot.getName());
 			if(slot.getId().equalsIgnoreCase(id))
 			{
 				Iterator subComponentIterator = slot.getComponents().iterator();
 				while(subComponentIterator.hasNext())
 				{
 					InfoGlueComponent infoGlueComponent = (InfoGlueComponent)subComponentIterator.next();
-					//CmsLogger.logInfo("Adding not inherited component " + infoGlueComponent.getName() + " to list...");
+					//logger.info("Adding not inherited component " + infoGlueComponent.getName() + " to list...");
 					inheritedComponents.add(infoGlueComponent);
 				}
 			}
@@ -654,21 +658,21 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
 		
-		//CmsLogger.logInfo("inheritedComponents:" + inheritedComponents);
-		//CmsLogger.logInfo("parentSiteNodeVO:" + parentSiteNodeVO);
+		//logger.info("inheritedComponents:" + inheritedComponents);
+		//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
 		while(inheritedComponents.size() == 0 && parentSiteNodeVO != null)
 		{
-		    //CmsLogger.logInfo("*********************************************");
-		    //CmsLogger.logInfo("*         INHERITING COMPONENTS             *");
-		    //CmsLogger.logInfo("*********************************************");
+		    //logger.info("*********************************************");
+		    //logger.info("*         INHERITING COMPONENTS             *");
+		    //logger.info("*********************************************");
 			String componentXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
-			//CmsLogger.logInfo("componentXML:" + componentXML);
-			//CmsLogger.logInfo("id:" + id);
+			//logger.info("componentXML:" + componentXML);
+			//logger.info("id:" + id);
 		
 			Document document = new DOMBuilder().getDocument(componentXML);
 						
 			Map components = getComponent(db, document.getRootElement(), id, templateController, component);
-			//CmsLogger.logInfo("components:" + components.size());
+			//logger.info("components:" + components.size());
 			
 			if(components.containsKey(id))
 			{
@@ -697,17 +701,17 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    String parentPath = "";
 	    
 	    InfoGlueComponent parentInfoGlueComponent = infoGlueComponent.getParentComponent();
-	    //CmsLogger.logInfo("infoGlueComponent.getParentComponent():" + parentInfoGlueComponent);
+	    //logger.info("infoGlueComponent.getParentComponent():" + parentInfoGlueComponent);
 	    if(parentInfoGlueComponent != null && parentInfoGlueComponent.getId().intValue() != infoGlueComponent.getId().intValue())
 	    {
-	        //CmsLogger.logInfo("Had parent component...:" + parentInfoGlueComponent.getId() + ":" + parentInfoGlueComponent.getName());
+	        //logger.info("Had parent component...:" + parentInfoGlueComponent.getId() + ":" + parentInfoGlueComponent.getName());
 	        parentPath = getComponentXPath(parentInfoGlueComponent);
-	        //CmsLogger.logInfo("parentPath:" + parentPath);
+	        //logger.info("parentPath:" + parentPath);
 	    }
 	    
-	    //CmsLogger.logInfo("infoGlueComponent:" + infoGlueComponent.getSlotName());
+	    //logger.info("infoGlueComponent:" + infoGlueComponent.getSlotName());
 	    path = parentPath + "/components/component[@name='" + infoGlueComponent.getSlotName() + "']";
-	    //CmsLogger.logInfo("returning path:" + path);
+	    //logger.info("returning path:" + path);
 	    
 	    return path;
 	}
@@ -718,45 +722,45 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    
 	protected InfoGlueComponent getComponent(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
 	{
-		//CmsLogger.logInfo("Inside getComponent");
-		//CmsLogger.logInfo("component:" + component.getName());
-		//CmsLogger.logInfo("siteNodeId:" + siteNodeId);
-		//CmsLogger.logInfo("id:" + id);
+		//logger.info("Inside getComponent");
+		//logger.info("component:" + component.getName());
+		//logger.info("siteNodeId:" + siteNodeId);
+		//logger.info("id:" + id);
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
 
 		String componentXML = this.getPageComponentsString(db, templateController, siteNodeId, templateController.getLanguageId(), component.getContentId());
-		//CmsLogger.logInfo("componentXML:" + componentXML);
+		//logger.info("componentXML:" + componentXML);
 
 		Document document = new DOMBuilder().getDocument(componentXML);
 			
 		Map components = getComponent(db, document.getRootElement(), id, templateController, component);
 		
 		InfoGlueComponent infoGlueComponent = (InfoGlueComponent)components.get(id);
-		//CmsLogger.logInfo("infoGlueComponent:" + infoGlueComponent);
+		//logger.info("infoGlueComponent:" + infoGlueComponent);
 					
 		SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
-		//CmsLogger.logInfo("parentSiteNodeVO:" + parentSiteNodeVO);
+		//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
 
 		while(infoGlueComponent == null && parentSiteNodeVO != null)
 		{
 			componentXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
-			//CmsLogger.logInfo("componentXML:" + componentXML);
+			//logger.info("componentXML:" + componentXML);
 		
 			document = new DOMBuilder().getDocument(componentXML);
 						
 			components = getComponent(db, document.getRootElement(), id, templateController, component);
 			
 			infoGlueComponent = (InfoGlueComponent)components.get(id);
-			//CmsLogger.logInfo("infoGlueComponent:" + infoGlueComponent);
+			//logger.info("infoGlueComponent:" + infoGlueComponent);
 			if(infoGlueComponent != null)
 				infoGlueComponent.setIsInherited(true);
 			
 			parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, parentSiteNodeVO.getId());
-			//CmsLogger.logInfo("parentSiteNodeVO:" + parentSiteNodeVO);	
+			//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);	
 		}
 			
-		//CmsLogger.logInfo("*************************STOP**********************");
+		//logger.info("*************************STOP**********************");
    	
 		return infoGlueComponent;
 	}
@@ -768,10 +772,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    
 	protected List getComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
 	{
-		//CmsLogger.logInfo("Inside getComponents");
-		//CmsLogger.logInfo("component:" + component.getName());
-		//CmsLogger.logInfo("siteNodeId:" + siteNodeId);
-		//CmsLogger.logInfo("id:" + id);
+		//logger.info("Inside getComponents");
+		//logger.info("component:" + component.getName());
+		//logger.info("siteNodeId:" + siteNodeId);
+		//logger.info("id:" + id);
 		
 		List subComponents = new ArrayList();
 
@@ -781,7 +785,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
 
 		String componentStructureXML = this.getPageComponentsString(db, templateController, siteNodeId, templateController.getLanguageId(), component.getContentId());
-		//CmsLogger.logInfo("componentStructureXML:" + componentStructureXML);
+		//logger.info("componentStructureXML:" + componentStructureXML);
 
 		Document document = new DOMBuilder().getDocument(componentStructureXML);
 			
@@ -791,14 +795,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			subComponents = (List)components.get(id);
 		
 		SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
-		//CmsLogger.logInfo("parentSiteNodeVO:" + parentSiteNodeVO);
+		//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
 
 		while((subComponents == null || subComponents.size() == 0) && parentSiteNodeVO != null)
 		{
-			//CmsLogger.logInfo("parentSiteNodeVO:" + parentSiteNodeVO);
-			//CmsLogger.logInfo("component:" + component);
+			//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
+			//logger.info("component:" + component);
 			componentStructureXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
-			//CmsLogger.logInfo("componentStructureXML:" + componentStructureXML);
+			//logger.info("componentStructureXML:" + componentStructureXML);
 		
 			document = new DOMBuilder().getDocument(componentStructureXML);
 						
@@ -809,7 +813,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				
 			if(subComponents != null)
 			{
-				//CmsLogger.logInfo("infoGlueComponent:" + infoGlueComponent);
+				//logger.info("infoGlueComponent:" + infoGlueComponent);
 				Iterator inheritedComponentsIterator = subComponents.iterator();
 				while(inheritedComponentsIterator.hasNext())
 				{
@@ -819,10 +823,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 			
 			parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, parentSiteNodeVO.getId());
-			//CmsLogger.logInfo("parentSiteNodeVO:" + parentSiteNodeVO);	
+			//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);	
 		}
 			
-		//CmsLogger.logInfo("*************************STOP**********************");
+		//logger.info("*************************STOP**********************");
 		}
 		catch(Exception e)
 		{
@@ -852,7 +856,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						
 		String componentXPath = "component[@name='" + slotName + "']";
 		List componentElements = element.selectNodes(componentXPath);
-		//CmsLogger.logInfo("componentElements:" + componentElements.size());
+		//logger.info("componentElements:" + componentElements.size());
 		Iterator componentIterator = componentElements.iterator();
 		while(componentIterator.hasNext())
 		{
@@ -945,7 +949,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						Element componentsElement = (Element)componentElement.selectSingleNode("components");
 						
 						List subComponents = getPageComponents(db, componentsElement, slotId, templateController, component);
-						//CmsLogger.logInfo("subComponents:" + subComponents);
+						//logger.info("subComponents:" + subComponents);
 						slot.setComponents(subComponents);
 						
 						component.getSlotList().add(slot);
@@ -956,7 +960,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				}
 				catch(Exception e)
 				{		
-					CmsLogger.logWarning("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+					logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
 				}
 				
 				components.add(component);

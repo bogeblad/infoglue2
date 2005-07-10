@@ -38,7 +38,7 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.applications.common.VisualFormatter;
@@ -91,7 +91,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 		if(this.getLanguageId() == null && this.getAvailableLanguages().size() > 0)
 			this.setLanguageId(((LanguageVO)this.getAvailableLanguages().get(0)).getLanguageId());
 		
-		CmsLogger.logInfo("Language:" + this.languageId);
+		getLogger().info("Language:" + this.languageId);
     }
     
 	
@@ -171,7 +171,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -193,7 +193,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -231,7 +231,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 
 	public List getContentRelationQualifyers(String qualifyerXML)
 	{
-		CmsLogger.logInfo("Content qualifyerXML:" + qualifyerXML);
+		getLogger().info("Content qualifyerXML:" + qualifyerXML);
 	    return parseQualifyersFromXML(qualifyerXML, "contentId");
 	}
 
@@ -243,7 +243,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 
 	public List getSiteNodeRelationQualifyers(String qualifyerXML)
 	{
-		CmsLogger.logInfo("Content qualifyerXML:" + qualifyerXML);
+		getLogger().info("Content qualifyerXML:" + qualifyerXML);
 	    return parseQualifyersFromXML(qualifyerXML, "siteNodeId");
 	}
 
@@ -303,7 +303,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;
@@ -327,7 +327,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of categories: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of categories: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;

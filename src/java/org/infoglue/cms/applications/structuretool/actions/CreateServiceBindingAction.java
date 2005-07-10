@@ -27,15 +27,15 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * This action represents the CreateSiteNode Usecase.
  */
 
-public class CreateServiceBindingAction extends WebworkAbstractAction
+public class CreateServiceBindingAction extends InfoGlueAbstractAction
 {
 
     private Integer siteNodeVersionId;
@@ -149,7 +149,7 @@ public class CreateServiceBindingAction extends WebworkAbstractAction
      
     public String doExecute() throws Exception
     {
-    	CmsLogger.logInfo("-------------------------->" + this.serviceBindingVO.getServiceBindingId());
+    	getLogger().info("-------------------------->" + this.serviceBindingVO.getServiceBindingId());
     	if(this.serviceBindingVO.getServiceBindingId() == null)
     	{
     		ServiceBindingController.create(this.serviceBindingVO, qualifyerXML, this.availableServiceBindingId, this.siteNodeVersionId, this.serviceDefinitionId);	

@@ -23,10 +23,12 @@
 
 package org.infoglue.deliver.util;
 
+import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.*;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.io.FileHelper;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
@@ -45,6 +47,7 @@ import javax.servlet.ServletException;
 
 public class VelocityTemplateProcessor
 {
+    private final static Logger logger = Logger.getLogger(VelocityTemplateProcessor.class.getName());
 
 	/**
 	 * This method takes arguments and renders a template given as a string to the specified outputstream.
@@ -82,7 +85,7 @@ public class VelocityTemplateProcessor
 		}
 		catch(Exception e)
 		{
-		    CmsLogger.logWarning("templateAsString:" + templateAsString);
+		    logger.warn("templateAsString:" + templateAsString);
 		    throw e;
 		}
 	}

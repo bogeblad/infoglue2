@@ -38,7 +38,9 @@ import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+
+
 
 /**
  * @author Mattias Bogeblad
@@ -48,7 +50,8 @@ import org.infoglue.cms.util.CmsLogger;
 
 public class HttpHelper 
 {
-	
+    private final static Logger logger = Logger.getLogger(HttpHelper.class.getName());
+
 	public String postToUrl(String urlAddress, HttpServletRequest request, boolean includeRequest) throws Exception
 	{
 		if(includeRequest)
@@ -188,8 +191,8 @@ public class HttpHelper
 				argString = "?" + toEncodedString(inHash, "UTF-8");
 	    }
 
-		CmsLogger.logInfo("Getting content from url: " + urlAddress + argString);
-		CmsLogger.logWarning("Getting content from url: " + urlAddress + argString);
+		logger.info("Getting content from url: " + urlAddress + argString);
+		logger.warn("Getting content from url: " + urlAddress + argString);
 		
 	    URL url = new URL(urlAddress + argString);
 	    URLConnection connection = url.openConnection();
@@ -222,7 +225,7 @@ public class HttpHelper
 				argString = "?" + toEncodedString(inHash, encoding);
 		}
 
-		CmsLogger.logInfo("Getting content from url: " + urlAddress + argString);
+		logger.info("Getting content from url: " + urlAddress + argString);
 		
 		URL url = new URL(urlAddress + argString);
 		URLConnection connection = url.openConnection();

@@ -26,12 +26,12 @@ package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.*;
 
 import java.util.List;
 
-public class ViewAvailableServiceBindingAction extends WebworkAbstractAction
+public class ViewAvailableServiceBindingAction extends InfoGlueAbstractAction
 {
 
     private AvailableServiceBindingVO availableServiceBindingVO;
@@ -62,7 +62,7 @@ public class ViewAvailableServiceBindingAction extends WebworkAbstractAction
     
     public String doExecute() throws Exception
     {
-        CmsLogger.logInfo("Executing doExecute on ViewAvailableServiceBindingAction..");
+        getLogger().info("Executing doExecute on ViewAvailableServiceBindingAction..");
 		initialize(getAvailableServiceBindingId());
 		/*
         ViewAvailableServiceBindingUCC viewAvailableServiceBindingUCC = ViewAvailableServiceBindingUCCFactory.newViewAvailableServiceBindingUCC();
@@ -71,7 +71,7 @@ public class ViewAvailableServiceBindingAction extends WebworkAbstractAction
         availableServiceDefinitionVOList = viewAvailableServiceBindingUCC.getAvailableServiceDefinitions(getAvailableServiceBindingId());
         serviceDefinitionVOList = viewAvailableServiceBindingUCC.getAllServiceDefinitions();
 		*/
-        CmsLogger.logInfo("Finished executing doExecute on ViewAvailableServiceBindingAction..");
+        getLogger().info("Finished executing doExecute on ViewAvailableServiceBindingAction..");
         return "success";
     }
         

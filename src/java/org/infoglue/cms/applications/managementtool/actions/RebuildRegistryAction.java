@@ -36,7 +36,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Marshaller;
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -54,7 +54,7 @@ import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 
@@ -64,7 +64,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * @author mattias
  */
 
-public class RebuildRegistryAction extends WebworkAbstractAction
+public class RebuildRegistryAction extends InfoGlueAbstractAction
 {
 	private Integer repositoryId = null;
 	
@@ -104,7 +104,7 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 			while(siteNodesIterator.hasNext())
 			{
 			    SiteNode siteNode = (SiteNode)siteNodesIterator.next();
-			    CmsLogger.logInfo("Going to index all versions of " + siteNode.getName());
+			    getLogger().info("Going to index all versions of " + siteNode.getName());
 			    
 			    Iterator siteNodeVersionsIterator = siteNode.getSiteNodeVersions().iterator();
 				while(siteNodeVersionsIterator.hasNext())
@@ -122,7 +122,7 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 			while(iterator.hasNext())
 			{
 			    Content content = (Content)iterator.next();
-			    CmsLogger.logInfo("Going to index all version of " + content.getName());
+			    getLogger().info("Going to index all version of " + content.getName());
 			    
 			    Iterator versionsIterator = content.getContentVersions().iterator();
 				while(versionsIterator.hasNext())
@@ -138,7 +138,7 @@ public class RebuildRegistryAction extends WebworkAbstractAction
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logSevere("An error was found rebuilding the registry: " + e.getMessage(), e);
+			getLogger().error("An error was found rebuilding the registry: " + e.getMessage(), e);
 			db.rollback();
 			db.close();
 		}

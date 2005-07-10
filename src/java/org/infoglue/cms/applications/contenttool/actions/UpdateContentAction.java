@@ -27,7 +27,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.util.CmsLogger;
 
 
 /**
@@ -66,7 +65,6 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 		
 		ceb = this.contentVO.validate();
 		
-		CmsLogger.logInfo("Errors in contentVO:" + ceb.toString());
 		ceb.throwIfNotEmpty();
     	
     	ContentControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentVO, this.contentTypeDefinitionId);
@@ -126,13 +124,11 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 
     public void setPublishDateTime(String publishDateTime)
     {
-       	CmsLogger.logInfo("publishDateTime:" + publishDateTime);
-   		this.contentVO.setPublishDateTime(new VisualFormatter().parseDate(publishDateTime, "yyyy-MM-dd HH:mm"));
+       	this.contentVO.setPublishDateTime(new VisualFormatter().parseDate(publishDateTime, "yyyy-MM-dd HH:mm"));
     }
 
     public void setExpireDateTime(String expireDateTime)
     {
-       	CmsLogger.logInfo("expireDateTime:" + expireDateTime);
        	this.contentVO.setExpireDateTime(new VisualFormatter().parseDate(expireDateTime, "yyyy-MM-dd HH:mm"));
 	}
 

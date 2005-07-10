@@ -26,12 +26,12 @@ package org.infoglue.cms.applications.publishingtool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletRequest;
  * It deletes the old event and creates a new one with a reply to the requester.
  */
 
-public class DenyPublicationRequestAction extends WebworkAbstractAction 
+public class DenyPublicationRequestAction extends InfoGlueAbstractAction 
 {
 	private Integer eventId;
 	private Integer repositoryId;
@@ -88,7 +88,7 @@ public class DenyPublicationRequestAction extends WebworkAbstractAction
 	
 		for(int i=0; i < eventArguments.length; i++)
 		{
-			CmsLogger.logInfo("EventId:" + eventArguments[i]);
+			getLogger().info("EventId:" + eventArguments[i]);
 			EventVO eventVO = EventController.getEventVOWithId(new Integer(eventArguments[i]));
 			events.add(eventVO);
 		}		

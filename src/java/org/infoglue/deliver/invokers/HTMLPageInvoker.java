@@ -23,7 +23,9 @@
 
 package org.infoglue.deliver.invokers;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.util.*;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
@@ -47,7 +49,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class HTMLPageInvoker extends PageInvoker
 {
-    
+    private final static Logger logger = Logger.getLogger(HTMLPageInvoker.class.getName());
+
     /**
 	 * This method should return an instance of the class that should be used for page editing inside the tools or in working. 
 	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
@@ -81,7 +84,7 @@ public class HTMLPageInvoker extends PageInvoker
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 
@@ -98,15 +101,15 @@ public class HTMLPageInvoker extends PageInvoker
     	
 		try
 		{
-			CmsLogger.logInfo("DeliveryContext:" + this.getDeliveryContext().toString());
+			logger.info("DeliveryContext:" + this.getDeliveryContext().toString());
 			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()).getBoundContent(this.getTemplateController().getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Template", this.getDeliveryContext());		
 
-			CmsLogger.logInfo("contentVO:" + contentVO);
+			logger.info("contentVO:" + contentVO);
 
 			if(contentVO == null)
 				throw new SystemException("There was no template bound to this page which makes it impossible to render.");	
 			
-			CmsLogger.logInfo("contentVO:" + contentVO.getName());
+			logger.info("contentVO:" + contentVO.getName());
 
 			template = this.getTemplateController().getContentAttribute(contentVO.getContentId(), this.getTemplateController().getTemplateAttributeName());
 			
@@ -115,7 +118,7 @@ public class HTMLPageInvoker extends PageInvoker
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 

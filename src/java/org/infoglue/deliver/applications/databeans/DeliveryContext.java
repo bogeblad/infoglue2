@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.Session;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
@@ -84,7 +84,7 @@ public class DeliveryContext implements UsageListener
 	private HttpServletResponse httpServletResponse = null;
 	private HttpServletRequest httpServletRequest = null;
 	private Session session = null;
-	private WebworkAbstractAction webworkAbstractAction = null;
+	private InfoGlueAbstractAction infoglueAbstractAction = null;
 	
 	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
 	private List usageListeners = new ArrayList();
@@ -206,14 +206,14 @@ public class DeliveryContext implements UsageListener
 		this.session = session;
 	}
 
-	public WebworkAbstractAction getWebworkAbstractAction()
+	public InfoGlueAbstractAction getInfoGlueAbstractAction()
 	{
-		return webworkAbstractAction;
+		return infoglueAbstractAction;
 	}
 
-	public void setWebworkAbstractAction(WebworkAbstractAction action)
+	public void setInfoGlueAbstractAction(InfoGlueAbstractAction action)
 	{
-		webworkAbstractAction = action;
+	    infoglueAbstractAction = action;
 	}
 
 

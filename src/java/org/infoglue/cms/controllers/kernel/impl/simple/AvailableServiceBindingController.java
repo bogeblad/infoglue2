@@ -31,7 +31,7 @@ import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingI
 import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
 
 import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import org.exolab.castor.jdo.Database;
@@ -231,13 +231,13 @@ public class AvailableServiceBindingController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -267,13 +267,13 @@ public class AvailableServiceBindingController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -312,13 +312,13 @@ public class AvailableServiceBindingController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

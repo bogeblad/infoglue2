@@ -29,11 +29,11 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import java.util.*;
 
-public class ViewRoleAction extends WebworkAbstractAction
+public class ViewRoleAction extends InfoGlueAbstractAction
 {
 	private String roleName;
 	private boolean supportsUpdate = true;

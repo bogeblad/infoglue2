@@ -43,7 +43,7 @@ import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.applications.common.VisualFormatter;
@@ -83,7 +83,7 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 	{
 	    super.initialize();
 				
-		CmsLogger.logInfo("roleName:" + roleName);
+		getLogger().info("roleName:" + roleName);
 		
 		List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(roleName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
@@ -101,12 +101,12 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 			this.setContentTypeDefinitionId(this.getContentTypeDefinitionVO().getContentTypeDefinitionId());
 		}
 		
-		CmsLogger.logInfo("this.rolePropertiesVO:" + this.rolePropertiesVO);
+		getLogger().info("this.rolePropertiesVO:" + this.rolePropertiesVO);
 		
 		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
 	
-		CmsLogger.logInfo("attributes:" + this.getContentTypeAttributes().size());		
-		CmsLogger.logInfo("availableLanguages:" + this.getAvailableLanguages().size());		
+		getLogger().info("attributes:" + this.getContentTypeAttributes().size());		
+		getLogger().info("availableLanguages:" + this.getAvailableLanguages().size());		
 		
 	} 
 
@@ -135,7 +135,7 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
 		return digitalAssets;
@@ -159,7 +159,7 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;

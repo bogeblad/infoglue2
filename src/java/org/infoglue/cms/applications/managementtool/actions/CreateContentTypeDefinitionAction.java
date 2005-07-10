@@ -24,13 +24,13 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.io.FileHelper;
-import org.infoglue.cms.util.CmsLogger;
 
-public class CreateContentTypeDefinitionAction extends WebworkAbstractAction
+
+public class CreateContentTypeDefinitionAction extends InfoGlueAbstractAction
 {
 
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
@@ -55,7 +55,7 @@ public class CreateContentTypeDefinitionAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("The system could not find the default content type definition:" + e.getMessage(), e);
+			getLogger().error("The system could not find the default content type definition:" + e.getMessage(), e);
 		}
 		
 		this.contentTypeDefinitionVO.setSchemaValue(schemaValue);

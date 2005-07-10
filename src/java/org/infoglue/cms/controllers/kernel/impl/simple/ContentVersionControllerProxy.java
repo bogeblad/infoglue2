@@ -39,7 +39,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * @author Mattias Bogeblad
@@ -71,7 +71,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			CmsLogger.logInfo("Adding interceptorVO:" + interceptorVO.getName());
+			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -79,7 +79,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 			}
 			catch(ClassNotFoundException e)
 			{
-				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 
@@ -138,9 +138,9 @@ public class ContentVersionControllerProxy extends ContentVersionController
 
 	public ContentVersionVO acUpdate(InfoGluePrincipal infogluePrincipal, Integer contentId, Integer languageId, ContentVersionVO contentVersionVO) throws ConstraintException, SystemException, Bug, Exception
 	{
-		CmsLogger.logInfo("contentId:" + contentId);
-		CmsLogger.logInfo("languageId:" + languageId);
-		CmsLogger.logInfo("contentVersionId:" + contentVersionVO.getId());
+		getLogger().info("contentId:" + contentId);
+		getLogger().info("languageId:" + languageId);
+		getLogger().info("contentVersionId:" + contentVersionVO.getId());
 		
 		if(contentVersionVO.getId() != null)
 		{
@@ -183,7 +183,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 	{
 		boolean isContentProtected = false;
 		
-		CmsLogger.logInfo("getIsContentProtected contentId:" + contentId);
+		getLogger().info("getIsContentProtected contentId:" + contentId);
 		try
 		{
 			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
@@ -207,10 +207,10 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the content was protected:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the content was protected:" + e.getMessage(), e);
 		}
 		
-		CmsLogger.logInfo("isContentProtected:" + isContentProtected);
+		getLogger().info("isContentProtected:" + isContentProtected);
 		
 		return isContentProtected;
 	}

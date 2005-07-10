@@ -27,7 +27,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.List;
  * This action shows the Content-tree when binding stuff.
  */
 
-public class ViewContentTreeForServiceBindingAction extends WebworkAbstractAction
+public class ViewContentTreeForServiceBindingAction extends InfoGlueAbstractAction
 {
 
     private Integer siteNodeVersionId;

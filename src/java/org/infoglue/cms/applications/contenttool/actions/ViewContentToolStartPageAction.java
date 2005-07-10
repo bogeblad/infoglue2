@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 /**
@@ -32,7 +32,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
  * @author Mattias Bogeblad  
  */
 
-public class ViewContentToolStartPageAction extends WebworkAbstractAction
+public class ViewContentToolStartPageAction extends InfoGlueAbstractAction
 {
     private Integer repositoryId; 
     

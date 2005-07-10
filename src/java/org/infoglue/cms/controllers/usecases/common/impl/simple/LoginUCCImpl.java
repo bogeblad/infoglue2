@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.usecases.common.impl.simple;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.usecases.common.LoginUCC;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
@@ -33,12 +34,15 @@ import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.*;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.*;
 
 public class LoginUCCImpl extends BaseUCCController implements LoginUCC
 {
         
+    private final static Logger logger = Logger.getLogger(LoginUCCImpl.class.getName());
+
     public boolean authorizeSystemUser(String userName, String password) throws SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -70,7 +74,7 @@ public class LoginUCCImpl extends BaseUCCController implements LoginUCC
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

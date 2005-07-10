@@ -40,8 +40,9 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
 
+
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -54,7 +55,8 @@ import java.util.Collection;
 
 public class SiteNodeController extends BaseController 
 {
-	
+    private final static Logger logger = Logger.getLogger(SiteNodeController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -128,13 +130,13 @@ public class SiteNodeController extends BaseController
         }
         catch(ConstraintException ce)
         {
-        	CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + ce, ce);
+        	logger.error("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }        
@@ -216,7 +218,7 @@ public class SiteNodeController extends BaseController
         	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)versionIterator.next();
         	if(siteNodeVersion.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue() && siteNodeVersion.getIsActive().booleanValue() == true)
         	{
-        		CmsLogger.logWarning("The siteNode had a published version so we cannot delete it..");
+        		logger.warn("The siteNode had a published version so we cannot delete it..");
 				isDeletable = false;
         		break;
         	}
@@ -247,13 +249,13 @@ public class SiteNodeController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			//rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			//rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -265,11 +267,11 @@ public class SiteNodeController extends BaseController
     {
 	    SiteNode siteNode = null;
 
-        CmsLogger.logInfo("******************************************");
-        CmsLogger.logInfo("parentSiteNode:" + parentSiteNodeId);
-        CmsLogger.logInfo("siteNodeTypeDefinition:" + siteNodeTypeDefinitionId);
-        CmsLogger.logInfo("repository:" + repositoryId);
-        CmsLogger.logInfo("******************************************");
+        getLogger().info("******************************************");
+        getLogger().info("parentSiteNode:" + parentSiteNodeId);
+        getLogger().info("siteNodeTypeDefinition:" + siteNodeTypeDefinitionId);
+        getLogger().info("repository:" + repositoryId);
+        getLogger().info("******************************************");
         
         //Fetch related entities here if they should be referenced        
         
@@ -329,11 +331,11 @@ public class SiteNodeController extends BaseController
 
 		try
 		{
-			CmsLogger.logInfo("******************************************");
-			CmsLogger.logInfo("parentSiteNode:" + parentSiteNodeId);
-			CmsLogger.logInfo("siteNodeTypeDefinition:" + siteNodeTypeDefinitionId);
-			CmsLogger.logInfo("repository:" + repositoryId);
-			CmsLogger.logInfo("******************************************");
+			getLogger().info("******************************************");
+			getLogger().info("parentSiteNode:" + parentSiteNodeId);
+			getLogger().info("siteNodeTypeDefinition:" + siteNodeTypeDefinitionId);
+			getLogger().info("repository:" + repositoryId);
+			getLogger().info("******************************************");
             
         	//Fetch related entities here if they should be referenced        
 			
@@ -400,7 +402,7 @@ public class SiteNodeController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -445,13 +447,13 @@ public class SiteNodeController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -470,26 +472,26 @@ public class SiteNodeController extends BaseController
     	List siteNodes = null;
     	
     	String method = (String)argumentHashMap.get("method");
-    	CmsLogger.logInfo("method:" + method);
+    	logger.info("method:" + method);
     	
     	if(method.equalsIgnoreCase("selectSiteNodeListOnIdList"))
     	{
 			siteNodes = new ArrayList();
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			logger.info("Arguments:" + arguments.size());  
 			Iterator argumentIterator = arguments.iterator();
 			while(argumentIterator.hasNext())
 			{ 		
 				HashMap argument = (HashMap)argumentIterator.next(); 
-				CmsLogger.logInfo("argument:" + argument.size());
+				logger.info("argument:" + argument.size());
 				 
 				Iterator iterator = argument.keySet().iterator();
 			    while ( iterator.hasNext() )
-			       CmsLogger.logInfo( "   " + iterator.next() );
+			       logger.info( "   " + iterator.next() );
 
 
 				Integer siteNodeId = new Integer((String)argument.get("siteNodeId"));
-				CmsLogger.logInfo("Getting the siteNode with Id:" + siteNodeId);
+				logger.info("Getting the siteNode with Id:" + siteNodeId);
 				siteNodes.add(getSiteNodeVOWithId(siteNodeId));
 			}
     	}
@@ -507,26 +509,26 @@ public class SiteNodeController extends BaseController
     	List siteNodes = null;
     	
     	String method = (String)argumentHashMap.get("method");
-    	CmsLogger.logInfo("method:" + method);
+    	logger.info("method:" + method);
     	
     	if(method.equalsIgnoreCase("selectSiteNodeListOnIdList"))
     	{
 			siteNodes = new ArrayList();
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			logger.info("Arguments:" + arguments.size());  
 			Iterator argumentIterator = arguments.iterator();
 			while(argumentIterator.hasNext())
 			{ 		
 				HashMap argument = (HashMap)argumentIterator.next(); 
-				CmsLogger.logInfo("argument:" + argument.size());
+				logger.info("argument:" + argument.size());
 				 
 				Iterator iterator = argument.keySet().iterator();
 			    while ( iterator.hasNext() )
-			       CmsLogger.logInfo( "   " + iterator.next() );
+			       logger.info( "   " + iterator.next() );
 
 
 				Integer siteNodeId = new Integer((String)argument.get("siteNodeId"));
-				CmsLogger.logInfo("Getting the siteNode with Id:" + siteNodeId);
+				logger.info("Getting the siteNode with Id:" + siteNodeId);
 				siteNodes.add(getSmallSiteNodeVOWithId(siteNodeId, db));
 			}
     	}
@@ -557,7 +559,7 @@ public class SiteNodeController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -609,13 +611,13 @@ public class SiteNodeController extends BaseController
             
             if(newParentSiteNodeId == null)
             {
-            	CmsLogger.logWarning("You must specify the new parent-siteNode......");
+            	logger.warn("You must specify the new parent-siteNode......");
             	throw new ConstraintException("SiteNode.parentSiteNodeId", "3403");
             }
 
             if(siteNodeVO.getId().intValue() == newParentSiteNodeId.intValue())
             {
-            	CmsLogger.logWarning("You cannot have the siteNode as it's own parent......");
+            	logger.warn("You cannot have the siteNode as it's own parent......");
             	throw new ConstraintException("SiteNode.parentSiteNodeId", "3401");
             }
             
@@ -625,7 +627,7 @@ public class SiteNodeController extends BaseController
             
             if(oldParentSiteNode.getId().intValue() == newParentSiteNodeId.intValue())
             {
-            	CmsLogger.logWarning("You cannot specify the same node as it originally was located in......");
+            	logger.warn("You cannot specify the same node as it originally was located in......");
             	throw new ConstraintException("SiteNode.parentSiteNodeId", "3404");
             }
 
@@ -634,13 +636,13 @@ public class SiteNodeController extends BaseController
 			{
 				if(tempSiteNode.getId().intValue() == siteNode.getId().intValue())
 				{
-					CmsLogger.logWarning("You cannot move the node to a child under it......");
+					logger.warn("You cannot move the node to a child under it......");
             		throw new ConstraintException("SiteNode.parentSiteNodeId", "3402");
 				}
 				tempSiteNode = tempSiteNode.getParentSiteNode();
 			}	
 			
-            CmsLogger.logInfo("Setting the new Parent siteNode:" + siteNode.getSiteNodeId() + " " + newParentSiteNode.getSiteNodeId());
+            logger.info("Setting the new Parent siteNode:" + siteNode.getSiteNodeId() + " " + newParentSiteNode.getSiteNodeId());
             siteNode.setParentSiteNode((SiteNodeImpl)newParentSiteNode);
             siteNode.setRepository(newParentSiteNode.getRepository());
 			newParentSiteNode.getChildSiteNodes().add(siteNode);
@@ -653,13 +655,13 @@ public class SiteNodeController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

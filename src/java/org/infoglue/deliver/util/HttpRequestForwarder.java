@@ -36,7 +36,8 @@ import org.apache.commons.httpclient.cookie.CookieSpecBase;
 import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,13 +50,15 @@ import javax.servlet.http.HttpServletRequest;
 
 public class HttpRequestForwarder extends EntityEnclosingMethod
 {
+    private final static Logger logger = Logger.getLogger(HttpRequestForwarder.class.getName());
+
     HttpServletRequest originalRequest;    
     String destination;
     
     public HttpRequestForwarder(HttpServletRequest request, String destination) throws IOException 
     {
         super(destination.toString());
-        CmsLogger.logInfo("destination:" + destination.toString());
+        logger.info("destination:" + destination.toString());
         this.originalRequest = request;
         this.destination = destination;
         this.setFollowRedirects(false);

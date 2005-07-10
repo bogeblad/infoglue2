@@ -23,10 +23,10 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import java.net.URLEncoder;
@@ -40,7 +40,7 @@ import java.util.ArrayList;
  * @author Mattias Bogeblad  
  */
 
-public class ViewPublishingToolToolBarAction extends WebworkAbstractAction
+public class ViewPublishingToolToolBarAction extends InfoGlueAbstractAction
 {
 	private String title = "";
 	private String name  = "";
@@ -186,7 +186,7 @@ public class ViewPublishingToolToolBarAction extends WebworkAbstractAction
 
 	public List getButtons()
 	{
-		CmsLogger.logInfo("Title:" + this.title);
+		getLogger().info("Title:" + this.title);
 		
 		if(this.toolbarKey.equalsIgnoreCase("publications"))
 			return getPublicationsButtons();

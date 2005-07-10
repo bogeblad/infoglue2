@@ -25,7 +25,7 @@ package org.infoglue.deliver.applications.actions;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
@@ -101,7 +101,7 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
 			
 			String inputHandlerClassName = ContentDeliveryController.getContentDeliveryController().getContentAttribute(dbWrapper.getDatabase(), formContentId, languageId, "InputHandlerClassName", siteNodeId, true, DeliveryContext.getDeliveryContext());
 
-    		CmsLogger.logInfo("Trying to invoke " + inputHandlerClassName);
+    		getLogger().info("Trying to invoke " + inputHandlerClassName);
 	    	Object object =	Class.forName(inputHandlerClassName).newInstance();
     		InfoGlueInputHandler infoGlueInputHandler = (InfoGlueInputHandler)object;
     		HashMap parameters = requestToHashtable(this.getRequest()); 
@@ -111,7 +111,7 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}

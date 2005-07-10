@@ -26,25 +26,28 @@ package org.infoglue.cms.util.graphics;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-import org.infoglue.cms.util.CmsLogger;
+
+import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ThumbnailGenerator
 {
+    private final static Logger logger = Logger.getLogger(ThumbnailGenerator.class.getName());
+
     public ThumbnailGenerator()
     {
     }
    
     private void execCmd(String command) throws Exception
     {
-		CmsLogger.logSevere(command);
+		logger.error(command);
 		String line;
 		Process p = Runtime.getRuntime().exec(command);
 		BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		
 		while ((line = input.readLine()) != null)
 		{
-		    CmsLogger.logSevere(line);
+		    logger.error(line);
 		}
 		input.close();
     }

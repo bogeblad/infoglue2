@@ -42,7 +42,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.deliver.util.CacheController;
 
 
@@ -74,11 +74,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public LanguageVO getLanguageVO(Database db, Integer languageId) throws SystemException, Exception
 	{
 		String key = "" + languageId;
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("languageCache", key);
 		if(languageVO != null)
 		{
-			CmsLogger.logInfo("There was an cached languageVO:" + languageVO);
+			getLogger().info("There was an cached languageVO:" + languageVO);
 		}
 		else
 		{
@@ -144,7 +144,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
      				Language language = repositoryLanguage.getLanguage();
      				if(language != null)
      				{
-     					CmsLogger.logInfo("Adding " + language.getName() + " to the list of available languages");
+     					getLogger().info("Adding " + language.getName() + " to the list of available languages");
          				languageVOList.add(language.getValueObject());
      				}
      			}
@@ -186,11 +186,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public LanguageVO getMasterLanguageForRepository(Database db, Integer repositoryId) throws SystemException, Exception
 	{ 
 		String languageKey = "" + repositoryId;
-		CmsLogger.logInfo("languageKey in getMasterLanguageForRepository:" + languageKey);
+		getLogger().info("languageKey in getMasterLanguageForRepository:" + languageKey);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-			CmsLogger.logInfo("There was an cached master language:" + languageVO.getName());
+			getLogger().info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -221,11 +221,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		LanguageVO languageVO = null;
 
 		String languageKey = "" + repositoryId;
-		CmsLogger.logInfo("languageKey in getMasterLanguageForRepository:" + languageKey);
+		getLogger().info("languageKey in getMasterLanguageForRepository:" + languageKey);
 		languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-			CmsLogger.logInfo("There was an cached master language:" + languageVO.getName());
+			getLogger().info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -255,11 +255,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public LanguageVO getMasterLanguageForSiteNode(Database db, Integer siteNodeId) throws SystemException, Exception
 	{ 
 	    String languageKey = "siteNodeId_" + siteNodeId;
-		CmsLogger.logInfo("languageKey in getMasterLanguageForSiteNode:" + languageKey);
+		getLogger().info("languageKey in getMasterLanguageForSiteNode:" + languageKey);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-		    CmsLogger.logInfo("There was an cached master language:" + languageVO.getName());
+		    getLogger().info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -301,7 +301,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			} 
 			catch (Exception e) 
 			{
-				CmsLogger.logSevere("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
+				getLogger().error("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
 			}	
 		}
 		
@@ -316,11 +316,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public LanguageVO getLanguageWithCode(Database db, String languageCode) throws SystemException, Exception
 	{ 
 		String key = "" + languageCode;
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("languageCache", key);
 		if(languageVO != null)
 		{
-			CmsLogger.logInfo("There was an cached languageVO:" + languageVO);
+			getLogger().info("There was an cached languageVO:" + languageVO);
 		}
 		else
 		{
@@ -353,7 +353,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if (languageCodes == null) return null;
 		int index = Integer.MAX_VALUE;
 		int currentIndex = 0;
-		CmsLogger.logInfo("Coming in with languageCodes:" + languageCodes);
+		getLogger().info("Coming in with languageCodes:" + languageCodes);
 		
         Language language = null;
 
@@ -367,12 +367,12 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			{
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
 				Language currentLanguage = repositoryLanguage.getLanguage();
-				CmsLogger.logInfo("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
+				getLogger().info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
 				currentIndex = languageCodes.toLowerCase().indexOf(currentLanguage.getLanguageCode().toLowerCase());
 				if( currentIndex > -1 && currentIndex < index)
 				{
 					index = currentIndex;
-					CmsLogger.logInfo("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
+					getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
 					language = currentLanguage;
 					if (index==0) break; // Continue and try to find a better candidate unless index is 0 (first prio)
 				}

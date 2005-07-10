@@ -35,11 +35,11 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import java.io.PrintWriter;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 
-public class SimpleContentXmlServiceAction extends WebworkAbstractAction {
+public class SimpleContentXmlServiceAction extends InfoGlueAbstractAction {
 	
 	private String serviceRequest = null;
 	private Integer contentVersionId = null;

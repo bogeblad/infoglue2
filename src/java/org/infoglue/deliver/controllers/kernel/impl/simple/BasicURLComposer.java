@@ -28,7 +28,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.filters.FilterConstants;
@@ -76,8 +76,8 @@ public class BasicURLComposer extends URLComposer
 	        if (!digitalAssetPath.startsWith("/"))
 	        	digitalAssetPath = "/" + digitalAssetPath;
 	        
-	        //CmsLogger.logInfo("servletContext:" + servletContext);
-	        //CmsLogger.logInfo("digitalAssetPath:" + digitalAssetPath);
+	        //getLogger().info("servletContext:" + servletContext);
+	        //getLogger().info("digitalAssetPath:" + digitalAssetPath);
 	
 	        if(digitalAssetPath.indexOf(servletContext) == -1)
 	        	sb.append(servletContext);
@@ -86,7 +86,7 @@ public class BasicURLComposer extends URLComposer
 	     
 	        sb.append("/").append(filename);
 	        
-	        //CmsLogger.logInfo("sb:" + sb);
+	        //getLogger().info("sb:" + sb);
 	        
 	        assetUrl = sb.toString();
         }
@@ -209,7 +209,7 @@ public class BasicURLComposer extends URLComposer
 					url = componentRendererUrl + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
 				}
 				
-	            //CmsLogger.logInfo("url:" + url);
+	            //getLogger().info("url:" + url);
 	            
 	            return url;
             }
@@ -227,7 +227,6 @@ public class BasicURLComposer extends URLComposer
 	    			contentId = new Integer(-1);
 	
 	            String arguments = "siteNodeId=" + siteNodeId + getRequestArgumentDelimiter() + "languageId=" + languageId + getRequestArgumentDelimiter() + "contentId=" + contentId;
-	            CmsLogger.logInfo("servletContext:" + servletContext);
 	            String url = servletContext + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
 	            
 				if(deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
@@ -235,7 +234,7 @@ public class BasicURLComposer extends URLComposer
 					url = servletContext + "/" + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
 				}
 
-	            //CmsLogger.logInfo("url:" + url);
+	            //getLogger().info("url:" + url);
 
 	            return url;            
             }

@@ -31,7 +31,8 @@ import com.opensymphony.util.EJBUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+
 
 import java.sql.*;
 
@@ -81,17 +82,13 @@ import javax.sql.DataSource;
  *  <li><b>col.number</b> - column name for the number value</li>
  * </ul>
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author <a href="mailto:epesh@hotmail.com">Joseph B. Ottinger</a>
  * @author <a href="mailto:plightbo@hotmail.com">Pat Lightbody</a>
  */
 public class InfoGlueJDBCPropertySet extends JDBCPropertySet 
 {
-    //~ Static fields/initializers /////////////////////////////////////////////
-
-    private static final Log log = LogFactory.getLog(InfoGlueJDBCPropertySet.class);
-
-    //~ Instance fields ////////////////////////////////////////////////////////
+    private final static Logger logger = Logger.getLogger(InfoGlueJDBCPropertySet.class.getName());
 
     // config
     //DataSource ds;
@@ -435,7 +432,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     {
         Connection conn = null;
 		
-        CmsLogger.logInfo("Establishing connection to database '" + this.url + "'");
+        logger.info("Establishing connection to database '" + this.url + "'");
 
 		try 
 		{
@@ -456,7 +453,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
                 conn.close();
             }
         } catch (SQLException e) {
-            log.error("Could not close connection");
+           logger.error("Could not close connection");
         }
     }
 } 

@@ -26,7 +26,7 @@ package org.infoglue.deliver.applications.actions;
 
 import java.util.Iterator;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.util.*;
 
@@ -57,7 +57,7 @@ import org.infoglue.deliver.util.CacheController;
  * @author Mattias Bogeblad
  */
 
-public class UpdateCacheAction extends WebworkAbstractAction 
+public class UpdateCacheAction extends InfoGlueAbstractAction 
 {
 	private String className = null;
 	private String objectId = null;
@@ -89,8 +89,8 @@ public class UpdateCacheAction extends WebworkAbstractAction
     {
 		try
 		{  
-			CmsLogger.logInfo("className:" + className);
-			CmsLogger.logInfo("objectId:" + objectId);
+			getLogger().info("className:" + className);
+			getLogger().info("objectId:" + objectId);
 		    //Should contain permissioncontrol later...
 
 		    boolean isDependsClass = false;
@@ -109,7 +109,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 				//different caches can register to.
 				CacheController.clearCaches(null, null);
 				
-				CmsLogger.logInfo("Updating all caches as this was a publishing-update");
+				getLogger().info("Updating all caches as this was a publishing-update");
 				
 				CacheController.clearCastorCaches();
 				
@@ -125,7 +125,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 				    	
 				    if(Class.forName(innerClassName).getName().equals(ContentVersionImpl.class.getName()))
 					{
-						CmsLogger.logInfo("We should delete all images with contentVersionId " + objectId);
+						getLogger().info("We should delete all images with contentVersionId " + objectId);
 						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
 					}
 				}
@@ -133,7 +133,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 				/*
 				else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
 				{
-					CmsLogger.logInfo("We should delete all images with digitalAssetId " + objectId);
+					getLogger().info("We should delete all images with digitalAssetId " + objectId);
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 				}
 				*/
@@ -146,12 +146,12 @@ public class UpdateCacheAction extends WebworkAbstractAction
 		        {
 				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(this.className, this.typeId, this.objectId, this.objectName);
 				    CacheController.getNotifications().add(cacheEvictionBean);
-				    CmsLogger.logInfo("Added a cacheEvictionBean....");
+				    getLogger().info("Added a cacheEvictionBean....");
 		        }
 			    /*
 			    CacheController.clearCaches(className, objectId);
 
-			    CmsLogger.logInfo("Updating className with id:" + className + ":" + objectId);
+			    getLogger().info("Updating className with id:" + className + ":" + objectId);
 				if(className != null)
 				{
 				    //Class[] types = {Class.forName(className)};
@@ -172,7 +172,7 @@ public class UpdateCacheAction extends WebworkAbstractAction
 					/*
 					if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
 					{
-					    CmsLogger.logInfo("We should delete all images with contentVersionId " + objectId);
+					    getLogger().info("We should delete all images with contentVersionId " + objectId);
 						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
 					}
 					else */
@@ -180,12 +180,12 @@ public class UpdateCacheAction extends WebworkAbstractAction
 			    	/*
 			    	if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 					{
-					    CmsLogger.logInfo("We clear all small contents as well " + objectId);
+					    getLogger().info("We clear all small contents as well " + objectId);
 						Class typesExtra = SmallContentImpl.class;
 						Object[] idsExtra = {new Integer(objectId)};
 						CacheController.clearCache(typesExtra, idsExtra);
 
-						CmsLogger.logInfo("We clear all medium contents as well " + objectId);
+						getLogger().info("We clear all medium contents as well " + objectId);
 						Class typesExtraMedium = MediumContentImpl.class;
 						Object[] idsExtraMedium = {new Integer(objectId)};
 						CacheController.clearCache(typesExtraMedium, idsExtraMedium);
@@ -204,24 +204,24 @@ public class UpdateCacheAction extends WebworkAbstractAction
 					}
 					else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
 					{
-					    CmsLogger.logInfo("We should delete all images with digitalAssetId " + objectId);
+					    getLogger().info("We should delete all images with digitalAssetId " + objectId);
 						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 					}
 				}
 				*/
 			}		
 			
-			CmsLogger.logInfo("UpdateCache finished...");
+			getLogger().info("UpdateCache finished...");
 		}
 		catch(Exception e)
 		{
 		    e.printStackTrace();
-			CmsLogger.logSevere(e.getMessage(), e);
+			getLogger().error(e.getMessage(), e);
 		}
 		catch(Throwable t)
 		{
 		    t.printStackTrace();
-		    CmsLogger.logSevere(t.getMessage());
+		    getLogger().error(t.getMessage());
 		}
                 
         return NONE;

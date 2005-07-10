@@ -37,7 +37,7 @@ import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -106,7 +106,7 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -145,7 +145,7 @@ public class UserPropertiesController extends BaseController
     	
 		if(userPropertiesVO.getId() == null)
 		{
-			CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
+			getLogger().info("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
 			realUserPropertiesVO = create(languageId, contentTypeDefinitionId, userPropertiesVO);
 		}
 
@@ -174,13 +174,13 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -232,13 +232,13 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -299,13 +299,13 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -373,13 +373,13 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -398,9 +398,9 @@ public class UserPropertiesController extends BaseController
 		{
 			try
 			{
-				CmsLogger.logInfo("attributeName:"  + attributeName);
-				CmsLogger.logInfo("versionValue:"   + userPropertiesVO.getValue());
-				CmsLogger.logInfo("attributeValue:" + attributeValue);
+				getLogger().info("attributeName:"  + attributeName);
+				getLogger().info("versionValue:"   + userPropertiesVO.getValue());
+				getLogger().info("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(userPropertiesVO.getValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -443,7 +443,7 @@ public class UserPropertiesController extends BaseController
 				
 				StringBuffer sb = new StringBuffer();
 				org.infoglue.cms.util.XMLHelper.serializeDom(document.getDocumentElement(), sb);
-				CmsLogger.logInfo("sb:" + sb);
+				getLogger().info("sb:" + sb);
 				userPropertiesVO.setValue(sb.toString());
 				update(userPropertiesVO.getLanguageId(), userPropertiesVO.getContentTypeDefinitionId(), userPropertiesVO);
 			}
@@ -469,8 +469,8 @@ public class UserPropertiesController extends BaseController
 		{	
 			try
 			{
-				CmsLogger.logInfo("attributeName:" + attributeName);
-				CmsLogger.logInfo("VersionValue:"  + userPropertiesVO.getValue());
+				getLogger().info("attributeName:" + attributeName);
+				getLogger().info("VersionValue:"  + userPropertiesVO.getValue());
 				InputSource inputSource = new InputSource(new StringReader(userPropertiesVO.getValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -489,7 +489,7 @@ public class UserPropertiesController extends BaseController
 						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
 						{
 							value = n.getFirstChild().getNodeValue();
-							CmsLogger.logInfo("Getting value: " + value);
+							getLogger().info("Getting value: " + value);
 							if(value != null && escapeHTML)
 								value = new VisualFormatter().escapeHTML(value);
 							break;
@@ -502,7 +502,7 @@ public class UserPropertiesController extends BaseController
 				e.printStackTrace();
 			}
 		}
-		//CmsLogger.logInfo("value:" + value);	
+		//getLogger().info("value:" + value);	
 		return value;
 	}
 	
@@ -532,7 +532,7 @@ public class UserPropertiesController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logInfo("An error occurred when we tried to fetch the list of digitalAssets belonging to this userProperties:" + e);
+            getLogger().info("An error occurred when we tried to fetch the list of digitalAssets belonging to this userProperties:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());

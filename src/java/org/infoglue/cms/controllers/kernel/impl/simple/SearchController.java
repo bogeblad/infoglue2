@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 
 import org.w3c.dom.Document;
@@ -38,7 +39,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import org.exolab.castor.jdo.Database;
 
@@ -49,16 +50,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * @author mgu
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 public class SearchController extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(SearchController.class.getName());
 
 	public static String getAttributeValue(String xml,String key)
 	{
@@ -159,7 +153,7 @@ public class SearchController extends BaseController
 			}
 			    
 			String sql = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 AND cv.owningContent.repository.repositoryId = $3 " + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
-			CmsLogger.logInfo("sql:" + sql);
+			logger.info("sql:" + sql);
 			OQLQuery oql = db.getOQLQuery(sql);
 			oql.bind(new Boolean(true));
 			oql.bind("%" + searchString + "%");
@@ -179,7 +173,7 @@ public class SearchController extends BaseController
 			while(results.hasMore() && currentCount < maxRows) 
 			{
 				ContentVersion contentVersion = (ContentVersion)results.next();
-				CmsLogger.logInfo("Found a version matching " + searchString + ":" + contentVersion.getId() + "=" + contentVersion.getOwningContent().getName());
+				logger.info("Found a version matching " + searchString + ":" + contentVersion.getId() + "=" + contentVersion.getOwningContent().getName());
 				if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
 				{
 				    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
@@ -218,13 +212,13 @@ public class SearchController extends BaseController
 			for(int i=0; i<contentVersionIds.length; i++)
 			{
 			    String contentVersionId = contentVersionIds[i];
-			    CmsLogger.logInfo("contentVersionId:" + contentVersionId);
+			    logger.info("contentVersionId:" + contentVersionId);
 			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(contentVersionIds[i]), db);
 			    if(contentVersion.getStateId().intValue() != ContentVersionVO.WORKING_STATE.intValue())
 			    {
 		            List events = new ArrayList();
 			        contentVersion = ContentStateController.changeState(contentVersion.getId(), ContentVersionVO.WORKING_STATE, "Automatic by the replace function", infoGluePrincipal, null, db, events);
-			        CmsLogger.logInfo("Setting the version to working before replacing string...");
+			        logger.info("Setting the version to working before replacing string...");
 			    }
 			    
 			    String value = contentVersion.getVersionValue();

@@ -90,7 +90,7 @@ public class LanguageController extends BaseController
 			} 
 			catch (Exception e) 
 			{
-				CmsLogger.logSevere("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
+				getLogger().error("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
 			}	
 		}
 		
@@ -124,7 +124,7 @@ public class LanguageController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -192,7 +192,7 @@ public class LanguageController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -270,7 +270,7 @@ public class LanguageController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -315,7 +315,7 @@ public class LanguageController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -344,7 +344,7 @@ public class LanguageController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -388,13 +388,13 @@ public class LanguageController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -434,11 +434,11 @@ public class LanguageController extends BaseController
 		LanguageVO languageVO = null;
 
 		String languageKey = "" + repositoryId;
-		CmsLogger.logInfo("languageKey:" + languageKey);
+		getLogger().info("languageKey:" + languageKey);
 		languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-			CmsLogger.logInfo("There was an cached master language:" + languageVO.getName());
+			getLogger().info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -466,7 +466,7 @@ public class LanguageController extends BaseController
 			}
 			catch(Exception e)
 			{
-				CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+				getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 				rollbackTransaction(db);
 				throw new SystemException(e.getMessage());
 			}
@@ -535,13 +535,13 @@ public class LanguageController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

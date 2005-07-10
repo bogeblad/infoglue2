@@ -26,11 +26,11 @@ package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import java.util.List;
 
-public class ViewInterceptionPointAction extends WebworkAbstractAction
+public class ViewInterceptionPointAction extends InfoGlueAbstractAction
 {
 	private Integer interceptionPointId;
     private InterceptionPointVO interceptionPointVO;

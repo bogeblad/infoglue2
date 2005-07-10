@@ -35,7 +35,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.DomainUtils;
 
 import org.exolab.castor.jdo.Database;
@@ -90,11 +90,11 @@ public class WorkflowDefinitionController extends BaseController
     {
 		/*
         String key = "contentTypeDefinitionVOList";
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		List cachedContentTypeDefinitionVOList = (List)CacheController.getCachedObject("contentTypeDefinitionCache", key);
 		if(cachedContentTypeDefinitionVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
+			getLogger().info("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
 			return cachedContentTypeDefinitionVOList;
 		}
 		*/
@@ -142,7 +142,7 @@ public class WorkflowDefinitionController extends BaseController
     /*
 	public boolean getIsAccessApproved(Integer contentTypeDefinitionId, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
-		CmsLogger.logInfo("getIsAccessApproved for " + contentTypeDefinitionId + " AND " + infoGluePrincipal);
+		getLogger().info("getIsAccessApproved for " + contentTypeDefinitionId + " AND " + infoGluePrincipal);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -157,7 +157,7 @@ public class WorkflowDefinitionController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -193,7 +193,7 @@ public class WorkflowDefinitionController extends BaseController
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

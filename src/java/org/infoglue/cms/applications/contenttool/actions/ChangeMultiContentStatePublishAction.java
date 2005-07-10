@@ -27,18 +27,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.workflow.EventVO;
-import org.infoglue.cms.util.CmsLogger;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 
 
-public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
+public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 {
 	private Integer contentId;
 	private List contentVersionId = new ArrayList();
@@ -58,25 +56,14 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 	   
     public String doExecute() throws Exception
     {   
-        /*
-        setContentVersionId( getRequest().getParameterValues("sel") );
-		Iterator it = getContentVersionId().iterator();
-		
-		List events = new ArrayList();
-		while(it.hasNext())
-		{
-			ContentVersion contentVersion = ContentStateController.changeState((Integer) it.next(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
-		}
-		*/
-        
-		setSiteNodeVersionId( getRequest().getParameterValues("selSiteNodeVersions") );
+        setSiteNodeVersionId( getRequest().getParameterValues("selSiteNodeVersions") );
 		Iterator it = siteNodeVersionId.iterator();
 
 		List events = new ArrayList();
 		while(it.hasNext())
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
-			CmsLogger.logInfo("Publishing:" + siteNodeVersionId);
+			getLogger().info("Publishing:" + siteNodeVersionId);
 			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
 		}
 
@@ -86,7 +73,7 @@ public class ChangeMultiContentStatePublishAction extends WebworkAbstractAction
 		while(contentVersionIdsIterator.hasNext())
 		{
 			Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
-			CmsLogger.logInfo("Publishing:" + contentVersionId);
+			getLogger().info("Publishing:" + contentVersionId);
 			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
 		}
 		

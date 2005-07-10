@@ -30,7 +30,7 @@ import java.io.*;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.mydesktop.*;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.workflow.StepFilter;
 import org.infoglue.cms.exception.SystemException;
 
@@ -160,10 +160,10 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	public String doInvoke() throws SystemException
 	{
-		CmsLogger.logInfo("****************************************");
-		CmsLogger.logInfo("workflowId:" + getWorkflowId());
-		CmsLogger.logInfo("actionId:" + actionId);
-		CmsLogger.logInfo("****************************************");
+		getLogger().info("****************************************");
+		getLogger().info("workflowId:" + getWorkflowId());
+		getLogger().info("actionId:" + actionId);
+		getLogger().info("****************************************");
 
 		try
 		{
@@ -201,7 +201,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 				return redirect(url);
 		}
 
-		CmsLogger.logInfo("No action view, coming back to mydesktop...");
+		getLogger().info("No action view, coming back to mydesktop...");
 		return doExecute();
 	}
 
@@ -278,7 +278,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	{
 		try
 		{
-			CmsLogger.logInfo("Url in doInvoke:" + url);
+			getLogger().info("Url in doInvoke:" + url);
 			getResponse().sendRedirect(url);
 			return NONE;
 		}

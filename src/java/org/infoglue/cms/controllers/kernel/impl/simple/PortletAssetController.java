@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -37,14 +38,16 @@ import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * Controller that handles portlets. Simply an extension of DigitalAssetController.
  * 
  * @author jand
  */
-public class PortletAssetController extends DigitalAssetController {
+public class PortletAssetController extends DigitalAssetController 
+{
+    private final static Logger logger = Logger.getLogger(PortletAssetController.class.getName());
 
     public static DigitalAsset create(DigitalAssetVO digitalAssetVO, InputStream is)
             throws SystemException {
@@ -62,7 +65,7 @@ public class PortletAssetController extends DigitalAssetController {
 
             commitTransaction(db);
         } catch (Exception e) {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e,
+            logger.error("An error occurred so we should not complete the transaction:" + e,
                     e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -88,7 +91,7 @@ public class PortletAssetController extends DigitalAssetController {
                 contents.add(results.next());
             }
         } catch (Exception e) {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e,
+            logger.error("An error occurred so we should not complete the transaction:" + e,
                     e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());

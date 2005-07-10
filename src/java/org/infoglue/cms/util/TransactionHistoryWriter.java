@@ -25,6 +25,7 @@ package org.infoglue.cms.util;
 
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 
 
@@ -37,7 +38,9 @@ import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryControl
  */
 public class TransactionHistoryWriter implements NotificationListener
 {	
+    private final static Logger logger = Logger.getLogger(TransactionHistoryWriter.class.getName());
 
+    
 	/**
 	 * Default Constructor	
 	 */
@@ -64,7 +67,7 @@ public class TransactionHistoryWriter implements NotificationListener
 	{
 		try
 		{
-			CmsLogger.logInfo("Update TransactionHistory....");
+			logger.info("Update TransactionHistory....");
 			TransactionHistoryController.getController().create(notificationMessage);
 		}
 		catch(Exception e)

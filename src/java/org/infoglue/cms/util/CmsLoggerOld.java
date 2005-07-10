@@ -38,7 +38,7 @@ import java.io.*;
  * @author Mattias Bogeblad
  */
 
-public class CmsLogger 
+public class CmsLoggerOld 
 {	
 	private static Logger logger = null;
 	

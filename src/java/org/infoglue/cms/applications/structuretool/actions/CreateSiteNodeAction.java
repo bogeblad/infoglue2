@@ -34,7 +34,7 @@ import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -52,7 +52,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 
@@ -149,13 +149,13 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
     	
     public void setPublishDateTime(String publishDateTime)
     {
-       	CmsLogger.logInfo("publishDateTime:" + publishDateTime);
+       	getLogger().info("publishDateTime:" + publishDateTime);
    		this.siteNodeVO.setPublishDateTime(new VisualFormatter().parseDate(publishDateTime, "yyyy-MM-dd HH:mm"));
     }
 
     public void setExpireDateTime(String expireDateTime)
     {
-       	CmsLogger.logInfo("expireDateTime:" + expireDateTime);
+       	getLogger().info("expireDateTime:" + expireDateTime);
        	this.siteNodeVO.setExpireDateTime(new VisualFormatter().parseDate(expireDateTime, "yyyy-MM-dd HH:mm"));
 	}
  
@@ -216,7 +216,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -237,10 +237,10 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
         ceb = this.siteNodeVO.validate();
     	ceb.throwIfNotEmpty();
     	
-    	CmsLogger.logInfo("name:" + this.siteNodeVO.getName());
-    	CmsLogger.logInfo("publishDateTime:" + this.siteNodeVO.getPublishDateTime());
-    	CmsLogger.logInfo("expireDateTime:" + this.siteNodeVO.getExpireDateTime());
-    	CmsLogger.logInfo("isBranch:" + this.siteNodeVO.getIsBranch());
+    	getLogger().info("name:" + this.siteNodeVO.getName());
+    	getLogger().info("publishDateTime:" + this.siteNodeVO.getPublishDateTime());
+    	getLogger().info("expireDateTime:" + this.siteNodeVO.getExpireDateTime());
+    	getLogger().info("isBranch:" + this.siteNodeVO.getIsBranch());
     	
 		newSiteNodeVO = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.repositoryId, this.siteNodeVO);
     	//newSiteNodeVO = SiteNodeController.getController().create(this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.getInfoGluePrincipal(), this.repositoryId, this.siteNodeVO);
@@ -293,7 +293,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 				ContentVO child = (ContentVO)childrenIterator.next();
 				if(child.getName().equalsIgnoreCase("Meta info folder"))
 				{
-					CmsLogger.logInfo("Found the metainfo folder..");
+					getLogger().info("Found the metainfo folder..");
 					parentFolderContentVO = child;
 					break;
 				}

@@ -30,11 +30,11 @@ import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController
 //import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import java.util.*;
 
-public class ViewGroupAction extends WebworkAbstractAction
+public class ViewGroupAction extends InfoGlueAbstractAction
 {
 	private String groupName;
 	private boolean supportsUpdate = true;

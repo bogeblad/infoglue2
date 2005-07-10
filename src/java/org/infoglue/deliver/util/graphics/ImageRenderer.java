@@ -109,10 +109,10 @@ public class ImageRenderer //extends JFrame
 	{
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	    String[] fontNames = env.getAvailableFontFamilyNames();
-	    //CmsLogger.logInfo("Available Fonts:");
+	    //getLogger().info("Available Fonts:");
 	    for(int i=0; i<fontNames.length; i++)
 	    {
-	    	//CmsLogger.logInfo("  " + fontNames[i]);
+	    	//getLogger().info("  " + fontNames[i]);
 	    	System.out.println("  " + fontNames[i]);
 	    }
 	}
@@ -155,7 +155,7 @@ public class ImageRenderer //extends JFrame
 		drawText((Graphics2D)image.getGraphics(), text); 
 		Hashtable arguments = new Hashtable();
 		arguments.put("encoding", "websafe"); 
-		//CmsLogger.logInfo("Going to generate gif to disc..."); 
+		//getLogger().info("Going to generate gif to disc..."); 
 		//new GifEncoder().encode(image, new DataOutputStream(new FileOutputStream(file)), arguments);
 		File outputFile = new File(file);
 		javax.imageio.ImageIO.write(image, "PNG", outputFile);

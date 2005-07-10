@@ -43,7 +43,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.validators.ContentVersionValidator;
 import org.infoglue.deliver.applications.actions.ViewPageAction;
 
@@ -151,7 +151,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -177,7 +177,7 @@ public class ContentVersionController extends BaseController
 	        while(relatedEntitiesIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            CmsLogger.logInfo("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            getLogger().info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
 	            {
 	                List relatedContentVersions = getLatestContentVersionWithParent(new Integer(registryVO.getEntityId()), stateId, db);
@@ -222,7 +222,7 @@ public class ContentVersionController extends BaseController
 			while (results.hasMore()) 
             {
             	ContentVersion contentVersion = (ContentVersion)results.next();
-            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
+            	getLogger().info("found one:" + contentVersion.getValueObject());
             	contentVersionVO = contentVersion.getValueObject();
             	resultList.add(contentVersionVO);
             }
@@ -232,7 +232,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -286,7 +286,7 @@ public class ContentVersionController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -319,7 +319,7 @@ public class ContentVersionController extends BaseController
 		while (results.hasMore()) 
 		{
 			ContentVersion contentVersion = (ContentVersion)results.next();
-			CmsLogger.logInfo("contentVersion:" + contentVersion.getValueObject().getContentName());
+			getLogger().info("contentVersion:" + contentVersion.getValueObject().getContentName());
 			if(contentVersion.getIsActive().booleanValue())
 			{
 				if ( (contentVersion.getStateId().compareTo(stateId)==0) && 
@@ -368,16 +368,16 @@ public class ContentVersionController extends BaseController
 			}
 		}
 
-		CmsLogger.logInfo("Found languageVersions:" + languageVersions.size());
-		CmsLogger.logInfo("Found lastLanguageVersions:" + lastLanguageVersions.size());
+		getLogger().info("Found languageVersions:" + languageVersions.size());
+		getLogger().info("Found lastLanguageVersions:" + lastLanguageVersions.size());
 		Iterator i = languageVersions.values().iterator();
 		while(i.hasNext())
 		{
 		    ContentVersion contentVersion = (ContentVersion)i.next();
 		    ContentVersion lastVersionInThatLanguage = (ContentVersion)lastLanguageVersions.get(contentVersion.getLanguage().getId());
 
-		    CmsLogger.logInfo("contentVersion:" + contentVersion.getId());
-		    CmsLogger.logInfo("lastVersionInThatLanguage:" + lastVersionInThatLanguage.getId());
+		    getLogger().info("contentVersion:" + contentVersion.getId());
+		    getLogger().info("lastVersionInThatLanguage:" + lastVersionInThatLanguage.getId());
 
 		    if(contentVersion == lastVersionInThatLanguage)
 			    resultList.add(contentVersion);
@@ -411,7 +411,7 @@ public class ContentVersionController extends BaseController
             while(i.hasNext())
             {
             	ContentVersion currentContentVersion = (ContentVersion)i.next();
-            	CmsLogger.logInfo("found one candidate:" + currentContentVersion.getValueObject());
+            	getLogger().info("found one candidate:" + currentContentVersion.getValueObject());
 				if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
 				{
 					if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
@@ -427,7 +427,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -445,21 +445,21 @@ public class ContentVersionController extends BaseController
 		ContentVersion contentVersion = null;
     	
     	Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	CmsLogger.logInfo("contentId:" + contentId);
-    	CmsLogger.logInfo("languageId:" + languageId);
-    	CmsLogger.logInfo("content:" + content.getName());
+    	getLogger().info("contentId:" + contentId);
+    	getLogger().info("languageId:" + languageId);
+    	getLogger().info("content:" + content.getName());
 		Collection contentVersions = content.getContentVersions();
-		CmsLogger.logInfo("contentVersions:" + contentVersions.size());
+		getLogger().info("contentVersions:" + contentVersions.size());
         
 		Iterator i = contentVersions.iterator();
         while(i.hasNext())
 		{
 			ContentVersion currentContentVersion = (ContentVersion)i.next();
-			CmsLogger.logInfo("found one candidate:" + currentContentVersion.getValueObject());
+			getLogger().info("found one candidate:" + currentContentVersion.getValueObject());
 			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
 			{
-				CmsLogger.logInfo("currentContentVersion:" + currentContentVersion.getIsActive());
-				CmsLogger.logInfo("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				getLogger().info("currentContentVersion:" + currentContentVersion.getIsActive());
+				getLogger().info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
 				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
 					contentVersion = currentContentVersion;
 			}
@@ -488,7 +488,7 @@ public class ContentVersionController extends BaseController
 			if (results.hasMore()) 
             {
             	ContentVersion contentVersion = (ContentVersion)results.next();
-            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
+            	getLogger().info("found one:" + contentVersion.getValueObject());
             	contentVersionVO = contentVersion.getValueObject();
             }
             
@@ -496,7 +496,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -521,7 +521,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -566,7 +566,7 @@ public class ContentVersionController extends BaseController
 		}
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -595,7 +595,7 @@ public class ContentVersionController extends BaseController
     {
 		ContentVersion contentVersion = new ContentVersionImpl();
 		contentVersion.setLanguage((LanguageImpl)language);
-		CmsLogger.logInfo("Content:" + content.getContentId() + ":" + db.isPersistent(content));
+		getLogger().info("Content:" + content.getContentId() + ":" + db.isPersistent(content));
 		contentVersion.setOwningContent((ContentImpl)content);
 		
 		if(oldContentVersionId != null && oldContentVersionId.intValue() != -1)
@@ -624,7 +624,7 @@ public class ContentVersionController extends BaseController
 		}
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -687,7 +687,7 @@ public class ContentVersionController extends BaseController
 				db.remove(digitalAsset);
 			}
 			
-        	CmsLogger.logInfo("Deleting contentVersion:" + contentVersion.getContentVersionId());
+        	getLogger().info("Deleting contentVersion:" + contentVersion.getContentVersionId());
         	contentVersionIterator.remove();
         	delete(contentVersion, db);
         }
@@ -718,7 +718,7 @@ public class ContentVersionController extends BaseController
             
 	        if(contentVersionVO.getId() == null)
 	    	{
-	    		CmsLogger.logInfo("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
+	    		getLogger().info("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
 	    		contentVersion = create(contentId, languageId, contentVersionVO, null, db);
 	    	}
 	    	else
@@ -735,13 +735,13 @@ public class ContentVersionController extends BaseController
         }
         catch(ConstraintException ce)
         {
-        	CmsLogger.logSevere("Validation error:" + ce, ce);
+        	getLogger().error("Validation error:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -775,7 +775,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -809,7 +809,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -862,7 +862,7 @@ public class ContentVersionController extends BaseController
 			if (results.hasMore()) 
             {
             	ContentVersion contentVersion = (ContentVersion)results.next();
-            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
+            	getLogger().info("found one:" + contentVersion.getValueObject());
             	contentVersionVO = contentVersion.getValueObject();
             }
             
@@ -870,7 +870,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -903,7 +903,7 @@ public class ContentVersionController extends BaseController
 			if (results.hasMore()) 
             {
             	ContentVersion contentVersion = (ContentVersion)results.next();
-            	CmsLogger.logInfo("found one:" + contentVersion.getValueObject());
+            	getLogger().info("found one:" + contentVersion.getValueObject());
             	contentVersionVO = contentVersion.getValueObject();
             }
             
@@ -911,7 +911,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -938,7 +938,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -993,8 +993,8 @@ public class ContentVersionController extends BaseController
 		{
 			try
 			{
-				CmsLogger.logInfo("attributeName:" + attributeName);
-				CmsLogger.logInfo("VersionValue:"  + contentVersionVO.getVersionValue());
+				getLogger().info("attributeName:" + attributeName);
+				getLogger().info("VersionValue:"  + contentVersionVO.getVersionValue());
 				value = getAttributeValue(contentVersionVO, attributeName, escapeHTML);
 			}
 			catch (Exception e)
@@ -1002,7 +1002,7 @@ public class ContentVersionController extends BaseController
 				e.printStackTrace();
 			}
 		}
-		//CmsLogger.logInfo("value:" + value);
+		//getLogger().info("value:" + value);
 		return value;
 	}
 
@@ -1046,9 +1046,9 @@ public class ContentVersionController extends BaseController
 		{
 			try
 			{
-				CmsLogger.logInfo("attributeName:"  + attributeName);
-				CmsLogger.logInfo("versionValue:"   + contentVersionVO.getVersionValue());
-				CmsLogger.logInfo("attributeValue:" + attributeValue);
+				getLogger().info("attributeName:"  + attributeName);
+				getLogger().info("versionValue:"   + contentVersionVO.getVersionValue());
+				getLogger().info("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -1091,7 +1091,7 @@ public class ContentVersionController extends BaseController
 				
 				StringBuffer sb = new StringBuffer();
 				org.infoglue.cms.util.XMLHelper.serializeDom(document.getDocumentElement(), sb);
-				CmsLogger.logInfo("sb:" + sb);
+				getLogger().info("sb:" + sb);
 				contentVersionVO.setVersionValue(sb.toString());
 				contentVersionVO.setVersionModifier(infogluePrincipal.getName());
 				update(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), contentVersionVO);
@@ -1133,7 +1133,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1152,13 +1152,13 @@ public class ContentVersionController extends BaseController
 	        contentVersionVOList.add(contentVersion.getValueObject());
 	        
 	        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(ContentVersion.class.getName(), contentVersion.getId().toString(), db);
-	        CmsLogger.logInfo("relatedEntities:" + relatedEntities);
+	        getLogger().info("relatedEntities:" + relatedEntities);
 	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
 	        
 	        while(relatedEntitiesIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            CmsLogger.logInfo("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            getLogger().info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
 	            {
 	                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
@@ -1174,7 +1174,7 @@ public class ContentVersionController extends BaseController
 	            {
 	                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
 	                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-	                CmsLogger.logInfo("relatedContentVersions:" + relatedContentVersions.size());
+	                getLogger().info("relatedContentVersions:" + relatedContentVersions.size());
 	                
 	                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
 	                while(relatedContentVersionsIterator.hasNext())
@@ -1183,7 +1183,7 @@ public class ContentVersionController extends BaseController
 		                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
 		                {
 		                    contentVersionVOList.add(relatedContentVersion.getValueObject());
-		                    CmsLogger.logInfo("Added:" + relatedContentVersion.getId());
+		                    getLogger().info("Added:" + relatedContentVersion.getId());
 			            }
 	                }
 	                

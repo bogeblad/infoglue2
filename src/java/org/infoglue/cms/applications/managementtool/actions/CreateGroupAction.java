@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.security.InfoGlueGroup;
@@ -40,7 +40,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
  */
 
 
-public class CreateGroupAction extends WebworkAbstractAction
+public class CreateGroupAction extends InfoGlueAbstractAction
 {
 	private GroupVO groupVO;
 	private InfoGlueGroup infoGlueGroup;

@@ -23,7 +23,9 @@
  
 package org.infoglue.deliver.util.charts;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.util.*;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 import org.jfree.chart.ChartUtilities;
@@ -39,6 +41,8 @@ import java.io.File;
 
 public class ChartHelper 
 {
+    private final static Logger logger = Logger.getLogger(ChartHelper.class.getName());
+
 	private TemplateController templateController = null;
 	
 	/**
@@ -87,7 +91,7 @@ public class ChartHelper
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred when we tried to generate a graph:" + e.getMessage(), e);
+			logger.warn("An error occurred when we tried to generate a graph:" + e.getMessage(), e);
 		}
 		
 		return assetUrl;

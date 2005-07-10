@@ -25,6 +25,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -33,7 +34,7 @@ import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * @author Stefan Sik, ss@frovi.com
@@ -43,7 +44,10 @@ import org.infoglue.cms.util.CmsLogger;
  * 
  * 
  */
-public class ValidationController extends BaseController {
+public class ValidationController extends BaseController 
+{
+
+    private final static Logger logger = Logger.getLogger(ValidationController.class.getName());
 
 	private static final String NOTUNIQUE_FIELD_ERROR_CODE = "302";
 
@@ -88,7 +92,7 @@ public class ValidationController extends BaseController {
 				while (results.hasMore()) 
 	            {
 	            	IBaseEntity o = (IBaseEntity) results.next();
-	            	CmsLogger.logInfo("Validating...." + o.getIdAsObject() + ":" + excludeObject + ":" + o.getIdAsObject().equals(excludeObject));
+	            	logger.info("Validating...." + o.getIdAsObject() + ":" + excludeObject + ":" + o.getIdAsObject().equals(excludeObject));
 	            	if(excludeObject != null)
 	            	{
 						if (!o.getIdAsObject().equals(excludeObject))
@@ -106,7 +110,7 @@ public class ValidationController extends BaseController {
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}				

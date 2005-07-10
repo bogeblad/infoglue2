@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
-public class CreateRoleFormAction extends WebworkAbstractAction
+public class CreateRoleFormAction extends InfoGlueAbstractAction
 {
 
       private java.lang.Integer roleId = null;

@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -39,7 +39,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.treeservice.ss.ManagementNodeImpl;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import java.util.HashMap;
@@ -53,7 +53,7 @@ import java.net.URLEncoder;
  * @author Mattias Bogeblad  
  */
 
-public class ViewManagementToolToolBarAction extends WebworkAbstractAction
+public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 {
 	private String title = "";
 	private String name  = "";
@@ -286,8 +286,8 @@ public class ViewManagementToolToolBarAction extends WebworkAbstractAction
 
 	public List getButtons()
 	{
-		CmsLogger.logInfo("Title:" + this.title);
-		CmsLogger.logInfo("toolbarKey:" + this.toolbarKey);
+		getLogger().info("Title:" + this.title);
+		getLogger().info("toolbarKey:" + this.toolbarKey);
 
 		try
 		{

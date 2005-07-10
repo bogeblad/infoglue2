@@ -29,13 +29,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCCFactory;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
@@ -50,6 +51,8 @@ import com.frovi.ss.Tree.BaseNodeSupplier;
  */
 public class SiteNodeNodeSupplier extends BaseNodeSupplier
 {
+
+    private final static Logger logger = Logger.getLogger(SiteNodeNodeSupplier.class.getName());
 
 	private ViewSiteNodeTreeUCC ucc;
 	private ArrayList cacheLeafs;
@@ -99,11 +102,11 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 		}
 		catch (ConstraintException e)
 		{
-			CmsLogger.logWarning("Error getting SiteNode Children", e);
+			logger.warn("Error getting SiteNode Children", e);
 		}
 		catch (SystemException e)
 		{
-			CmsLogger.logWarning("Error getting SiteNode Children", e);
+			logger.warn("Error getting SiteNode Children", e);
 		}
 		
 		//Sort the tree nodes if setup to do so

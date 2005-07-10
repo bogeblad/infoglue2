@@ -23,9 +23,8 @@
 
 package org.infoglue.cms.applications.common.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.exception.ConfigurationError;
-import org.infoglue.cms.util.CmsLogger;
 
 import java.util.StringTokenizer;
 
@@ -36,7 +35,7 @@ import webwork.util.ServletValueStack;
  * @author Mattias Bogeblad
  */
 
-public class ExtendedRedirect extends WebworkAbstractAction 
+public class ExtendedRedirect extends InfoGlueAbstractAction 
 {
 
 	private static final String UNPARSED_PARAMETER_DELIMITER = "#";

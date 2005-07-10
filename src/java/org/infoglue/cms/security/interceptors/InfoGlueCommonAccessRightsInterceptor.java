@@ -25,7 +25,9 @@ package org.infoglue.cms.security.interceptors;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
@@ -41,7 +43,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * @author Mattias Bogeblad
@@ -52,6 +54,8 @@ import org.infoglue.cms.util.CmsLogger;
 
 public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueInterceptor
 {
+    private final static Logger logger = Logger.getLogger(InfoGlueCommonAccessRightsInterceptor.class.getName());
+
 	/**
 	 * This method will be called when a interceptionPoint is reached.
 	 * 
@@ -63,7 +67,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata) throws ConstraintException, SystemException, Exception
 	{
-		CmsLogger.logInfo("interceptionPointVO:" + interceptionPointVO.getName());
+		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
 		
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
@@ -278,7 +282,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, Database db) throws ConstraintException, SystemException, Exception
 	{
-		CmsLogger.logInfo("interceptionPointVO:" + interceptionPointVO.getName());
+		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
 		
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
@@ -373,12 +377,12 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		}
 		else*/ if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Write"))
 		{
-			CmsLogger.logInfo("******************************************************");
-			CmsLogger.logInfo("SiteNodeVersion.ChangeAccessRights");
+			logger.info("******************************************************");
+			logger.info("SiteNodeVersion.ChangeAccessRights");
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
-			CmsLogger.logInfo("VersionModifier:" + siteNodeVersion.getVersionModifier());
-			CmsLogger.logInfo("infoGluePrincipal:" + infoGluePrincipal.getName());
+			logger.info("VersionModifier:" + siteNodeVersion.getVersionModifier());
+			logger.info("infoGluePrincipal:" + infoGluePrincipal.getName());
 			if(!siteNodeVersion.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);

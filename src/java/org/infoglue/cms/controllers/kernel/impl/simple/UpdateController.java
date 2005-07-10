@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Ant;
@@ -55,9 +56,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.up2date.UpdateCollection;
 import org.infoglue.cms.entities.up2date.UpdatePackage;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.xml.sax.InputSource;
 
 
@@ -132,9 +134,11 @@ import org.xml.sax.InputSource;
  * 
  * 
  */
-public class UpdateController
+public class UpdateController extends BaseController
 {
 	
+    private final static Logger logger = Logger.getLogger(UpdateController.class.getName());
+
 	/**
 	 * 
 	 */
@@ -171,11 +175,11 @@ public class UpdateController
 	
 	public Vector getAvailableUpdates()
 	{
-		CmsLogger.logInfo("Get Available updates");
+		getLogger().info("Get Available updates");
 
 		if (UpdateListHandler.getAvailableUpdates() == null)
 		{
-			CmsLogger.logInfo("Getting from updateserver");
+			getLogger().info("Getting from updateserver");
 			Vector ret = new Vector();		
 	
 			 try 
@@ -228,7 +232,7 @@ public class UpdateController
 	
 	public Vector getInstalledUpdates()
 	{
-		CmsLogger.logInfo("GetInstalled Updates");
+		getLogger().info("GetInstalled Updates");
 
 		Unmarshaller unmar = null;
 		UpdateCollection coll = new UpdateCollection();
@@ -240,7 +244,7 @@ public class UpdateController
 		} 
 		catch (MarshalException e2) 
 		{
-			CmsLogger.logInfo("Marshal exception");
+			getLogger().info("Marshal exception");
 		} 
 		catch (ValidationException e2) 
 		{
@@ -248,14 +252,14 @@ public class UpdateController
 		} 
 		catch (FileNotFoundException e2) 
 		{
-			CmsLogger.logInfo("No packages found");
+			getLogger().info("No packages found");
 		}
 		catch (MappingException e1) 
 		{
 			e1.printStackTrace();
 		}
 
-		CmsLogger.logInfo("Leaving GetInstalled Updates");
+		getLogger().info("Leaving GetInstalled Updates");
 		return coll.getUpdatePackageList();
 	}
 
@@ -279,7 +283,7 @@ public class UpdateController
 			} catch (ValidationException e2) {
 				e2.printStackTrace();
 			} catch (FileNotFoundException e2) {
-				CmsLogger.logInfo("No previous installations");
+				getLogger().info("No previous installations");
 			}
 			coll.getUpdatePackageList().add(upd);
 			
@@ -326,7 +330,7 @@ public class UpdateController
 		} catch (ValidationException e2) {
 			e2.printStackTrace();
 		} catch (FileNotFoundException e2) {
-			CmsLogger.logInfo("No previous installations");
+			getLogger().info("No previous installations");
 		}
 
 			// Find the update with id updatePackageId
@@ -373,7 +377,7 @@ public class UpdateController
 			  UpdatePackage u = (UpdatePackage) iterator.next();
 			  if(updatePackageId.compareTo(u.getPackageId())==0)
 			  {
-			  	CmsLogger.logInfo("Found package to install: " + u.getPackageId());
+			  	getLogger().info("Found package to install: " + u.getPackageId());
 			  	runUpdatePackage(u, out);
 			  	break;
 			  }
@@ -390,7 +394,7 @@ public class UpdateController
 			  UpdatePackage u = (UpdatePackage) iterator.next();
 			  if(updatePackageId.compareTo(u.getPackageId())==0)
 			  {
-			  	CmsLogger.logInfo("Found package to uninstall: " + u.getPackageId());
+			  	getLogger().info("Found package to uninstall: " + u.getPackageId());
 				unInstallPackage(u, out);
 				break;
 			  }
@@ -519,5 +523,11 @@ public class UpdateController
 		}
 		fo.close();
 	}
+
+    public BaseEntityVO getNewVO()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

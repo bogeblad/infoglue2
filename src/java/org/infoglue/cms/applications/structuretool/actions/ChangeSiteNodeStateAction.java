@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 
-public class ChangeSiteNodeStateAction extends WebworkAbstractAction
+public class ChangeSiteNodeStateAction extends InfoGlueAbstractAction
 {
 	private Integer siteNodeId;
 	private Integer siteNodeVersionId;

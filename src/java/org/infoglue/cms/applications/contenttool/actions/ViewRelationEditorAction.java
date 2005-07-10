@@ -29,7 +29,7 @@ import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 
@@ -43,7 +43,7 @@ import java.util.*;
  * This action is the base action for all relation editors.
  */ 
 
-public abstract class ViewRelationEditorAction extends WebworkAbstractAction
+public abstract class ViewRelationEditorAction extends InfoGlueAbstractAction
 {
 	//protected Integer contentVersionId			= null;
 	protected Integer entityId					= null;

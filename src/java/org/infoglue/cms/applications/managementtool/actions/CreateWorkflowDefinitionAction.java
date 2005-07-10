@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.management.GroupVO;
@@ -37,7 +37,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
  */
 
 
-public class CreateWorkflowDefinitionAction extends WebworkAbstractAction
+public class CreateWorkflowDefinitionAction extends InfoGlueAbstractAction
 {
 	private WorkflowDefinitionVO workflowDefinitionVO = new WorkflowDefinitionVO();
 	private ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();

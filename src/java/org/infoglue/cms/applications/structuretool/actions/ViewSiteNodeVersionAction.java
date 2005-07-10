@@ -29,12 +29,12 @@ import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeUCCFactor
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
 
 import java.util.List;
 
-public class ViewSiteNodeVersionAction extends WebworkAbstractAction
+public class ViewSiteNodeVersionAction extends InfoGlueAbstractAction
 {
 	private Integer unrefreshedSiteNodeId = new Integer(0);
 	private Integer changeTypeId = new Integer(0);
@@ -53,7 +53,7 @@ public class ViewSiteNodeVersionAction extends WebworkAbstractAction
     
     public ViewSiteNodeVersionAction(SiteNodeVO siteNodeVO, SiteNodeVersionVO siteNodeVersionVO)
     {
-		CmsLogger.logInfo("Construction ViewSiteNodeAction");
+		getLogger().info("Construction ViewSiteNodeAction");
         this.siteNodeVO = siteNodeVO;
         this.siteNodeVersionVO = siteNodeVersionVO;
     }
@@ -65,8 +65,8 @@ public class ViewSiteNodeVersionAction extends WebworkAbstractAction
         //this.siteNodeTypeDefinitionVO = viewSiteNodeUCC.getSiteNodeTypeDefinition(siteNodeId);
         //this.siteNodeVersionVO = viewSiteNodeUCC.getLatestSiteNodeVersion(siteNodeId, languageId);
      	
-     	CmsLogger.logInfo("siteNodeVersionVO:" + siteNodeVersionVO);
-        CmsLogger.logInfo("siteNodeVO:" + siteNodeVO);
+     	getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO);
+        getLogger().info("siteNodeVO:" + siteNodeVO);
         //this.availableLanguages = viewSiteNodeUCC.getRepositoryLanguages(siteNodeId);
     } 
 
@@ -86,7 +86,7 @@ public class ViewSiteNodeVersionAction extends WebworkAbstractAction
 
     public String doChangeState() throws Exception
     {
-    	CmsLogger.logInfo("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
+    	getLogger().info("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
     	//SiteNodeVersionController.updateStateId(this.siteNodeVersionVO.getSiteNodeVersionId(), getStateId(), this.siteNodeVersionVO.getVersionComment(), getRequest().getRemoteUser(), this.getSiteNodeId(), this.getLanguageId());
     	this.initialize(getSiteNodeId(), this.languageId);
         return "success";
@@ -94,7 +94,7 @@ public class ViewSiteNodeVersionAction extends WebworkAbstractAction
     
     public String doCommentVersion() throws Exception
     {
-    	CmsLogger.logInfo("Gonna show the comment-view");
+    	getLogger().info("Gonna show the comment-view");
         return "commentVersion";
     }
     
@@ -159,7 +159,6 @@ public class ViewSiteNodeVersionAction extends WebworkAbstractAction
         return this.siteNodeVO.getName();
     }
 
-	//Test
     public java.lang.Integer getRepositoryId()
     {
         return this.siteNodeVO.getRepositoryId();
@@ -170,12 +169,5 @@ public class ViewSiteNodeVersionAction extends WebworkAbstractAction
 		return this.availableLanguages;
 	}	
 
-	public ViewSiteNodeVersionAction getThis()
-	{
-		return this;
-	}
-	
-
-	
 
 }

@@ -50,6 +50,7 @@ import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -65,6 +66,8 @@ import java.util.Date;
 
 public class NodeDeliveryController extends BaseDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(NodeDeliveryController.class.getName());
+
 	private URLComposer urlComposer = null; 
 
     protected static final String META_INFO_BINDING_NAME 				= "Meta information";
@@ -122,11 +125,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			operatingMode = new Integer(CmsPropertyHandler.getProperty("operatingMode"));
-			//CmsLogger.logInfo("Operating mode is:" + operatingMode);
+			//getLogger().info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
+			getLogger().warn("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
 		}
 		return operatingMode;
 	}
@@ -155,15 +158,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 		SiteNodeVersion siteNodeVersion = null;
 		
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-		CmsLogger.logInfo("Loaded siteNode " + siteNode.getName());
+		getLogger().info("Loaded siteNode " + siteNode.getName());
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		CmsLogger.logInfo("Loaded versions " + siteNodeVersions.size());
+		getLogger().info("Loaded versions " + siteNodeVersions.size());
 		
 		Iterator versionIterator = siteNodeVersions.iterator();
 		while(versionIterator.hasNext())
 		{
 			SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-			CmsLogger.logInfo("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
+			getLogger().info("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
 			if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
 			{
 				if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNodeId.intValue())
@@ -185,12 +188,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ServiceDefinitionVO getInheritedServiceDefinition(List qualifyerList, Integer siteNodeId, AvailableServiceBindingVO availableServiceBindingVO, Database db, boolean inheritParentBindings) throws SystemException, Exception
 	{
-		CmsLogger.logInfo("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
+		getLogger().info("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
 		ServiceDefinitionVO serviceDefinitionVO = null;
 		
 		//SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
-		CmsLogger.logInfo("Loaded siteNode " + siteNode.getName());
+		getLogger().info("Loaded siteNode " + siteNode.getName());
 		
 		//serviceDefinitionVO = getServiceDefinitionVO(siteNode, availableServiceBindingVO, db);
 		serviceDefinitionVO = getServiceDefinitionVO(qualifyerList, siteNode, availableServiceBindingVO, db);
@@ -201,7 +204,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			//AvailableServiceBinding availableServiceBinding = getAvailableServiceBindingRecursive(siteNodeVersion.getOwningSiteNode(), availableServiceBindingName, inheritParentBindings);
 			if(availableServiceBindingVO != null && availableServiceBindingVO.getIsInheritable().booleanValue() && inheritParentBindings)
         	{
-            	CmsLogger.logInfo("No binding found - lets try the parent.");
+            	getLogger().info("No binding found - lets try the parent.");
             	SiteNode parent = siteNode.getParentSiteNode();
             	if(parent != null)
             	    serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, parent.getSiteNodeId(), availableServiceBindingVO, db, inheritParentBindings);
@@ -216,12 +219,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    //ServiceBinding serviceBinding = null;
 		
 	    String key = "" + siteNode.getSiteNodeId() + "_" + availableServiceBindingVO.getId();
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		Object object = CacheController.getCachedObject("serviceDefinitionCache", key);
 		Object object2 = CacheController.getCachedObject("qualifyerListCache", key);
 		if(object != null && object2 != null)
 		{
-			CmsLogger.logInfo("There was an cached ServiceDefinitionVO:" + object);
+			getLogger().info("There was an cached ServiceDefinitionVO:" + object);
 			if(object instanceof ServiceDefinitionVO)
 			    serviceDefinitionVO = (ServiceDefinitionVO)object;
 			if(object2 instanceof List)
@@ -326,7 +329,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		while(serviceBindingIterator.hasNext())
 		{
 			ServiceBinding serviceBindingCandidate = (ServiceBinding)serviceBindingIterator.next();
-			//CmsLogger.logWarning("siteNodeVersion " + siteNodeVersion.getId());
+			//getLogger().warn("siteNodeVersion " + siteNodeVersion.getId());
 			if(serviceBindingCandidate.getAvailableServiceBinding().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
 			//if(serviceBindingCandidate.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
 			{
@@ -393,11 +396,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		String key = "" + siteNodeId;
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", key);
 		if(siteNodeVersionVO != null)
 		{
-			CmsLogger.logInfo("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
+			getLogger().info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
 		}
 		else
 		{
@@ -420,17 +423,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		SiteNodeVersion siteNodeVersion = null;
 		
-		CmsLogger.logInfo("Loading siteNode " + siteNodeId);
+		getLogger().info("Loading siteNode " + siteNodeId);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-		CmsLogger.logInfo("siteNode " + siteNode);
+		getLogger().info("siteNode " + siteNode);
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		CmsLogger.logInfo("siteNodeVersions " + siteNodeVersions);
+		getLogger().info("siteNodeVersions " + siteNodeVersions);
 		
 		Iterator versionIterator = siteNodeVersions.iterator();
 		while(versionIterator.hasNext())
 		{
 			SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-			CmsLogger.logInfo("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
+			getLogger().info("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
 			if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
 			{
 				if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNodeId.intValue())
@@ -454,22 +457,22 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNodeVO getParentSiteNode(Database db, Integer siteNodeId) throws SystemException
 	{
 		String key = "" + siteNodeId;
-		CmsLogger.logInfo("key getParentSiteNode:" + key);
+		getLogger().info("key getParentSiteNode:" + key);
 		SiteNodeVO parentSiteNodeVO = (SiteNodeVO)CacheController.getCachedObject("parentSiteNodeCache", key);
 		if(parentSiteNodeVO != null)
 		{
-			CmsLogger.logInfo("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
+			getLogger().info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
 		}
 		else
 		{
-			CmsLogger.logInfo("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
+			getLogger().info("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
 			
 			SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
             SiteNode parentSiteNode = siteNode.getParentSiteNode();
             if(parentSiteNode != null)		
 				parentSiteNodeVO = parentSiteNode.getValueObject();
             		
-			CmsLogger.logInfo("Caching parentSiteNodeVO:" + parentSiteNodeVO);
+			getLogger().info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
 			
 			CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
 		}
@@ -507,7 +510,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return isPageCacheDisabled;
@@ -519,7 +522,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public boolean getIsEditOnSightDisabled(Database db, Integer siteNodeId)
 	{
-		CmsLogger.logInfo("getIsEditOnSightDisabled:" + siteNodeId);
+		getLogger().info("getIsEditOnSightDisabled:" + siteNodeId);
 		
 		boolean isEditOnSightDisabled = false;
 		
@@ -543,10 +546,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 			
-		CmsLogger.logInfo("getIsEditOnSightDisabled:" + isEditOnSightDisabled);
+		getLogger().info("getIsEditOnSightDisabled:" + isEditOnSightDisabled);
 		
 		return isEditOnSightDisabled;
 	}
@@ -580,7 +583,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return isPageProtected;
@@ -598,8 +601,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
-			CmsLogger.logInfo("siteNodeId:" + siteNodeId);
-			CmsLogger.logInfo("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
+			getLogger().info("siteNodeId:" + siteNodeId);
+			getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
 			if(siteNodeVersionVO != null && siteNodeVersionVO.getIsProtected() != null)
 			{	
 				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
@@ -617,7 +620,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return protectedSiteNodeVersionId;
@@ -651,8 +654,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		CmsLogger.logInfo("siteNodeId:" + siteNodeId);
-		CmsLogger.logInfo("availableServiceBindingName:" + availableServiceBindingName);
+		getLogger().info("siteNodeId:" + siteNodeId);
+		getLogger().info("availableServiceBindingName:" + availableServiceBindingName);
 		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, true, deliveryContext);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
@@ -678,7 +681,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    }
 	    catch(Exception e)
 	    {
-	        CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+	        getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 	        throw new SystemException(e.getMessage());
 	    }
@@ -695,17 +698,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + includeFolders + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		//String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
-		CmsLogger.logInfo("boundContentsKey:" + boundContentsKey);
+		getLogger().info("boundContentsKey:" + boundContentsKey);
 		List boundContentVOList = (List)CacheController.getCachedObject("boundContentCache", boundContentsKey);
 		if(boundContentVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached content boundContentVOList:" + boundContentVOList.size());
+			getLogger().info("There was an cached content boundContentVOList:" + boundContentVOList.size());
 		}
 		else
 		{
 		    boundContentVOList = new ArrayList();
 			
-			CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
+			getLogger().info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
 
 		    AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
         
@@ -723,20 +726,20 @@ public class NodeDeliveryController extends BaseDeliveryController
 				
 				List contents = service.selectMatchingEntities(arguments, db);
 				
-				CmsLogger.logInfo("Found bound contents:" + contents.size());	        		
+				getLogger().info("Found bound contents:" + contents.size());	        		
 				if(contents != null)
 				{
 					Iterator i = contents.iterator();
 					while(i.hasNext())
 					{
 						ContentVO candidate = (ContentVO)i.next();
-						CmsLogger.logInfo("candidate:" + candidate.getName());
+						getLogger().info("candidate:" + candidate.getName());
 						//Checking to see that now is between the contents publish and expire-date. 
 						//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
 						//	boundContentVOList.add(candidate);        		
 						Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
 						
-						CmsLogger.logInfo("candidateContent:" + candidateContent.getName());
+						getLogger().info("candidateContent:" + candidateContent.getName());
 						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
 						{
 							deliveryContext.addUsedContent("content:" + candidate.getId());
@@ -767,10 +770,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 		
-    	CmsLogger.logInfo("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
+    	getLogger().info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
         
         ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, includeFolders, deliveryContext);
-        CmsLogger.logInfo("contentVO:" + contentVO);
+        getLogger().info("contentVO:" + contentVO);
         
         if(contentVO != null)
         {
@@ -826,11 +829,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public List getBoundSiteNodes(Database db, Integer siteNodeId, String availableServiceBindingName) throws SystemException, Exception
 	{
 		String boundSiteNodesKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
-		CmsLogger.logInfo("boundSiteNodesKey:" + boundSiteNodesKey);
+		getLogger().info("boundSiteNodesKey:" + boundSiteNodesKey);
 		List boundSiteNodeVOList = (List)CacheController.getCachedObject("boundSiteNodeCache", boundSiteNodesKey);
 		if(boundSiteNodeVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached content boundSiteNodeVOList:" + boundSiteNodeVOList.size());
+			getLogger().info("There was an cached content boundSiteNodeVOList:" + boundSiteNodeVOList.size());
 		}
 		else
 		{
@@ -853,7 +856,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     		
 				List siteNodes = service.selectMatchingEntities(arguments, db);
     		
-				CmsLogger.logInfo("Found bound siteNodes:" + siteNodes.size());
+				getLogger().info("Found bound siteNodes:" + siteNodes.size());
 				if(siteNodes != null)
 				{
 					Iterator i = siteNodes.iterator();
@@ -989,16 +992,16 @@ public class NodeDeliveryController extends BaseDeliveryController
     public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String path, String attributeName, Integer parentSiteNodeId, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         /*
-        CmsLogger.logInfo("repositoryId:" + repositoryId);
-        CmsLogger.logInfo("navigationTitle:" + navigationTitle);
-        CmsLogger.logInfo("parentSiteNodeId:" + parentSiteNodeId);
-        CmsLogger.logInfo("languageId:" + languageId);
+        getLogger().info("repositoryId:" + repositoryId);
+        getLogger().info("navigationTitle:" + navigationTitle);
+        getLogger().info("parentSiteNodeId:" + parentSiteNodeId);
+        getLogger().info("languageId:" + languageId);
         */
     	
         if (repositoryId == null || repositoryId.intValue() == -1) 
         {
             repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
-            CmsLogger.logInfo("RepositoryId not specifed - Resolved master repository to "+repositoryId);
+            getLogger().info("RepositoryId not specifed - Resolved master repository to "+repositoryId);
         }
         
         if (repositoryId == null)
@@ -1024,7 +1027,7 @@ public class NodeDeliveryController extends BaseDeliveryController
         sb.append("and s.repository.repositoryId = $").append((bindings.size()+1)).append(" ");
         bindings.add(repositoryId);
 
-        CmsLogger.logInfo("OQL ["+sb.toString()+"]");
+        getLogger().info("OQL ["+sb.toString()+"]");
         OQLQuery oql = db.getOQLQuery( sb.toString() );
         for (int i=0;i<bindings.size();i++) 
         {
@@ -1040,16 +1043,16 @@ public class NodeDeliveryController extends BaseDeliveryController
                 return siteNode.getSiteNodeId();
             }
             
-            // CmsLogger.logInfo("Site : "+siteNode.getSiteNodeId());
+            // getLogger().info("Site : "+siteNode.getSiteNodeId());
             ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME, deliveryContext);
             if(content != null) 
             {
-                //CmsLogger.logInfo("Content "+content.getContentId());
+                //getLogger().info("Content "+content.getContentId());
                 String pathCandidate = null;
                 for (int i=0;i<languages.size();i++) 
                 {
                     LanguageVO language = (LanguageVO) languages.get(i);
-                    //CmsLogger.logInfo("Language : "+language.getLanguageCode());
+                    //getLogger().info("Language : "+language.getLanguageCode());
                     
                     if(attributeName.equals("SiteNode.name"))
                         pathCandidate = siteNode.getName();
@@ -1061,7 +1064,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext);
                     }
                     
-                    CmsLogger.logInfo(attributeName + " ["+pathCandidate+"]==[" + path + "]");
+                    getLogger().info(attributeName + " ["+pathCandidate+"]==[" + path + "]");
                     if (pathCandidate != null && pathCandidate.equals(path)) 
                     {
                         return siteNode.getSiteNodeId();
@@ -1121,13 +1124,13 @@ public class NodeDeliveryController extends BaseDeliveryController
         int idx = path.length;
         while (idx >= 0) 
         {
-        	//CmsLogger.logInfo("Looking for cache nodeName at index "+idx);
+        	//getLogger().info("Looking for cache nodeName at index "+idx);
             siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, idx);
             if (siteNodeId != null)
                 break;
             idx = idx - 1;
         }
-        //CmsLogger.logInfo("Idx = "+idx);
+        //getLogger().info("Idx = "+idx);
         for (int i = idx;i < path.length; i++) 
         {
             if (i < 0) 
@@ -1161,13 +1164,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        int idx = path.length;
 	        while (idx >= 0) 
 	        {
-	        	//CmsLogger.logInfo("Looking for cache nodeName at index "+idx);
+	        	//getLogger().info("Looking for cache nodeName at index "+idx);
 	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, idx);
 	            if (siteNodeId != null)
 	                break;
 	            idx = idx - 1;
 	        }
-	        //CmsLogger.logInfo("Idx = "+idx);
+	        //getLogger().info("Idx = "+idx);
 	        for (int i = idx;i < path.length; i++) 
 	        {
 	            if (i < 0) 
@@ -1187,7 +1190,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    }
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -1220,12 +1223,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 		if(repositoryName == null)
 		{
 			repositoryName = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getName();
-			CmsLogger.logInfo("Fetched name of master repository as none were given:" + repositoryName);
+			logger.info("Fetched name of master repository as none were given:" + repositoryName);
 		}
 		 
         SiteNode siteNode = null;
 
-        CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryName);
+        logger.info("Fetching the root siteNode for the repository " + repositoryName);
 		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.name = $1");
 		oql.bind(repositoryName);
 		
@@ -1234,10 +1237,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		if (results.hasMore()) 
         {
         	siteNode = (SiteNode)results.next();
-			CmsLogger.logInfo("The root node was found:" + siteNode.getName());
+        	logger.info("The root node was found:" + siteNode.getName());
         }
         
-		CmsLogger.logInfo("siteNode:" + siteNode);
+		logger.info("siteNode:" + siteNode);
 		
         return (siteNode == null) ? null : siteNode.getValueObject();	
 	}
@@ -1253,21 +1256,21 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    SiteNodeVO siteNodeVO = null;
 
         String key = "" + repositoryId;
-		CmsLogger.logInfo("key in getRootSiteNode:" + key);
+		getLogger().info("key in getRootSiteNode:" + key);
 		siteNodeVO = (SiteNodeVO)CacheController.getCachedObject("rootSiteNodeCache", key);
 		if(siteNodeVO != null)
 		{
-		    CmsLogger.logInfo("There was an cached master root siteNode:" + siteNodeVO.getName());
+		    getLogger().info("There was an cached master root siteNode:" + siteNodeVO.getName());
 		}
 		else
 		{
 			if(repositoryId == null)
 			{
 				repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
-				CmsLogger.logInfo("Fetched name of master repository as none were given:" + repositoryId);
+				getLogger().info("Fetched name of master repository as none were given:" + repositoryId);
 			}
 			
-	        CmsLogger.logInfo("Fetching the root siteNode for the repository " + repositoryId);
+	        getLogger().info("Fetching the root siteNode for the repository " + repositoryId);
 			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository = $1");
 			oql.bind(repositoryId);
 			
@@ -1276,10 +1279,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	if (results.hasMore()) 
 	        {
 	        	siteNodeVO = ((SiteNode)results.next()).getValueObject();
-				CmsLogger.logInfo("The root node was found:" + siteNodeVO.getName());
+				getLogger().info("The root node was found:" + siteNodeVO.getName());
 	        }
 
-			CmsLogger.logInfo("siteNodeVO:" + siteNodeVO);
+			getLogger().info("siteNodeVO:" + siteNodeVO);
 
 			CacheController.cacheObject("rootSiteNodeCache", key, siteNodeVO);
 		}
@@ -1441,7 +1444,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("The sorting of qualifyers failed:" + e.getMessage(), e);
+			getLogger().warn("The sorting of qualifyers failed:" + e.getMessage(), e);
 		}
 			
 		return sortedQualifyers;

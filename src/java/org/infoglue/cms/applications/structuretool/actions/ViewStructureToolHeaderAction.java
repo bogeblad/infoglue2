@@ -25,7 +25,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import java.util.List;
@@ -39,7 +39,7 @@ import javax.servlet.http.Cookie;
  * @author Mattias Bogeblad  
  */
 
-public class ViewStructureToolHeaderAction extends WebworkAbstractAction
+public class ViewStructureToolHeaderAction extends InfoGlueAbstractAction
 {
     
      

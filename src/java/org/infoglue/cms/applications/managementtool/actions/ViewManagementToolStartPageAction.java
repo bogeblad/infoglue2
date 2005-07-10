@@ -23,8 +23,8 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import java.util.List;
@@ -35,14 +35,14 @@ import java.util.List;
  * @author Mattias Bogeblad  
  */
 
-public class ViewManagementToolStartPageAction extends WebworkAbstractAction
+public class ViewManagementToolStartPageAction extends InfoGlueAbstractAction
 {
     private List repositories;
     
     public String doExecute() throws Exception
     {
     	this.repositories = RepositoryController.getController().getRepositoryVOList();
-    	CmsLogger.logInfo("ClassPath:" + System.getProperty("java.class.path","."));
+    	getLogger().info("ClassPath:" + System.getProperty("java.class.path","."));
     	
         return "success";
     }

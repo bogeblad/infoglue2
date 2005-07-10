@@ -35,7 +35,6 @@ import org.infoglue.cms.util.validators.ConstraintRule;
 import org.infoglue.cms.util.validators.Constants;
 import org.infoglue.cms.util.validators.EmailValidator;
 import org.infoglue.cms.util.validators.StringValidator;
-import org.infoglue.cms.util.CmsLogger;
 
 
 public class SystemUserVO extends ValidatableEntityVO implements BaseEntityVO
@@ -114,7 +113,6 @@ public class SystemUserVO extends ValidatableEntityVO implements BaseEntityVO
 
 	public void PrepareValidation()
 	{
-		CmsLogger.logInfo("preparing validation...");
 		// Define the constraint rules for this valueobject
 		// maybe this belongs in the setters of this object?.
 		// then this method would be obsolete, and the validation
@@ -188,8 +186,7 @@ public class SystemUserVO extends ValidatableEntityVO implements BaseEntityVO
 		{
 			ConstraintRule cr = (ConstraintRule) iterator.next();
 			String userName = ((SystemUserVO)vo).getUserName();
-			CmsLogger.logInfo("Validating object with userName: " + userName);
-
+			
 			// an ugly switch for now.    		
 			switch (cr.getConstraintType())
 			{

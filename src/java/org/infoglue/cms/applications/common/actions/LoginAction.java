@@ -23,11 +23,11 @@
 
 package org.infoglue.cms.applications.common.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.controllers.usecases.common.*;
 
-public class LoginAction extends WebworkAbstractAction
+public class LoginAction extends InfoGlueAbstractAction
 {
 	private String userName     = null;
 	private String password     = null;

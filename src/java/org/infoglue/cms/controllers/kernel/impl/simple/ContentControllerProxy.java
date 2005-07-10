@@ -40,7 +40,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * @author Mattias Bogeblad
@@ -72,7 +72,7 @@ public class ContentControllerProxy extends ContentController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			CmsLogger.logInfo("Adding interceptorVO:" + interceptorVO.getName());
+			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -80,7 +80,7 @@ public class ContentControllerProxy extends ContentController
 			}
 			catch(ClassNotFoundException e)
 			{
-				CmsLogger.logWarning("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 	}
@@ -123,19 +123,19 @@ public class ContentControllerProxy extends ContentController
     	List contents = null;
     	
     	String method = (String)argumentHashMap.get("method");
-    	CmsLogger.logInfo("method:" + method);
+    	getLogger().info("method:" + method);
     	
     	if(method.equalsIgnoreCase("selectContentListOnIdList"))
     	{
 			contents = new ArrayList();
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			getLogger().info("Arguments:" + arguments.size());  
 			Iterator argumentIterator = arguments.iterator();
 			while(argumentIterator.hasNext())
 			{ 		
 				HashMap argument = (HashMap)argumentIterator.next(); 
 				Integer contentId = new Integer((String)argument.get("contentId"));
-				CmsLogger.logInfo("Getting the content with Id:" + contentId);
+				getLogger().info("Getting the content with Id:" + contentId);
 				try
 				{
 				    contents.add(this.getACContentVOWithId(infoGluePrincipal, contentId, db));
@@ -150,7 +150,7 @@ public class ContentControllerProxy extends ContentController
         else if(method.equalsIgnoreCase("selectListOnContentTypeName"))
     	{
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());   		
+			getLogger().info("Arguments:" + arguments.size());   		
 			contents = getContentVOListByContentTypeNames(arguments);
 			Iterator contentIterator = contents.iterator();
 			while(contentIterator.hasNext())
@@ -166,7 +166,7 @@ public class ContentControllerProxy extends ContentController
 		    	}
 		    	catch(Exception e)
 		    	{
-		    		CmsLogger.logInfo("Was not authorized to look at task...");
+		    		getLogger().info("Was not authorized to look at task...");
 		    	    contentIterator.remove();
 		    	}
 			}
@@ -184,19 +184,19 @@ public class ContentControllerProxy extends ContentController
     	List contents = null;
     	
     	String method = (String)argumentHashMap.get("method");
-    	CmsLogger.logInfo("method:" + method);
+    	getLogger().info("method:" + method);
     	
     	if(method.equalsIgnoreCase("selectContentListOnIdList"))
     	{
 			contents = new ArrayList();
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());  
+			getLogger().info("Arguments:" + arguments.size());  
 			Iterator argumentIterator = arguments.iterator();
 			while(argumentIterator.hasNext())
 			{ 		
 				HashMap argument = (HashMap)argumentIterator.next(); 
 				Integer contentId = new Integer((String)argument.get("contentId"));
-				CmsLogger.logInfo("Getting the content with Id:" + contentId);
+				getLogger().info("Getting the content with Id:" + contentId);
 				try
 				{
 				    contents.add(this.getACContentVOWithId(infoGluePrincipal, contentId));
@@ -211,7 +211,7 @@ public class ContentControllerProxy extends ContentController
         else if(method.equalsIgnoreCase("selectListOnContentTypeName"))
     	{
 			List arguments = (List)argumentHashMap.get("arguments");
-			CmsLogger.logInfo("Arguments:" + arguments.size());   		
+			getLogger().info("Arguments:" + arguments.size());   		
 			contents = getContentVOListByContentTypeNames(arguments);
 			Iterator contentIterator = contents.iterator();
 			while(contentIterator.hasNext())
@@ -227,7 +227,7 @@ public class ContentControllerProxy extends ContentController
 		    	}
 		    	catch(Exception e)
 		    	{
-		    		CmsLogger.logInfo("Was not authorized to look at task...");
+		    		getLogger().info("Was not authorized to look at task...");
 		    	    contentIterator.remove();
 		    	}
 			}
@@ -358,7 +358,7 @@ public class ContentControllerProxy extends ContentController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 			
 		return protectedContentId;
@@ -392,7 +392,7 @@ public class ContentControllerProxy extends ContentController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 			
 		return isContentProtected;

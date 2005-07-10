@@ -115,14 +115,14 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		try
 		{
 			List repositoryVOList = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOList(db);
-			CmsLogger.logInfo("Number of repositories:" + repositoryVOList.size());
+			getLogger().info("Number of repositories:" + repositoryVOList.size());
 			this.databaseConnectionOk = true;
 
 	        closeTransaction(db);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -144,7 +144,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);            
+			getLogger().error(e.getMessage(), e);            
 		}
 		
         return "success";

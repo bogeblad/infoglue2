@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.util;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConfigurationError;
 
@@ -34,23 +35,20 @@ import java.util.ResourceBundle;
 /**
  *
  */
-class SimpleStringManager implements StringManager {
-  // --- [Constants] -----------------------------------------------------------
-  // --- [Attributes] ----------------------------------------------------------
+public class SimpleStringManager implements StringManager 
+{
 
-  // The ResourceBundle for this StringManager.
-  private ResourceBundle bundle;
+    private final static Logger logger = Logger.getLogger(SimpleStringManager.class.getName());
 
+    // The ResourceBundle for this StringManager.
+    private ResourceBundle bundle;
 
-
-  // --- [Static] --------------------------------------------------------------
-  // --- [Constructors] --------------------------------------------------------
-  
+ 
     SimpleStringManager(String bundleName, Locale locale) 
     { 
         try 
         { 
-            CmsLogger.logInfo("Created a SimpleStringManager for package bundleName" + bundleName);
+            logger.info("Created a SimpleStringManager for package bundleName" + bundleName);
             this.bundle = ResourceBundle.getBundle(bundleName, locale);
         } 
         catch(MissingResourceException e) 
@@ -75,17 +73,17 @@ class SimpleStringManager implements StringManager {
     {
         try 
         {
-            //CmsLogger.logInfo("Trying to find a string for key " + key + " in " + this);
+            //logger.info("Trying to find a string for key " + key + " in " + this);
             return this.bundle.getString(key);
         } 
         catch(MissingResourceException e) 
         {
-        	CmsLogger.logWarning("Error trying to find a string for key " + key, e);
+        	logger.warn("Error trying to find a string for key " + key, e);
             throw new ConfigurationError("Key not found.", e);
         } 
         catch(Throwable t) 
         {
-        	CmsLogger.logWarning("Error trying to find a string for key " + key);
+        	logger.warn("Error trying to find a string for key " + key);
             throw new Bug("Unable to fetch the value for the specified key.", t);
         }
     }

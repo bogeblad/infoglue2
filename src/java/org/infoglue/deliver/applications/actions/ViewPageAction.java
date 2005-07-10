@@ -25,7 +25,7 @@ package org.infoglue.deliver.applications.actions;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
@@ -129,9 +129,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	long start			= new Date().getTime();
     	long elapsedTime 	= 0;
     	
-    	CmsLogger.logInfo("************************************************");
-    	CmsLogger.logInfo("* ViewPageAction was called....                *");
-    	CmsLogger.logInfo("************************************************");
+    	getLogger().info("************************************************");
+    	getLogger().info("* ViewPageAction was called....                *");
+    	getLogger().info("************************************************");
     	    	
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
@@ -143,7 +143,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
 	    	String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent();
-	    	CmsLogger.logInfo("pageKey:" + pageKey);
+	    	getLogger().info("pageKey:" + pageKey);
 	    	String pagePath	= null;
 	    	
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
@@ -152,11 +152,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
-			CmsLogger.logInfo("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 			if(protectedSiteNodeVersionId != null)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
 		
-			CmsLogger.logInfo("handled extranet users");
+			getLogger().info("handled extranet users");
 	
 			// ----
 			// -- portlet
@@ -168,7 +168,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 	        if (portalActive) 
 	        {
-	            CmsLogger.logInfo("---> Checking for portlet action");
+	            getLogger().info("---> Checking for portlet action");
 	            PortalService service = new PortalService();
 	            //TODO: catch PortalException?
 	            boolean actionExecuted = service.service(getRequest(), getResponse());
@@ -176,18 +176,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            // -- if an action was executed return NONE as a redirect is issued
 	            if (actionExecuted) 
 	            {
-	                CmsLogger.logInfo("---> PortletAction was executed, returning NONE as a redirect has been issued");
+	                getLogger().info("---> PortletAction was executed, returning NONE as a redirect has been issued");
 	                //TODO: maybe statistics service should run here
-	                CmsLogger.logWarning("No statistics have been run for this request");
+	                getLogger().warn("No statistics have been run for this request");
 	                return NONE;
 	            }
 	        }
 	
-	        CmsLogger.logInfo("handled portal action");
+	        getLogger().info("handled portal action");
 			
 			if(!isUserRedirected)
 			{	
-				CmsLogger.logInfo("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
+				getLogger().info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
 				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*(InfoGluePrincipal)this.principal*/);
 				deliveryContext.setRepositoryName(this.repositoryName);
 				deliveryContext.setSiteNodeId(this.siteNodeId);
@@ -195,7 +195,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setLanguageId(this.languageId);
 				deliveryContext.setPageKey(pageKey);
 				deliveryContext.setSession(this.getSession());
-				deliveryContext.setWebworkAbstractAction(this);
+				deliveryContext.setInfoGlueAbstractAction(this);
 				deliveryContext.setHttpServletRequest(this.getRequest());
 				deliveryContext.setHttpServletResponse(this.getResponse());
 				
@@ -224,20 +224,20 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			
 			elapsedTime = new Date().getTime() - start;
-			CmsLogger.logWarning("The page delivery took " + elapsedTime + "ms");
+			getLogger().warn("The page delivery took " + elapsedTime + "ms");
 			
-			//CmsLogger.logWarning("Of that is " + contentAttributeTime + "ms from contentAttribute fetching...");
-			//CmsLogger.logWarning("and " + contentVersionTime + "ms from contentVersion fetching...");
-			//CmsLogger.logWarning("and " + serviceBindingTime + "ms from serviceBinding fetching...");
-			//CmsLogger.logWarning("and " + boundContentTime + "ms from boundContent fetching...");
-			//CmsLogger.logWarning("and " + inheritedServiceBindingTime + "ms from inheritedServiceBindingTime fetching...");
-			//CmsLogger.logWarning("and " + selectMatchingEntitiesTime + "ms from selectMatchingEntities fetching...");
-			//CmsLogger.logWarning("and " + isValidTime + "ms from isValidTime fetching...");
-			//CmsLogger.logWarning("and " + qualifyersTime + "ms from qualifyers fetching...");
-			//CmsLogger.logWarning("and " + sortQualifyersTime + "ms from sortQualifyers fetching...");
-			//CmsLogger.logWarning("and " + commitTime + "ms from commitTime fetching...");
-			//CmsLogger.logWarning("and " + rollbackTime + "ms from rollbackTime fetching...");
-			//CmsLogger.logWarning("and " + closeTime + "ms from closeTime fetching...");
+			//getLogger().warn("Of that is " + contentAttributeTime + "ms from contentAttribute fetching...");
+			//getLogger().warn("and " + contentVersionTime + "ms from contentVersion fetching...");
+			//getLogger().warn("and " + serviceBindingTime + "ms from serviceBinding fetching...");
+			//getLogger().warn("and " + boundContentTime + "ms from boundContent fetching...");
+			//getLogger().warn("and " + inheritedServiceBindingTime + "ms from inheritedServiceBindingTime fetching...");
+			//getLogger().warn("and " + selectMatchingEntitiesTime + "ms from selectMatchingEntities fetching...");
+			//getLogger().warn("and " + isValidTime + "ms from isValidTime fetching...");
+			//getLogger().warn("and " + qualifyersTime + "ms from qualifyers fetching...");
+			//getLogger().warn("and " + sortQualifyersTime + "ms from sortQualifyers fetching...");
+			//getLogger().warn("and " + commitTime + "ms from commitTime fetching...");
+			//getLogger().warn("and " + rollbackTime + "ms from rollbackTime fetching...");
+			//getLogger().warn("and " + closeTime + "ms from closeTime fetching...");
 			contentAttributeTime = 0;
 			contentVersionTime = 0;
 			serviceBindingTime = 0;
@@ -251,7 +251,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			rollbackTime = 0;
 			closeTime = 0;
 			
-			CmsLogger.logWarning("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			getLogger().warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 	        
 	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
 	    	
@@ -259,7 +259,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}
@@ -278,9 +278,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		long start			= new Date().getTime();
 		long elapsedTime 	= 0;
     	
-		CmsLogger.logInfo("************************************************");
-		CmsLogger.logInfo("* ViewPageAction was called....                *");
-		CmsLogger.logInfo("************************************************");
+		getLogger().info("************************************************");
+		getLogger().info("* ViewPageAction was called....                *");
+		getLogger().info("************************************************");
 		
 		DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
@@ -292,7 +292,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
 			String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + this.showSimple + "_pagecomponentDecorated";
-			CmsLogger.logInfo("A pageKey:" + pageKey);
+			getLogger().info("A pageKey:" + pageKey);
 			String pagePath	= null;
 	    	
 			this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
@@ -301,15 +301,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	
 			boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
-			CmsLogger.logInfo("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 			if(protectedSiteNodeVersionId != null)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
 		
-			CmsLogger.logInfo("handled extranet users");
+			getLogger().info("handled extranet users");
 	
 			if(!isUserRedirected)
 			{	
-				CmsLogger.logInfo("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
+				getLogger().info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
 		
 				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*this.templateController.getPrincipal()*/);
 				deliveryContext.setRepositoryName(this.repositoryName);
@@ -319,7 +319,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setShowSimple(this.showSimple);
 				deliveryContext.setPageKey(pageKey);
 				deliveryContext.setSession(this.getSession());
-				deliveryContext.setWebworkAbstractAction(this);
+				deliveryContext.setInfoGlueAbstractAction(this);
 				deliveryContext.setHttpServletRequest(this.getRequest());
 				deliveryContext.setHttpServletResponse(this.getResponse());
 	
@@ -350,7 +350,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			
 			elapsedTime = new Date().getTime() - start;
-			CmsLogger.logWarning("The page delivery took " + elapsedTime + "ms");
+			getLogger().warn("The page delivery took " + elapsedTime + "ms");
 	        
 			StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
 	    	
@@ -358,7 +358,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}
@@ -482,13 +482,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		try
 		{
 		    String referer = this.getRequest().getHeader("Referer");
-			CmsLogger.logInfo("referer:" + referer);
+			getLogger().info("referer:" + referer);
 
 			if(referer == null)
 				referer = "/"; 
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
-			CmsLogger.logInfo("principal:" + principal);
+			getLogger().info("principal:" + principal);
 			if(principal == null)
 			{
 				try
@@ -513,7 +513,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", siteNodeVersionVO.getId().toString());
 						if(!isAuthorized)
 						{	
-							CmsLogger.logInfo("SiteNode is protected and user was not found - sending him to login page.");
+							getLogger().info("SiteNode is protected and user was not found - sending him to login page.");
 							String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 							getResponse().sendRedirect(url);
 							isRedirected = true;
@@ -527,7 +527,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			else
 			{
-				CmsLogger.logInfo("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+				getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 				//Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(siteNodeId);
 				
 				Map arguments = new HashMap();
@@ -541,14 +541,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					
 					if(principal.getName().equals("anonymous"))
 					{
-						CmsLogger.logInfo("SiteNode is protected and user was anonymous - sending him to login page.");
+						getLogger().info("SiteNode is protected and user was anonymous - sending him to login page.");
 						String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 						getResponse().sendRedirect(url);
 						isRedirected = true;
 					}
 					else
 					{
-						CmsLogger.logInfo("SiteNode is protected and user has no access - sending him to no access page.");
+						getLogger().info("SiteNode is protected and user has no access - sending him to no access page.");
 						//final String url = "ExtranetLogin!noAccess.action?returnAddress=" + java.net.URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString(), "UTF-8");
 						String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 						getResponse().sendRedirect(url);

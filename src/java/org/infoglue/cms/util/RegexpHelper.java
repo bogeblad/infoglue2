@@ -72,9 +72,9 @@ public class RegexpHelper
 		try 
 		{
 			boolean result = regexpDelegate.match("/" + pattern + "/", string);
-			//CmsLogger.logInfo("pattern:" + pattern);
-			//CmsLogger.logInfo("string:" + string);
-			//CmsLogger.logInfo("result:" + result);
+			//getLogger().info("pattern:" + pattern);
+			//getLogger().info("string:" + string);
+			//getLogger().info("result:" + result);
 			return result;
 		} 
 		catch (MalformedPerl5PatternException e) 

@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
  * This class implements the action class for the framed page in the management tool.
@@ -31,7 +31,7 @@ import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
  * @author Mattias Bogeblad  
  */
 
-public class ViewManagementToolAction extends WebworkAbstractAction
+public class ViewManagementToolAction extends InfoGlueAbstractAction
 {
     private Integer repositoryId = new Integer(0);
     

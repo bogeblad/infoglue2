@@ -29,7 +29,7 @@ import org.infoglue.cms.entities.mydesktop.*;
 import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.workflow.WorkflowFacade;
 
 import java.util.*;
@@ -145,9 +145,9 @@ public class WorkflowController extends BaseController
 	public WorkflowVO invokeAction(InfoGluePrincipal principal, HttpServletRequest request, long workflowId, int actionId)
 			throws WorkflowException
 	{
-		CmsLogger.logInfo("invokeAction.............");
-		CmsLogger.logInfo("workflowId:" + workflowId);
-		CmsLogger.logInfo("actionId:" + actionId);
+		getLogger().info("invokeAction.............");
+		getLogger().info("workflowId:" + workflowId);
+		getLogger().info("actionId:" + actionId);
 
 		Map parameters = new HashMap();
 		parameters.putAll(request.getParameterMap());
@@ -156,7 +156,7 @@ public class WorkflowController extends BaseController
 		WorkflowFacade workflow = new WorkflowFacade(principal, workflowId);
 		workflow.doAction(actionId, parameters);
 
-		CmsLogger.logInfo("invokeAction end.............");
+		getLogger().info("invokeAction end.............");
 		return workflow.createWorkflowVO();
 	}
 
@@ -177,8 +177,8 @@ public class WorkflowController extends BaseController
 	 */
 	public Map getProperties(InfoGluePrincipal userPrincipal, long workflowId)
 	{
-		CmsLogger.logInfo("userPrincipal:" + userPrincipal);
-		CmsLogger.logInfo("workflowId:" + workflowId);
+		getLogger().info("userPrincipal:" + userPrincipal);
+		getLogger().info("workflowId:" + workflowId);
 
 		PropertySet propertySet = getPropertySet(userPrincipal, workflowId);
 		Map parameters = new HashMap();

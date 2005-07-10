@@ -43,7 +43,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 
 import org.exolab.castor.jdo.Database;

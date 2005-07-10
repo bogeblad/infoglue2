@@ -29,16 +29,18 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * BaseDeliveryController.java
@@ -50,6 +52,16 @@ import org.infoglue.cms.util.CmsLogger;
 
 public abstract class BaseDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(BaseDeliveryController.class.getName());
+
+    /**
+     * Gets a logger for the action class.
+     */
+
+	protected Logger getLogger() 
+	{
+	    return Logger.getLogger(this.getClass().getName());
+	}
 
 	/**
 	 * This method fetches one object / entity within a transaction.
@@ -110,7 +122,7 @@ public abstract class BaseDeliveryController
 		
 		try
 		{
-        	CmsLogger.logInfo("BaseHelper::GetAllObjects for " + arg.getName());
+        	logger.info("BaseHelper::GetAllObjects for " + arg.getName());
 			OQLQuery oql = db.getOQLQuery( "SELECT u FROM " + arg.getName() + " u" );
 			QueryResults results = oql.execute(Database.ReadOnly);
 			
@@ -145,7 +157,7 @@ public abstract class BaseDeliveryController
 		try
 		{
         	
-			CmsLogger.logInfo("BaseHelper::GetAllObjects for " + arg.getName());
+			logger.info("BaseHelper::GetAllObjects for " + arg.getName());
 			OQLQuery oql = db.getOQLQuery( "SELECT u FROM " + arg.getName() + " u ORDER BY u." + orderByField + " " + direction);
 			QueryResults results = oql.execute(Database.ReadOnly);
 			
@@ -260,7 +272,7 @@ public abstract class BaseDeliveryController
 		try
 		{
 			db.begin();
-			CmsLogger.logInfo("Opening a new Transaction...");
+			logger.info("Opening a new Transaction...");
 		}
 		catch(Exception e)
 		{
@@ -275,7 +287,7 @@ public abstract class BaseDeliveryController
      
 	public static void closeTransaction(Database db) throws SystemException
 	{
-	    CmsLogger.logInfo("closeTransaction a transaction and closing it...");
+	    logger.info("closeTransaction a transaction and closing it...");
 	    //rollbackTransaction(db);
 	    commitTransaction(db);
 	}
@@ -288,7 +300,7 @@ public abstract class BaseDeliveryController
 	{
 		try
 		{
-		    CmsLogger.logInfo("Committing a transaction and closing it...");
+		    logger.info("Committing a transaction and closing it...");
 		    
 		    db.commit();
 			db.close();
@@ -307,7 +319,7 @@ public abstract class BaseDeliveryController
      
 	public static void rollbackTransaction(Database db) throws SystemException
 	{
-	    CmsLogger.logInfo("Rollback a transaction...");
+	    logger.info("Rollback a transaction...");
 
 		try
 		{
@@ -319,7 +331,7 @@ public abstract class BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logInfo("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+			logger.info("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
 			//throw new SystemException("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage(), e);    
 		}
 	}
@@ -332,7 +344,7 @@ public abstract class BaseDeliveryController
 	{
 		try
 		{
-		    CmsLogger.logInfo("Closing database...");
+		    logger.info("Closing database...");
 
 			db.close();
 		}

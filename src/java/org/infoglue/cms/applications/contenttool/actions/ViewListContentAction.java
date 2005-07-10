@@ -23,8 +23,8 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ import java.util.List;
  *  @author Mattias Bogeblad
  */
 
-public class ViewListContentAction extends WebworkAbstractAction 
+public class ViewListContentAction extends InfoGlueAbstractAction 
 {
 
 	private List contentVOList;
@@ -43,10 +43,10 @@ public class ViewListContentAction extends WebworkAbstractAction
 	protected String doExecute() throws Exception 
 	{
 	
-	    CmsLogger.logInfo("Executing doExecute on ViewListContentAction..");
+	    getLogger().info("Executing doExecute on ViewListContentAction..");
 		//ViewListContentUCC viewListContentUCC = ViewListContentUCCFactory.newViewListContentUCC();
 		//this.contentVOList = viewListContentUCC.viewListContent();
-	    CmsLogger.logInfo("Finished executing doExecute on ViewListContentAction..");
+	    getLogger().info("Finished executing doExecute on ViewListContentAction..");
         return "success";
 	}
 	

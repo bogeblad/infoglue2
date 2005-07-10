@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.util.webloggers;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.util.*;
 
 import java.io.*;
@@ -39,8 +40,9 @@ import javax.servlet.http.HttpServletResponse;
  * <a href="http://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format">common log format</a>).
  */
 
-public class CommonLogger extends Logger
+public class CommonLogger extends org.infoglue.deliver.util.webloggers.Logger
 {
+    private final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(CommonLogger.class.getName());
 
 	private static String hostAddress = null;
 	private static String hostName = null;
@@ -133,7 +135,7 @@ public class CommonLogger extends Logger
 	    	}
 	    	catch(Exception e)
 	    	{
-	    		CmsLogger.logSevere(e.getMessage(), e);
+	    		logger.error(e.getMessage(), e);
 	    	}
 	    	finally
 	    	{
@@ -206,7 +208,7 @@ public class CommonLogger extends Logger
     	}
     	catch(Exception e)
     	{
-    		CmsLogger.logSevere(e.getMessage(), e);
+    		logger.error(e.getMessage(), e);
     	}
     	
     	hostAddress = address;
@@ -227,7 +229,7 @@ public class CommonLogger extends Logger
     	}
     	catch(Exception e)
     	{
-    		CmsLogger.logSevere(e.getMessage(), e);
+    		logger.error(e.getMessage(), e);
     	}
     	
     	hostName = name;

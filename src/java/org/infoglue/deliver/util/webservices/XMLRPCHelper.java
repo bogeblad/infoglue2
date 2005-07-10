@@ -25,9 +25,11 @@ package org.infoglue.deliver.util.webservices;
 
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.apache.xmlrpc.XmlRpc;
 import org.apache.xmlrpc.XmlRpcClient;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+
 
 /**
  * @author Mattias Bogeblad
@@ -37,6 +39,8 @@ import org.infoglue.cms.util.CmsLogger;
 
 public class XMLRPCHelper
 {
+    private final static Logger logger = Logger.getLogger(XMLRPCHelper.class.getName());
+
 	private String serviceUrl = "";
 	private String method = "";
 	private Vector parameters = new Vector();
@@ -67,13 +71,13 @@ public class XMLRPCHelper
 			// this method returns a string
 			this.result = xmlrpc.execute(this.method, this.parameters);
 			
-			CmsLogger.logInfo("result:" + result);
+			logger.info("result:" + result);
 		}
 		catch(Exception e)
 		{
 			this.errorCode = "1";
 			this.errorMessage = "An error occurred:" + e.getMessage();
-			CmsLogger.logWarning("An error occurred:" + e.getMessage(), e);
+			logger.warn("An error occurred:" + e.getMessage(), e);
 		}
 	}
 	

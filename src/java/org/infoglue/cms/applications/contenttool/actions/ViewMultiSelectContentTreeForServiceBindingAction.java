@@ -27,9 +27,9 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.List;
 import java.util.*;
@@ -38,7 +38,7 @@ import java.util.*;
  * This action shows the Content-tree when binding stuff.
  */ 
 
-public class ViewMultiSelectContentTreeForServiceBindingAction extends WebworkAbstractAction
+public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueAbstractAction
 {
 
     private Integer siteNodeVersionId;
@@ -197,11 +197,6 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends WebworkAb
 		return this.serviceBindingId;
 	}
 	
-	public ViewMultiSelectContentTreeForServiceBindingAction getThis()
-	{
-		return this;
-	}
-	
 	public String getTree()
 	{
 		return tree;
@@ -346,7 +341,7 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends WebworkAb
 
     public String doMoveQualifyer() throws Exception
     {	
-    	CmsLogger.logInfo("------------------------------------->");
+    	getLogger().info("------------------------------------->");
 		this.qualifyers = parseQualifyers(qualifyerString);
 		this.qualifyers = moveQualifyer(this.direction, this.oldSortOrder, this.qualifyers);  	
 
@@ -358,7 +353,7 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends WebworkAb
 
     public String doDeleteQualifyer() throws Exception
     {	
-    	CmsLogger.logInfo("------------------------------------->");
+    	getLogger().info("------------------------------------->");
 		this.qualifyers = parseQualifyers(qualifyerString);
 		this.qualifyers = deleteQualifyer(this.oldSortOrder, this.qualifyers);  	
 		
@@ -399,7 +394,7 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends WebworkAb
 
     private List moveQualifyer(Integer direction, Integer oldSortOrder, List qualifyers)
     {
-    	CmsLogger.logInfo("-------------------------------------> About to move the qualifyer in direction " + direction + " and old sortOrder was " + oldSortOrder);
+    	getLogger().info("-------------------------------------> About to move the qualifyer in direction " + direction + " and old sortOrder was " + oldSortOrder);
     	ArrayList newQualifyers = new ArrayList();
     	
     	Iterator iterator = qualifyers.iterator();
@@ -407,18 +402,18 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends WebworkAb
     	while(iterator.hasNext())
     	{
     		QualifyerVO qualifyer = (QualifyerVO)iterator.next();
-    		CmsLogger.logInfo("Found qualifyer " + qualifyer.getValue() + ":" + qualifyer.getSortOrder());
+    		getLogger().info("Found qualifyer " + qualifyer.getValue() + ":" + qualifyer.getSortOrder());
 			if(qualifyer.getSortOrder().equals(oldSortOrder) && direction.intValue() == 0) //down
 			{
-				CmsLogger.logInfo("About to move it down...");
+				getLogger().info("About to move it down...");
 				if(iterator.hasNext())
 				{
 					QualifyerVO nextQualifyer = (QualifyerVO)iterator.next();
-		    		CmsLogger.logInfo("nextQualifyer " + nextQualifyer.getValue() + ":" + nextQualifyer.getSortOrder());
+		    		getLogger().info("nextQualifyer " + nextQualifyer.getValue() + ":" + nextQualifyer.getSortOrder());
 					nextQualifyer.setSortOrder(qualifyer.getSortOrder());	
-					CmsLogger.logInfo("Set the nextQualifyer sortOrder to " + qualifyer.getSortOrder());
+					getLogger().info("Set the nextQualifyer sortOrder to " + qualifyer.getSortOrder());
 					qualifyer.setSortOrder(new Integer(qualifyer.getSortOrder().intValue() + 1));
-					CmsLogger.logInfo("Set the qualifyer sortOrder to " + qualifyer.getSortOrder());
+					getLogger().info("Set the qualifyer sortOrder to " + qualifyer.getSortOrder());
 					newQualifyers.add(nextQualifyer);
 					newQualifyers.add(qualifyer);
 				}
@@ -428,15 +423,15 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends WebworkAb
 			}
 			else if(qualifyer.getSortOrder().equals(oldSortOrder) && direction.intValue() == 1) //up
 			{
-				CmsLogger.logInfo("About to move it up...");
+				getLogger().info("About to move it up...");
 				if(i > 0)
 				{
 					QualifyerVO previousQualifyer = (QualifyerVO)newQualifyers.get(i-1);
-		    		CmsLogger.logInfo("Previous qualifyer " + previousQualifyer.getValue() + ":" + previousQualifyer.getSortOrder());
+		    		getLogger().info("Previous qualifyer " + previousQualifyer.getValue() + ":" + previousQualifyer.getSortOrder());
 					previousQualifyer.setSortOrder(qualifyer.getSortOrder());	
-					CmsLogger.logInfo("Set the previous qualifyer sortOrder to " + qualifyer.getSortOrder());
+					getLogger().info("Set the previous qualifyer sortOrder to " + qualifyer.getSortOrder());
 					qualifyer.setSortOrder(new Integer(qualifyer.getSortOrder().intValue() - 1));
-					CmsLogger.logInfo("Set the qualifyer sortOrder to " + qualifyer.getSortOrder());
+					getLogger().info("Set the qualifyer sortOrder to " + qualifyer.getSortOrder());
 					newQualifyers.remove(qualifyer);
 					newQualifyers.add(i-1, qualifyer);
 				}
@@ -461,12 +456,12 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends WebworkAb
     	while(iterator.hasNext())
     	{
     		QualifyerVO qualifyer = (QualifyerVO)iterator.next();
-    		CmsLogger.logInfo("-------------------------------->Found qualifyer " + qualifyer.getValue() + ":" + qualifyer.getSortOrder());
+    		getLogger().info("-------------------------------->Found qualifyer " + qualifyer.getValue() + ":" + qualifyer.getSortOrder());
 			if(!qualifyer.getSortOrder().equals(oldSortOrder))
 			{
-				CmsLogger.logInfo("qualifyer:" + qualifyer.getSortOrder());
-				CmsLogger.logInfo("qualifyer:" + qualifyer.getValue());
-				CmsLogger.logInfo("Adding this qualifyer again as it did not match the delete-one:" + oldSortOrder);
+				getLogger().info("qualifyer:" + qualifyer.getSortOrder());
+				getLogger().info("qualifyer:" + qualifyer.getValue());
+				getLogger().info("Adding this qualifyer again as it did not match the delete-one:" + oldSortOrder);
 				qualifyer.setSortOrder(new Integer(i));
 				newQualifyers.add(qualifyer);				
 				i++;

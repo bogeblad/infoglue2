@@ -58,7 +58,7 @@ import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.css.CSSHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -120,13 +120,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	public List getContentRelationQualifyers(String qualifyerXML)
 	{
-		CmsLogger.logInfo("Content qualifyerXML:" + qualifyerXML);
+		getLogger().info("Content qualifyerXML:" + qualifyerXML);
 	    return parseQualifyersFromXML(qualifyerXML, "contentId");
 	}
 
 	public List getSiteNodeRelationQualifyers(String qualifyerXML)
 	{
-		CmsLogger.logInfo("Content qualifyerXML:" + qualifyerXML);
+		getLogger().info("Content qualifyerXML:" + qualifyerXML);
 	    return parseQualifyersFromXML(qualifyerXML, "siteNodeId");
 	}
 
@@ -203,13 +203,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
 			if(this.contentVersionVO == null && fallBackToMasterLanguage)
 			{
-			    //CmsLogger.logInfo("repositoryId:" + repositoryId);
+			    //getLogger().info("repositoryId:" + repositoryId);
 			    Integer usedRepositoryId = this.repositoryId;
 			    if(this.repositoryId == null && this.contentVO != null)
 			        usedRepositoryId = this.contentVO.getRepositoryId();
 			    
 			    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(usedRepositoryId);
-			    //CmsLogger.logInfo("MasterLanguage: " + masterLanguageVO);
+			    //getLogger().info("MasterLanguage: " + masterLanguageVO);
 			    this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
 			}
 			
@@ -352,7 +352,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
 		
 		return eventVO;
@@ -485,7 +485,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
 		return digitalAssets;
@@ -514,7 +514,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
 		return digitalAssets;
@@ -535,7 +535,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -557,7 +557,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -579,7 +579,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -601,7 +601,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -622,8 +622,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		{
 			try
 	        {
-		        CmsLogger.logInfo("key:" + key);
-				CmsLogger.logInfo("VersionValue:" + this.contentVersionVO.getVersionValue());
+		        getLogger().info("key:" + key);
+				getLogger().info("VersionValue:" + this.contentVersionVO.getVersionValue());
 		
 				String xml = this.contentVersionVO.getVersionValue();
 				
@@ -654,9 +654,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
 						{
 							value = n.getFirstChild().getNodeValue();
-							CmsLogger.logInfo("Getting value: " + value);
+							getLogger().info("Getting value: " + value);
 
-							//CmsLogger.logInfo("VersionValue:" + value);
+							//getLogger().info("VersionValue:" + value);
 							if(value != null)
 								value = new VisualFormatter().escapeHTML(value);
 							
@@ -672,7 +672,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	        }
 		}
 		
-		//CmsLogger.logInfo("value:" + value);	
+		//getLogger().info("value:" + value);	
 		
 		return value;
 	}
@@ -689,8 +689,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		{
 			try
 			{
-				CmsLogger.logInfo("key:" + key);
-				CmsLogger.logInfo("VersionValue:" + this.contentVersionVO.getVersionValue());
+				getLogger().info("key:" + key);
+				getLogger().info("VersionValue:" + this.contentVersionVO.getVersionValue());
 				
 				String xml = this.contentVersionVO.getVersionValue();
 				
@@ -720,7 +720,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
 						{
 							value = n.getFirstChild().getNodeValue();
-							CmsLogger.logInfo("Getting value: " + value);
+							getLogger().info("Getting value: " + value);
 							break;
 						}
 					}
@@ -732,7 +732,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 				e.printStackTrace();
 			}
 		}
-		//CmsLogger.logInfo("value:" + value);	
+		//getLogger().info("value:" + value);	
 		return value;
 	}
 	
@@ -777,7 +777,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	    
 	    if(this.WYSIWYGProperties != null)
 	    {
-		    CmsLogger.logInfo("this.WYSIWYGProperties:" + this.WYSIWYGProperties.size());
+		    getLogger().info("this.WYSIWYGProperties:" + this.WYSIWYGProperties.size());
 		    
 		    //Clear sections of the configuration if overridden
 		    if(principalWYSIWYGProperties.containsKey("toolbar_line0_position0"))
@@ -824,7 +824,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	
 	public List getCSSRules(String url)
 	{
-		CmsLogger.logInfo("url:" + url);
+		getLogger().info("url:" + url);
 	    CSSHelper cssHelper = CSSHelper.getHelper(); 
 	    cssHelper.setCSSUrl(url);
 	    
@@ -922,7 +922,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;
@@ -945,7 +945,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of categories: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of categories: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;
@@ -965,7 +965,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logWarning("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;

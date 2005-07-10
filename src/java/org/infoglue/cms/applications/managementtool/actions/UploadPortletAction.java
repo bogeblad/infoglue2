@@ -44,7 +44,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
@@ -65,7 +65,7 @@ import webwork.multipart.MultiPartRequestWrapper;
  * @author jand
  *  
  */
-public class UploadPortletAction extends WebworkAbstractAction {
+public class UploadPortletAction extends InfoGlueAbstractAction {
     private static final Log log = LogFactory.getLog(UploadPortletAction.class);
 
     private static final String PORTLET_DEPLOY_PREFIX = "portlet.deploy";

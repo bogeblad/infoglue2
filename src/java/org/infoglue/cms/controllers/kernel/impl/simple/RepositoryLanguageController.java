@@ -83,13 +83,13 @@ public class RepositoryLanguageController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -131,7 +131,7 @@ public class RepositoryLanguageController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -146,11 +146,11 @@ public class RepositoryLanguageController extends BaseController
         
 		/*
 		String repositoryLanguageListKey = "" + repositoryId;
-		CmsLogger.logInfo("repositoryLanguageListKey:" + repositoryLanguageListKey);
+		getLogger().info("repositoryLanguageListKey:" + repositoryLanguageListKey);
 		repositoryLanguageList = (List)CacheController.getCachedObject("repositoryLanguageListCache", repositoryLanguageListKey);
 		if(repositoryLanguageList != null)
 		{
-			CmsLogger.logInfo("There was an cached list:" + repositoryLanguageList);
+			getLogger().info("There was an cached list:" + repositoryLanguageList);
 		}
 		else
 		{
@@ -174,7 +174,7 @@ public class RepositoryLanguageController extends BaseController
 	        }
 	        catch(Exception e)
 	        {
-	            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+	            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
 	            rollbackTransaction(db);
 	            throw new SystemException(e.getMessage());
 	        }
@@ -208,11 +208,11 @@ public class RepositoryLanguageController extends BaseController
 		List repositoryLanguageVOList = null;
 		
 		String repositoryLanguageListKey = "" + repositoryId;
-		CmsLogger.logInfo("repositoryLanguageListKey:" + repositoryLanguageListKey);
+		getLogger().info("repositoryLanguageListKey:" + repositoryLanguageListKey);
 		repositoryLanguageVOList = (List)CacheController.getCachedObject("repositoryLanguageListCache", repositoryLanguageListKey);
 		if(repositoryLanguageVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached list:" + repositoryLanguageVOList);
+			getLogger().info("There was an cached list:" + repositoryLanguageVOList);
 		}
 		else
 		{
@@ -240,7 +240,7 @@ public class RepositoryLanguageController extends BaseController
 	        }
 	        catch(Exception e)
 	        {
-	            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+	            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
 	            rollbackTransaction(db);
 	            throw new SystemException(e.getMessage());
 	        }
@@ -425,7 +425,7 @@ public class RepositoryLanguageController extends BaseController
 		 }
 		 catch(Exception e)
 		 {
-			 CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			 getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			 rollbackTransaction(db);
 			 throw new SystemException(e.getMessage());
 		 }
@@ -450,7 +450,7 @@ public class RepositoryLanguageController extends BaseController
 		 }
 		 catch(Exception e)
 		 {
-			 CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			 getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			 rollbackTransaction(db);
 			 throw new SystemException(e.getMessage());
 		 }
@@ -495,7 +495,7 @@ public class RepositoryLanguageController extends BaseController
 		 }
 		 catch(Exception e)
 		 {
-			 CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			 getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			 rollbackTransaction(db);
 			 throw new SystemException(e.getMessage());
 		 }
@@ -518,7 +518,7 @@ public class RepositoryLanguageController extends BaseController
 		 }
 		 catch(Exception e)
 		 {
-			 CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			 getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			 rollbackTransaction(db);
 			 throw new SystemException(e.getMessage());
 		 }
@@ -560,13 +560,13 @@ public class RepositoryLanguageController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            CmsLogger.logWarning("An error occurred so we should not completes the transaction:" + ce, ce);
+            getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -592,12 +592,12 @@ public class RepositoryLanguageController extends BaseController
 			while(languageIterator.hasNext())
 			{
 				LanguageVO languageVO = (LanguageVO)languageIterator.next();
-				CmsLogger.logInfo("Language:" + languageVO.getName());		
+				getLogger().info("Language:" + languageVO.getName());		
 				Iterator repositoryLanguageIterator = repositoryLanguageList.iterator();
 				while(repositoryLanguageIterator.hasNext())
 				{
 					RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguageIterator.next();
-					CmsLogger.logInfo("Comparing" + languageVO.getLanguageId().intValue() + " and " + repositoryLanguage.getLanguage().getLanguageId().intValue());
+					getLogger().info("Comparing" + languageVO.getLanguageId().intValue() + " and " + repositoryLanguage.getLanguage().getLanguageId().intValue());
 					if(languageVO.getLanguageId().intValue() == repositoryLanguage.getLanguage().getLanguageId().intValue())
 					{
 						remainingLanguages.remove(languageVO);
@@ -612,13 +612,13 @@ public class RepositoryLanguageController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			CmsLogger.logWarning("An error occurred so we should not complete the transaction:" + ce, ce);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			e.printStackTrace();
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());

@@ -1,7 +1,8 @@
 package org.infoglue.cms.util.sorters;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.infoglue.cms.util.CmsLogger;
+import org.apache.log4j.Logger;
+
 
 import java.util.Comparator;
 
@@ -12,6 +13,8 @@ import java.util.Comparator;
  */
 public class ReflectionComparator implements Comparator
 {
+    private final static Logger logger = Logger.getLogger(ReflectionComparator.class.getName());
+
 	private String sortProperty;
 
 	public ReflectionComparator(String prop)
@@ -38,7 +41,7 @@ public class ReflectionComparator implements Comparator
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logInfo(getClass().getName() + " Error finding property " + property, e);
+			logger.info(getClass().getName() + " Error finding property " + property, e);
 			return new Comparable()
 			{
 				public int compareTo(Object o)

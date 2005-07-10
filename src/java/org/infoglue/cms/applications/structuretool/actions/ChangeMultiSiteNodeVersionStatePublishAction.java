@@ -33,8 +33,8 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.util.CmsLogger;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
  * This class implements submit to publish on many sitenode versions at once.
@@ -42,7 +42,7 @@ import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
  * @author Mattias Bogeblad
  */
 
-public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstractAction
+public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstractAction
 {
 	private Integer siteNodeId;
 	private List siteNodeVersionId = new ArrayList();
@@ -68,7 +68,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstrac
 		while(it.hasNext())
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
-			CmsLogger.logInfo("Publishing:" + siteNodeVersionId);
+			getLogger().info("Publishing:" + siteNodeVersionId);
 			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
 		}
 
@@ -78,7 +78,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends WebworkAbstrac
 		while(contentVersionIdsIterator.hasNext())
 		{
 			Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
-			CmsLogger.logInfo("Publishing:" + contentVersionId);
+			getLogger().info("Publishing:" + contentVersionId);
 			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
 		}
 

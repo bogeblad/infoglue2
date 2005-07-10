@@ -62,15 +62,15 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
 	public AvailableServiceBindingVO getAvailableServiceBindingVO(String availableServiceBindingName, Database db) throws SystemException, Exception
 	{ 
 	    String key = "" + availableServiceBindingName;
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
 		if(availableServiceBindingVO != null)
 		{
-		    CmsLogger.logInfo("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
+		    getLogger().info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
 		}
 		else
 		{
-			CmsLogger.logInfo("Going to look for availableServiceBindingName " + availableServiceBindingName);
+			getLogger().info("Going to look for availableServiceBindingName " + availableServiceBindingName);
 			
 			//OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl asb WHERE asb.name = $1");
     		OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl asb WHERE asb.name = $1");
@@ -82,11 +82,11 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
         	{
         		AvailableServiceBinding availableServiceBinding = (AvailableServiceBinding)results.next();
 				availableServiceBindingVO = availableServiceBinding.getValueObject();
-				CmsLogger.logInfo("Found availableServiceBinding:" + availableServiceBindingVO.getName());
+				getLogger().info("Found availableServiceBinding:" + availableServiceBindingVO.getName());
         	}
             else
             {
-                CmsLogger.logInfo("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
+                getLogger().info("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
             }
 			
 			CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);
@@ -110,7 +110,7 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
 		if (results.hasMore()) 
     	{
     		availableServiceBinding = (AvailableServiceBinding)results.next();
-			CmsLogger.logInfo("Found availableServiceBinding:" + availableServiceBinding.getName());
+			getLogger().info("Found availableServiceBinding:" + availableServiceBinding.getName());
     	}
             
         return availableServiceBinding;	

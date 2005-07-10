@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
  * This class implements the action class for the menu in the content tool.
@@ -31,7 +31,7 @@ import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
  * @author Mattias Bogeblad  
  */
 
-public class ViewContentToolMenuAction extends WebworkAbstractAction
+public class ViewContentToolMenuAction extends InfoGlueAbstractAction
 {
     
     private Integer repositoryId;

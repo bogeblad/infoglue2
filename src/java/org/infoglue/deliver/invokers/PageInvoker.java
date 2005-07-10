@@ -30,11 +30,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
@@ -53,6 +54,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public abstract class PageInvoker
 {	
+    private final static Logger logger = Logger.getLogger(PageInvoker.class.getName());
+
     private DatabaseWrapper dbWrapper				= null;
 	private HttpServletRequest request				= null;
 	private HttpServletResponse response 			= null;
@@ -138,13 +141,13 @@ public abstract class PageInvoker
 
 	public void deliverPage() throws Exception
 	{
-		CmsLogger.logInfo("C PageKey:" + this.getDeliveryContext().getPageKey());
+		logger.info("C PageKey:" + this.getDeliveryContext().getPageKey());
 		
 		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.getTemplateController().getLanguageId());
-		CmsLogger.logInfo("languageVO:" + languageVO);
+		logger.info("languageVO:" + languageVO);
 		
 		String isPageCacheOn = CmsPropertyHandler.getProperty("isPageCacheOn");
-		CmsLogger.logInfo("isPageCacheOn:" + isPageCacheOn);
+		logger.info("isPageCacheOn:" + isPageCacheOn);
 		String refresh = this.getRequest().getParameter("refresh");
 		
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")))
@@ -160,7 +163,7 @@ public abstract class PageInvoker
 			}
 			else
 			{
-				CmsLogger.logInfo("There was a cached copy..."); // + pageString);
+				logger.info("There was a cached copy..."); // + pageString);
 			}
 			
 			//Caching the pagePath
@@ -182,13 +185,13 @@ public abstract class PageInvoker
 		}
 
 		String contentType = this.getTemplateController().getPageContentType();
-		//CmsLogger.logInfo("ContentType in deliveryContext:" + this.deliveryContext.getContentType());
+		//logger.info("ContentType in deliveryContext:" + this.deliveryContext.getContentType());
 		if(this.deliveryContext.getContentType() != null && !contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))
 		    contentType = this.deliveryContext.getContentType();
 		
-		//CmsLogger.logInfo("ContentType:" + contentType);
+		//logger.info("ContentType:" + contentType);
 		this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
-		CmsLogger.logInfo("contentType:" + contentType + "; charset=" + languageVO.getCharset());
+		logger.info("contentType:" + contentType + "; charset=" + languageVO.getCharset());
 		
 		PrintWriter out = this.getResponse().getWriter();
 		out.println(pageString);
@@ -259,8 +262,8 @@ public abstract class PageInvoker
 		{
 		    PortalController pController = new PortalController(getRequest(), getResponse());
 		    context.put(PortalController.NAME, pController);
-		    CmsLogger.logInfo("PortalController.NAME:" + PortalController.NAME);
-		    CmsLogger.logInfo("pController:" + pController);
+		    logger.info("PortalController.NAME:" + PortalController.NAME);
+		    logger.info("pController:" + pController);
 		}
 		
 		return context;

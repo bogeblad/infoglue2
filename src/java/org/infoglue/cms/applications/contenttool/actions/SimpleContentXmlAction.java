@@ -53,7 +53,6 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.treeservice.ss.ContentNodeSupplier;
-import org.infoglue.cms.util.CmsLogger;
 
 import com.frovi.ss.Tree.INodeSupplier;
 
@@ -109,7 +108,7 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
 		}
 		
 		return contentVersionVO;

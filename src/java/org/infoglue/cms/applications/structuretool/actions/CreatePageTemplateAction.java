@@ -44,7 +44,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import webwork.action.Action;
 import webwork.action.ActionContext;
@@ -87,11 +87,11 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 
     public String doExecute() throws Exception
     {
-        CmsLogger.logInfo("contentId:" + contentId);
-        CmsLogger.logInfo("parentContentId:" + parentContentId);
-        CmsLogger.logInfo("repositoryId:" + repositoryId);
-        CmsLogger.logInfo("siteNodeId:" + siteNodeId);
-        CmsLogger.logInfo("name:" + name);
+        getLogger().info("contentId:" + contentId);
+        getLogger().info("parentContentId:" + parentContentId);
+        getLogger().info("repositoryId:" + repositoryId);
+        getLogger().info("siteNodeId:" + siteNodeId);
+        getLogger().info("name:" + name);
         
         ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PageTemplate");
         if(contentTypeDefinitionVO == null)
@@ -112,12 +112,12 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		Integer originalMetaInfoMasterLanguageId = LanguageController.getController().getMasterLanguage(metaInfoContentVO.getRepositoryId()).getId();
 		Integer destinationMasterLanguageId = LanguageController.getController().getMasterLanguage(this.repositoryId).getId();
 		ContentVersionVO originalContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.contentId, originalMetaInfoMasterLanguageId);
-		CmsLogger.logInfo("originalMetaInfoMasterLanguageId:" + originalMetaInfoMasterLanguageId);
-		CmsLogger.logInfo("contentId:" + contentId);
-		CmsLogger.logInfo("originalContentVersionVO:" + originalContentVersionVO);
+		getLogger().info("originalMetaInfoMasterLanguageId:" + originalMetaInfoMasterLanguageId);
+		getLogger().info("contentId:" + contentId);
+		getLogger().info("originalContentVersionVO:" + originalContentVersionVO);
 		
 	    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(originalContentVersionVO.getId(), "ComponentStructure", false);
-	    CmsLogger.logInfo("componentStructure:" + componentStructure);
+	    getLogger().info("componentStructure:" + componentStructure);
 		
 		//Create initial content version also... in masterlanguage
 		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
@@ -135,7 +135,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
     	try 
     	{
     		MultiPartRequestWrapper mpr = ActionContext.getContext().getMultiPartRequest();
-    		CmsLogger.logInfo("mpr:" + mpr);
+    		getLogger().info("mpr:" + mpr);
     		if(mpr != null)
     		{ 
 	    		Enumeration names = mpr.getFileNames();
@@ -145,9 +145,9 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 					String contentType    = mpr.getContentType(name);
 					String fileSystemName = mpr.getFilesystemName(name);
 					
-					CmsLogger.logInfo("name:" + name);
-					CmsLogger.logInfo("contentType:" + contentType);
-					CmsLogger.logInfo("fileSystemName:" + fileSystemName);
+					getLogger().info("name:" + name);
+					getLogger().info("contentType:" + contentType);
+					getLogger().info("fileSystemName:" + fileSystemName);
 	            	
 	            	file = mpr.getFile(name);
 					String fileName = fileSystemName;
@@ -170,12 +170,12 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
     		}
     		else
     		{
-    		    CmsLogger.logSevere("File upload failed for some reason.");
+    		    getLogger().error("File upload failed for some reason.");
     		}
       	} 
       	catch (Exception e) 
       	{
-      		CmsLogger.logSevere("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+      		getLogger().error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
       	}
 		finally
 		{

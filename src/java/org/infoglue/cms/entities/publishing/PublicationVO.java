@@ -32,7 +32,6 @@ import org.infoglue.cms.entities.kernel.ValidatableEntityVO;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
 import org.infoglue.cms.util.validators.ConstraintRule;
 import org.infoglue.cms.util.validators.Range;
-import org.infoglue.cms.util.CmsLogger;
 
 /**
  * This class represents a published edition. The individual entries in the edition
@@ -125,7 +124,6 @@ public class PublicationVO extends ValidatableEntityVO implements BaseEntityVO
 
 	public void PrepareValidation()
 	{
-		CmsLogger.logInfo("preparing validation...");
 		// Define the constraint rules for this valueobject
 		// maybe this belongs in the setters of this object?.
 		// then this method would be obsolete, and the validation

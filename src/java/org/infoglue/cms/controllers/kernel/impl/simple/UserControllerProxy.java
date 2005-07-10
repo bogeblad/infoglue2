@@ -35,7 +35,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * @author Mattias Bogeblad
@@ -73,17 +73,17 @@ public class UserControllerProxy extends BaseController
 	    //{
 			try
 	    	{
-			    CmsLogger.logInfo("InfoGlueAuthenticationFilter.authorizerClass:" + InfoGlueAuthenticationFilter.authorizerClass);
+			    getLogger().info("InfoGlueAuthenticationFilter.authorizerClass:" + InfoGlueAuthenticationFilter.authorizerClass);
 				authorizationModule = (AuthorizationModule)Class.forName(InfoGlueAuthenticationFilter.authorizerClass).newInstance();
-				CmsLogger.logInfo("authorizationModule:" + authorizationModule);
+				getLogger().info("authorizationModule:" + authorizationModule);
 				authorizationModule.setExtraProperties(InfoGlueAuthenticationFilter.extraProperties);
 				authorizationModule.setTransactionObject(this.transactionObject);
-				CmsLogger.logInfo("InfoGlueAuthenticationFilter.extraProperties:" + InfoGlueAuthenticationFilter.extraProperties);
+				getLogger().info("InfoGlueAuthenticationFilter.extraProperties:" + InfoGlueAuthenticationFilter.extraProperties);
 	    	}
 	    	catch(Exception e)
 	    	{
 	    		//e.printStackTrace();
-	    		CmsLogger.logSevere("There was an error initializing the authorizerClass:" + e.getMessage(), e);
+	    		getLogger().error("There was an error initializing the authorizerClass:" + e.getMessage(), e);
 	    		throw new SystemException("There was an error initializing the authorizerClass:" + e.getMessage(), e);
 	    	}
 	    //}

@@ -45,15 +45,6 @@ public class ViewStructureRelationEditorAction extends ViewRelationEditorAction
     	this.currentEntityIdentifyer 	= "siteNodeId";
     }
     
-    /**
-     * This is a method for the gui to get hold of this object.
-     */
-
-	public ViewStructureRelationEditorAction getThis()
-	{
-		return this;
-	}
-		
 	/**
 	 * A method that gets the name for the qualifyer for representation purposes.
 	 */

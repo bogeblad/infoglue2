@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.7 2005/07/01 14:43:35 mattias Exp $
+ * $Id: CategoryController.java,v 1.8 2005/07/10 21:04:34 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -35,7 +35,7 @@ import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 
 /**
  * The CategoryController manages all actions related to persistence
@@ -146,7 +146,7 @@ public class CategoryController extends BaseController
         while(categoryVOListIterator.hasNext())
         {
             CategoryVO currentCategoryVO = (CategoryVO)categoryVOListIterator.next();
-	        CmsLogger.logInfo("currentCategoryVO:" + currentCategoryVO.getName() + "=" + name);
+	        getLogger().info("currentCategoryVO:" + currentCategoryVO.getName() + "=" + name);
             if(currentCategoryVO.getName().equalsIgnoreCase(name))
             {
                 categoryVO = currentCategoryVO;
@@ -357,7 +357,7 @@ public class CategoryController extends BaseController
     
 	public boolean getIsAccessApproved(Integer categoryId, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
-		CmsLogger.logInfo("getIsAccessApproved for " + categoryId + " AND " + infoGluePrincipal);
+		getLogger().info("getIsAccessApproved for " + categoryId + " AND " + infoGluePrincipal);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -372,7 +372,7 @@ public class CategoryController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

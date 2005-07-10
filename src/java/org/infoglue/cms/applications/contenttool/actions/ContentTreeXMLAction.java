@@ -43,7 +43,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -62,12 +62,11 @@ import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImp
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.treeservice.ss.ContentNodeSupplier;
-import org.infoglue.cms.util.CmsLogger;
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.INodeSupplier;
 
-public class ContentTreeXMLAction extends WebworkAbstractAction
+public class ContentTreeXMLAction extends InfoGlueAbstractAction
 {
     private static String TYPE_FOLDER = "ContentFolder";
     private static String TYPE_ITEM = "ContentItem";
@@ -166,7 +165,7 @@ public class ContentTreeXMLAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
 		}
 		
 		return contentVersionVO;

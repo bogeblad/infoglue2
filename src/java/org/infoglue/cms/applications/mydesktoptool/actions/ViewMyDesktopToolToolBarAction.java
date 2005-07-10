@@ -24,7 +24,7 @@
 package org.infoglue.cms.applications.mydesktoptool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -182,7 +182,7 @@ public class ViewMyDesktopToolToolBarAction extends InfoGlueAbstractAction
 
 	public List getButtons()
 	{
-		CmsLogger.logInfo("Title:" + this.title);
+		getLogger().info("Title:" + this.title);
 		
 		if(this.toolbarKey.equalsIgnoreCase("publications"))
 			return getPublicationsButtons();

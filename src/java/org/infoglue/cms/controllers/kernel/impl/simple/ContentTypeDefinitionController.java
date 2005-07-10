@@ -32,7 +32,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.DomainUtils;
 
 import org.exolab.castor.jdo.Database;
@@ -107,11 +107,11 @@ public class ContentTypeDefinitionController extends BaseController
     public List getContentTypeDefinitionVOList() throws SystemException, Bug
     {
 		String key = "contentTypeDefinitionVOList";
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		List cachedContentTypeDefinitionVOList = (List)CacheController.getCachedObject("contentTypeDefinitionCache", key);
 		if(cachedContentTypeDefinitionVOList != null)
 		{
-			CmsLogger.logInfo("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
+			getLogger().info("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
 			return cachedContentTypeDefinitionVOList;
 		}
 
@@ -154,7 +154,7 @@ public class ContentTypeDefinitionController extends BaseController
     
 	public boolean getIsAccessApproved(Integer contentTypeDefinitionId, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
-		CmsLogger.logInfo("getIsAccessApproved for " + contentTypeDefinitionId + " AND " + infoGluePrincipal);
+		getLogger().info("getIsAccessApproved for " + contentTypeDefinitionId + " AND " + infoGluePrincipal);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -169,7 +169,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -204,7 +204,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -260,7 +260,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -360,7 +360,7 @@ public class ContentTypeDefinitionController extends BaseController
 		{
 		    Node ichild = nodes.item(i);
 		    
-		    CmsLogger.logInfo("ichild:" + ichild.getNodeName() + ":" + ichild.getNodeValue());
+		    getLogger().info("ichild:" + ichild.getNodeName() + ":" + ichild.getNodeValue());
 			
 			try
 			{
@@ -392,7 +392,7 @@ public class ContentTypeDefinitionController extends BaseController
 				assetKeyDefinition.setImageWidth(imageWidthValue);
 				assetKeyDefinition.setImageHeight(imageHeightValue);
 				
-				CmsLogger.logInfo("Adding assetKeyDefinition " + assetKeyDefinition.getAssetKey());
+				getLogger().info("Adding assetKeyDefinition " + assetKeyDefinition.getAssetKey());
 				keys.add(assetKeyDefinition);
 			}
 			catch(Exception e)
@@ -401,7 +401,7 @@ public class ContentTypeDefinitionController extends BaseController
 			}
 		}
 		
-		CmsLogger.logInfo("keys:" + keys.size());
+		getLogger().info("keys:" + keys.size());
 		
 		return keys;
 	}
@@ -461,7 +461,7 @@ public class ContentTypeDefinitionController extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logWarning("An error occurred when trying to fetch the asset keys:" + e.getMessage(), e);
+        	getLogger().warn("An error occurred when trying to fetch the asset keys:" + e.getMessage(), e);
         }
 
 		return EMPTY_NODELIST;
@@ -604,7 +604,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
 		}
 
 		return attributes;

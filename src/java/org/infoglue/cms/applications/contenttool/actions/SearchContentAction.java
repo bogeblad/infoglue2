@@ -25,7 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -33,7 +33,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.util.CmsLogger;
 
 import webwork.action.Action;
 
@@ -104,8 +103,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	
 	public String doExecute() throws Exception 
 	{
-	    CmsLogger.logInfo("Executing doExecute on SearchContentAction..");
-		int maxRows = 100;
+	    int maxRows = 100;
 		try
 		{
 			maxRows = Integer.parseInt(CmsPropertyHandler.getProperty("maxRows"));
@@ -120,8 +118,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 
-		CmsLogger.logInfo("Finished executing doExecute on SearchContentAction..");
-        return "success";
+		return "success";
 	}
 	
 	/**
@@ -151,7 +148,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get the content for this version:" + e.getMessage(), e);
+			getLogger().error("An error occurred when we tried to get the content for this version:" + e.getMessage(), e);
 		}
 		
 		return contentVO;
@@ -170,7 +167,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to get the language for this version:" + e.getMessage(), e);
+		    getLogger().error("An error occurred when we tried to get the language for this version:" + e.getMessage(), e);
 		}
 		
 		return languageVO;

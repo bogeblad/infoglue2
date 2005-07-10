@@ -23,9 +23,8 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
-import org.infoglue.cms.util.CmsLogger;
 
 /**
 * This action downloads an asset from the system.
@@ -33,7 +32,7 @@ import org.infoglue.cms.util.CmsLogger;
 * @author Mattias Bogeblad
 */
 
-public class DownloadAssetAction extends WebworkAbstractAction
+public class DownloadAssetAction extends InfoGlueAbstractAction
 {
 	private Integer contentId;
 	private Integer languageId;
@@ -46,7 +45,6 @@ public class DownloadAssetAction extends WebworkAbstractAction
 		try
 		{
 			assetUrl = DigitalAssetController.getDigitalAssetUrl(contentId, languageId, assetKey, true);
-			CmsLogger.logInfo("assetUrl:" + assetUrl);
 			this.getResponse().sendRedirect(assetUrl);
 		}
 		catch(Exception e)

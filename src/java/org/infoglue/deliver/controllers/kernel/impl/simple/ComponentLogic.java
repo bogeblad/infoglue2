@@ -23,6 +23,8 @@
  
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.util.*;
@@ -47,6 +49,8 @@ import java.util.ArrayList;
 
 public class ComponentLogic 
 {
+    private final static Logger logger = Logger.getLogger(ComponentLogic.class.getName());
+
 	private TemplateController templateController = null;
 	private InfoGlueComponent infoGlueComponent = null;
 	private boolean useInheritance = true;
@@ -151,11 +155,11 @@ public class ComponentLogic
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
-			CmsLogger.logInfo("bindings:" + bindings.size());
+			logger.info("bindings:" + bindings.size());
 			if(bindings.size() > 0)
 			{
 				Integer contentId = new Integer((String)bindings.get(0));
-				CmsLogger.logInfo("contentId:" + contentId);
+				logger.info("contentId:" + contentId);
 				assetUrl = templateController.getAssetUrl(contentId);
 			}
 		}
@@ -170,11 +174,11 @@ public class ComponentLogic
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
-			CmsLogger.logInfo("bindings:" + bindings.size());
+			logger.info("bindings:" + bindings.size());
 			if(bindings.size() > 0)
 			{
 				Integer contentId = new Integer((String)bindings.get(0));
-				CmsLogger.logInfo("contentId:" + contentId);
+				logger.info("contentId:" + contentId);
 				assetUrl = templateController.getAssetUrl(contentId);
 			}
 		}
@@ -839,7 +843,7 @@ public class ComponentLogic
 				
 			Map property = (Map)component.getProperties().get(propertyName);
 			InfoGlueComponent parentComponent = component.getParentComponent();
-			//CmsLogger.logInfo("parentComponent: " + parentComponent);
+			//logger.info("parentComponent: " + parentComponent);
 			while(property == null && parentComponent != null)
 			{
 				property = (Map)parentComponent.getProperties().get(propertyName);
@@ -935,21 +939,21 @@ public class ComponentLogic
 					
 					List bindings = new ArrayList();
 					NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
-					//CmsLogger.logInfo("bindingNodeList:" + bindingNodeList.getLength());
+					//logger.info("bindingNodeList:" + bindingNodeList.getLength());
 					for(int j=0; j < bindingNodeList.getLength(); j++)
 					{
 						Element bindingElement = (Element)bindingNodeList.item(j);
 						String entityName = bindingElement.getAttribute("entity");
 						String entityId = bindingElement.getAttribute("entityId");
-						//CmsLogger.logInfo("Binding found:" + entityName + ":" + entityId);
+						//logger.info("Binding found:" + entityName + ":" + entityId);
 						if(entityName.equalsIgnoreCase("Content"))
 						{
-							//CmsLogger.logInfo("Content added:" + entityName + ":" + entityId);
+							//logger.info("Content added:" + entityName + ":" + entityId);
 							bindings.add(entityId);
 						}
 						else
 						{
-							//CmsLogger.logInfo("SiteNode added:" + entityName + ":" + entityId);
+							//logger.info("SiteNode added:" + entityName + ":" + entityId);
 							bindings.add(entityId); 
 						} 
 					}
@@ -1043,10 +1047,10 @@ public class ComponentLogic
 	 
 	private Map getInheritedComponentProperty(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, String propertyName) throws Exception
 	{
-	    //CmsLogger.logInfo("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
+	    //logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
 		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
-		//CmsLogger.logInfo("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
-		//CmsLogger.logInfo("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
+		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
+		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
 		
 		HashMap property = null;
 		
@@ -1054,42 +1058,42 @@ public class ComponentLogic
 		{
 			Document document = XMLHelper.readDocumentFromByteArray(inheritedPageComponentsXML.getBytes("UTF-8"));
 			String propertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
-			//CmsLogger.logInfo("propertyXPath:" + propertyXPath);
-			//CmsLogger.logInfo("propertyXPath:" + propertyXPath);
+			//logger.info("propertyXPath:" + propertyXPath);
+			//logger.info("propertyXPath:" + propertyXPath);
 			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
-			//CmsLogger.logInfo("*********************************************************anl:" + anl.getLength());
+			//logger.info("*********************************************************anl:" + anl.getLength());
 			
 			//If not found on the same component id - let's check them all and use the first we find.
 			if(anl == null || anl.getLength() == 0)
 			{
 				String globalPropertyXPath = "//component/properties/property[@name='" + propertyName + "'][1]";
-				//CmsLogger.logInfo("globalPropertyXPath:" + globalPropertyXPath);
-				//CmsLogger.logInfo("globalPropertyXPath:" + globalPropertyXPath);
+				//logger.info("globalPropertyXPath:" + globalPropertyXPath);
+				//logger.info("globalPropertyXPath:" + globalPropertyXPath);
 				anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), globalPropertyXPath);
-				//CmsLogger.logInfo("anl:" + anl.getLength());
-				//CmsLogger.logInfo("*********************************************************anl:" + anl.getLength());
+				//logger.info("anl:" + anl.getLength());
+				//logger.info("*********************************************************anl:" + anl.getLength());
 			}			
 			
 			for(int i=0; i < anl.getLength(); i++)
 			{
 				Element propertyElement = (Element)anl.item(i);
-				//CmsLogger.logInfo(XMLHelper.serializeDom(propertyElement, new StringBuffer()));
-				//CmsLogger.logInfo("YES - we read the property...");		
+				//logger.info(XMLHelper.serializeDom(propertyElement, new StringBuffer()));
+				//logger.info("YES - we read the property...");		
 				
 				String name		= propertyElement.getAttribute("name");
 				String type		= propertyElement.getAttribute("type");
 				String entity 	= propertyElement.getAttribute("entity");
 				boolean isMultipleBinding = new Boolean(propertyElement.getAttribute("multiple")).booleanValue();
 				
-				//CmsLogger.logInfo("name:" + name);
-				//CmsLogger.logInfo("type:" + type);
-				//CmsLogger.logInfo("entity:" + entity);
-				//CmsLogger.logInfo("isMultipleBinding:" + isMultipleBinding);
+				//logger.info("name:" + name);
+				//logger.info("type:" + type);
+				//logger.info("entity:" + entity);
+				//logger.info("isMultipleBinding:" + isMultipleBinding);
 				
-				CmsLogger.logInfo("name:" + name);
-				//CmsLogger.logInfo("type:" + type);
-				//CmsLogger.logInfo("entity:" + entity);
-				//CmsLogger.logInfo("isMultipleBinding:" + isMultipleBinding);
+				logger.info("name:" + name);
+				//logger.info("type:" + type);
+				//logger.info("entity:" + entity);
+				//logger.info("isMultipleBinding:" + isMultipleBinding);
 				
 				String value = null;
 				
@@ -1115,21 +1119,21 @@ public class ComponentLogic
 				
 				List bindings = new ArrayList();
 				NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
-				//CmsLogger.logInfo("bindingNodeList:" + bindingNodeList.getLength());
+				//logger.info("bindingNodeList:" + bindingNodeList.getLength());
 				for(int j=0; j < bindingNodeList.getLength(); j++)
 				{
 					Element bindingElement = (Element)bindingNodeList.item(j);
 					String entityName = bindingElement.getAttribute("entity");
 					String entityId = bindingElement.getAttribute("entityId");
-					//CmsLogger.logInfo("Binding found:" + entityName + ":" + entityId);
+					//logger.info("Binding found:" + entityName + ":" + entityId);
 					if(entityName.equalsIgnoreCase("Content"))
 					{
-						//CmsLogger.logInfo("Content added:" + entityName + ":" + entityId);
+						//logger.info("Content added:" + entityName + ":" + entityId);
 						bindings.add(entityId);
 					}
 					else
 					{
-						//CmsLogger.logInfo("SiteNode added:" + entityName + ":" + entityId);
+						//logger.info("SiteNode added:" + entityName + ":" + entityId);
 						bindings.add(entityId); 
 					} 
 				}
@@ -1159,7 +1163,7 @@ public class ComponentLogic
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 
@@ -1180,7 +1184,7 @@ public class ComponentLogic
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
-		//CmsLogger.logInfo("componentXPath:" + componentXPath);
+		//logger.info("componentXPath:" + componentXPath);
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
 		for(int i=0; i < anl.getLength(); i++)
 		{
@@ -1267,7 +1271,7 @@ public class ComponentLogic
 		if(pageComponentsString == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
 				    
-		CmsLogger.logInfo("pageComponentsString: " + pageComponentsString);
+		logger.info("pageComponentsString: " + pageComponentsString);
 	
 		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
 		
@@ -1291,13 +1295,13 @@ public class ComponentLogic
 				throw new SystemException("There was no metainformation bound to this page which makes it impossible to render.");	
 			
 			template = templateController.getContentAttribute(contentVO.getContentId(), "ComponentStructure", true);
-			//CmsLogger.logInfo(template);
+			//logger.info(template);
 			if(template == null)
 				throw new SystemException("There was no metainformation bound to this page which makes it impossible to render.");	
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			throw e;
 		}
 

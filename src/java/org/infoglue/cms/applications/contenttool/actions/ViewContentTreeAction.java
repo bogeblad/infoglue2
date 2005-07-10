@@ -25,7 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import javax.servlet.http.Cookie;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -34,7 +34,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * @author Mattias Bogeblad  
  */
 
-public class ViewContentTreeAction extends WebworkAbstractAction implements ViewContentTreeActionInterface
+public class ViewContentTreeAction extends InfoGlueAbstractAction implements ViewContentTreeActionInterface
 {
     
     private Integer repositoryId;

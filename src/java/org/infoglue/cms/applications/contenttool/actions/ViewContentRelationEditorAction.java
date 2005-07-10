@@ -45,15 +45,6 @@ public class ViewContentRelationEditorAction extends ViewRelationEditorAction
     	this.currentEntityIdentifyer 	= "contentId";
     }
     
-    /**
-     * This is a method for the gui to get hold of this object.
-     */
-
-	public ViewContentRelationEditorAction getThis()
-	{
-		return this;
-	}
-		
 	/**
 	 * A method that gets the name for the qualifyer for representation purposes.
 	 */

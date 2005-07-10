@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.List;
  *  @author Mattias Bogeblad
  */
 
-public class ViewListTransactionHistoryAction extends WebworkAbstractAction 
+public class ViewListTransactionHistoryAction extends InfoGlueAbstractAction 
 {
 
 	private List transactionHistoryVOList;

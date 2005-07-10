@@ -23,13 +23,15 @@
 
 package org.infoglue.cms.applications.tasktool.actions;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import webwork.action.ActionContext;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 
 import javax.servlet.http.*;
 import java.util.*;
@@ -40,6 +42,8 @@ import java.util.*;
 
 public class BasicScriptController implements ScriptController
 {
+    private final static Logger logger = Logger.getLogger(BasicScriptController.class.getName());
+
 	private Database db = null;
 	private HttpServletRequest request = null;
 	private Map outputParameters = new HashMap();
@@ -295,8 +299,7 @@ public class BasicScriptController implements ScriptController
 		}
 		catch(Exception e)
 		{
-			//e.printStackTrace();
-			CmsLogger.logInfo("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+			logger.info("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
 			//throw new SystemException("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage(), e);    
 		}
 	}
@@ -308,7 +311,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logInfo(String info)
 	{
-	    CmsLogger.logInfo(info);
+	    logger.info(info);
 	}
 	
 	/**
@@ -317,7 +320,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logInfo(String header, String info)
 	{
-		CmsLogger.logInfo(header + ": " + info);
+	    logger.info(header + ": " + info);
 	}
 	
 	/**
@@ -326,7 +329,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logInfo(String header, boolean info)
 	{
-		CmsLogger.logInfo(header + ": " + info);
+	    logger.info(header + ": " + info);
 	}
 
 	/**
@@ -335,7 +338,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logInfo(String header, int info)
 	{
-		CmsLogger.logInfo(header + ": " + info);
+	    logger.info(header + ": " + info);
 	}
 	
 	/**
@@ -344,7 +347,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logInfo(String header, Object info)
 	{
-		CmsLogger.logInfo(header + ": " + info);
+	    logger.info(header + ": " + info);
 	}
 
 
@@ -354,7 +357,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logWarning(String info)
 	{
-	    CmsLogger.logWarning(info);
+	    logger.warn(info);
 	}
 	
 	/**
@@ -363,7 +366,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logWarning(String header, String info)
 	{
-		CmsLogger.logWarning(header + ": " + info);
+	    logger.warn(header + ": " + info);
 	}
 	
 	/**
@@ -372,7 +375,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logWarning(String header, boolean info)
 	{
-		CmsLogger.logWarning(header + ": " + info);
+	    logger.warn(header + ": " + info);
 	}
 
 	/**
@@ -381,7 +384,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logWarning(String header, int info)
 	{
-		CmsLogger.logInfo(header + ": " + info);
+	    logger.info(header + ": " + info);
 	}
 	
 	/**
@@ -390,7 +393,7 @@ public class BasicScriptController implements ScriptController
 	
 	public void logWarning(String header, Object info)
 	{
-		CmsLogger.logWarning(header + ": " + info);
+	    logger.warn(header + ": " + info);
 	}
 
 }

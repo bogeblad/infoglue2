@@ -22,7 +22,7 @@
  */
 
 package org.infoglue.cms.applications.managementtool.actions;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 
 import org.infoglue.cms.entities.management.SystemUserVO;
@@ -34,7 +34,7 @@ import org.infoglue.cms.entities.management.SystemUserVO;
  *
  */
 
-public class DeleteSystemUserAction extends WebworkAbstractAction
+public class DeleteSystemUserAction extends InfoGlueAbstractAction
 {
 	private SystemUserVO systemUserVO;
 	private Integer systemUserId;

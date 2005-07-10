@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
  * @author mgu
@@ -34,7 +34,7 @@ import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
  * Window>Preferences>Java>Code Generation.
  */
 
-public class ConfirmAction extends WebworkAbstractAction
+public class ConfirmAction extends InfoGlueAbstractAction
 {
 	private String yesDestination;
 	private String noDestination;

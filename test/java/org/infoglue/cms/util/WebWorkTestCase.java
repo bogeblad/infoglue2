@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WebWorkTestCase.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: WebWorkTestCase.java,v 1.2 2005/07/10 21:07:07 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -28,6 +28,7 @@ import java.util.Map;
 
 import webwork.action.ActionContext;
 import webwork.action.Action;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
 
 /**

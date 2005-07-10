@@ -33,7 +33,7 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -75,13 +75,13 @@ public class ViewSystemUserPropertiesAction extends InfoGlueAbstractAction
 		if(this.languageId == null && this.availableLanguages.size() > 0)
 			this.languageId = ((LanguageVO)this.availableLanguages.get(0)).getLanguageId();
 		
-		CmsLogger.logInfo("Language:" + this.languageId);
+		getLogger().info("Language:" + this.languageId);
 		
 		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(userName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
 			this.contentTypeDefinitionVO = (ContentTypeDefinitionVO)contentTypeDefinitionVOList.get(0);
 		
-		CmsLogger.logInfo("contentTypeDefinitionVO:" + contentTypeDefinitionVO.getName());
+		getLogger().info("contentTypeDefinitionVO:" + contentTypeDefinitionVO.getName());
 		
 		InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController().getUser(userName);
 		userPropertiesVOList = UserPropertiesController.getController().getUserPropertiesVOList(userName, this.languageId);
@@ -97,8 +97,8 @@ public class ViewSystemUserPropertiesAction extends InfoGlueAbstractAction
 
 		this.attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());	
 	
-		CmsLogger.logInfo("attributes:" + this.attributes.size());		
-		CmsLogger.logInfo("availableLanguages:" + this.availableLanguages.size());		
+		getLogger().info("attributes:" + this.attributes.size());		
+		getLogger().info("availableLanguages:" + this.availableLanguages.size());		
 	} 
 
 	public String doExecute() throws Exception
@@ -115,26 +115,26 @@ public class ViewSystemUserPropertiesAction extends InfoGlueAbstractAction
 	 
 	public String getAttributeValue(String key)
 	{
-		CmsLogger.logInfo("Getting: " + key);
+		getLogger().info("Getting: " + key);
 		String value = "";
 		try
 		{
 			String xml = this.getXML();
 			if(xml != null)
 			{	
-				CmsLogger.logInfo("key:" + key);
-				CmsLogger.logInfo("XML:" + this.getXML());
+				getLogger().info("key:" + key);
+				getLogger().info("XML:" + this.getXML());
 				
 				DOMBuilder domBuilder = new DOMBuilder();
 				
 				Document document = domBuilder.getDocument(this.getXML());
-				CmsLogger.logInfo("rootElement:" + document.getRootElement().asXML());
+				getLogger().info("rootElement:" + document.getRootElement().asXML());
 				
 				Node node = document.getRootElement().selectSingleNode("attributes/" + key);
 				if(node != null)
 				{
 					value = node.getStringValue();
-					CmsLogger.logInfo("Getting value: " + value);
+					getLogger().info("Getting value: " + value);
 					if(value != null)
 						value = new VisualFormatter().escapeHTML(value);
 				}

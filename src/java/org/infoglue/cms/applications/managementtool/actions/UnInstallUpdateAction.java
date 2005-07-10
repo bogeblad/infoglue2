@@ -25,9 +25,9 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import java.io.PrintWriter;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 
@@ -36,7 +36,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  *
  * 
  */
-public class UnInstallUpdateAction extends WebworkAbstractAction {
+public class UnInstallUpdateAction extends InfoGlueAbstractAction 
+{
 
 	UpdateController uc;
 	private String updatePackageId;
@@ -45,7 +46,7 @@ public class UnInstallUpdateAction extends WebworkAbstractAction {
 	protected String doExecute() throws Exception {
 		getResponse().setBufferSize(10);
 		PrintWriter out = getResponse().getWriter();		
-		CmsLogger.logInfo("Executing doExecute on RefreshUpdates..");
+		getLogger().info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
 		String url = CmsPropertyHandler.getProperty("up2dateUrl");	
 	
@@ -55,11 +56,6 @@ public class UnInstallUpdateAction extends WebworkAbstractAction {
         return "success";
 	}
 	
-	public UnInstallUpdateAction getThis()
-	{
-		return this;
-	}
-
 	
 	/**
 	 * @return

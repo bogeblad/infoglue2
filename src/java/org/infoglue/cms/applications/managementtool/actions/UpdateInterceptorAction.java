@@ -25,7 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 import org.infoglue.cms.entities.management.InterceptorVO;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 
@@ -49,7 +49,7 @@ public class UpdateInterceptorAction extends ViewInterceptorAction
     	ceb.throwIfNotEmpty();		
     	
     	String[] values = getRequest().getParameterValues("interceptionPointId");
-    	CmsLogger.logInfo("values:" + values);
+    	getLogger().info("values:" + values);
 		
 		InterceptorController.getController().update(this.interceptorVO, values);
     	

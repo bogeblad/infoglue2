@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -34,7 +34,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
   * @author Mattias Bogeblad
   */
 
-public class UpdateGroupPropertiesAction extends WebworkAbstractAction 
+public class UpdateGroupPropertiesAction extends InfoGlueAbstractAction 
 {
 	private GroupPropertiesVO groupPropertiesVO;
 	private Integer languageId;

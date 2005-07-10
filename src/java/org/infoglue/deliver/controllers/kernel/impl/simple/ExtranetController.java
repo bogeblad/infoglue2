@@ -55,7 +55,7 @@ import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -120,13 +120,13 @@ public class ExtranetController extends BaseDeliveryController
 			authenticationModule.setTransactionObject(db);
 			
 			String authenticatedUserName = authenticationModule.authenticateUser(request);
-			CmsLogger.logInfo("authenticatedUserName:" + authenticatedUserName);
+			getLogger().info("authenticatedUserName:" + authenticatedUserName);
 			principal = UserControllerProxy.getController(db).getUser(authenticatedUserName);
-			CmsLogger.logInfo("principal:" + principal);
+			getLogger().info("principal:" + principal);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			throw new SystemException("The login process failed: " + e.getMessage(), e);
 		}
 		
@@ -168,13 +168,13 @@ public class ExtranetController extends BaseDeliveryController
 			authenticationModule.setTransactionObject(null);
 			
 			String authenticatedUserName = authenticationModule.authenticateUser(request);
-			CmsLogger.logInfo("authenticatedUserName:" + authenticatedUserName);
+			getLogger().info("authenticatedUserName:" + authenticatedUserName);
 			principal = UserControllerProxy.getController().getUser(authenticatedUserName);
-			CmsLogger.logInfo("principal:" + principal);
+			getLogger().info("principal:" + principal);
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not complete the transaction:" + e, e);
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			throw new SystemException("The login process failed: " + e.getMessage(), e);
 		}
 		
@@ -198,14 +198,14 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				ExtranetAccessVO extranetAccessVO = (ExtranetAccessVO)extranetAccessVOListIterator.next();
 				List roles = ((InfoGluePrincipal)principal).getRoles();
-				CmsLogger.logInfo("ExtranetAccessVO:" + extranetAccessVO.getRoleId());
-				CmsLogger.logInfo("name:" + extranetAccessVO.getName());
-				CmsLogger.logInfo("value:" + extranetAccessVO.getValue());
+				getLogger().info("ExtranetAccessVO:" + extranetAccessVO.getRoleId());
+				getLogger().info("name:" + extranetAccessVO.getName());
+				getLogger().info("value:" + extranetAccessVO.getValue());
 				Iterator rolesIterator = roles.iterator();
 				while(rolesIterator.hasNext())
 				{
 					RoleVO roleVO = (RoleVO)rolesIterator.next();
-					CmsLogger.logInfo("roleVO:" + roleVO.getRoleId());
+					getLogger().info("roleVO:" + roleVO.getRoleId());
 					if(roleVO.getRoleId().intValue() == extranetAccessVO.getRoleId().intValue() && extranetAccessVO.getHasReadAccess().booleanValue())
 					{
 						isPrincipalAuthorized = true;
@@ -224,7 +224,7 @@ public class ExtranetController extends BaseDeliveryController
 			}
 		}
 		
-		CmsLogger.logInfo("isPrincipalAuthorized:" + isPrincipalAuthorized);
+		getLogger().info("isPrincipalAuthorized:" + isPrincipalAuthorized);
 		
 		return isPrincipalAuthorized;
 	}
@@ -248,14 +248,14 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				ExtranetAccessVO extranetAccessVO = (ExtranetAccessVO)extranetAccessVOListIterator.next();
 				List roles = ((InfoGluePrincipal)principal).getRoles();
-				CmsLogger.logInfo("ExtranetAccessVO:" + extranetAccessVO.getRoleId());
-				CmsLogger.logInfo("name:" + extranetAccessVO.getName());
-				CmsLogger.logInfo("value:" + extranetAccessVO.getValue());
+				getLogger().info("ExtranetAccessVO:" + extranetAccessVO.getRoleId());
+				getLogger().info("name:" + extranetAccessVO.getName());
+				getLogger().info("value:" + extranetAccessVO.getValue());
 				Iterator rolesIterator = roles.iterator();
 				while(rolesIterator.hasNext())
 				{
 					RoleVO roleVO = (RoleVO)rolesIterator.next();
-					CmsLogger.logInfo("roleVO:" + roleVO.getRoleId());
+					getLogger().info("roleVO:" + roleVO.getRoleId());
 					if(roleVO.getRoleId().intValue() == extranetAccessVO.getRoleId().intValue() && extranetAccessVO.getHasWriteAccess().booleanValue())
 					{
 						isPrincipalAuthorized = true;
@@ -274,7 +274,7 @@ public class ExtranetController extends BaseDeliveryController
 			}
 		}
 		
-		CmsLogger.logInfo("isPrincipalAuthorized:" + isPrincipalAuthorized);
+		getLogger().info("isPrincipalAuthorized:" + isPrincipalAuthorized);
 		
 		return isPrincipalAuthorized;
 	}
@@ -309,7 +309,7 @@ public class ExtranetController extends BaseDeliveryController
 				if(node != null)
 				{
 					value = node.getStringValue();
-					CmsLogger.logInfo("Getting value: " + value);
+					getLogger().info("Getting value: " + value);
 					if(value != null && escapeSpecialCharacters)
 						value = new VisualFormatter().escapeHTML(value);
 					break;
@@ -341,7 +341,7 @@ public class ExtranetController extends BaseDeliveryController
 						if(node != null)
 						{
 							value = node.getStringValue();
-							CmsLogger.logInfo("Getting value: " + value);
+							getLogger().info("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
 							break;
@@ -383,7 +383,7 @@ public class ExtranetController extends BaseDeliveryController
 						if(node != null)
 						{
 							value = node.getStringValue();
-							CmsLogger.logInfo("Getting value: " + value);
+							getLogger().info("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
 							break;
@@ -420,30 +420,30 @@ public class ExtranetController extends BaseDeliveryController
 			return null;
 
 		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
-		CmsLogger.logInfo("userProperties:" + userPropertiesList.size());
+		getLogger().info("userProperties:" + userPropertiesList.size());
 		Iterator userPropertiesListIterator = userPropertiesList.iterator();
 		while(userPropertiesListIterator.hasNext())
 		{
 			UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
-			//CmsLogger.logInfo("userProperties:" + userProperties.getValue());
-			//CmsLogger.logInfo("propertyName:" + propertyName);
-			CmsLogger.logInfo("userProperties:" + userProperties.getValue());
-			CmsLogger.logInfo("assetKey:" + assetKey);
+			//getLogger().info("userProperties:" + userProperties.getValue());
+			//getLogger().info("propertyName:" + propertyName);
+			getLogger().info("userProperties:" + userProperties.getValue());
+			getLogger().info("assetKey:" + assetKey);
 
 			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId))
 			{
 			    Collection assets = userProperties.getDigitalAssets();
-			    CmsLogger.logInfo("assets:" + assets.size());
+			    getLogger().info("assets:" + assets.size());
 			    Iterator assetsIterator = assets.iterator();
 			    while(assetsIterator.hasNext())
 			    {
 			        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
-			        CmsLogger.logInfo("digitalAsset:" + digitalAsset.getAssetKey());
+			        getLogger().info("digitalAsset:" + digitalAsset.getAssetKey());
 			        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 			        {
 			            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
 			            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
-			            CmsLogger.logInfo("assetUrl:" + assetUrl);
+			            getLogger().info("assetUrl:" + assetUrl);
 			            break;
 			        }
 			    }

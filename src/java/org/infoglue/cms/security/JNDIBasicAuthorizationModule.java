@@ -42,13 +42,14 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
 import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -59,6 +60,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class JNDIBasicAuthorizationModule implements AuthorizationModule
 {
+    private final static Logger logger = Logger.getLogger(JNDIBasicAuthorizationModule.class.getName());
+
 	protected Properties extraProperties = null;
 	
 	/**
@@ -180,9 +183,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 
 		
 		this.extraProperties.list(System.out);
-		CmsLogger.logInfo("connectionURL:" + connectionURL);
-		CmsLogger.logInfo("connectionName:" + connectionName);
-		CmsLogger.logInfo("connectionPassword:" + connectionPassword);
+		logger.info("connectionURL:" + connectionURL);
+		logger.info("connectionName:" + connectionName);
+		logger.info("connectionPassword:" + connectionPassword);
 		
 		// Create a Hashtable object.
 		Hashtable env = new Hashtable();
@@ -208,9 +211,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			
 			String[] attrID = attributesFilter.split(",");
 			
-			CmsLogger.logInfo("baseDN:" + baseDN);
-			CmsLogger.logInfo("searchFilter:" + searchFilter);
-			CmsLogger.logInfo("attrID" + attrID);
+			logger.info("baseDN:" + baseDN);
+			logger.info("searchFilter:" + searchFilter);
+			logger.info("attrID" + attrID);
 						
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -223,44 +226,44 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				CmsLogger.logInfo("Person:" + sr.toString() + "\n");
+				logger.info("Person:" + sr.toString() + "\n");
 				Attributes attributes = sr.getAttributes();
 				
 				for(int i=0; i<attrID.length; i++)
 				{
 					Attribute attribute = attributes.get(attrID[i]);
-					CmsLogger.logInfo("attribute:" + attribute.toString());
+					logger.info("attribute:" + attribute.toString());
 					NamingEnumeration allEnum = attribute.getAll();
 					while(allEnum.hasMore())
 					{
 						String value = (String)allEnum.next();
-						CmsLogger.logInfo("value:" + value);
+						logger.info("value:" + value);
 						userAttributes.put(attrID[i], value);
 					}
 				}	
 				
 				Attribute userNameAttribute = attributes.get(userNameAttributeFilter);
-				CmsLogger.logInfo("userNameAttribute:" + userNameAttribute.toString());
+				logger.info("userNameAttribute:" + userNameAttribute.toString());
 				Attribute userFirstNameAttribute = attributes.get(userFirstNameAttributeFilter);
-				CmsLogger.logInfo("userFirstNameAttribute:" + userFirstNameAttribute.toString());
+				logger.info("userFirstNameAttribute:" + userFirstNameAttribute.toString());
 				Attribute userLastNameAttribute = attributes.get(userLastNameAttributeFilter);
-				CmsLogger.logInfo("userLastNameAttribute:" + userLastNameAttribute.toString());
+				logger.info("userLastNameAttribute:" + userLastNameAttribute.toString());
 				Attribute userMailAttribute = attributes.get(userMailAttributeFilter);
-				CmsLogger.logInfo("userMailAttribute:" + userMailAttribute.toString());
+				logger.info("userMailAttribute:" + userMailAttribute.toString());
 				
 				userAttributes.put("firstName", userFirstNameAttribute.get().toString());
 				userAttributes.put("lastName", userLastNameAttribute.get().toString());
 				//userAttributes.put("firstName", userFirstNameAttribute);
 				//userAttributes.put("firstName", userFirstNameAttribute);
 				//Attribute memberOfAttribute = attributes.get(memberOfAttributeFilter);
-				//CmsLogger.logInfo("memberOfAttribute:" + memberOfAttribute.toString());
+				//logger.info("memberOfAttribute:" + memberOfAttribute.toString());
 
 			} 
 			ctx.close();
 		}
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("Could not find attributes for user: " +userName +e);
+			logger.info("Could not find attributes for user: " +userName +e);
 			e.printStackTrace();
 		}
 
@@ -281,10 +284,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	protected List getRoles(String userName) throws NamingException 
 	{
-		CmsLogger.logInfo("**************************************************");
-		CmsLogger.logInfo("*In JNDI version								 *");
-		CmsLogger.logInfo("**************************************************");
-		CmsLogger.logInfo("userName:" + userName);
+		logger.info("**************************************************");
+		logger.info("*In JNDI version								 *");
+		logger.info("**************************************************");
+		logger.info("userName:" + userName);
 		
 		List roles = new ArrayList();
 		
@@ -301,11 +304,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		String roleNameAttribute 	= this.extraProperties.getProperty("roleNameAttribute");
 		String roleFilter			= this.extraProperties.getProperty("roleFilter", "InfoGlue");
 
-		CmsLogger.logInfo("connectionURL:" + connectionURL);
-		CmsLogger.logInfo("connectionName:" + connectionName);
-		CmsLogger.logInfo("connectionPassword:" + connectionPassword);
-		CmsLogger.logInfo("roleBase:" + roleBase);
-		CmsLogger.logInfo("userBase:" + userBase);
+		logger.info("connectionURL:" + connectionURL);
+		logger.info("connectionName:" + connectionName);
+		logger.info("connectionPassword:" + connectionPassword);
+		logger.info("roleBase:" + roleBase);
+		logger.info("userBase:" + userBase);
 		
 		// Create a Hashtable object.
 		Hashtable env = new Hashtable();
@@ -335,9 +338,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
 				rolesAttribute = rolesAttributeFilter;
 			
-			CmsLogger.logInfo("baseDN:" + baseDN);
-			CmsLogger.logInfo("searchFilter:" + searchFilter);
-			CmsLogger.logInfo("attrID" + attrID);
+			logger.info("baseDN:" + baseDN);
+			logger.info("searchFilter:" + searchFilter);
+			logger.info("attrID" + attrID);
 			
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -350,39 +353,39 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				CmsLogger.logInfo("Person:" + sr.toString() + "\n");
+				logger.info("Person:" + sr.toString() + "\n");
 				Attributes attributes = sr.getAttributes();
 				
 				Attribute attribute = attributes.get(memberOfAttributeFilter);
-				CmsLogger.logInfo("..................attribute:" + attribute.toString());
+				logger.info("..................attribute:" + attribute.toString());
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
 					Object groupNameObject = allEnum.next();
 					
 					String groupName = groupNameObject.toString();
-					CmsLogger.logInfo("groupName:" + groupName);
-					CmsLogger.logInfo("roleBase:" + roleBase);
-					CmsLogger.logInfo("indexOf:" + groupName.indexOf(roleBase));
+					logger.info("groupName:" + groupName);
+					logger.info("roleBase:" + roleBase);
+					logger.info("indexOf:" + groupName.indexOf(roleBase));
 					if(roleBase != null && groupName.indexOf(roleBase) > -1)
 					{
 					    groupName = groupName.substring(0, groupName.indexOf(roleBase));
 					    groupName = groupName.substring(0, groupName.lastIndexOf(","));
 					}
-					CmsLogger.logInfo("roleNameAttribute:" + roleNameAttribute);
-					CmsLogger.logInfo("groupName:" + groupName);
-					CmsLogger.logInfo("indexOf:" + groupName.indexOf(roleNameAttribute));
+					logger.info("roleNameAttribute:" + roleNameAttribute);
+					logger.info("groupName:" + groupName);
+					logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
 					if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
 					{
 					    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
 					}
 					
-					CmsLogger.logInfo("groupName:" + groupName);
-					CmsLogger.logInfo("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
 					if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
 					{
 					    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
-						CmsLogger.logInfo("Adding role.................:" + groupName);
+						logger.info("Adding role.................:" + groupName);
 						roles.add(infoGlueRole);
 					}
 				}
@@ -392,7 +395,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("Could not find Group for empID: " +userName +e);
+			logger.info("Could not find Group for empID: " +userName +e);
 			e.printStackTrace();
 		}
 
@@ -413,10 +416,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	protected List getGroups(String userName) throws NamingException 
 	{
-		CmsLogger.logInfo("**************************************************");
-		CmsLogger.logInfo("*In JNDI version								 *");
-		CmsLogger.logInfo("**************************************************");
-		CmsLogger.logInfo("userName:" + userName);
+		logger.info("**************************************************");
+		logger.info("*In JNDI version								 *");
+		logger.info("**************************************************");
+		logger.info("userName:" + userName);
 		
 		List roles = new ArrayList();
 		
@@ -433,11 +436,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		String roleNameAttribute 	= this.extraProperties.getProperty("roleNameAttribute");
 		String roleFilter			= this.extraProperties.getProperty("roleFilter", "InfoGlue");
 
-		CmsLogger.logInfo("connectionURL:" + connectionURL);
-		CmsLogger.logInfo("connectionName:" + connectionName);
-		CmsLogger.logInfo("connectionPassword:" + connectionPassword);
-		CmsLogger.logInfo("roleBase:" + roleBase);
-		CmsLogger.logInfo("userBase:" + userBase);
+		logger.info("connectionURL:" + connectionURL);
+		logger.info("connectionName:" + connectionName);
+		logger.info("connectionPassword:" + connectionPassword);
+		logger.info("roleBase:" + roleBase);
+		logger.info("userBase:" + userBase);
 		
 		// Create a Hashtable object.
 		Hashtable env = new Hashtable();
@@ -467,9 +470,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
 				rolesAttribute = rolesAttributeFilter;
 			
-			CmsLogger.logInfo("baseDN:" + baseDN);
-			CmsLogger.logInfo("searchFilter:" + searchFilter);
-			CmsLogger.logInfo("attrID" + attrID);
+			logger.info("baseDN:" + baseDN);
+			logger.info("searchFilter:" + searchFilter);
+			logger.info("attrID" + attrID);
 			
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -482,39 +485,39 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				CmsLogger.logInfo("Person:" + sr.toString() + "\n");
+				logger.info("Person:" + sr.toString() + "\n");
 				Attributes attributes = sr.getAttributes();
 				
 				Attribute attribute = attributes.get(memberOfAttributeFilter);
-				CmsLogger.logInfo("..................attribute:" + attribute.toString());
+				logger.info("..................attribute:" + attribute.toString());
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
 					Object groupNameObject = allEnum.next();
 					
 					String groupName = groupNameObject.toString();
-					CmsLogger.logInfo("groupName:" + groupName);
-					CmsLogger.logInfo("roleBase:" + roleBase);
-					CmsLogger.logInfo("indexOf:" + groupName.indexOf(roleBase));
+					logger.info("groupName:" + groupName);
+					logger.info("roleBase:" + roleBase);
+					logger.info("indexOf:" + groupName.indexOf(roleBase));
 					if(roleBase != null && groupName.indexOf(roleBase) > -1)
 					{
 					    groupName = groupName.substring(0, groupName.indexOf(roleBase));
 					    groupName = groupName.substring(0, groupName.lastIndexOf(","));
 					}
-					CmsLogger.logInfo("roleNameAttribute:" + roleNameAttribute);
-					CmsLogger.logInfo("groupName:" + groupName);
-					CmsLogger.logInfo("indexOf:" + groupName.indexOf(roleNameAttribute));
+					logger.info("roleNameAttribute:" + roleNameAttribute);
+					logger.info("groupName:" + groupName);
+					logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
 					if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
 					{
 					    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
 					}
 					
-					CmsLogger.logInfo("groupName:" + groupName);
-					CmsLogger.logInfo("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
 					if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
 					{
 					    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
-						CmsLogger.logInfo("Adding role.................:" + groupName);
+						logger.info("Adding role.................:" + groupName);
 						roles.add(infoGlueRole);
 					}
 				}
@@ -524,7 +527,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("Could not find Group for empID: " +userName +e);
+			logger.info("Could not find Group for empID: " +userName +e);
 			e.printStackTrace();
 		}
 
@@ -537,7 +540,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	public List getRoles() throws Exception
 	{
-	    CmsLogger.logInfo("getRoles start....");
+	    logger.info("getRoles start....");
 		List roles = new ArrayList();
 		
 		DirContext ctx 		= null;
@@ -574,7 +577,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				rolesAttribute = rolesAttributeFilter;
 	
 			String[] attrID = rolesAttribute.split(",");
-			CmsLogger.logInfo("attrID:" + attrID);
+			logger.info("attrID:" + attrID);
 			
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -585,37 +588,37 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			if(!answer.hasMore())
 				throw new Exception("The was no groups found in the JNDI Data Source.");
 		
-			CmsLogger.logInfo("-----------------------\n");
+			logger.info("-----------------------\n");
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				CmsLogger.logInfo("Group:" + sr.toString() + "\n");
+				logger.info("Group:" + sr.toString() + "\n");
 				
 				Attributes attributes = sr.getAttributes();
-				CmsLogger.logInfo("attributes:" + attributes.toString());
-				CmsLogger.logInfo("roleNameAttribute:" + roleNameAttribute);
+				logger.info("attributes:" + attributes.toString());
+				logger.info("roleNameAttribute:" + roleNameAttribute);
 				Attribute attribute = attributes.get(roleNameAttribute);
-				CmsLogger.logInfo("attribute:" + attribute.toString());
+				logger.info("attribute:" + attribute.toString());
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
 					String groupName = (String)allEnum.next();
-					CmsLogger.logInfo("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
 					
 					InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
 					roles.add(infoGlueRole);
 				}
 				
 			} 
-			CmsLogger.logInfo("-----------------------\n");
+			logger.info("-----------------------\n");
 
 			ctx.close();
 		}
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("Could not find Groups: " + e.getMessage());
+			logger.info("Could not find Groups: " + e.getMessage());
 		}
-	    CmsLogger.logInfo("getRoles end....");
+	    logger.info("getRoles end....");
 
 		return roles;
 	}
@@ -626,7 +629,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	public List getUsers() throws Exception
 	{
-	    CmsLogger.logInfo("getUsers start...");
+	    logger.info("getUsers start...");
 	    
 		List users = new ArrayList();
 		
@@ -671,9 +674,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 						
 			String[] attrID = attributesFilter.split(",");
 			
-			CmsLogger.logInfo("baseDN:" + baseDN);
-			CmsLogger.logInfo("searchFilter:" + searchFilter);
-			CmsLogger.logInfo("attrID" + attrID);
+			logger.info("baseDN:" + baseDN);
+			logger.info("searchFilter:" + searchFilter);
+			logger.info("attrID" + attrID);
 						
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -687,43 +690,43 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				CmsLogger.logInfo("Person:" + sr.toString() + "\n");
+				logger.info("Person:" + sr.toString() + "\n");
 				
 				Attributes attributes = sr.getAttributes();
-				CmsLogger.logInfo("attributes:" + attributes.toString());
+				logger.info("attributes:" + attributes.toString());
 				Attribute userNameAttribute = attributes.get(userNameAttributeFilter);
-				CmsLogger.logInfo("userNameAttribute:" + userNameAttribute.toString());
+				logger.info("userNameAttribute:" + userNameAttribute.toString());
 				Attribute userFirstNameAttribute = attributes.get(userFirstNameAttributeFilter);
-				CmsLogger.logInfo("userFirstNameAttribute:" + userFirstNameAttribute.toString());
+				logger.info("userFirstNameAttribute:" + userFirstNameAttribute.toString());
 				Attribute userLastNameAttribute = attributes.get(userLastNameAttributeFilter);
-				CmsLogger.logInfo("userLastNameAttribute:" + userLastNameAttribute.toString());
+				logger.info("userLastNameAttribute:" + userLastNameAttribute.toString());
 				Attribute userMailAttribute = attributes.get(userMailAttributeFilter);
-				CmsLogger.logInfo("userMailAttribute:" + userMailAttribute.toString());
+				logger.info("userMailAttribute:" + userMailAttribute.toString());
 				
 				Attribute memberOfAttribute = attributes.get(memberOfAttributeFilter);
-				CmsLogger.logInfo("memberOfAttribute:" + memberOfAttribute.toString());
+				logger.info("memberOfAttribute:" + memberOfAttribute.toString());
 				Attribute memberOfGroupsAttribute = attributes.get(memberOfAttributeFilter);
-				CmsLogger.logInfo("memberOfAttribute:" + memberOfAttribute.toString());
+				logger.info("memberOfAttribute:" + memberOfAttribute.toString());
 				
 				List roles = new ArrayList();
 				NamingEnumeration allEnum = memberOfAttribute.getAll();
 				while(allEnum.hasMore())
 				{
 					String groupName = (String)allEnum.next();
-					CmsLogger.logInfo("groupName:" + groupName);
-					CmsLogger.logInfo("roleBase:" + roleBase);
+					logger.info("groupName:" + groupName);
+					logger.info("roleBase:" + roleBase);
 					if(roleBase != null && groupName.indexOf(roleBase) > -1)
 					{
 					    groupName = groupName.substring(0, groupName.indexOf(roleBase));
 					    groupName = groupName.substring(0, groupName.lastIndexOf(","));
 					}
 					
-					CmsLogger.logInfo("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
 					if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
 					{
-					    CmsLogger.logInfo("roleNameAttribute:" + roleNameAttribute);
-						CmsLogger.logInfo("groupName:" + groupName);
-						CmsLogger.logInfo("indexOf:" + groupName.indexOf(roleNameAttribute));
+					    logger.info("roleNameAttribute:" + roleNameAttribute);
+						logger.info("groupName:" + groupName);
+						logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
 						if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
 						{
 						    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
@@ -739,20 +742,20 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				while(allEnum.hasMore())
 				{
 					String groupName = (String)allEnum.next();
-					CmsLogger.logInfo("groupName:" + groupName);
-					CmsLogger.logInfo("roleBase:" + roleBase);
+					logger.info("groupName:" + groupName);
+					logger.info("roleBase:" + roleBase);
 					if(roleBase != null && groupName.indexOf(roleBase) > -1)
 					{
 					    groupName = groupName.substring(0, groupName.indexOf(roleBase));
 					    groupName = groupName.substring(0, groupName.lastIndexOf(","));
 					}
 					
-					CmsLogger.logInfo("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
 					if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
 					{
-					    CmsLogger.logInfo("roleNameAttribute:" + roleNameAttribute);
-						CmsLogger.logInfo("groupName:" + groupName);
-						CmsLogger.logInfo("indexOf:" + groupName.indexOf(roleNameAttribute));
+					    logger.info("roleNameAttribute:" + roleNameAttribute);
+						logger.info("groupName:" + groupName);
+						logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
 						if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
 						{
 						    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
@@ -771,9 +774,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("Could not find Groups: " + e.getMessage());
+			logger.info("Could not find Groups: " + e.getMessage());
 		}
-	    CmsLogger.logInfo("getUsers end...");
+	    logger.info("getUsers end...");
 
 		return users;
 	}
@@ -787,7 +790,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 
 	public List getUsers(String roleName) throws Exception
 	{
-	    CmsLogger.logInfo("--------getUsers(String roleName) start---------------");
+	    logger.info("--------getUsers(String roleName) start---------------");
 		List users = new ArrayList();
 
 		DirContext ctx 		= null;
@@ -840,31 +843,31 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				CmsLogger.logInfo("Group:" + sr.toString() + "\n");
+				logger.info("Group:" + sr.toString() + "\n");
 				
 				Attributes attributes = sr.getAttributes();
-				CmsLogger.logInfo("attributes:" + attributes.toString());
-				CmsLogger.logInfo("roleNameAttribute:" + roleNameAttribute);
+				logger.info("attributes:" + attributes.toString());
+				logger.info("roleNameAttribute:" + roleNameAttribute);
 				Attribute attribute = attributes.get(roleNameAttribute);
-				CmsLogger.logInfo("attribute:" + attribute.toString());
+				logger.info("attribute:" + attribute.toString());
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
 					String groupName = (String)allEnum.next();
-					CmsLogger.logInfo("groupName:" + groupName);
+					logger.info("groupName:" + groupName);
 					
 					if(groupName.equals(roleName))
 					{
 					    Attribute usersAttribute = attributes.get(usersAttributeFilter);
-						CmsLogger.logInfo("usersAttribute:" + usersAttribute.toString());
+						logger.info("usersAttribute:" + usersAttribute.toString());
 						
 						List roles = new ArrayList();
 						NamingEnumeration allUsersEnum = usersAttribute.getAll();
 						while(allUsersEnum.hasMore())
 						{
 							String userName = (String)allUsersEnum.next();
-							CmsLogger.logInfo("userName:" + userName);
-							CmsLogger.logInfo("userBase:" + userBase);
+							logger.info("userName:" + userName);
+							logger.info("userBase:" + userBase);
 							
 							if(roleBase != null && userName.indexOf(userBase) > -1)
 							{
@@ -872,9 +875,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 							    userName = userName.substring(0, userName.lastIndexOf(","));
 							}
 							
-							CmsLogger.logInfo("userNameAttribute:" + userNameAttribute);
-							CmsLogger.logInfo("groupName:" + userName);
-							CmsLogger.logInfo("indexOf:" + userName.indexOf(userNameAttribute));
+							logger.info("userNameAttribute:" + userNameAttribute);
+							logger.info("groupName:" + userName);
+							logger.info("indexOf:" + userName.indexOf(userNameAttribute));
 							if(roleNameAttribute != null && userName.indexOf(userNameAttribute) > -1)
 							{
 							    userName = userName.substring(userName.indexOf(userNameAttribute) + userNameAttribute.length() + 1);
@@ -894,9 +897,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("Could not find Groups: " + e.getMessage());
+			logger.info("Could not find Groups: " + e.getMessage());
 		}
-	    CmsLogger.logInfo("--------------------END---------------------");
+	    logger.info("--------------------END---------------------");
 
 		return users;
 	}

@@ -28,8 +28,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
-import org.infoglue.cms.util.CmsLogger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import java.util.List;
@@ -40,7 +40,7 @@ import java.util.Iterator;
  * The content is then shown to the user for editing.
  */
 
-public class ViewAndCreateContentForServiceBindingAction extends WebworkAbstractAction
+public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstractAction
 {
     private Integer siteNodeVersionId;
     private Integer repositoryId;
@@ -229,7 +229,7 @@ public class ViewAndCreateContentForServiceBindingAction extends WebworkAbstract
 	
 	    		SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(this.siteNodeId);
 	    		
-				CmsLogger.logInfo("The service definition was null so we must create a new content and binding..");
+				getLogger().info("The service definition was null so we must create a new content and binding..");
 				
 				ContentVO parentFolderContentVO = null;
 				
@@ -243,7 +243,7 @@ public class ViewAndCreateContentForServiceBindingAction extends WebworkAbstract
 						ContentVO child = (ContentVO)childrenIterator.next();
 						if(child.getName().equalsIgnoreCase("Meta info folder"))
 						{
-							CmsLogger.logInfo("Found the metainfo folder..");
+							getLogger().info("Found the metainfo folder..");
 							parentFolderContentVO = child;
 							break;
 						}

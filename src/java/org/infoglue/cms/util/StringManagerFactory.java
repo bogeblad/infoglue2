@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 
 /**
  *
@@ -35,6 +37,8 @@ import java.util.Map;
  */
 public class StringManagerFactory 
 {
+
+    private final static Logger logger = Logger.getLogger(StringManagerFactory.class.getName());
 
     private static final String SYSTEM       = ".SystemStrings";
     private static final String PRESENTATION = ".PresentationStrings";
@@ -71,7 +75,7 @@ public class StringManagerFactory
    */
   public static synchronized StringManager getPresentationStringManager(String packageNames[], Locale locale) 
   {
-    CmsLogger.logInfo("Getting stringManager");  
+    logger.info("Getting stringManager");  
     final ChainedStringManager chain = new ChainedStringManager();
     for(int i=0; i<packageNames.length; ++i) {
       chain.add(getPresentationStringManager(packageNames[i], locale));
@@ -90,7 +94,7 @@ public class StringManagerFactory
    *
    */
   private static StringManager getStringManager(String packageName, String suffix, Locale locale) {
-    CmsLogger.logInfo("packageName:" + packageName);
+    logger.info("packageName:" + packageName);
     final String name       = getName(packageName, suffix, locale);
     final String bundleName = getBundleName(packageName, suffix);
 

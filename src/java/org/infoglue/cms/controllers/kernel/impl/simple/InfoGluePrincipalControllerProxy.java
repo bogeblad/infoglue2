@@ -49,7 +49,7 @@ import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
@@ -117,7 +117,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }		
@@ -155,7 +155,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 				if(node != null)
 				{
 					value = node.getStringValue();
-					CmsLogger.logInfo("Getting value: " + value);
+					getLogger().info("Getting value: " + value);
 					if(value != null && escapeSpecialCharacters)
 						value = new VisualFormatter().escapeHTML(value);
 					break;
@@ -189,7 +189,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 						if(node != null)
 						{
 							value = node.getStringValue();
-							CmsLogger.logInfo("Getting value: " + value);
+							getLogger().info("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
 							
@@ -239,7 +239,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 						if(node != null)
 						{
 							value = node.getStringValue();
-							CmsLogger.logInfo("Getting value: " + value);
+							getLogger().info("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
 							

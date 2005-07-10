@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -43,7 +44,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
@@ -59,6 +60,8 @@ import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 public class PublicationController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(PublicationController.class.getName());
+
 	public static final int OVERIDE_WORKING = 1;
 	public static final int LEAVE_WORKING   = 2;
 
@@ -117,7 +120,7 @@ public class PublicationController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -162,7 +165,7 @@ public class PublicationController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -243,7 +246,7 @@ public class PublicationController extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -330,7 +333,7 @@ public class PublicationController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -378,7 +381,7 @@ public class PublicationController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("The notification was not sent. Reason:" + e.getMessage(), e);
+			logger.error("The notification was not sent. Reason:" + e.getMessage(), e);
 		}
 	}
 
@@ -400,7 +403,7 @@ public class PublicationController extends BaseController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to commit the publication: " + e.getMessage(), e);
+			logger.error("An error occurred when we tried to commit the publication: " + e.getMessage(), e);
 	    	rollbackTransaction(db);
 		}
 
@@ -412,9 +415,9 @@ public class PublicationController extends BaseController
 	 */
 	public PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
     {
-	   	CmsLogger.logInfo("*********************************");
-    	CmsLogger.logInfo("Creating edition ");
-    	CmsLogger.logInfo("*********************************");
+	   	logger.info("*********************************");
+    	logger.info("Creating edition ");
+    	logger.info("*********************************");
 
         Publication publication = new PublicationImpl();
         publicationVO.setPublicationDateTime(Calendar.getInstance().getTime());
@@ -433,13 +436,13 @@ public class PublicationController extends BaseController
         // Replicate database!!!
         try
 		{
-	    	CmsLogger.logInfo("Starting replication...");
+	    	logger.info("Starting replication...");
 			ReplicationMySqlController.updateSlaveServer();
-	    	CmsLogger.logInfo("Finished replication...");
+	    	logger.info("Finished replication...");
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
 		}
 
         // Notify the listeners!!!
@@ -452,21 +455,21 @@ public class PublicationController extends BaseController
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
 		}
 
 		// Update live site!!!
 		try
 		{
-			CmsLogger.logInfo("Notifying the entire system about a publishing...");
+			logger.info("Notifying the entire system about a publishing...");
 			NotificationMessage notificationMessage = new NotificationMessage("PublicationController.createAndPublish():", PublicationImpl.class.getName(), infoGluePrincipal.getName(), NotificationMessage.PUBLISHING, publicationVO.getId(), publicationVO.getName());
 			//NotificationMessage notificationMessage = new NotificationMessage("PublicationController.createAndPublish():", NotificationMessage.PUBLISHING_TEXT, infoGluePrincipal.getName(), NotificationMessage.PUBLISHING, publicationVO.getId(), "org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl");
 			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-			CmsLogger.logInfo("Finished Notifying...");
+			logger.info("Finished Notifying...");
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
 		}
 
         return publicationVO;
@@ -482,9 +485,9 @@ public class PublicationController extends BaseController
 		String entityClass = event.getEntityClass();
 		Integer entityId   = event.getEntityId();
 		Integer typeId     = event.getTypeId();
-		CmsLogger.logInfo("entityClass:" + entityClass);
-		CmsLogger.logInfo("entityId:" + entityId);
-		CmsLogger.logInfo("typeId:" + typeId);
+		logger.info("entityClass:" + entityClass);
+		logger.info("entityId:" + entityId);
+		logger.info("typeId:" + typeId);
 
 		// Publish contentversions
         if(entityClass.equals(ContentVersion.class.getName()))
@@ -632,7 +635,7 @@ public class PublicationController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -646,7 +649,7 @@ public class PublicationController extends BaseController
 	 */
 	public static PublicationVO unPublish(Integer publicationId, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
-		CmsLogger.logInfo("Starting unpublishing operation...");
+		logger.info("Starting unpublishing operation...");
 
 		Database db = CastorDatabaseService.getDatabase();
 		Publication publication = null;
@@ -676,37 +679,37 @@ public class PublicationController extends BaseController
             db.remove(publication);
 
 			commitTransaction(db);
-			CmsLogger.logInfo("Done unpublishing operation...");
+			logger.info("Done unpublishing operation...");
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
 
         try
 		{
-			CmsLogger.logInfo("Starting replication operation...");
+			logger.info("Starting replication operation...");
 			ReplicationMySqlController.updateSlaveServer();
-			CmsLogger.logInfo("Done replication operation...");
+			logger.info("Done replication operation...");
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
 		}
 
 		//Update live site!!!
 		try
 		{
-			CmsLogger.logInfo("Notifying the entire system about an unpublishing...");
+			logger.info("Notifying the entire system about an unpublishing...");
 			NotificationMessage notificationMessage = new NotificationMessage("PublicationController.unPublish():", PublicationImpl.class.getName(), infoGluePrincipal.getName(), NotificationMessage.UNPUBLISHING, publication.getId(), publication.getName());
 	      	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-	      	CmsLogger.logInfo("Finished Notifying...");
+	      	logger.info("Finished Notifying...");
 		}
 		catch (Exception e)
 		{
-			CmsLogger.logSevere("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
 		}
 
         return publication.getValueObject();
@@ -745,7 +748,7 @@ public class PublicationController extends BaseController
 		}
 		catch(Exception e)
 		{
-		    CmsLogger.logInfo("Could not republish entity:" + e.getMessage(), e);
+		    logger.info("Could not republish entity:" + e.getMessage(), e);
 		}
 	}
 	
@@ -781,7 +784,7 @@ public class PublicationController extends BaseController
 		}
 		catch(Exception e)
 		{
-		    CmsLogger.logInfo("Could not republish entity:" + e.getMessage(), e);
+		    logger.info("Could not republish entity:" + e.getMessage(), e);
 		}
 	}
 
@@ -807,7 +810,7 @@ public class PublicationController extends BaseController
         }
         catch(Exception e)
         {
-            CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -830,7 +833,7 @@ public class PublicationController extends BaseController
         }
         catch(Exception e)
         {
-        	CmsLogger.logSevere("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

@@ -32,7 +32,6 @@ import org.infoglue.cms.util.validators.ConstraintRuleList;
 import org.infoglue.cms.util.validators.Constants;
 import org.infoglue.cms.util.validators.EmailValidator;
 import org.infoglue.cms.util.validators.StringValidator;
-import org.infoglue.cms.util.CmsLogger;
 
 /**
  * ValitadeableEntity.java
@@ -114,7 +113,6 @@ public abstract class ValidatableEntityVO implements BaseEntityVO
     	{
     		ConstraintRule cr = (ConstraintRule) iterator.next();
     		Integer intId = vo.getId();
-    		CmsLogger.logInfo("Validating object id: " + intId);
 
 			// an ugly switch for now.    		
     		switch (cr.getConstraintType())

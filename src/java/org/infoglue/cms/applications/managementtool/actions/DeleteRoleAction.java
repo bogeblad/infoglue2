@@ -22,14 +22,14 @@
  */
 
 package org.infoglue.cms.applications.managementtool.actions;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 /**
  * @author Mattias Bogeblad
  */
 
-public class DeleteRoleAction extends WebworkAbstractAction
+public class DeleteRoleAction extends InfoGlueAbstractAction
 {
 	private String roleName;
 	

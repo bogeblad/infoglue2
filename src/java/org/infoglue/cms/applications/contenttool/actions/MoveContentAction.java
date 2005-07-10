@@ -25,14 +25,14 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  * This action represents the CreateContent Usecase.
  */
 
-public class MoveContentAction extends WebworkAbstractAction
+public class MoveContentAction extends InfoGlueAbstractAction
 {
 
     private Integer contentId;

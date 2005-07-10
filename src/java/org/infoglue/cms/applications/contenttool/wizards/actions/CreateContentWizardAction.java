@@ -33,7 +33,7 @@ import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
 
@@ -49,7 +49,7 @@ import java.util.List;
  * and allows a developer to control it's flow and basic parameters a bit so it steers the user to make correct descisions.
  */
 
-public class CreateContentWizardAction extends WebworkAbstractAction implements ViewContentTreeActionInterface
+public class CreateContentWizardAction extends InfoGlueAbstractAction implements ViewContentTreeActionInterface
 {
 	//Used by the tree only
 	private Integer contentId;

@@ -41,7 +41,7 @@ import org.infoglue.cms.exception.*;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.cms.util.CmsLogger;
+
 import org.infoglue.deliver.util.CacheController;
 
 import org.exolab.castor.jdo.Database;
@@ -107,14 +107,14 @@ public class AccessRightController extends BaseController
 			if(accessRight != null)
 			    accessRightGroupVOList = toVOList(accessRight.getGroups());
 			
-	        CmsLogger.logInfo("accessRightGroupVOList:" + accessRightGroupVOList.size());
+	        getLogger().info("accessRightGroupVOList:" + accessRightGroupVOList.size());
 			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -134,14 +134,14 @@ public class AccessRightController extends BaseController
 			
 			accessRightVOList = getAccessRightVOList(db, interceptionPointId, parameters, roleName);
 
-			CmsLogger.logInfo("accessRightVOList:" + accessRightVOList.size());
+			getLogger().info("accessRightVOList:" + accessRightVOList.size());
 			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -160,7 +160,7 @@ public class AccessRightController extends BaseController
 		else
 			accessRightVOList = toVOList(getAccessRightList(interceptionPointId, roleName, db));
 
-		CmsLogger.logInfo("accessRightVOList:" + accessRightVOList.size());
+		getLogger().info("accessRightVOList:" + accessRightVOList.size());
 		
 		return accessRightVOList;	
 	}
@@ -177,14 +177,14 @@ public class AccessRightController extends BaseController
 			
 			accessRightVOList = getAccessRightVOListOnly(db, interceptionPointId, parameters);
 
-			CmsLogger.logInfo("accessRightVOList:" + accessRightVOList.size());
+			getLogger().info("accessRightVOList:" + accessRightVOList.size());
 			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -202,7 +202,7 @@ public class AccessRightController extends BaseController
 		else
 			accessRightVOList = toVOList(getAccessRightList(interceptionPointId, db));
 
-		CmsLogger.logInfo("accessRightVOList:" + accessRightVOList.size());
+		getLogger().info("accessRightVOList:" + accessRightVOList.size());
 		
 		return accessRightVOList;	
 	}
@@ -298,9 +298,9 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-		    //CmsLogger.logInfo("getAccessRightListForEntity(Integer interceptionPointId, String parameters, Database db)");
-		    //CmsLogger.logInfo("interceptionPointId:" + interceptionPointId);
-		    //CmsLogger.logInfo("parameters:" + parameters);
+		    //getLogger().info("getAccessRightListForEntity(Integer interceptionPointId, String parameters, Database db)");
+		    //getLogger().info("interceptionPointId:" + interceptionPointId);
+		    //getLogger().info("parameters:" + parameters);
 			
 			OQLQuery oql = null;
 			
@@ -321,7 +321,7 @@ public class AccessRightController extends BaseController
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				//CmsLogger.logInfo("accessRight:" + accessRight.getAccessRightId());
+				//getLogger().info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 		}
@@ -340,8 +340,8 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-			CmsLogger.logInfo("getAccessRightList(Integer interceptionPointId, Database db)");
-			CmsLogger.logInfo("interceptionPointId: " + interceptionPointId);
+			getLogger().info("getAccessRightList(Integer interceptionPointId, Database db)");
+			getLogger().info("interceptionPointId: " + interceptionPointId);
 			
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1");
 			oql.bind(interceptionPointId);
@@ -350,7 +350,7 @@ public class AccessRightController extends BaseController
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				CmsLogger.logInfo("accessRight:" + accessRight.getAccessRightId());
+				getLogger().info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 		}
@@ -368,8 +368,8 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-			CmsLogger.logInfo("getAccessRightList(String roleName, Database db)");
-			CmsLogger.logInfo("roleName: " + roleName);
+			getLogger().info("getAccessRightList(String roleName, Database db)");
+			getLogger().info("roleName: " + roleName);
 			
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.roles.roleName = $1");
 			oql.bind(roleName);
@@ -378,7 +378,7 @@ public class AccessRightController extends BaseController
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				CmsLogger.logInfo("accessRight:" + accessRight.getAccessRightId());
+				getLogger().info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 		}
@@ -397,9 +397,9 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-		    CmsLogger.logInfo("getAccessRightList(Integer interceptionPointId, String roleName, Database db)");
-			CmsLogger.logInfo("interceptionPointId: " + interceptionPointId);
-			CmsLogger.logInfo("roleName: " + roleName);
+		    getLogger().info("getAccessRightList(Integer interceptionPointId, String roleName, Database db)");
+			getLogger().info("interceptionPointId: " + interceptionPointId);
+			getLogger().info("roleName: " + roleName);
 			
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.roles.roleName = $2");
 			oql.bind(interceptionPointId);
@@ -409,7 +409,7 @@ public class AccessRightController extends BaseController
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				CmsLogger.logInfo("accessRight:" + accessRight.getAccessRightId());
+				getLogger().info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 		}
@@ -454,7 +454,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		CmsLogger.logInfo("parameters:" + parameters);
+		getLogger().info("parameters:" + parameters);
 		
 		try 
 		{
@@ -503,7 +503,7 @@ public class AccessRightController extends BaseController
 				    if(accessRight == null)
 				    {
 					    InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithId(new Integer(interceptionPointIdString), db);
-					    //CmsLogger.logInfo("Creating access for:" + interceptionPoint.getName() + "_" + parameters);
+					    //getLogger().info("Creating access for:" + interceptionPoint.getName() + "_" + parameters);
 						accessRight = create(accessRightVO, interceptionPoint, db);
 				    }
 					
@@ -514,7 +514,7 @@ public class AccessRightController extends BaseController
 					
 				    groupIndex++;
 				    groupName = request.getParameter(interceptionPointIdString + "_" + groupIndex + "_groupName");
-				    //CmsLogger.logInfo("groupName:" + groupName);
+				    //getLogger().info("groupName:" + groupName);
 				}
 
 				interceptionPointIndex++;
@@ -525,7 +525,7 @@ public class AccessRightController extends BaseController
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -536,7 +536,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		CmsLogger.logInfo("parameters:" + parameters);
+		getLogger().info("parameters:" + parameters);
 		
 		try 
 		{
@@ -569,7 +569,7 @@ public class AccessRightController extends BaseController
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -619,7 +619,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		CmsLogger.logInfo("parameters:" + parameters);
+		getLogger().info("parameters:" + parameters);
 		
 		try 
 		{
@@ -629,13 +629,13 @@ public class AccessRightController extends BaseController
 			String roleName = request.getParameter(roleIndex + "_roleName");
 			while(roleName != null)
 			{
-				CmsLogger.logInfo("roleName:" + roleName);
+				getLogger().info("roleName:" + roleName);
 				
 				int interceptionPointIndex = 0;
 				String interceptionPointIdString = request.getParameter(roleName + "_" + interceptionPointIndex + "_InterceptionPointId");
 				while(interceptionPointIdString != null)
 				{
-					CmsLogger.logInfo("interceptionPointIdString:" + interceptionPointIdString);
+					getLogger().info("interceptionPointIdString:" + interceptionPointIdString);
 					
 					delete(new Integer(interceptionPointIdString), parameters, roleName, db);
 
@@ -648,7 +648,7 @@ public class AccessRightController extends BaseController
 						accessRightVO.setParameters(parameters);
 
 						InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithId(new Integer(interceptionPointIdString), db);
-						CmsLogger.logInfo("Creating access for roleName:" + roleName + ":" + parameters + "_" + interceptionPoint.getName());
+						getLogger().info("Creating access for roleName:" + roleName + ":" + parameters + "_" + interceptionPoint.getName());
 						
 						create(accessRightVO, interceptionPoint, db);
 					}
@@ -664,7 +664,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -683,7 +683,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		CmsLogger.logInfo("roleName:" + roleName);
+		getLogger().info("roleName:" + roleName);
 		
 		try 
 		{
@@ -701,7 +701,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -771,7 +771,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -795,8 +795,8 @@ public class AccessRightController extends BaseController
 		   
 		Collection roles = infoGluePrincipal.getRoles();
 		Collection groups = infoGluePrincipal.getGroups();
-		CmsLogger.logInfo("roles:" + roles.size());
-		CmsLogger.logInfo("groups:" + groups.size());
+		getLogger().info("roles:" + roles.size());
+		getLogger().info("groups:" + groups.size());
 		
 		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
 		List accessRightList = this.getAccessRightListOnly(interceptionPoint.getId(), extraParameters, db);
@@ -813,7 +813,7 @@ public class AccessRightController extends BaseController
 			outer:while(rolesIterator.hasNext())
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-				CmsLogger.logInfo("role:" + role.getName());
+				getLogger().info("role:" + role.getName());
 				
 				Iterator approvedRolesIterator = approvedRoles.iterator();
 				while(approvedRolesIterator.hasNext())
@@ -831,7 +831,7 @@ public class AccessRightController extends BaseController
 			outer:while(approvedGroupsIterator.hasNext())
 			{
 			    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
-			    CmsLogger.logInfo("accessRightGroup:" + accessRightGroup.getGroupName());
+			    getLogger().info("accessRightGroup:" + accessRightGroup.getGroupName());
 
 			    limitOnGroups = true;
 
@@ -864,11 +864,11 @@ public class AccessRightController extends BaseController
 			return true;
 			
 		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName;
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
-			CmsLogger.logInfo("There was an cached authorization:" + cachedIsPrincipalAuthorized);
+			getLogger().info("There was an cached authorization:" + cachedIsPrincipalAuthorized);
 			return cachedIsPrincipalAuthorized.booleanValue();
 		}
 		
@@ -888,7 +888,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			CmsLogger.logInfo("An error occurred so we should not complete the transaction:" + e);
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -907,7 +907,7 @@ public class AccessRightController extends BaseController
 
 		/*
 		String key = "cachedAccessRightsVOList";
-		CmsLogger.logInfo("key:" + key);
+		getLogger().info("key:" + key);
 		List cachedAccessRightsVOList = (List)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedAccessRightsVOList == null)
 		{
@@ -937,7 +937,7 @@ public class AccessRightController extends BaseController
 			outer:while(rolesIterator.hasNext())
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-				CmsLogger.logInfo("role:" + role.getName());
+				getLogger().info("role:" + role.getName());
 				
 				Iterator approvedRolesIterator = approvedRoles.iterator();
 				while(approvedRolesIterator.hasNext())
@@ -955,7 +955,7 @@ public class AccessRightController extends BaseController
 			outer:while(approvedGroupsIterator.hasNext())
 			{
 			    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
-			    CmsLogger.logInfo("accessRightGroup:" + accessRightGroup.getGroupName());
+			    getLogger().info("accessRightGroup:" + accessRightGroup.getGroupName());
 
 			    limitOnGroups = true;
 
@@ -976,7 +976,7 @@ public class AccessRightController extends BaseController
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
 		
-	    CmsLogger.logInfo("isPrincipalAuthorized:" + isPrincipalAuthorized);
+	    getLogger().info("isPrincipalAuthorized:" + isPrincipalAuthorized);
 	    
 		return isPrincipalAuthorized;
 	}

@@ -157,7 +157,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		File outputFile = new File(filePath + File.separator + fileName);
 		if(outputFile.exists())
 		{
-			CmsLogger.logInfo("The file allready exists so we don't need to dump it again..");
+			getLogger().info("The file allready exists so we don't need to dump it again..");
 			return;
 		}
 		
@@ -176,7 +176,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
         bis.close();
 		fis.close();
 		bos.close();
-        CmsLogger.logInfo("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+        getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 	}
 
 	/**
@@ -188,20 +188,20 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	public void dumpDigitalAssetThumbnail(DigitalAsset digitalAsset, String fileName, String thumbnailFile, String filePath, int width, int height) throws Exception
 	{
 		long timer = System.currentTimeMillis();
-		CmsLogger.logInfo("fileName:" + fileName);
-		CmsLogger.logInfo("thumbnailFile:" + thumbnailFile);
+		getLogger().info("fileName:" + fileName);
+		getLogger().info("thumbnailFile:" + thumbnailFile);
 		
 		File outputFile = new File(filePath + File.separator + thumbnailFile);
 		if(outputFile.exists())
 		{
-			CmsLogger.logInfo("The file allready exists so we don't need to dump it again..");
+			getLogger().info("The file allready exists so we don't need to dump it again..");
 			return;
 		}
 		
 		ThumbnailGenerator tg = new ThumbnailGenerator();
 		tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFile, width, height, 100);
 		
-		CmsLogger.logInfo("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 	}
 	
 
@@ -242,14 +242,14 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			for(int i=0; i<files.length; i++)
 			{
 				File file = files[i];
-				CmsLogger.logInfo("Deleting file " + file.getPath());
+				getLogger().info("Deleting file " + file.getPath());
 				file.delete();
 			}
 			
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("Could not delete the assets for the contentVersion " + contentVersionId + ":" + e.getMessage(), e);
+			getLogger().error("Could not delete the assets for the contentVersion " + contentVersionId + ":" + e.getMessage(), e);
 		}
 	}
 	*/
@@ -272,7 +272,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("Could not delete the assets for the contentVersion " + contentVersionId + ":" + e.getMessage(), e);
+			getLogger().error("Could not delete the assets for the contentVersion " + contentVersionId + ":" + e.getMessage(), e);
 		}
 	}
 
@@ -291,14 +291,14 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			for(int i=0; i<files.length; i++)
 			{
 				File file = files[i];
-				CmsLogger.logInfo("Deleting file " + file.getPath());
+				getLogger().info("Deleting file " + file.getPath());
 				file.delete();
 			}
 	
 		}
 		catch(Exception e)
 		{
-			CmsLogger.logSevere("Could not delete the assets for the digitalAsset " + digitalAssetId + ":" + e.getMessage(), e);
+			getLogger().error("Could not delete the assets for the digitalAsset " + digitalAssetId + ":" + e.getMessage(), e);
 		}
 	}
 	
@@ -308,7 +308,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	
 	private void unzipFile(File assetFile, File targetFolder) throws Exception
 	{
-		CmsLogger.logInfo("Unzipping file " + assetFile.getPath() + " to " + targetFolder);
+		getLogger().info("Unzipping file " + assetFile.getPath() + " to " + targetFolder);
 		Enumeration entries;
     	ZipFile zipFile = new ZipFile(assetFile);
       	entries = zipFile.entries();
@@ -335,7 +335,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 	private Vector getZipFileEntries(File assetFile, File targetFolder) throws Exception
 	{
-		CmsLogger.logInfo("Getting entries from " + assetFile.getPath());
+		getLogger().info("Getting entries from " + assetFile.getPath());
 		Enumeration entries;
 		Vector entryCopies = new Vector();
 		ZipFile zipFile = new ZipFile(assetFile);
