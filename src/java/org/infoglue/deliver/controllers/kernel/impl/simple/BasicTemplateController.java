@@ -4800,7 +4800,7 @@ public class BasicTemplateController implements TemplateController
 		return getTemplateController(siteNodeId, languageId, contentId, this.request, infoGluePrincipal, deliveryContext);
 	}	
 	
-	public TemplateController getTemplateController(Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request, InfoGluePrincipal infoGluePrincipal, DeliveryContext deliveryContext) throws SystemException, Exception
+	public TemplateController getTemplateController(Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request, InfoGluePrincipal infoGluePrincipal, DeliveryContext deliveryContextt) throws SystemException, Exception
 	{
 		TemplateController templateController = null;
 		templateController = new BasicTemplateController(this.databaseWrapper, infoGluePrincipal);
@@ -4818,6 +4818,10 @@ public class BasicTemplateController implements TemplateController
 		String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
 		String editOnSite = CmsPropertyHandler.getProperty("editOnSite");
 		boolean isEditOnSightDisabled = templateController.getIsEditOnSightDisabled();
+		boolean allowEditOnSightAtAll = false;
+		if(request.getRequestURL().indexOf("!renderDecoratedPage") > -1)
+		    allowEditOnSightAtAll = true;
+		
 		if(!isEditOnSightDisabled && operatingMode != null && (operatingMode.equals("0") || operatingMode.equals("1") || operatingMode.equals("2")) && editOnSite != null && editOnSite.equalsIgnoreCase("true"))
 		{
 			templateController = new EditOnSiteBasicTemplateController(this.databaseWrapper, infoGluePrincipal);

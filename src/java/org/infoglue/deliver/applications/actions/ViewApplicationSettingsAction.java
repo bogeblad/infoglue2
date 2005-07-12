@@ -229,7 +229,7 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 			
 			this.nodeDeliveryController		   		= NodeDeliveryController.getNodeDeliveryController(getSiteNodeId(), getLanguageId(), getContentId());
 			this.integrationDeliveryController 		= IntegrationDeliveryController.getIntegrationDeliveryController(getSiteNodeId(), getLanguageId(), getContentId());
-			TemplateController templateController 	= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)principal);
+			TemplateController templateController 	= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)principal, false);
 			this.navigationTitle = templateController.getPageNavTitle(this.getSiteNodeId());
 
 			closeTransaction(dbWrapper.getDatabase());

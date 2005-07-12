@@ -79,11 +79,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/editOnSiteHeader.vm"));
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/editOnSiteBody.vm"));
 		    
-			//String extraHeader = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteHeader.vm"));
-		    //String extraBody   = FileHelper.getStreamAsString(EditOnSiteBasicTemplateController.class.getResourceAsStream("/resources/templates/preview/editOnSiteBody.vm"));
 			String servletContext = request.getContextPath();
 			extraHeader = extraHeader.replaceAll("\\{applicationContext\\}", servletContext);
-			//logger.info("extraHeader:" + extraHeader);
 			//logger.info("extraHeader:" + extraHeader);
 			
 			StringBuffer modifiedTemplate = new StringBuffer(page);
