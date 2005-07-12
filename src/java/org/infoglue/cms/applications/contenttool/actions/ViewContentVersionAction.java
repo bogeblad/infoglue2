@@ -85,7 +85,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private String textAreaId = "";
 			
     private ContentVO contentVO;
-    private ContentVersionVO contentVersionVO;
+    protected ContentVersionVO contentVersionVO;
 	public List attributes = null;
 
 	private List repositories;
@@ -618,6 +618,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public String getAttributeValue(String key)
 	{
 		String value = "";
+		
+		//System.out.println("this.contentVersionVO:" + this.contentVersionVO);
+
 		if(this.contentVersionVO != null)
 		{
 			try
@@ -672,7 +675,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	        }
 		}
 		
-		//getLogger().info("value:" + value);	
+		getLogger().info("value:" + value);	
 		
 		return value;
 	}

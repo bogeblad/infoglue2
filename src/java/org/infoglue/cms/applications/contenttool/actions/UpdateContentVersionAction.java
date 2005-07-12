@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
@@ -41,7 +42,7 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 	private Integer contentVersionId;
 	private Integer currentEditorId;
 	private String attributeName;
-
+	
 	private ConstraintExceptionBuffer ceb;
 	
 	public UpdateContentVersionAction()
@@ -61,7 +62,16 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		ceb.throwIfNotEmpty();
 
 		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-		this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+		
+		try
+		{
+		    this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+		}
+		catch(ConstraintException ce)
+		{
+		    super.contentVersionVO = this.contentVersionVO;
+		    throw ce;
+		}
 		
 		return "success";
 	}
