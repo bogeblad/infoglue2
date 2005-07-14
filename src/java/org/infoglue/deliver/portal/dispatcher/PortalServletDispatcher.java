@@ -38,9 +38,11 @@ import org.apache.pluto.portalImpl.core.PortletContainerFactory;
 import org.apache.pluto.portalImpl.factory.FactoryAccess;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.factorymanager.FactoryManager;
+import org.infoglue.cms.util.FileUploadHelper;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 
 import webwork.dispatcher.ServletDispatcher;
+import webwork.multipart.MultiPartRequestWrapper;
 
 /**
  * Overides the webwork(1) servlet dispatcher in order to initiate the pluto
@@ -50,7 +52,7 @@ import webwork.dispatcher.ServletDispatcher;
  * @author jan danils
  * @author jöran stark
  */
-public class PortalServletDispatcher extends ServletDispatcher {
+public class PortalServletDispatcher extends DeliveryServletDispatcher {
 
     private static final Log log = LogFactory.getLog(PortalServletDispatcher.class);
 
@@ -141,7 +143,8 @@ public class PortalServletDispatcher extends ServletDispatcher {
         }
     }
 
-    public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+    public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException 
+    {
         if (log.isDebugEnabled()) {
             log.debug("\n******************************************** infogluePortal service()");
             Enumeration enumeration = req.getParameterNames();
@@ -167,4 +170,6 @@ public class PortalServletDispatcher extends ServletDispatcher {
         // Delegate to super-servlet (infoglue)
         super.service(req, resp);
     }
+    
+
 }
