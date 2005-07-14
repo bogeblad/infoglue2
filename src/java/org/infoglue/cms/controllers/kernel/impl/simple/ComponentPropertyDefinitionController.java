@@ -75,6 +75,9 @@ public class ComponentPropertyDefinitionController extends BaseController
 	{
 	    List componentPropertyDefinitions = new ArrayList();
 	    
+	    if(xml == null || xml.equals(""))
+	        return componentPropertyDefinitions;
+	    
 	    try
 	    {
 	        InputSource xmlSource = new InputSource(new StringReader(xml));
