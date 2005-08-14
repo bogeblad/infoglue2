@@ -24,12 +24,15 @@ package org.infoglue.deliver.portal.services;
 
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.naming.NameNotFoundException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pluto.om.entity.PortletApplicationEntity;
+import org.apache.pluto.om.entity.PortletApplicationEntityList;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowListCtrl;
@@ -44,25 +47,37 @@ import org.infoglue.deliver.portal.om.PortletWindowImpl;
  * @author jand
  *  
  */
-public class PortletWindowRegistryServiceImpl extends Service implements
-        PortletWindowRegistryService {
+public class PortletWindowRegistryServiceImpl extends Service implements PortletWindowRegistryService 
+{
     private static final Log log = LogFactory.getLog(PortletWindowRegistryServiceImpl.class);
 
     /** Window-id to window */
     private static Map wid2win = Collections.synchronizedMap(new Hashtable());
 
-    public synchronized PortletWindow createPortletWindow(String windowID, String entityID)
-            throws NameNotFoundException {
+    public synchronized PortletWindow createPortletWindow(String windowID, String entityID) throws NameNotFoundException 
+    {
         PortletWindow window = (PortletWindow) wid2win.get(windowID);
 
-        if (window == null) {
+        if (window == null) 
+        {
             log.debug("Found no portletwindow with id[" + windowID + "], registring new instance");
-            PortletEntity entity = PortletEntityRegistry.getPortletEntity(ObjectID
-                    .createFromString(entityID));
-            if (entity == null) {
+
+            PortletApplicationEntityList applicationList = PortletEntityRegistry.getPortletApplicationEntityList();
+            Iterator portletApplicationEntityListIterator = applicationList.iterator();
+            while(portletApplicationEntityListIterator.hasNext())
+            {
+                PortletApplicationEntity pae = (PortletApplicationEntity)portletApplicationEntityListIterator.next();
+                log.debug("Available application: " + pae.getId());
+            }
+            
+            PortletEntity entity = PortletEntityRegistry.getPortletEntity(ObjectID.createFromString(entityID));
+
+            if (entity == null) 
+            {
                 log.fatal("Couldn't find entity with id: " + entityID);
                 throw new NameNotFoundException("Portlet entity not found: " + entityID);
             }
+            
             window = new PortletWindowImpl(windowID, entity);
 
             ((PortletWindowListCtrl) entity.getPortletWindowList()).add(window);
