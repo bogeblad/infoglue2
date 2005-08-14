@@ -22,6 +22,8 @@ function changeEditor(editorId, attributeName)
 	var editor2 = attributeName + "EditorType2";
 	var editor3 = attributeName + "EditorType3";
 	var editor4 = attributeName + "EditorType4";
+	var editor5 = attributeName + "EditorType5";
+	var editor6 = attributeName + "EditorType6";
 	//alert("editor1:" + editor1);
 	
 	//If the editor choosen is of type 0 it means we use the standard html input field.
@@ -108,6 +110,20 @@ function changeEditor(editorId, attributeName)
 		showdiv.style.visibility = "visible";
 		//openWindow
 	}
+	else if(editorId == 5)
+	{
+		hideEditors(editor, attributeName);
+		showdiv = document.getElementById(editor5);
+		showdiv.style.visibility = "visible";
+		//openWindow
+	}
+	else if(editorId == 6)
+	{
+		hideEditors(editor, attributeName);
+		showdiv = document.getElementById(editor6);
+		showdiv.style.visibility = "visible";
+		//openWindow
+	}
 	currentEditorIdHash[attributeName + "CurrentEditorId"] = editorId;
 	//alert("APA:" + currentEditorIdHash[attributeName + "CurrentEditorId"])
 }
@@ -125,6 +141,8 @@ function hideEditors(editorId, attributeName)
 	var editor2 = attributeName + "EditorType2";
 	var editor3 = attributeName + "EditorType3";
 	var editor4 = attributeName + "EditorType4";
+	var editor5 = attributeName + "EditorType5";
+	var editor6 = attributeName + "EditorType6";
 	
 	currentEditorId = currentEditorIdHash[attributeName + "CurrentEditorId"]
 	//alert("editorId:" + editorId);
@@ -176,6 +194,17 @@ function hideEditors(editorId, attributeName)
 	{
 		showdiv = document.getElementById(editor4);
 		showdiv.style.visibility = "hidden";
+	}
+	else if(currentEditorId == 5)
+	{
+		showdiv = document.getElementById(editor5);
+		showdiv.style.visibility = "hidden";
+	}
+	else if(currentEditorId == 6)
+	{
+		showdiv = document.getElementById(editor6);
+		showdiv.style.display = "none";
+		//showdiv.style.visibility = "hidden";
 	}
 	
 }

@@ -47,6 +47,7 @@
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	<script type="text/javascript" src="script/calendar1.js"></script>
 	<script type="text/javascript" src="script/editorForFCKEditor.js"></script>
 	<script type="text/javascript" src="script/hotkeys.js"></script>
@@ -439,6 +440,10 @@
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
 					    		| <a href="javascript:changeEditor(2, '${attribute.name}');">$ui.getString("tool.contenttool.editorInfoGlueTemplateEditor")</a>
 								#end
+																
+								#if($enableComponentPropertiesEditor == "true")
+									<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a> 
+								#end
 							</td>
 					    </tr>
 					</table>
@@ -697,6 +702,7 @@
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
 							document.getElementById('${attribute.name}EditorType6').style.display = "block";							
+							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 6;
 						</script>
 					#end
 					
@@ -907,7 +913,11 @@
 					{
 						document.getElementById("$attribute.name").value = document.${attribute.name}InfoGlueCodeEditor.getText();	
 					}
-	
+					else if(currentEditorId == 0 && "$attribute.name" == "ComponentProperties")
+					{
+						document.getElementById("${attribute.name}Hidden").value = document.getElementById("${attribute.name}").value	
+					}
+					
 	   				#if($attribute.inputType != "digitalAsset")
 						//isCurrentValid = validate${attribute.name}();
 						//if(isCurrentValid == false)
@@ -988,7 +998,7 @@
 							fieldName = "document.editForm." + elementId;
 						
 						value = eval(fieldName).value;
-						//alert("value:" + value);
+						//alert(fieldName + " value:" + value);
 						//value = document.getElementById(elementId).value;
 						
 						//alert("elementId:" + elementId);
