@@ -514,7 +514,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						if(!isAuthorized)
 						{	
 							getLogger().info("SiteNode is protected and user was not found - sending him to login page.");
-							String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+							String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 							getResponse().sendRedirect(url);
 							isRedirected = true;
 						}
