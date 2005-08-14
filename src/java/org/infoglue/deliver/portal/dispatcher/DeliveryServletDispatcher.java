@@ -13,6 +13,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.infoglue.cms.security.InfoGluePrincipal;
+
 import webwork.action.Action;
 import webwork.action.ActionContext;
 import webwork.action.ServletActionContext;
@@ -36,7 +38,7 @@ import webwork.util.ServletValueStack;
  *
  * @author Rickard Öberg (rickard@middleware-company.com)
  * @author Matt Baldree (matt@smallleap.com)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DeliveryServletDispatcher extends ServletDispatcher
 {
@@ -74,74 +76,104 @@ public class DeliveryServletDispatcher extends ServletDispatcher
       String actionName = getActionName(servletPath);
       GenericDispatcher gd = new GenericDispatcher(actionName, false);
       ActionContext context = gd.prepareContext();
+      
+      InfoGluePrincipal principal = (InfoGluePrincipal)aRequest.getSession().getAttribute("infogluePrincipal");
+      if(principal != null)
+          aRequest.setAttribute("infoglueRemoteUser", principal.getName());
+      
       ServletActionContext.setContext(aRequest, aResponse, getServletContext(), actionName);
       gd.prepareValueStack();
       ActionResult ar = null;
-       try {
+      try 
+      {
            gd.executeAction();
            ar = gd.finish();
-       } catch (Throwable e) {
-           log.error("Could not execute action", e);
-           try {
-               aResponse.sendError(404, "Could not execute action [" + actionName + "]:" + e.getMessage() + getHTMLErrorMessage(e));
-           } catch (IOException e1) {
-           }
-       }
+      } 
+      catch (Throwable e) 
+      {
+          log.error("Could not execute action", e);
+          try 
+          {
+              aResponse.sendError(404, "Could not execute action [" + actionName + "]:" + e.getMessage() + getHTMLErrorMessage(e));
+          } 
+          catch (IOException e1) 
+          {
+          }
+      }
 
-       if (ar != null && ar.getActionException() != null) {
-           log.error("Could not execute action", ar.getActionException());
-           try {
-               aResponse.sendError(500, ar.getActionException().getMessage() + getHTMLErrorMessage(ar.getActionException()));
-           } catch (IOException e1) {
-           }
-       }
+      if (ar != null && ar.getActionException() != null) 
+      {
+          log.error("Could not execute action", ar.getActionException());
+          try 
+          {
+              aResponse.sendError(500, ar.getActionException().getMessage() + getHTMLErrorMessage(ar.getActionException()));
+          } 
+          catch (IOException e1) 
+          {
+          }
+      }
 
-       // check if no view exists
-       if (ar != null && ar.getResult() != null && ar.getView() == null && !ar.getResult().equals(Action.NONE)) {
-           try {
-               aResponse.sendError(404, "No view for result [" + ar.getResult() + "] exists for action [" + actionName + "]");
-           } catch (IOException e) {
-           }
-       }
+      // check if no view exists
+      if (ar != null && ar.getResult() != null && ar.getView() == null && !ar.getResult().equals(Action.NONE)) {
+          try 
+          {
+              aResponse.sendError(404, "No view for result [" + ar.getResult() + "] exists for action [" + actionName + "]");
+          } 
+          catch (IOException e) 
+          {
+          }
+      }
 
-       if (ar != null && ar.getView() != null && ar.getActionException() == null) {
-           String view = ar.getView().toString();
-           log.debug("Result:" + view);
+      if (ar != null && ar.getView() != null && ar.getActionException() == null) 
+      {
+          String view = ar.getView().toString();
+          log.debug("Result:" + view);
 
-           RequestDispatcher dispatcher = null;
-           try {
+          RequestDispatcher dispatcher = null;
+          try 
+          {
                dispatcher = aRequest.getRequestDispatcher(view);
-           } catch (Throwable e) {
-               // Ignore
-           }
+          } 
+          catch (Throwable e) 
+          {
+              // Ignore
+          }
 
-           if (dispatcher == null)
-               throw new ServletException("No presentation file with name '" + view + "' found!");
+          if (dispatcher == null)
+              throw new ServletException("No presentation file with name '" + view + "' found!");
 
-           try {
-               // If we're included, then include the view
-               // Otherwise do forward
-               // This allow the page to, for example, set content type
-               if (aRequest.getAttribute("javax.servlet.include.servlet_path") == null) {
+          try 
+          {
+              // If we're included, then include the view
+              // Otherwise do forward
+              // This allow the page to, for example, set content type
+              if (aRequest.getAttribute("javax.servlet.include.servlet_path") == null) 
+              {
                    aRequest.setAttribute("webwork.view_uri", view);
                    aRequest.setAttribute("webwork.request_uri", aRequest.getRequestURI());
-                   //               aRequest.setAttribute("webwork.contextPath",aRequest.getContextPath());
+                   //aRequest.setAttribute("webwork.contextPath",aRequest.getContextPath());
                    dispatcher.forward(aRequest, aResponse);
-               } else {
-                   //               aRequest.setAttribute("webwork.request_uri",aRequest.getAttribute("javax.servlet.include.request_uri"));
-                   //               aRequest.setAttribute("webwork.contextPath",aRequest.getAttribute("javax.servlet.include.context_path"));
+              } 
+              else 
+              {
+                   //aRequest.setAttribute("webwork.request_uri",aRequest.getAttribute("javax.servlet.include.request_uri"));
+                   //aRequest.setAttribute("webwork.contextPath",aRequest.getAttribute("javax.servlet.include.context_path"));
                    dispatcher.include(aRequest, aResponse);
-               }
-           } catch (IOException e) {
-               throw new ServletException(e);
-           } finally {
-               // Get last action from stack and and store it in request attribute STACK_HEAD
-               // It is then popped from the stack.
-               aRequest.setAttribute(STACK_HEAD, ServletValueStack.getStack(aRequest).popValue());
-           }
-       }
+              }
+          } 
+          catch (IOException e) 
+          {
+              throw new ServletException(e);
+          } 
+          finally 
+          {
+              // Get last action from stack and and store it in request attribute STACK_HEAD
+              // It is then popped from the stack.
+              aRequest.setAttribute(STACK_HEAD, ServletValueStack.getStack(aRequest).popValue());
+          }
+      }
 
-       gd.finalizeContext();
+      gd.finalizeContext();
    }
 
    /**
