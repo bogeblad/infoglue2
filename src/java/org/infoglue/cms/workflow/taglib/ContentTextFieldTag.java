@@ -36,7 +36,7 @@ public class ContentTextFieldTag extends ContentInputTag {
 	 */
 	private static final long serialVersionUID = 3256727294570804535L;
 	
-	private static final String TEXT_FIELD = "<input id=\"{0}\" name=\"{1}\" type=\"text\" value=\"{2}\" {3}\"/>";
+	private static final String TEXT_FIELD = "<input id=\"{0}\" name=\"{1}\" type=\"text\" value=\"{2}\" {3}/>";
 	private static final String READONLY_ATTRIBUTE = " readonly=\"{0}\" ";
 	private static final String CLASS_ATTRIBUTE    = " class=\"{0}\" ";
 	
