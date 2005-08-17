@@ -718,7 +718,7 @@
     <field name="children" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl" lazy="true" collection="collection">
       <sql many-key="parentContId"/>
     </field>
-    <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" lazy="true" collection="collection">
+    <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" lazy="false" collection="collection">
       <sql many-key="ContId"/>
     </field>
     <field name="creator" type="java.lang.String">
