@@ -246,7 +246,7 @@ class SqlBuilder {
 	 * 
 	 */
 	private String generate() {
-		return "CALL SQL" + SPACE + generateSelectClause() + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + ContentImpl.class.getName();
+		return "CALL SQL" + SPACE + generateSelectClause() + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + SmallContentImpl.class.getName();
 	}
 	
 	/**
