@@ -30,7 +30,9 @@ public class RelatedContentsTag extends TemplateControllerTag {
 	private Object getRelatedContents() throws JspException
 	{
 		final List related = getController().getRelatedContents(contentId, attributeName);
-		return (onlyFirst && !related.isEmpty()) ? related.get(0) : related;
+		if(onlyFirst)
+			return related.isEmpty() ? null : related.get(0);
+		return related;
 	}
 
     public void setContentId(String contentId) throws JspException
