@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.util;
 
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
@@ -31,7 +34,11 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import webwork.multipart.MultiPartRequestWrapper;
 
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.io.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -88,4 +95,59 @@ public class FileUploadHelper
 		return renamedFile;
 	}
 	
+	/**
+	 * Lists the files
+	 */
+
+	public static void listMultiPartFiles(HttpServletRequest req)
+	{
+	    try
+	    {
+	        File tempDir = new File("c:/temp/uploads");
+	        System.out.println("tempDir:" + tempDir.exists());
+	        
+	        DiskFileItemFactory factory = new DiskFileItemFactory(1000, tempDir);
+	        ServletFileUpload upload = new ServletFileUpload(factory);
+	        if(ServletFileUpload.isMultipartContent((HttpServletRequest)req))
+	        {
+	            List fileItems = upload.parseRequest((HttpServletRequest)req);
+	            System.out.println("******************************");
+	            System.out.println("fileItems:" + fileItems.size());
+	            System.out.println("******************************");
+	            req.setAttribute("Test", "Mattias Testar");
+	            
+	            Iterator i = fileItems.iterator();
+		        while(i.hasNext())
+		        {
+		            Object o = i.next();
+		            DiskFileItem dfi = (DiskFileItem)o;
+		            System.out.println("dfi:" + dfi.getFieldName());
+		            System.out.println("dfi:" + dfi);
+		            
+		            if (!dfi.isFormField()) {
+		                String fieldName = dfi.getFieldName();
+		                String fileName = dfi.getName();
+		                String contentType = dfi.getContentType();
+		                boolean isInMemory = dfi.isInMemory();
+		                long sizeInBytes = dfi.getSize();
+		                
+		                System.out.println("fieldName:" + fieldName);
+		                System.out.println("fileName:" + fileName);
+		                System.out.println("contentType:" + contentType);
+		                System.out.println("isInMemory:" + isInMemory);
+		                System.out.println("sizeInBytes:" + sizeInBytes);
+		                File uploadedFile = new File("c:/temp/uploads/" + fileName);
+		                dfi.write(uploadedFile);
+	
+			            req.setAttribute(dfi.getFieldName(), uploadedFile.getAbsolutePath());
+		            }
+		            
+		        }
+	        }
+	    } 
+	    catch (Exception e)
+	    {
+	        e.printStackTrace();
+	    }
+	}
 }

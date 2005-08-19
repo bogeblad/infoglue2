@@ -38,7 +38,7 @@ import webwork.util.ServletValueStack;
  *
  * @author Rickard Öberg (rickard@middleware-company.com)
  * @author Matt Baldree (matt@smallleap.com)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DeliveryServletDispatcher extends ServletDispatcher
 {
@@ -72,6 +72,9 @@ public class DeliveryServletDispatcher extends ServletDispatcher
       String servletPath = (String) aRequest.getAttribute("javax.servlet.include.servlet_path");
       if (servletPath == null)
          servletPath = aRequest.getServletPath();
+      System.out.println("******************************************ServletPath:" + servletPath);
+      System.out.println("******************************************getRequestURI:" + aRequest.getRequestURI());
+      System.out.println("******************************************getRequestURL:" + aRequest.getRequestURL());
 
       String actionName = getActionName(servletPath);
       GenericDispatcher gd = new GenericDispatcher(actionName, false);
@@ -80,6 +83,8 @@ public class DeliveryServletDispatcher extends ServletDispatcher
       InfoGluePrincipal principal = (InfoGluePrincipal)aRequest.getSession().getAttribute("infogluePrincipal");
       if(principal != null)
           aRequest.setAttribute("infoglueRemoteUser", principal.getName());
+
+      aRequest.setAttribute("webwork.request_url", aRequest.getRequestURL());
       
       ServletActionContext.setContext(aRequest, aResponse, getServletContext(), actionName);
       gd.prepareValueStack();
@@ -151,7 +156,9 @@ public class DeliveryServletDispatcher extends ServletDispatcher
               {
                    aRequest.setAttribute("webwork.view_uri", view);
                    aRequest.setAttribute("webwork.request_uri", aRequest.getRequestURI());
+                   aRequest.setAttribute("webwork.request_url", aRequest.getRequestURL());
                    //aRequest.setAttribute("webwork.contextPath",aRequest.getContextPath());
+
                    dispatcher.forward(aRequest, aResponse);
               } 
               else 
