@@ -209,11 +209,14 @@ public class Deploy {
                 throw new IOException("Failed to load mapping file " + SERVLET_MAPPING);
             }
 
+            log.debug("Opening uploaded jar:" + file);
             // Open the jar file.
             JarFile jar = new JarFile(file);
+            log.debug("JAR:" + jar);
 
             // Extract and parse portlet.xml
             ZipEntry portletEntry = jar.getEntry(PORTLET_XML);
+            log.debug("portletEntry:" + portletEntry);
             if (portletEntry == null) {
                 throw new IOException("Unable to find portlet.xml");
             }
