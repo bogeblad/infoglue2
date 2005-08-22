@@ -143,7 +143,8 @@ class SortStruct implements Comparable {
 			if(clazz.isAssignableFrom(Comparable.class))
 				throw new IllegalArgumentException(clazz.getName() + " is not comparable.");
 			final Constructor ctor = clazz.getConstructor(new Class[] { String.class });
-			return (Comparable) ctor.newInstance(new Object[] { stringValue });
+			final String s = (Number.class.isAssignableFrom(clazz) && stringValue.equals("")) ? "0" : stringValue;
+			return (Comparable) ctor.newInstance(new Object[] { s });
 		} catch(Exception e) {
 			e.printStackTrace();
 			throw new IllegalArgumentException("Unable to cast [" + name + "] to [" + clazz.getName() + "].");
