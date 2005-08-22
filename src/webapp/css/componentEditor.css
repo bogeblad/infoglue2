@@ -307,6 +307,15 @@ input.normaltextfield {
 	width            : 300px;
 }
 
+input.propertytextfield {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	border-style	 : solid;
+	border-width	 : 1px;	
+	border-color     : #C2D0E2;
+	width            : 200px;
+}
+
 .inheritedOverlay
 {
  	font-family      : verdana, arial, sans-serif;
