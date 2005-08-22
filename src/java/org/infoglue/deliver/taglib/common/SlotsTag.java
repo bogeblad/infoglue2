@@ -37,6 +37,11 @@ public class SlotsTag extends AbstractTag {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 3257849891731681845L;
+
+	/**
+	 * 
+	 */
 	private String visibleElementsId;
 	
 	/**
@@ -69,6 +74,10 @@ public class SlotsTag extends AbstractTag {
 	 */
 	private int slotCount;
 	
+	/**
+	 * 
+	 */
+	private int maxSlots;
 	
 	
 	/**
@@ -87,14 +96,21 @@ public class SlotsTag extends AbstractTag {
 	{
 		try 
 		{
-			Slots slots = new Slots(elements, currentSlot, slotSize, slotCount);
-			setResultAttribute(visibleElementsId, slots.getVisibleElements());
-			setResultAttribute(visibleSlotsId, slots.getVisibleSlots());
-			setResultAttribute(lastSlotId, slots.getLastSlot());
-			
-			System.out.println(visibleElementsId + "=" + slots.getVisibleElements().toString());
-			System.out.println(visibleSlotsId + "=" + slots.getVisibleSlots().toString());
-			System.out.println(lastSlotId + "=" + slots.getLastSlot().toString());
+			if(elements != null && visibleElementsId != null) 
+			{
+				Slots slots = new Slots(elements, currentSlot, slotSize, slotCount);
+				setResultAttribute(visibleElementsId, slots.getVisibleElements());
+				setResultAttribute(visibleSlotsId, slots.getVisibleSlots());
+				setResultAttribute(lastSlotId, slots.getLastSlot());
+			}
+			else if(maxSlots > 0)
+			{
+				Slots slots = new Slots(currentSlot, slotSize, slotCount, maxSlots);
+				setResultAttribute(visibleSlotsId, slots.getVisibleSlots());
+				setResultAttribute(lastSlotId, slots.getLastSlot());
+			}
+			else
+				throw new JspTagException("Either elements/visibleElementsId or maxSlots must be specified.");
 		} 
 		catch(Exception e)
 		{
@@ -143,7 +159,7 @@ public class SlotsTag extends AbstractTag {
 	 */
 	public void setElements(final String elements) throws JspException
 	{
-		this.elements = evaluateList("slotsTag", "elements", elements);
+		this.elements = evaluateList("slots", "elements", elements);
 	}
 
 	/**
@@ -151,22 +167,30 @@ public class SlotsTag extends AbstractTag {
 	 */
 	public void setCurrentSlot(final String currentSlot) throws JspException
 	{
-		this.currentSlot = Math.max(1, evaluateInteger("slotsTag", "currentSlot", currentSlot).intValue());
+		this.currentSlot = Math.max(1, evaluateInteger("slots", "currentSlot", currentSlot).intValue());
 	}
 
 	/**
 	 *
 	 */
-	public void setSlotSize(final int slotSize)
+	public void setMaxSlots(final String maxSlots) throws JspException
 	{
-		this.slotSize = slotSize;
+		this.maxSlots = evaluateInteger("slots", "maxSlots", maxSlots).intValue();
+	}
+	
+	/**
+	 *
+	 */
+	public void setSlotSize(final String slotSize) throws JspException
+	{
+		this.slotSize = evaluateInteger("slots", "slotSize", slotSize).intValue();
 	}
 
 	/**
 	 *
 	 */
-	public void setSlotCount(final int slotCount) 
+	public void setSlotCount(final String slotCount) throws JspException
 	{
-		this.slotCount = slotCount;
+		this.slotCount = evaluateInteger("slots", "slotCount", slotCount).intValue();
 	}
 }
