@@ -35,10 +35,12 @@ import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
+import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
@@ -148,6 +150,14 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("workflowCache");
 			}
+			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
+			{
+				CacheController.clearCache("groupListCache");
+			}
+			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
+			{
+				CacheController.clearCache("roleListCache");
+			}
     	}
     }
 
@@ -242,6 +252,15 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("workflowCache");
 			}
+			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
+			{
+				CacheController.clearCache("groupListCache");
+			}
+			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
+			{
+				CacheController.clearCache("roleListCache");
+			}
+
 
 
 			//System.out.println("created end...:" + object);
@@ -322,6 +341,14 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
 			{
 				CacheController.clearCache("workflowCache");
+			}
+			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
+			{
+				CacheController.clearCache("groupListCache");
+			}
+			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
+			{
+				CacheController.clearCache("roleListCache");
 			}
 
 

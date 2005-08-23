@@ -26,10 +26,12 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.CacheController;
 
 
 import org.exolab.castor.jdo.Database;
@@ -100,8 +102,22 @@ public class GroupController extends BaseController
 
     public List getGroupVOList(Database db) throws SystemException, Bug
     {
-        return getAllVOObjects(GroupImpl.class, "groupName", db);
-    }
+		String cacheKey = "allGroupVO";
+		getLogger().info("cacheKey in getGroupVOList:" + cacheKey);
+		List groupVOList = (List)CacheController.getCachedObject("groupVOListCache", cacheKey);
+		if(groupVOList != null)
+		{
+			getLogger().info("There was an cached list of GroupVO:" + groupVOList.size());
+		}
+		else
+		{
+		    groupVOList = getAllVOObjects(GroupImpl.class, "groupName", db);
+			if(groupVOList != null)
+			    CacheController.cacheObject("groupVOListCache", cacheKey, groupVOList);
+		}
+		
+		return groupVOList;
+	}
 
     public GroupVO create(GroupVO groupVO) throws ConstraintException, SystemException
     {
