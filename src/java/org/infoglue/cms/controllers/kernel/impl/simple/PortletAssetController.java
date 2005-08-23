@@ -49,14 +49,16 @@ public class PortletAssetController extends DigitalAssetController
 {
     private final static Logger logger = Logger.getLogger(PortletAssetController.class.getName());
 
-    public static DigitalAsset create(DigitalAssetVO digitalAssetVO, InputStream is)
-            throws SystemException {
+    public static DigitalAsset create(DigitalAssetVO digitalAssetVO, InputStream is) throws SystemException 
+    {
         Database db = CastorDatabaseService.getDatabase();
 
         DigitalAsset digitalAsset = null;
 
         beginTransaction(db);
-        try {
+        
+        try 
+        {
             digitalAsset = new DigitalAssetImpl();
             digitalAsset.setValueObject(digitalAssetVO);
             digitalAsset.setAssetBlob(is);
@@ -64,9 +66,10 @@ public class PortletAssetController extends DigitalAssetController
             db.create(digitalAsset);
 
             commitTransaction(db);
-        } catch (Exception e) {
-            logger.error("An error occurred so we should not complete the transaction:" + e,
-                    e);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -74,25 +77,30 @@ public class PortletAssetController extends DigitalAssetController
         return digitalAsset;
     }
 
-    public static List getDigitalAssetByName(String name) throws SystemException {
+    public static List getDigitalAssetByName(String name) throws SystemException 
+    {
         Database db = CastorDatabaseService.getDatabase();
         
         List contents = new ArrayList();
 
         beginTransaction(db);
-        try {
-            OQLQuery oql = db
-                    .getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl c WHERE c.assetFileName = $1");
+        try 
+        {
+            OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl c WHERE c.assetFileName = $1");
             oql.bind(name);
 
             QueryResults results = oql.execute(Database.ReadOnly);
 
-            while (results.hasMore()) {
+            while (results.hasMore()) 
+            {
                 contents.add(results.next());
             }
-        } catch (Exception e) {
-            logger.error("An error occurred so we should not complete the transaction:" + e,
-                    e);
+            
+            commitTransaction(db);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
@@ -29,7 +30,10 @@ import org.infoglue.cms.exception.SystemException;
  * 
  */
 public class ExtendedSearchController extends BaseController {
-	/**
+
+    private final static Logger logger = Logger.getLogger(ExtendedSearchController.class.getName());
+
+    /**
 	 * The singleton controller.
 	 */
 	private static final ExtendedSearchController instance = new ExtendedSearchController();
@@ -222,10 +226,12 @@ class SqlBuilder {
 		this.bindings                 = new ArrayList();
 		
 		this.sql = generate();
-		System.out.println("this.stateId=" + this.stateId);
-		System.out.println("======================================================================");
-		System.out.println("#" + sql + "#");
-		System.out.println("======================================================================");
+		/*
+		logger.info("this.stateId=" + this.stateId);
+		logger.info("======================================================================");
+		logger.info("#" + sql + "#");
+		logger.info("======================================================================");
+		*/
 	}
 
 	/**

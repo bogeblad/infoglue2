@@ -102,8 +102,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
 			if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 			{
-			    System.out.println("className:" + className);
-			    System.out.println("objectId:" + objectId);
+			    getLogger().info("className:" + className);
+			    getLogger().info("objectId:" + objectId);
 			    
 			    //Hardcoded some stuff to clear.... not nice. Instead have some register which 
 				//different caches can register to.

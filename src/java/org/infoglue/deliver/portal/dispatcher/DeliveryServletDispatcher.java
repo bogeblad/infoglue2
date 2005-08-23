@@ -38,7 +38,7 @@ import webwork.util.ServletValueStack;
  *
  * @author Rickard Öberg (rickard@middleware-company.com)
  * @author Matt Baldree (matt@smallleap.com)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DeliveryServletDispatcher extends ServletDispatcher
 {
@@ -72,10 +72,13 @@ public class DeliveryServletDispatcher extends ServletDispatcher
       String servletPath = (String) aRequest.getAttribute("javax.servlet.include.servlet_path");
       if (servletPath == null)
          servletPath = aRequest.getServletPath();
+      
+      /*
       System.out.println("******************************************ServletPath:" + servletPath);
       System.out.println("******************************************getRequestURI:" + aRequest.getRequestURI());
       System.out.println("******************************************getRequestURL:" + aRequest.getRequestURL());
-
+      */
+      
       String actionName = getActionName(servletPath);
       GenericDispatcher gd = new GenericDispatcher(actionName, false);
       ActionContext context = gd.prepareContext();

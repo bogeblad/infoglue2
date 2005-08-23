@@ -1334,7 +1334,7 @@ public class ContentController extends BaseController
 				throw new SystemException("There exists no content with the path [" + path + "].");
 			else 
 			{
-				System.out.println("   CREATE " + name);
+			    getLogger().info("   CREATE " + name);
 				ContentVO contentVO = new ContentVO();
 				contentVO.setIsBranch(Boolean.TRUE);
 				contentVO.setCreatorName(creator.getName());

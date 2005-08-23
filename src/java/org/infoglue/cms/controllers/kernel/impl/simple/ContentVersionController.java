@@ -970,11 +970,11 @@ public class ContentVersionController extends BaseController
 		while(digitalAssetsIterator.hasNext())
 		{
 		    DigitalAsset digitalAsset = (DigitalAsset)digitalAssetsIterator.next();
-		    System.out.println("Copying digitalAssets " + digitalAsset.getAssetKey());
+		    getLogger().info("Copying digitalAssets " + digitalAsset.getAssetKey());
 		    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
 		    
 		    DigitalAssetController.create(digitalAssetVO, digitalAsset.getAssetBlob(), newContentVersion, db);
-		    System.out.println("digitalAssets:" + digitalAssets.size());
+		    getLogger().info("digitalAssets:" + digitalAssets.size());
 		}
 		//newContentVersion.setDigitalAssets(digitalAssets);
 	}	

@@ -376,7 +376,7 @@ public class PublicationController extends BaseController
 			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
 				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
 
-			System.out.println("email:" + email);
+			logger.info("email:" + email);
 			MailServiceFactory.getService().send(systemEmailSender, recipient, "CMS - Publishing was denied!!", email, contentType, "UTF-8");
 		}
 		catch(Exception e)
