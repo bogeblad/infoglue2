@@ -46,8 +46,7 @@ public class ViewListPortletAction extends InfoGlueAbstractAction
 
 	protected String doExecute() throws Exception 
 	{
-	    PortletApplicationEntityList pael = PortletEntityRegistry
-        .getPortletApplicationEntityList();
+	    PortletApplicationEntityList pael = PortletEntityRegistry.getPortletApplicationEntityList();
 	    
 	    for(Iterator it = pael.iterator(); it.hasNext();) {
 	        PortletApplicationEntity pae = (PortletApplicationEntity) it.next();
