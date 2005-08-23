@@ -27,6 +27,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -44,30 +45,42 @@ import org.infoglue.cms.security.InfoGlueGroup;
 public class GroupControllerProxy extends BaseController 
 {
 	private static AuthorizationModule authorizationModule = null;
+	private Database transactionObject = null;
+
+	public GroupControllerProxy(Database transactionObject)
+	{
+	    this.transactionObject = transactionObject;
+	}
 
 	public static GroupControllerProxy getController()
 	{
-		return new GroupControllerProxy();
+		return new GroupControllerProxy(null);
 	}
-	
+
+	public static GroupControllerProxy getController(Database transactionObject)
+	{
+		return new GroupControllerProxy(transactionObject);
+	}
+
 	/**
 	 * This method instantiates the AuthorizationModule.
 	 */
 	
 	public AuthorizationModule getAuthorizationModule()
 	{
-		if(authorizationModule == null)
-		{
+		//if(authorizationModule == null)
+	    //{
 			try
 			{
 				authorizationModule = (AuthorizationModule)Class.forName(InfoGlueAuthenticationFilter.authorizerClass).newInstance();
 				authorizationModule.setExtraProperties(InfoGlueAuthenticationFilter.extraProperties);
+				authorizationModule.setTransactionObject(this.transactionObject);
 			}
 			catch(Exception e)
 			{
 				e.printStackTrace();
 			}
-		}
+		//}
 	   
 		return authorizationModule;
 	}

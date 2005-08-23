@@ -98,6 +98,11 @@ public class GroupController extends BaseController
         return getAllVOObjects(GroupImpl.class, "groupName");
     }
 
+    public List getGroupVOList(Database db) throws SystemException, Bug
+    {
+        return getAllVOObjects(GroupImpl.class, "groupName", db);
+    }
+
     public GroupVO create(GroupVO groupVO) throws ConstraintException, SystemException
     {
         Group group = new GroupImpl();

@@ -98,6 +98,11 @@ public class RoleController extends BaseController
         return getAllVOObjects(RoleImpl.class, "roleName");
     }
 
+    public List getRoleVOList(Database db) throws SystemException, Bug
+    {
+        return getAllVOObjects(RoleImpl.class, "roleName", db);
+    }
+
     public RoleVO create(RoleVO roleVO) throws ConstraintException, SystemException
     {
         Role role = new RoleImpl();

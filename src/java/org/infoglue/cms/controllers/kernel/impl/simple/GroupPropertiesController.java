@@ -32,6 +32,7 @@ import org.infoglue.cms.entities.management.GroupContentTypeDefinition;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.PropertiesCategory;
 import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl;
@@ -512,17 +513,7 @@ public class GroupPropertiesController extends BaseController
 
 		try
 		{
-		    List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
-		    Iterator iterator = groupProperties.iterator();
-		    GroupProperties groupProperty = null;
-		    while(iterator.hasNext())
-		    {
-		        groupProperty = (GroupProperties)iterator.next();
-		        break;
-		    }
-		    
-		    value = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
-		    
+		    value = getAttributeValue(groupName, languageId, attributeName, db);
 			
 			commitTransaction(db);
 		}
@@ -536,7 +527,29 @@ public class GroupPropertiesController extends BaseController
 		return value;
 	}
 
-	
+
+	/**
+	 * Returns the value of a Group Property
+	 */
+
+	public String getAttributeValue(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
+	{
+		String value = "";
+		
+	    List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
+		Iterator iterator = groupProperties.iterator();
+		GroupProperties groupProperty = null;
+		while(iterator.hasNext())
+		{
+	        groupProperty = (GroupProperties)iterator.next();
+	        break;
+	    }
+	    
+	    value = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+		
+		return value;
+	}
+
 	/**
 	 * This method fetches a value from the xml that is the groupProperties Value. 
 	 */
@@ -555,6 +568,7 @@ public class GroupPropertiesController extends BaseController
 		return value;
 	}
 
+	
 	/**
 	 * This method fetches a value from the xml that is the groupProperties Value. 
 	 */
@@ -599,6 +613,7 @@ public class GroupPropertiesController extends BaseController
 		return value;
 	}
 
+	
 	/**
 	 * Returns the related Contents
 	 * @param groupPropertiesId
@@ -615,19 +630,9 @@ public class GroupPropertiesController extends BaseController
 
 		try
 		{
-		    List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
-		    Iterator iterator = groupProperties.iterator();
-		    GroupProperties groupProperty = null;
-		    while(iterator.hasNext())
-		    {
-		        groupProperty = (GroupProperties)iterator.next();
-		        break;
-		    }
-		    
-		    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
-			List contents = this.getRelatedContentsFromXML(db, xml);
-
-			relatedContentVOList = toVOList(contents);
+			List relatedContents = getRelatedContents(groupName, languageId, attributeName, db);
+			if(relatedContents != null)
+			    relatedContentVOList = toVOList(relatedContents);
 			
 			commitTransaction(db);
 		}
@@ -639,6 +644,31 @@ public class GroupPropertiesController extends BaseController
 		}
 		
 		return relatedContentVOList;
+	}
+
+	/**
+	 * Returns the related Contents
+	 * @param groupPropertiesId
+	 * @return
+	 */
+
+	public List getRelatedContents(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
+	{
+		List relatedContentList = new ArrayList();
+
+		List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
+	    Iterator iterator = groupProperties.iterator();
+	    GroupProperties groupProperty = null;
+	    while(iterator.hasNext())
+	    {
+	        groupProperty = (GroupProperties)iterator.next();
+	        break;
+	    }
+	    
+	    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+		relatedContentList = this.getRelatedContentsFromXML(db, xml);
+		
+		return relatedContentList;
 	}
 
 	/**
@@ -657,19 +687,9 @@ public class GroupPropertiesController extends BaseController
 
 		try
 		{
-		    List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
-		    Iterator iterator = groupProperties.iterator();
-		    GroupProperties groupProperty = null;
-		    while(iterator.hasNext())
-		    {
-		        groupProperty = (GroupProperties)iterator.next();
-		        break;
-		    }
-		    
-		    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
-			List siteNodes = this.getRelatedSiteNodesFromXML(db, xml);
-
-			relatedSiteNodeVOList = toVOList(siteNodes);
+		    List relatedSiteNodes = getRelatedSiteNodes(groupName, languageId, attributeName, db);
+		    if(relatedSiteNodes != null)
+		        relatedSiteNodeVOList = toVOList(relatedSiteNodes);
 			
 			commitTransaction(db);
 		}
@@ -683,6 +703,31 @@ public class GroupPropertiesController extends BaseController
 		return relatedSiteNodeVOList;
 	}
 
+
+	/**
+	 * Returns the related SiteNodes
+	 * @param groupPropertiesId
+	 * @return
+	 */
+
+	public List getRelatedSiteNodes(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
+	{
+		List relatedSiteNodeList = new ArrayList();
+
+		List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
+	    Iterator iterator = groupProperties.iterator();
+	    GroupProperties groupProperty = null;
+	    while(iterator.hasNext())
+	    {
+	        groupProperty = (GroupProperties)iterator.next();
+	        break;
+	    }
+	    
+	    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+	    relatedSiteNodeList = this.getRelatedSiteNodesFromXML(db, xml);
+
+		return relatedSiteNodeList;
+	}
 
 	/**
 	 * Parses contents from an XML within a transaction
@@ -801,6 +846,46 @@ public class GroupPropertiesController extends BaseController
 		return relatedCategories;
 	}
 	
+	/**
+	 * Returns all current Category relationships for th specified attribute name
+	 * @param attribute
+	 * @return
+	 */
+	
+	public List getRelatedCategories(String groupName, Integer languageId, String attribute, Database db)
+	{
+	    List relatedCategories = new ArrayList();
+	    
+		try
+		{
+		    List groupPropertiesList = this.getGroupPropertiesList(groupName, languageId, db);
+		    Iterator iterator = groupPropertiesList.iterator();
+		    GroupProperties groupProperty = null;
+		    while(iterator.hasNext())
+		    {
+		        groupProperty = (GroupProperties)iterator.next();
+		        break;
+		    }
+
+			if(groupProperty != null && groupProperty.getId() != null)
+			{
+		    	List propertiesCategoryList = PropertiesCategoryController.getController().findByPropertiesAttribute(attribute, GroupProperties.class.getName(), groupProperty.getId(), db);
+		    	Iterator propertiesCategoryListIterator = propertiesCategoryList.iterator();
+		    	while(propertiesCategoryListIterator.hasNext())
+		    	{
+		    	    PropertiesCategory propertiesCategory = (PropertiesCategory)propertiesCategoryListIterator.next();
+		    	    relatedCategories.add(propertiesCategory.getCategory());
+		    	}
+			}
+		}
+		catch(Exception e)
+		{
+			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+		}
+
+		return relatedCategories;
+	}
+
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.

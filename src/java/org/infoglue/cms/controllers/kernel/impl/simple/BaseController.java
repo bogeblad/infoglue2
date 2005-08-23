@@ -807,6 +807,32 @@ public abstract class BaseController
 		}
 	}
 
+	
+	/**
+	 * Executes a Query, also binds the provided parameters
+	 *
+ 	 * @param query An OQL Query
+	 * @param params A List of paramters
+	 * @param db A transaction object
+	 * @return A VO list of the query results
+	 * @throws SystemException If an error occurs
+	 */
+	protected static List executeQuery(String query, List params, Database db) throws SystemException
+	{
+	    try
+		{
+			List results = new ArrayList();
+			results = Collections.list(createQuery(db, query, params).execute());
+			return results;
+		}
+		catch (Exception e)
+		{
+			logger.error("Error executing " + query, e);
+			throw new SystemException(e.getMessage(), e);
+		}
+	}
+
+	
 	/**
 	 * Creates an OQLQuery for the provided Database and binds the parameters to it.
 	 *
