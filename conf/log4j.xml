@@ -5,7 +5,7 @@
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="Target" value="System.out"/>
-		<param name="Threshold" value="DEBUG"/>
+		<param name="Threshold" value="WARNING"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
 		</layout>
@@ -16,7 +16,7 @@
 		<param name="File" value="infoglue.log"/>
 		<param name="MaxFileSize" value="1MB"/>
 		<param name="MaxBackupIndex" value="2"/>
-		<param name="Threshold" value="DEBUG"/>
+		<param name="Threshold" value="WARNING"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
 		</layout>
@@ -35,6 +35,14 @@
 	<!-- Use categories to control logging  -->
 	<!-- down to the package or class level	-->
 	<!-- ==================================	-->
+	
+	<category name="org.infoglue.deliver.applications.filters.PortalParameterFilter">
+		<priority value="WARN"/>
+	</category>
+	<category name="org.apache.commons.fileupload">
+		<priority value="WARN"/>
+	</category>
+	
 	<category name="org.infoglue.cms">
 		<priority value="WARN"/>
 	</category>
@@ -43,6 +51,10 @@
 		<priority value="WARN"/>
 	</category>
 
+	<category name="com.frovi.vmi">
+		<priority value="WARN"/>
+	</category>
+	
 	<category name="org.exolab.castor">
 		<priority value="ERROR"/>
 	</category>
@@ -50,7 +62,7 @@
 	<category name="org.exolab.castor.jdo">
       <priority value="WARN" />
     </category>
-	
+
 	<category name="webwork">
 		<priority value="WARN"/>
 	</category>
@@ -59,9 +71,39 @@
 		<priority value="WARN"/>
 	</category>
 
+	<category name="org.apache.jasper">
+		<priority value="WARN"/>
+	</category>
+
 	<category name="org.apache.commons">
 		<priority value="WARN"/>
 	</category>
+
+	<category name="org.apache.axis">
+		<priority value="WARN"/>
+	</category>
+	
+	<!--
+	<category name="org.apache.axis.encoding">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.apache.axis.message.MessageElement">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.apache.axis.message.BodyBuilder">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.apache.axis.message.SAXOutputter">
+		<priority value="WARN"/>
+	</category>
+
+	<category name="org.apache.axis.utils">
+		<priority value="WARN"/>
+	</category>
+	-->
 
 	<category name="org.apache.pluto">
 		<priority value="WARN"/>
@@ -86,7 +128,7 @@
 
 	<!-- Anyhing not caught by the above categories will be caught here -->
 	<root>
-		<priority value="DEBUG"/>
+		<priority value="WARNING"/>
 		<appender-ref ref="CONSOLE"/>
 	</root>
 
