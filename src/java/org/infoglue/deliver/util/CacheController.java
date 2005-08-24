@@ -312,7 +312,11 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-
+				if(cacheName.equalsIgnoreCase("relatedCategoriesCache") && (entity.indexOf("Group") > 0 || entity.indexOf("Role") > 0))
+				{
+					clear = true;
+				}
+				
 				
 				if(clear)
 				{	

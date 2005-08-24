@@ -27,6 +27,7 @@ import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.management.*;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -212,6 +213,39 @@ public class ContentTypeDefinitionController extends BaseController
 		return contentTypeDefinitionVO;
 	}
 
+	/**
+	 * Returns the Content Type Definition with the given name.
+	 *
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public ContentTypeDefinitionVO getContentTypeDefinitionVOWithName(String name, Database db) throws SystemException, Bug
+	{
+	
+		String key = "" + name;
+		getLogger().info("key:" + key);
+		ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)CacheController.getCachedObject("contentTypeDefinitionCache", key);
+		if(contentTypeDefinitionVO != null)
+		{
+			getLogger().info("There was an cached contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+		}
+		else
+		{
+			ContentTypeDefinition contentTypeDefinition = getContentTypeDefinitionWithName(name, db);
+			if(contentTypeDefinition != null)
+				contentTypeDefinitionVO = contentTypeDefinition.getValueObject();
+	        
+			CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVO);				
+		}
+		
+		return contentTypeDefinitionVO;
+	}
+
+	
+	
 	/**
 	 * Returns the Content Type Definition with the given name fetched within a given transaction.
 	 *

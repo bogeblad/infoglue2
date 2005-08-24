@@ -2988,8 +2988,8 @@ public class BasicTemplateController implements TemplateController
 		    String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
 		    for(int i=0; i<contentTypeDefinitionNames.length; i++)
 		    {
-		        ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(contentTypeDefinitionNames[i], getDatabase());
-		        contentTypeDefinitionVOList.add(contentTypeDefinition.getValueObject());
+		        ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionNames[i], getDatabase());
+		        contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
 		    }
 
 			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
