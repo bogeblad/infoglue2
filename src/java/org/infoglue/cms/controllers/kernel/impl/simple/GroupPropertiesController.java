@@ -198,6 +198,7 @@ public class GroupPropertiesController extends BaseController
 
 		return groupProperties.getValueObject();
 	}     
+
 	
 	/**
 	 * This method gets a list of groupProperties for a group
@@ -205,6 +206,37 @@ public class GroupPropertiesController extends BaseController
 	 */
 
 	public List getGroupPropertiesVOList(String groupName, Integer languageId) throws ConstraintException, SystemException
+	{
+	    List groupPropertiesVOList = new ArrayList();
+	    
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		beginTransaction(db);
+
+		try
+		{
+			groupPropertiesVOList = getGroupPropertiesVOList(groupName, languageId, db);
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return groupPropertiesVOList;
+	}
+
+	
+	/**
+	 * This method gets a list of groupProperties for a group
+	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
+	 */
+
+	public List getGroupPropertiesVOList(String groupName, Integer languageId, Database db) throws ConstraintException, Exception
 	{
 	    List groupPropertiesVOList = new ArrayList();
 	    
@@ -217,31 +249,13 @@ public class GroupPropertiesController extends BaseController
 		}
 		else
 		{
-			Database db = CastorDatabaseService.getDatabase();
-			ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-	
-			beginTransaction(db);
-	
-			try
+			List groupProperties = getGroupPropertiesList(groupName, languageId, db);
+			if(groupProperties != null)
 			{
-				List groupProperties = getGroupPropertiesList(groupName, languageId, db);
-				if(groupProperties != null)
-				{
-				    groupPropertiesVOList = toVOList(groupProperties);
-			    	CacheController.cacheObject("masterLanguageCache", cacheKey, groupPropertiesVOList);
-				}
-				
-				//If any of the validations or setMethods reported an error, we throw them up now before create.
-				ceb.throwIfNotEmpty();
-	            
-				commitTransaction(db);
+			    groupPropertiesVOList = toVOList(groupProperties);
+		    	CacheController.cacheObject("masterLanguageCache", cacheKey, groupPropertiesVOList);
 			}
-			catch(Exception e)
-			{
-				getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
-				rollbackTransaction(db);
-				throw new SystemException(e.getMessage());
-			}
+
 		}
 		
 		return groupPropertiesVOList;
