@@ -736,8 +736,8 @@
 <!--  Mapping for SmallContent  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.SmallContentImpl" identity="contentId" key-generator="SEQUENCE">
     <description>SmallContent</description>
-	<!--<cache-type type="unlimited" capacity="5000"/>-->
-    <cache-type type="none"/>
+	<cache-type type="unlimited" capacity="5000"/>
+    <!--<cache-type type="none"/>-->
     <map-to table="cmCont"/>
     <field name="contentId" type="java.lang.Integer">
       <sql name="ContId" type="integer" dirty="check" />
