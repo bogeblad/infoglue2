@@ -854,6 +854,11 @@
     <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
       <sql many-key="ContVerId" many-table="cmContVerDigAsset"/>
     </field>
+    
+    <field name="contentCategories" type="org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl" lazy="true" collection="collection">
+      <sql many-key="contVerId" many-table="cmContentCategory"/>
+    </field>
+    
     <field name="versionValue" type="java.lang.String">
       <sql name="VerValue" type="clob" dirty="ignore" />
     </field>

@@ -78,7 +78,11 @@ public interface ContentVersion extends IBaseEntity
     public java.util.Collection getDigitalAssets();
     
     public void setDigitalAssets(java.util.Collection digitalAssets);    
+
+    public java.util.Collection getContentCategories();
     
+    public void setContentCategories(java.util.Collection contentCategories);    
+
     public java.lang.String getVersionValue();
     
     public void setVersionValue(java.lang.String versionValue);

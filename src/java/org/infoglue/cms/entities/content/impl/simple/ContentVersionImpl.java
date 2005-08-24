@@ -78,7 +78,8 @@ public class ContentVersionImpl implements ContentVersion
     private org.infoglue.cms.entities.management.impl.simple.LanguageImpl language;
     private java.util.Collection publications = new ArrayList();
 	private java.util.Collection digitalAssets = new ArrayList();; 
-    
+	private java.util.Collection contentCategories = new ArrayList();; 
+	
     public java.lang.Integer getContentVersionId()
     {
         return this.valueObject.getContentVersionId();
@@ -208,6 +209,17 @@ public class ContentVersionImpl implements ContentVersion
     {
     	this.digitalAssets = digitalAssets;
     }  
+    
+    public java.util.Collection getContentCategories()
+    {
+        return this.contentCategories;
+    }
+    
+    public void setContentCategories(java.util.Collection contentCategories)
+    {
+        this.contentCategories = contentCategories;
+    }
+
     
     public java.lang.String getVersionValue()
     {

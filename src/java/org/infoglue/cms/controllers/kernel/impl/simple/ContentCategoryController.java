@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.7 2005/08/23 14:03:57 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.8 2005/08/24 13:25:06 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -30,13 +30,16 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentCategory;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
 
@@ -94,10 +97,40 @@ public class ContentCategoryController extends BaseController
 	 */
 	public List findByContentVersionAttribute(String attribute, Integer versionId) throws SystemException
 	{
-		List params = new ArrayList();
+	    System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId + " no db " + System.currentTimeMillis());
+	    
+	    /*
+	    List params = new ArrayList();
 		params.add(attribute);
 		params.add(versionId);
 		return executeQuery(findByContentVersionAttribute, params);
+	    */
+	    
+	    List contentCategoryVOList = new ArrayList();
+	    
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		beginTransaction(db);
+
+		try
+		{
+		    List contentCategories = findByContentVersionAttribute(attribute, versionId, db);
+			if(contentCategories != null)
+			    contentCategoryVOList = toVOList(contentCategories);
+			
+			commitTransaction(db);	
+		}
+		catch(Exception e)
+		{
+			//logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+
+		
+		System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId + " no db " + System.currentTimeMillis());
+		return contentCategoryVOList;
 	}
 
 	/**
@@ -109,10 +142,32 @@ public class ContentCategoryController extends BaseController
 	 */
 	public List findByContentVersionAttribute(String attribute, Integer versionId, Database db) throws SystemException
 	{
+	    /*
+	    System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId);
 		List params = new ArrayList();
 		params.add(attribute);
 		params.add(versionId);
 		return executeQuery(findByContentVersionAttribute, params, db);
+		*/
+
+	    List contentCategoryList = new ArrayList();
+	    
+		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(versionId, db);
+		Collection contentCategories = contentVersion.getContentCategories();
+		if(contentCategories != null)
+		{
+		    Iterator contentCategoriesIterator = contentCategories.iterator();
+		    while(contentCategoriesIterator.hasNext())
+		    {
+		        ContentCategory contentCategory = (ContentCategory)contentCategoriesIterator.next();
+		        if(contentCategory.getAttributeName().equals(attribute))
+		        {
+		            contentCategoryList.add(contentCategory);
+		        }
+		    }
+		}
+
+		return contentCategoryList;
 	}
 
 	/**
