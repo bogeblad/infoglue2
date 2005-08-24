@@ -483,15 +483,22 @@ function Ok()
 	SetAttribute( oLink, 'accesskey', GetE('txtAttAccessKey').value ) ;
 	SetAttribute( oLink, 'tabindex'	, ( GetE('txtAttTabIndex').value > 0 ? GetE('txtAttTabIndex').value : null ) ) ;
 	SetAttribute( oLink, 'title'	, GetE('txtAttTitle').value ) ;
-	SetAttribute( oLink, 'class'	, GetE('txtAttClasses').value ) ;
+	//SetAttribute( oLink, 'class'	, GetE('txtAttClasses').value ) ;
+	
 	SetAttribute( oLink, 'type'		, GetE('txtAttContentType').value ) ;
 	SetAttribute( oLink, 'charset'	, GetE('txtAttCharSet').value ) ;
 
 	if ( oEditor.FCKBrowserInfo.IsIE )
+	{
+		oLink.className = GetE('txtAttClasses').value;
 		oLink.style.cssText = GetE('txtAttStyle').value ;
+	}
 	else
+	{
+		SetAttribute( oLink, 'class', GetE('txtAttClasses').value ) ;
 		SetAttribute( oLink, 'style', GetE('txtAttStyle').value ) ;
-
+	}
+	
 	return true ;
 }
 
