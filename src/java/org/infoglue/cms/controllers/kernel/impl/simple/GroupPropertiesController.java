@@ -249,10 +249,10 @@ public class GroupPropertiesController extends BaseController
 		}
 		else
 		{
-			List groupProperties = getGroupPropertiesList(groupName, languageId, db);
-			if(groupProperties != null)
+			List groupPropertiesList = getGroupPropertiesList(groupName, languageId, db);
+			if(groupPropertiesList != null)
 			{
-			    groupPropertiesVOList = toVOList(groupProperties);
+			    groupPropertiesVOList = toVOList(groupPropertiesList);
 		    	CacheController.cacheObject("masterLanguageCache", cacheKey, groupPropertiesVOList);
 			}
 
@@ -560,16 +560,16 @@ public class GroupPropertiesController extends BaseController
 	{
 		String value = "";
 		
-	    List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
-		Iterator iterator = groupProperties.iterator();
-		GroupProperties groupProperty = null;
+	    List groupPropertiesVO = this.getGroupPropertiesVOList(groupName, languageId, db);
+		Iterator iterator = groupPropertiesVO.iterator();
+		GroupPropertiesVO groupPropertyVO = null;
 		while(iterator.hasNext())
 		{
-	        groupProperty = (GroupProperties)iterator.next();
+	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
 	        break;
 	    }
 	    
-	    value = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+	    value = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
 		
 		return value;
 	}
@@ -680,16 +680,16 @@ public class GroupPropertiesController extends BaseController
 	{
 		List relatedContentList = new ArrayList();
 
-		List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
-	    Iterator iterator = groupProperties.iterator();
-	    GroupProperties groupProperty = null;
+		List groupPropertiesVO = this.getGroupPropertiesVOList(groupName, languageId, db);
+	    Iterator iterator = groupPropertiesVO.iterator();
+	    GroupPropertiesVO groupPropertyVO = null;
 	    while(iterator.hasNext())
 	    {
-	        groupProperty = (GroupProperties)iterator.next();
+	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
 	        break;
 	    }
 	    
-	    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+	    String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
 		relatedContentList = this.getRelatedContentsFromXML(db, xml);
 		
 		return relatedContentList;
@@ -738,16 +738,16 @@ public class GroupPropertiesController extends BaseController
 	{
 		List relatedSiteNodeList = new ArrayList();
 
-		List groupProperties = this.getGroupPropertiesList(groupName, languageId, db);
+		List groupProperties = this.getGroupPropertiesVOList(groupName, languageId, db);
 	    Iterator iterator = groupProperties.iterator();
-	    GroupProperties groupProperty = null;
+	    GroupPropertiesVO groupPropertyVO = null;
 	    while(iterator.hasNext())
 	    {
-	        groupProperty = (GroupProperties)iterator.next();
+	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
 	        break;
 	    }
 	    
-	    String xml = this.getAttributeValue(groupProperty.getValue(), attributeName, false);
+	    String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
 	    relatedSiteNodeList = this.getRelatedSiteNodesFromXML(db, xml);
 
 		return relatedSiteNodeList;
@@ -882,18 +882,18 @@ public class GroupPropertiesController extends BaseController
 	    
 		try
 		{
-		    List groupPropertiesList = this.getGroupPropertiesList(groupName, languageId, db);
-		    Iterator iterator = groupPropertiesList.iterator();
-		    GroupProperties groupProperty = null;
+		    List groupPropertiesVOList = this.getGroupPropertiesVOList(groupName, languageId, db);
+		    Iterator iterator = groupPropertiesVOList.iterator();
+		    GroupPropertiesVO groupPropertyVO = null;
 		    while(iterator.hasNext())
 		    {
-		        groupProperty = (GroupProperties)iterator.next();
+		        groupPropertyVO = (GroupPropertiesVO)iterator.next();
 		        break;
 		    }
 
-			if(groupProperty != null && groupProperty.getId() != null)
+			if(groupPropertyVO != null && groupPropertyVO.getId() != null)
 			{
-		    	List propertiesCategoryList = PropertiesCategoryController.getController().findByPropertiesAttribute(attribute, GroupProperties.class.getName(), groupProperty.getId(), db);
+		    	List propertiesCategoryList = PropertiesCategoryController.getController().findByPropertiesAttribute(attribute, GroupProperties.class.getName(), groupPropertyVO.getId(), db);
 		    	Iterator propertiesCategoryListIterator = propertiesCategoryList.iterator();
 		    	while(propertiesCategoryListIterator.hasNext())
 		    	{
