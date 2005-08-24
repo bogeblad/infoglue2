@@ -32,6 +32,7 @@ import org.infoglue.cms.entities.management.GroupContentTypeDefinition;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.PropertiesCategory;
 import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 import org.infoglue.cms.entities.management.UserProperties;
@@ -45,6 +46,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -204,36 +206,44 @@ public class GroupPropertiesController extends BaseController
 
 	public List getGroupPropertiesVOList(String groupName, Integer languageId) throws ConstraintException, SystemException
 	{
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		List groupPropertiesVOList = new ArrayList();
-
-		beginTransaction(db);
-
-		try
+	    List groupPropertiesVOList = new ArrayList();
+	    
+		String cacheKey = "" + groupName + "_" + languageId;
+		getLogger().info("cacheKey:" + cacheKey);
+		groupPropertiesVOList = (List)CacheController.getCachedObject("groupPropertiesCache", cacheKey);
+		if(groupPropertiesVOList != null)
 		{
-			List groupProperties = getGroupPropertiesList(groupName, languageId, db);
-			groupPropertiesVOList = toVOList(groupProperties);
-			
-			//If any of the validations or setMethods reported an error, we throw them up now before create.
-			ceb.throwIfNotEmpty();
-            
-			commitTransaction(db);
+			getLogger().info("There was an cached groupPropertiesVOList:" + groupPropertiesVOList.size());
 		}
-		catch(ConstraintException ce)
+		else
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
-			rollbackTransaction(db);
-			throw ce;
+			Database db = CastorDatabaseService.getDatabase();
+			ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	
+			beginTransaction(db);
+	
+			try
+			{
+				List groupProperties = getGroupPropertiesList(groupName, languageId, db);
+				if(groupProperties != null)
+				{
+				    groupPropertiesVOList = toVOList(groupProperties);
+			    	CacheController.cacheObject("masterLanguageCache", cacheKey, groupPropertiesVOList);
+				}
+				
+				//If any of the validations or setMethods reported an error, we throw them up now before create.
+				ceb.throwIfNotEmpty();
+	            
+				commitTransaction(db);
+			}
+			catch(Exception e)
+			{
+				getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+				rollbackTransaction(db);
+				throw new SystemException(e.getMessage());
+			}
 		}
-		catch(Exception e)
-		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-
+		
 		return groupPropertiesVOList;
 	}
 

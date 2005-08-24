@@ -36,11 +36,13 @@ import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
@@ -158,6 +160,15 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("roleListCache");
 			}
+			else if(object.getClass().getName().equals(GroupPropertiesImpl.class.getName()))
+			{
+				CacheController.clearCache("groupPropertiesCache");
+			}
+			else if(object.getClass().getName().equals(RolePropertiesImpl.class.getName()))
+			{
+				CacheController.clearCache("rolePropertiesCache");
+			}
+			
     	}
     }
 
@@ -260,6 +271,14 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("roleListCache");
 			}
+			else if(object.getClass().getName().equals(GroupPropertiesImpl.class.getName()))
+			{
+				CacheController.clearCache("groupPropertiesCache");
+			}
+			else if(object.getClass().getName().equals(RolePropertiesImpl.class.getName()))
+			{
+				CacheController.clearCache("rolePropertiesCache");
+			}
 
 
 
@@ -349,6 +368,14 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
 				CacheController.clearCache("roleListCache");
+			}
+			else if(object.getClass().getName().equals(GroupPropertiesImpl.class.getName()))
+			{
+				CacheController.clearCache("groupPropertiesCache");
+			}
+			else if(object.getClass().getName().equals(RolePropertiesImpl.class.getName()))
+			{
+				CacheController.clearCache("rolePropertiesCache");
 			}
 
 

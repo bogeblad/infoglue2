@@ -304,6 +304,14 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("groupPropertiesCache") && entity.indexOf("Group") > 0)
+				{
+					clear = true;
+				}
+				if(cacheName.equalsIgnoreCase("rolePropertiesCache") && entity.indexOf("Role") > 0)
+				{
+					clear = true;
+				}
 
 				
 				if(clear)
