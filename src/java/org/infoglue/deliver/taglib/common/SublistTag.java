@@ -52,7 +52,7 @@ public class SublistTag extends TemplateControllerTag {
 	/**
 	 * 
 	 */
-	private int count;
+	private Integer count;
 	
 	
 	/**
@@ -79,7 +79,7 @@ public class SublistTag extends TemplateControllerTag {
 			throw new JspTagException("List is null.");
 		if(startIndex < 0 || (!list.isEmpty() && startIndex >= list.size()))
 			throw new JspTagException("Illegal startIndex [0<=" + startIndex + "<" + list.size() + "].");
-		if(count < 0)
+		if(count.intValue() < 0)
 			throw new JspTagException("Illegal count; must be a non-negative integer.");
 	}
 	
@@ -98,7 +98,7 @@ public class SublistTag extends TemplateControllerTag {
 	 * 
 	 */
 	private int getRealCount() {
-		return (count == 0 || count > list.size() - startIndex) ? list.size() - startIndex : count;
+		return (count.intValue() == 0 || count.intValue() > list.size() - startIndex) ? list.size() - startIndex : count.intValue();
 	}
 	
     public void setList(final String list) throws JspException
@@ -111,8 +111,8 @@ public class SublistTag extends TemplateControllerTag {
         this.startIndex = startIndex;
     }
 
-    public void setCount(final int count)
+    public void setCount(final String count) throws JspException
     {
-        this.count = count;
+        this.count = evaluateInteger("sublistTag", "count", count);
     }
 }
