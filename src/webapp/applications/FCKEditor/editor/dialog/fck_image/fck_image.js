@@ -77,8 +77,11 @@ window.onload = function()
 	// Translate the dialog box texts.
 	oEditor.FCKLanguageManager.TranslatePage(document) ;
 
-	GetE('btnLockSizes').title = oEditor.FCKLang.DlgImgLockRatio ;
-	GetE('btnResetSize').title = oEditor.FCKLang.DlgBtnResetSize ;
+	if(!FCKConfig.AllowImageSizes || FCKConfig.AllowImageSizes != 'false')
+	{
+		GetE('btnLockSizes').title = oEditor.FCKLang.DlgImgLockRatio ;
+		GetE('btnResetSize').title = oEditor.FCKLang.DlgBtnResetSize ;
+	}
 
 	// Load the selected element information (if any).
 	LoadSelection() ;
@@ -221,8 +224,12 @@ function UpdateImage( e, skipId )
 {
 	e.src = GetE('txtUrl').value ;
 	SetAttribute( e, "alt"   , GetE('txtAlt').value ) ;
-	SetAttribute( e, "width" , GetE('txtWidth').value ) ;
-	SetAttribute( e, "height", GetE('txtHeight').value ) ;
+	
+	if(!FCKConfig.AllowImageSizes || FCKConfig.AllowImageSizes != 'false')
+	{
+		SetAttribute( e, "width" , GetE('txtWidth').value ) ;
+		SetAttribute( e, "height", GetE('txtHeight').value ) ;
+	}
 	SetAttribute( e, "vspace", GetE('txtVSpace').value ) ;
 	SetAttribute( e, "hspace", GetE('txtHSpace').value ) ;
 	SetAttribute( e, "border", GetE('txtBorder').value ) ;

@@ -59,23 +59,36 @@
 								<td valign="top">
 									<br />
 									<table cellspacing="0" cellpadding="0" border="0">
-										<tr>
-											<td nowrap><span fckLang="DlgImgWidth">Width</span>&nbsp;</td>
-											<td>
-												<input type="text" size="3" id="txtWidth" onkeyup="OnSizeChanged('Width',this.value);"></td>
-											<td nowrap rowspan="2">
-												<div id="btnLockSizes" class="BtnLocked" onmouseover="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ) + ' BtnOver';"
-													onmouseout="this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' );" title="Lock Sizes"
-													onclick="SwitchLock(this);"></div>
-												<div id="btnResetSize" class="BtnReset" onmouseover="this.className='BtnReset BtnOver';"
-													onmouseout="this.className='BtnReset';" title="Reset Size" onclick="ResetSizes();"></div>
-											</td>
-										</tr>
-										<tr>
-											<td nowrap><span fckLang="DlgImgHeight">Height</span>&nbsp;</td>
-											<td>
-												<input type="text" size="3" id="txtHeight" onkeyup="OnSizeChanged('Height',this.value);"></td>
-										</tr>
+										<script type="text/javascript">
+											
+											if(!FCKConfig.AllowImageSizes && FCKConfig.AllowImageSizes != 'false')
+											{
+												document.write("<tr>");
+												document.write("	<td nowrap><span fckLang=\"DlgImgWidth\">Width</span>&nbsp;</td>");
+												document.write("	<td>");
+												document.write("		<input type=\"text\" size=\"3\" id=\"txtWidth\" onkeyup=\"OnSizeChanged('Width',this.value);\">");
+												document.write("	</td>");
+												document.write("	<td nowrap rowspan=\"2\">");
+												document.write("		<div id=\"btnLockSizes\" class=\"BtnLocked\" onmouseover=\"this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ) + ' BtnOver';\"");
+												document.write("			onmouseout=\"this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' );\" title=\"Lock Sizes\"");
+												document.write("			onclick=\"SwitchLock(this);\"></div>");
+												document.write("		<div id=\"btnResetSize\" class=\"BtnReset\" onmouseover=\"this.className='BtnReset BtnOver';\"");
+												document.write("			onmouseout=\"this.className='BtnReset';\" title=\"Reset Size\" onclick=\"ResetSizes();\"></div>");
+												document.write("	</td>");
+												document.write("</tr>");
+												document.write("<tr>");
+												document.write("	<td nowrap><span fckLang=\"DlgImgHeight\">Height</span>&nbsp;</td>");
+												document.write("	<td>");
+												document.write("		<input type=\"text\" size=\"3\" id=\"txtHeight\" onkeyup=\"OnSizeChanged('Height',this.value);\"></td>");
+												document.write("</tr>");
+											}
+											else
+											{
+												document.write("		<input type=\"hidden\" id=\"txtWidth\" > ");
+												document.write("		<input type=\"hidden\" id=\"txtHeight\" > ");
+											
+											}
+										</script>
 									</table>
 									<br />
 									<table cellspacing="0" cellpadding="0" border="0">
