@@ -50,6 +50,12 @@
 		{
 			top.location.href = "Login!logout.action";
 		}
+
+		function openHelpWindow()
+		{
+			alert("Unfortunately we have not yet accomplished a good enough help system so until then we recommend that you consider buying the separate user manual available on www.infoglue.org.");
+			//top.location.href = "Login!logout.action";
+		}
 		
 	-->
 	</script>
@@ -197,7 +203,7 @@
 		<image src="images/trans.gif" width="10" height="13">
 		<a href="javascript:openToolWindow();"><image src="images/$ui.getString("images.header.newWindowLabel")" border="0"></a>
 		<image src="images/trans.gif" width="10" height="13">
-		<image src="images/$ui.getString("images.header.helpLabel")">
+		<a href="javascript:openHelpWindow();"><image src="images/$ui.getString("images.header.helpLabel")" border="0"></a>
 	</td>
 </tr>
 </table>
