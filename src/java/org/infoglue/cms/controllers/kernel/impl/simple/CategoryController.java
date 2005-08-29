@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.9 2005/08/24 17:44:07 mattias Exp $
+ * $Id: CategoryController.java,v 1.10 2005/08/29 14:43:12 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -208,15 +208,6 @@ public class CategoryController extends BaseController
 	 */
 	public List findRootCategories() throws SystemException
 	{
-	    try
-	    {
-	        throw new Exception("DEBUG");
-	    }
-	    catch(Exception e)
-	    {
-	        e.printStackTrace();
-	    }
-	    
 		return executeQuery(findRootCategories);
 	}
 
