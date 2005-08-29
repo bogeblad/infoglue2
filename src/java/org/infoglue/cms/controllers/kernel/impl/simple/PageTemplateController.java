@@ -72,9 +72,9 @@ public class PageTemplateController extends BaseController
 	 * This method returns the contents that are of contentTypeDefinition "PageTemplate"
 	 */
 	
-	public List getPageTemplates(Integer languageId) throws Exception
+	public List getPageTemplates(InfoGluePrincipal infoGluePrincipal, Integer languageId) throws Exception
 	{
-	    List pageTemplates = getPageTemplates();
+	    List pageTemplates = getPageTemplates(infoGluePrincipal);
 	    Iterator i = pageTemplates.iterator();
 	    while(i.hasNext())
 	    {
@@ -93,7 +93,7 @@ public class PageTemplateController extends BaseController
 	 * This method returns the contents that are of contentTypeDefinition "PageTemplate"
 	 */
 	
-	public List getPageTemplates() throws Exception
+	public List getPageTemplates(InfoGluePrincipal infoGluePrincipal) throws Exception
 	{
 		HashMap arguments = new HashMap();
 		arguments.put("method", "selectListOnContentTypeName");
@@ -104,7 +104,8 @@ public class PageTemplateController extends BaseController
 		argumentList.add(argument);
 		arguments.put("arguments", argumentList);
 		
-		return ContentController.getContentController().getContentVOList(arguments);
+		return ContentControllerProxy.getController().getACContentVOList(infoGluePrincipal, arguments);
+		//return ContentController.getContentController().getContentVOList(arguments);
 	}
 
 	

@@ -147,12 +147,12 @@
 	<tr>
 		<td>
 			#set($lvConstraint = 0)
-			#lvHead(["Available&nbsp;workflows", "Action"] "" "" "" "")
+			#lvHead(["", "Available&nbsp;workflows", "Action"] "" "" "" "")
 			#set($cnt = 0)
 			#set($quote = '"')
 			#foreach ($availableWorkflowVO in $availableWorkflows)
 				#set($view = "$quote$availableWorkflowVO.getView()$quote")
-				#set($row = ["<a href='javascript:showDiv(${quote}availableWorkflow${availableWorkflowVO.name}DetailsProperties${quote});'>$availableWorkflowVO.getName()</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
+				#set($row = ["<a href='javascript:showDiv(${quote}availableWorkflow${availableWorkflowVO.name}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'>$availableWorkflowVO.getName()</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
 				#set($cnt = $cnt + 1)
 				#lvAddRow($row $cnt "$availableWorkflowVO.getWorkflowId()")
 			#end

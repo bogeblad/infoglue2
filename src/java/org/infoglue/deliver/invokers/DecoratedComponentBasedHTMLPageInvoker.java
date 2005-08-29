@@ -191,7 +191,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 	     try
 		 {
-		     List sortedPageTemplates = PageTemplateController.getController().getPageTemplates();
+		     List sortedPageTemplates = PageTemplateController.getController().getPageTemplates(this.getTemplateController().getPrincipal());
 			 Iterator sortedPageTemplatesIterator = sortedPageTemplates.iterator();
 			 while(sortedPageTemplatesIterator.hasNext())
 			 {
