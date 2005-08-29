@@ -54,7 +54,7 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
 	private PropertySet propertySet				= null; 
 	
 	private String languageCode 				= null;
-
+	private String defaultToolId				= null;
 	    
     /**
      * The main method that fetches the Value-objects for this use-case
@@ -67,6 +67,7 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
 	    this.languageCode 	= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_languageCode");
+	    this.defaultToolId 	= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultToolId");
 
         return "success";
     }
@@ -104,8 +105,8 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
         return languageCode;
     }
     
-    public void setLanguageCode(String languageCode)
+    public String getDefaultToolId()
     {
-        this.languageCode = languageCode;
+        return defaultToolId;
     }
 }

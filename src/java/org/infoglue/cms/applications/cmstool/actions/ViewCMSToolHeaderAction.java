@@ -39,9 +39,10 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
 {
-    private Integer toolId = new Integer(0);
+    //private Integer toolId = new Integer(0);
 	private String userName = "";
 
+	/*
     public void setToolId(Integer toolId)
     {
     	this.toolId = toolId;
@@ -51,7 +52,8 @@ public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
     {
     	return this.toolId;
     }
-
+    */
+	
 	public String getUserName()
 	{
 		return this.getInfoGluePrincipal().getName();

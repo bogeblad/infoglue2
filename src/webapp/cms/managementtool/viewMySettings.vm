@@ -1,46 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-
+ 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("tool.managementtool.repositoryProperties.header" "tool.managementtool.repositoryProperties.header" "repositoryId=$repositoryId")
+<html>
+<head>
+	<title>My Settings</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+</head>
+
+<body class="managementtooledit">
 
 <div class="fullymarginalized">
 
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
 <form name="editForm" method="POST" action="UpdateMySettings.action">
 	<tr>
+		<td class="biglabel">
+			$ui.getString("tool.managementtool.mysettings.header")
+		</td>
+	</tr>
+	<tr>
+		<td>$ui.getString("tool.managementtool.mysettings.introduction")
+	</tr>
+	<tr>
 		<td>
-			<b>$ui.getString("tool.managementtool.validation.header")</b>
+			$ui.getString("entity.Language.property.defaultLanguageCode.label")<br/>
+			<select name="languageCode" class="sitedropbox" style="width: 100px;">
+			#foreach($toolLocale in $toolLocales)
+				<option value="$toolLocale.language" #if($languageCode == $toolLocale.language)selected="1"#end>$toolLocale.displayName</option>
+			#end
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>	
+			$ui.getString("tool.managementtool.mysettings.defaultToolId.label")<br/>
+			<select class="sitedropbox" name="defaultToolId">
+				<option value="0" #if($defaultToolId == "0")selected="1"#end>$ui.getString("tool.common.contentTool.name")</option>
+				<option value="1" #if($defaultToolId == "1")selected="1"#end>$ui.getString("tool.common.structureTool.name")</option>
+				<option value="2" #if($defaultToolId == "2")selected="1"#end>$ui.getString("tool.common.managementTool.name")</option>
+				<option value="3" #if($defaultToolId == "3")selected="1"#end>$ui.getString("tool.common.publishingTool.name")</option>
+				<option value="4" #if($defaultToolId == "4")selected="1"#end>$ui.getString("tool.common.myDesktopTool.name")</option>
+			</select>				
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<p>
-				$ui.getString("entity.Language.property.defaultLanguageCode.label")<br/>
-				<select name="languageCode" onchange="changeLanguage(this);" class="sitedropbox" style="width: 100px;">
-				#foreach($toolLocale in $toolLocales)
-					<option value="$toolLocale.language" #if($currentLocale.language == $toolLocale.language)selected="1"#end>$toolLocale.displayName</option>
-				#end
-				</select>
-			</p>
-			<p>
-				$ui.getString("entity.Repository.property.defaultTemplateRepository.label")<br/>
-				<select class="siteNodetypes" name="defaultTemplateRepository">
-					<option value="">None</option>
-				#foreach ($repositoryVO in $repositoryVOList)
-					<option value="$repositoryVO.getId()" #if($defaultTemplateRepository == "$repositoryVO.getId()")selected="1"#end>$repositoryVO.getName()</option>
-				#end
-				</select>				
-			</p>
-			<p>
-				$ui.getString("entity.Repository.property.parentRepository.label")<br/>
-				<select class="siteNodetypes" name="parentRepository">
-					<option value="">None</option>
-				#foreach ($repositoryVO in $repositoryVOList)
-					<option value="$repositoryVO.getId()" #if($parentRepository == "$repositoryVO.getId()")selected="1"#end>$repositoryVO.getName()</option>
-				#end
-				</select>				
-			</p>
+			<a href="UpdateSystemUserPassword!input.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">Change password</a>
 		</td>
 	</tr>
 	<tr>
@@ -49,12 +64,9 @@
 	<tr>
 		<td>
 			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
-			<a href="javascript:saveAndExit(document.editForm, 'ViewRepositoryProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="ViewRepository.action?repositoryId=$repositoryId"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+			<a href="javascript:self.opener.top.location.href='ViewCMSTool.action?languageCode=$languageCode'; window.close();"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
 		</td>
 	</tr>
-
-<input type="hidden" name="repositoryId" value="$!repositoryId">
 </form>
 </table>
 </div>

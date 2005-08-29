@@ -27,8 +27,14 @@ import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
+
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import webwork.action.factory.SessionMap;
@@ -46,9 +52,10 @@ import webwork.action.ActionContext;
 public class Session
 {
 	// Session attribute names
-	private static final String LOCALE = "locale";
+	public static final String LOCALE = "locale";
 	private static final String USER   = "user";
 	private static final String IG_PRINCIPAL = InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER;
+	public static final String TOOL_ID = "toolId";
 
 
 	private Map sessionDelegate;
@@ -76,10 +83,24 @@ public class Session
 		//If empty set it to english
 		if(sessionDelegate.get(LOCALE) == null)
 		{
-			setLocale(java.util.Locale.ENGLISH);
+	        setLocale(java.util.Locale.ENGLISH);
 		}
 
 		return (Locale) sessionDelegate.get(LOCALE);
+	}
+
+	/**
+	* Returns the locale used for the session.
+	*/
+	public final Integer getToolId()
+	{
+		//If empty set it to english
+		if(sessionDelegate.get(TOOL_ID) == null)
+		{
+	        setToolId(new Integer(0));
+		}
+
+		return (Integer) sessionDelegate.get(TOOL_ID);
 	}
 
 	/**
@@ -90,6 +111,16 @@ public class Session
 	public final void setLocale(Locale locale)
 	{
 		sessionDelegate.put(LOCALE, locale);
+	}
+
+	/**
+	 * Sets the locale used for the session.
+	 *
+	 * @param locale the locale to use for the session.
+	 */
+	public final void setToolId(Integer toolId)
+	{
+		sessionDelegate.put(TOOL_ID, toolId);
 	}
 
 	/**
@@ -139,4 +170,5 @@ public class Session
 		sb.append("    user=[" + getUser() + "]\n");
 		return sb.toString();
 	}
+	
 }

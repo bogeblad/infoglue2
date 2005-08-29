@@ -27,18 +27,23 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
+
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This filter protects actions withing InfoGlue from access without authentication. 
@@ -158,7 +163,10 @@ public class InfoGlueAuthenticationFilter implements Filter
 
 				// Store the authenticated user in the session
 				if(session != null)
+				{
 					session.setAttribute(INFOGLUE_FILTER_USER, user);
+					setUserProperties(session, user);
+				}
 				
 			    if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
 			    {
@@ -177,7 +185,29 @@ public class InfoGlueAuthenticationFilter implements Filter
 		}
   	}
 
+    /**
+     * Here we set all user preferences given.
+     * @param session
+     * @param user
+     */
 
+    private void setUserProperties(HttpSession session, InfoGluePrincipal user)
+	{
+		String preferredLanguageCode = CmsPropertyHandler.getPreferredLanguageCode(user.getName());
+	    if(preferredLanguageCode != null && preferredLanguageCode.length() > 0)
+			session.setAttribute(Session.LOCALE, new java.util.Locale(preferredLanguageCode));
+	    else
+	        session.setAttribute(Session.LOCALE, java.util.Locale.ENGLISH);
+	
+		String preferredToolId = CmsPropertyHandler.getPreferredToolId(user.getName());
+	    System.out.println("preferredToolId:" + preferredToolId);
+		if(preferredToolId != null && preferredToolId.length() > 0)
+			session.setAttribute(Session.TOOL_ID, new Integer(preferredToolId));
+	    else
+	        session.setAttribute(Session.TOOL_ID, new Integer(0));
+		System.out.println("preferredToolId after:" + session.getAttribute(Session.TOOL_ID));
+	}
+    
   	public void destroy() { }
 
   	private void checkSuccessRedirect(ServletRequest request, ServletResponse response, String URL) throws ServletException, IOException, UnsupportedEncodingException

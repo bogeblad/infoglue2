@@ -294,11 +294,26 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
         return this.getSession().getLocale();
     }
     
+    public Integer getToolId()
+    {
+        return this.getSession().getToolId();
+    }
+
     public String getLanguageCode()
     {
         return this.getSession().getLocale().getLanguage();
     }
     
+	public void setLanguageCode(String languageCode)
+	{
+		this.getSession().setLocale(new java.util.Locale(languageCode));
+	}
+
+	public void setToolId(Integer toolId)
+	{
+		this.getSession().setToolId(toolId);
+	}
+
 	//--------------------------------------------------------------------------
 	// Database/Transaction specific operations
 	//--------------------------------------------------------------------------

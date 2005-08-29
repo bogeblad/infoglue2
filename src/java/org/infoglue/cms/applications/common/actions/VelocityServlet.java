@@ -29,7 +29,9 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
@@ -40,6 +42,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 import webwork.view.velocity.WebWorkVelocityServlet;
 
@@ -106,7 +111,7 @@ public class VelocityServlet extends WebWorkVelocityServlet
 		//<todo>this should definitely not be placed here
 		if (session.getLocale() == null)
 		{
-			session.setLocale(java.util.Locale.ENGLISH);
+	        session.setLocale(java.util.Locale.ENGLISH);
 		}
 		//</todo>
 
@@ -118,4 +123,24 @@ public class VelocityServlet extends WebWorkVelocityServlet
 
 		return super.handleRequest(request, response, context);
 	}
+	
+	private String getPreferredLanguageCode(HttpServletRequest request)
+	{
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    System.out.println("request.getRemoteUser():" + request.getRemoteUser());
+	    return ps.getString("principal_" + request.getRemoteUser() + "_languageCode");
+	}
+
+	private String getPreferredToolId(HttpServletRequest request)
+	{
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    System.out.println("request.getRemoteUser():" + request.getRemoteUser());
+	    
+	    return ps.getString("principal_" + request.getRemoteUser() + "_defaultToolId");
+	}
+
 }

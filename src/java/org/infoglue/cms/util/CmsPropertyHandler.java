@@ -23,11 +23,18 @@
 
 package org.infoglue.cms.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.io.*;
 import java.util.Enumeration;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 
 
@@ -171,6 +178,7 @@ public class CmsPropertyHandler
 	 * User Properties
 	 * This method returns a propertyValue corresponding to the key supplied for the specified user.
 	 */
+	/*
 	public static String getUserProperty(String userName, String key)
 	{
 		if(cachedUserProperties == null)
@@ -206,7 +214,25 @@ public class CmsPropertyHandler
 		
 		logger.info("Saving Key:" + key + " rendered " + value);
 	}	
+	*/
+	
+	public static String getPreferredLanguageCode(String userName)
+	{
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    return ps.getString("principal_" + userName + "_languageCode");
+	}
 
+	public static String getPreferredToolId(String userName)
+	{
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    return ps.getString("principal_" + userName + "_defaultToolId");
+	}
 		
 
 }

@@ -33,8 +33,10 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewCMSToolAction extends InfoGlueAbstractAction
 {
+   /*
     private Integer toolId = new Integer(0);
-		        
+	
+   
     public void setToolId(Integer toolId)
     {
     	this.toolId = toolId;
@@ -44,15 +46,10 @@ public class ViewCMSToolAction extends InfoGlueAbstractAction
     {
     	return this.toolId;
     }
- 
+ */
     public String doExecute() throws Exception
     {
         return "success";
     }
 
-	public void setLanguageCode(String languageCode)
-	{
-		this.getSession().setLocale(new java.util.Locale(languageCode));
-	}
-      
 }

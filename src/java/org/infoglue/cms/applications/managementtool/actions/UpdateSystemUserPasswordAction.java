@@ -30,6 +30,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.ConstraintException;
 
 import webwork.action.Action;
+import webwork.action.ActionContext;
 
 /**
  * This action makes it possible to change a users password for him/her.
@@ -43,6 +44,7 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
     private String oldPassword;
     private String newPassword;
     private String verifiedNewPassword;
+    private String returnAddress;
     
     public String doInput() throws Exception
     {
@@ -56,7 +58,13 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
 	    
 	    UserControllerProxy.getController().updateUserPassword(this.userName, this.oldPassword, this.newPassword);
 		
-	    return Action.SUCCESS;
+	    if(this.returnAddress != null)
+	    {
+	        ActionContext.getResponse().sendRedirect(returnAddress);
+	        return Action.NONE;
+	    }
+	    else
+	        return Action.SUCCESS;
 	}
 	
     public String getNewPassword()
@@ -97,5 +105,15 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
     public void setVerifiedNewPassword(String verifiedNewPassword)
     {
         this.verifiedNewPassword = verifiedNewPassword;
+    }
+    
+    public String getReturnAddress()
+    {
+        return returnAddress;
+    }
+    
+    public void setReturnAddress(String returnAddress)
+    {
+        this.returnAddress = returnAddress;
     }
 }
