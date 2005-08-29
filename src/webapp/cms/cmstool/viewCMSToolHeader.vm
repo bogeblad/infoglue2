@@ -7,6 +7,8 @@
 	<title>Header</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
+	<script type="text/javascript" src="script/listview.js"></script>
+	
 	<script type="text/javascript" language="Javascript">
 	<!-- 
 	
@@ -55,6 +57,16 @@
 		{
 			alert("Unfortunately we have not yet accomplished a good enough help system so until then we recommend that you consider buying the separate user manual available on www.infoglue.org.");
 			//top.location.href = "Login!logout.action";
+		}
+
+		function changeLanguage(dropBox)
+		{
+			top.location.href = "ViewCMSTool.action?languageCode=" + dropBox.value;
+		}
+
+		function openMySettings()
+		{
+			openPopup('ViewMySettings.action', 'MySettings', 'width=500,height=400,resizable=no');
 		}
 		
 	-->
@@ -175,35 +187,49 @@
 </div>
 
 
-<div style="RIGHT:15px; position:absolute; TOP:7px; visibility: visible; z-index:1; border:0px solid black;">
+<div style="RIGHT:15px; position:absolute; TOP:4px; visibility: visible; z-index:1; border:0px solid black;">
 <table border="0" cellspacing="0" cellpadding="0" width="200">
 <tr>
-	<td align="right" colspan="5" valign="top" nowrap="1">
-		<a href="ViewCMSTool.action?languageCode=sv" target="_top" class="whitelabel">Svenska</a> |
-		<a href="ViewCMSTool.action?languageCode=en" target="_top" class="whitelabel">English</a>
+<!--
+	<td align="right">
+		<image src="images/$ui.getString("images.header.mySettingLabel")" border="0">
+	</td>
+-->
+	<td align="right" nowrap="1">
+		<image src="images/$ui.getString("images.header.languageLabel")"><image src="images/trans.gif" width="3" height="5">
+	</td>
+	<td align="right" width="100">
+		<select name="languageCode" onchange="changeLanguage(this);" class="sitedropbox" style="width: 100px;">
 		#foreach($toolLocale in $toolLocales)
-			| <a href="ViewCMSTool.action?languageCode=$toolLocale.language" target="_top" class="whitelabel">$toolLocale.displayName</a>
+			<option value="$toolLocale.language" #if($currentLocale.language == $toolLocale.language)selected="1"#end>$toolLocale.displayName</option>
 		#end
+		</select>
 	</td>
 </tr>
 </table>
 </div>
 
-<div style="RIGHT:15px; position:absolute; TOP:22px; visibility: visible; z-index:1; border:0px solid black;">
+<div style="RIGHT:15px; position:absolute; TOP:27px; visibility: visible; z-index:1; border:0px solid black;">
 <table border="0" cellspacing="0" cellpadding="0" width="100">
 <tr>
-	<td align="right" colspan="5" valign="top" nowrap="1"><image src="images/$ui.getString("images.header.loggedInAsLabel")" width="119" height="13"><image src="images/trans.gif" width="3" height="13">$userName</td>
+	<td align="right"><a href="javascript:openMySettings();"><image src="images/$ui.getString("images.header.mySettingLabel")" border="0"></a>
+			<image src="images/trans.gif" width="10" height="13">
+		<a href="javascript:openHelpWindow();"><image src="images/$ui.getString("images.header.helpLabel")" border="0"></a>
+	</td>
+	<!--
+	<td align="right" colspan="5" avalign="top" nowrap="1"><image src="images/$ui.getString("images.header.loggedInAsLabel")" width="119" height="13"><image src="images/trans.gif" width="3" height="13">$userName</td>
+	-->
 </tr>
+<!--
 <tr>
-	<td colspan="5"><image src="images/trans.gif" width="1" height="5"></td>
+	<td colspan="5"><image src="images/trans.gif" width="1" height="3"></td>
 </tr>
+-->
 <tr>
 	<td align="right" colspan="5" nowrap="1">
 		<a href="javascript:logout();"><image src="images/$ui.getString("images.header.logoutLabel")" border="0"></a>
 		<image src="images/trans.gif" width="10" height="13">
 		<a href="javascript:openToolWindow();"><image src="images/$ui.getString("images.header.newWindowLabel")" border="0"></a>
-		<image src="images/trans.gif" width="10" height="13">
-		<a href="javascript:openHelpWindow();"><image src="images/$ui.getString("images.header.helpLabel")" border="0"></a>
 	</td>
 </tr>
 </table>

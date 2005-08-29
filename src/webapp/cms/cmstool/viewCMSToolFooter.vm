@@ -14,12 +14,14 @@
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
 	<td><image src="images/trans.gif" width="4" height="1"></td>
-	<td bgcolor="#FFFFFF" width="100%"><image src="images/trans.gif" width="1" height="1"></td>	
+	<td colspan="3" bgcolor="#FFFFFF" width="100%"><image src="images/trans.gif" width="1" height="1"></td>	
 	<td><image src="images/trans.gif" width="4" height="1"></td>
 </tr>
 <tr>
 	<td><image src="images/trans.gif" width="4" height="1"></td>
-	<td style="padding-top: 5px;"><b>$ui.getString("footer.application.name") Version build:</b> 2.0 Final (2005-08-30)</td>
+	<td style="padding-top: 5px;" width="90%" valign="top"><b>$ui.getString("footer.application.name") Version build:</b> 2.0 Final (2005-08-30)</td>
+	<td style="padding-top: 5px;" align="right" valign="top"><image src="images/$ui.getString("images.header.loggedInAsLabel")" width="119" height="13"><image src="images/trans.gif" width="3" height="13"></td>
+	<td style="padding-top: 5px; font-size: 11px; font-family: Arial, Verdana;" valign="top">$userName</td>
 	<td><image src="images/trans.gif" width="4" height="1"></td>
 </tr>
 </table>

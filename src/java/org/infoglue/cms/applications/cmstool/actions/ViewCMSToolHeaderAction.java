@@ -56,24 +56,10 @@ public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
 	{
 		return this.getInfoGluePrincipal().getName();
 	}
-  	
-	public List getToolLocales()
+
+	public Locale getCurrentLocale()
 	{
-	    List toolLocales = new ArrayList();
-	    
-	    int index = 0;
-	    String languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
-	    while(languageCode != null)
-	    {
-	        Locale locale = new java.util.Locale(languageCode);
-	        if(locale != null)
-	            toolLocales.add(locale);
-	        
-	        index++;
-	        languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
-	    }
-	    
-	    return toolLocales;
+		return this.getSession().getLocale();
 	}
 	
     public String doExecute() throws Exception

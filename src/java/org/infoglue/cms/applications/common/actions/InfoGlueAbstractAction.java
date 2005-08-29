@@ -23,7 +23,9 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -100,6 +102,30 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	    return this.getHttpSession().getMaxInactiveInterval();
 	}
 
+	/**
+	 * Gets a list of tool languages
+	 */
+
+	public List getToolLocales()
+	{
+	    List toolLocales = new ArrayList();
+	    
+	    int index = 0;
+	    String languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
+	    while(languageCode != null)
+	    {
+	        Locale locale = new java.util.Locale(languageCode);
+	        if(locale != null)
+	            toolLocales.add(locale);
+	        
+	        index++;
+	        languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
+	    }
+	    
+	    return toolLocales;
+	}
+
+	
 	/**
 	 * This method returns a propertyValue for the logged in user.
 	 * 
