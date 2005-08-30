@@ -63,14 +63,14 @@ public class UpdateRolePropertiesAction extends InfoGlueAbstractAction
 
 	public String doSaveAndExit() throws Exception
 	{
-		doExecute();
+	    RolePropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.rolePropertiesVO);
 						 
 		return "saveAndExit";
 	}
 
 	public String doSaveAndExitStandalone() throws Exception
 	{
-		doExecute();
+	    RolePropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.rolePropertiesVO);
 						 
 		return "saveAndExitStandalone";
 	}

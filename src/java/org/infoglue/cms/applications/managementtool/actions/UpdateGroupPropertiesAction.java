@@ -63,14 +63,14 @@ public class UpdateGroupPropertiesAction extends InfoGlueAbstractAction
 
 	public String doSaveAndExit() throws Exception
 	{
-		doExecute();
+	    GroupPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.groupPropertiesVO);
 						 
 		return "saveAndExit";
 	}
 
 	public String doSaveAndExitStandalone() throws Exception
 	{
-		doExecute();
+	    GroupPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.groupPropertiesVO);
 						 
 		return "saveAndExitStandalone";
 	}

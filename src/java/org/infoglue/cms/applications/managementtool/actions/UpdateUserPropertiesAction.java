@@ -62,26 +62,16 @@ public class UpdateUserPropertiesAction extends InfoGlueAbstractAction
 	    return NONE;
 	}
 
-	/*
-	public String doStandalone() throws Exception
-	{
-		//super.initialize(this.contentVersionId, this.contentId, this.languageId);
-		ceb.throwIfNotEmpty();
-		ContentVersionController.update(this.contentId, this.languageId, getRequest().getRemoteUser(), this.contentVersionVO);
-		
-		return "standalone";
-	}
-*/
 	public String doSaveAndExit() throws Exception
 	{
-		doExecute();
+	    UserPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.userPropertiesVO);
 						 
 		return "saveAndExit";
 	}
 
 	public String doSaveAndExitStandalone() throws Exception
 	{
-		doExecute();
+	    UserPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.userPropertiesVO);
 						 
 		return "saveAndExitStandalone";
 	}

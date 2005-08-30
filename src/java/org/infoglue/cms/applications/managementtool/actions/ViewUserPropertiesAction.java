@@ -43,7 +43,7 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
     {
         this.setCurrentAction("ViewUserProperties.action");
         this.setUpdateAction("UpdateUserProperties");
-        this.setCancelAction("ViewUser.action");
+        this.setCancelAction("ViewSystemUser.action");
         this.setToolbarKey("tool.managementtool.viewUserProperties.header");
         this.setTitleKey("tool.managementtool.viewUserProperties.header");
         this.setArguments("");
