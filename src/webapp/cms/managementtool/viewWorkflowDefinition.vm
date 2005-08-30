@@ -11,7 +11,7 @@
 	<tr>
 		<td>
 			<p>#editTextField("WorkflowDefinition.name" "name" $!workflowDefinitionVO.name "51" "normaltextfield" "")</p>
-			<p>#editTextArea("WorkflowDefinition.value" "value" $!workflowDefinitionVO.value "60" "25" "largetextarea")</p>
+			<p>#editTextArea("WorkflowDefinition.value" "value" $!workflowDefinitionVO.value "60" "25" "greedytextarea")</p>
 		</td>
 	</tr>
 	<tr>
