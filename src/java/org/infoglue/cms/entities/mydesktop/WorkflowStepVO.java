@@ -36,6 +36,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class WorkflowStepVO implements BaseEntityVO
 {
+	private WorkflowVO workflow;
 	private Long workflowId;
 	private Integer id;
 	private Integer stepId;
@@ -47,6 +48,17 @@ public class WorkflowStepVO implements BaseEntityVO
 	private Date finishDate;
 	private List actions = new ArrayList();
 
+	public WorkflowStepVO() {}
+	public WorkflowStepVO(final WorkflowVO workflow) 
+	{
+		this.workflow = workflow;
+	}
+	
+	public WorkflowVO getWorkflow() 
+	{
+		return this.workflow;
+	}
+	
 	public Integer getId()
 	{
 		return this.id;
