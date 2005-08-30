@@ -103,7 +103,8 @@ public class ViewPageFilter implements Filter
         HttpSession httpSession = httpRequest.getSession(true);
         validateCmsProperties(httpRequest);
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
-
+        logger.info("requestURI:" + requestURI);
+        
         if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
         {
             Integer repositoryId = null;

@@ -122,9 +122,9 @@ public class BasicURLComposer extends URLComposer
             SiteNode currentSiteNode = SiteNodeController.getSiteNodeWithId(deliveryContext.getSiteNodeId(), db, true);
     		if(!siteNode.getRepository().getId().equals(currentSiteNode.getRepository().getId()))
     		{
-    		    System.out.println("The repositories were not equal...");
+    		    //System.out.println("The repositories were not equal...");
     		    String dnsName = siteNode.getRepository().getDnsName();
-    		    System.out.println("Here is the dns we are going to use instead:" + dnsName);
+    		    //System.out.println("Here is the dns we are going to use instead:" + dnsName);
     		  
     		    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
     		    String keyword = "";
@@ -167,6 +167,10 @@ public class BasicURLComposer extends URLComposer
 	        try 
 			{
 	            sb.append(NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getPageNavigationPath(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext));
+	            
+	            if(sb.toString().endsWith(context))
+	                sb.append("/");
+	            
 	            if (contentId != null && contentId.intValue() != -1)
 	                sb.append("?contentId=").append(String.valueOf(contentId));
 	     
@@ -251,7 +255,7 @@ public class BasicURLComposer extends URLComposer
         
         if(enableNiceURI.equalsIgnoreCase("true"))
         {
-	        if (pageUrl.indexOf("?") == -1) 
+            if (pageUrl.indexOf("?") == -1) 
 	        {
 	            pageUrl += "?languageId=" + String.valueOf(languageId);
 	        } 
