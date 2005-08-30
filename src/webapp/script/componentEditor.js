@@ -672,8 +672,9 @@ function listRowOff()
 
 
 
-function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate) 
+function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString) 
 {
+	//alert("AssignComponent:" + allowedComponentNamesUrlEncodedString);
 	//alert("draggedComponentId:" + draggedComponentId);
 	if(draggedComponentId > 0)
 	{
@@ -684,7 +685,7 @@ function assignComponent(siteNodeId, languageId, contentId, parentComponentId, s
 		//alert("slotId" + slotId);
 		//alert("specifyBaseTemplate" + specifyBaseTemplate);
 		
-		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "";
+		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString;
 		//alert("insertUrl:" + insertUrl);
 		document.location.href = insertUrl;
 		draggedComponentId = -1;

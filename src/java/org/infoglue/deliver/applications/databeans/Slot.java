@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.applications.databeans;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class Slot
 	private String number;
 	private String name;
 	private List components = new ArrayList();
+	private String[] allowedComponentsArray = null;
 	
 	public List getComponents()
 	{
@@ -78,5 +80,35 @@ public class Slot
 	{
 		this.number = number;
 	}
+	
+    public String[] getAllowedComponentsArray()
+    {
+        return allowedComponentsArray;
+    }
+    
+    public void setAllowedComponentsArray(String[] allowedComponentsArray)
+    {
+        this.allowedComponentsArray = allowedComponentsArray;
+    }
+
+    public String getAllowedComponentsArrayAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        if(allowedComponentsArray != null)
+        {
+	        for(int i=0; i<allowedComponentsArray.length; i++)
+	        {
+	            if(i > 0)
+	                sb.append("&");
+	            
+	            sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentsArray[i], "UTF-8"));
+	        }
+        }
+        else
+            return null;
+        
+        return sb.toString();
+    }
 
 }

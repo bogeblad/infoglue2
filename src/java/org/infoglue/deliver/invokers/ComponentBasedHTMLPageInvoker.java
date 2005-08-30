@@ -312,8 +312,18 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
 				String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
 
+				String[] allowedComponentNamesArray = null;
+				int allowedComponentNamesIndex = slotString.indexOf("allowedComponentNames");
+				if(allowedComponentNamesIndex > -1)
+				{    
+				    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 23, slotString.indexOf("\"", allowedComponentNamesIndex + 23));
+				    //System.out.println("allowedComponentNames:" + allowedComponentNames);
+				    allowedComponentNamesArray = allowedComponentNames.split(",");
+				}
+				
 			  	Slot slot = new Slot();
 			  	slot.setId(slotId);
+			    slot.setAllowedComponentsArray(allowedComponentNamesArray);
 
 			  	List subComponents = getComponents(db, templateController, component, templateController.getSiteNodeId(), slotId);
 			  	slot.setComponents(subComponents);
@@ -942,9 +952,19 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						int slotStopIndex = componentString.indexOf("</ig:slot>", slotStartIndex);
 						String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
 						String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
-			
+						
+						String[] allowedComponentNamesArray = null;
+						int allowedComponentNamesIndex = slotString.indexOf("allowedComponentNames");
+						if(allowedComponentNamesIndex > -1)
+						{    
+						    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 23, slotString.indexOf("\"", allowedComponentNamesIndex + 23));
+						    //System.out.println("allowedComponentNames:" + allowedComponentNames);
+						    allowedComponentNamesArray = allowedComponentNames.split(",");
+						}
+
 						Slot slot = new Slot();
 						slot.setId(slotId);
+						slot.setAllowedComponentsArray(allowedComponentNamesArray);
 						
 						Element componentsElement = (Element)componentElement.selectSingleNode("components");
 						

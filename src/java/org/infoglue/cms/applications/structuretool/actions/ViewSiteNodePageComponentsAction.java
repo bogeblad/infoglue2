@@ -79,6 +79,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private Integer filterRepositoryId 		 = null; 
 	private String sortProperty 			 = "name";
 	private String[] allowedContentTypeNames = null;
+	private String[] allowedComponentNames = null;
 	
 	public ViewSiteNodePageComponentsAction()
 	{
@@ -1151,7 +1152,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    try
 	    {
 	        String direction = "asc";
-	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction);
+	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction, allowedComponentNames);
 	    }
 	    catch(Exception e)
 	    {
@@ -1414,4 +1415,30 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
     {
         this.pageTemplateContentId = pageTemplateContentId;
     }
+    
+    public String[] getAllowedComponentNames()
+    {
+        return allowedComponentNames;
+    }
+    
+    public void setAllowedComponentNames(String[] allowedComponentNames)
+    {
+        this.allowedComponentNames = allowedComponentNames;
+    }
+
+    public String getAllowedComponentNamesAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedComponentNames.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentNames[i], "UTF-8"));
+        }
+        
+        return sb.toString();
+    }
+
 }

@@ -70,7 +70,7 @@ public class ComponentController extends BaseController
 	 * @throws Bug
 	 */
 	
-	public List getComponentVOList(String sortAttribute, String direction) throws SystemException, Bug, Exception
+	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames) throws SystemException, Bug, Exception
 	{
 		List componentVOList = null;
 		
@@ -79,7 +79,7 @@ public class ComponentController extends BaseController
 		{
 			beginTransaction(db);
 			
-			componentVOList = getComponentVOList(sortAttribute, direction, db);
+			componentVOList = getComponentVOList(sortAttribute, direction, allowedComponentNames, db);
 			    
 			commitTransaction(db);
 		}
@@ -103,9 +103,16 @@ public class ComponentController extends BaseController
 	
 	private static List cachedComponents = null;
 	
-	public List getComponentVOList(String sortAttribute, String direction, Database db) throws SystemException, Bug, Exception
+	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, Database db) throws SystemException, Bug, Exception
 	{
-	    String componentsKey = "components";
+	    String allowedComponentNamesString = "";
+	    if(allowedComponentNames != null)
+	    {
+	        for(int i=0; i<allowedComponentNames.length; i++)
+	            allowedComponentNamesString = allowedComponentNames[i] + ":";
+	    }
+	    
+	    String componentsKey = "components_" + sortAttribute + "_" + direction + "_" + allowedComponentNamesString;
 	    List components = (List)CacheController.getCachedObject("componentContentsCache", componentsKey);
 		if(components != null)
 		{
@@ -113,7 +120,7 @@ public class ComponentController extends BaseController
 		}
 		else
 		{
-		    components = getComponents();
+		    components = getComponents(allowedComponentNames);
 			Iterator componentsIterator = components.iterator();
 			while(componentsIterator.hasNext())
 			{
@@ -146,7 +153,7 @@ public class ComponentController extends BaseController
 	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
 	 */
 	
-	public List getComponents() throws Exception
+	public List getComponents(String[] allowedComponentNames) throws Exception
 	{
 		HashMap arguments = new HashMap();
 		arguments.put("method", "selectListOnContentTypeName");
@@ -158,6 +165,24 @@ public class ComponentController extends BaseController
 		arguments.put("arguments", argumentList);
 		
 		List results = ContentController.getContentController().getContentVOList(arguments);
+		
+		if(allowedComponentNames != null && allowedComponentNames.length > 0)
+		{
+		    Iterator resultsIterator = results.iterator();
+		    while(resultsIterator.hasNext())
+		    {
+		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        boolean isAllowed = false;
+		        for(int i=0; i<allowedComponentNames.length; i++)
+		        {
+		            if(contentVO.getName().equals(allowedComponentNames[i]))
+		                isAllowed = true;
+		        }
+		        
+		        if(!isAllowed)
+		            resultsIterator.remove();
+		    }
+		}
 		
 		return results;	
 	}
