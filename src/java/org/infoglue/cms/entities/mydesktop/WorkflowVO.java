@@ -37,8 +37,11 @@ import org.infoglue.cms.util.workflow.StepFilter;
 
 public class WorkflowVO implements BaseEntityVO
 {
+	public static final String TITLE_IDENTIFIER = "workflow.title";
+	
 	private Long workflowId;
-	private String name;
+	private String name;  // the name of the workflow
+	private String title; // the name of the workflow instance
 	private List declaredSteps = new ArrayList();
 	private List currentSteps = new ArrayList();
 	private List historySteps = new ArrayList();
@@ -88,6 +91,16 @@ public class WorkflowVO implements BaseEntityVO
 		this.name = name;
 	}
 
+	public String getTitle() 
+	{
+		return title;
+	}
+	
+	public void setTitle(final String title)
+	{
+		this.title = title;
+	}
+	
 	public List getDeclaredSteps()
 	{
 		return declaredSteps;
