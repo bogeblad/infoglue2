@@ -423,7 +423,9 @@
 					#set($value = $attributeInitialData)
 				#end
 							
-				#if($attribute.inputType == "textfield")
+				#if($attribute.inputType == "hidden")
+					<input type="hidden" id="$attribute.name" name="$attribute.name" value="$value"/>
+				#elseif($attribute.inputType == "textfield")
 					$attributeTitle ("$attribute.name") $attributeDescription<br/>
 					<input $readonly type="text" length="50" class="$class" maxlength="" id="$attribute.name" name="$attribute.name" value="$value"/>
 				#elseif($attribute.inputType == "textarea")
