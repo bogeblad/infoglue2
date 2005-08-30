@@ -1305,7 +1305,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		 
         List siteNodeVOList = new ArrayList();
 
-        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1");
+        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1 ORDER BY s.siteNodeId");
 		oql.bind(siteNodeId);
 		
     	QueryResults results = oql.execute(Database.ReadOnly);
@@ -1315,7 +1315,6 @@ public class NodeDeliveryController extends BaseDeliveryController
         	SiteNode siteNode = (SiteNode)results.next();
 			siteNodeVOList.add(siteNode.getValueObject());
 		}
-        
 		return siteNodeVOList;	
 	}
 
