@@ -200,12 +200,10 @@ public class InfoGlueAuthenticationFilter implements Filter
 	        session.setAttribute(Session.LOCALE, java.util.Locale.ENGLISH);
 	
 		String preferredToolId = CmsPropertyHandler.getPreferredToolId(user.getName());
-	    System.out.println("preferredToolId:" + preferredToolId);
-		if(preferredToolId != null && preferredToolId.length() > 0)
+	    if(preferredToolId != null && preferredToolId.length() > 0)
 			session.setAttribute(Session.TOOL_ID, new Integer(preferredToolId));
 	    else
 	        session.setAttribute(Session.TOOL_ID, new Integer(0));
-		System.out.println("preferredToolId after:" + session.getAttribute(Session.TOOL_ID));
 	}
     
   	public void destroy() { }
