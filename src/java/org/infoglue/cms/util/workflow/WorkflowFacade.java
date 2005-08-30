@@ -45,7 +45,7 @@ import net.sf.hibernate.cfg.Configuration;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.16 $ $Date: 2005/07/10 21:05:50 $
+ * @version $Revision: 1.17 $ $Date: 2005/08/30 14:28:14 $
  */
 public class WorkflowFacade
 {
@@ -259,7 +259,12 @@ public class WorkflowFacade
 	 */
 	public List getCurrentSteps()
 	{
-		return createStepVOs(workflow.getCurrentSteps(workflowId));
+		return getCurrentSteps(null);
+	}
+	
+	public List getCurrentSteps(final WorkflowVO workflowVO)
+	{
+		return createStepVOs(workflowVO, workflow.getCurrentSteps(workflowId));
 	}
 
 	/**
@@ -268,7 +273,12 @@ public class WorkflowFacade
 	 */
 	public List getHistorySteps()
 	{
-		return createStepVOs(workflow.getHistorySteps(workflowId));
+		return getHistorySteps(null);
+	}
+	
+	public List getHistorySteps(final WorkflowVO workflowVO)
+	{
+		return createStepVOs(workflowVO, workflow.getHistorySteps(workflowId));
 	}
 
 	/**
@@ -286,11 +296,11 @@ public class WorkflowFacade
 	 * @param steps a list of Steps
 	 * @return a list of WorkflowStepVOs corresponding to all steps that pass the filter
 	 */
-	private List createStepVOs(List steps)
+	private List createStepVOs(final WorkflowVO workflowVO, final List steps)
 	{
 		List stepVOs = new ArrayList();
 		for (Iterator i = steps.iterator(); i.hasNext();)
-			stepVOs.add(createStepVO((Step)i.next()));
+			stepVOs.add(createStepVO(workflowVO, (Step)i.next()));
 
 		return stepVOs;
 	}
@@ -351,14 +361,23 @@ public class WorkflowFacade
 	public WorkflowVO createWorkflowVO()
 	{
 		WorkflowVO workflowVO = new WorkflowVO(new Long(workflowId), workflow.getWorkflowName(workflowId));
-		workflowVO.setCurrentSteps(getCurrentSteps());
-		workflowVO.setHistorySteps(getHistorySteps());
+		workflowVO.setTitle(getWorkflowTitle());
+		workflowVO.setCurrentSteps(getCurrentSteps(workflowVO));
+		workflowVO.setHistorySteps(getHistorySteps(workflowVO));
 		workflowVO.setInitialActions(getInitialActions());
 		workflowVO.setGlobalActions(getGlobalActions());
 
 		return workflowVO;
 	}
 
+	/**
+	 * 
+	 */
+	private String getWorkflowTitle() {
+		final PropertySet ps = workflow.getPropertySet(workflowId);
+		return ps.exists(WorkflowVO.TITLE_IDENTIFIER) ? ps.getString(WorkflowVO.TITLE_IDENTIFIER) : null;
+	}
+	
 	/**
 	 * Creates a new WorkflowVO from workflow with the given name.  The resulting workflow VO contains only a
 	 * minimal amount of data because we don't have the workflow ID.  Basically all you get is all the steps.
@@ -377,12 +396,12 @@ public class WorkflowFacade
 	 * @param step the desired step
 	 * @return a new WorkflowStepVO representing step.
 	 */
-	private WorkflowStepVO createStepVO(Step step)
+	private WorkflowStepVO createStepVO(final WorkflowVO workflowVO, final Step step)
 	{
 		logger.info("step:" + step + ':' + step.getId());
 		logger.info("Owner:" + step.getOwner());
 
-		WorkflowStepVO stepVO = new WorkflowStepVO();
+		WorkflowStepVO stepVO = new WorkflowStepVO(workflowVO);
 		stepVO.setId(new Integer((int)step.getId()));// Hope it doesn't get too big; we are stuck with int thanks to BaseEntityVO
 		stepVO.setStepId(new Integer(step.getStepId()));
 		stepVO.setWorkflowId(new Long(workflowId));
