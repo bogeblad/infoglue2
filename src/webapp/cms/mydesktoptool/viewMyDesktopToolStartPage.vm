@@ -176,7 +176,7 @@
 	</table>
 </div>
 
-<div id="tasks" style="position:absolute; left:300px; top:20px; right: 20px; awidth:700px; height:200px; z-index:2">
+<div id="tasks" style="position:absolute; left:350px; top:20px; right: 20px; awidth:700px; height:200px; z-index:2">
 	<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
 	<tr>
 		<td>
