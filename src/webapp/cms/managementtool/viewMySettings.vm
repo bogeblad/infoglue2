@@ -45,11 +45,21 @@
 		<td>	
 			$ui.getString("tool.managementtool.mysettings.defaultToolId.label")<br/>
 			<select class="sitedropbox" name="defaultToolId">
+				#if($this.hasAccessTo("ContentTool.Read"))
 				<option value="0" #if($defaultToolId == "0")selected="1"#end>$ui.getString("tool.common.contentTool.name")</option>
+				#end
+				#if($this.hasAccessTo("StructureTool.Read"))
 				<option value="1" #if($defaultToolId == "1")selected="1"#end>$ui.getString("tool.common.structureTool.name")</option>
+				#end
+				#if($this.hasAccessTo("ManagementTool.Read"))
 				<option value="2" #if($defaultToolId == "2")selected="1"#end>$ui.getString("tool.common.managementTool.name")</option>
+				#end
+				#if($this.hasAccessTo("PublishingTool.Read"))
 				<option value="3" #if($defaultToolId == "3")selected="1"#end>$ui.getString("tool.common.publishingTool.name")</option>
+				#end
+				#if($this.hasAccessTo("MyDesktopTool.Read"))
 				<option value="4" #if($defaultToolId == "4")selected="1"#end>$ui.getString("tool.common.myDesktopTool.name")</option>
+				#end
 			</select>				
 		</td>
 	</tr>
