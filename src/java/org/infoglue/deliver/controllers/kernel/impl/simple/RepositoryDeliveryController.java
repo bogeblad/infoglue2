@@ -24,8 +24,10 @@
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.management.*;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.util.CacheController;
 
 import org.exolab.castor.jdo.Database;
@@ -153,11 +155,35 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	
 	public String getPropertyValue(Integer repositoryId, String propertyName) 
 	{
+		String key = "parentRepository_" + repositoryId + "_" + propertyName;
+	    getLogger().info("key:" + key);
+	    Object object = CacheController.getCachedObject("parentRepository", key);
+		
+	    if(object instanceof NullObject)
+		{
+			getLogger().info("There was an cached property but it was null:" + object);
+			return null;
+		}
+		else if(object != null)
+		{
+			getLogger().info("There was an cached property:" + object);
+			return (String)object;
+		}
+		
+		String propertyValue = null;
+		
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
-	    return ps.getString("repository_" + repositoryId + "_" + propertyName);
+	    propertyValue = ps.getString("repository_" + repositoryId + "_" + propertyName);
+	    getLogger().info("propertyValue:" + propertyValue);
+	    if(propertyValue != null)
+	        CacheController.cacheObject("parentRepository", key, propertyValue);
+	    else
+	        CacheController.cacheObject("parentRepository", key, new NullObject());
+	        
+		return propertyValue;
 	}
 
 }

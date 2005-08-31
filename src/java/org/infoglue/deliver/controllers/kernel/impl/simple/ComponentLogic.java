@@ -1007,22 +1007,24 @@ public class ComponentLogic
 		{
 			try
 			{
-				NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
+			    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
 			
 				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), this.templateController.getSiteNodeId()).getValueObject();
-				while(property == null && parentSiteNodeVO != null)
+			    while(property == null && parentSiteNodeVO != null)
 				{
 				    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
 					
 				    SiteNodeVO newParentSiteNodeVO = nodeDeliveryController.getParentSiteNode(templateController.getDatabase(), parentSiteNodeVO.getId());
-					if(newParentSiteNodeVO == null)
+				
+				    if(newParentSiteNodeVO == null)
 					{
+					    logger.info("before parentRepositoryId...");
 					    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
-					    //System.out.println("parentRepositoryId:" + parentRepositoryId);
+					    logger.info("parentRepositoryId:" + parentRepositoryId);
 					    if(parentRepositoryId != null)
 					    {
 					        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
-					        //System.out.println("Found parentSiteNodeVO:" + newParentSiteNodeVO);
+						    //System.out.println("Found parentSiteNodeVO:" + newParentSiteNodeVO);
 					    }
 					}
 					

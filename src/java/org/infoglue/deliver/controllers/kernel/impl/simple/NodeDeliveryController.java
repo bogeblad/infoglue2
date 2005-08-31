@@ -458,10 +458,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		String key = "" + siteNodeId;
 		getLogger().info("key getParentSiteNode:" + key);
-		SiteNodeVO parentSiteNodeVO = (SiteNodeVO)CacheController.getCachedObject("parentSiteNodeCache", key);
-		if(parentSiteNodeVO != null)
+		Object object = CacheController.getCachedObject("parentSiteNodeCache", key);
+		SiteNodeVO parentSiteNodeVO = null;
+		getLogger().info("object:" + object);
+		if(object instanceof NullObject)
+		{
+			getLogger().info("There was an cached parentSiteNodeVO but it was null:" + object);
+		}
+		else if(object != null)
 		{
 			getLogger().info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
+			parentSiteNodeVO = (SiteNodeVO)object;
 		}
 		else
 		{
@@ -470,11 +477,18 @@ public class NodeDeliveryController extends BaseDeliveryController
 			SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
             SiteNode parentSiteNode = siteNode.getParentSiteNode();
             if(parentSiteNode != null)		
-				parentSiteNodeVO = parentSiteNode.getValueObject();
-            		
-			getLogger().info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
+            {
+                parentSiteNodeVO = parentSiteNode.getValueObject();
+            	CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
+    			getLogger().info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
+            }
+            else
+            {
+                getLogger().info("Caching parentSiteNodeVO: NullObject");
+                CacheController.cacheObject("parentSiteNodeCache", key, new NullObject());
+            }
+            
 			
-			CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
 		}
 		
 		return parentSiteNodeVO;
