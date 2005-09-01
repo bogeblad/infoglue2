@@ -435,6 +435,21 @@ public class ContentVersionController extends BaseController
 		return contentVersionVO;
     }
 
+    /**
+     * This method returns the latest active content version.
+     */
+    
+   	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug
+    {
+    	ContentVersionVO contentVersionVO = null;
+
+       	ContentVersion contentVersion = getLatestActiveContentVersion(contentId, languageId, db);
+            
+        if(contentVersion != null)
+            contentVersionVO = contentVersion.getValueObject();
+    	
+		return contentVersionVO;
+    }
 
    	/**
 	 * This method returns the latest active content version.
