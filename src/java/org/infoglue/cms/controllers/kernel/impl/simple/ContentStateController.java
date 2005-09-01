@@ -212,9 +212,13 @@ public class ContentStateController extends BaseController
 		List orignals = contentCategoryController.findByContentVersion(originalContentVersion.getId(), db);
 		for (Iterator iter = orignals.iterator(); iter.hasNext();)
 		{
-			ContentCategoryVO vo = (ContentCategoryVO)iter.next();
+			ContentCategory contentCategory = (ContentCategory)iter.next();
+			ContentCategoryVO vo = new ContentCategoryVO();
+			vo.setAttributeName(contentCategory.getAttributeName());
+			vo.setCategory(contentCategory.getCategory().getValueObject());
 			vo.setContentVersionId(newContentVersion.getId());
-			contentCategoryController.createWithDatabase(vo, db);
+			ContentCategory newContentCategory = contentCategoryController.createWithDatabase(vo, db);
+			//newContentCategory
 		}
 	}
 

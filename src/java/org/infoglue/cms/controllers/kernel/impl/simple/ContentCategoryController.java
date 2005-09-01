@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.10 2005/09/01 15:24:12 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.11 2005/09/01 15:54:33 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -247,11 +247,14 @@ public class ContentCategoryController extends BaseController
 		// TODO: When hibernate comes, just save the VOs and if it has a child VO with an id set
 		// TODO: it is used to make the relationship...ask me for clarification -frank
 		Category category = (Category)getObjectWithId(CategoryImpl.class, c.getCategory().getId(), db);
+		ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, c.getContentVersionId(), db);
 
 		ContentCategory contentCategory = new ContentCategoryImpl();
 		contentCategory.setValueObject(c);
 		contentCategory.setCategory((CategoryImpl)category);
 		db.create(contentCategory);
+		contentVersion.getContentCategories().add(contentCategory);
+		
 		return contentCategory;
 	}
 
@@ -332,7 +335,26 @@ public class ContentCategoryController extends BaseController
 	 */
 	public void delete(Integer id) throws SystemException
 	{
-		deleteEntity(ContentCategoryImpl.class, id);
+		Database db = beginTransaction();
+
+		try
+		{
+		    ContentCategory contentCategory = (ContentCategory)getObjectWithId(ContentCategoryImpl.class, id, db);
+		    ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentCategory.getContentVersionId(), db);
+		    System.out.println("contentVersion:" + contentVersion.getContentCategories().size());
+		    contentVersion.getContentCategories().remove(contentCategory);
+		    System.out.println("contentVersion:" + contentVersion.getContentCategories().size());
+		    db.remove(contentCategory);
+		    
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		//deleteEntity(ContentCategoryImpl.class, id);
 	}
 
 	/**
