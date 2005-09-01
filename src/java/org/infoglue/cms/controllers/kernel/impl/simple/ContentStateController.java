@@ -209,7 +209,7 @@ public class ContentStateController extends BaseController
 	 */
 	private static void copyContentCategories(ContentVersion originalContentVersion, ContentVersion newContentVersion, Database db) throws SystemException, PersistenceException
 	{
-		List orignals = contentCategoryController.findByContentVersion(originalContentVersion.getId());
+		List orignals = contentCategoryController.findByContentVersion(originalContentVersion.getId(), db);
 		for (Iterator iter = orignals.iterator(); iter.hasNext();)
 		{
 			ContentCategoryVO vo = (ContentCategoryVO)iter.next();

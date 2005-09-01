@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.9 2005/09/01 15:21:15 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.10 2005/09/01 15:24:12 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -183,6 +183,20 @@ public class ContentCategoryController extends BaseController
 		return executeQuery(findByContentVersion, params);
 	}
 
+	/**
+	 * Find a List of ContentCategories for a Content Version.
+	 * @param	versionId The Content Version id of the ContentCategory to find
+	 * @return	A list of ContentCategoryVO that have the provided content version and attribute
+	 * @throws	SystemException If an error happens
+	 */
+	public List findByContentVersion(Integer versionId, Database db) throws SystemException
+	{
+		List params = new ArrayList();
+		params.add(versionId);
+		return executeQuery(findByContentVersion, params, db);
+	}
+
+	
 	/**
 	 * Find a List of ContentCategories for the specific attribute and Content Version.
 	 * @param	categoryId The Category id of the ContentCategory to find
