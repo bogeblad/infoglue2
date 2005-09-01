@@ -37,8 +37,6 @@ import org.infoglue.cms.util.workflow.StepFilter;
 
 public class WorkflowVO implements BaseEntityVO
 {
-	public static final String TITLE_IDENTIFIER = "workflow.title";
-	
 	private Long workflowId;
 	private String name;  // the name of the workflow
 	private String title; // the name of the workflow instance
