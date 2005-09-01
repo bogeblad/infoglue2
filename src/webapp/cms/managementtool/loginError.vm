@@ -72,7 +72,7 @@
 			//	window.close();
 			//} 	
 			
-			document.inputForm.elements[0].focus();
+			document.getElementById("j_username").focus();
 		}			
 
 		-->
@@ -108,7 +108,7 @@
 		</tr>	
 		<tr>
 			<td><img src="images/trans.gif" width="20" height="1"></td>
-			<td><input class="input" type="text" name="j_username" value=""></td>
+			<td><input class="input" type="text" id="j_username" name="j_username" value=""></td>
 		</tr>	
 		<tr>
 			<td colspan="2">&nbsp;</td>
