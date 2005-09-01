@@ -242,6 +242,10 @@ public class CacheController extends Thread
 				{	
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("parentRepository") && entity.indexOf("Repository") > 0)
+				{	
+					clear = true;
+				}
 				if(cacheName.equalsIgnoreCase("contentAttributeCache") && entity.indexOf("ContentVersion") > -1)
 				{	
 					clear = true;
