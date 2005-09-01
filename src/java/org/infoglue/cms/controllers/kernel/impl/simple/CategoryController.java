@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.11 2005/09/01 07:15:45 mattias Exp $
+ * $Id: CategoryController.java,v 1.12 2005/09/01 14:02:32 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -146,7 +146,7 @@ public class CategoryController extends BaseController
         
 	    if(nodes.length > 0)
 	    {
-	        List rootCategories = findRootCategories(db);
+	        List rootCategories = findRootCategoryVOList(db);
 	        String name = nodes[0];
 	        categoryVO = getCategoryVOWithNameInList(rootCategories, name);
 	        
@@ -277,6 +277,18 @@ public class CategoryController extends BaseController
 	public List findRootCategories(Database db) throws SystemException
 	{
 		return executeQuery(findRootCategories, db);
+	}
+
+	/**
+	 * Find a List of Categories that have no parent.
+	 *
+	 * @return	A list of CategoryVOs that are at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public List findRootCategoryVOList(Database db) throws SystemException
+	{
+	    List categories = executeQuery(findRootCategories, db);
+		return (categories != null) ? toVOList(categories) : null;
 	}
 
 	/**
