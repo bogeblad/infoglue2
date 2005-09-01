@@ -23,21 +23,35 @@
 
 package org.infoglue.cms.util.workflow;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.hibernate.HibernateException;
+import net.sf.hibernate.SessionFactory;
+import net.sf.hibernate.cfg.Configuration;
 
 import org.apache.log4j.Logger;
-import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
-import org.infoglue.cms.entities.mydesktop.*;
-import com.opensymphony.workflow.*;
-import com.opensymphony.workflow.spi.*;
-import com.opensymphony.workflow.query.*;
-import com.opensymphony.workflow.basic.BasicWorkflow;
-import com.opensymphony.workflow.loader.*;
 import com.opensymphony.module.propertyset.PropertySet;
-import net.sf.hibernate.*;
-import net.sf.hibernate.cfg.Configuration;
+import com.opensymphony.workflow.AbstractWorkflow;
+import com.opensymphony.workflow.InvalidActionException;
+import com.opensymphony.workflow.WorkflowException;
+import com.opensymphony.workflow.basic.BasicWorkflow;
+import com.opensymphony.workflow.loader.ActionDescriptor;
+import com.opensymphony.workflow.loader.StepDescriptor;
+import com.opensymphony.workflow.loader.WorkflowDescriptor;
+import com.opensymphony.workflow.query.FieldExpression;
+import com.opensymphony.workflow.query.WorkflowExpressionQuery;
+import com.opensymphony.workflow.spi.Step;
+import com.opensymphony.workflow.spi.WorkflowEntry;
 
 /**
  * A facade to OSWorkflow that gives us a place to cache workflow data as we need it while interacting with it.
@@ -45,11 +59,24 @@ import net.sf.hibernate.cfg.Configuration;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.17 $ $Date: 2005/08/30 14:28:14 $
+ * @version $Revision: 1.18 $ $Date: 2005/09/01 15:28:11 $
  */
 public class WorkflowFacade
 {
-    private final static Logger logger = Logger.getLogger(WorkflowFacade.class.getName());
+	/**
+	 * If the following attribute is specified in the workflow meta attributes, 
+	 * The title will be fetch from the propertyset associated with the workflow, using the meta value as a key.
+	 */
+	private static final String WORKFLOW_TITLE_EXTENSION_META_ATTRIBUTE = "org.infoglue.title";
+	
+	/**
+	 * If the following attribute is specified in the workflow meta attributes,
+	 * then all actions will have access to a WorkflowDatabase instance controlled by this class. 
+	 */
+	private static final String WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE = "org.infoglue.database";
+	
+	
+	private final static Logger logger = Logger.getLogger(WorkflowFacade.class.getName());
 
 	private static SessionFactory hibernateSessionFactory;
 
@@ -150,7 +177,10 @@ public class WorkflowFacade
 	{
 		try
 		{
-			setWorkflowIdAndDescriptor(workflow.initialize(name, initialAction, inputs));
+			if(useDatabaseExtension(workflow.getWorkflowDescriptor(name)))
+				setWorkflowIdAndDescriptor(doExtendedInitialize(name, initialAction, inputs));
+			else
+				setWorkflowIdAndDescriptor(workflow.initialize(name, initialAction, inputs));
 		}
 		catch (Exception e)
 		{
@@ -158,6 +188,31 @@ public class WorkflowFacade
 		}
 	}
 
+	/**
+	 * 
+	 */
+	private long doExtendedInitialize(String name, int initialAction, Map inputs) throws WorkflowException
+	{
+		logger.debug("##########################WorkflowFacade.doExtendedInitialize()########################## - START");
+		long result = 0;
+		final DatabaseSession db = new DatabaseSession();
+		try
+		{
+			final Map copy = new HashMap();
+			copy.putAll(inputs);
+			copy.put(workflow.getWorkflowDescriptor(name).getMetaAttributes().get(WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE), db);
+			result = workflow.initialize(name, initialAction, copy);
+		} catch(Exception e) {
+			e.printStackTrace();
+			if(db != null)
+				db.setRollbackOnly();
+		} finally {
+			db.releaseDB();
+			logger.debug("##########################WorkflowFacade.doExtendedInitialize()########################## - END");
+		}
+		return result;
+	}
+	
 	/**
 	 * Performs an action using the given inputs
 	 * @param actionId the ID of the action to perform
@@ -169,7 +224,32 @@ public class WorkflowFacade
 		if (!isActive())
 			throw new InvalidActionException("Workflow " + workflowId + " is no longer active");
 
-		workflow.doAction(workflowId, actionId, inputs);
+		if(useDatabaseExtension(workflowDescriptor))
+			doExtendedAction(actionId, inputs);
+		else
+			workflow.doAction(workflowId, actionId, inputs);
+	}
+	
+	/**
+	 * 
+	 */
+	private void doExtendedAction(int actionId, Map inputs) throws WorkflowException
+	{
+		logger.debug("##########################WorkflowFacade.invokeAction()########################## - START");
+		final DatabaseSession db = new DatabaseSession();
+		try {
+			final Map copy = new HashMap();
+			copy.putAll(inputs);
+			copy.put(workflowDescriptor.getMetaAttributes().get(WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE), db);
+			workflow.doAction(workflowId, actionId, copy);
+		} catch(Exception e) {
+			e.printStackTrace();
+			if(db != null)
+				db.setRollbackOnly();
+		} finally {
+			db.releaseDB();
+			logger.debug("##########################WorkflowFacade.invokeAction()########################## - END");
+		}
 	}
 
 	/**
@@ -361,7 +441,8 @@ public class WorkflowFacade
 	public WorkflowVO createWorkflowVO()
 	{
 		WorkflowVO workflowVO = new WorkflowVO(new Long(workflowId), workflow.getWorkflowName(workflowId));
-		workflowVO.setTitle(getWorkflowTitle());
+		if(useTitleExtension(workflowDescriptor))
+			workflowVO.setTitle(getWorkflowTitle());
 		workflowVO.setCurrentSteps(getCurrentSteps(workflowVO));
 		workflowVO.setHistorySteps(getHistorySteps(workflowVO));
 		workflowVO.setInitialActions(getInitialActions());
@@ -374,8 +455,12 @@ public class WorkflowFacade
 	 * 
 	 */
 	private String getWorkflowTitle() {
-		final PropertySet ps = workflow.getPropertySet(workflowId);
-		return ps.exists(WorkflowVO.TITLE_IDENTIFIER) ? ps.getString(WorkflowVO.TITLE_IDENTIFIER) : null;
+		if(!workflowDescriptor.getMetaAttributes().containsKey(WORKFLOW_TITLE_EXTENSION_META_ATTRIBUTE))
+			return null;
+		
+		final String key = (String) workflowDescriptor.getMetaAttributes().get(WORKFLOW_TITLE_EXTENSION_META_ATTRIBUTE);
+		final PropertySet ps = getPropertySet();
+		return ps.exists(key) ? ps.getString(key) : null;
 	}
 	
 	/**
@@ -456,4 +541,22 @@ public class WorkflowFacade
 		actionVO.setMetaAttributes(actionDescriptor.getMetaAttributes());
 		return actionVO;
 	}
+	
+	/**
+	 * Checks if the title extension should be used.
+	 * 
+	 * @return true if the extension should be used, false otherwise.
+	 */
+	private boolean useTitleExtension(final WorkflowDescriptor descriptor) {
+		return descriptor.getMetaAttributes().containsKey(WORKFLOW_TITLE_EXTENSION_META_ATTRIBUTE);
+	}
+
+	/**
+	 * Checks if the database extension should be used.
+	 * 
+	 * @return true if the extension should be used, false otherwise.
+	 */
+	private boolean useDatabaseExtension(final WorkflowDescriptor descriptor) {
+		return descriptor.getMetaAttributes().containsKey(WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE);
+	}	
 }
