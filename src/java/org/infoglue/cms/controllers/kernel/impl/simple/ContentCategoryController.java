@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.8 2005/08/24 13:25:06 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.9 2005/09/01 15:21:15 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -294,6 +294,7 @@ public class ContentCategoryController extends BaseController
 		    contentCategoryVO.setAttributeName(attributeName);
 		    contentCategoryVO.setContentVersionId(contentVersion.getId());
 		    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, db);
+			contentVersion.getContentCategories().add(contentCategory);
 				    
 		    contentCategoryList.add(contentCategory);
 		}
