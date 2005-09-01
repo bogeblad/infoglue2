@@ -781,6 +781,18 @@ public abstract class BaseController
 	}
 
 	/**
+	 * Executes a Query with no parameters
+	 *
+ 	 * @param query An OQL Query
+	 * @return A VO list of the query results
+	 * @throws SystemException If an error occurs
+	 */
+	protected static List executeQuery(String query, Database db) throws SystemException
+	{
+		return executeQuery(query, Collections.EMPTY_LIST, db);
+	}
+
+	/**
 	 * Executes a Query, also binds the provided parameters
 	 *
  	 * @param query An OQL Query

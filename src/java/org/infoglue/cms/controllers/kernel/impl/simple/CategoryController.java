@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.10 2005/08/29 14:43:12 mattias Exp $
+ * $Id: CategoryController.java,v 1.11 2005/09/01 07:15:45 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -132,6 +132,34 @@ public class CategoryController extends BaseController
 	}
 
 	/**
+	 * Find a Category by it's name path.
+	 *
+	 * @param	path The path of the Category to find in the form /categoryName/categoryName/categoryName
+	 * @return	The CategoryVO identified by the provided path
+	 * @throws	SystemException If an error happens
+	 */
+	public CategoryVO findByPath(String path, Database db) throws SystemException
+	{
+	    CategoryVO categoryVO = null;
+	    
+	    String[] nodes = path.substring(1).split("/");
+        
+	    if(nodes.length > 0)
+	    {
+	        List rootCategories = findRootCategories(db);
+	        String name = nodes[0];
+	        categoryVO = getCategoryVOWithNameInList(rootCategories, name);
+	        
+	        for(int i = 1; i < nodes.length; i++)
+	        {
+	            categoryVO = getCategoryVOWithNameInList(findByParent(categoryVO.getId(), db), nodes[i]);
+		    }
+	    }
+	    
+	    return categoryVO;
+	}
+
+	/**
 	 * Iterates the list of categories and returns the first one that matches your name.
 	 * @param categoryVOList
 	 * @param name
@@ -156,7 +184,8 @@ public class CategoryController extends BaseController
         
         return categoryVO;
 	}
-	
+
+
 	/**
 	 * Find a List of Categories by parent.
 	 *
@@ -169,6 +198,20 @@ public class CategoryController extends BaseController
 		List params = new ArrayList();
 		params.add(parentId);
 		return executeQuery(findByParent, params);
+	}
+
+	/**
+	 * Find a List of Categories by parent.
+	 *
+	 * @param	parentId The parent id of the Category to find
+	 * @return	A list of CategoryVOs that have the provided parentId
+	 * @throws	SystemException If an error happens
+	 */
+	public List findByParent(Integer parentId, Database db) throws SystemException
+	{
+		List params = new ArrayList();
+		params.add(parentId);
+		return executeQuery(findByParent, params, db);
 	}
 
 	/**
@@ -201,6 +244,20 @@ public class CategoryController extends BaseController
 	}
 
 	/**
+	 * Find a Category with it's children populated.
+	 *
+	 * @param	id The id of the Category to find
+	 * @return	A list of CategoryVOs that are at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public CategoryVO findWithChildren(Integer id, Database db) throws SystemException
+	{
+		Category c = findById(id, db);
+		c.getValueObject().setChildren(findByParent(c.getId(), db));
+		return c.getValueObject();
+	}
+
+	/**
 	 * Find a List of Categories that have no parent.
 	 *
 	 * @return	A list of CategoryVOs that are at the root of the category tree
@@ -209,6 +266,17 @@ public class CategoryController extends BaseController
 	public List findRootCategories() throws SystemException
 	{
 		return executeQuery(findRootCategories);
+	}
+
+	/**
+	 * Find a List of Categories that have no parent.
+	 *
+	 * @return	A list of CategoryVOs that are at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public List findRootCategories(Database db) throws SystemException
+	{
+		return executeQuery(findRootCategories, db);
 	}
 
 	/**

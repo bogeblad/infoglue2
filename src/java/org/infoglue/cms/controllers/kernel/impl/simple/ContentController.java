@@ -81,6 +81,11 @@ public class ContentController extends BaseController
     	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId);
     } 
 
+	public ContentVO getContentVOWithId(Integer contentId, Database db) throws SystemException, Bug
+    {
+    	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId, db);
+    } 
+
 	public ContentVO getSmallContentVOWithId(Integer contentId, Database db) throws SystemException, Bug
     {
     	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId, db);

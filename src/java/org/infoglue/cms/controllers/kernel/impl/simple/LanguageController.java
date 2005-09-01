@@ -74,6 +74,15 @@ public class LanguageController extends BaseController
 	} 
 
 	/**
+	 * This method returns a specific LanguageVO object
+	 */
+	
+	public LanguageVO getLanguageVOWithId(Integer languageId, Database db) throws SystemException, Bug
+	{
+		return (LanguageVO)getVOWithId(LanguageImpl.class, languageId, db);
+	} 
+
+	/**
 	 * This method returns language with the languageCode sent in. 
 	 */
 	
@@ -163,6 +172,26 @@ public class LanguageController extends BaseController
 		}
 		
 		return language;		
+	}
+
+	/**
+	 * Returns the LanguageVO with the given languageCode.
+	 * 
+	 * @param code
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public LanguageVO getLanguageVOWithCode(String code, Database db) throws SystemException, Bug
+	{
+		LanguageVO languageVO = null;
+		
+		Language language = getLanguageWithCode(code, db);
+		if(language != null)
+			languageVO = language.getValueObject();
+		
+		return languageVO;	
 	}
 
 	/**
@@ -419,11 +448,16 @@ public class LanguageController extends BaseController
 		return languageList;
 	}
 
+    public List getLanguageVOList(Database db) throws SystemException, Bug
+    {
+        return getAllVOObjects(LanguageImpl.class, "languageId", db);
+    }
+
     public List getLanguageVOList() throws SystemException, Bug
     {
         return getAllVOObjects(LanguageImpl.class, "languageId");
     }
-    
+
 	/**
 	 * This method returns the master language. 
 	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
