@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.12 2005/09/01 14:02:32 mattias Exp $
+ * $Id: CategoryController.java,v 1.13 2005/09/01 14:11:39 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -253,7 +253,7 @@ public class CategoryController extends BaseController
 	public CategoryVO findWithChildren(Integer id, Database db) throws SystemException
 	{
 		Category c = findById(id, db);
-		c.getValueObject().setChildren(findByParent(c.getId(), db));
+		c.getValueObject().setChildren(toVOList(findByParent(c.getId(), db)));
 		return c.getValueObject();
 	}
 
