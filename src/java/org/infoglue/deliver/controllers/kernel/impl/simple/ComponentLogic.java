@@ -1018,14 +1018,12 @@ public class ComponentLogic
 				
 				    if(newParentSiteNodeVO == null)
 					{
-					    logger.info("before parentRepositoryId...");
 					    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
 					    logger.info("parentRepositoryId:" + parentRepositoryId);
 					    if(parentRepositoryId != null)
 					    {
 					        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
-						    //System.out.println("Found parentSiteNodeVO:" + newParentSiteNodeVO);
-					    }
+						}
 					}
 					
 					parentSiteNodeVO = newParentSiteNodeVO;
