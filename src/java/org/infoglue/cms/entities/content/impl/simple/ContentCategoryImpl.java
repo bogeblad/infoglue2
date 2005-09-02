@@ -43,6 +43,7 @@ public class ContentCategoryImpl implements ContentCategory
 {
     private ContentCategoryVO valueObject = new ContentCategoryVO();
     private CategoryImpl category;
+    private ContentVersionImpl contentVersion;
 
 	public ContentCategoryImpl()
 	{}
@@ -87,4 +88,14 @@ public class ContentCategoryImpl implements ContentCategory
 		valueObject.setCategory(c.getValueObject());
 	}
 
+    public ContentVersionImpl getContentVersion()
+    {
+        return contentVersion;
+    }
+    
+    public void setContentVersion(ContentVersionImpl contentVersion)
+    {
+        this.contentVersion = contentVersion;
+        valueObject.setContentVersionId(contentVersion.getContentVersionId());
+    }
 }

@@ -669,11 +669,13 @@ public class ContentVersionController extends BaseController
 		if (contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
 			throw new ConstraintException("ContentVersion.stateId", "3300");
 
+		contentCategoryController.deleteByContentVersion(contentVersion, db);
+
 		Content content = contentVersion.getOwningContent();
 
 		content.getContentVersions().remove(contentVersion);
+
 		db.remove(contentVersion);
-		contentCategoryController.deleteByContentVersion(contentVersion.getId(), db);
 	}
 	
 

@@ -1089,8 +1089,13 @@
 		<field name="attributeName" type="java.lang.String">
 			<sql name="attributeName" type="varchar" dirty="check" />
 		</field>
+		<!--
 		<field name="contentVersionId" type="java.lang.Integer">
 			<sql name="ContVerId" type="integer" dirty="check" />
+		</field>
+		-->
+		<field name="contentVersion" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl">
+		  <sql name="ContVerId"/>
 		</field>
 		<field name="category" type="org.infoglue.cms.entities.management.impl.simple.CategoryImpl">
 		  <sql name="categoryId"/>

@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.11 2005/09/01 15:54:33 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.12 2005/09/02 15:52:47 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -58,12 +58,12 @@ public class ContentCategoryController extends BaseController
 
 	private static final String findByContentVersion = new StringBuffer("SELECT c ")
 			.append("FROM org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl c ")
-			.append("WHERE c.contentVersionId = $1").toString();
+			.append("WHERE c.contentVersion.contentVersionId = $1").toString();
 
 	private static final String findByContentVersionAttribute = new StringBuffer("SELECT c ")
 			.append("FROM org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl c ")
 			.append("WHERE c.attributeName = $1 ")
-			.append("AND c.contentVersionId = $2")
+			.append("AND c.contentVersion.contentVersionId = $2")
 			.append("ORDER BY c.category.name").toString();
 
 	private static final String findByCategory = new StringBuffer("SELECT c ")
@@ -252,6 +252,7 @@ public class ContentCategoryController extends BaseController
 		ContentCategory contentCategory = new ContentCategoryImpl();
 		contentCategory.setValueObject(c);
 		contentCategory.setCategory((CategoryImpl)category);
+		contentCategory.setContentVersion((ContentVersionImpl)contentVersion);
 		db.create(contentCategory);
 		contentVersion.getContentCategories().add(contentCategory);
 		
@@ -274,11 +275,12 @@ public class ContentCategoryController extends BaseController
 			{
 			    CategoryVO categoryVO = (CategoryVO)categoryVOListIterator.next();
 				Category category = (Category)getObjectWithId(CategoryImpl.class, categoryVO.getId(), db);
+				ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionVO.getId(), db);
 				
 			    ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
 			    contentCategoryVO.setAttributeName(attributeName);
 			    contentCategoryVO.setContentVersionId(contentVersionVO.getId());
-			    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, db);
+			    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, contentVersion, db);
 					    
 			    contentCategoryVOList.add(contentCategory.getValueObject());
 			}
@@ -310,7 +312,7 @@ public class ContentCategoryController extends BaseController
 		    ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
 		    contentCategoryVO.setAttributeName(attributeName);
 		    contentCategoryVO.setContentVersionId(contentVersion.getId());
-		    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, db);
+		    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, contentVersion, db);
 			contentVersion.getContentCategories().add(contentCategory);
 				    
 		    contentCategoryList.add(contentCategory);
@@ -319,11 +321,12 @@ public class ContentCategoryController extends BaseController
 		return contentCategoryList;
 	}
 
-	public ContentCategory createWithDatabase(ContentCategoryVO c, Category category, Database db) throws SystemException, PersistenceException
+	public ContentCategory createWithDatabase(ContentCategoryVO c, Category category, ContentVersion contentVersion, Database db) throws SystemException, PersistenceException
 	{
 		ContentCategory contentCategory = new ContentCategoryImpl();
 		contentCategory.setValueObject(c);
 		contentCategory.setCategory((CategoryImpl)category);
+		contentCategory.setContentVersion((ContentVersionImpl)contentVersion);
 		db.create(contentCategory);
 		return contentCategory;
 	}
@@ -365,6 +368,22 @@ public class ContentCategoryController extends BaseController
 	public void deleteByContentVersion(Integer versionId) throws SystemException
 	{
 		delete(findByContentVersion(versionId));
+	}
+
+	/**
+	 * Deletes all ContentCategories for a particular ContentVersion
+	 * @param	versionId The id of the ContentCategory to delete
+	 * @throws	SystemException If an error happens
+	 */
+	public void deleteByContentVersion(ContentVersion contentVersion, Database db) throws SystemException, Exception
+	{
+	    Iterator contentVersionIterator = contentVersion.getContentCategories().iterator();
+	    while(contentVersionIterator.hasNext())
+	    {
+	        ContentCategory contentCategory = (ContentCategory)contentVersionIterator.next();
+	        db.remove(contentCategory);
+	        contentVersionIterator.remove();
+	    }
 	}
 
 	/**

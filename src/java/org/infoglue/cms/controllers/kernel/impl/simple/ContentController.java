@@ -248,7 +248,7 @@ public class ContentController extends BaseController
 	    
     public void delete(ContentVO contentVO) throws ConstraintException, SystemException
     {
-    	Database db = CastorDatabaseService.getDatabase();
+	    Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
 		try
         {		
