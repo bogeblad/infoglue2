@@ -59,7 +59,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.18 $ $Date: 2005/09/01 15:28:11 $
+ * @version $Revision: 1.19 $ $Date: 2005/09/02 07:28:32 $
  */
 public class WorkflowFacade
 {
@@ -71,7 +71,7 @@ public class WorkflowFacade
 	
 	/**
 	 * If the following attribute is specified in the workflow meta attributes,
-	 * then all actions will have access to a WorkflowDatabase instance controlled by this class. 
+	 * then all actions will have access to a DatabaseSession instance controlled by this class. 
 	 */
 	private static final String WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE = "org.infoglue.database";
 	
