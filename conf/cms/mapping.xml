@@ -894,7 +894,7 @@
       <sql many-key="contentVersionId" many-table="cmContentVersionDigitalAsset"/>
     </field>
     
-    <field name="contentCategories" type="org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl" lazy="true" collection="collection">
+    <field name="contentCategories" type="org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl" lazy="false" collection="collection">
       <sql many-key="contentVersionId" many-table="cmContentCategory"/>
     </field>
     
