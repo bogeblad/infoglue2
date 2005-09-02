@@ -15,11 +15,6 @@ public class ContentProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	public static final String TRANSIENT_VARS_VARIABLE = "content";
-	
-	/**
-	 * 
-	 */
 	public static final String RESULTSET_CONTENT_ID = ContentPopulator.PROPERTYSET_CONTENT_PREFIX + "contentID";
 	
 	
@@ -39,7 +34,7 @@ public class ContentProvider extends InfoglueFunction {
 			try {
 				final Integer contentID = new Integer(ps.getString(RESULTSET_CONTENT_ID));
 				final ContentVO content = ContentController.getContentController().getContentVOWithId(contentID, getDatabase());
-				transientVars.put(TRANSIENT_VARS_VARIABLE, content);
+				transientVars.put(ContentFunction.CONTENT_PARAMETER, content);
 			} catch(Exception e) {
 				getLogger().warn("Non-existing contentId found; removing from the resultset.");
 				ps.remove(RESULTSET_CONTENT_ID);

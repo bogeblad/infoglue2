@@ -16,7 +16,8 @@ public class ContentMover extends ContentFunction {
 	/**
 	 * 
 	 */
-	public static final String TRANSIENT_VARS_FOLDER_VARIABLE = "move.newParentFolder";
+	public static final String DESTINATION_PARAMETER = "move.newParentFolder";
+	
 	/**
 	 *
 	 */
@@ -27,7 +28,7 @@ public class ContentMover extends ContentFunction {
 	 */
 	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
 		if(getContentVO() != null) {
-			move((ContentVO) getParameter(transientVars, TRANSIENT_VARS_FOLDER_VARIABLE));
+			move((ContentVO) getParameter(transientVars, DESTINATION_PARAMETER));
 		}
 	}
 

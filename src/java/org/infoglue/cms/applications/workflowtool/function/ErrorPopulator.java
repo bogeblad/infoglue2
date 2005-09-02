@@ -3,7 +3,6 @@ package org.infoglue.cms.applications.workflowtool.function;
 import java.util.Locale;
 import java.util.Map;
 
-import org.infoglue.cms.applications.workflowtool.register.ContentType;
 import org.infoglue.cms.applications.workflowtool.util.ContentFactory;
 import org.infoglue.cms.applications.workflowtool.util.ContentValues;
 import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
@@ -16,7 +15,6 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
-
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
@@ -113,11 +111,11 @@ public class ErrorPopulator extends InfoglueFunction {
 	 */
 	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
 		super.initialize(transientVars, args, ps);
-		principal               = (InfoGluePrincipal)       getParameter(transientVars, PrincipalProvider.TRANSIENT_VARS_VARIABLE);
-		language                = (LanguageVO)              getParameter(transientVars, LanguageProvider.TRANSIENT_VARS_VARIABLE);
-		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(transientVars, ContentType.TRANSIENT_VARIABLE_VARIABLE);
-		contentValues           = (ContentValues)           getParameter(transientVars, ContentPopulator.TRANSIENT_VARS_CONTENT_VARIABLE);
-		contentVersionValues    = (ContentVersionValues)    getParameter(transientVars, ContentPopulator.TRANSIENT_VARS_CONTENT_VERSION_VARIABLE);
+		principal               = (InfoGluePrincipal)       getParameter(transientVars, PrincipalProvider.PRINCIPAL_PARAMETER);
+		language                = (LanguageVO)              getParameter(transientVars, LanguageProvider.LANGUAGE_PARAMETER);
+		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(transientVars, ContentTypeDefinitionProvider.CONTENT_TYPE_DEFINITION_PARAMETER);
+		contentValues           = (ContentValues)           getParameter(transientVars, ContentPopulator.CONTENT_VALUES_PARAMETER);
+		contentVersionValues    = (ContentVersionValues)    getParameter(transientVars, ContentPopulator.CONTENT_VERSION_VALUES_PARAMETER);
 		
 		locale = new RequestHelper(transientVars).getLocale();
 	}

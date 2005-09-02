@@ -38,7 +38,7 @@ public class ContentVersionTitlePopulator extends Populator {
 	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
 		super.initialize(transientVars, args, ps);
 		final String attributeName = (String) args.get(ARGUMENT_ATTRIBUTE_NAME);
-		final ContentVersionValues contentVersionValues = (ContentVersionValues) transientVars.get(ContentPopulator.TRANSIENT_VARS_CONTENT_VERSION_VARIABLE);
+		final ContentVersionValues contentVersionValues = (ContentVersionValues) transientVars.get(ContentPopulator.CONTENT_VERSION_VALUES_PARAMETER);
 		if(attributeName != null && contentVersionValues != null && contentVersionValues.contains(attributeName))
 			title = (String) contentVersionValues.get(attributeName);
 	}

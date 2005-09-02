@@ -16,7 +16,7 @@ public class LanguageProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	public static final String TRANSIENT_VARS_VARIABLE   = "language";
+	public static final String LANGUAGE_PARAMETER   = "language";
 
 	/**
 	 * 
@@ -70,7 +70,7 @@ public class LanguageProvider extends InfoglueFunction {
 		if(language == null && ps.exists(PROPERTYSET_LANGUAGE_ID))
 			ps.remove(PROPERTYSET_LANGUAGE_ID);
 		if(language != null) {
-			transientVars.put(TRANSIENT_VARS_VARIABLE, language);
+			transientVars.put(LANGUAGE_PARAMETER, language);
 			ps.setString(PROPERTYSET_LANGUAGE_ID, language.getId().toString());
 		}
 	}

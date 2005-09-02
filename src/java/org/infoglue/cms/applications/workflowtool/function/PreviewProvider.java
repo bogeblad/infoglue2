@@ -18,7 +18,7 @@ public class PreviewProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	public static final String TRANSIENT_VARS_SITENODE_VARIABLE = "previewSiteNode";
+	public static final String SITENODE_PARAMETER = "previewSiteNode";
 	
 	/**
 	 * 
@@ -63,8 +63,8 @@ public class PreviewProvider extends InfoglueFunction {
 	 */
 	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
 		super.initialize(transientVars, args, ps);
-		content         = (ContentVO)  getParameter(transientVars, ContentProvider.TRANSIENT_VARS_VARIABLE);
-		language        = (LanguageVO) getParameter(transientVars, LanguageProvider.TRANSIENT_VARS_VARIABLE);
-		previewSiteNode = (SiteNodeVO) getParameter(transientVars, TRANSIENT_VARS_SITENODE_VARIABLE);
+		content         = (ContentVO)  getParameter(transientVars, ContentFunction.CONTENT_PARAMETER);
+		language        = (LanguageVO) getParameter(transientVars, LanguageProvider.LANGUAGE_PARAMETER);
+		previewSiteNode = (SiteNodeVO) getParameter(transientVars, SITENODE_PARAMETER);
 	}
 }

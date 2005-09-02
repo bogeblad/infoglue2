@@ -14,6 +14,11 @@ public abstract class ContentFunction extends InfoglueFunction {
 	/**
 	 * 
 	 */
+	public static final String CONTENT_PARAMETER = "content";
+	
+	/**
+	 * 
+	 */
 	private ContentVO contentVO;
 
 	/**
@@ -31,6 +36,6 @@ public abstract class ContentFunction extends InfoglueFunction {
 	 */
 	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
 		super.initialize(transientVars, args, ps);
-		contentVO = (ContentVO) getParameter(transientVars, ContentProvider.TRANSIENT_VARS_VARIABLE, false);
+		contentVO = (ContentVO) getParameter(transientVars, CONTENT_PARAMETER, false);
 	}
 }

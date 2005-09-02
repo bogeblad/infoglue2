@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.infoglue.cms.applications.workflowtool.register.ContentType;
 import org.infoglue.cms.applications.workflowtool.util.ContentValues;
 import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
 import org.infoglue.cms.applications.workflowtool.util.PropertysetHelper;
@@ -33,12 +32,12 @@ public class ContentPopulator extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	public static final String TRANSIENT_VARS_CONTENT_VARIABLE = "contentAttributes";
+	public static final String CONTENT_VALUES_PARAMETER = "contentValues";
 
 	/**
 	 * 
 	 */
-	public static final String TRANSIENT_VARS_CONTENT_VERSION_VARIABLE = "contentVersionAttributes";
+	public static final String CONTENT_VERSION_VALUES_PARAMETER = "contentVersionValues";
 	
 	/**
 	 * 
@@ -60,7 +59,7 @@ public class ContentPopulator extends InfoglueFunction {
 	 */
 	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
 		super.initialize(transientVars, args, ps);
-		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(transientVars, ContentType.TRANSIENT_VARIABLE_VARIABLE);
+		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(transientVars, ContentTypeDefinitionProvider.CONTENT_TYPE_DEFINITION_PARAMETER);
 	}
 	
 	/**
@@ -73,7 +72,7 @@ public class ContentPopulator extends InfoglueFunction {
 		result.setPublishDateTime(populate(transientVars, ps, PROPERTYSET_CONTENT_PREFIX + ContentValues.PUBLISH_DATE_TIME));
 		result.setExpireDateTime(populate(transientVars, ps, PROPERTYSET_CONTENT_PREFIX + ContentValues.EXPIRE_DATE_TIME));
 
-		transientVars.put(TRANSIENT_VARS_CONTENT_VARIABLE, result);
+		transientVars.put(CONTENT_VALUES_PARAMETER, result);
 	}
 	
 	/**
@@ -86,7 +85,7 @@ public class ContentPopulator extends InfoglueFunction {
 			final ContentTypeAttribute attribute = (ContentTypeAttribute) i.next();
 			result.set(attribute.getName(), populate(transientVars, ps, PROPERTYSET_CONTENT_VERSION_PREFIX + attribute.getName()));
 		}
-		transientVars.put(TRANSIENT_VARS_CONTENT_VERSION_VARIABLE, result);
+		transientVars.put(CONTENT_VERSION_VALUES_PARAMETER, result);
 	}
 	
 	/**

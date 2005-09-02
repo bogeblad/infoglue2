@@ -13,7 +13,7 @@ public abstract class CategoryProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	public static final String TRANSIENT_VARS_VARIABLE = "categories";
+	public static final String CATEGORIES_PARAMETER = "categories";
 
 	/**
 	 * 
@@ -35,11 +35,11 @@ public abstract class CategoryProvider extends InfoglueFunction {
 	 * 
 	 */
 	protected void initializeTransientVars(final Map transientVars) throws WorkflowException {
-		if(transientVars.containsKey(TRANSIENT_VARS_VARIABLE))
-			categories = (Map) transientVars.get(TRANSIENT_VARS_VARIABLE);
+		if(transientVars.containsKey(CATEGORIES_PARAMETER))
+			categories = (Map) transientVars.get(CATEGORIES_PARAMETER);
 		else {
 			categories = new HashMap();
-			transientVars.put(TRANSIENT_VARS_VARIABLE, categories);
+			transientVars.put(CATEGORIES_PARAMETER, categories);
 		}
 	}
 

@@ -27,7 +27,7 @@ public abstract class InfoglueFunction implements FunctionProvider {
 	/**
 	 * 
 	 */
-	private static final String TRANSIENT_VARS_DB_VARIABLE = "db";
+	public static final String TRANSIENT_VARS_DB_VARIABLE = "db";
 
 	/**
 	 * 
@@ -46,10 +46,11 @@ public abstract class InfoglueFunction implements FunctionProvider {
 	 */
 	public final void execute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
 		try {
-			getLogger().debug(getClass().getName() + ".execute()");
+			getLogger().debug(getClass().getName() + ".execute()--------- START");
 			initializeWorkflowDatabase(transientVars);
 			initialize(transientVars, args, ps);
 			doExecute(transientVars, args, ps);
+			getLogger().debug(getClass().getName() + ".execute()--------- STOP");
 		} catch(WorkflowException e) {
 			getLogger().error(e);
 			setRollbackOnly();

@@ -15,7 +15,7 @@ public class PrincipalProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	public static final String TRANSIENT_VARS_VARIABLE = "principal";
+	public static final String PRINCIPAL_PARAMETER = "principal";
 
 	/**
 	 * 
@@ -38,7 +38,7 @@ public class PrincipalProvider extends InfoglueFunction {
 		try {
 			final String userName = (String) transientVars.get(PRINCIPAL_REQUEST_NAME);
 			final InfoGluePrincipal principal = UserControllerProxy.getController().getUser(userName);
-			transientVars.put(TRANSIENT_VARS_VARIABLE, principal);
+			transientVars.put(PRINCIPAL_PARAMETER, principal);
 		} catch(Exception e) {
 			e.printStackTrace();
 			throw new WorkflowException("PrincipalProvider.populate()" + e);

@@ -87,7 +87,7 @@ public class ContentPublisher extends ContentFunction {
 	 */
 	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
 		super.initialize(transientVars, args, ps);
-		principal = (InfoGluePrincipal) getParameter(transientVars, PrincipalProvider.TRANSIENT_VARS_VARIABLE);
-		language =  (LanguageVO)        getParameter(transientVars, LanguageProvider.TRANSIENT_VARS_VARIABLE);
+		principal = (InfoGluePrincipal) getParameter(transientVars, PrincipalProvider.PRINCIPAL_PARAMETER);
+		language =  (LanguageVO)        getParameter(transientVars, LanguageProvider.LANGUAGE_PARAMETER);
 	}
 }
