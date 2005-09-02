@@ -304,8 +304,9 @@ public class ContentController extends BaseController
 	
     private static void deleteRecursive(Content content, Iterator parentIterator, Database db) throws ConstraintException, SystemException, Exception
     {
-		//Content parent = content.getParentContent();
-		//Repository repository = content.getRepository();
+        List referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(content.getId(), db);
+		if(referenceBeanList != null && referenceBeanList.size() > 0)
+			throw new ConstraintException("ContentVersion.stateId", "3305");
 		
         Collection children = content.getChildren();
 		Iterator childrenIterator = children.iterator();

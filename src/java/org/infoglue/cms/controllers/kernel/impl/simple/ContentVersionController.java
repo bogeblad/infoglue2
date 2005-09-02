@@ -662,10 +662,6 @@ public class ContentVersionController extends BaseController
 	
  	public void delete(ContentVersion contentVersion, Database db) throws ConstraintException, SystemException, Exception
 	{
-		// Check if deleteable
-		// Initial thought was to only allow working copies to be deleted, but after checking
-		// rules for deleting content, the same rules is applied on this method for deleting
-		// a single contentVersion. TODO: Consider only deleting content that has working copies.
 		if (contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
 			throw new ConstraintException("ContentVersion.stateId", "3300");
 

@@ -133,14 +133,15 @@ public class RebuildRegistryAction extends InfoGlueAbstractAction
 			}
 						
 			db.commit();
-			db.close();
-
 		} 
 		catch (Exception e) 
 		{
 			getLogger().error("An error was found rebuilding the registry: " + e.getMessage(), e);
 			db.rollback();
-			db.close();
+		}
+		finally
+		{
+			db.close();    
 		}
 		
 		return "success";

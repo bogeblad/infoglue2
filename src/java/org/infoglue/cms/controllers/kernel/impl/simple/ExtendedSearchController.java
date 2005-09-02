@@ -25,6 +25,7 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * 
@@ -171,29 +172,30 @@ class SqlBuilder {
 	private static final String CONTENT_ALIAS                 = "c";
 	private static final String CONTENT_VERSION_ALIAS         = "cv";
 
-	//
-	private static final String CONTENT_TABLE                 = "cmCont";
-	//private static final String CONTENT_TABLE                 = "cmcontent";
-	private static final String CONTENT_VERSION_TABLE         = "cmContVer";
-	//private static final String CONTENT_VERSION_TABLE         = "cmcontentversion";
+	//Here is all the table names used for building the search query.
+	private static final String CONTENT_TABLE_SHORT           = "cmCont";
+	private static final String CONTENT_TABLE                 = "cmcontent";
+	private static final String CONTENT_VERSION_TABLE_SHORT   = "cmContVer";
+	private static final String CONTENT_VERSION_TABLE         = "cmcontentversion";
 	
 	//
 	private static final String CV_ACTIVE_CLAUSE              = CONTENT_VERSION_ALIAS + ".isActive=1";
 	private static final String CV_LANGUAGE_CLAUSE            = CONTENT_VERSION_ALIAS + ".languageId={0}";
 	//private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId={0}";
 	private static final String CV_STATE_CLAUSE               = CONTENT_VERSION_ALIAS + ".stateId>={0}";
-	private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".ContId=" + CONTENT_VERSION_ALIAS + ".ContId";
-	//private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".contentId=" + CONTENT_VERSION_ALIAS + ".contentId";
-	private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".ContVerId in (select max(ContVerId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.ContId=" + CONTENT_VERSION_ALIAS + ".ContId)";
-	//private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".contentVersionId in (select max(contentVersionId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.contentId=" + CONTENT_VERSION_ALIAS + ".contentId)";
+
+	private static final String CV_CONTENT_JOIN_SHORT         = CONTENT_ALIAS + ".ContId=" + CONTENT_VERSION_ALIAS + ".ContId";
+	private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".contentId=" + CONTENT_VERSION_ALIAS + ".contentId";
+	private static final String CV_LATEST_VERSION_CLAUSE_SHORT= CONTENT_VERSION_ALIAS + ".ContVerId in (select max(ContVerId) from " + CONTENT_VERSION_TABLE_SHORT + " cv2 where cv2.ContId=" + CONTENT_VERSION_ALIAS + ".ContId)";
+	private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".contentVersionId in (select max(contentVersionId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.contentId=" + CONTENT_VERSION_ALIAS + ".contentId)";
 	
-	//
-	private static final String C_CONTENT_TYPE_CLAUSE         = CONTENT_ALIAS + ".contentTypeDefId={0}";
-	//private static final String C_CONTENT_TYPE_CLAUSE         = CONTENT_ALIAS + ".contentTypeDefinitionId={0}";
+	private static final String C_CONTENT_TYPE_CLAUSE_SHORT   = CONTENT_ALIAS + ".contentTypeDefId={0}";
+	private static final String C_CONTENT_TYPE_CLAUSE         = CONTENT_ALIAS + ".contentTypeDefinitionId={0}";
 	
-	//
-	private static final String FREETEXT_EXPRESSION           = CONTENT_VERSION_ALIAS + ".VerValue like {0}";
-	//private static final String FREETEXT_EXPRESSION           = CONTENT_VERSION_ALIAS + ".versionValue like {0}";
+	private static final String FREETEXT_EXPRESSION_SHORT     = CONTENT_VERSION_ALIAS + ".VerValue like {0}";
+	private static final String FREETEXT_EXPRESSION           = CONTENT_VERSION_ALIAS + ".versionValue like {0}";
+
+
 	private static final String FREETEXT_EXPRESSION_VARIABLE  = "%<{0}><![CDATA[%{1}%]]></{0}>%";
 	
 	private final List contentTypeDefinitionVOs;
@@ -279,8 +281,8 @@ class SqlBuilder {
 	 */
 	private String generateFromClause() {
 		final List tables = new ArrayList();
-		tables.add(CONTENT_TABLE + SPACE + CONTENT_ALIAS);
-		tables.add(CONTENT_VERSION_TABLE + SPACE + CONTENT_VERSION_ALIAS);
+		tables.add(getCONTENT_TABLE() + SPACE + CONTENT_ALIAS);
+		tables.add(getCONTENT_VERSION_TABLE() + SPACE + CONTENT_VERSION_ALIAS);
 		tables.addAll(getCategoryTables());
 		
 		return FROM_KEYWORD + SPACE + joinCollection(tables, COMMA);
@@ -313,8 +315,8 @@ class SqlBuilder {
 		final List clauses = new ArrayList();
 
 		clauses.add(CV_ACTIVE_CLAUSE);
-		clauses.add(CV_LATEST_VERSION_CLAUSE);
-		clauses.add(CV_CONTENT_JOIN);
+		clauses.add(getCV_LATEST_VERSION_CLAUSE());
+		clauses.add(getCV_CONTENT_JOIN());
 		clauses.add(MessageFormat.format(CV_STATE_CLAUSE, new Object[] { getBindingVariable() }));
 		bindings.add(stateId);
 
@@ -334,7 +336,7 @@ class SqlBuilder {
 		if(contentTypeDefinitionVOs != null)
 			for(final Iterator i=contentTypeDefinitionVOs.iterator(); i.hasNext(); ) {
 				final ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO) i.next();
-				expressions.add(MessageFormat.format(C_CONTENT_TYPE_CLAUSE, new Object[] { getBindingVariable() }));
+				expressions.add(MessageFormat.format(getC_CONTENT_TYPE_CLAUSE(), new Object[] { getBindingVariable() }));
 				bindings.add(contentTypeDefinitionVO.getId());
 			}
 
@@ -359,7 +361,7 @@ class SqlBuilder {
 		if(xmlAttributes != null)
 			for(final Iterator i=xmlAttributes.iterator(); i.hasNext(); ) {
 				final String xmlAttribute = (String) i.next();
-				final String freeTextExpression = MessageFormat.format(FREETEXT_EXPRESSION, new Object[] { getBindingVariable() }); 
+				final String freeTextExpression = MessageFormat.format(getFREETEXT_EXPRESSION(), new Object[] { getBindingVariable() }); 
 				final String freeTextVariable   = MessageFormat.format(FREETEXT_EXPRESSION_VARIABLE, new Object[] { xmlAttribute, freetext }); 
 			
 				bindings.add(freeTextVariable);
@@ -396,4 +398,44 @@ class SqlBuilder {
 	private String getBindingVariable() {
 		return "$" + (bindings.size() + 1);
 	}
+	
+	private static Boolean useFull = null;
+    private static boolean useFull()
+    {
+        if(useFull == null)
+        {
+            String useShortTableNames = CmsPropertyHandler.getProperty("useShortTableNames");
+            if(useShortTableNames == null || !useShortTableNames.equalsIgnoreCase("true"))
+                useFull = new Boolean(true);
+            else
+                useFull = new Boolean(false);    
+        }
+        
+        return useFull.booleanValue();
+    }
+	
+	public static String getCONTENT_TABLE()
+    {
+        return (useFull()) ? CONTENT_TABLE : CONTENT_TABLE_SHORT;
+    }
+    public static String getCONTENT_VERSION_TABLE()
+    {
+        return (useFull()) ? CONTENT_VERSION_TABLE : CONTENT_VERSION_TABLE_SHORT;
+    }
+    public static String getC_CONTENT_TYPE_CLAUSE()
+    {
+        return (useFull()) ? C_CONTENT_TYPE_CLAUSE : C_CONTENT_TYPE_CLAUSE_SHORT;
+    }
+    public static String getCV_CONTENT_JOIN()
+    {
+        return (useFull()) ? CV_CONTENT_JOIN : CV_CONTENT_JOIN_SHORT;
+    }
+    public static String getCV_LATEST_VERSION_CLAUSE()
+    {
+        return (useFull()) ? CV_LATEST_VERSION_CLAUSE : CV_LATEST_VERSION_CLAUSE_SHORT;
+    }
+    public static String getFREETEXT_EXPRESSION()
+    {
+        return (useFull()) ? FREETEXT_EXPRESSION : FREETEXT_EXPRESSION_SHORT;
+    }
 }

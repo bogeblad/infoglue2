@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.19 2005/09/02 10:01:30 mattias Exp $
+ * $Id: RegistryController.java,v 1.20 2005/09/02 22:36:46 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -651,6 +651,9 @@ public class RegistryController extends BaseController
 		{
 			beginTransaction(db);
 			
+			referenceBeanList = getReferencingObjectsForContent(contentId, db);
+			
+			/*
 			Map entries = new HashMap();
 			
 	        List registryEntires = getMatchingRegistryVOList(Content.class.getName(), contentId.toString(), db);
@@ -743,7 +746,7 @@ public class RegistryController extends BaseController
 	            ReferenceBean referenceBean = (ReferenceBean)i.next();
 	            if(referenceBean.getVersions().size() == 0)
 	                i.remove();
-	        }
+	        }*/
 	    
 	        commitTransaction(db);
 		}
@@ -760,6 +763,109 @@ public class RegistryController extends BaseController
         return referenceBeanList;
     }
 
+	public List getReferencingObjectsForContent(Integer contentId, Database db) throws SystemException, Exception
+    {
+		
+        List referenceBeanList = new ArrayList();
+
+        Map entries = new HashMap();
+		
+        List registryEntires = getMatchingRegistryVOList(Content.class.getName(), contentId.toString(), db);
+        getLogger().info("registryEntires:" + registryEntires.size());
+        Iterator registryEntiresIterator = registryEntires.iterator();
+        while(registryEntiresIterator.hasNext())
+        {
+            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
+            getLogger().info("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
+            boolean add = true;
+            
+            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
+            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
+            ReferenceBean existingReferenceBean = (ReferenceBean)entries.get(key);
+            if(existingReferenceBean == null)
+            {
+                
+                existingReferenceBean = new ReferenceBean();
+	            getLogger().info("Adding referenceBean to entries with key:" + key);
+	            entries.put(key, existingReferenceBean);
+	            referenceBeanList.add(existingReferenceBean);
+	        }
+
+            ReferenceVersionBean referenceVersionBean = new ReferenceVersionBean();
+            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
+            {
+                try
+                {
+                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+		    		getLogger().info("contentVersion:" + contentVersion.getContentVersionId());
+		    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
+		    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
+		    		
+		    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
+		    		referenceVersionBean.getRegistryVOList().add(registryVO);
+                }
+                catch(Exception e)
+                {
+                    add = false;
+                    getLogger().info("content:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
+                }
+            }
+            else
+            {
+                try
+                {
+	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+		    		getLogger().info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+		    		getLogger().info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
+		    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
+		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
+
+		    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
+		    		referenceVersionBean.getRegistryVOList().add(registryVO);
+                }
+                catch(Exception e)
+                {
+                    add = false;
+                    getLogger().info("siteNode:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
+                }
+            }
+            
+            if(add)
+            {
+                boolean exists = false;
+                ReferenceVersionBean existingReferenceVersionBean = null;
+	            Iterator versionsIterator = existingReferenceBean.getVersions().iterator();
+	            while(versionsIterator.hasNext())
+	            {
+	                existingReferenceVersionBean = (ReferenceVersionBean)versionsIterator.next();
+	                if(existingReferenceVersionBean.getReferencingObject().equals(referenceVersionBean.getReferencingObject()))
+	                {
+	                    exists = true;
+	                    break;
+	                }
+	            }
+
+	            if(!exists)
+	                existingReferenceBean.getVersions().add(referenceVersionBean);
+	            else
+	                existingReferenceVersionBean.getRegistryVOList().add(registryVO);
+
+            }
+            
+        }
+        
+        Iterator i = referenceBeanList.iterator();
+        while(i.hasNext())
+        {
+            ReferenceBean referenceBean = (ReferenceBean)i.next();
+            if(referenceBean.getVersions().size() == 0)
+                i.remove();
+        }
+	    
+		getLogger().info("referenceBeanList:" + referenceBeanList.size());
+		
+        return referenceBeanList;
+    }
     
     
     /**
@@ -836,7 +942,7 @@ public class RegistryController extends BaseController
         return referenceBeanList;
     }
     */
-    
+
     public List getReferencingObjectsForSiteNode(Integer siteNodeId) throws SystemException, Exception
     {
         List referenceBeanList = new ArrayList();
@@ -846,107 +952,116 @@ public class RegistryController extends BaseController
 		try 
 		{
 			beginTransaction(db);
-			
-			Map entries = new HashMap();
-			
-			List registryEntires = getMatchingRegistryVOList(SiteNode.class.getName(), siteNodeId.toString(), db);
-	        Iterator registryEntiresIterator = registryEntires.iterator();
-	        while(registryEntiresIterator.hasNext())
-	        {
-	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
-	            getLogger().info("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
-	            boolean add = true;
 
-	            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
-	            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
-	            ReferenceBean existingReferenceBean = (ReferenceBean)entries.get(key);
-	            if(existingReferenceBean == null)
-	            {
-	                existingReferenceBean = new ReferenceBean();
-		            getLogger().info("Adding referenceBean to entries with key:" + key);
-		            entries.put(key, existingReferenceBean);
-		            referenceBeanList.add(existingReferenceBean);
-		        }
+		    referenceBeanList = getReferencingObjectsForSiteNode(siteNodeId, db);
 
-	            ReferenceVersionBean referenceVersionBean = new ReferenceVersionBean();
-	            
-	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
-	            {
-	                try
-	                {
-	                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-			    		getLogger().info("contentVersion:" + contentVersion.getContentVersionId());
-			    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
-			    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
-			    		
-			    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
-			    		referenceVersionBean.getRegistryVOList().add(registryVO);
-	                }
-	                catch(Exception e)
-	                {
-	                    add = false;
-	                    getLogger().info("content:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
-	                }
-	            }
-	            else
-	            {
-	                try
-	                {
-		                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-			    		getLogger().info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
-			    		getLogger().info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
-			    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
-			    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
-	
-			    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
-			    		referenceVersionBean.getRegistryVOList().add(registryVO);
-	                }
-	                catch(Exception e)
-	                {
-	                    add = false;
-	                    getLogger().info("siteNode:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
-	                }
-	            }
-	               
-	            if(add)
-	            {
-		            boolean exists = false;
-		            ReferenceVersionBean existingReferenceVersionBean = null;
-		            Iterator versionsIterator = existingReferenceBean.getVersions().iterator();
-		            while(versionsIterator.hasNext())
-		            {
-		                existingReferenceVersionBean = (ReferenceVersionBean)versionsIterator.next();
-		                if(existingReferenceVersionBean.getReferencingObject().equals(referenceVersionBean.getReferencingObject()))
-		                {
-		                    exists = true;
-		                    break;
-		                }
-		            }
-		            
-		            if(!exists)
-		                existingReferenceBean.getVersions().add(referenceVersionBean);
-		            else
-		                existingReferenceVersionBean.getRegistryVOList().add(registryVO);
-		        }
-	        }
-	        
-	        Iterator i = referenceBeanList.iterator();
-	        while(i.hasNext())
-	        {
-	            ReferenceBean referenceBean = (ReferenceBean)i.next();
-	            if(referenceBean.getVersions().size() == 0)
-	                i.remove();
-	        }
-
-	        commitTransaction(db);
+		    commitTransaction(db);
 		}
 		catch (Exception e)		
 		{
 		    e.printStackTrace();
 		    getLogger().warn("One of the references was not found which is bad but not critical:" + e.getMessage(), e);
 		    rollbackTransaction(db);
-			//throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
 		}
+		
+        return referenceBeanList;
+    }
+
+		    
+    public List getReferencingObjectsForSiteNode(Integer siteNodeId, Database db) throws SystemException, Exception
+    {
+        List referenceBeanList = new ArrayList();
+        
+		Map entries = new HashMap();
+		
+		List registryEntires = getMatchingRegistryVOList(SiteNode.class.getName(), siteNodeId.toString(), db);
+        Iterator registryEntiresIterator = registryEntires.iterator();
+        while(registryEntiresIterator.hasNext())
+        {
+            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
+            getLogger().info("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
+            boolean add = true;
+
+            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
+            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
+            ReferenceBean existingReferenceBean = (ReferenceBean)entries.get(key);
+            if(existingReferenceBean == null)
+            {
+                existingReferenceBean = new ReferenceBean();
+	            getLogger().info("Adding referenceBean to entries with key:" + key);
+	            entries.put(key, existingReferenceBean);
+	            referenceBeanList.add(existingReferenceBean);
+	        }
+
+            ReferenceVersionBean referenceVersionBean = new ReferenceVersionBean();
+            
+            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
+            {
+                try
+                {
+                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+		    		getLogger().info("contentVersion:" + contentVersion.getContentVersionId());
+		    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
+		    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
+		    		
+		    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
+		    		referenceVersionBean.getRegistryVOList().add(registryVO);
+                }
+                catch(Exception e)
+                {
+                    add = false;
+                    getLogger().info("content:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
+                }
+            }
+            else
+            {
+                try
+                {
+	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+		    		getLogger().info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+		    		getLogger().info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
+		    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
+		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
+
+		    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
+		    		referenceVersionBean.getRegistryVOList().add(registryVO);
+                }
+                catch(Exception e)
+                {
+                    add = false;
+                    getLogger().info("siteNode:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
+                }
+            }
+               
+            if(add)
+            {
+	            boolean exists = false;
+	            ReferenceVersionBean existingReferenceVersionBean = null;
+	            Iterator versionsIterator = existingReferenceBean.getVersions().iterator();
+	            while(versionsIterator.hasNext())
+	            {
+	                existingReferenceVersionBean = (ReferenceVersionBean)versionsIterator.next();
+	                if(existingReferenceVersionBean.getReferencingObject().equals(referenceVersionBean.getReferencingObject()))
+	                {
+	                    exists = true;
+	                    break;
+	                }
+	            }
+	            
+	            if(!exists)
+	                existingReferenceBean.getVersions().add(referenceVersionBean);
+	            else
+	                existingReferenceVersionBean.getRegistryVOList().add(registryVO);
+	        }
+        }
+        
+        Iterator i = referenceBeanList.iterator();
+        while(i.hasNext())
+        {
+            ReferenceBean referenceBean = (ReferenceBean)i.next();
+            if(referenceBean.getVersions().size() == 0)
+                i.remove();
+        }
 		
         return referenceBeanList;
     }
@@ -1029,11 +1144,110 @@ public class RegistryController extends BaseController
 		return matchingRegistryVOList;		
 	}
 	
+
+	/**
+	 * Gets matching references
+	 */
 	
+	public void clearRegistryForReferencedEntity(String entityName, String entityId) throws SystemException, Exception
+	{
+	    Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.entityName = $1 AND r.entityId = $2 ORDER BY r.registryId");
+			oql.bind(entityName);
+			oql.bind(entityId);
+					
+			QueryResults results = oql.execute();
+			
+			while (results.hasMore()) 
+	        {
+	            Registry registry = (Registry)results.next();
+	            db.remove(registry);
+	        }
+		    
+	        commitTransaction(db);
+		}
+		catch (Exception e)		
+		{
+		    getLogger().warn("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
+		}
+	}
+
+	/**
+	 * Gets matching references
+	 */
+	
+	public void clearRegistryForReferencingEntityCompletingName(String entityCompletingName, String entityCompletingId) throws SystemException, Exception
+	{
+	    Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityCompletingName = $1 AND r.referencingEntityCompletingId = $2 ORDER BY r.registryId");
+			oql.bind(entityCompletingName);
+			oql.bind(entityCompletingId);
+					
+			QueryResults results = oql.execute();
+			
+			while (results.hasMore()) 
+	        {
+	            Registry registry = (Registry)results.next();
+	            db.remove(registry);
+	        }
+		    
+	        commitTransaction(db);
+		}
+		catch (Exception e)		
+		{
+		    getLogger().warn("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
+		}
+	}
+
+	/**
+	 * Gets matching references
+	 */
+	
+	public void clearRegistryForReferencingEntityName(String entityName, String entityId) throws SystemException, Exception
+	{
+	    Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
+			oql.bind(entityName);
+			oql.bind(entityId);
+					
+			QueryResults results = oql.execute();
+			
+			while (results.hasMore()) 
+	        {
+	            Registry registry = (Registry)results.next();
+	            db.remove(registry);
+	        }
+		    
+	        commitTransaction(db);
+		}
+		catch (Exception e)		
+		{
+		    getLogger().warn("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
+		}
+	}
+
 	/**
 	 * Clears all references to a entity
 	 */
-	
+/*
 	public void clearRegistryForReferencedEntity(String entityName, String entityId) throws SystemException, Exception
 	{
 	    Database db = CastorDatabaseService.getDatabase();
@@ -1045,7 +1259,6 @@ public class RegistryController extends BaseController
 			OQLQuery oql = db.getOQLQuery("DELETE FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.entityName = $1 AND r.entityId = $2");
 			oql.bind(entityName);
 			oql.bind(entityId);
-			
 			QueryResults results = oql.execute();		
 		    
 	        commitTransaction(db);
@@ -1056,6 +1269,7 @@ public class RegistryController extends BaseController
 		    rollbackTransaction(db);
 		}
 	}
+*/
 	
 	/**
 	 * Gets siteNodeVersions which uses the metainfo
