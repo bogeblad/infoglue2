@@ -40,6 +40,7 @@ public class DatabaseSession {
 	public Database getDB() throws WorkflowException {
 		if(db == null) {
 		    try {
+				logger.debug("Creating a new database");
 				db = CastorDatabaseService.getDatabase();
 				db.begin();
 		    } catch(Exception e) {
@@ -56,6 +57,7 @@ public class DatabaseSession {
 	public void releaseDB() throws WorkflowException {
 		logger.debug("WorkflowDatabase.releaseDB()");
 		if(db != null && db.isActive()) {
+			logger.debug("releaseDB : " + (rollbackOnly ? "rollback" : "commit"));
 			if(rollbackOnly)
 				rollback();
 			else
@@ -67,7 +69,7 @@ public class DatabaseSession {
 	 * 
 	 */
 	private void rollback() throws WorkflowException {
-		logger.debug("WorkflowDatabase.rollback()");
+		logger.debug("rollback()");
 		try {
 			db.rollback();
 			db.close();
@@ -81,7 +83,7 @@ public class DatabaseSession {
 	 * 
 	 */
 	private void commit() throws WorkflowException {
-		logger.debug("WorkflowDatabase.commit()");
+		logger.debug("commit()");
 		try {
 			db.commit();
 			db.close();
