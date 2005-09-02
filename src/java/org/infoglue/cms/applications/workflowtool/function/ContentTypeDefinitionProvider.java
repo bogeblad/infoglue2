@@ -18,7 +18,7 @@ public class ContentTypeDefinitionProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	private static final String ARGUMENT_CONTENT_TYPE_NAME = "contentTypeName";
+	private static final String ARGUMENT_CONTENT_TYPE_NAME = "contentTypeDefinitionName";
 
 	/**
 	 * 
