@@ -107,11 +107,11 @@
 
 
 <div id="workflows" style="position:absolute; left:20px; top:20px; width:350px; height:200px; z-index:1">
-	<table tableborder="0" border="0" bgcolor="#666666" width="70%" cellpadding="1" cellspacing="0">
+	<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
 	<tr>
 		<td>
 			#set($lvConstraint = 0)
-			#lvHead(["Ongoing&nbsp;workflows", "Action"] "" "" "" "")
+			#lvHead(["", "Ongoing&nbsp;workflows", "Action"] "" "" "" "")
 			#set($cnt = 0)
 			#set($quote = '"')
 			#foreach ($workflowVO in $currentWorkflowVOList)
@@ -126,21 +126,21 @@
 					#set($action = "$!action <a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $viewGlobalAction);'><img src='$iconUrl' border='0' width='15' height='15' alt='$workflowActionVO.getName()'/></a>")
 				#end
 
-				#set($view = "$quote$workflowVO.getView()$quote")
+				#set($view = "$quote$workflowVO.getView()$quote")				
+				#if($workflowVO.getTitle())
+				  	#set($fullTitle = "$workflowVO.getName() - $workflowVO.getTitle()")
+				#else
+					#set($fullTitle = "$workflowVO.getName()")
+				#end
 				
-#if($workflowVO.getTitle())
-  #set($fullTitle = "$workflowVO.getName() - $workflowVO.getTitle()")
-#else
-																  #set($fullTitle = "$workflowVO.getName()")
-						#end
 
-				#set($row = ["<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'>$fullTitle</a>", "$!action"])
+				#set($row = ["<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'>$fullTitle</a>", "$!action"])
 				#set($cnt = $cnt + 1)
 				#lvAddRow($row $cnt "$workflowVO.getWorkflowId()")
 			#end
 
 			#if($cnt == 0)
-				#set($row = ["There are no active workflows", ""])
+				#set($row = ["", "There are no active workflows", ""])
 				#lvAddRow($row $cnt "")
 			#end
 
@@ -150,7 +150,7 @@
 	</tr>
 	</table>
 	<br>
-	<table tableborder="0" border="0" bgcolor="#666666" width="70%" cellpadding="1" cellspacing="0">
+	<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
 	<tr>
 		<td>
 			#set($lvConstraint = 0)
@@ -176,7 +176,7 @@
 	</table>
 </div>
 
-<div id="tasks" style="position:absolute; left:350px; top:20px; right: 20px; awidth:700px; height:200px; z-index:2">
+<div id="tasks" style="position:absolute; left:380px; top:20px; right: 20px; awidth:700px; height:200px; z-index:2">
 	<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
 	<tr>
 		<td>

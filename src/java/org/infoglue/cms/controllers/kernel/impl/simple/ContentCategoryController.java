@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.12 2005/09/02 15:52:47 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.13 2005/09/02 16:40:13 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -381,8 +381,8 @@ public class ContentCategoryController extends BaseController
 	    while(contentVersionIterator.hasNext())
 	    {
 	        ContentCategory contentCategory = (ContentCategory)contentVersionIterator.next();
-	        db.remove(contentCategory);
 	        contentVersionIterator.remove();
+	        db.remove(contentCategory);
 	    }
 	}
 
