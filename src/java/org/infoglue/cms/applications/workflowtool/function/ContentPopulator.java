@@ -1,6 +1,5 @@
 package org.infoglue.cms.applications.workflowtool.function;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.infoglue.cms.applications.workflowtool.util.TransientVarsHelper;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
@@ -53,7 +51,8 @@ public class ContentPopulator extends InfoglueFunction {
 	 * 
 	 */
 	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		populate(transientVars, ps);
+		populateContentValues(transientVars, ps);
+		populateContentVersionValues(transientVars, ps);
 	}
 
 	/**
@@ -67,32 +66,16 @@ public class ContentPopulator extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	private void populate(Map transientVars, PropertySet ps) throws WorkflowException {
-		populateContentValues(transientVars, ps);
-		populateContentVersionValues(transientVars, ps);
-	}
-
-	/**
-	 * 
-	 */
-	protected void populateContentValues(Map transientVars, PropertySet ps) throws WorkflowException {
+	protected void populateContentValues(final Map transientVars, final PropertySet ps) throws WorkflowException {
 		final ContentValues result = new ContentValues();
 		
-		final String publishDate = TransientVarsHelper.getRequestValue(transientVars, PROPERTYSET_CONTENT_PREFIX + ContentValues.PUBLISH_DATE_TIME);
-		final String expireDate  = TransientVarsHelper.getRequestValue(transientVars, PROPERTYSET_CONTENT_PREFIX + ContentValues.EXPIRE_DATE_TIME);
-		final String name        = TransientVarsHelper.getRequestValue(transientVars, PROPERTYSET_CONTENT_PREFIX + ContentValues.NAME);
-		
-		result.setName(name);
-		result.setPublishDateTime(publishDate);
-		result.setExpireDateTime(expireDate);
-
-		populatePropertySet(ps, PROPERTYSET_CONTENT_PREFIX + ContentValues.PUBLISH_DATE_TIME, publishDate);
-		populatePropertySet(ps, PROPERTYSET_CONTENT_PREFIX + ContentValues.EXPIRE_DATE_TIME,  expireDate);
-		populatePropertySet(ps, PROPERTYSET_CONTENT_PREFIX + ContentValues.NAME,  name);
+		result.setName(populate(transientVars, ps, PROPERTYSET_CONTENT_PREFIX + ContentValues.NAME));
+		result.setPublishDateTime(populate(transientVars, ps, PROPERTYSET_CONTENT_PREFIX + ContentValues.PUBLISH_DATE_TIME));
+		result.setExpireDateTime(populate(transientVars, ps, PROPERTYSET_CONTENT_PREFIX + ContentValues.EXPIRE_DATE_TIME));
 
 		transientVars.put(TRANSIENT_VARS_CONTENT_VARIABLE, result);
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -101,12 +84,7 @@ public class ContentPopulator extends InfoglueFunction {
 		final List contentTypeAttributes = getContentTypeAttributes();
 		for(Iterator i=contentTypeAttributes.iterator(); i.hasNext(); ) {
 			final ContentTypeAttribute attribute = (ContentTypeAttribute) i.next();
-
-			final String name  = PROPERTYSET_CONTENT_VERSION_PREFIX + attribute.getName();
-			final String value = TransientVarsHelper.getRequestValue(transientVars, name);
-			populatePropertySet(ps, name, value);
-			if(value != null)
-				result.set(attribute.getName(), value);
+			result.set(attribute.getName(), populate(transientVars, ps, PROPERTYSET_CONTENT_VERSION_PREFIX + attribute.getName()));
 		}
 		transientVars.put(TRANSIENT_VARS_CONTENT_VERSION_VARIABLE, result);
 	}
@@ -114,20 +92,15 @@ public class ContentPopulator extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	private void populatePropertySet(PropertySet ps, String name, String value) throws WorkflowException {
-		if(value != null)
-			new PropertysetHelper(ps).setData(name, value);
-		else if(ps.exists(name)) 
-			ps.remove(name);
+	private String populate(final Map transientVars, final PropertySet ps, final String name) throws WorkflowException {
+		final PropertysetHelper psHelper = new PropertysetHelper(ps);
+		if(transientVars.containsKey(name)) {
+			psHelper.setData(name, TransientVarsHelper.getRequestValue(transientVars, name));
+			getLogger().debug(name + " is found in the request; propertyset updated.");
+		} else
+			getLogger().debug(name + " is not found in the request; propertyset not updated.");
+		return ps.exists(name) ? psHelper.getData(name) : "";
 	}
-
-	/**
-	 * 
-	 */
-	private void populatePropertySet(PropertySet ps, String name, Date value) throws WorkflowException {
-		populatePropertySet(ps, name, (value == null) ? null : value.toString());
-	}
-
 	/**
 	 * 
 	 */

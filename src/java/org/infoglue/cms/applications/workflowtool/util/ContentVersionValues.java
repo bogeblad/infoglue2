@@ -27,7 +27,7 @@ public class ContentVersionValues {
 	/**
 	 * 
 	 */
-	public void set(final String name, final String value) { values.put(name, value); }
+	public void set(final String name, final String value) { values.put(name, value == null ? "" : value); }
 
 	/**
 	 * 
