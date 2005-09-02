@@ -116,7 +116,6 @@ public class ContentVersionController extends BaseController
 	{
 		// Get the versions of this content.
 		resultList.addAll(getLatestContentVersionVOWithParent(contentId, stateId));
-		
 		// Get the children of this content and do the recursion
 		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId);
 		Iterator cit = childContentList.iterator();
@@ -322,11 +321,13 @@ public class ContentVersionController extends BaseController
 			getLogger().info("contentVersion:" + contentVersion.getValueObject().getContentName());
 			if(contentVersion.getIsActive().booleanValue())
 			{
-				if ( (contentVersion.getStateId().compareTo(stateId)==0) && 
-				(!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
+				if ( (contentVersion.getStateId().compareTo(stateId)==0) && (!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
+				{
+				    System.out.println("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
 					resultList.add(contentVersion);
+					langCheck.add(contentVersion.getLanguage().getLanguageId());
+				}
 
-				langCheck.add(contentVersion.getLanguage().getLanguageId());
 			}
 		}
     	

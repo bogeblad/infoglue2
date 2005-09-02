@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.18 2005/07/10 21:04:34 mattias Exp $
+ * $Id: RegistryController.java,v 1.19 2005/09/02 10:01:30 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -642,6 +642,7 @@ public class RegistryController extends BaseController
     
 	public List getReferencingObjectsForContent(Integer contentId) throws SystemException
     {
+		
         List referenceBeanList = new ArrayList();
         
 		Database db = CastorDatabaseService.getDatabase();
@@ -659,12 +660,14 @@ public class RegistryController extends BaseController
 	        {
 	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
 	            getLogger().info("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
+	            boolean add = true;
 	            
 	            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
 	            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
 	            ReferenceBean existingReferenceBean = (ReferenceBean)entries.get(key);
 	            if(existingReferenceBean == null)
 	            {
+	                
 	                existingReferenceBean = new ReferenceBean();
 		            getLogger().info("Adding referenceBean to entries with key:" + key);
 		            entries.put(key, existingReferenceBean);
@@ -672,48 +675,76 @@ public class RegistryController extends BaseController
 		        }
 
 	            ReferenceVersionBean referenceVersionBean = new ReferenceVersionBean();
-	            
 	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
 	            {
-                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		getLogger().info("contentVersion:" + contentVersion.getContentVersionId());
-		    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
-		    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
-		    		
-		    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
-		    		referenceVersionBean.getRegistryVOList().add(registryVO);
+	                try
+	                {
+	                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+			    		getLogger().info("contentVersion:" + contentVersion.getContentVersionId());
+			    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
+			    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
+			    		
+			    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
+			    		referenceVersionBean.getRegistryVOList().add(registryVO);
+	                }
+	                catch(Exception e)
+	                {
+	                    add = false;
+	                    getLogger().info("content:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
+	                }
 	            }
 	            else
 	            {
-	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		getLogger().info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
-		    		getLogger().info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
-		    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
-		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
-
-		    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
-		    		referenceVersionBean.getRegistryVOList().add(registryVO);
-	            }
-	               
-	            boolean exists = false;
-	            ReferenceVersionBean existingReferenceVersionBean = null;
-	            Iterator versionsIterator = existingReferenceBean.getVersions().iterator();
-	            while(versionsIterator.hasNext())
-	            {
-	                existingReferenceVersionBean = (ReferenceVersionBean)versionsIterator.next();
-	                if(existingReferenceVersionBean.getReferencingObject().equals(referenceVersionBean.getReferencingObject()))
+	                try
 	                {
-	                    exists = true;
-	                    break;
+		                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+			    		getLogger().info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+			    		getLogger().info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
+			    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
+			    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
+	
+			    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
+			    		referenceVersionBean.getRegistryVOList().add(registryVO);
+	                }
+	                catch(Exception e)
+	                {
+	                    add = false;
+	                    getLogger().info("siteNode:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
 	                }
 	            }
 	            
-	            if(!exists)
-	                existingReferenceBean.getVersions().add(referenceVersionBean);
-	            else
-	                existingReferenceVersionBean.getRegistryVOList().add(registryVO);
+	            if(add)
+	            {
+	                boolean exists = false;
+	                ReferenceVersionBean existingReferenceVersionBean = null;
+		            Iterator versionsIterator = existingReferenceBean.getVersions().iterator();
+		            while(versionsIterator.hasNext())
+		            {
+		                existingReferenceVersionBean = (ReferenceVersionBean)versionsIterator.next();
+		                if(existingReferenceVersionBean.getReferencingObject().equals(referenceVersionBean.getReferencingObject()))
+		                {
+		                    exists = true;
+		                    break;
+		                }
+		            }
+
+		            if(!exists)
+		                existingReferenceBean.getVersions().add(referenceVersionBean);
+		            else
+		                existingReferenceVersionBean.getRegistryVOList().add(registryVO);
+
+	            }
+	            
 	        }
 	        
+	        Iterator i = referenceBeanList.iterator();
+	        while(i.hasNext())
+	        {
+	            ReferenceBean referenceBean = (ReferenceBean)i.next();
+	            if(referenceBean.getVersions().size() == 0)
+	                i.remove();
+	        }
+	    
 	        commitTransaction(db);
 		}
 		catch (Exception e)		
@@ -824,7 +855,8 @@ public class RegistryController extends BaseController
 	        {
 	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
 	            getLogger().info("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
-	     
+	            boolean add = true;
+
 	            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
 	            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
 	            ReferenceBean existingReferenceBean = (ReferenceBean)entries.get(key);
@@ -840,45 +872,72 @@ public class RegistryController extends BaseController
 	            
 	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
 	            {
-                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		getLogger().info("contentVersion:" + contentVersion.getContentVersionId());
-		    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
-		    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
-		    		
-		    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
-		    		referenceVersionBean.getRegistryVOList().add(registryVO);
-	            }
-	            else
-	            {
-	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		getLogger().info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
-		    		getLogger().info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
-		    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
-		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
-
-		    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
-		    		referenceVersionBean.getRegistryVOList().add(registryVO);
-	            }
-	               
-	            boolean exists = false;
-	            ReferenceVersionBean existingReferenceVersionBean = null;
-	            Iterator versionsIterator = existingReferenceBean.getVersions().iterator();
-	            while(versionsIterator.hasNext())
-	            {
-	                existingReferenceVersionBean = (ReferenceVersionBean)versionsIterator.next();
-	                if(existingReferenceVersionBean.getReferencingObject().equals(referenceVersionBean.getReferencingObject()))
+	                try
 	                {
-	                    exists = true;
-	                    break;
+	                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+			    		getLogger().info("contentVersion:" + contentVersion.getContentVersionId());
+			    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
+			    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
+			    		
+			    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
+			    		referenceVersionBean.getRegistryVOList().add(registryVO);
+	                }
+	                catch(Exception e)
+	                {
+	                    add = false;
+	                    getLogger().info("content:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
 	                }
 	            }
-	            
-	            if(!exists)
-	                existingReferenceBean.getVersions().add(referenceVersionBean);
 	            else
-	                existingReferenceVersionBean.getRegistryVOList().add(registryVO);
+	            {
+	                try
+	                {
+		                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
+			    		getLogger().info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
+			    		getLogger().info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
+			    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
+			    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
+	
+			    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
+			    		referenceVersionBean.getRegistryVOList().add(registryVO);
+	                }
+	                catch(Exception e)
+	                {
+	                    add = false;
+	                    getLogger().info("siteNode:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
+	                }
+	            }
+	               
+	            if(add)
+	            {
+		            boolean exists = false;
+		            ReferenceVersionBean existingReferenceVersionBean = null;
+		            Iterator versionsIterator = existingReferenceBean.getVersions().iterator();
+		            while(versionsIterator.hasNext())
+		            {
+		                existingReferenceVersionBean = (ReferenceVersionBean)versionsIterator.next();
+		                if(existingReferenceVersionBean.getReferencingObject().equals(referenceVersionBean.getReferencingObject()))
+		                {
+		                    exists = true;
+		                    break;
+		                }
+		            }
+		            
+		            if(!exists)
+		                existingReferenceBean.getVersions().add(referenceVersionBean);
+		            else
+		                existingReferenceVersionBean.getRegistryVOList().add(registryVO);
+		        }
 	        }
 	        
+	        Iterator i = referenceBeanList.iterator();
+	        while(i.hasNext())
+	        {
+	            ReferenceBean referenceBean = (ReferenceBean)i.next();
+	            if(referenceBean.getVersions().size() == 0)
+	                i.remove();
+	        }
+
 	        commitTransaction(db);
 		}
 		catch (Exception e)		
