@@ -55,8 +55,8 @@
 
 		function openHelpWindow()
 		{
-			alert("Unfortunately we have not yet accomplished a good enough help system so until then we recommend that you consider buying the separate user manual available on www.infoglue.org.");
-			//top.location.href = "Login!logout.action";
+			//alert("Unfortunately we have not yet accomplished a good enough help system so until then we recommend that you consider buying the separate user manual available on www.infoglue.org.");
+			openPopup('$helpUrl', 'Help', 'width=500,height=400,resizable=yes,scrollbars=yes');
 		}
 
 		function changeLanguage(dropBox)

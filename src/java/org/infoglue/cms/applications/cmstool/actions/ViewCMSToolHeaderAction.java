@@ -64,7 +64,12 @@ public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
 		return this.getSession().getLocale();
 	}
 	
-    public String doExecute() throws Exception
+	public String getHelpUrl()
+	{
+	    return CmsPropertyHandler.getProperty("helpUrl");
+	}
+
+	public String doExecute() throws Exception
     {
         return "success";
     }
