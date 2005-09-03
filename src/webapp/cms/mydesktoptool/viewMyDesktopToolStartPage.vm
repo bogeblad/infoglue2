@@ -165,7 +165,7 @@
 			#end
 
 			#if($cnt == 0)
-				#set($row = ["There are no workflows available", ""])
+				#set($row = ["", "There are no workflows available", ""])
 				#lvAddRow($row $cnt "")
 			#end
 
