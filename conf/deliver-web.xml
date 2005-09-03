@@ -49,7 +49,10 @@
                 /scripts/*,
                 /script/*,
                 /css/*,
-                /images/*
+                /images/*,
+                *.gif,
+                *.jpg,
+                *.png
             </param-value>
         </init-param>
         <!--
