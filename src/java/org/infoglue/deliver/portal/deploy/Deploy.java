@@ -24,6 +24,7 @@ package org.infoglue.deliver.portal.deploy;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -70,6 +71,7 @@ import org.apache.pluto.portalImpl.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.xml.Constants;
 import org.apache.pluto.portalImpl.xml.XmlParser;
+import org.apache.xerces.parsers.DOMParser;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.exolab.castor.mapping.Mapping;
@@ -77,6 +79,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import org.apache.pluto.descriptors.services.WebAppDescriptorService;
 import org.apache.pluto.descriptors.services.PortletAppDescriptorService;
@@ -239,10 +242,25 @@ public class Deploy {
             if (portletEntry == null) {
                 throw new IOException("Unable to find portlet.xml");
             }
+            
+            InputStream pisDebug = jar.getInputStream(portletEntry);
+            StringBuffer sb = new StringBuffer();
+            int i;
+            while((i = pisDebug.read()) > -1)
+            {
+                sb.append((char)i);
+            }
+            pisDebug.close();
+            
+			InputSource xmlSource = new InputSource(new ByteArrayInputStream(sb.toString().getBytes("UTF-8")));
+			DOMParser parser = new DOMParser();
+			parser.parse(xmlSource);
+			Document portletDocument = parser.getDocument();
+            
+            //InputStream pis = jar.getInputStream(portletEntry);
+            //Document portletDocument = XmlParser.parsePortletXml(pis);
+            //pis.close();
             InputStream pis = jar.getInputStream(portletEntry);
-            Document portletDocument = XmlParser.parsePortletXml(pis);
-            pis.close();
-            pis = jar.getInputStream(portletEntry);
             
             ZipEntry webEntry = jar.getEntry(WEB_XML);
             InputStream wis = null;
