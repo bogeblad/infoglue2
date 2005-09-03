@@ -242,7 +242,7 @@
 			to be accessed by all webapps/portlets
 			-->
 			<lib dir="${lib}/build" includes="**/*.jar" 
-									excludes="pluto-1.0.1-rc2.jar,portlet-api-1.0.jar"/>
+									excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,portlet-api-1.0.jar"/>
 			<lib refid="core.libs"/>
 			<lib refid="jdbc.libs"/>
 			<zipfileset dir="${conf}/cms"
@@ -282,7 +282,7 @@
 			to be accessed by all webapps/portlets
 			-->
 			<lib dir="${lib}/build" includes="**/*.jar" 
-									excludes="pluto-1.0.1-rc2.jar,portlet-api-1.0.jar"/>
+									excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,portlet-api-1.0.jar"/>
 			<lib refid="core.libs"/>
 			<lib refid="jdbc.libs"/>
 			<zipfileset dir="${conf}/deliver"
@@ -410,11 +410,13 @@
 			<fileset dir="${lib}/build">
 				<include name="*.*"/>
 				<exclude name="pluto-1.0.1-rc2.jar"/>
+				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
 			</fileset>
 			<fileset dir="${lib}/core">
 				<include name="*.*"/>
 				<exclude name="pluto-1.0.1-rc2.jar"/>
+				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
 			</fileset>
 			<fileset dir="${lib}/jdbc">
@@ -427,11 +429,13 @@
 			<fileset dir="${lib}/build">
 				<include name="*.*"/>
 				<exclude name="pluto-1.0.1-rc2.jar"/>
+				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
 			</fileset>
 			<fileset dir="${lib}/core">
 				<include name="*.*"/>
 				<exclude name="pluto-1.0.1-rc2.jar"/>
+				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
 			</fileset>
 			<fileset dir="${lib}/jdbc">
