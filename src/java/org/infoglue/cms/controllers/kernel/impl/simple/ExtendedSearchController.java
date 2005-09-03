@@ -254,13 +254,13 @@ class SqlBuilder {
 	 * 
 	 */
 	private String generate() {
-		return "CALL SQL" + SPACE + generateSelectClause() + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + SmallContentImpl.class.getName();
+		return "CALL SQL" + SPACE + (useFull() ? generateSelectClause() : generateSelectClauseShort()) + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + SmallContentImpl.class.getName();
 	}
 	
 	/**
 	 * 
 	 */
-	private String generateSelectClause() {
+	private String generateSelectClauseShort() {
 		return 	SELECT_KEYWORD + SPACE + 
 		CONTENT_ALIAS + ".ContId" +
 		COMMA + CONTENT_ALIAS + ".name" +
@@ -273,6 +273,25 @@ class SqlBuilder {
 		COMMA + CONTENT_ALIAS + ".repositoryId" +
 		COMMA + CONTENT_ALIAS + ".parentContId" +
 		COMMA + CONTENT_ALIAS + ".ContId" +
+		COMMA + CONTENT_ALIAS + ".creator";
+	}
+
+	/**
+	 * 
+	 */
+	private String generateSelectClause() {
+		return 	SELECT_KEYWORD + SPACE + 
+		CONTENT_ALIAS + ".contentId" +
+		COMMA + CONTENT_ALIAS + ".name" +
+		COMMA + CONTENT_ALIAS + ".publishDateTime" +
+		COMMA + CONTENT_ALIAS + ".expireDateTime" +
+		COMMA + CONTENT_ALIAS + ".isBranch" +
+		COMMA + CONTENT_ALIAS + ".isProtected" +
+		COMMA + CONTENT_ALIAS + ".contentTypeDefinitionId" +
+		COMMA + CONTENT_ALIAS + ".parentContentId" +
+		COMMA + CONTENT_ALIAS + ".repositoryId" +
+		COMMA + CONTENT_ALIAS + ".parentContentId" +
+		COMMA + CONTENT_ALIAS + ".contentId" +
 		COMMA + CONTENT_ALIAS + ".creator";
 	}
 
