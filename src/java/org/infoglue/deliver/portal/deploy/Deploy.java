@@ -78,12 +78,40 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.w3c.dom.Document;
 
+import org.apache.pluto.descriptors.services.WebAppDescriptorService;
+import org.apache.pluto.descriptors.services.PortletAppDescriptorService;
+import org.apache.pluto.descriptors.services.impl.AbstractWebAppDescriptorService;
+import org.apache.pluto.descriptors.services.impl.StreamPortletAppDescriptorServiceImpl;
+
 /**
  * Slightly modified version of jakarta-plutos deploy target. This utility
  * requires that portletdefinitionmapping.xml and servletdefinitionmapping.xml
  * are located somewhere in the classpath.
  */
 public class Deploy {
+    
+    public static class StreamWebAppDescriptorServiceImpl extends AbstractWebAppDescriptorService {
+
+        private InputStream in;
+        private OutputStream out;
+
+        public StreamWebAppDescriptorServiceImpl(String contextPath,
+                                                 InputStream in,
+                                                 OutputStream out) {
+            super(contextPath);
+            this.in = in;
+            this.out = out;
+        }
+
+        protected InputStream getInputStream() throws IOException {
+            return in;
+        }
+
+        protected OutputStream getOutputStream() throws IOException {
+            return out;
+        }
+    }
+
     private static final Log log = LogFactory.getLog(Deploy.class);
 
     private static final int MAX_POLL_DEPLOY = 30;
@@ -194,45 +222,38 @@ public class Deploy {
             throws IOException {
         PortletApplicationDefinitionImpl portletApp = null;
         try {
-            Mapping pdmXml = new Mapping();
-            try {
-                URL url = Deploy.class.getResource("/" + PORTLET_MAPPING);
-                pdmXml.loadMapping(url);
-            } catch (Exception e) {
-                throw new IOException("Failed to load mapping file " + PORTLET_MAPPING);
-            }
-            Mapping sdmXml = new Mapping();
-            try {
-                URL url = Deploy.class.getResource("/" + SERVLET_MAPPING);
-                sdmXml.loadMapping(url);
-            } catch (Exception e) {
-                throw new IOException("Failed to load mapping file " + SERVLET_MAPPING);
-            }
-
-            log.debug("Opening uploaded jar:" + file);
-            // Open the jar file.
+            
+             Mapping pdmXml = new Mapping();
+             try {
+                 URL url = Deploy.class.getResource("/" + PORTLET_MAPPING);
+                 pdmXml.loadMapping(url);
+             } catch (Exception e) {
+                 throw new IOException("Failed to load mapping file " + PORTLET_MAPPING);
+             }
+             
+             // Open the jar file.
             JarFile jar = new JarFile(file);
-            log.debug("JAR:" + jar);
 
             // Extract and parse portlet.xml
             ZipEntry portletEntry = jar.getEntry(PORTLET_XML);
-            log.debug("portletEntry:" + portletEntry);
             if (portletEntry == null) {
                 throw new IOException("Unable to find portlet.xml");
             }
             InputStream pis = jar.getInputStream(portletEntry);
             Document portletDocument = XmlParser.parsePortletXml(pis);
             pis.close();
-
-            // Extract and parse web.xml
-            Document webDocument = null;
+            pis = jar.getInputStream(portletEntry);
+            
             ZipEntry webEntry = jar.getEntry(WEB_XML);
+            InputStream wis = null;
             if (webEntry != null) {
-                InputStream wis = jar.getInputStream(webEntry);
-                webDocument = XmlParser.parseWebXml(wis);
+                wis = jar.getInputStream(webEntry);
+                /*  webDocument = XmlParser.parseWebXml(wis);
                 wis.close();
+                */
             }
-
+            
+            
             Unmarshaller unmarshaller = new Unmarshaller(pdmXml);
             unmarshaller.setWhitespacePreserve(true);
             unmarshaller.setIgnoreExtraElements(true);
@@ -247,6 +268,7 @@ public class Deploy {
             structure.add(null);
             portletApp.preBuild(structure);
 
+            /*
             // now generate web part
             WebApplicationDefinitionImpl webApp = null;
             if (webDocument != null) {
@@ -390,12 +412,14 @@ public class Deploy {
                 }
 
             }
+            */
 
             /*
              * TODO is this necessary? TagDefinitionImpl portletTagLib = new
              * TagDefinitionImpl(); Collection taglibs =
              * webApp.getCastorTagDefinitions(); taglibs.add(portletTagLib);
              */
+        
 
             // Duplicate jar-file with replaced web.xml
             FileOutputStream fos = new FileOutputStream(tmp);
@@ -409,6 +433,7 @@ public class Deploy {
 
                 if (entry.getName().equals(WEB_XML)) {
                     // Swap web.xml
+                    /*
                     log.debug("Swapping web.xml");
                     OutputFormat of = new OutputFormat();
                     of.setIndenting(true);
@@ -420,6 +445,19 @@ public class Deploy {
                     Marshaller marshaller = new Marshaller(serializer.asDocumentHandler());
                     marshaller.setMapping(sdmXml);
                     marshaller.marshal(webApp);
+                    */
+                    
+                    PortletAppDescriptorService portletAppDescriptorService = new StreamPortletAppDescriptorServiceImpl(appName, pis, null);
+                    File tmpf = File.createTempFile("infoglue-web-xml", null);
+                    WebAppDescriptorService webAppDescriptorService = new StreamWebAppDescriptorServiceImpl(appName, wis, new FileOutputStream(tmpf));
+                    
+                    org.apache.pluto.driver.deploy.Deploy d = new org.apache.pluto.driver.deploy.Deploy(webAppDescriptorService, portletAppDescriptorService);
+                    d.updateDescriptors();
+                    FileInputStream fis = new FileInputStream(tmpf);
+                    while ((bytesRead = fis.read(buffer)) != -1) {
+                        tempJar.write(buffer, 0, bytesRead);
+                    }
+                    tmpf.delete();
                 } else {
                     InputStream entryStream = jar.getInputStream(entry);
                     while ((bytesRead = entryStream.read(buffer)) != -1) {
