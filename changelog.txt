@@ -1,4 +1,62 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.0 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+InfoGlue 2.0 Final is finally released. 
+We have worked long and hard with this release as several big changes has been made and several big new features has been added.
+With this release InfoGlue has taken the step from being only a good CMS to now being a Portal/CMS hybrid which was allways the intention.
+This release contains many bugfixes compared to 2.0RC2 but also features a lot of new functionality and performance improvements.
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.0RC2 
+---------------------------------------
+
+New features
+- Added possibility to set a parent repository in repository properties - this in turn means properties can be inherited between repositories.
+- Added property to repository so one can set which repository should be default when looking for components
+- Added a component property editor so one can avoid the xml-mode as a developer.
+- Added a lot of InfoGlue taglibs for JSP developers.
+- Added mysettings handling. Now it's possible to set preferred language and tool and also change password yourself.
+- Made it possible to set which components are allowed in a slot
+- Fixed so hidden fields are supported in content type definitions
+
+Improvements
+- Changed all classes to use log4j
+- Fixed so validation errors does not reinitialize the old data but keep the bad one for the user
+- Fixed so one can use page templates on existing pages as well and also added filtering so only
+pageTemplates with meta info in the same language that your site has for master language can be used
+- Added methods to get info about a property on a specific sitenode.
+- Improved performance on both deliver and tools.
+- Added info-button on workflows. Also made page templates rights-protected. 
+- Added model relation between contentVersion and contentCategory and contentCategory and category and changed the logic accordingly.
+- Improved possibility to set title on workflows in the MyDesktop view.
+- Added methods for common fileupload
+- Added possibility to restrict if the image should have sizes assigned in WYSIWYG and fixed some bugs.
+- Parametirized URIEncoding
+- Updated to Pluto 1.0.1rc4
+
+Changes:
+- Had to removed so edit on sight only works in the internal page view - not in working delivery.
+
+Bug fixes
+- portlet deployment removes web.xml elements
+- Fixed issues with portlets and file uploads - now uploads reach the portlet
+- Fixed so saveAndExit works on some property screens
+- Fixed unclosed transaction in portlet handling
+- Fixed base url so graphics etc becomes correct in the login screen (for nice uri:s)
+- Fixed a bug with root nodes and nice uri:s when changing languages.
+- Added class to input-fields in the component editor and made other aspects of the component editor less sensitive.
+
+
+
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.0 RC2
 -------------------------------------------------------------------------------------
 
