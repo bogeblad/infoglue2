@@ -45,6 +45,8 @@ public class UpdatePackage  {
 	private String detailsUrl;
 	private String description;
 	private String title;
+	private Integer binarySize;
+	private String binaryUrl;
 
 
 	/**
@@ -87,6 +89,17 @@ public class UpdatePackage  {
 		}
 		return ret;
 	}
+
+	public String getDecodedBinaryUrl() {
+		String ret = "";
+		try {
+			ret = URLDecoder.decode(binaryUrl, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 	/**
 	 * @param string
 	 */
@@ -136,4 +149,20 @@ public class UpdatePackage  {
 		title = string;
 	}
 
+    public Integer getBinarySize()
+    {
+        return binarySize;
+    }
+    public void setBinarySize(Integer binarySize)
+    {
+        this.binarySize = binarySize;
+    }
+    public String getBinaryUrl()
+    {
+        return binaryUrl;
+    }
+    public void setBinaryUrl(String binaryUrl)
+    {
+        this.binaryUrl = binaryUrl;
+    }
 }

@@ -53,7 +53,7 @@ public class UnInstallUpdateAction extends InfoGlueAbstractAction
 		uc = new UpdateController(url, path);
 		uc.unInstallPackage(getUpdatePackageId(), out);
 		
-        return "success";
+        return null;
 	}
 	
 	

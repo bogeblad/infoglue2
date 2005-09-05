@@ -26,6 +26,10 @@
                 <field name="DetailsUrl" type="java.lang.String">
 					<bind-xml name="details-url" node="element"/>
                 </field>
+
+                <field name="BinaryUrl" type="java.lang.String">
+					<bind-xml name="binary-url" node="element"/>
+                </field>
                 
                 <field name="Description" type="java.lang.String">
 					<bind-xml name="description" node="element"/>
@@ -34,6 +38,11 @@
                 <field name="Title" type="java.lang.String">
 					<bind-xml name="title" node="element"/>
                 </field>
+
+                <field name="BinarySize" type="java.lang.Integer">
+					<bind-xml name="binary-size" node="element"/>
+                </field>
+                
         </class>
 
 </mapping>

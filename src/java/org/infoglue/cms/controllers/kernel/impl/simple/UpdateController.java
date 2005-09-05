@@ -29,6 +29,7 @@
  * */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -37,6 +38,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -46,6 +49,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Ant;
@@ -59,7 +63,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.up2date.UpdateCollection;
 import org.infoglue.cms.entities.up2date.UpdatePackage;
-
 import org.xml.sax.InputSource;
 
 
@@ -95,9 +98,10 @@ import org.xml.sax.InputSource;
  * 	<update-collection>
  *		<update-package>
  *			<package-id>pid</package-id>
+ *			<title>Title</title>
+ *			<description>breif description</description>
  *			<url>http://url_to_ant_install_script</url>
  *			<details-url>http://url_to_html-info_page_describing_the_package</details-url>
- *			<description>breif description</description>
  *		</update-package>
  *		<update-package>
  *			...
@@ -195,10 +199,6 @@ public class UpdateController extends BaseController
 				Vector installed = getInstalledUpdates();
 				Iterator iterator = installed.iterator();
 				
-				// TODO: fuling för att komma förbi cache problemet
-				// if (iterator.hasNext())
-					url += "&s=1&i=1&k=1";
-					
 				while (iterator.hasNext()) {
 					  UpdatePackage u = (UpdatePackage) iterator.next();
 					  url += "&p=" + u.getPackageId();
@@ -368,7 +368,7 @@ public class UpdateController extends BaseController
 			}
 	}
 	
-	public void runUpdatePackage(String updatePackageId, PrintWriter out) throws MalformedURLException
+	public void runUpdatePackage(String updatePackageId, OutputStream out) throws IOException
 	{
 		// Find the update with id updatePackageId
 		Vector updates = getAvailableUpdates();
@@ -402,65 +402,64 @@ public class UpdateController extends BaseController
 		
 	}
 
-	public void runUpdatePackage(UpdatePackage upd, final PrintWriter out) throws MalformedURLException
+	public void runUpdatePackage(UpdatePackage upd, final OutputStream os) throws IOException
 	{
 		
 		/* TODO:
 		 * Capture output from ant session and return it, så that we can produce
 		 * a summary of the installation to the user.
-		 * 
-		 * Should maybe use outputstream instead of printwriter
 		 */
-		
-		
-		out.println("About to run update...");
-
-		// Get the ant-file and run it!
-		String url = upd.getDecodedUrl();
-		final String antfile = upd.getPackageId();
-		
-		String destFile = path + antfile + ".xml";
-
-		// Use ant to get the ant-script from the
-		// update server
-		final class AntGet extends Get {
-			public AntGet() {
-				project = new Project();
-				project.init();
-				taskType = "get";
-				taskName = "get";
-				target = new Target();
-			}	
-		}
-		AntGet ag = new AntGet();
-		ag.setDest(new File(destFile));
-		ag.setSrc(new URL(url));
-		out.println("Getting the update from " + url + "...");
-		ag.execute();
-
-		
-		// Run the ant file!
-		final class AntRun extends Ant {
-			public AntRun() {
-				project = new Project();
-				project.init();
-			}	
-		}
-		AntRun a = new AntRun();
-		a.setAntfile(destFile);
-		a.setDir(new File(path));
-		a.setTarget("runUpdate");
-		out.println("Running Ant...");
-		a.execute();
-
-
-		// Add this update!
-		out.println("Finalizing...");
-		refreshAvailableUpdates();
-		addInstalledUpdate(upd);
-
-		// We are done
-		out.println("DONE!");
+	    OutputStreamWriter out = new OutputStreamWriter(os);
+	    try {
+	    
+			// Get the zip-file!
+			out.write("Downloading the package");
+			out.flush();
+			String url = upd.getDecodedBinaryUrl();
+			String zipFile = path + "autoUpdate/" + upd.getPackageId() + ".zip";
+			getFile(url, zipFile, upd.getBinarySize().intValue(), out);
+			
+			// Get the ant-file and run it!
+			String antFile = path + upd.getPackageId() + ".xml";
+			getFile(upd.getDecodedUrl(), antFile, -1, out);
+			out.flush();
+	
+			// Run the ant file!
+			final class AntRun extends Ant {
+				public AntRun() {
+					project = new Project();
+					project.init();
+				}	
+			}
+			AntRun a = new AntRun();
+			a.setAntfile(antFile);
+			a.setDir(new File(path));
+			a.setTarget("runUpdate");
+			out.write("Executing ant update script...<br>");
+			out.flush();
+			a.execute();
+	
+	
+			// Add this update!
+			out.write("Finalizing...<br>");
+			out.flush();
+			refreshAvailableUpdates();
+			addInstalledUpdate(upd);
+	
+			// We are done
+			out.write("DONE!<br>");
+			out.flush();
+	    }
+	    catch(BuildException e)
+	    {
+			out.write(e.getMessage());
+			out.write("<br>");
+	        
+	    } catch (MalformedURLException e)
+        {
+			out.write(e.getMessage());
+			out.write("<br>");
+        }
 	}
 	
 	public void unInstallPackage(UpdatePackage upd, final PrintWriter out) throws MalformedURLException
@@ -504,24 +503,60 @@ public class UpdateController extends BaseController
 	
 	
 	
-	private void getFile(String src, String dest) throws IOException
+	private void getFile(String src, String dest, int size, OutputStreamWriter out) throws IOException
 	{
 		URL u = new java.net.URL(src);
 		URLConnection urlConn = u.openConnection();
 		urlConn.setAllowUserInteraction(false); 
 		urlConn.setUseCaches (false); 
-			
 		InputStream is = urlConn.getInputStream();
+		String fileName = dest.substring(dest.lastIndexOf("/"));
 
 		FileOutputStream fo = new FileOutputStream(new File(dest));
 
-		int ch;
-		long cnt = 0;
-		while ((ch = is.read()) >= 0) {
-			cnt=cnt+1;
-			fo.write(ch);
-		}
+		int cnt = 0;
+		int cntcheck = 0;
+		int steps = 50;
+		int interval = size / steps;
+		
+        out.write("<font color='blue'><pre>");
+        for(int x = 0; x< steps;x++)
+			out.write("_");
+        out.write("<br>");
+		out.flush();
+
+		
+		byte[] buffer = new byte[64];// Or any length you want
+	    BufferedInputStream br = new BufferedInputStream(urlConn.getInputStream());
+	    for (int lengthRead = 0; (lengthRead = br.read(buffer)) >= 0;)
+	    {
+	        cnt+=lengthRead;
+	        fo.write(buffer, 0, lengthRead);
+	        
+	        if(size > 0)
+	        {
+				if(cnt % (size / steps) < cntcheck)
+				{
+					out.write("*");
+					out.flush();
+				}
+		        cntcheck = cnt % (size / steps);
+	        }
+	    }
+        if(size <= 0)
+        {
+            for(int x = 0; x< steps;x++)
+				out.write("*");
+        }
+		out.flush();
+
+		out.write("</font><font color='green'> [OK] - " + fileName + "</font>");
+		out.write("<br>");
+        out.write("</pre>");
+		out.flush();
+		is.close();
 		fo.close();
+		out.flush();
 	}
 
     public BaseEntityVO getNewVO()

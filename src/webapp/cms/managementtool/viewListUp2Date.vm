@@ -48,7 +48,7 @@
 <tr>
 	<td>
 		#set($available=$this.getAvailableUpdates())
-		<nobr>Available updates ( @ $currentUpdateServer | latest check: $!this.getLatestRefresh() )</nobr>
+		<nobr>Available updates (@ $currentUpdateServer | latest check: $!this.getLatestRefresh() )</nobr>
 		#set($lvConstraint = 1) 
 	</td>
 </tr>	
@@ -57,7 +57,7 @@
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 	<td> 
-		#lvHead(["Title","Description"] "Install update" "InstallUpdateMain.action" "ViewListUp2Date.action?title=Up2Date" "Do you really want to install the update:<br/><br/>")
+		#lvHead(["Title","Description"] "tool.managementtool.installUpdate.header" "InstallUpdateMain.action" "ViewListUp2Date.action?title=Up2Date" "tool.managementtool.installUpdate.text")
 		##set($cnt = 0)
 		#foreach ($upd in $available)
 			#set ( $rurl = "JavaScript:OpenDetails('${upd.getDecodedDetailsUrl()}');")

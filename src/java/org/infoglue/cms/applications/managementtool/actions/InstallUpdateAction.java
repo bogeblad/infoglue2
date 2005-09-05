@@ -23,11 +23,11 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 
@@ -43,16 +43,47 @@ public class InstallUpdateAction extends InfoGlueAbstractAction {
 	
 
 	protected String doExecute() throws Exception {
-		getResponse().setBufferSize(10);
-		PrintWriter out = getResponse().getWriter();		
+	    
+	    OutputStream os = getResponse().getOutputStream();
+	    OutputStreamWriter writer = new OutputStreamWriter(os);
+	    getResponse().setBufferSize(1);
+	    getResponse().setContentType("text/html");
+		// getResponse().setBufferSize(10);
+		// PrintWriter out = getResponse().getWriter();		
 		getLogger().info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
+		
+		System.out.println("UP2DATE: PATH: " + path);
 		String url = CmsPropertyHandler.getProperty("up2dateUrl");	
 	
-		uc = new UpdateController(url, path);
-		uc.runUpdatePackage(getUpdatePackageId(), out);
 		
-        return "success";
+		
+		uc = new UpdateController(url, path);
+		
+		writer.write("<!-- INFOGLUE AUTO-UPDATE SYSTEM -->\n");
+		for(int i = 0;i<1200;i++)
+		{
+			writer.write("                                                                                ");
+		}
+		writer.write("\n");
+		
+		writer.write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"css/cms.css\" /></head><body class=\"managementtooledit\">");
+		writer.flush();
+		uc.runUpdatePackage(getUpdatePackageId(), os);
+		// writer.write("</pre>");
+		
+		writer.write("<script language='javascript'>\n");
+		writer.write("alert('Infoglue Up2Date\\n\\nThis installation has finished. ');\n");
+		// writer.write("parent.location.href = 'ViewListUp2Date.action?title=InfoGlue Up2Date';\n");
+		
+		writer.write("</script>");
+		
+		writer.write("</body></html>");
+		writer.flush();
+		
+		os.flush();
+		
+        return null;
 	}
 	
 	

@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("InfoGlue Up2Date" "Installing update" "")
+#beginManagementTool("tool.managementtool.installUpdate.progress.header" "tool.managementtool.installUpdate.progress.text" "")
 
 <table cellpadding=10 width=100%><tr><td>
 
@@ -12,7 +12,7 @@ Please wait...<br/>
 Installing update: <b> ${updatePackageId} </b> 
 
 
-<IFRAME FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 width="100%" src="InstallUpdate.action?updatePackageId=${updatePackageId}">
+<IFRAME FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 width="100%" height="700" src="InstallUpdate.action?updatePackageId=${updatePackageId}">
 </IFRAME>
 
 </td></tr></table>

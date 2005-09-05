@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("InfoGlue Up2Date" "UnInstalling package" "")
+#beginManagementTool("tool.managementtool.uninstallUpdate.header" "tool.managementtool.uninstallUpdate.header" "")
 
 <table cellpadding=10 width=100%><tr><td>
 
