@@ -109,13 +109,13 @@ public class VelocityServlet extends WebWorkVelocityServlet
 		final Session session = new Session(httpSession);
 
 		//<todo>this should definitely not be placed here
-		if (session.getLocale() == null)
+        if(session.getLocale() == null || session.getLocale().getLanguage() == null || session.getLocale().getLanguage().equalsIgnoreCase(""))
 		{
 	        session.setLocale(java.util.Locale.ENGLISH);
 		}
 		//</todo>
 
-		if(session.getLocale() == null)
+        if(session.getLocale() == null || session.getLocale().getLanguage() == null || session.getLocale().getLanguage().equalsIgnoreCase(""))
 		    context.put("ui", getStringManagerChain(java.util.Locale.ENGLISH));
 		else
 		    context.put("ui", getStringManagerChain(session.getLocale()));

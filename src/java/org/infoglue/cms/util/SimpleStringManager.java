@@ -46,9 +46,9 @@ public class SimpleStringManager implements StringManager
  
     SimpleStringManager(String bundleName, Locale locale) 
     { 
-        if(locale == null)
+        if(locale == null || locale.getLanguage() == null || locale.getLanguage().equalsIgnoreCase(""))
         {
-            logger.info("No locale sent in - must be a bug...");
+            logger.info("No locale sent in - must be a bug:" + locale);
             locale = Locale.ENGLISH;
         }
         
