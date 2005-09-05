@@ -255,7 +255,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        
 	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
 	    	
-	        closeTransaction(dbWrapper.getDatabase());
+	        //closeTransaction(dbWrapper.getDatabase());
 		}
 		catch(Exception e)
 		{
@@ -263,6 +263,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}
+		finally
+		{
+		    closeTransaction(dbWrapper.getDatabase());
+		}
+
 		
         return NONE;
     }
