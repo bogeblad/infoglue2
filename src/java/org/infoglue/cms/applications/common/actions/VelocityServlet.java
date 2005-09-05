@@ -115,7 +115,11 @@ public class VelocityServlet extends WebWorkVelocityServlet
 		}
 		//</todo>
 
-		context.put("ui", getStringManagerChain(session.getLocale()));
+		if(session.getLocale() == null)
+		    context.put("ui", getStringManagerChain(java.util.Locale.ENGLISH));
+		else
+		    context.put("ui", getStringManagerChain(session.getLocale()));
+		
 		context.put("formatter", new VisualFormatter());
 
 		request.setCharacterEncoding("UTF-8");

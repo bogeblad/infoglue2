@@ -46,9 +46,15 @@ public class SimpleStringManager implements StringManager
  
     SimpleStringManager(String bundleName, Locale locale) 
     { 
+        if(locale == null)
+        {
+            logger.info("No locale sent in - must be a bug...");
+            locale = Locale.ENGLISH;
+        }
+        
         try 
         { 
-            logger.info("Created a SimpleStringManager for package bundleName" + bundleName);
+            logger.info("Created a SimpleStringManager for package bundleName" + bundleName + ":" + locale);
             this.bundle = ResourceBundle.getBundle(bundleName, locale);
         } 
         catch(MissingResourceException e) 
