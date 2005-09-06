@@ -73,7 +73,7 @@ public abstract class InfoglueFunction implements FunctionProvider {
 	 *  
 	 */
 	protected final Object getParameter(final Map transientVars, final String key) throws WorkflowException {
-		return getParameter(transientVars, key, false);
+		return getParameter(transientVars, key, true);
 	}
 
 	/**
