@@ -194,7 +194,10 @@ public class UpdateController extends BaseController
 				// Fix url to updateserver, so that it filters
 				// packages allready installed locally
 				// also submit updatesystemversion
-				url += "&v=" + protocolVersion;
+                if(url.indexOf("?") == -1)
+                    url += "?v=" + protocolVersion;
+                else
+                    url += "&v=" + protocolVersion;
 				
 				Vector installed = getInstalledUpdates();
 				Iterator iterator = installed.iterator();
