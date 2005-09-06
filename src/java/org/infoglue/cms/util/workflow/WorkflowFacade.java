@@ -59,7 +59,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.19 $ $Date: 2005/09/02 07:28:32 $
+ * @version $Revision: 1.20 $ $Date: 2005/09/06 14:36:36 $
  */
 public class WorkflowFacade
 {
@@ -274,11 +274,21 @@ public class WorkflowFacade
 	 * Indicates whether the underlying workflow is active
 	 * @return true if the underlying workflow's state is WorkflowEntry.ACTIVATED, otherwise returns false.
 	 */
-	private boolean isActive()
+	public boolean isActive()
 	{
 		return getEntryState() == WorkflowEntry.ACTIVATED;
 	}
 
+	/**
+	 * Indicates whether the underlying workflow is finished.
+	 * @return true if the underlying workflow's state is WorkflowEntry.KILLED or WorkflowEntry.COMPLETED, otherwise returns false.
+	 */
+	public boolean isFinished()
+	{
+		int state = getEntryState();
+		return state == WorkflowEntry.KILLED || state == WorkflowEntry.COMPLETED;
+	}
+	
 	/**
 	 * Returns a list of all declared workflows, i.e., workflows defined in workflows.xml
 	 * @return a list WorkflowVOs representing all declared workflows
