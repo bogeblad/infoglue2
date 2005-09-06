@@ -170,6 +170,14 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				element.getParentNode().removeChild(element);
 			}
 
+		    String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '" + attributeName + "']";
+		    NodeList anl2 = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), validatorsXPath);
+			for(int i=0; i<anl2.getLength(); i++)
+			{
+				Element element = (Element)anl2.item(i);
+				element.getParentNode().removeChild(element);
+			}
+
 			saveUpdatedDefinition(document);
 		}
 		catch(Exception e)
@@ -482,6 +490,35 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				element.setAttribute("type", this.inputTypeId);
 			}
 
+			try
+			{
+				//Updating the validation part
+				String validationXPath = "//xs:complexType[@name='Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property='" + this.attributeName + "']";
+				NodeList fieldNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), validationXPath);
+				if(fieldNodeList != null && fieldNodeList.getLength() > 0)
+				{
+					Element element = (Element)fieldNodeList.item(0);
+					element.setAttribute("property", this.newAttributeName);
+				}
+
+				//Updating the dependent part
+				String validationDependentXPath = "//xs:complexType[@name='Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@depends='requiredif']/var/var-value";
+				NodeList requiredIfValueNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), validationDependentXPath);
+				if(requiredIfValueNodeList != null && requiredIfValueNodeList.getLength() > 0)
+				{
+				    for(int i=0; i<requiredIfValueNodeList.getLength(); i++)
+				    {
+				        Element element = (Element)requiredIfValueNodeList.item(0);
+				        if(element.getFirstChild() != null && element.getFirstChild().getNodeValue() != null && element.getFirstChild().getNodeValue().equals(this.attributeName))
+				            element.getFirstChild().setNodeValue(this.newAttributeName);
+				    }
+				}
+			}
+			catch(Exception ve)
+			{
+			    ve.printStackTrace();
+			}
+				
 			saveUpdatedDefinition(document);
 		}
 		catch(Exception e)
