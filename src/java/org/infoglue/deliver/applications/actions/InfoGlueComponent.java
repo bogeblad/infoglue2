@@ -35,6 +35,7 @@ public class InfoGlueComponent
 	private Map properties     					= new HashMap();
 	private Map tasks     						= new HashMap();
 	private List slotList 						= new ArrayList();
+	private List restrictions 					= new ArrayList();
 	private Map slots 							= new HashMap();
 	private Map components 						= new HashMap();
 	private InfoGlueComponent parentComponent 	= null;
@@ -151,5 +152,10 @@ public class InfoGlueComponent
     public void setSlotName(String slotName)
     {
         this.slotName = slotName;
+    }
+    
+    public List getRestrictions()
+    {
+        return restrictions;
     }
 }
