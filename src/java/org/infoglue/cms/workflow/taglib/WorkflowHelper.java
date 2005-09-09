@@ -32,11 +32,18 @@ import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.WorkflowException;
 
 /**
  * 
  */
 public class WorkflowHelper {
+
+	/**
+	 * 
+	 */
+	private static final String UTF8_ENCODING = "utf-8";
+
 	public static final String ACTION_ID_PARAMETER   = "actionId";
 	public static final String WORKFLOW_ID_PARAMETER = "workflowId";
 
@@ -93,10 +100,28 @@ public class WorkflowHelper {
 	public static String getPropertyData(final PropertySet ps, final String name) {
 		try {
 			final byte[] data = ps.getData(name); 
-			return (data == null) ? "" : new String(data, "utf-8");
+			return (data == null) ? "" : new String(data, UTF8_ENCODING);
 		} catch(UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return "";
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public static void setData(final PropertySet ps, final String name, final String value)
+	{
+		if(value != null)
+		{
+			try 
+			{
+				ps.setData(name, value.getBytes(UTF8_ENCODING));
+			} 
+			catch(UnsupportedEncodingException e) 
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 }
