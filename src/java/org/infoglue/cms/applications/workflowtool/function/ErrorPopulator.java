@@ -22,11 +22,12 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  * 
  */
-public class ErrorPopulator extends InfoglueFunction {
+public class ErrorPopulator extends InfoglueFunction 
+{
 	/**
 	 * 
 	 */
-	public static final String PROPERTYSET_ERROR_PREFIX = "error.";
+	public static final String PROPERTYSET_ERROR_PREFIX = "error_";
 
 	/**
 	 * 
@@ -63,7 +64,8 @@ public class ErrorPopulator extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
+	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	{
 		clean(ps);
 		populate(ps);
 	}
@@ -71,14 +73,16 @@ public class ErrorPopulator extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	private void clean(final PropertySet ps) {
+	private void clean(final PropertySet ps) 
+	{
 		new PropertysetHelper(ps).removeKeys(PROPERTYSET_ERROR_PREFIX);
 	}
 	
 	/**
 	 * 
 	 */
-	private void populate(PropertySet ps) {
+	private void populate(PropertySet ps) 
+	{
 		final ConstraintExceptionBuffer ceb = new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, principal, language).validate();
 		for(ConstraintException e = ceb.toConstraintException(); e != null; e = e.getChainedException())
 			populateError(ps, e);
@@ -87,21 +91,46 @@ public class ErrorPopulator extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	private void populateError(final PropertySet ps, final ConstraintException e) {
+	private void populateError(final PropertySet ps, final ConstraintException e) 
+	{
 		ps.setString(getErrorKey(e), getErrorMessage(e));
 	}
 	
 	/**
 	 * 
 	 */
-	private String getErrorKey(final ConstraintException e) {
-		return PROPERTYSET_ERROR_PREFIX + e.getFieldName();
+	private String getErrorKey(final ConstraintException e) 
+	{
+		// The field name has the form:
+		//   Content.<name> 
+		// or
+		//   ContentVersion.<name>
+		// 
+		// convert this to:
+		//   content_<name> 
+		// or
+		//   contentversion_<name>
+		// to better fit into the workflow framework.
+		
+		final String fieldName = e.getFieldName();
+		final int index = fieldName.indexOf('.');
+		if(index == -1) // play it safe
+			return PROPERTYSET_ERROR_PREFIX + e.getFieldName();
+		
+		final String before = fieldName.substring(0, index).toLowerCase();
+		final String after  = fieldName.substring(index + 1);
+		final String key    = PROPERTYSET_ERROR_PREFIX + before + "_" + after;
+
+		getLogger().debug("error field name converted from [" + fieldName  + "] to [" + before + "_" + after + "].");
+		
+		return key;
 	}
 
 	/**
 	 * 
 	 */
-	private String getErrorMessage(final ConstraintException e) {
+	private String getErrorMessage(final ConstraintException e) 
+	{
 	    final StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.entities", locale);
 	    return stringManager.getString(e.getErrorCode());
 	}
@@ -109,7 +138,8 @@ public class ErrorPopulator extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
+	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	{
 		super.initialize(transientVars, args, ps);
 		principal               = (InfoGluePrincipal)       getParameter(transientVars, PrincipalProvider.PRINCIPAL_PARAMETER);
 		language                = (LanguageVO)              getParameter(transientVars, LanguageProvider.LANGUAGE_PARAMETER);
