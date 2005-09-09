@@ -106,6 +106,16 @@
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
+    	<attribute>
+			<name>rows</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    	<attribute>
+			<name>columns</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>
 	<tag>
         <name>radio</name>
