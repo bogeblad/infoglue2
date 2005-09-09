@@ -74,9 +74,7 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 	
 	public String doShowPublicationDetails() throws Exception
 	{
-	    System.out.println("Kalle:" + publicationId);
 		publicationDetailVOList = PublicationController.getPublicationDetailVOList(publicationId);
-	    System.out.println("publicationDetailVOList:" + publicationDetailVOList);
 		return "showPublicationDetails";
 	}
 

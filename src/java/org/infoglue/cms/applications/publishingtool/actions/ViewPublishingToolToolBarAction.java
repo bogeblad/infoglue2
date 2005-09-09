@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.publishingtool.actions;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.entities.management.RepositoryVO;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -205,8 +206,31 @@ public class ViewPublishingToolToolBarAction extends InfoGlueAbstractAction
 		
 		try
 		{
-			String repositoryName = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId).getName();
-			buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("stagingDeliveryUrl") + "?repositoryName=" + repositoryName + "', 'StagingPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.previewEnvironment"), "tool.publishtool.previewEnvironment.header"));
+		    RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
+
+		    String repositoryName = repositoryVO.getName();
+			String dnsName = repositoryVO.getDnsName();
+
+		    String previewUrl = null;
+		    
+		    String keyword = "preview=";
+		    int startIndex = dnsName.indexOf(keyword);
+		    if(startIndex != -1)
+		    {
+		        int endIndex = dnsName.indexOf(",", startIndex);
+			    if(endIndex > -1)
+		            dnsName = dnsName.substring(startIndex, endIndex);
+		        else
+		            dnsName = dnsName.substring(startIndex);
+
+			    previewUrl = dnsName.split("=")[1] + CmsPropertyHandler.getProperty("componentRendererUrl").replaceAll("Working", "Preview") + "ViewPage.action";
+		    }
+		    else
+		    {
+		        previewUrl = CmsPropertyHandler.getProperty("stagingDeliveryUrl");
+		    }
+
+			buttons.add(new ImageButton(true, "javascript:openPopup('" + previewUrl + "?repositoryName=" + repositoryName + "', 'StagingPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.previewEnvironment"), "tool.publishtool.previewEnvironment.header"));
 		}
 		catch(Exception e)
 		{

@@ -338,7 +338,29 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	{
 		RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
 		
-		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
+		String dnsName = repositoryVO.getDnsName();
+
+	    String workingUrl = null;
+	    
+	    String keyword = "working=";
+	    int startIndex = dnsName.indexOf(keyword);
+	    if(startIndex != -1)
+	    {
+	        int endIndex = dnsName.indexOf(",", startIndex);
+		    if(endIndex > -1)
+	            dnsName = dnsName.substring(startIndex, endIndex);
+	        else
+	            dnsName = dnsName.substring(startIndex);
+
+		    workingUrl = dnsName.split("=")[1] + CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage.action";
+	    }
+	    else
+	    {
+	        workingUrl = CmsPropertyHandler.getProperty("previewDeliveryUrl");
+	    }
+	    
+		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
+		
 		
 		return imageButton;
 	}

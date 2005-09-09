@@ -31,10 +31,12 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.workflow.*;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 
 import java.util.List;
@@ -352,7 +354,32 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 				buttons.add(new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'ContentPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header"));	
 				
 				if(this.siteNodeId != null)
-					buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SitePreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header"));			
+				{
+					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
+
+					String dnsName = repositoryVO.getDnsName();
+
+				    String workingUrl = null;
+				    
+				    String keyword = "working=";
+				    int startIndex = dnsName.indexOf(keyword);
+				    if(startIndex != -1)
+				    {
+				        int endIndex = dnsName.indexOf(",", startIndex);
+					    if(endIndex > -1)
+				            dnsName = dnsName.substring(startIndex, endIndex);
+				        else
+				            dnsName = dnsName.substring(startIndex);
+
+					    workingUrl = dnsName.split("=")[1] + CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage.action";
+				    }
+				    else
+				    {
+				        workingUrl = CmsPropertyHandler.getProperty("previewDeliveryUrl");
+				    }
+				    
+					buttons.add(new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SitePreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header"));			
+				}
 				
 				if(hasPublishedVersion())
 					buttons.add(getUnpublishButton());

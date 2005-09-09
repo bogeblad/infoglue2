@@ -104,7 +104,14 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             for (int i=0;i<dnsNames.length;i++) 
             {
             	getLogger().info("dnsNames[i]:" + dnsNames[i]);
-                if((dnsNames[i].indexOf(":") == -1 && dnsNames[i].indexOf(serverName) != -1) || dnsNames[i].indexOf(serverName + ":" + portNumber) != -1) 
+                String dnsName = dnsNames[i];
+            	int protocolIndex = dnsName.indexOf("://");
+                if(protocolIndex > -1)
+                    dnsName = dnsName.substring(protocolIndex + 3);
+                
+                getLogger().info("Matching only server name - removed protocol if there:" + dnsName);
+                
+            	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) != -1) || dnsName.indexOf(serverName + ":" + portNumber) != -1) 
                 {
                     return repository.getValueObject();
                 }
