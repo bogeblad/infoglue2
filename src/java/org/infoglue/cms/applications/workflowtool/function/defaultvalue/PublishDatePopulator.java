@@ -14,7 +14,10 @@ public class PublishDatePopulator extends DatePopulator {
 	/**
 	 * 
 	 */
-	public PublishDatePopulator() { super(); }
+	public PublishDatePopulator() 
+	{ 
+		super(); 
+	}
 
 	/**
 	 * 
