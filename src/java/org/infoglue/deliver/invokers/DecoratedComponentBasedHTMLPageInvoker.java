@@ -396,7 +396,16 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				    slotBean.setId(id);
 				    slotBean.setAllowedComponentsArray(allowedComponentNamesArray);
 				}
-				
+
+				boolean inherit = true;
+				int inheritIndex = slot.indexOf("inherit");
+				if(inheritIndex > -1)
+				{    
+				    String inheritString = slot.substring(inheritIndex + 9, slot.indexOf("\"", inheritIndex + 9));
+				    //System.out.println("inheritString:" + inheritString);
+				    inherit = Boolean.getBoolean(inheritString);
+				}
+				slotBean.setInherit(inherit);
 				
 				String subComponentString = "";
 				
@@ -406,7 +415,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				else
 				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" class=\"componentDiv\" onmouseup=\"javascript:assignComponent('" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "', '" + slotBean.getAllowedComponentsArrayAsUrlEncodedString() + "');\">";
 				    
-				List subComponents = getInheritedComponents(getDatabase(), templateController, component, templateController.getSiteNodeId(), id);
+				List subComponents = getInheritedComponents(getDatabase(), templateController, component, templateController.getSiteNodeId(), id, inherit);
 
 				timer.printElapsedTime("4");
 	

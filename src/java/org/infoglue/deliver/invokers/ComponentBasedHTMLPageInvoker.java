@@ -31,6 +31,7 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
+import org.infoglue.deliver.applications.databeans.ComponentRestriction;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
@@ -238,7 +239,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			//component.setName(name);
 			component.setSlotName(name);
 			component.setParentComponent(parentComponent);
-
+			
+			//Change to this later
+			//getComponentProperties(child, component, locale, templateController);
 			List propertiesNodeList = child.selectNodes("properties");
 			//logger.info("propertiesNodeList:" + propertiesNodeList.getLength());
 			if(propertiesNodeList.size() > 0)
@@ -300,6 +303,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 			
 			
+			getComponentRestrictions(child, component, locale, templateController);
+
+			
 			//Getting slots for the component
 			String componentString = this.getComponentString(templateController, contentId, component);
 			//logger.info("Getting the slots for component.......");
@@ -312,6 +318,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
 				String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
 
+				boolean inherit = true;
+				int inheritIndex = slotString.indexOf("inherit");
+				if(inheritIndex > -1)
+				{    
+				    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
+				    //System.out.println("inheritString:" + inheritString);
+				    inherit = Boolean.getBoolean(inheritString);
+				}
+
 				String[] allowedComponentNamesArray = null;
 				int allowedComponentNamesIndex = slotString.indexOf("allowedComponentNames");
 				if(allowedComponentNamesIndex > -1)
@@ -323,8 +338,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				
 			  	Slot slot = new Slot();
 			  	slot.setId(slotId);
-			    slot.setAllowedComponentsArray(allowedComponentNamesArray);
-
+			    slot.setInherit(inherit);
+			  	slot.setAllowedComponentsArray(allowedComponentNamesArray);
+			    
 			  	List subComponents = getComponents(db, templateController, component, templateController.getSiteNodeId(), slotId);
 			  	slot.setComponents(subComponents);
 
@@ -385,6 +401,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			component.setParentComponent(parentComponent);
 			////logger.info("Name:" + name);
 
+			//Change to this later
+			//getComponentProperties(child, component, locale, templateController);
 			List propertiesNodeList = child.selectNodes("properties");
 			////logger.info("propertiesNodeList:" + propertiesNodeList.getLength());
 			if(propertiesNodeList.size() > 0)
@@ -446,6 +464,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					component.getProperties().put(propertyName, property);
 				}
 			}
+			
+			getComponentRestrictions(child, component, locale, templateController);
 			
 			List anl = child.selectNodes("components");
 			////logger.info("Components NL:" + anl.getLength());
@@ -543,7 +563,16 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					String slot = componentString.substring(slotStartIndex, slotStopIndex + 10);
 					String id = slot.substring(slot.indexOf("id") + 4, slot.indexOf("\"", slot.indexOf("id") + 4));
 					
-					List subComponents = getInheritedComponents(templateController.getDatabase(), templateController, component, templateController.getSiteNodeId(), id);
+					boolean inherit = true;
+					int inheritIndex = slot.indexOf("inherit");
+					if(inheritIndex > -1)
+					{    
+					    String inheritString = slot.substring(inheritIndex + 9, slot.indexOf("\"", inheritIndex + 9));
+					    System.out.println("inheritString:" + inheritString);
+					    inherit = Boolean.getBoolean(inheritString);
+					}
+
+					List subComponents = getInheritedComponents(templateController.getDatabase(), templateController, component, templateController.getSiteNodeId(), id, inherit);
 					Iterator subComponentsIterator = subComponents.iterator();
 					while(subComponentsIterator.hasNext())
 					{
@@ -637,7 +666,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 * This method fetches a subcomponent from either the current page or from a parent node if it's not defined.
 	 */
    
-	protected List getInheritedComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
+	protected List getInheritedComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id, boolean inherit) throws Exception
 	{
 	    //logger.info("slotId");
 	    //logger.info("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
@@ -670,7 +699,23 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		//logger.info("inheritedComponents:" + inheritedComponents);
 		//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
-		while(inheritedComponents.size() == 0 && parentSiteNodeVO != null)
+		boolean restrictAll = false;
+		System.out.println("Restrictions on " + id + " was " + component.getRestrictions().size());
+		Iterator restrictionsIterator = component.getRestrictions().iterator();
+		while(restrictionsIterator.hasNext())
+		{
+		    ComponentRestriction restriction = (ComponentRestriction)restrictionsIterator.next();
+		    if(restriction.getType().equalsIgnoreCase("blockComponents"))
+		    {
+		        System.out.println("It was a block components restriction....:" + restriction.getSlotId() + ":" + id + restriction.getArguments());
+		        if(restriction.getSlotId().equalsIgnoreCase(id) && restriction.getArguments().equalsIgnoreCase("*"))
+		        {
+		            System.out.println("Restriction matched the slot - perhaps we should not render...");
+		            restrictAll = true;
+		        }
+		    }
+		}
+		while(inheritedComponents.size() == 0 && parentSiteNodeVO != null && inherit && !restrictAll)
 		{
 		    //logger.info("*********************************************");
 		    //logger.info("*         INHERITING COMPONENTS             *");
@@ -887,6 +932,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				component.setSlotName(name);
 				component.setParentComponent(parentComponent);
 		
+				//Use this later
+				//getComponentProperties(componentElement, component, locale, templateController);
 				List propertiesNodeList = componentElement.selectNodes("properties");
 				if(propertiesNodeList.size() > 0)
 				{
@@ -941,6 +988,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					}
 				}
 				
+				
+				getComponentRestrictions(componentElement, component, locale, templateController);
+				
 				//Getting slots for the component
 				try
 				{
@@ -953,6 +1003,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
 						String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
 						
+						boolean inherit = true;
+						int inheritIndex = slotString.indexOf("inherit");
+						if(inheritIndex > -1)
+						{    
+						    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
+						    System.out.println("inheritString:" + inheritString);
+						    inherit = Boolean.getBoolean(inheritString);
+						}
+
 						String[] allowedComponentNamesArray = null;
 						int allowedComponentNamesIndex = slotString.indexOf("allowedComponentNames");
 						if(allowedComponentNamesIndex > -1)
@@ -964,6 +1023,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 						Slot slot = new Slot();
 						slot.setId(slotId);
+						slot.setInherit(inherit);
 						slot.setAllowedComponentsArray(allowedComponentNamesArray);
 						
 						Element componentsElement = (Element)componentElement.selectSingleNode("components");
@@ -996,6 +1056,108 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		return components;
 	}
 
-	
-	
+	/**
+	 * This method gets the component properties
+	 */
+	private void getComponentProperties(Element child, InfoGlueComponent component, Locale locale, TemplateController templateController) throws Exception
+	{
+		List propertiesNodeList = child.selectNodes("properties");
+		//logger.info("propertiesNodeList:" + propertiesNodeList.getLength());
+		if(propertiesNodeList.size() > 0)
+		{
+			Element propertiesElement = (Element)propertiesNodeList.get(0);
+			
+			List propertyNodeList = propertiesElement.selectNodes("property");
+			//logger.info("propertyNodeList:" + propertyNodeList.getLength());
+			Iterator propertyNodeListIterator = propertyNodeList.iterator();
+			while(propertyNodeListIterator.hasNext())
+			{
+				Element propertyElement = (Element)propertyNodeListIterator.next();
+				
+				String propertyName = propertyElement.attributeValue("name");
+				String type = propertyElement.attributeValue("type");
+				String path = propertyElement.attributeValue("path");
+
+				if(path == null)
+				{
+					LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
+					if(propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode()) != null)
+						path = propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode());
+				}
+
+				//logger.info("path:" + "path_" + locale.getLanguage() + ":" + propertyElement.attributeValue("path_" + locale.getLanguage()));
+				if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null)
+					path = propertyElement.attributeValue("path_" + locale.getLanguage());
+				//logger.info("path:" + path);
+
+				Map property = new HashMap();
+				property.put("name", propertyName);
+				property.put("path", path);
+				property.put("type", type);
+				
+				List bindings = new ArrayList();
+				List bindingNodeList = propertyElement.selectNodes("binding");
+				//logger.info("bindingNodeList:" + bindingNodeList.getLength());
+				Iterator bindingNodeListIterator = bindingNodeList.iterator();
+				while(bindingNodeListIterator.hasNext())
+				{
+					Element bindingElement = (Element)bindingNodeListIterator.next();
+					String entity = bindingElement.attributeValue("entity");
+					String entityId = bindingElement.attributeValue("entityId");
+					//logger.info("Binding found:" + entity + ":" + entityId);
+					if(entity.equalsIgnoreCase("Content"))
+					{
+						bindings.add(entityId);
+					}
+					else
+					{
+						bindings.add(entityId); 
+					} 
+				}
+
+				property.put("bindings", bindings);
+				
+				component.getProperties().put(propertyName, property);
+			}
+		}
+	}
+
+
+	/**
+	 * This method gets the restrictions for this component
+	 */
+	private void getComponentRestrictions(Element child, InfoGlueComponent component, Locale locale, TemplateController templateController) throws Exception
+	{
+	    System.out.println("Getting restrictions for " + component.getId() + ":" + child.getName());
+		List restrictionsNodeList = child.selectNodes("restrictions");
+		//logger.info("restrictionsNodeList:" + restrictionsNodeList.getLength());
+		if(restrictionsNodeList.size() > 0)
+		{
+			Element restrictionsElement = (Element)restrictionsNodeList.get(0);
+			
+			List restrictionNodeList = restrictionsElement.selectNodes("restriction");
+			//logger.info("restrictionNodeList:" + restrictionNodeList.getLength());
+			Iterator restrictionNodeListIterator = restrictionNodeList.iterator();
+			while(restrictionNodeListIterator.hasNext())
+			{
+				Element restrictionElement = (Element)restrictionNodeListIterator.next();
+				
+				ComponentRestriction restriction = new ComponentRestriction();
+			    
+				String type = restrictionElement.attributeValue("type");
+				if(type.equals("blockComponents"))
+				{
+				    String slotId = restrictionElement.attributeValue("slotId");
+				    String arguments = restrictionElement.attributeValue("arguments");
+
+				    restriction.setType(type);
+					restriction.setSlotId(slotId);
+					restriction.setArguments(arguments);
+				}
+				
+				component.getRestrictions().add(restriction);
+			}
+		}
+	}
+
 }
