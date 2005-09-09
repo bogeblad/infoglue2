@@ -12,34 +12,42 @@ import com.opensymphony.workflow.WorkflowException;
  * 
  *
  */
-public class ContentMover extends ContentFunction {
+public class ContentMover extends ContentFunction 
+{
 	/**
 	 * 
 	 */
-	public static final String DESTINATION_PARAMETER = "move.newParentFolder";
+	public static final String DESTINATION_PARAMETER = "move_newParentFolder";
 	
 	/**
 	 *
 	 */
-	public ContentMover() { super(); }
-
-	/**
-	 * 
-	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		if(getContentVO() != null) {
-			move((ContentVO) getParameter(transientVars, DESTINATION_PARAMETER));
-		}
+	public ContentMover() 
+	{ 
+		super(); 
 	}
 
 	/**
 	 * 
 	 */
-	private void move(final ContentVO destinationContentVO) throws WorkflowException {
-		try {
+	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	{
+		if(getContentVO() != null)
+			move((ContentVO) getParameter(transientVars, DESTINATION_PARAMETER));
+	}
+
+	/**
+	 * 
+	 */
+	private void move(final ContentVO destinationContentVO) throws WorkflowException 
+	{
+		try 
+		{
 			if(!getContentVO().getParentContentId().equals(destinationContentVO.getContentId()))
 				ContentController.getContentController().moveContent(getContentVO(), destinationContentVO.getId(), getDatabase());
-		} catch(Exception e) {
+		} 
+		catch(Exception e) 
+		{
 			throw new WorkflowException(e);
 		}
 	}

@@ -19,11 +19,12 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  * 
  */
-public class ContentCreator extends ContentFunction {
+public class ContentCreator extends ContentFunction 
+{
 	/**
 	 * 
 	 */
-	public static final String FOLDER_PARAMETER = "create.folder";
+	public static final String FOLDER_PARAMETER = "create_folder";
 	
 	/**
 	 * 
@@ -74,15 +75,18 @@ public class ContentCreator extends ContentFunction {
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
+	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	{
 		create(ps);
 	}
 
 	/**
 	 * 
 	 */
-	private void create(final PropertySet ps) throws WorkflowException {
-		try {
+	private void create(final PropertySet ps) throws WorkflowException 
+	{
+		try 
+		{
 			final ContentFactory factory = new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, principal, languageVO);
 			ContentVO newContentVO = null;
 			if(getContentVO() == null)
@@ -92,9 +96,13 @@ public class ContentCreator extends ContentFunction {
 			if(newContentVO != null)
 				ps.setString(ContentProvider.RESULTSET_CONTENT_ID, newContentVO.getContentId().toString());
 			setStatus(ps, (newContentVO != null) ? STATUS_OK : STATUS_NOK);
-		} catch(ConstraintException e) {
+		} 
+		catch(ConstraintException e) 
+		{
 			getLogger().debug(e.toString());
-		} catch(Exception e) {
+		} 
+		catch(Exception e) 
+		{
 			throw new WorkflowException(e);
 		}
 	}
@@ -102,14 +110,16 @@ public class ContentCreator extends ContentFunction {
 	/**
 	 * 
 	 */
-	private List getContentTypeAttributes() {
+	private List getContentTypeAttributes() 
+	{
 		return ContentTypeDefinitionController.getController().getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue());
 	}
 
 	/**
 	 * 
 	 */
-	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
+	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	{
 		super.initialize(transientVars, args, ps);
 		principal               = (InfoGluePrincipal)       getParameter(transientVars, PrincipalProvider.PRINCIPAL_PARAMETER);
 		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(transientVars, ContentTypeDefinitionProvider.CONTENT_TYPE_DEFINITION_PARAMETER);

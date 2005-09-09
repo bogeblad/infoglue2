@@ -18,16 +18,17 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  * 
  */
-public class ContentPopulator extends InfoglueFunction {
+public class ContentPopulator extends InfoglueFunction 
+{
 	/**
 	 * 
 	 */
-	public static final String PROPERTYSET_CONTENT_PREFIX = "content.";
+	public static final String PROPERTYSET_CONTENT_PREFIX = "content_";
 
 	/**
 	 * 
 	 */
-	public static final String PROPERTYSET_CONTENT_VERSION_PREFIX = "contentversion.";
+	public static final String PROPERTYSET_CONTENT_VERSION_PREFIX = "contentversion_";
 	
 	/**
 	 * 

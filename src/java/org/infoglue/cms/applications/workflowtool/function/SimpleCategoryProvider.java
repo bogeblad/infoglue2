@@ -16,11 +16,12 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  * 
  */
-public class SimpleCategoryProvider extends CategoryProvider {
+public class SimpleCategoryProvider extends CategoryProvider 
+{
 	/**
 	 * 
 	 */
-	private static final String PROPERTYSET_CATEGORY_PREFIX = "category.";
+	private static final String PROPERTYSET_CATEGORY_PREFIX = "category_";
 
 	/**
 	 * 
@@ -47,12 +48,16 @@ public class SimpleCategoryProvider extends CategoryProvider {
 	/**
 	 * 
 	 */
-	public SimpleCategoryProvider() { super();	}
+	public SimpleCategoryProvider() 
+	{ 
+		super();	
+	}
 
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
+	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	{
 		cleanPropertySet(ps);
 		populate(transientVars, ps);	
 	}
@@ -60,11 +65,14 @@ public class SimpleCategoryProvider extends CategoryProvider {
 	/**
 	 * 
 	 */
-	private void populate(final Map transientVars, final PropertySet ps) throws WorkflowException {
+	private void populate(final Map transientVars, final PropertySet ps) throws WorkflowException 
+	{
 		List result = new ArrayList();
-		for(Iterator i = rootCategory.getChildren().iterator(); i.hasNext();) {
+		for(Iterator i = rootCategory.getChildren().iterator(); i.hasNext();) 
+		{
 			final CategoryVO categoryVO = (CategoryVO) i.next();
-			if(transientVars.containsKey(getCategoryKey(categoryVO))) {
+			if(transientVars.containsKey(getCategoryKey(categoryVO))) 
+			{
 				new PropertysetHelper(ps).setData(getCategoryKey(categoryVO), "1");
 				result.add(categoryVO);
 			}
@@ -75,14 +83,16 @@ public class SimpleCategoryProvider extends CategoryProvider {
 	/**
 	 * 
 	 */
-	private void cleanPropertySet(final PropertySet ps) {
+	private void cleanPropertySet(final PropertySet ps) 
+	{
 		new PropertysetHelper(ps).removeKeys(getBaseKey());
 	}
 	
 	/**
 	 * 
 	 */
-	protected void initializeArguments(final Map args) throws WorkflowException {
+	protected void initializeArguments(final Map args) throws WorkflowException 
+	{
 		super.initializeArguments(args);
 		attributeName = (String) args.get(ARGUMENT_ATTRIBUTE_NAME);
 		rootCategory  = getRootCategory((String) args.get(ARGUMENT_ROOT_CATEGORY_NAME));
@@ -91,11 +101,15 @@ public class SimpleCategoryProvider extends CategoryProvider {
 	/**
 	 * 
 	 */
-	private CategoryVO getRootCategory(final String path) throws WorkflowException {
-		try {
+	private CategoryVO getRootCategory(final String path) throws WorkflowException 
+	{
+		try 
+		{
 			final CategoryVO categoryVO = CategoryController.getController().findByPath(path, getDatabase());
 			return CategoryController.getController().findWithChildren(categoryVO.getId(), getDatabase());
-		} catch(Exception e) {
+		} 
+		catch(Exception e) 
+		{
 			e.printStackTrace();
 			throw new WorkflowException("SimpleCategoryProvider.getRootCategory() : " + e);
 		}
@@ -104,14 +118,16 @@ public class SimpleCategoryProvider extends CategoryProvider {
 	/**
 	 * 
 	 */
-	private String getBaseKey() { 
-		return PROPERTYSET_CATEGORY_PREFIX + attributeName + ".";	
+	private String getBaseKey() 
+	{ 
+		return PROPERTYSET_CATEGORY_PREFIX + attributeName + "_";	
 	}
 	
 	/**
 	 * 
 	 */
-	private String getCategoryKey(final CategoryVO categoryVO) { 
+	private String getCategoryKey(final CategoryVO categoryVO) 
+	{ 
 		return getBaseKey() + categoryVO.getName(); 
 	}
 }

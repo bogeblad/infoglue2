@@ -14,24 +14,29 @@ public abstract class Populator extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	private static final String PROPERTYSET_TITLE_VARIABLE = "workflow.title";
+	private static final String PROPERTYSET_TITLE_VARIABLE = "workflow_title";
 	
 	/**
 	 * 
 	 */
-	public Populator() { super(); }
+	public Populator() 
+	{ 
+		super(); 
+	}
 
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
+	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	{
 		populate(ps, getTitle());
 	}
 	
 	/**
 	 * 
 	 */
-	private void populate(final PropertySet ps, final String title) {
+	private void populate(final PropertySet ps, final String title) 
+	{
 		if(title != null && title.trim().length() > 0)
 			ps.setString(PROPERTYSET_TITLE_VARIABLE, title.trim());
 	}
@@ -40,11 +45,4 @@ public abstract class Populator extends InfoglueFunction {
 	 * 
 	 */
 	protected abstract String getTitle();
-	
-	/**
-	 * 
-	 */
-	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		super.initialize(transientVars, args, ps);
-	}
 }
