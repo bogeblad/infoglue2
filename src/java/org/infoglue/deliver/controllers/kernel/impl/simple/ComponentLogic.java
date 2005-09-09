@@ -639,6 +639,30 @@ public class ComponentLogic
 	}
 
 	/**
+	 * This method returns a list of pages bound to the component.
+	 */
+
+	public SiteNodeVO getBoundSiteNode(String propertyName, boolean useInheritance)
+	{
+	    SiteNodeVO siteNodeVO = null;
+	    
+	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			if(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				siteNodeVO = templateController.getSiteNode(siteNodeId);
+			}
+		}
+
+		return siteNodeVO;
+	}
+
+	/**
 	 * This method returns a list of childContents using inheritence as default.
 	 */
 

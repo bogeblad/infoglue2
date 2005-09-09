@@ -694,6 +694,16 @@ public interface TemplateController
     public abstract Integer getSiteNodeId(String structureBindningName);
 
     /**
+	 * This method fetches the given siteNode
+	 */
+	public abstract SiteNodeVO getSiteNode(Integer siteNodeId);
+
+    /**
+	 * This method fetches the given siteNode
+	 */
+	public abstract SiteNodeVO getSiteNode();
+
+    /**
      * Getter for bound contentId for a binding
      */
     public abstract Integer getContentId(String contentBindningName);

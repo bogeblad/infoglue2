@@ -2829,6 +2829,26 @@ public class BasicTemplateController implements TemplateController
 		return pageUrl;
 	}
 
+	/**
+	 * Getter for the current siteNode
+	 */
+	
+	public SiteNodeVO getSiteNode()
+	{
+	    SiteNodeVO siteNodeVO = null;
+
+		try
+		{
+			siteNodeVO = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId).getValueObject();
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get the current content:" + e.getMessage(), e);
+		}
+
+		return siteNodeVO;
+	}
+
 
 	/**
 	 * This method fetches the given siteNode
