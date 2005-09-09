@@ -38,6 +38,7 @@ public class Slot
 	private String id;
 	private String number;
 	private String name;
+	private boolean inherit;
 	private List components = new ArrayList();
 	private String[] allowedComponentsArray = null;
 	
@@ -80,7 +81,17 @@ public class Slot
 	{
 		this.number = number;
 	}
-	
+
+    public boolean isInherit()
+    {
+        return inherit;
+    }
+
+    public void setInherit(boolean inherit)
+    {
+        this.inherit = inherit;
+    }
+
     public String[] getAllowedComponentsArray()
     {
         return allowedComponentsArray;
