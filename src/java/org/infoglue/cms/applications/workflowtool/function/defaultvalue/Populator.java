@@ -44,6 +44,7 @@ public abstract class Populator extends InfoglueFunction {
 	 * 
 	 */
 	protected void doPopulate(final PropertySet ps, final String name, final String value) throws WorkflowException {
+		System.out.println("doPopulate" + name + "#" + value);
 		new PropertysetHelper(ps).setData(name, value);
 	}
 
