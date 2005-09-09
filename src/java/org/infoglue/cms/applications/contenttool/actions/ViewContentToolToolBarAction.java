@@ -362,7 +362,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 				    String workingUrl = null;
 				    
 				    String keyword = "working=";
-				    int startIndex = dnsName.indexOf(keyword);
+				    int startIndex = (dnsName == null) ? -1 : dnsName.indexOf(keyword);
 				    if(startIndex != -1)
 				    {
 				        int endIndex = dnsName.indexOf(",", startIndex);

@@ -214,7 +214,7 @@ public class ViewPublishingToolToolBarAction extends InfoGlueAbstractAction
 		    String previewUrl = null;
 		    
 		    String keyword = "preview=";
-		    int startIndex = dnsName.indexOf(keyword);
+		    int startIndex = (dnsName == null) ? -1 : dnsName.indexOf(keyword);
 		    if(startIndex != -1)
 		    {
 		        int endIndex = dnsName.indexOf(",", startIndex);
