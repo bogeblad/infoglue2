@@ -13,7 +13,8 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  * 
  */
-public abstract class InfoglueFunction implements FunctionProvider {
+public abstract class InfoglueFunction implements FunctionProvider 
+{
 	/**
 	 * 
 	 */
@@ -22,7 +23,7 @@ public abstract class InfoglueFunction implements FunctionProvider {
 	/**
 	 * 
 	 */
-	public static final String PROPERTYSET_STATUS = "workflow.status";
+	public static final String PROPERTYSET_STATUS = "workflow_status";
 
 	/**
 	 * 
@@ -44,18 +45,24 @@ public abstract class InfoglueFunction implements FunctionProvider {
 	/**
 	 * 
 	 */
-	public final void execute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		try {
+	public final void execute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	{
+		try 
+		{
 			getLogger().debug(getClass().getName() + ".execute()--------- START");
 			initializeWorkflowDatabase(transientVars);
 			initialize(transientVars, args, ps);
 			doExecute(transientVars, args, ps);
 			getLogger().debug(getClass().getName() + ".execute()--------- STOP");
-		} catch(WorkflowException e) {
+		} 
+		catch(WorkflowException e) 
+		{
 			getLogger().error(e);
 			setRollbackOnly();
 			throw e;
-		} catch(Exception e) {
+		} 
+		catch(Exception e) 
+		{
 			getLogger().error(e);
 			setRollbackOnly();
 			throw new WorkflowException(e);
@@ -65,21 +72,38 @@ public abstract class InfoglueFunction implements FunctionProvider {
 	/**
 	 * 
 	 */
-	private void initializeWorkflowDatabase(final Map transientVars) throws WorkflowException {
+	private void initializeWorkflowDatabase(final Map transientVars) throws WorkflowException 
+	{
 		workflowDatabase = (DatabaseSession) getParameter(transientVars, TRANSIENT_VARS_DB_VARIABLE, true);
 	}
 	
 	/**
 	 *  
 	 */
-	protected final Object getParameter(final Map transientVars, final String key) throws WorkflowException {
+	protected final String getArgument(final Map args, final String key) throws WorkflowException 
+	{
+		if(!args.containsKey(key)) 
+		{
+			final WorkflowException e = new WorkflowException("Required argument " + key + " is missing.");
+			logger.error(e.toString());
+			throw e;
+		}
+		return (String) args.get(key);
+	}
+	
+	/**
+	 *  
+	 */
+	protected final Object getParameter(final Map transientVars, final String key) throws WorkflowException 
+	{
 		return getParameter(transientVars, key, true);
 	}
 
 	/**
 	 * 
 	 */
-	protected final Object getParameter(final Map transientVars, final String key, final boolean required) throws WorkflowException {
+	protected final Object getParameter(final Map transientVars, final String key, final boolean required) throws WorkflowException 
+	{
 		final Object parameter = transientVars.get(key);
 		if(required && parameter == null) {
 			final WorkflowException e = new WorkflowException("Required parameter " + key + " is missing.");
@@ -102,12 +126,16 @@ public abstract class InfoglueFunction implements FunctionProvider {
 	/**
 	 * 
 	 */
-	protected final Logger getLogger() { return logger; }
+	protected final Logger getLogger() 
+	{ 
+		return logger; 
+	}
 	
 	/**
 	 * 
 	 */
-	protected final void setStatus(final PropertySet ps, final String status) {
+	protected final void setStatus(final PropertySet ps, final String status) 
+	{
 		getLogger().debug("setStatus(" + status + ")");
 		ps.setString(PROPERTYSET_STATUS, status);
 	}
@@ -115,14 +143,16 @@ public abstract class InfoglueFunction implements FunctionProvider {
 	/**
 	 * 
 	 */
-	protected final Database getDatabase() throws WorkflowException {
+	protected final Database getDatabase() throws WorkflowException 
+	{
 		return workflowDatabase != null ? workflowDatabase.getDB() : null;
 	}
 
 	/**
 	 * 
 	 */
-	private void setRollbackOnly() throws WorkflowException {
+	private void setRollbackOnly() throws WorkflowException 
+	{
 		if(workflowDatabase != null)
 			workflowDatabase.setRollbackOnly();
 	}
