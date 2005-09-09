@@ -32,7 +32,7 @@ import javax.servlet.jsp.JspException;
  */
 public abstract class ContentBooleanFieldTag extends ContentInputTag {
 	private static final String FIELD_UNCHECKED = "<input id=\"{0}\" name=\"{1}\" type=\"{2}\" value=\"{3}\"/>";
-	private static final String FIELD_CHECKED   = "<input id=\"{0}\" name=\"{1}\" type=\"{2}\" value=\"{3}\" checked=\"true\"/>";
+	private static final String FIELD_CHECKED   = "<input id=\"{0}\" name=\"{1}\" type=\"{2}\" value=\"{3}\" checked=\"checked\"/>";
 
 	private String value;
 	private String fieldType;

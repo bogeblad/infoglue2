@@ -38,8 +38,8 @@ public class FormTag extends BodyTagSupport {
 
 	private static final String RETURN_ADDRESS_PARAMETER = "returnAddress";
 
-	private static final String FORM_START = "<form name=\"form\" id=\"form\" method=\"GET\" action=\"{0}\">";
-	private static final String HIDDEN     = "<input id=\"{0}\" name=\"{0}\" type=\"hidden\" value=\"{1}\"/>";
+	private static final String FORM_START = "<form name=\"form\" id=\"form\" method=\"get\" action=\"{0}\">";
+	private static final String HIDDEN     = "<div><input id=\"{0}\" name=\"{0}\" type=\"hidden\" value=\"{1}\"/></div>";
 	private static final String FORM_END   = "</form>";
 
 	/**

@@ -21,7 +21,7 @@ public class CategorySelector extends ContentInputTag {
 	private static final String SELECT_FIELD    = "<select id=\"{0}\" name=\"{0}\">{1}</select>";
 	private static final String OPTION_DEFAULT  = "<option value=\"\">{0}</option>";
 	private static final String OPTION          = "<option value=\"{0}\">{1}</option>";
-	private static final String OPTION_SELECTED = "<option value=\"{0}\" selected=\"true\">{1}</option>";
+	private static final String OPTION_SELECTED = "<option value=\"{0}\" selected=\"selected\">{1}</option>";
 
 	private String categoryPath;
 	private String defaultLabel;
