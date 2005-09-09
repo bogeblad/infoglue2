@@ -568,8 +568,11 @@ public class GroupPropertiesController extends BaseController
 	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
 	        break;
 	    }
-	    
-	    value = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
+
+		if(groupPropertyVO != null)
+		{	
+			value = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
+		}
 		
 		return value;
 	}
@@ -688,9 +691,12 @@ public class GroupPropertiesController extends BaseController
 	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
 	        break;
 	    }
-	    
-	    String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
-		relatedContentList = this.getRelatedContentsFromXML(db, xml);
+
+		if(groupPropertyVO != null)
+		{
+			String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
+			relatedContentList = this.getRelatedContentsFromXML(db, xml);
+		}
 		
 		return relatedContentList;
 	}
@@ -747,8 +753,11 @@ public class GroupPropertiesController extends BaseController
 	        break;
 	    }
 	    
-	    String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
-	    relatedSiteNodeList = this.getRelatedSiteNodesFromXML(db, xml);
+		if(groupPropertyVO != null)
+		{
+			String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
+			relatedSiteNodeList = this.getRelatedSiteNodesFromXML(db, xml);
+		}
 
 		return relatedSiteNodeList;
 	}
