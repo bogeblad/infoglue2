@@ -227,7 +227,7 @@
 	* Creates the CMS war file.  Since we deploy an exploded war, the primary
 	* purpose of this target is to organize the files required to deploy.
 	-->
-	<target name="war-cms" depends="compile,jar-apps" description="Creates the CMS war file">
+	<target name="war-cms" depends="clean,compile,jar-apps" description="Creates the CMS war file">
 		<delete>
 		    <fileset dir="${build.classes}" includes="mapping.xml,oracle_mapping.xml,webwork.properties,actions.xml,jobs.xml"/>
         </delete>
@@ -270,7 +270,7 @@
 	* Creates the deliver war file.  Since we deploy an exploded war, the primary
 	* purpose of this target is to organize the files required to deploy.
 	-->
-	<target name="war-deliver" depends="compile" description="Creates the deliver war file">
+	<target name="war-deliver" depends="clean,compile" description="Creates the deliver war file">
 
 		<delete>
 		    <fileset dir="${build.classes}" includes="mapping.xml,oracle_mapping.xml,webwork.properties,actions.xml,jobs.xml"/>
