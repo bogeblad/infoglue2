@@ -43,6 +43,7 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.BrowserBean;
@@ -151,6 +152,11 @@ public interface TemplateController
      * This method gets the NumberFormat instance with the proper locale.
      */
     public abstract NumberFormat getNumberFormatHelper() throws SystemException;
+
+	/**
+	 * This method gets the DesEncryptionHelper.
+	 */
+	public DesEncryptionHelper getDesEncryptionHelper();
 
     /**
      * This method gets the object converter utility.

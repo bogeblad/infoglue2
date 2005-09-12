@@ -84,6 +84,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.PageComparator;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
@@ -440,6 +441,15 @@ public class BasicTemplateController implements TemplateController
 	 	return NumberFormat.getInstance	(
 	 			LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), this.languageId)
 	 		);
+	}
+
+	/**
+	 * This method gets the DesEncryptionHelper.
+	 */
+	
+	public DesEncryptionHelper getDesEncryptionHelper()
+	{
+		return new DesEncryptionHelper();
 	}
 
 	/**
