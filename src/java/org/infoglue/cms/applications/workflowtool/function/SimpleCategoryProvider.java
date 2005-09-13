@@ -1,16 +1,34 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
 package org.infoglue.cms.applications.workflowtool.function;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import org.infoglue.cms.applications.workflowtool.util.PropertysetHelper;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.entities.management.CategoryVO;
 
-
-import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
@@ -21,17 +39,17 @@ public class SimpleCategoryProvider extends CategoryProvider
 	/**
 	 * 
 	 */
-	private static final String PROPERTYSET_CATEGORY_PREFIX = "category_";
+	private static final String CATEGORY_PROPERTYSET_PREFIX = "category_";
 
 	/**
 	 * 
 	 */
-	private static final String ARGUMENT_ATTRIBUTE_NAME = "attributeName";
+	private static final String NAME_ARGUMENT = "attributeName";
 
 	/**
 	 * 
 	 */
-	private static final String	ARGUMENT_ROOT_CATEGORY_NAME = "rootCategory";
+	private static final String	ROOT_ARGUMENT = "rootCategory";
 
 	/**
 	 * 
@@ -56,24 +74,24 @@ public class SimpleCategoryProvider extends CategoryProvider
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	protected void execute() throws WorkflowException 
 	{
-		cleanPropertySet(ps);
-		populate(transientVars, ps);	
+		cleanPropertySet();
+		populate();	
 	}
 	
 	/**
 	 * 
 	 */
-	private void populate(final Map transientVars, final PropertySet ps) throws WorkflowException 
+	private void populate() throws WorkflowException 
 	{
 		List result = new ArrayList();
 		for(Iterator i = rootCategory.getChildren().iterator(); i.hasNext();) 
 		{
 			final CategoryVO categoryVO = (CategoryVO) i.next();
-			if(transientVars.containsKey(getCategoryKey(categoryVO))) 
+			if(parameterExists(getCategoryKey(categoryVO))) 
 			{
-				new PropertysetHelper(ps).setData(getCategoryKey(categoryVO), "1");
+				setPropertySetDataString(getCategoryKey(categoryVO), "1");
 				result.add(categoryVO);
 			}
 		}
@@ -83,19 +101,19 @@ public class SimpleCategoryProvider extends CategoryProvider
 	/**
 	 * 
 	 */
-	private void cleanPropertySet(final PropertySet ps) 
+	private void cleanPropertySet() throws WorkflowException
 	{
-		new PropertysetHelper(ps).removeKeys(getBaseKey());
+		removeFromPropertySet(getBaseKey(), true);
 	}
 	
 	/**
 	 * 
 	 */
-	protected void initializeArguments(final Map args) throws WorkflowException 
+	protected void initialize() throws WorkflowException 
 	{
-		super.initializeArguments(args);
-		attributeName = (String) args.get(ARGUMENT_ATTRIBUTE_NAME);
-		rootCategory  = getRootCategory((String) args.get(ARGUMENT_ROOT_CATEGORY_NAME));
+		super.initialize();
+		attributeName = getArgument(NAME_ARGUMENT);
+		rootCategory  = getRootCategory(getArgument(ROOT_ARGUMENT));
 	}
 	
 	/**
@@ -120,7 +138,7 @@ public class SimpleCategoryProvider extends CategoryProvider
 	 */
 	private String getBaseKey() 
 	{ 
-		return PROPERTYSET_CATEGORY_PREFIX + attributeName + "_";	
+		return CATEGORY_PROPERTYSET_PREFIX + attributeName + "_";	
 	}
 	
 	/**

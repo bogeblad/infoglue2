@@ -1,8 +1,29 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
 package org.infoglue.cms.applications.workflowtool.function;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -10,15 +31,14 @@ import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
-import org.infoglue.cms.security.InfoGluePrincipal;
 
-import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
  * 
  */
-public class ContentPublisher extends ContentFunction {
+public class ContentPublisher extends ContentFunction 
+{
 	/**
 	 * 
 	 */
@@ -32,11 +52,6 @@ public class ContentPublisher extends ContentFunction {
 	/**
 	 * 
 	 */
-	private InfoGluePrincipal principal;
-
-	/**
-	 * 
-	 */
 	private LanguageVO language;
 
 	
@@ -44,40 +59,53 @@ public class ContentPublisher extends ContentFunction {
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
+	protected void execute() throws WorkflowException 
+	{
 		if(getContentVO() != null)
-			publish(ps);
+		{
+			publish();
+		}
 		else
-			setStatus(ps, STATUS_NOK);
-	}
-	
-	/**
-	 * 
-	 */
-	private void publish(final PropertySet ps) throws WorkflowException {
-		try {
-			final ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(getContentVO().getId(), language.getId(), getDatabase());
-			if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE)) {
-				final List events = new ArrayList();
-				ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", principal, getContentVO().getId(), getDatabase(), events);
-				PublicationController.getController().createAndPublish(createPublicationVO(), events, principal, getDatabase());
-				setStatus(ps, STATUS_OK);
-			} else {
-				setStatus(ps, STATUS_NOK);
-			}
-		} catch(Exception e) {
-			setStatus(ps, STATUS_NOK);
-			throw new WorkflowException(e);
+		{
+			setStatus(STATUS_NOK);
 		}
 	}
 	
 	/**
 	 * 
 	 */
-	private PublicationVO createPublicationVO() {
-	    PublicationVO publicationVO = new PublicationVO();
-	    publicationVO.setName("Workflow publication by " + principal.getName());
-	    publicationVO.setDescription("Workflow publication by " + principal.getName());
+	private void publish() throws WorkflowException 
+	{
+		try 
+		{
+			final ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(getContentVO().getId(), language.getId(), getDatabase());
+			if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE)) 
+			{
+				final List events = new ArrayList();
+				ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", getPrincipal(), getContentVO().getId(), getDatabase(), events);
+				PublicationController.getController().createAndPublish(createPublicationVO(), events, getPrincipal(), getDatabase());
+				setStatus(STATUS_OK);
+			} 
+			else 
+			{
+				setStatus(STATUS_NOK);
+			}
+		} 
+		catch(Exception e) 
+		{
+			setStatus(STATUS_NOK);
+			throwException(e);
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private PublicationVO createPublicationVO() 
+	{
+	    final PublicationVO publicationVO = new PublicationVO();
+	    publicationVO.setName("Workflow publication by " + getPrincipal().getName());
+	    publicationVO.setDescription("Workflow publication by " + getPrincipal().getName());
 	    publicationVO.setRepositoryId(getContentVO().getRepositoryId());
 		return publicationVO;
 	}
@@ -85,9 +113,9 @@ public class ContentPublisher extends ContentFunction {
 	/**
 	 * 
 	 */
-	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		super.initialize(transientVars, args, ps);
-		principal = (InfoGluePrincipal) getParameter(transientVars, PrincipalProvider.PRINCIPAL_PARAMETER);
-		language =  (LanguageVO)        getParameter(transientVars, LanguageProvider.LANGUAGE_PARAMETER);
+	protected void initialize() throws WorkflowException 
+	{
+		super.initialize();
+		language =  (LanguageVO) getParameter(LanguageProvider.LANGUAGE_PARAMETER);
 	}
 }

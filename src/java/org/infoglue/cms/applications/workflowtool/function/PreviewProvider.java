@@ -1,6 +1,26 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
 package org.infoglue.cms.applications.workflowtool.function;
-
-import java.util.Map;
 
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -8,13 +28,13 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.URLHelper;
 
-import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
  * 
  */
-public class PreviewProvider extends InfoglueFunction {
+public class PreviewProvider extends InfoglueFunction
+{
 	/**
 	 * 
 	 */
@@ -23,7 +43,7 @@ public class PreviewProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	public static final String PROPERTYSET_PREVIEW_URL_VARIABLE = "previewURL";
+	public static final String PREVIEW_URL_PROPERTYSET_KEY = "previewURL";
 
 	/**
 	 * 
@@ -45,26 +65,21 @@ public class PreviewProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		populate(ps);
-	}
-
-	/**
-	 * 
-	 */
-	private void populate(PropertySet ps) throws WorkflowException {
+	protected void execute() throws WorkflowException 
+	{
 		final String baseURL   = CmsPropertyHandler.getProperty("previewDeliveryUrl");
 		final URLHelper helper = new URLHelper(baseURL, content.getId(), previewSiteNode.getId(), language.getId());
-		ps.setString(PROPERTYSET_PREVIEW_URL_VARIABLE, helper.getURL());
+		setPropertySetString(PREVIEW_URL_PROPERTYSET_KEY, helper.getURL());
 	}
 
 	/**
 	 * 
 	 */
-	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		super.initialize(transientVars, args, ps);
-		content         = (ContentVO)  getParameter(transientVars, ContentFunction.CONTENT_PARAMETER);
-		language        = (LanguageVO) getParameter(transientVars, LanguageProvider.LANGUAGE_PARAMETER);
-		previewSiteNode = (SiteNodeVO) getParameter(transientVars, SITENODE_PARAMETER);
+	protected void initialize() throws WorkflowException 
+	{
+		super.initialize();
+		content         = (ContentVO)  getParameter(ContentFunction.CONTENT_PARAMETER);
+		language        = (LanguageVO) getParameter(LanguageProvider.LANGUAGE_PARAMETER);
+		previewSiteNode = (SiteNodeVO) getParameter(SITENODE_PARAMETER);
 	}
 }

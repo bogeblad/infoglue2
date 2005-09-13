@@ -1,18 +1,39 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
 package org.infoglue.cms.applications.workflowtool.function;
 
 import java.util.List;
-import java.util.Map;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.management.LanguageVO;
 
-import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
  * 
  */
-public class LanguageProvider extends InfoglueFunction {
+public class LanguageProvider extends InfoglueFunction 
+{
 	/**
 	 * 
 	 */
@@ -21,12 +42,12 @@ public class LanguageProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	private static final String PROPERTYSET_LANGUAGE_ID  = "languageId";
+	private static final String LANGUAGE_PROPERTYSET_KEY  = "languageId";
 
 	/**
 	 * 
 	 */
-	private static final String ARGUMENT_LANGUAGE_CODE = "code";
+	private static final String LANGUAGE_CODE_ARGUMENT = "code";
 
 	/**
 	 * 
@@ -38,80 +59,100 @@ public class LanguageProvider extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		populate(transientVars, args, ps);
-	}
-	
-	/**
-	 * 
-	 */
-	private void populate(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		LanguageVO language = null;
+	protected void execute() throws WorkflowException 
+	{
+		LanguageVO languageVO = null;
 
-		if(ps.exists(PROPERTYSET_LANGUAGE_ID))
-			language = getLanguageWithID(ps.getString(PROPERTYSET_LANGUAGE_ID));
+		if(propertySetContains(LANGUAGE_PROPERTYSET_KEY))
+		{
+			languageVO = getLanguageWithID(getPropertySetString(LANGUAGE_PROPERTYSET_KEY));
+		}
+		if(languageVO == null && parameterExists(LANGUAGE_ID_IDENTIFIER))
+		{
+			languageVO = getLanguageWithID(getParameter(LANGUAGE_ID_IDENTIFIER).toString());
+		}
+		if(languageVO == null && argumentExists(LANGUAGE_CODE_ARGUMENT))
+		{
+			languageVO = getLanguageWithCode(getArgument(LANGUAGE_CODE_ARGUMENT));
+		}
 
-		if(language == null && transientVars.containsKey(LANGUAGE_ID_IDENTIFIER))
-			language = getLanguageWithID((String) transientVars.get(LANGUAGE_ID_IDENTIFIER));
-
-		if(language == null && args.containsKey(ARGUMENT_LANGUAGE_CODE))
-			language = getLanguageWithCode((String) args.get(ARGUMENT_LANGUAGE_CODE));
-
-		if(language == null)
-			language = getAnyLanguage();
+		if(languageVO == null)
+		{
+			languageVO = getAnyLanguage();
+		}
 		
-		populate(transientVars, ps, language);
+		populate(languageVO);
 	}
 	
 	/**
 	 * 
 	 */
-	private void populate(final Map transientVars, final PropertySet ps, final LanguageVO language) {
-		if(language == null && ps.exists(PROPERTYSET_LANGUAGE_ID))
-			ps.remove(PROPERTYSET_LANGUAGE_ID);
-		if(language != null) {
-			transientVars.put(LANGUAGE_PARAMETER, language);
-			ps.setString(PROPERTYSET_LANGUAGE_ID, language.getId().toString());
+	private void populate(final LanguageVO languageVO) throws WorkflowException
+	{
+		if(languageVO == null && propertySetContains(LANGUAGE_PROPERTYSET_KEY))
+		{
+			removeFromPropertySet(LANGUAGE_PROPERTYSET_KEY);
+		}
+		if(languageVO != null) 
+		{
+			setParameter(LANGUAGE_PARAMETER, languageVO);
+			setPropertySetString(LANGUAGE_PROPERTYSET_KEY, languageVO.getId().toString());
 		}
 	}
 	
 	/**
 	 * 
 	 */
-	public LanguageVO getAnyLanguage() throws WorkflowException {
-		try {
-			
+	public LanguageVO getAnyLanguage() throws WorkflowException 
+	{
+		LanguageVO languageVO = null;
+		try 
+		{
 			final List languages = LanguageController.getController().getLanguageVOList(getDatabase());
 			if(!languages.isEmpty())
-				return (LanguageVO) languages.get(0);
-			throw new WorkflowException("No languages found...");
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new WorkflowException("Language.getAnyLanguage() : " + e);
+			{
+				languageVO = (LanguageVO) languages.get(0);
+			}
+			throwException("No languages found...");
+		} 
+		catch (Exception e) 
+		{
+			throwException("Language.getAnyLanguage() : " + e);
 		}
+		return languageVO;
 	}
 
 	/**
 	 * 
 	 */
-	public LanguageVO getLanguageWithID(final String languageId) throws WorkflowException {
-		try {
-			return LanguageController.getController().getLanguageVOWithId(new Integer(languageId), getDatabase());
-		} catch (Exception e) {
-			e.printStackTrace();
+	public LanguageVO getLanguageWithID(final String languageId) throws WorkflowException 
+	{
+		LanguageVO languageVO = null;
+		try 
+		{
+			languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId), getDatabase());
+		} 
+		catch (Exception e) 
+		{
 			throw new WorkflowException("Language.getLanguageWithID() : " + e);
 		}
+		return languageVO;
 	}
 
 	/**
 	 * 
 	 */
-	public LanguageVO getLanguageWithCode(final String code) throws WorkflowException {
-		try {
-			return LanguageController.getController().getLanguageVOWithCode(code, getDatabase());
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new WorkflowException("Language.getLanguageWithCode() : " + e);
+	public LanguageVO getLanguageWithCode(final String code) throws WorkflowException 
+	{
+		LanguageVO languageVO = null;
+		try 
+		{
+			languageVO = LanguageController.getController().getLanguageVOWithCode(code, getDatabase());
+		} 
+		catch (Exception e) 
+		{
+			throwException("Language.getLanguageWithCode() : " + e);
 		}
+		return languageVO;
 	}
 }

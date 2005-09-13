@@ -1,19 +1,38 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
 package org.infoglue.cms.applications.workflowtool.function.title;
-
-import java.util.Map;
 
 import org.infoglue.cms.applications.workflowtool.function.ContentPopulator;
 import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
 
-
-import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
 
-public class ContentVersionTitlePopulator extends Populator {
+public class ContentVersionTitlePopulator extends Populator 
+{
 	/**
 	 * 
 	 */
-    private static final String ARGUMENT_ATTRIBUTE_NAME = "attributeName";
+    private static final String ATTRIBUTE_ARGUMENT = "attributeName";
 	
 	/**
 	 * 
@@ -25,21 +44,30 @@ public class ContentVersionTitlePopulator extends Populator {
 	/**
 	 * 
 	 */
-	public ContentVersionTitlePopulator() { super(); }
+	public ContentVersionTitlePopulator() 
+	{ 
+		super(); 
+	}
 	
 	/**
 	 * 
 	 */
-	protected String getTitle() { return title; } 
+	protected String getTitle() 
+	{ 
+		return title; 
+	} 
 
 	/**
 	 * 
 	 */
-	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException {
-		super.initialize(transientVars, args, ps);
-		final String attributeName = (String) args.get(ARGUMENT_ATTRIBUTE_NAME);
-		final ContentVersionValues contentVersionValues = (ContentVersionValues) transientVars.get(ContentPopulator.CONTENT_VERSION_VALUES_PARAMETER);
-		if(attributeName != null && contentVersionValues != null && contentVersionValues.contains(attributeName))
-			title = (String) contentVersionValues.get(attributeName);
+	protected void initialize() throws WorkflowException 
+	{
+		super.initialize();
+		final String attributeName = getArgument(ATTRIBUTE_ARGUMENT);
+		final ContentVersionValues contentVersionValues = (ContentVersionValues) getParameter(ContentPopulator.CONTENT_VERSION_VALUES_PARAMETER, null);
+		if(contentVersionValues != null && contentVersionValues.contains(attributeName))
+		{
+			title = contentVersionValues.get(attributeName).toString();
+		}
 	}
 }

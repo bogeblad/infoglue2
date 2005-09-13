@@ -1,19 +1,38 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
 package org.infoglue.cms.applications.workflowtool.function;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.infoglue.cms.applications.workflowtool.util.ContentFactory;
 import org.infoglue.cms.applications.workflowtool.util.ContentValues;
 import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.security.InfoGluePrincipal;
 
-import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
@@ -35,11 +54,6 @@ public class ContentCreator extends ContentFunction
 	 * 
 	 */
 	private static final String STATUS_NOK = "status.content.nok";
-	
-	/**
-	 * 
-	 */
-	private InfoGluePrincipal principal;
 	
 	/**
 	 * 
@@ -75,27 +89,25 @@ public class ContentCreator extends ContentFunction
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
-	{
-		create(ps);
-	}
-
-	/**
-	 * 
-	 */
-	private void create(final PropertySet ps) throws WorkflowException 
+	protected void execute() throws WorkflowException 
 	{
 		try 
 		{
-			final ContentFactory factory = new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, principal, languageVO);
+			final ContentFactory factory = new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, getPrincipal(), languageVO);
 			ContentVO newContentVO = null;
 			if(getContentVO() == null)
+			{
 				newContentVO = factory.create(parentFontentVO, categories, getDatabase());
+			}
 			else
+			{
 				newContentVO = factory.update(getContentVO(), categories, getDatabase());
+			}
 			if(newContentVO != null)
-				ps.setString(ContentProvider.RESULTSET_CONTENT_ID, newContentVO.getContentId().toString());
-			setStatus(ps, (newContentVO != null) ? STATUS_OK : STATUS_NOK);
+			{
+				setPropertySetString(ContentProvider.CONTENT_ID_PROPERTYSET_KEY, newContentVO.getContentId().toString());
+			}
+			setStatus((newContentVO != null) ? STATUS_OK : STATUS_NOK);
 		} 
 		catch(ConstraintException e) 
 		{
@@ -103,30 +115,21 @@ public class ContentCreator extends ContentFunction
 		} 
 		catch(Exception e) 
 		{
-			throw new WorkflowException(e);
+			throwException(e);
 		}
 	}
 
 	/**
 	 * 
 	 */
-	private List getContentTypeAttributes() 
+	protected void initialize() throws WorkflowException 
 	{
-		return ContentTypeDefinitionController.getController().getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue());
-	}
-
-	/**
-	 * 
-	 */
-	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
-	{
-		super.initialize(transientVars, args, ps);
-		principal               = (InfoGluePrincipal)       getParameter(transientVars, PrincipalProvider.PRINCIPAL_PARAMETER);
-		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(transientVars, ContentTypeDefinitionProvider.CONTENT_TYPE_DEFINITION_PARAMETER);
-		languageVO              = (LanguageVO)              getParameter(transientVars, LanguageProvider.LANGUAGE_PARAMETER);
-		categories              = (Map)                     getParameter(transientVars, CategoryProvider.CATEGORIES_PARAMETER);
-		contentValues           = (ContentValues)           getParameter(transientVars, ContentPopulator.CONTENT_VALUES_PARAMETER);
-		contentVersionValues    = (ContentVersionValues)    getParameter(transientVars, ContentPopulator.CONTENT_VERSION_VALUES_PARAMETER);
-		parentFontentVO         = (ContentVO)               getParameter(transientVars, FOLDER_PARAMETER);
+		super.initialize();
+		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(ContentTypeDefinitionProvider.CONTENT_TYPE_DEFINITION_PARAMETER);
+		languageVO              = (LanguageVO)              getParameter(LanguageProvider.LANGUAGE_PARAMETER);
+		categories              = (Map)                     getParameter(CategoryProvider.CATEGORIES_PARAMETER, new HashMap());
+		contentValues           = (ContentValues)           getParameter(ContentPopulator.CONTENT_VALUES_PARAMETER);
+		contentVersionValues    = (ContentVersionValues)    getParameter(ContentPopulator.CONTENT_VERSION_VALUES_PARAMETER);
+		parentFontentVO         = (ContentVO)               getParameter(FOLDER_PARAMETER);
 	}
 }
