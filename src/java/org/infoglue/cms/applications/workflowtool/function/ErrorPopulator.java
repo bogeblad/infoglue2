@@ -1,152 +1,101 @@
+/* ===============================================================================
+*
+* Part of the InfoGlue Content Management Platform (www.infoglue.org)
+*
+* ===============================================================================
+*
+*  Copyright (C)
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License version 2, as published by the
+* Free Software Foundation. See the file LICENSE.html for more information.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+* Place, Suite 330 / Boston, MA 02111-1307 / USA.
+*
+* ===============================================================================
+*/
 package org.infoglue.cms.applications.workflowtool.function;
 
-import java.util.Locale;
-import java.util.Map;
-
-import org.infoglue.cms.applications.workflowtool.util.ContentFactory;
-import org.infoglue.cms.applications.workflowtool.util.ContentValues;
-import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
-import org.infoglue.cms.applications.workflowtool.util.PropertysetHelper;
-import org.infoglue.cms.applications.workflowtool.util.RequestHelper;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
 
-import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
  * 
  */
-public class ErrorPopulator extends InfoglueFunction 
+public abstract class ErrorPopulator extends InfoglueFunction 
 {
 	/**
 	 * 
 	 */
-	public static final String PROPERTYSET_ERROR_PREFIX = "error_";
-
-	/**
-	 * 
-	 */
-	private InfoGluePrincipal principal;
-
-	/**
-	 * 
-	 */
-	private LanguageVO language;
-
-	/**
-	 * 
-	 */
-	private ContentTypeDefinitionVO contentTypeDefinitionVO;
-
-	/**
-	 * 
-	 */
-	private ContentValues contentValues;
-
-	/**
-	 * 
-	 */
-	private ContentVersionValues contentVersionValues;
+	private static final String PACKAGE = "org.infoglue.cms.entities";
 	
 	/**
 	 * 
 	 */
-	private Locale locale;
+	public static final String ERROR_PROPERTYSET_PREFIX = "error_";
 
-	
+	/**
+	 * 
+	 */
+	private StringManager stringManager; 
 	
 	/**
 	 * 
 	 */
-	protected void doExecute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	protected ErrorPopulator()
 	{
-		clean(ps);
-		populate(ps);
-	}
-
-	/**
-	 * 
-	 */
-	private void clean(final PropertySet ps) 
-	{
-		new PropertysetHelper(ps).removeKeys(PROPERTYSET_ERROR_PREFIX);
+		super();
 	}
 	
 	/**
 	 * 
 	 */
-	private void populate(PropertySet ps) 
+	protected final void execute() throws WorkflowException
 	{
-		final ConstraintExceptionBuffer ceb = new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, principal, language).validate();
-		for(ConstraintException e = ceb.toConstraintException(); e != null; e = e.getChainedException())
-			populateError(ps, e);
-	}
-
-	/**
-	 * 
-	 */
-	private void populateError(final PropertySet ps, final ConstraintException e) 
-	{
-		ps.setString(getErrorKey(e), getErrorMessage(e));
+		clean();
+		populate();
 	}
 	
 	/**
 	 * 
 	 */
-	private String getErrorKey(final ConstraintException e) 
-	{
-		// The field name has the form:
-		//   Content.<name> 
-		// or
-		//   ContentVersion.<name>
-		// 
-		// convert this to:
-		//   content_<name> 
-		// or
-		//   contentversion_<name>
-		// to better fit into the workflow framework.
-		
-		final String fieldName = e.getFieldName();
-		final int index = fieldName.indexOf('.');
-		if(index == -1) // play it safe
-			return PROPERTYSET_ERROR_PREFIX + e.getFieldName();
-		
-		final String before = fieldName.substring(0, index).toLowerCase();
-		final String after  = fieldName.substring(index + 1);
-		final String key    = PROPERTYSET_ERROR_PREFIX + before + "_" + after;
+	protected abstract void clean() throws WorkflowException;
 
-		getLogger().debug("error field name converted from [" + fieldName  + "] to [" + before + "_" + after + "].");
-		
-		return key;
+	/**
+	 * 
+	 */
+	protected abstract void populate() throws WorkflowException;
+	
+	/**
+	 * 
+	 */
+	protected final void clean(final String errorPrefix) throws WorkflowException
+	{
+		removeFromPropertySet(errorPrefix, true);
 	}
 
 	/**
 	 * 
 	 */
-	private String getErrorMessage(final ConstraintException e) 
+	protected void initialize() throws WorkflowException 
 	{
-	    final StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.entities", locale);
-	    return stringManager.getString(e.getErrorCode());
+		super.initialize();
+		stringManager = StringManagerFactory.getPresentationStringManager(PACKAGE, getLocale()); 
 	}
-
+	
 	/**
 	 * 
 	 */
-	protected void initialize(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	protected final StringManager getStringManager()
 	{
-		super.initialize(transientVars, args, ps);
-		principal               = (InfoGluePrincipal)       getParameter(transientVars, PrincipalProvider.PRINCIPAL_PARAMETER);
-		language                = (LanguageVO)              getParameter(transientVars, LanguageProvider.LANGUAGE_PARAMETER);
-		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(transientVars, ContentTypeDefinitionProvider.CONTENT_TYPE_DEFINITION_PARAMETER);
-		contentValues           = (ContentValues)           getParameter(transientVars, ContentPopulator.CONTENT_VALUES_PARAMETER);
-		contentVersionValues    = (ContentVersionValues)    getParameter(transientVars, ContentPopulator.CONTENT_VERSION_VALUES_PARAMETER);
-		
-		locale = new RequestHelper(transientVars).getLocale();
+	    return stringManager;
 	}
 }
