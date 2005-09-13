@@ -129,12 +129,19 @@
 				#set($view = "$quote$workflowVO.getView()$quote")				
 				#if($workflowVO.getTitle())
 				  	#set($fullTitle = "$workflowVO.getName() - $workflowVO.getTitle()")
+					#set($visibleTitle = $fullTitle)
+					#if($fullTitle.length() > 40)
+						#set($visibleTitle = "$fullTitle.substring(0,37)...")
+					#end
 				#else
 					#set($fullTitle = "$workflowVO.getName()")
+					#set($visibleTitle = $fullTitle)
+					#if($fullTitle.length() > 40)
+						#set($visibleTitle = "$fullTitle.substring(0,37)...")
+					#end
 				#end
 				
-
-				#set($row = ["<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'>$fullTitle</a>", "$!action"])
+				#set($row = ["<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a title='$fullTitle' href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'>$visibleTitle</a>", "$!action"])
 				#set($cnt = $cnt + 1)
 				#lvAddRow($row $cnt "$workflowVO.getWorkflowId()")
 			#end
@@ -159,7 +166,14 @@
 			#set($quote = '"')
 			#foreach ($availableWorkflowVO in $availableWorkflows)
 				#set($view = "$quote$availableWorkflowVO.getView()$quote")
-				#set($row = ["<a href='javascript:showDiv(${quote}availableWorkflow${availableWorkflowVO.name}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'>$availableWorkflowVO.getName()</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
+				
+				#set($fullTitle = $availableWorkflowVO.getName())
+				#set($visibleTitle = $fullTitle)
+				#if($fullTitle.length() > 40)
+					#set($visibleTitle = "$fullTitle.substring(0,37)...")
+				#end
+				
+				#set($row = ["<a href='javascript:showDiv(${quote}availableWorkflow${availableWorkflowVO.name}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a title='$fullTitle' href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'>$visibleTitle</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
 				#set($cnt = $cnt + 1)
 				#lvAddRow($row $cnt "$availableWorkflowVO.getWorkflowId()")
 			#end
