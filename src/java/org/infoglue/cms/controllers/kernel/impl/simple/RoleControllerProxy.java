@@ -27,6 +27,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -44,12 +45,23 @@ import org.infoglue.cms.security.InfoGlueRole;
 public class RoleControllerProxy extends BaseController 
 {
 	private static AuthorizationModule authorizationModule = null;
+	private Database transactionObject = null;
+
+	public RoleControllerProxy(Database transactionObject)
+	{
+	    this.transactionObject = transactionObject;
+	}
 
 	public static RoleControllerProxy getController()
 	{
-		return new RoleControllerProxy();
+		return new RoleControllerProxy(null);
 	}
 	
+	public static RoleControllerProxy getController(Database transactionObject)
+	{
+	    return new RoleControllerProxy(transactionObject);
+	}
+
 	/**
 	 * This method instantiates the AuthorizationModule.
 	 */
@@ -62,6 +74,7 @@ public class RoleControllerProxy extends BaseController
 			{
 				authorizationModule = (AuthorizationModule)Class.forName(InfoGlueAuthenticationFilter.authorizerClass).newInstance();
 				authorizationModule.setExtraProperties(InfoGlueAuthenticationFilter.extraProperties);
+				authorizationModule.setTransactionObject(this.transactionObject);
 			}
 			catch(Exception e)
 			{
