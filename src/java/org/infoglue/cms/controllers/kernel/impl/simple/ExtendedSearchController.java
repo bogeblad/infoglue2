@@ -1,15 +1,33 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -27,12 +45,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 /**
  * 
  */
-public class ExtendedSearchController extends BaseController {
-	/**
-	 * 
-	 */
-    private final static Logger logger = Logger.getLogger(ExtendedSearchController.class.getName());
-
+public class ExtendedSearchController extends BaseController 
+{
     /**
 	 * The singleton controller.
 	 */
@@ -147,7 +161,9 @@ public class ExtendedSearchController extends BaseController {
 			final SqlBuilder sqlBuilder = new SqlBuilder(criterias);
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
+			{
 				oql.bind(i.next());
+			}
 			return createResults(oql.execute(Database.ReadOnly));
 		} 
 		catch(Exception e)
@@ -164,14 +180,19 @@ public class ExtendedSearchController extends BaseController {
 	{
 		final Set results = new HashSet();
 		while(qr.hasMore())
+		{
 			results.add(qr.next());
+		}
 		return results;
 	}
 	
 	/**
 	 * Unused. 
 	 */
-	public BaseEntityVO getNewVO() { return null; }
+	public BaseEntityVO getNewVO() 
+	{ 
+		return null; 
+	}
 }
 
 /**
@@ -233,8 +254,6 @@ class SqlBuilder
 	//
 	private String sql;
 	private List bindings;
-	private int bindingsCounter;
-	private final Map uniqueCategoryTableKeys = new HashMap();
 	
 	
 	/**
@@ -339,7 +358,9 @@ class SqlBuilder
 		clauses.addAll(getContentWhereClauses());
 		clauses.add(getContentVersionWhereClauses());
 		if(criterias.hasFreetextCritera())
+		{
 			clauses.add(getFreetextWhereClause());
+		}
 		clauses.addAll(getCategoriesWhereClauses());
 		clauses.addAll(getDateWhereClauses());
 		return WHERE_KEYWORD + SPACE + joinCollection(clauses, SPACE + AND + SPACE);
@@ -358,7 +379,8 @@ class SqlBuilder
 		clauses.add(MessageFormat.format(CV_STATE_CLAUSE, new Object[] { getBindingVariable() }));
 		bindings.add(criterias.getStateId());
 
-		if(criterias.hasLanguageCriteria()) {
+		if(criterias.hasLanguageCriteria()) 
+		{
 			logger.debug(" CRITERA[language]");
 			clauses.add(MessageFormat.format(CV_LANGUAGE_CLAUSE, new Object[] { getBindingVariable() }));
 			bindings.add(criterias.getLanguage().getId());
@@ -374,13 +396,15 @@ class SqlBuilder
 	{
 		final List expressions = new ArrayList();
 		if(criterias.hasContentTypeDefinitionVOsCriteria())
+		{
 			logger.debug(" CRITERA[content type definition]");
-			for(final Iterator i=criterias.getContentTypeDefinitions().iterator(); i.hasNext(); ) {
+			for(final Iterator i=criterias.getContentTypeDefinitions().iterator(); i.hasNext(); ) 
+			{
 				final ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO) i.next();
 				expressions.add(MessageFormat.format(getC_CONTENT_TYPE_CLAUSE(), new Object[] { getBindingVariable() }));
 				bindings.add(contentTypeDefinitionVO.getId());
 			}
-
+		}
 		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
 	}
 
@@ -435,6 +459,7 @@ class SqlBuilder
 		logger.debug(" CRITERA[freetext]");
 		final List expressions = new ArrayList();
 		if(criterias.hasFreetextCritera())
+		{
 			for(final Iterator i=criterias.getXmlAttributes().iterator(); i.hasNext(); ) 
 			{
 				final String xmlAttribute = (String) i.next();
@@ -444,6 +469,7 @@ class SqlBuilder
 				bindings.add(freeTextVariable);
 				expressions.add(freeTextExpression);
 			}
+		}
 		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
 	}
 	
@@ -454,7 +480,9 @@ class SqlBuilder
 	{
 		final List tables = new ArrayList();
 		if(criterias.hasCategoryConditions())
+		{
 			tables.addAll(criterias.getCategories().getFromClauseTables());
+		}
 		return tables;
 	}
 	
@@ -487,9 +515,13 @@ class SqlBuilder
         {
             String useShortTableNames = CmsPropertyHandler.getProperty("useShortTableNames");
             if(useShortTableNames == null || !useShortTableNames.equalsIgnoreCase("true"))
+            {
                 useFull = new Boolean(true);
+            }
             else
-                useFull = new Boolean(false);    
+            {
+                useFull = new Boolean(false);
+            }
         }
         
         return useFull.booleanValue();
