@@ -118,7 +118,7 @@ TextareaProp		: "Egenskaper för textruta",
 FormProp			: "Egenskaper för formulär",
 
 //FontFormats			: "Normal;Div;Formaterad;Adress;Rubrik 1;Rubrik 2;Rubrik 3;Rubrik 4;Rubrik 5;Rubrik 6;Citat",
-FontFormats			: "Brödtext;Formaterad;Adress;Rubrik 1;Rubrik;Mellanrubrik;Ingress;Rubrik 5;Rubrik 6;Div",
+FontFormats			: "Brödtext;Formaterad;Adress;Rubrik 1;Underrubrik;Mellanrubrik;Ingress;Stort citat;Rubrik 6;Div",
 
 // Alerts and Messages
 ProcessingXHTML		: "Bearbetar XHTML. Var god vänta...",
