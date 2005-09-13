@@ -27,6 +27,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.infoglue.cms.util.CmsPropertyHandler;
+
 /**
  * @author mattias
  * This class represents a slot in a page component structure.
@@ -113,7 +115,10 @@ public class Slot
 	            if(i > 0)
 	                sb.append("&");
 	            
-	            sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentsArray[i], "UTF-8"));
+	            //sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentsArray[i], "UTF-8"));
+	            String encoding = CmsPropertyHandler.getProperty("URIEncoding");
+	            
+	            sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentsArray[i], encoding));
 	        }
         }
         else
