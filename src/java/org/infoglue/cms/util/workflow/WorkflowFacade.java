@@ -25,9 +25,11 @@ package org.infoglue.cms.util.workflow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.SessionFactory;
@@ -59,7 +61,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.20 $ $Date: 2005/09/06 14:36:36 $
+ * @version $Revision: 1.21 $ $Date: 2005/09/13 13:23:04 $
  */
 public class WorkflowFacade
 {
@@ -99,13 +101,22 @@ public class WorkflowFacade
 	private WorkflowDescriptor workflowDescriptor;
 
 	/**
+	 * Constructs a WorkflowFacade with the given owner.
+	 * @param owner
+	 */
+	public WorkflowFacade(final Owner owner)
+	{
+		workflow = new BasicWorkflow(owner.getIdentifier());
+		workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
+	}
+	
+	/**
 	 * Constructs a WorkflowFacade with the given user principal
 	 * @param userPrincipal an InfoGluePrincipal representing a system user
 	 */
 	public WorkflowFacade(InfoGluePrincipal userPrincipal)
 	{
-		workflow = new BasicWorkflow(userPrincipal.getName());
-		workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
+		this(OwnerFactory.create(userPrincipal));
 	}
 
 	/**
@@ -322,7 +333,39 @@ public class WorkflowFacade
 
 		return workflowVOs;
 	}
-
+	
+	/**
+	 * 
+	 */
+	public List getMyActiveWorkflows(final InfoGluePrincipal principal) throws SystemException
+	{
+		if(principal.getIsAdministrator())
+		{
+			return getActiveWorkflows();
+		}
+		final Set workflowVOs = new HashSet();
+		for(final Iterator owners = OwnerFactory.createAll(principal).iterator(); owners.hasNext(); )
+		{
+			final Owner owner = (Owner) owners.next();
+			workflowVOs.addAll(createWorkflowsForOwner(owner));
+		}
+		return new ArrayList(workflowVOs);
+	}
+	
+	/**
+	 * 
+	 */
+	private final Set createWorkflowsForOwner(final Owner owner) throws SystemException
+	{
+		final Set workflowVOs = new HashSet(); 
+		for (Iterator workflows = findWorkflows(owner).iterator(); workflows.hasNext();)
+		{
+			setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
+			workflowVOs.add(createWorkflowVO());
+		}
+		return workflowVOs;
+	}
+	
 	/**
 	 * Finds all active workflows
 	 * @return A list of workflowIds representing workflows that match the hard-wored query expression.
@@ -341,6 +384,26 @@ public class WorkflowFacade
 		}
 	}
 
+	/**
+	 * Finds all workflows for the specified owner.
+	 * 
+	 * @param owner the owner.
+	 * @return The active workflows owned by the specified owner. 
+	 * @throws SystemException
+	 */
+	private List findWorkflows(final Owner owner) throws SystemException
+	{
+		try
+		{
+			return workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.OWNER,
+						FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier())));
+		}
+		catch (WorkflowException e)
+		{
+			throw new SystemException(e);
+		}
+	}
+	
 	/**
 	 * Returns all current steps for the workflow, i.e., steps that could be performed in the workflow's current state
 	 * Steps are filtered according to ownership; if a step has an owner, it is only included if the ownser matches

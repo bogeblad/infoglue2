@@ -24,17 +24,19 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.mydesktop.*;
-import org.infoglue.cms.exception.SystemException;
-
-import org.infoglue.cms.security.InfoGluePrincipal;
-
-import org.infoglue.cms.util.workflow.WorkflowFacade;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.workflow.WorkflowFacade;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
@@ -60,50 +62,29 @@ public class WorkflowController extends BaseController
 	private WorkflowController() {}
 
 	/**
-	 * Creates a new instance of a named workflow.
-	 * @param userPrincipal the user principal representing the desired user
-	 * @param workflowName the name of the workflow to create.
-	 * @return a WorkflowVO representing the newly created workflow instance
-	 * @throws SystemException if an error occurs while initiaizing the workflow
-	 * @deprecated use initializeWorkflow() instead; this method relies on a hard-coded initial action ID of 0.
-	 * @see #initializeWorkflow
+	 * TODO: move; used by tests + CreateWorkflowInstanceAction 
 	 */
-	public WorkflowVO createWorkflowInstance(InfoGluePrincipal userPrincipal, String workflowName) throws SystemException
+	public static Map createWorkflowParameters(final HttpServletRequest request)
 	{
-		return initializeWorkflow(userPrincipal, workflowName, 0);
+		final Map parameters = new HashMap();
+		parameters.putAll(request.getParameterMap());
+		parameters.put("request", request);
+		return parameters;
 	}
 
 	/**
 	 * @param principal the user principal representing the desired user
 	 * @param name the name of the workflow to create.
 	 * @param actionId the ID of the initial action
+	 * @param inputs the inputs to the workflow
 	 * @return a WorkflowVO representing the newly created workflow instance
 	 * @throws SystemException if an error occurs while initiaizing the workflow
 	 */
-	public WorkflowVO initializeWorkflow(InfoGluePrincipal principal, String name, int actionId) throws SystemException
+	public WorkflowVO initializeWorkflow(InfoGluePrincipal principal, String name, int actionId, Map inputs) throws SystemException
 	{
 		try
 		{
-			return new WorkflowFacade(principal, name, actionId).createWorkflowVO();
-		}
-		catch (Exception e)
-		{
-			throw new SystemException(e);
-		}
-	}
-
-	/**
-	 * @param principal the user principal representing the desired user
-	 * @param name the name of the workflow to create.
-	 * @param actionId the ID of the initial action
-	 * @return a WorkflowVO representing the newly created workflow instance
-	 * @throws SystemException if an error occurs while initiaizing the workflow
-	 */
-	public WorkflowVO initializeWorkflow(InfoGluePrincipal principal, String name, int actionId, Map map) throws SystemException
-	{
-		try
-		{
-			return new WorkflowFacade(principal, name, actionId, map).createWorkflowVO();
+			return new WorkflowFacade(principal, name, actionId, inputs).createWorkflowVO();
 		}
 		catch (Exception e)
 		{
@@ -131,32 +112,29 @@ public class WorkflowController extends BaseController
 	{
 		return new WorkflowFacade(userPrincipal).getActiveWorkflows();
 	}
+	
+	/**
+	 * 
+	 */
+	public List getMyCurrentWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
+	{
+		return new WorkflowFacade(userPrincipal).getMyActiveWorkflows(userPrincipal);
+	}
+	
 
 	/**
 	 * Invokes an action on a workflow for a given user and request
-	 * <b>TODO:</b> Remove dependency on HTTP request
 	 * @param principal the user principal
-	 * @param request the current HTTP request
 	 * @param workflowId the ID of the desired workflow
 	 * @param actionId the ID of the desired action
+	 * @param inputs the inputs to the workflow 
 	 * @return a WorkflowVO representing the current state of the workflow identified by workflowId
 	 * @throws WorkflowException if a workflow error occurs
 	 */
-	public WorkflowVO invokeAction(InfoGluePrincipal principal, HttpServletRequest request, long workflowId, int actionId)
-			throws WorkflowException
+	public WorkflowVO invokeAction(InfoGluePrincipal principal, long workflowId, int actionId, Map inputs) throws WorkflowException
 	{
-		getLogger().info("invokeAction.............");
-		getLogger().info("workflowId:" + workflowId);
-		getLogger().info("actionId:" + actionId);
-
-		Map parameters = new HashMap();
-		parameters.putAll(request.getParameterMap());
-		parameters.put("request", request);
-
 		WorkflowFacade workflow = new WorkflowFacade(principal, workflowId);
-		workflow.doAction(actionId, parameters);
-
-		getLogger().info("invokeAction end.............");
+		workflow.doAction(actionId, inputs);
 		return workflow.createWorkflowVO();
 	}
 

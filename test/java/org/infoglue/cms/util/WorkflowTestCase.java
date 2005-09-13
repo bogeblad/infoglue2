@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.7 2005/06/10 14:40:42 jed Exp $
+ * $Id: WorkflowTestCase.java,v 1.8 2005/09/13 13:23:04 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -117,7 +117,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 */
 	protected void startWorkflow(int initialAction) throws Exception
 	{
-		setWorkflow(controller.initializeWorkflow(getUserPrincipal(), getWorkflowName(), initialAction));
+		setWorkflow(controller.initializeWorkflow(getUserPrincipal(), getWorkflowName(), initialAction, new HashMap()));
 	}
 
 	/**
@@ -141,7 +141,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 */
 	protected void invokeAction(HttpServletRequest request, int actionId) throws Exception
 	{
-		workflow = controller.invokeAction(getUserPrincipal(), request, getWorkflowId(), actionId);
+		workflow = controller.invokeAction(getUserPrincipal(), getWorkflowId(), actionId, WorkflowController.createWorkflowParameters(request));
 	}
 
 	/**

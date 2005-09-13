@@ -23,19 +23,25 @@
 
 package org.infoglue.cms.applications.mydesktoptool.actions;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
-import org.infoglue.cms.entities.mydesktop.*;
-
-import org.infoglue.cms.util.workflow.StepFilter;
+import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.workflow.StepFilter;
 
 import webwork.action.ActionContext;
-import com.opensymphony.workflow.*;
+
+import com.opensymphony.workflow.InvalidActionException;
+import com.opensymphony.workflow.WorkflowException;
 
 /**
  * This class implements the action class for the startpage in the mydesktop tool.
@@ -44,6 +50,11 @@ import com.opensymphony.workflow.*;
  */
 public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6543209932597662088L;
+
 	protected static final String INVALID_ACTION = "invalidAction";
 
 	private static final WorkflowController controller = WorkflowController.getController();
@@ -142,7 +153,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	public String doStartWorkflow() throws SystemException
 	{
-		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), getWorkflowName(), actionId, getRequest().getParameterMap());
+		workflow = controller.initializeWorkflow(getInfoGluePrincipal(), getWorkflowName(), actionId, WorkflowController.createWorkflowParameters(ActionContext.getRequest()));
 		return redirectToView();
 	}
 
@@ -167,7 +178,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 
 		try
 		{
-			workflow = controller.invokeAction(getInfoGluePrincipal(), ActionContext.getRequest(), getWorkflowId(), actionId);
+			workflow = controller.invokeAction(getInfoGluePrincipal(), getWorkflowId(), actionId, WorkflowController.createWorkflowParameters(ActionContext.getRequest()));
 			return redirectToView();
 		}
 		catch (InvalidActionException e)
@@ -212,7 +223,15 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	private void populateLists() throws SystemException
 	{
 		availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
-		workflowVOList = controller.getCurrentWorkflowVOList(getInfoGluePrincipal());
+		final String showAllWorkflows = CmsPropertyHandler.getProperty("showAllWorkflows");
+		if(showAllWorkflows == null || showAllWorkflows.equalsIgnoreCase("true"))
+		{
+			workflowVOList = controller.getCurrentWorkflowVOList(getInfoGluePrincipal());
+		}
+		else
+		{
+			workflowVOList = controller.getMyCurrentWorkflowVOList(getInfoGluePrincipal());
+		}
 	}
 
 	/**

@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.5 2005/06/10 14:31:08 jed Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.6 2005/09/13 13:23:04 mattias Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool.actions;
 
@@ -61,8 +61,8 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 
 	public void testExecute2ActiveWorkflows() throws Exception
 	{
-		WorkflowVO workflow1 = controller.initializeWorkflow(getAdminPrincipal(), "Create News", 0);
-		WorkflowVO workflow2 = controller.initializeWorkflow(getAdminPrincipal(), "Create User", 0);
+		WorkflowVO workflow1 = controller.initializeWorkflow(getAdminPrincipal(), "Create News", 0, WorkflowController.createWorkflowParameters(request));
+		WorkflowVO workflow2 = controller.initializeWorkflow(getAdminPrincipal(), "Create User", 0, WorkflowController.createWorkflowParameters(request));
 
 		try
 		{
@@ -194,7 +194,7 @@ public class ViewMyDesktopToolStartPageActionTest extends WebWorkTestCase
 
 	private void finishWorkflow(long workflowId) throws Exception
 	{
-		controller.invokeAction(getAdminPrincipal(), request, workflowId, WorkflowTestCase.FINISH_WORKFLOW);
+		controller.invokeAction(getAdminPrincipal(), workflowId, WorkflowTestCase.FINISH_WORKFLOW, WorkflowController.createWorkflowParameters(request));
 	}
 
 	private static void assertContains(List actions, WorkflowActionVO expected)

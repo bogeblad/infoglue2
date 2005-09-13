@@ -22,6 +22,8 @@
 */
 package org.infoglue.cms.util.workflow;
 
+import java.util.Iterator;
+
 import org.infoglue.cms.security.*;
 import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
 import org.infoglue.cms.util.workflow.StepFilter;
@@ -31,7 +33,7 @@ import org.infoglue.cms.applications.common.Session;
  * Filters steps according to owner.  If a step has no owner, it is assumed that anyone can view it.
  * An administrator can view all steps regardless of owner.
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.8 $ $Date: 2005/01/07 14:15:14 $
+ * @version $Revision: 1.9 $ $Date: 2005/09/13 13:23:04 $
  */
 public class OwnerStepFilter implements StepFilter
 {
@@ -62,7 +64,19 @@ public class OwnerStepFilter implements StepFilter
 	 */
 	public boolean isAllowed(WorkflowStepVO step)
 	{
-		return !step.hasOwner() || step.isOwner(userPrincipal.getName()) || isUserAdministrator();
+		if(!step.hasOwner() || isUserAdministrator())
+		{
+			return true;
+		}
+		for(final Iterator owners = OwnerFactory.createAll(userPrincipal).iterator(); owners.hasNext(); )
+		{
+			final Owner owner = (Owner) owners.next();
+			if(step.isOwner(owner.getIdentifier()))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected boolean isUserAdministrator()
