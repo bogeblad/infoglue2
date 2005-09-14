@@ -28,48 +28,61 @@ import java.text.MessageFormat;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /**
  * 
  */
-public class FormTag extends BodyTagSupport {
-	private static final long serialVersionUID = 3256441425909724981L;
-
-	private static final String RETURN_ADDRESS_PARAMETER = "returnAddress";
-
-	private static final String FORM_START = "<form name=\"form\" id=\"form\" method=\"get\" action=\"{0}\">";
-	private static final String HIDDEN     = "<div><input id=\"{0}\" name=\"{0}\" type=\"hidden\" value=\"{1}\"/></div>";
-	private static final String FORM_END   = "</form>";
+public class FormTag extends WorkflowTag 
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -558848421886366918L;
 
 	/**
 	 * 
 	 */
-	public FormTag() {
+	private static final String RETURN_ADDRESS_PARAMETER = "returnAddress";
+
+	/**
+	 * 
+	 */
+	private static final String FORM_START = "<form name=\"form\" id=\"form\" method=\"get\" action=\"{0}\">";
+
+	/**
+	 * 
+	 */
+	private static final String HIDDEN = "<div><input id=\"{0}\" name=\"{0}\" type=\"hidden\" value=\"{1}\"/></div>";
+
+	/**
+	 * 
+	 */
+	private static final String FORM_END = "</form>";
+
+	/**
+	 * 
+	 */
+	public FormTag() 
+	{
 		super();
 	}
 
 	/**
 	 * 
 	 */
-	public int doStartTag() throws JspException {
-		final String returnAddress  = getReturnAddress();
-		final String actionID       = WorkflowHelper.getActionID(pageContext.getRequest());
-		final String workflowID     = WorkflowHelper.getWorkflowID(pageContext.getRequest());
-
-		final String actionIDName   = WorkflowHelper.ACTION_ID_PARAMETER;
-		final String workflowIDName = WorkflowHelper.WORKFLOW_ID_PARAMETER;
-
-		write(MessageFormat.format(FORM_START, new Object[] { returnAddress }));
-		write(MessageFormat.format(HIDDEN, new Object[] { actionIDName, actionID }));
-		write(MessageFormat.format(HIDDEN, new Object[] { workflowIDName,  workflowID }));
+	public int doStartTag() throws JspException 
+	{
+		write(MessageFormat.format(FORM_START, new Object[] { getReturnAddress() }));
+		write(MessageFormat.format(HIDDEN, new Object[] { ACTION_ID_PARAMETER, getActionID() }));
+		write(MessageFormat.format(HIDDEN, new Object[] { WORKFLOW_ID_PARAMETER,  getWorkflowID() }));
 		return EVAL_BODY_INCLUDE;
 	}
 
 	/**
 	 * 
 	 */
-	public int doEndTag() throws JspException {
+	public int doEndTag() throws JspException 
+	{
 		write(FORM_END);
 		return EVAL_PAGE;
 	}
@@ -77,10 +90,14 @@ public class FormTag extends BodyTagSupport {
 	/**
 	 * 
 	 */
-	private void write(String text) throws JspException {
-		try {
+	private void write(String text) throws JspException 
+	{
+		try 
+		{
 			pageContext.getOut().write(text);
-		} catch(IOException e) {
+		} 
+		catch(IOException e) 
+		{
 			e.printStackTrace();
 			throw new JspTagException("IO error: " + e.getMessage());
 		}

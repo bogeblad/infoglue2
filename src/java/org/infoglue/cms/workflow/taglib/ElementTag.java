@@ -5,81 +5,119 @@
 * ===============================================================================
 *
 *  Copyright (C)
-* 
+*
 * This program is free software; you can redistribute it and/or modify it under
 * the terms of the GNU General Public License version 2, as published by the
 * Free Software Foundation. See the file LICENSE.html for more information.
-* 
+*
 * This program is distributed in the hope that it will be useful, but WITHOUT
 * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
 * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License along with
 * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
 *
 * ===============================================================================
 */
-
 package org.infoglue.cms.workflow.taglib;
+
+import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
-/**
- * 
- */
-public class SetPropertySetTag extends WorkflowTag
+public abstract class ElementTag extends WorkflowTag 
 {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4937344683246274243L;
-
-	/**
-	 * 
-	 */
-	private String key;
+	private Element element;
 	
 	/**
 	 * 
 	 */
-	private String value;
-	
-	
-    public SetPropertySetTag() 
+	ElementTag()
 	{
-        super();
-    }
-
+		super();
+	}
+	
 	/**
 	 * 
 	 */
-	public int doEndTag() throws JspException {
+	public final int doEndTag() throws JspException 
+	{
+		process();
+		write();
+		element = null;
+		return EVAL_PAGE;
+	}
+	
+	/**
+	 * 
+	 */
+	protected void process()
+	{
+	}
+	
+	/**
+	 * 
+	 */
+	protected void write() throws JspException 
+	{
 		try 
 		{
-			getPropertySet().setDataString(key, value);
-		}
-		catch(Exception e)
+			pageContext.getOut().write(getElement().toString());
+		} 
+		catch(IOException e) 
 		{
+			e.printStackTrace();
 			throw new JspTagException(e.getMessage());
 		}
-        return EVAL_PAGE;
-    }
+	}
+
+	/**
+	 * 
+	 */
+	protected Element getElement()
+	{
+		if(element == null)
+		{
+			element = createElement();
+		}
+		return element;
+	}
 	
 	/**
 	 * 
 	 */
-    public void setKey(final String key) 
-	{
-        this.key = key;
+	protected abstract Element createElement();
+
+	// -------------------------------------------------------------------------	
+	// --- core html attributes ------------------------------------------------
+	// -------------------------------------------------------------------------	
+	
+	/**
+	 * 
+	 */
+    public void setIdAttr(final String id) 
+    {
+    	getElement().attribute("id", id);
     }
 
 	/**
 	 * 
 	 */
-    public void setValue(final String value) 
-	{
-        this.value = value;
+    public void setCssClass(final String css) 
+    {
+    	getElement().attribute("class", css);
+    }
+
+    /**
+	 * 
+	 */
+    public void setTitle(final String title) 
+    {
+    	getElement().attribute("title", title);
     }
 }

@@ -23,101 +23,68 @@
 
 package org.infoglue.cms.workflow.taglib;
 
-import java.io.IOException;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-
 /**
  * 
  */
-public abstract class ContentInputTag extends TagSupport {
-	private String idAttr   = "";
-	private String name     = "";
-	private String cssClass = "";
-	private String readonly;
-
+public abstract class ContentInputTag extends ElementTag 
+{
+	/**
+	 * 
+	 */
+	private String elementValue;
 
 	/**
 	 * 
 	 */
-	public ContentInputTag() {
+	public ContentInputTag() 
+	{
 		super();
 	}
 
 	/**
 	 * 
 	 */
-	protected void write(String text) throws JspException {
-		try {
-			pageContext.getOut().write(text);
-		} catch(IOException e) {
-			e.printStackTrace();
-			throw new JspTagException("IO error: " + e.getMessage());
-		}
-	}
-
-	/**
-	 *
-	 */
-	protected String getContentValue() {
-		return WorkflowHelper.getPropertyData(getName(), pageContext.getSession(), pageContext.getRequest());
+	protected void process() 
+	{
+		super.process();
+		getElement().attribute("type", getType());
 	}
 
 	/**
 	 * 
 	 */
-	public String getName() {
-		return name;
-	}
-
+	protected abstract String getType();
+	
 	/**
 	 * 
 	 */
-	public void setName(String name) {
-		this.name = name;
+	protected Element createElement()
+	{
+		return new Element("input");
 	}
 	
 	/**
 	 * 
 	 */
-    public String getIdAttr() {
-        return idAttr;
-    }
-    
+	protected final String getElementValue()
+	{
+		return elementValue;
+	}
+	
 	/**
 	 * 
 	 */
-    public void setIdAttr(String idAttr) {
-        this.idAttr = idAttr;
-    }
-
+	public void setName(final String name) 
+	{
+		getElement().attribute("name", name);
+		elementValue = getElementValue(name);
+	}
+	
 	/**
 	 * 
 	 */
-    public String getCssClass() {
-        return cssClass;
-    }
-    
-	/**
-	 * 
-	 */
-    public void setCssClass(String cssClass) {
-        this.cssClass = cssClass;
-    }
-
-	/**
-	 * 
-	 */
-    public String getReadonly() {
-        return readonly;
-    }
-    
-	/**
-	 * 
-	 */
-    public void setReadonly(String readonly) {
-        this.readonly = readonly;
+    public void setReadonly(final boolean isReadonly) 
+    {
+    	getElement().attribute("readonly", "readonly", isReadonly);
     }
 }

@@ -27,12 +27,23 @@ package org.infoglue.cms.workflow.taglib;
  * 
  */
 public class ContentCheckboxFieldTag extends ContentBooleanFieldTag {
-	private static final long serialVersionUID = 3761121639563014455L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3434771498028818579L;
 
 	/**
 	 * 
 	 */
 	public ContentCheckboxFieldTag() {
-		super("checkbox");
+		super();
+	}
+
+	/**
+	 * 
+	 */
+	protected String getType()
+	{
+		return "checkbox";
 	}
 }

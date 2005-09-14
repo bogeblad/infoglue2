@@ -27,12 +27,24 @@ package org.infoglue.cms.workflow.taglib;
  * 
  */
 public class ContentRadioFieldTag extends ContentBooleanFieldTag {
-	private static final long serialVersionUID = 3257569524873310257L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6075535724616738560L;
 
 	/**
 	 * 
 	 */
-	public ContentRadioFieldTag() {
-		super("radio");
+	public ContentRadioFieldTag() 
+	{
+		super();
+	}
+
+	/**
+	 * 
+	 */
+	protected String getType()
+	{
+		return "radio";
 	}
 }

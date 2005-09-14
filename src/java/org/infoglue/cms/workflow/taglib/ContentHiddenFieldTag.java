@@ -23,42 +23,39 @@
 
 package org.infoglue.cms.workflow.taglib;
 
-import java.text.MessageFormat;
-
-import javax.servlet.jsp.JspException;
 
 /**
  * 
  */
-public class ContentHiddenFieldTag extends ContentInputTag {
+public class ContentHiddenFieldTag extends ContentInputTag 
+{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 3258411746401334071L;
-	
-	private static final String HIDDEN_FIELD = "<input id=\"{0}\" name=\"{1}\" type=\"hidden\" value=\"{2}\"/>";
-	
+	private static final long serialVersionUID = 4525533981132474111L;
+
 	/**
 	 * 
 	 */
-	public ContentHiddenFieldTag() {
+	public ContentHiddenFieldTag() 
+	{
 		super();
 	}
 
 	/**
 	 * 
 	 */
-	public int doEndTag() throws JspException {
-		write(createHiddenFieldHTML());
-		return EVAL_PAGE;
+	protected String getType()
+	{
+		return "hidden";
 	}
-
-
+	
 	/**
 	 * 
 	 */
-	private String createHiddenFieldHTML() {
-		String value = (getContentValue() == null) ? "" : getContentValue();
-		return MessageFormat.format(HIDDEN_FIELD, new Object[] { getIdAttr(), getName(), value });
+	protected void process() 
+	{
+		super.process();
+		getElement().attribute("value", getElementValue());
 	}
 }

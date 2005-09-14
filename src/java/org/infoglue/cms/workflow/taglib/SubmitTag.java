@@ -22,67 +22,42 @@
 */
 package org.infoglue.cms.workflow.taglib;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-public class SubmitTag extends TagSupport {
-	private static final long serialVersionUID = 3256726169356613942L;
-
-	private static final String SUBMIT_FIELD = "<input type=\"submit\" value=\"{0}\" onclick=\"document.getElementById({1}).value={2}\"/>";
-
-	private String actionID;
-	private String value;
+/**
+ * 
+ */
+public class SubmitTag extends ContentInputTag 
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1974076670375531350L;
 
 	/**
 	 * 
 	 */
-    public SubmitTag() {
+    public SubmitTag() 
+    {
         super();
     }
 
+    protected String getType() 
+    {
+    	return "submit";
+    }
+    
 	/**
 	 * 
 	 */
-	public int doEndTag() throws JspException {
-		write(createSubmitHTML());
-        return EVAL_PAGE;
-	}
-	
-	/**
-	 * 
-	 */
-	private void write(String text) throws JspException {
-		try {
-			pageContext.getOut().write(text);
-		} catch(IOException e) {
-			e.printStackTrace();
-			throw new JspTagException("IO error: " + e.getMessage());
-		}
-	}
-
-	/**
-	 * 
-	 */
-	private String createSubmitHTML() {
-		final String actionIDName = "'" + WorkflowHelper.ACTION_ID_PARAMETER + "'";
-		return MessageFormat.format(SUBMIT_FIELD, new Object[] { value, actionIDName, actionID });
-	}
-		
-	/**
-	 * 
-	 */
-	public void setActionID(String id) {
-        this.actionID = id;
+	public void setActionID(final String id) 
+	{
+		getElement().attribute("onclick", "document.getElementById('" + ACTION_ID_PARAMETER + "').value=" + id + ";");
     }
 
 	/**
 	 * 
 	 */
-	public void setValue(String value) {
-        this.value = value;
+	public void setValue(final String value) 
+	{
+		getElement().attribute("value", value);
     }
 }

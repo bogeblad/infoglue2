@@ -23,53 +23,40 @@
 
 package org.infoglue.cms.workflow.taglib;
 
-import java.text.MessageFormat;
-
-import javax.servlet.jsp.JspException;
 
 /**
  * 
  */
-public abstract class ContentBooleanFieldTag extends ContentInputTag {
-	private static final String FIELD_UNCHECKED = "<input id=\"{0}\" name=\"{1}\" type=\"{2}\" value=\"{3}\"/>";
-	private static final String FIELD_CHECKED   = "<input id=\"{0}\" name=\"{1}\" type=\"{2}\" value=\"{3}\" checked=\"checked\"/>";
-
+public abstract class ContentBooleanFieldTag extends ContentInputTag 
+{
+	/**
+	 * 
+	 */
 	private String value;
-	private String fieldType;
-	
 	
 	/**
 	 * 
 	 */
-	public ContentBooleanFieldTag(String fieldType) {
+	public ContentBooleanFieldTag() 
+	{
 		super();
-		this.fieldType = fieldType;
 	}
-
+	
 	/**
 	 * 
 	 */
-	public int doEndTag() throws JspException {
-		write(createBooleanFieldHTML());
-		return EVAL_PAGE;
+	protected void process() 
+	{
+		super.process();
+		getElement().attribute("checked", "checked", value != null && getElementValue() != null && value.equals(getElementValue()));
 	}
-
-
+	
 	/**
 	 * 
 	 */
-	private String createBooleanFieldHTML() {
-		String value = (this.value == null) ? "" : this.value;
-		if(getContentValue() != null && value != null && value.equals(getContentValue()))
-			return MessageFormat.format(FIELD_CHECKED, new Object[] { getIdAttr(), getName(), fieldType, value });
-		else
-			return MessageFormat.format(FIELD_UNCHECKED, new Object[] { getIdAttr(), getName(), fieldType, value });
-	}
-
-	/**
-	 * 
-	 */
-	public void setValue(String value) {
+	public void setValue(final String value) 
+	{
+		getElement().attribute("value", value);
 		this.value = value;
 	}
 }
