@@ -84,6 +84,6 @@ public class HasStatus implements Condition
 			throw e;
 		}
 		wantedStatus  = (String) args.get(ARGUMENT_WANTED_STATUS);
-		currentStatus = (String) (ps.exists(InfoglueFunction.STATUS_PROPERTYSET_KEY) ? ps.getString(InfoglueFunction.STATUS_PROPERTYSET_KEY) : null); 
+		currentStatus = ps.exists(InfoglueFunction.STATUS_PROPERTYSET_KEY) ? ps.getString(InfoglueFunction.STATUS_PROPERTYSET_KEY) : null; 
 	}
 }
