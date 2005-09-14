@@ -131,6 +131,39 @@ public class InfogluePropertySet implements PropertySet {
 		}
 	}
 
+	/**
+	 * 
+	 */
+	public String getAsString(final String key)
+	{
+		if(!exists(key) || getAsActualType(key) == null)
+		{
+			return null;
+		}
+		
+		switch(getType(key)) 
+		{
+			case PropertySet.BOOLEAN:
+				return new Boolean(getBoolean(key)).toString();
+			case PropertySet.DATA:
+				return getDataString(key);
+			case PropertySet.DATE:
+				return getDate(key).toString();
+			case PropertySet.DOUBLE:
+				return new Double(getDouble(key)).toString();
+			case PropertySet.INT:
+				return new Integer(getInt(key)).toString();
+			case PropertySet.LONG:
+				return new Long(getLong(key)).toString();
+			case PropertySet.STRING:
+				return getString(key);
+			case PropertySet.TEXT:
+				return getText(key);
+			default:
+				logger.warn("Unsupported type [" + getType(key) + "].");
+		}
+		return null;
+	}
 	
 	
 	// -----------------------------------------------------------------------------
