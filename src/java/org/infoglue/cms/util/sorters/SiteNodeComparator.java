@@ -4,7 +4,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 
-import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
@@ -15,15 +14,15 @@ import java.util.Comparator;
  *
  * @author Frank Febbraro (frank@phase2technology.com)
  */
-public class PageComparator implements Comparator
+public class SiteNodeComparator implements Comparator
 {
-    private final static Logger logger = Logger.getLogger(PageComparator.class.getName());
+    private final static Logger logger = Logger.getLogger(SiteNodeComparator.class.getName());
 
 	private String sortProperty;
 	private String sortOrder;
 	private TemplateController templateController;
 
-	public PageComparator(String sortProperty, String sortOrder, TemplateController templateController)
+	public SiteNodeComparator(String sortProperty, String sortOrder, TemplateController templateController)
 	{
 		this.sortProperty = sortProperty;
 		this.sortOrder = sortOrder;
@@ -37,11 +36,11 @@ public class PageComparator implements Comparator
 		
 		if(valueOne == null)
 		{
-			WebPage webPage1 = (WebPage)o1;
-			WebPage webPage2 = (WebPage)o2;
+			SiteNodeVO siteNodeVO1 = (SiteNodeVO)o1;
+		    SiteNodeVO siteNodeVO2 = (SiteNodeVO)o2;
 		    
-		    Integer meta1Id = this.templateController.getMetaInformationContentId(webPage1.getSiteNodeId());
-		    Integer meta2Id = this.templateController.getMetaInformationContentId(webPage2.getSiteNodeId());
+		    Integer meta1Id = this.templateController.getMetaInformationContentId(siteNodeVO1.getId());
+		    Integer meta2Id = this.templateController.getMetaInformationContentId(siteNodeVO2.getId());
 		    
 		    valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
 			valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);

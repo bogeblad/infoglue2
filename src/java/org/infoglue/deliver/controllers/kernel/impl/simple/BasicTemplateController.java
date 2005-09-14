@@ -86,7 +86,7 @@ import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.util.sorters.PageComparator;
+import org.infoglue.cms.util.sorters.SiteNodeComparator;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
@@ -3617,7 +3617,7 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
-			Collections.sort(childNodeVOList, new PageComparator(sortAttribute, sortOrder, this));
+			Collections.sort(childNodeVOList, new SiteNodeComparator(sortAttribute, sortOrder, this));
 			Iterator i = childNodeVOList.iterator();
 			while(i.hasNext())
 			{
