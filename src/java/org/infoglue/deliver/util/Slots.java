@@ -139,7 +139,7 @@ public class Slots {
 	 */
 	private List calculateVisibleElements() 
 	{
-		System.out.println("calculateVisibleElements() : [" + getFromElementIndex() + "," + getToElementIndex() + "]");
+		//System.out.println("calculateVisibleElements() : [" + getFromElementIndex() + "," + getToElementIndex() + "]");
 
 		return allElements.subList(getFromElementIndex(), getToElementIndex());
 	}
@@ -152,7 +152,7 @@ public class Slots {
 		final List result = new ArrayList();
 		final int start   = startSlot();
 		final int end     = Math.min(start + slotCount, maxSlots); 
-		System.out.println("calculateVisibleSlots() : [" + start + "," + end + "]");
+		//System.out.println("calculateVisibleSlots() : [" + start + "," + end + "]");
 		
 		for(int i=start; i<=end; ++i)
 			result.add(new Integer(i));

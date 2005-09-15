@@ -35,6 +35,7 @@ public class ContentTag extends ComponentLogicTag
 {
 	private static final long serialVersionUID = 3258135773294113587L;
 
+	private Integer siteNodeId;
 	private Integer contentId;
 	private String propertyName;
     private boolean useInheritance = true;
@@ -55,7 +56,10 @@ public class ContentTag extends ComponentLogicTag
 	    if(this.contentId != null)
 	        return this.getController().getContent(this.contentId);
 	    else if(this.propertyName != null)
-	        return this.getComponentLogic().getBoundContent(propertyName, useInheritance);
+	        if(this.siteNodeId != null)
+	            return this.getComponentLogic().getBoundContent(siteNodeId, propertyName, useInheritance);
+	        else
+	            return this.getComponentLogic().getBoundContent(propertyName, useInheritance);
 	    else if(this.getController().getContentId() != null && this.getController().getContentId().intValue() > -1)
 	        return this.getController().getContent();
 	    else
@@ -77,4 +81,8 @@ public class ContentTag extends ComponentLogicTag
         this.useInheritance = useInheritance;
     }
     
+    public void setSiteNodeId(String siteNodeId) throws JspException
+    {
+        this.siteNodeId = evaluateInteger("content", "siteNodeId", siteNodeId);
+    }
 }

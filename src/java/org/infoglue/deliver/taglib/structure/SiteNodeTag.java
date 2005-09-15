@@ -33,8 +33,9 @@ public class SiteNodeTag extends ComponentLogicTag
 	private static final long serialVersionUID = 3258135773294113587L;
 
 	private Integer siteNodeId;
+	private Integer targetSiteNodeId;
 	private String propertyName;
-    private boolean useInheritance = true;
+	private boolean useInheritance = true;
     
     public SiteNodeTag()
     {
@@ -52,7 +53,10 @@ public class SiteNodeTag extends ComponentLogicTag
 	    if(this.siteNodeId != null)
 	        return this.getController().getSiteNode(this.siteNodeId);
 	    else if(this.propertyName != null)
-	        return this.getComponentLogic().getBoundSiteNode(propertyName, useInheritance);
+	        if(this.targetSiteNodeId != null)
+	            return this.getComponentLogic().getBoundSiteNode(targetSiteNodeId, propertyName, useInheritance);
+	        else
+	            return this.getComponentLogic().getBoundSiteNode(propertyName, useInheritance);    
 	    else if(this.getController().getSiteNodeId() != null && this.getController().getSiteNodeId().intValue() > -1)
 	        return this.getController().getSiteNode();
 	    else
@@ -74,4 +78,9 @@ public class SiteNodeTag extends ComponentLogicTag
         this.useInheritance = useInheritance;
     }
     
+    public void setTargetSiteNodeId(String targetSiteNodeId) throws JspException
+    {
+        this.targetSiteNodeId = evaluateInteger("siteNode", "targetSiteNodeId", targetSiteNodeId);
+    }
+
 }

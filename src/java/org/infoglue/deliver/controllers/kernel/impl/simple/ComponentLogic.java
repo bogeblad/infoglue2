@@ -520,6 +520,24 @@ public class ComponentLogic
 		return content;
 	}
 
+	public ContentVO getBoundContent(Integer siteNodeId, String propertyName, boolean useInheritance)
+	{
+		ContentVO content = null;
+
+		Map property = getInheritedComponentProperty(siteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				content = this.templateController.getContent(contentId);
+			}
+		}
+
+		return content;
+	}
+
 	public Integer getBoundContentId(String propertyName)
 	{
 	    return getBoundContentId(propertyName, true);
@@ -647,6 +665,30 @@ public class ComponentLogic
 	    SiteNodeVO siteNodeVO = null;
 	    
 	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			if(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				siteNodeVO = templateController.getSiteNode(siteNodeId);
+			}
+		}
+
+		return siteNodeVO;
+	}
+
+	/**
+	 * This method returns a list of pages bound to the component on the given siteNode.
+	 */
+
+	public SiteNodeVO getBoundSiteNode(Integer targetSiteNodeId, String propertyName, boolean useInheritance)
+	{
+	    SiteNodeVO siteNodeVO = null;
+	    
+	    Map property = getInheritedComponentProperty(targetSiteNodeId, this.infoGlueComponent, propertyName, useInheritance);
 		
 		if(property != null)
 		{	
@@ -883,7 +925,39 @@ public class ComponentLogic
 		
 		return null;
 	}
-	
+
+	/**
+	 * This method gets a property from the component and if not found there checks in parent components.
+	 */
+
+	public Map getInheritedComponentProperty(Integer siteNodeId, InfoGlueComponent component, String propertyName, boolean useInheritance)
+	{
+	    try
+		{
+			Map property1 = getComponentProperty(siteNodeId, propertyName, useInheritance);
+			if(property1 != null)
+				return property1;
+			/*	
+			Map property = (Map)component.getProperties().get(propertyName);
+			InfoGlueComponent parentComponent = component.getParentComponent();
+			//logger.info("parentComponent: " + parentComponent);
+			while(property == null && parentComponent != null)
+			{
+				property = (Map)parentComponent.getProperties().get(propertyName);
+				parentComponent = parentComponent.getParentComponent();
+			}
+			*/
+			
+			return null;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
 	/**
 	 * This method gets if a property is defined and available in the given page.
 	 */
@@ -1063,7 +1137,54 @@ public class ComponentLogic
 
 		return property;
 	}
+
+	/**
+	 * This method fetches the component named component property. If not available on the sent in page metainfo we go up recursive.
+	 */
 	
+	private Map getComponentProperty(Integer siteNodeId, String propertyName, boolean useInheritance) throws Exception
+	{
+		//Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
+		//System.out.println("property1:" + property);
+		Map property = null;
+		
+		if(useInheritance)
+		{
+			try
+			{
+			    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.templateController.getLanguageId(), this.templateController.getContentId());
+			
+				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), siteNodeId).getValueObject();
+				while(property == null && parentSiteNodeVO != null)
+				{
+				    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
+					
+				    SiteNodeVO newParentSiteNodeVO = nodeDeliveryController.getParentSiteNode(templateController.getDatabase(), parentSiteNodeVO.getId());
+				
+				    if(newParentSiteNodeVO == null)
+					{
+					    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
+					    logger.info("parentRepositoryId:" + parentRepositoryId);
+					    if(parentRepositoryId != null)
+					    {
+					        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
+						}
+					}
+					
+					parentSiteNodeVO = newParentSiteNodeVO;
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+        //System.out.println("Done..." + propertyName);
+
+		return property;
+	}
+
 	
 	/**
 	 * This method gets a component property from the parent to the current recursively until found.
