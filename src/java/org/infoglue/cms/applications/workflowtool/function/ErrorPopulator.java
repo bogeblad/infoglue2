@@ -40,11 +40,6 @@ public abstract class ErrorPopulator extends InfoglueFunction
 	/**
 	 * 
 	 */
-	public static final String ERROR_PROPERTYSET_PREFIX = "error_";
-
-	/**
-	 * 
-	 */
 	private StringManager stringManager; 
 	
 	/**
