@@ -22,29 +22,15 @@
 */
 package org.infoglue.cms.applications.workflowtool.condition;
 
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-import org.infoglue.cms.applications.workflowtool.function.ErrorPopulator;
-
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.workflow.Condition;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
  * 
  */
-public class HasErrors implements Condition 
+public class HasErrors extends InfoglueCondition
 {
 	/**
-	 * 
-	 */
-    private final static Logger logger = Logger.getLogger(HasErrors.class.getName());
-
-	
-	
-	/**
-	 * 
+	 * Default constructor. 
 	 */
 	public HasErrors() 
 	{ 
@@ -52,12 +38,13 @@ public class HasErrors implements Condition
 	}
 
 	/**
+	 * Determines if a condition should signal pass or fail.
 	 * 
+	 * @return true if the condition passes; false otherwise.
+	 * @throws WorkflowException if an error (such as missing required argument) occurs while evaluating the condition.
 	 */
-	public boolean passesCondition(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
+	protected boolean passesCondition() throws WorkflowException 
 	{
-		final boolean condition = !ps.getKeys(ErrorPopulator.ERROR_PROPERTYSET_PREFIX).isEmpty();
-		logger.debug("HasErrors.passesCondition() : " + condition);
-		return condition;
+		return !getPropertySet().getKeys(ERROR_PROPERTYSET_PREFIX).isEmpty();
 	}
 }
