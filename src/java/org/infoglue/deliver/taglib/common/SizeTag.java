@@ -22,23 +22,26 @@
 */
 package org.infoglue.deliver.taglib.common;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
 
-import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
  * 
  */
-public class SizeTag extends TemplateControllerTag 
+public class SizeTag extends AbstractTag 
 {
-
-	private static final long serialVersionUID = 3617579309963752240L;
-
-	private List list;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8603406098980150888L;
+	
+	/**
+	 * 
+	 */
+	private Collection collection;
 	
 	/**
 	 * 
@@ -48,14 +51,20 @@ public class SizeTag extends TemplateControllerTag
 		super();
 	}
 	
+	/**
+	 * 
+	 */
 	public int doEndTag() throws JspException
     {
-	    setResultAttribute(new Integer(list.size()));
+	    setResultAttribute(new Integer(collection == null ? 0 : collection.size()));
         return EVAL_PAGE;
     }
 
-    public void setList(final String list) throws JspException
+	/**
+	 * TODO: change to setCollection
+	 */
+    public void setList(final String collection) throws JspException
     {
-        this.list = evaluateList("sublistTag", "list", list);
+        this.collection = evaluateCollection("size", "list", collection);
     }
 }
