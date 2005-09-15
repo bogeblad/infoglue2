@@ -254,6 +254,10 @@
 		<taglib-location>/WEB-INF/lib/webwork.jar</taglib-location>
 	</taglib>
 	<taglib>
+		<taglib-uri>infoglue-common</taglib-uri>
+		<taglib-location>/WEB-INF/tld/infoglue-common.tld</taglib-location>
+	</taglib>
+	<taglib>
 		<taglib-uri>infoglue-workflow</taglib-uri>
 		<taglib-location>/WEB-INF/tld/infoglue-workflow.tld</taglib-location>
 	</taglib>
