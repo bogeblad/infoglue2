@@ -1146,7 +1146,7 @@ public class ComponentLogic
 	{
 		//Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
 		//System.out.println("property1:" + property);
-		Map property = null;
+		Map property = getInheritedComponentProperty(this.templateController, siteNodeId, this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
 		
 		if(useInheritance)
 		{
