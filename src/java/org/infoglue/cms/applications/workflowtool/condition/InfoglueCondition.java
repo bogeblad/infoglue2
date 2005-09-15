@@ -31,7 +31,7 @@ import com.opensymphony.workflow.Condition;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * Base class for all infoglue workflow conditions.
  */
 public abstract class InfoglueCondition extends InfoglueWorkflowBase implements Condition 
 {
@@ -44,7 +44,13 @@ public abstract class InfoglueCondition extends InfoglueWorkflowBase implements 
 	}
 
 	/**
+	 * Determines if a condition should signal pass or fail.
 	 * 
+	 * @param transientVars the transient variables of the current execution context.
+	 * @param args the arguments of the function.
+	 * @param ps the propertyset associated with the current workflow.
+	 * @return true if the condition passes; false otherwise.
+	 * @throws WorkflowException if an error (such as missing required argument) occurs while evaluating the condition.
 	 */
 	public final boolean passesCondition(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
 	{
@@ -65,7 +71,10 @@ public abstract class InfoglueCondition extends InfoglueWorkflowBase implements 
 	}
 	
 	/**
+	 * Determines if a condition should signal pass or fail.
 	 * 
+	 * @return true if the condition passes; false otherwise.
+	 * @throws WorkflowException if an error (such as missing required argument) occurs while evaluating the condition.
 	 */
 	protected abstract boolean passesCondition() throws WorkflowException;
 }

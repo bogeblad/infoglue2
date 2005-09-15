@@ -58,7 +58,8 @@ public abstract class WorkflowTag extends AbstractTag
 	 * 
 	 * @return the workflow identifier.
 	 */
-	protected final String getWorkflowID() {
+	protected final String getWorkflowID() 
+	{
 		return pageContext.getRequest().getParameter(WORKFLOW_ID_PARAMETER);
 	}
 

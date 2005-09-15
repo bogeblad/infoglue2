@@ -25,7 +25,7 @@ package org.infoglue.cms.applications.workflowtool.condition;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * Workflow condition used to determine if there are any (mainly content validation) errors reported.
  */
 public class HasErrors extends InfoglueCondition
 {

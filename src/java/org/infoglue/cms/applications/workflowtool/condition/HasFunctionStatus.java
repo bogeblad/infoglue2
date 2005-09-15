@@ -25,7 +25,7 @@ package org.infoglue.cms.applications.workflowtool.condition;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * Workflow condition used to determine if the status reported by the functions is as expected.
  */
 public class HasFunctionStatus extends InfoglueCondition 
 {

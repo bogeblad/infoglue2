@@ -25,17 +25,17 @@ package org.infoglue.cms.applications.workflowtool.condition;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * Workflow condition used to determine if the value of a propertyset key is as expected.
  */
 public class PropertysetContains extends InfoglueCondition
 {
 	/**
-	 * 
+	 * The name of the property set key argument.
 	 */
 	private static final String NAME_ARGUMENT = "name";
 	
 	/**
-	 * 
+	 * The name of the expected value argument.
 	 */
 	private static final String VALUE_ARGUMENT = "value";
 	
