@@ -107,7 +107,7 @@ public class ContentCreator extends ContentFunction
 			{
 				setPropertySetString(ContentProvider.CONTENT_ID_PROPERTYSET_KEY, newContentVO.getContentId().toString());
 			}
-			setStatus((newContentVO != null) ? STATUS_OK : STATUS_NOK);
+			setFunctionStatus((newContentVO != null) ? STATUS_OK : STATUS_NOK);
 		} 
 		catch(ConstraintException e) 
 		{

@@ -67,7 +67,7 @@ public class ContentPublisher extends ContentFunction
 		}
 		else
 		{
-			setStatus(STATUS_NOK);
+			setFunctionStatus(STATUS_NOK);
 		}
 	}
 	
@@ -84,16 +84,16 @@ public class ContentPublisher extends ContentFunction
 				final List events = new ArrayList();
 				ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", getPrincipal(), getContentVO().getId(), getDatabase(), events);
 				PublicationController.getController().createAndPublish(createPublicationVO(), events, getPrincipal(), getDatabase());
-				setStatus(STATUS_OK);
+				setFunctionStatus(STATUS_OK);
 			} 
 			else 
 			{
-				setStatus(STATUS_NOK);
+				setFunctionStatus(STATUS_NOK);
 			}
 		} 
 		catch(Exception e) 
 		{
-			setStatus(STATUS_NOK);
+			setFunctionStatus(STATUS_NOK);
 			throwException(e);
 		}
 	}
