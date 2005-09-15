@@ -308,12 +308,11 @@ class SqlBuilder
 		COMMA + CONTENT_ALIAS + ".expireDateTime" +
 		COMMA + CONTENT_ALIAS + ".isBranch" +
 		COMMA + CONTENT_ALIAS + ".isProtected" +
+		COMMA + CONTENT_ALIAS + ".creator" + 
 		COMMA + CONTENT_ALIAS + ".contentTypeDefId" +
-		COMMA + CONTENT_ALIAS + ".parentContId" +
 		COMMA + CONTENT_ALIAS + ".repositoryId" +
 		COMMA + CONTENT_ALIAS + ".parentContId" +
-		COMMA + CONTENT_ALIAS + ".ContId" +
-		COMMA + CONTENT_ALIAS + ".creator";
+		COMMA + CONTENT_ALIAS + ".ContId";
 	}
 
 	/**
@@ -328,12 +327,11 @@ class SqlBuilder
 		COMMA + CONTENT_ALIAS + ".expireDateTime" +
 		COMMA + CONTENT_ALIAS + ".isBranch" +
 		COMMA + CONTENT_ALIAS + ".isProtected" +
+		COMMA + CONTENT_ALIAS + ".creator" + 
 		COMMA + CONTENT_ALIAS + ".contentTypeDefinitionId" +
-		COMMA + CONTENT_ALIAS + ".parentContentId" +
 		COMMA + CONTENT_ALIAS + ".repositoryId" +
 		COMMA + CONTENT_ALIAS + ".parentContentId" +
-		COMMA + CONTENT_ALIAS + ".contentId" +
-		COMMA + CONTENT_ALIAS + ".creator";
+		COMMA + CONTENT_ALIAS + ".contentId";
 	}
 
 	/**
