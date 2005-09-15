@@ -33,12 +33,7 @@ public class PropertySetTag extends WorkflowTag
 	/**
 	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = -8111517888511388857L;
-
-	/**
-	 * 
-	 */
-	private String id;
+	private static final long serialVersionUID = -5671251095976313163L;
 	
 	/**
 	 * 
@@ -57,15 +52,8 @@ public class PropertySetTag extends WorkflowTag
 	 * 
 	 */
 	public int doEndTag() throws JspException {
-		final String value = getPropertySet().getAsString(key);
-		if(value != null && id != null)
-		{
-			pageContext.setAttribute(id, value);
-		}
-		if(value != null && id == null)
-		{
-			write(value);
-		}
+		System.out.println("///////" + getPropertySet().getAsString(key));
+		produceResult(getPropertySet().getAsString(key));
         return EVAL_PAGE;
     }
 
@@ -75,13 +63,5 @@ public class PropertySetTag extends WorkflowTag
     public void setKey(final String key) 
     {
         this.key = key;
-    }
-
-	/**
-	 * 
-	 */
-    public void setId(final String id) 
-    {
-        this.id = id;
     }
 }
