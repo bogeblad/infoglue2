@@ -51,9 +51,9 @@ public class PrincipalTag extends TemplateControllerTag {
 	    return EVAL_PAGE;
     }
 
-    public void setUserName(String userName)
+    public void setUserName(final String userName) throws JspException
     {
-        this.userName = userName;
+        this.userName = evaluateString("principal", "userName", userName);
     }
     
     public void setContentVersion(Object contentVersion)
