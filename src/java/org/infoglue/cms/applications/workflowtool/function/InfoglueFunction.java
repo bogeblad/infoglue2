@@ -22,18 +22,14 @@
  */
 package org.infoglue.cms.applications.workflowtool.function;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.Session;
-import org.infoglue.cms.applications.workflowtool.util.InfogluePropertySet;
+import org.infoglue.cms.applications.workflowtool.util.InfoglueWorkflowBase;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.workflow.DatabaseSession;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.FunctionProvider;
@@ -42,60 +38,25 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  * 
  */
-public abstract class InfoglueFunction implements FunctionProvider 
+public abstract class InfoglueFunction extends InfoglueWorkflowBase implements FunctionProvider 
 {
 	/**
-	 * 
-	 */
-	private final static Logger logger = Logger.getLogger(InfoglueFunction.class.getName());
-	
-	/**
-	 * The key used to lookup the <code>HttpServletRequest</code> in <code>parameters</code>.
+	 * The key used to lookup the <code>HttpServletRequest</code> in the <code>parameters</code>.
 	 */
 	private static final String REQUEST_PARAMETER = "request";
 	
 	/**
-	 * The key used to lookup the <code>principal</code> in <code>parameters</code>.
+	 * The key used to lookup the <code>principal</code> in the <code>parameters</code>.
 	 */
 	private static final String PRINCIPAL_PARAMETER = "principal";
 	
 	/**
-	 * The key used to lookup the <code>principal</code> in <code>parameters</code>.
+	 * The key used to lookup the <code>principal</code> in the <code>parameters</code>.
 	 */
 	private static final String LOCALE_PARAMETER = "locale";
 	
 	/**
-	 * 
-	 */
-	public static final String WORKFLOW_PROPERTYSET_PREFIX = "workflow_";
-	
-	/**
-	 * 
-	 */
-	public static final String STATUS_PROPERTYSET_KEY = WORKFLOW_PROPERTYSET_PREFIX + "status";
-
-	/**
-	 * 
-	 */
-	private static final String DB_PARAMETER = "db";
-
-	/**
-	 * 
-	 */
-	private Map parameters;
-	
-	/**
-	 * 
-	 */
-	private Map arguments;
-	
-	/**
-	 * 
-	 */
-	private InfogluePropertySet propertySet;
-	
-	/**
-	 * 
+	 * The locale associated with the current session.
 	 */
 	private Locale locale;
 	
@@ -105,14 +66,7 @@ public abstract class InfoglueFunction implements FunctionProvider
 	private InfoGluePrincipal principal;
 	
 	/**
-	 * 
-	 */
-	private DatabaseSession workflowDatabase;
-	
-	
-	
-	/**
-	 * 
+	 * Default constructor.
 	 */
 	public InfoglueFunction() 
 	{ 
@@ -140,12 +94,13 @@ public abstract class InfoglueFunction implements FunctionProvider
 	
 	/**
 	 * 
+	 * Note! You must call <code>super.initialize()</code> first. 
 	 */
 	protected void initialize() throws WorkflowException
 	{
+		super.initialize();
 		initializeLocale();
 		initializePrincipal();
-		initializeDatabase();
 	}
 	
 	/**
@@ -181,14 +136,6 @@ public abstract class InfoglueFunction implements FunctionProvider
 	/**
 	 * 
 	 */
-	private void initializeDatabase() throws WorkflowException
-	{
-		workflowDatabase = (DatabaseSession) getParameter(DB_PARAMETER);
-	}
-	
-	/**
-	 * 
-	 */
 	private Session getSession() throws WorkflowException
 	{
 		return new Session(((HttpServletRequest) getParameter(REQUEST_PARAMETER)).getSession());
@@ -200,106 +147,11 @@ public abstract class InfoglueFunction implements FunctionProvider
 	protected abstract void execute() throws WorkflowException;
 	
 	/**
-	 * 
-	 */
-	private void storeContext(final Map transientVars, final Map args, final PropertySet ps)
-	{
-		this.parameters  = transientVars;
-		this.arguments   = Collections.unmodifiableMap(args);
-		this.propertySet = new InfogluePropertySet(ps);
-	}
-	
-	/**
-	 * 
-	 */
-	protected void throwException(final String message) throws WorkflowException
-	{
-		throwException(new WorkflowException(message));
-	}
-	
-	/**
-	 * 
-	 */
-	protected void throwException(final Exception e) throws WorkflowException
-	{
-		logger.error(e.getMessage());
-		workflowDatabase.setRollbackOnly();
-		throw (e instanceof WorkflowException) ? (WorkflowException) e : new WorkflowException(e);
-	}
-	
-	/**
-	 *  
-	 */
-	protected final boolean argumentExists(final String key) 
-	{
-		return arguments.containsKey(key);
-	}
-	
-	/**
-	 * 
-	 */
-	protected final String getArgument(final String key) throws WorkflowException 
-	{
-		if(!arguments.containsKey(key)) 
-		{
-			throwException("Required argument " + key + " is missing.");
-		}
-		return arguments.get(key).toString();
-	}
-	
-	/**
-	 *  
-	 */
-	protected final String getArgument(final String key, final String defaultValue) throws WorkflowException 
-	{
-		return arguments.containsKey(key) ? arguments.get(key).toString() : defaultValue;
-	}
-	
-	/**
-	 *  
-	 */
-	protected final boolean parameterExists(final String key) throws WorkflowException 
-	{
-		return parameters.containsKey(key);
-	}
-	
-	/**
-	 *
-	 */
-	protected final Object getParameter(final String key) throws WorkflowException 
-	{
-		return getParameter(key, true);
-	}
-	
-	/**
-	 *  
-	 */
-	protected final Object getParameter(final String key, final Object defaultValue) throws WorkflowException 
-	{
-		return parameters.containsKey(key) ? parameters.get(key) : defaultValue;
-	}
-	
-	/**
-	 * 
-	 */
-	protected final Object getParameter(final String key, final boolean required) throws WorkflowException 
-	{
-		final Object parameter = parameters.get(key);
-		if(required && parameter == null) 
-		{
-			final WorkflowException e = new WorkflowException("Required parameter " + key + " is missing.");
-			logger.error(e.toString());
-			throw e;
-		}
-		return parameter;
-	}
-	
-	/**
 	 * @todo : is this really needed?
 	 */
 	protected final String getRequestParameter(final String key) 
 	{
-		Object value = parameters.get(key);
+		Object value = getParameters().get(key);
 		if(value != null && value.getClass().isArray()) 
 		{
 			final String[] values = (String[]) value;
@@ -308,88 +160,11 @@ public abstract class InfoglueFunction implements FunctionProvider
 		return (value == null) ? null : value.toString();
 	}
 	
-	/**
-	 *  
-	 */
-	protected final void setParameter(final String key, final Object value)
-	{
-		parameters.put(key, value);
-	}
-	
-	/**
-	 * 
-	 */
-	protected final Map getParameters()
-	{
-		return parameters;
-	}
-	
-	/**
-	 * 
-	 */
-	protected final boolean propertySetContains(final String key)
-	{
-		return propertySet.exists(key);
-	}
-	
-	/**
-	 * 
-	 */
-	protected final String getPropertySetDataString(final String key)
-	{
-		return propertySet.getDataString(key);
-	}
-	
-	/**
-	 * 
-	 */
-	protected final void setPropertySetDataString(final String key, final String value)
-	{
-		propertySet.setDataString(key, value);
-	}
-	
-	/**
-	 * 
-	 */
-	protected final String getPropertySetString(final String key)
-	{
-		return propertySet.getString(key);
-	}
-	
-	/**
-	 * 
-	 */
-	protected final void setPropertySetString(final String key, final String value)
-	{
-		propertySet.setString(key, value);
-	}
-	
-	/**
-	 * 
-	 */
-	protected final void removeFromPropertySet(final String key)
-	{
-		removeFromPropertySet(key, false);
-	}
-	
-	/**
-	 * 
-	 */
-	protected final void removeFromPropertySet(final String key, final boolean isPrefix)
-	{
-		propertySet.removeKeys(key, isPrefix);
-	}
 
 	/**
+	 * Returns the locale associated with the current session.
 	 * 
-	 */
-	protected final InfogluePropertySet getPropertySet()
-	{
-		return propertySet;
-	}
-	
-	/**
-	 * 
+	 * @return the locale associated with the current session.
 	 */
 	protected final Locale getLocale() throws WorkflowException
 	{
@@ -404,29 +179,12 @@ public abstract class InfoglueFunction implements FunctionProvider
 		return principal;
 	}
 	
-	
 	/**
 	 * 
 	 */
-	protected final Logger getLogger() 
-	{ 
-		return logger; 
-	}
-	
-	/**
-	 * 
-	 */
-	protected final Database getDatabase() throws WorkflowException 
+	protected final void setFunctionStatus(final String status) 
 	{
-		return workflowDatabase.getDB();
-	}
-
-	/**
-	 * 
-	 */
-	protected final void setStatus(final String status) 
-	{
-		getLogger().debug("setStatus(" + status + ")");
-		getPropertySet().setString(STATUS_PROPERTYSET_KEY, status);
+		getLogger().debug("setFunctionStatus(" + status + ")");
+		getPropertySet().setString(FUNCTION_STATUS_PROPERTYSET_KEY, status);
 	}
 }
