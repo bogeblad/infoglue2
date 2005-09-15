@@ -23,34 +23,39 @@
 package org.infoglue.cms.workflow.taglib;
 
 /**
- * 
+ *
  */
-public class SubmitTag extends ContentInputTag 
+public class SubmitTag extends ElementTag 
 {
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = 1974076670375531350L;
+	private static final long serialVersionUID = -3441813821318937907L;
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
     public SubmitTag() 
     {
         super();
     }
 
-    protected String getType() 
-    {
-    	return "submit";
-    }
+	/**
+	 * Creates the element to use when constructing this tag.
+	 * 
+	 * @return the element to use when constructing this tag.
+	 */
+	protected Element createElement()
+	{
+		return new Element("input").addAttribute("type", "submit");
+	}
     
 	/**
 	 * 
 	 */
 	public void setActionID(final String id) 
 	{
-		getElement().attribute("onclick", "document.getElementById('" + ACTION_ID_PARAMETER + "').value=" + id + ";");
+		getElement().addAttribute("onclick", "document.getElementById('" + ACTION_ID_PARAMETER + "').value=" + id + ";");
     }
 
 	/**
@@ -58,6 +63,14 @@ public class SubmitTag extends ContentInputTag
 	 */
 	public void setValue(final String value) 
 	{
-		getElement().attribute("value", value);
+		getElement().addAttribute("value", value);
     }
+
+	/**
+	 * 
+	 */
+	public void setName(final String name) 
+	{
+		getElement().addAttribute("name", name);
+	}
 }

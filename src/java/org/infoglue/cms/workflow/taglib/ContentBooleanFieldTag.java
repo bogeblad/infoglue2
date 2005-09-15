@@ -23,11 +23,13 @@
 
 package org.infoglue.cms.workflow.taglib;
 
+import javax.servlet.jsp.JspException;
+
 
 /**
- * 
+ *
  */
-public abstract class ContentBooleanFieldTag extends ContentInputTag 
+public abstract class ContentBooleanFieldTag extends ElementTag 
 {
 	/**
 	 * 
@@ -37,6 +39,11 @@ public abstract class ContentBooleanFieldTag extends ContentInputTag
 	/**
 	 * 
 	 */
+	private String elementValue;
+	
+	/**
+	 * Default constructor.
+	 */
 	public ContentBooleanFieldTag() 
 	{
 		super();
@@ -45,18 +52,37 @@ public abstract class ContentBooleanFieldTag extends ContentInputTag
 	/**
 	 * 
 	 */
-	protected void process() 
+	public int doEndTag() throws JspException 
 	{
-		super.process();
-		getElement().attribute("checked", "checked", value != null && getElementValue() != null && value.equals(getElementValue()));
+		getElement().addAttribute("checked", "checked", isChecked());
+		value = null;
+		elementValue = null;
+		return super.doEndTag();
 	}
 	
 	/**
 	 * 
 	 */
+	private boolean isChecked()
+	{
+		return value != null && elementValue != null && value.equals(elementValue);
+	}
+	
+	/**
+	 * 
+	 */
+	public void setName(final String name) 
+	{
+		getElement().addAttribute("name", name);
+		this.elementValue = getPropertySet().getDataString(name);
+	}
+
+	/**
+	 * 
+	 */
 	public void setValue(final String value) 
 	{
-		getElement().attribute("value", value);
-		this.value = value;
+		getElement().addAttribute("value", value);
+		this.value = value; 
 	}
 }

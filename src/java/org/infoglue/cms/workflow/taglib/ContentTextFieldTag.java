@@ -20,21 +20,21 @@
 *
 * ===============================================================================
 */
-
 package org.infoglue.cms.workflow.taglib;
 
 /**
- * 
+ * This class implements the <iw:textfield> tag, which presents an <input type="text" ... /> 
+ * form element where the value is taken from the propertyset associated with the workflow. 
  */
-public class ContentTextFieldTag extends ContentInputTag 
+public class ContentTextFieldTag extends ElementTag 
 {
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = 7211955977731226587L;
+	private static final long serialVersionUID = 925996908046500785L;
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public ContentTextFieldTag() 
 	{
@@ -42,19 +42,35 @@ public class ContentTextFieldTag extends ContentInputTag
 	}
 
 	/**
+	 * Creates the element to use when constructing this tag.
 	 * 
+	 * @return the element to use when constructing this tag.
 	 */
-	protected String getType()
+	protected Element createElement()
 	{
-		return "text";
+		return new Element("input").addAttribute("type", "text");
 	}
-	
+
 	/**
+	 * Sets the name attribute of the input element. 
+	 * As an side-effect, the value attribute will also be set, where the value is
+	 * fetched from the propertyset using the specified name.
 	 * 
+	 * @param name the name to use.
 	 */
-	protected void process() 
+	public void setName(final String name) 
 	{
-		super.process();
-		getElement().attribute("value", getElementValue());
+		getElement().addAttribute("name", name);
+		getElement().addAttribute("value", getPropertySet().getDataString(name));
 	}
+
+	/**
+	 * Sets the readonly attribute of the input element if the specified argument is true.
+	 * 
+	 * @param isReadonly indicates if the attribute should be set.
+	 */
+    public void setReadonly(final boolean isReadonly) 
+    {
+    	getElement().addAttribute("readonly", "readonly", isReadonly);
+    }
 }

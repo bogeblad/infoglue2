@@ -23,17 +23,15 @@
 
 package org.infoglue.cms.workflow.taglib;
 
-import java.io.IOException;
-
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
 
 /**
  * 
  */
-public class PropertySetTag extends WorkflowTag {
+public class PropertySetTag extends WorkflowTag 
+{
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
 	private static final long serialVersionUID = -8111517888511388857L;
 
@@ -47,7 +45,9 @@ public class PropertySetTag extends WorkflowTag {
 	 */
 	private String key;
 	
-	
+	/**
+	 * Default constructor.
+	 */
     public PropertySetTag() 
     {
         super();
@@ -58,16 +58,13 @@ public class PropertySetTag extends WorkflowTag {
 	 */
 	public int doEndTag() throws JspException {
 		final String value = getPropertySet().getAsString(key);
-		if(value != null) {
-			try {
-				if(id != null)
-					pageContext.setAttribute(id, value);
-				else
-					pageContext.getOut().write(value);
-			} catch(IOException e) {
-				e.printStackTrace();
-				throw new JspTagException("IO error: " + e.getMessage());
-			}
+		if(value != null && id != null)
+		{
+			pageContext.setAttribute(id, value);
+		}
+		if(value != null && id == null)
+		{
+			write(value);
 		}
         return EVAL_PAGE;
     }
@@ -75,14 +72,16 @@ public class PropertySetTag extends WorkflowTag {
 	/**
 	 * 
 	 */
-    public void setKey(String key) {
+    public void setKey(final String key) 
+    {
         this.key = key;
     }
 
 	/**
 	 * 
 	 */
-    public void setId(String id) {
+    public void setId(final String id) 
+    {
         this.id = id;
     }
 }

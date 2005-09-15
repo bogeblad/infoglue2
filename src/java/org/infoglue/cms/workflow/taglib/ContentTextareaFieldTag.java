@@ -25,17 +25,17 @@ package org.infoglue.cms.workflow.taglib;
 
 
 /**
- * 
+ *
  */
 public class ContentTextareaFieldTag extends ElementTag 
 {
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = 7262153925857546242L;
+	private static final long serialVersionUID = 8959111408264926025L;
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public ContentTextareaFieldTag() 
 	{
@@ -43,36 +43,31 @@ public class ContentTextareaFieldTag extends ElementTag
 	}
 
 	/**
+	 * Creates the element to use when constructing this tag.
 	 * 
+	 * @return the element to use when constructing this tag.
 	 */
 	protected Element createElement()
 	{
 		return new Element("textarea");
 	}
-	
-	/**
-	 * 
-	 */
-	protected void process() 
-	{
-		super.process();
-	}
-	
+
 	/**
 	 * 
 	 */
 	public void setName(final String name) 
 	{
-		getElement().attribute("name", name);
-		getElement().text(getElementValue(name));
+		getElement().addAttribute("name", name);
+		getElement().addText(getPropertySet().getDataString(name));
 	}
+	
 	
 	/**
 	 * 
 	 */
 	public void setRows(final String rows) 
 	{
-		getElement().attribute("rows", rows);
+		getElement().addAttribute("rows", rows);
 	}
 
 	/**
@@ -80,6 +75,6 @@ public class ContentTextareaFieldTag extends ElementTag
 	 */
 	public void setColumns(final String columns) 
 	{
-		getElement().attribute("cols", columns);
+		getElement().addAttribute("cols", columns);
 	}
 }

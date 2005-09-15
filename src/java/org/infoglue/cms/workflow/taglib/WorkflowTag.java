@@ -22,43 +22,50 @@
 */
 package org.infoglue.cms.workflow.taglib;
 
-import javax.servlet.jsp.tagext.TagSupport;
-
 import org.infoglue.cms.applications.workflowtool.util.InfogluePropertySet;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
+ * Base class for all workflow related tags. 
  * 
+ * Provides access to the propertyset associated with the workflow and
+ * the parameters used to identify a workflow.
  */
-public abstract class WorkflowTag extends TagSupport 
+public abstract class WorkflowTag extends AbstractTag 
 {
 	/**
-	 * 
+	 * The name used to identify the current workflow action.
 	 */
 	public static final String ACTION_ID_PARAMETER   = "actionId";
 	
 	/**
-	 * 
+	 * The name used to identify the current workflow.
 	 */
 	public static final String WORKFLOW_ID_PARAMETER = "workflowId";
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	protected WorkflowTag() 
 	{
+		super();
 	}
 
 	/**
+	 * Returns the identifier of the current workflow.
 	 * 
+	 * @return the workflow identifier.
 	 */
 	protected final String getWorkflowID() {
 		return pageContext.getRequest().getParameter(WORKFLOW_ID_PARAMETER);
 	}
 
 	/**
+	 * Returns the identifier of the current workflow action.
 	 * 
+	 * @return the action identifier.
 	 */
 	protected final String getActionID() 
 	{
@@ -66,7 +73,9 @@ public abstract class WorkflowTag extends TagSupport
 	}
 
 	/**
+	 * Returns the principal associated with the current session.
 	 * 
+	 * @return the principal associated with the current session.
 	 */
 	protected final InfoGluePrincipal getPrincipal() 
 	{
@@ -74,18 +83,12 @@ public abstract class WorkflowTag extends TagSupport
 	}
 
 	/**
+	 * Returns the propertyset associated with the current workflow.
 	 * 
+	 * @return the propertyset associated with the current workflow.
 	 */
 	protected final InfogluePropertySet getPropertySet() 
 	{
 		return new InfogluePropertySet(WorkflowController.getController().getPropertySet(getPrincipal(), Long.valueOf(getWorkflowID()).longValue()));
-	}
-	
-	/**
-	 * 
-	 */
-	protected final String getElementValue(final String name)
-	{
-		return getPropertySet().getDataString(name);
 	}
 }

@@ -22,20 +22,22 @@
 */
 package org.infoglue.cms.workflow.taglib;
 
-import java.io.IOException;
-
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
 
+/**
+ * Base class for all workflow related tags writing to the output stream.
+ * 
+ * An <code>Element</code> is used for constructing the output. 
+ */
 public abstract class ElementTag extends WorkflowTag 
 {
 	/**
-	 * 
+	 * The element used for constructing the output.
 	 */
 	private Element element;
 	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	ElementTag()
 	{
@@ -43,43 +45,27 @@ public abstract class ElementTag extends WorkflowTag
 	}
 	
 	/**
+	 * Process the end tag. Writes the element to the output stream.
 	 * 
+	 * @return the evaluation result.
+	 * @throws JspException if an I/O error occurs when writing to the output stream.
 	 */
-	public final int doEndTag() throws JspException 
+	public int doEndTag() throws JspException 
 	{
-		process();
-		write();
+		if(getElement() != null)
+		{
+			write(getElement().toString());
+		}
 		element = null;
 		return EVAL_PAGE;
 	}
 	
 	/**
+	 * Returns the element used for constructing the output.
 	 * 
+	 * @return the element used for constructing the output.
 	 */
-	protected void process()
-	{
-	}
-	
-	/**
-	 * 
-	 */
-	protected void write() throws JspException 
-	{
-		try 
-		{
-			pageContext.getOut().write(getElement().toString());
-		} 
-		catch(IOException e) 
-		{
-			e.printStackTrace();
-			throw new JspTagException(e.getMessage());
-		}
-	}
-
-	/**
-	 * 
-	 */
-	protected Element getElement()
+	protected final Element getElement()
 	{
 		if(element == null)
 		{
@@ -89,7 +75,9 @@ public abstract class ElementTag extends WorkflowTag
 	}
 	
 	/**
+	 * Creates the element used for constructing the output.
 	 * 
+	 * @return the element used for constructing the output.
 	 */
 	protected abstract Element createElement();
 
@@ -98,26 +86,42 @@ public abstract class ElementTag extends WorkflowTag
 	// -------------------------------------------------------------------------	
 	
 	/**
+	 * Sets the id attribute of the html element.
 	 * 
-	 */
+	 * @param id the id to use.
+	 */ 
     public void setIdAttr(final String id) 
     {
-    	getElement().attribute("id", id);
+    	getElement().addAttribute("id", id);
     }
 
 	/**
+	 * Sets the class attribute of the html element.
 	 * 
-	 */
-    public void setCssClass(final String css) 
+	 * @param cssClass the class to use.
+	 */ 
+    public void setCssClass(final String cssClass) 
     {
-    	getElement().attribute("class", css);
+    	getElement().addAttribute("class", cssClass);
     }
 
-    /**
+	/**
+	 * Sets the title attribute of the html element.
 	 * 
-	 */
+	 * @param title the title to use.
+	 */ 
     public void setTitle(final String title) 
     {
-    	getElement().attribute("title", title);
+    	getElement().addAttribute("title", title);
+    }
+
+	/**
+	 * Sets the style attribute of the html element.
+	 * 
+	 * @param style the style to use.
+	 */ 
+    public void setStyle(final String style) 
+    {
+    	getElement().addAttribute("style", style);
     }
 }

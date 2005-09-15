@@ -26,24 +26,28 @@ package org.infoglue.cms.workflow.taglib;
 /**
  * 
  */
-public class ContentCheckboxFieldTag extends ContentBooleanFieldTag {
+public class ContentCheckboxFieldTag extends ContentBooleanFieldTag 
+{
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = 3434771498028818579L;
+	private static final long serialVersionUID = 3014782957677194202L;
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
-	public ContentCheckboxFieldTag() {
+	public ContentCheckboxFieldTag() 
+	{
 		super();
 	}
 
 	/**
+	 * Creates the element to use when constructing this tag.
 	 * 
+	 * @return the element to use when constructing this tag.
 	 */
-	protected String getType()
+	protected Element createElement()
 	{
-		return "checkbox";
+		return new Element("input").addAttribute("type", "checkbox");
 	}
 }

@@ -26,14 +26,15 @@ package org.infoglue.cms.workflow.taglib;
 /**
  * 
  */
-public class ContentRadioFieldTag extends ContentBooleanFieldTag {
+public class ContentRadioFieldTag extends ContentBooleanFieldTag 
+{
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = -6075535724616738560L;
+	private static final long serialVersionUID = 8350821042869589564L;
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public ContentRadioFieldTag() 
 	{
@@ -41,10 +42,12 @@ public class ContentRadioFieldTag extends ContentBooleanFieldTag {
 	}
 
 	/**
+	 * Creates the element to use when constructing this tag.
 	 * 
+	 * @return the element to use when constructing this tag.
 	 */
-	protected String getType()
+	protected Element createElement()
 	{
-		return "radio";
+		return new Element("input").addAttribute("type", "radio");
 	}
 }

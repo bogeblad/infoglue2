@@ -23,19 +23,17 @@
 
 package org.infoglue.cms.workflow.taglib;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
 
 /**
- * 
+ *
  */
 public class FormTag extends WorkflowTag 
 {
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
 	private static final long serialVersionUID = -558848421886366918L;
 
@@ -60,7 +58,7 @@ public class FormTag extends WorkflowTag
 	private static final String FORM_END = "</form>";
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public FormTag() 
 	{
@@ -90,23 +88,8 @@ public class FormTag extends WorkflowTag
 	/**
 	 * 
 	 */
-	private void write(String text) throws JspException 
+	private String getReturnAddress() 
 	{
-		try 
-		{
-			pageContext.getOut().write(text);
-		} 
-		catch(IOException e) 
-		{
-			e.printStackTrace();
-			throw new JspTagException("IO error: " + e.getMessage());
-		}
-	}
-
-	/**
-	 * 
-	 */
-	private String getReturnAddress() {
 		return pageContext.getRequest().getParameter(RETURN_ADDRESS_PARAMETER);
 	}
 }

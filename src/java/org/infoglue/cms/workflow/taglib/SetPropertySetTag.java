@@ -20,7 +20,6 @@
 *
 * ===============================================================================
 */
-
 package org.infoglue.cms.workflow.taglib;
 
 import javax.servlet.jsp.JspException;
@@ -32,7 +31,7 @@ import javax.servlet.jsp.JspTagException;
 public class SetPropertySetTag extends WorkflowTag
 {
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
 	private static final long serialVersionUID = -4937344683246274243L;
 
@@ -46,7 +45,9 @@ public class SetPropertySetTag extends WorkflowTag
 	 */
 	private String value;
 	
-	
+	/**
+	 * Default constructor.
+	 */
     public SetPropertySetTag() 
 	{
         super();
@@ -55,13 +56,15 @@ public class SetPropertySetTag extends WorkflowTag
 	/**
 	 * 
 	 */
-	public int doEndTag() throws JspException {
+	public int doEndTag() throws JspException 
+	{
 		try 
 		{
 			getPropertySet().setDataString(key, value);
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			throw new JspTagException(e.getMessage());
 		}
         return EVAL_PAGE;

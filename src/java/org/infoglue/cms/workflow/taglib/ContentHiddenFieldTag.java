@@ -23,19 +23,19 @@
 
 package org.infoglue.cms.workflow.taglib;
 
-
 /**
- * 
+ * This class implements the <iw:hidden> tag, which presents an <input type="hidden" ... /> 
+ * form element where the value is taken from the propertyset associated with the workflow. 
  */
-public class ContentHiddenFieldTag extends ContentInputTag 
+public class ContentHiddenFieldTag extends ElementTag 
 {
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = 4525533981132474111L;
+	private static final long serialVersionUID = -1662296072294548592L;
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public ContentHiddenFieldTag() 
 	{
@@ -43,19 +43,25 @@ public class ContentHiddenFieldTag extends ContentInputTag
 	}
 
 	/**
+	 * Creates the element to use when constructing this tag.
 	 * 
+	 * @return the element to use when constructing this tag.
 	 */
-	protected String getType()
+	protected Element createElement()
 	{
-		return "hidden";
+		return new Element("input").addAttribute("type", "hidden");
 	}
 	
 	/**
+	 * Sets the name attribute of the input element. 
+	 * As an side-effect, the value attribute will also be set, where the value is
+	 * fetched from the propertyset using the specified name.
 	 * 
+	 * @param name the name to use.
 	 */
-	protected void process() 
+	public void setName(final String name) 
 	{
-		super.process();
-		getElement().attribute("value", getElementValue());
+		getElement().addAttribute("name", name);
+		getElement().addAttribute("value", getPropertySet().getDataString(name));
 	}
 }

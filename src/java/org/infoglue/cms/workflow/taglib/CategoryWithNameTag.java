@@ -29,19 +29,39 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.entities.management.CategoryVO;
 
-public class CategoryWithNameTag extends TagSupport {
+/**
+ * 
+ */
+public class CategoryWithNameTag extends TagSupport 
+{
+	/**
+	 * The universal version identifier.
+	 */
+	private static final long serialVersionUID = -534019735162349201L;
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 3257566204712270135L;
-	
 	private String id;
+
+	/**
+	 * 
+	 */
 	private String name;
 	
 	/**
+	 * Default constructor.
+	 */
+	public CategoryWithNameTag()
+	{
+		super();
+	}
+	
+	/**
 	 * 
 	 */
-    public int doEndTag() throws JspException {
+    public int doEndTag() throws JspException 
+    {
 		processCategory();
         return EVAL_PAGE;
     }
@@ -49,35 +69,42 @@ public class CategoryWithNameTag extends TagSupport {
 	/**
 	 * 
 	 */
-	private void processCategory() throws JspTagException {
-		try {
-			CategoryVO categoryVO = CategoryController.getController().findByPath(name);
-			CategoryVO categoryVOWithChildren = CategoryController.getController().findWithChildren(categoryVO.getId());
+	private void processCategory() throws JspTagException 
+	{
+		try 
+		{
+			final CategoryVO categoryVO = CategoryController.getController().findByPath(name);
+			final CategoryVO categoryVOWithChildren = CategoryController.getController().findWithChildren(categoryVO.getId());
 			setResultAttribute(categoryVOWithChildren);
-		} catch(Exception e) {
+		} 
+		catch(Exception e) 
+		{
 			e.printStackTrace();
-			throw new JspTagException("CategoryWithNameTag.processCategory() : " + e);
+			throw new JspTagException(e.getMessage());
 		}
 	}
 	
 	/**
 	 * 
 	 */
-	protected void setResultAttribute(CategoryVO categoryVO) {
+	protected void setResultAttribute(final CategoryVO categoryVO) 
+	{
 		pageContext.setAttribute(id, categoryVO);
 	}
 
 	/**
 	 * 
 	 */
-	public void setId(String id) {
+	public void setId(final String id) 
+	{
 		this.id = id;
 	}
 
 	/**
 	 * 
 	 */
-	public void setName(String name) {
+	public void setName(final String name) 
+	{
 		this.name = name;
 	}
 }

@@ -24,6 +24,7 @@ package org.infoglue.cms.workflow.taglib;
 
 import java.util.Iterator;
 
+import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
@@ -35,17 +36,22 @@ import org.infoglue.cms.entities.management.CategoryVO;
 public class CategorySelector extends ElementTag 
 {
 	/**
+	 * The universal version identifier.
+	 */
+	private static final long serialVersionUID = 8780937592170697001L;
+
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -6909207400354758841L;
+	private CategoryVO rootCategoryVO;
 	
 	/**
 	 * 
 	 */
-	private String selectedValue;
-
+	private String elementValue;
+	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public CategorySelector() 
 	{
@@ -55,6 +61,28 @@ public class CategorySelector extends ElementTag
 	/**
 	 * 
 	 */
+	public int doEndTag() throws JspException 
+	{
+		for(final Iterator i = rootCategoryVO.getChildren().iterator(); i.hasNext();) {
+			final CategoryVO categoryVO = (CategoryVO) i.next();
+			final String name           = categoryVO.getName();
+			final String value          = categoryVO.getId().toString();
+			
+			getElement().addChild("option")
+				.addText(name)
+				.addAttribute("value", value)
+				.addAttribute("selected", "selected", value != null && elementValue != null && value.equals(elementValue));
+		}
+		rootCategoryVO = null;
+		elementValue   = null;
+		return super.doEndTag();
+	}
+	
+	/**
+	 * Creates the element to use when constructing this tag.
+	 * 
+	 * @return the element to use when constructing this tag.
+	 */
 	protected Element createElement()
 	{
 		return new Element("select");
@@ -63,18 +91,9 @@ public class CategorySelector extends ElementTag
 	/**
 	 * 
 	 */
-	public void setName(final String name) 
+	public void setDefaultLabel(final String label) 
 	{
-		getElement().attribute("name", name);
-		selectedValue = getElementValue(name);
-	}
-
-	/**
-	 * 
-	 */
-	public void setDefaultLabel(final String defaultLabel) 
-	{
-		getElement().child("option", 0).text(defaultLabel);
+		getElement().addChildFirst("option").addText(label);
 	}
 	
 	/**
@@ -82,28 +101,31 @@ public class CategorySelector extends ElementTag
 	 */
 	public void setCategoryPath(final String path) throws JspTagException
 	{
-		for(final Iterator i = getRootCategory(path).getChildren().iterator(); i.hasNext();) {
-			final CategoryVO categoryVO = (CategoryVO) i.next();
-			final String name           = categoryVO.getName();
-			final String value          = categoryVO.getId().toString();
-			
-			getElement().child("option")
-				.text(name)
-				.attribute("value", value)
-				.attribute("selected", "selected", value != null && selectedValue != null && value.equals(selectedValue));
-		}
+		rootCategoryVO = getRootCategory(path);
 	}
 
 	/**
 	 * 
 	 */
+	public void setName(final String name) 
+	{
+		getElement().addAttribute("name", name);
+		this.elementValue = getPropertySet().getDataString(name);
+	}
+	
+	/**
+	 * 
+	 */
 	private CategoryVO getRootCategory(final String path) throws JspTagException {
-		try {
-			CategoryVO categoryVO = CategoryController.getController().findByPath(path);
+		try 
+		{
+			final CategoryVO categoryVO = CategoryController.getController().findByPath(path);
 			return CategoryController.getController().findWithChildren(categoryVO.getId());
-		} catch(Exception e) {
+		} 
+		catch(Exception e) 
+		{
 			e.printStackTrace();
-			throw new JspTagException("CategorySelector.getRootCategory() : " + e);
+			throw new JspTagException(e.getMessage());
 		}
 	}
 }

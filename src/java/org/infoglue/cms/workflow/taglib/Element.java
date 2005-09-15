@@ -100,15 +100,15 @@ class Element
 	/**
 	 * 
 	 */
-	public Element attribute(final String name, final String value)
+	public Element addAttribute(final String name, final String value)
 	{
-		return attribute(name, value, true);
+		return addAttribute(name, value, true);
 	}
 	
 	/**
 	 * 
 	 */
-	public Element attribute(final String name, final String value, final boolean condition)
+	public Element addAttribute(final String name, final String value, final boolean condition)
 	{
 		if(condition && value != null)
 		{
@@ -120,7 +120,7 @@ class Element
 	/**
 	 * 
 	 */
-	public Element child(final String name) 
+	public Element addChild(final String name) 
 	{
 		final Element child = new Element(this, name);
 		children.add(child);
@@ -130,17 +130,17 @@ class Element
 	/**
 	 * 
 	 */
-	public Element child(final String name, final int index) 
+	public Element addChildFirst(final String name) 
 	{
 		final Element child = new Element(this, name);
-		children.add(index, child);
+		children.add(0, child);
 		return child;
 	}
 	
 	/**
 	 * 
 	 */
-	public Element child(final Element child) 
+	public Element addChild(final Element child) 
 	{
 		if(child != null)
 		{
@@ -153,7 +153,7 @@ class Element
 	/**
 	 * 
 	 */
-	public Element text(final String text)
+	public Element addText(final String text)
 	{
 		if(text != null && text.length() > 0)
 		{
