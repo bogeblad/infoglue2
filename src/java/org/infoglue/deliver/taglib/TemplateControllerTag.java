@@ -23,8 +23,6 @@
 
 package org.infoglue.deliver.taglib;
 
-import java.io.IOException;
-
 import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
@@ -32,37 +30,13 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 /**
  * Base class for all Tags operating on the TemplateController.
  */
-public abstract class TemplateControllerTag extends AbstractTag {
-	private String id;
-	
-	
+public abstract class TemplateControllerTag extends AbstractTag 
+{
 	protected TemplateControllerTag()
 	{
 		super();
 	}
 	
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-	protected void setResultAttribute(Object value)
-	{
-		if(value == null)
-			pageContext.removeAttribute(id);
-		else
-			pageContext.setAttribute(id, value);
-		
-	}
-	
-	protected void produceResult(Object value) throws JspTagException
-	{
-	    if(id == null)
-			write(value.toString());
-		else
-			setResultAttribute(value);
-	}
-
 	/**
 	 * Note! Do not called this function before the PageContext is initialized.
 	 */
@@ -74,7 +48,9 @@ public abstract class TemplateControllerTag extends AbstractTag {
 		{
 			controller = (TemplateController) this.pageContext.getRequest().getAttribute("org.infoglue.cms.deliver.templateLogic");
 			if(controller == null)
+			{
 				throw new NullPointerException("No TemplateController found in context.");
+			}
 		} 
 		catch(Exception e) 
 		{
@@ -83,18 +59,5 @@ public abstract class TemplateControllerTag extends AbstractTag {
 		}
 			
 		return controller;
-	}
-	
-	protected void write(String s) throws JspTagException
-	{
-		try 
-		{
-			pageContext.getOut().write(s);
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-			throw new JspTagException("IO error: " + e.getMessage());
-		}
 	}
 }
