@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.structure.SiteNode;
@@ -45,6 +46,7 @@ import webwork.action.ActionContext;
  */
 public class BasicURLComposer extends URLComposer
 {
+    private final static Logger logger = Logger.getLogger(BasicURLComposer.class.getName());
 
     public BasicURLComposer()
     {
@@ -124,6 +126,7 @@ public class BasicURLComposer extends URLComposer
     		{
     		    //System.out.println("The repositories were not equal...");
     		    String dnsName = siteNode.getRepository().getDnsName();
+    		    logger.debug("dnsName:" + dnsName);
     		    //System.out.println("Here is the dns we are going to use instead:" + dnsName);
     		  
     		    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
