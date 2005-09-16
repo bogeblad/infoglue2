@@ -130,13 +130,19 @@ function LoadSelection()
 	GetE('cmbAttLangDir').value		= oImage.dir ;
 	GetE('txtAttLangCode').value	= oImage.lang ;
 	GetE('txtAttTitle').value		= oImage.title ;
-	GetE('txtAttClasses').value		= oImage.getAttribute('class',2) || '' ;
+	//GetE('txtAttClasses').value		= oImage.getAttribute('class',2) || '' ;
 	GetE('txtLongDesc').value		= oImage.longDesc ;
 
 	if ( oEditor.FCKBrowserInfo.IsIE )
+	{
+		GetE('txtAttClasses').value	= oImage.getAttribute('className',2) || '' ;
 		GetE('txtAttStyle').value	= oImage.style.cssText ;
+	}
 	else
+	{
+		GetE('txtAttClasses').value	= oImage.getAttribute('class',2) || '' ;
 		GetE('txtAttStyle').value	= oImage.getAttribute('style',2) ;
+	}
 
 	if ( oLink )
 	{
@@ -243,13 +249,19 @@ function UpdateImage( e, skipId )
 	SetAttribute( e, 'dir'		, GetE('cmbAttLangDir').value ) ;
 	SetAttribute( e, 'lang'		, GetE('txtAttLangCode').value ) ;
 	SetAttribute( e, 'title'	, GetE('txtAttTitle').value ) ;
-	SetAttribute( e, 'class'	, GetE('txtAttClasses').value ) ;
+	//SetAttribute( e, 'class'	, GetE('txtAttClasses').value ) ;
 	SetAttribute( e, 'longDesc'	, GetE('txtLongDesc').value ) ;
 
 	if ( oEditor.FCKBrowserInfo.IsIE )
+	{
+		e.className = GetE('txtAttClasses').value;
 		e.style.cssText = GetE('txtAttStyle').value ;
+	}
 	else
+	{
+		SetAttribute( e, 'class', GetE('txtAttClasses').value ) ;
 		SetAttribute( e, 'style', GetE('txtAttStyle').value ) ;
+	}
 }
 
 function UpdatePreview()

@@ -61,6 +61,27 @@
 									<table cellspacing="0" cellpadding="0" border="0">
 										<script type="text/javascript">
 											
+											if(FCKConfig.ImageClasses && FCKConfig.ImageClassesNames)
+											{
+												document.write("<tr>");
+												document.write("	<td colspan=\"2\" nowrap><span fckLang=\"DlgLnkStyle\">Image style</span><br />");
+												document.write("<select id=\"txtAttClasses\">");
+												document.write("	<option value=\"\" fckLang=\"DlgLnkStyleLinkIcon\" selected=\"selected\">None</option>");
+											
+												var imageClasses=FCKConfig.ImageClasses.split(',');
+												var imageClassesNames=FCKConfig.ImageClassesNames.split(',');
+												for (var i=0;i<imageClasses.length;i++)
+												{
+													imageClass = imageClasses[i]; 
+													imageClassName = imageClassesNames[i]; 
+													document.write("	<option value=\"" + imageClass + "\" fckLang=\"DlgLnkStyleLinkIcon\">" + imageClassName + "</option>");
+												}
+												
+												document.write("</select><br/><br/>");
+												document.write("	</td>");
+												document.write("</tr>");
+											}
+											
 											if(!FCKConfig.AllowImageSizes && FCKConfig.AllowImageSizes != 'false')
 											{
 												document.write("<tr>");
