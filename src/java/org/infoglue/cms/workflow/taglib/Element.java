@@ -30,57 +30,60 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Utility class for creating html elements.
+ * Most functions returns the element itself to allow chained operations.
  */
 class Element 
 {
 	/**
-	 * 
+	 * Pattern for an attribute.
 	 */
 	private static final String ATTRIBUTE = "{0}=\"{1}\"";
 	
 	/**
-	 * 
+	 * Pattern for an element with both attributes and children.
 	 */
 	private static final String CHILDREN_AND_ATTRIBUTES = "<{0} {1}>{2}</{0}>";
 	
 	/**
-	 * 
+	 * Pattern for an element with children but no attributes.
 	 */
 	private static final String CHILDREN_AND_NO_ATTRIBUTES = "<{0}>{1}</{0}>";
 	
 	/**
-	 * 
+	 * Pattern for an element with neither children or attributes.
 	 */
 	private static final String NO_CHILDREN_NO_ATTRIBUTES = "<{0}></{0}>";
 	
 	/**
-	 * 
+	 * Pattern for an element with attributes but no children.
 	 */
 	private static final String NO_CHILDREN_AND_ATTRIBUTES = "<{0} {1}></{0}>";
 	
 	/**
-	 * 
+	 * The name of the element.
 	 */
 	private final String name;
 	
 	/**
-	 * 
+	 * The parent of the element.
 	 */
 	private Element parent;
 	
 	/**
-	 * 
+	 * The attributes of the element.
 	 */
 	private final Map attributes = new HashMap();
 	
 	/**
-	 * 
+	 * The children of the element.
 	 */
 	private final List children = new ArrayList();
 	
 	/**
+	 * Constructs an element with the specified name and with no parent element.
 	 * 
+	 * @param name the name of the element.
 	 */
 	public Element(final String name) 
 	{
@@ -88,7 +91,10 @@ class Element
 	}
 	
 	/**
+	 * Constructs an element with the specified name and parent element.
 	 * 
+	 * @param parent the parent of the element (null is permitted).
+	 * @param name the name of the element.
 	 */
 	public Element(final Element parent, final String name) 
 	{
@@ -98,7 +104,12 @@ class Element
 	}
 	
 	/**
+	 * Adds an attribute with the specified name and value if the value isn't null. 
+	 * If an attribute with the specified name exists, it will be overwritten. 
 	 * 
+	 * @param name the name of the attribute.
+	 * @param value the value of the attribute.
+	 * @return the current element.
 	 */
 	public Element addAttribute(final String name, final String value)
 	{
@@ -106,7 +117,14 @@ class Element
 	}
 	
 	/**
-	 * 
+	 * Adds an attribute with the specified name and value if the specified condition
+	 * is true and the value isn't null. 
+	 * If an attribute with the specified name exists, it will be overwritten.
+	 *  
+	 * @param name the name of the attribute.
+	 * @param value the value of the attribute.
+	 * @param condition the condition to check.
+	 * @return the current element.
 	 */
 	public Element addAttribute(final String name, final String value, final boolean condition)
 	{
@@ -118,7 +136,11 @@ class Element
 	}
 	
 	/**
+	 * Creates and adds a child with the specified name to the end of the children list.
+	 * The parent of the child will be the current element.
 	 * 
+	 * @param name the name of the child element.
+	 * @return the child element.
 	 */
 	public Element addChild(final String name) 
 	{
@@ -128,7 +150,11 @@ class Element
 	}
 
 	/**
+	 * Creates and adds a child with the specified name to the start of the children list.
+	 * The parent of the child will be the current element.
 	 * 
+	 * @param name the name of the child element.
+	 * @return the child element.
 	 */
 	public Element addChildFirst(final String name) 
 	{
@@ -138,7 +164,11 @@ class Element
 	}
 	
 	/**
+	 * Adds the specified child to the end of the children list if non-null.
+	 * The parent of the child will be set to the current element.
 	 * 
+	 * @param child the child element.
+	 * @return the current element.
 	 */
 	public Element addChild(final Element child) 
 	{
@@ -151,7 +181,10 @@ class Element
 	}
 	
 	/**
-	 * 
+	 * Creates and adds a text-child to the end of the children list if non-empty.
+	 *
+	 * @param text the text of the child.
+	 * @return the current element.
 	 */
 	public Element addText(final String text)
 	{
@@ -163,7 +196,39 @@ class Element
 	}
 	
 	/**
+	 * Returns true if the element has an attribute with the specified name; false otherwise.
 	 * 
+	 * @return true if the element has an attribute with the specified name; false otherwise.
+	 */
+	public boolean hasAttribute(final String name)
+	{
+		return name != null && attributes.containsKey(name);
+	}
+	
+	/**
+	 * Returns true if the element has any attributes; false otherwise.
+	 * 
+	 * @return true if the element has any attributes; false otherwise.
+	 */
+	public boolean hasAttributes()
+	{
+		return !attributes.isEmpty();
+	}
+
+	/**
+	 * Returns true if the element has any children; false otherwise.
+	 * 
+	 * @return true if the element has any children; false otherwise.
+	 */
+	public boolean hasChildren()
+	{
+		return !children.isEmpty();
+	}
+	
+	/**
+	 * Returns the parent of the element.
+	 * 
+	 * @return the parent of the element.
 	 */
 	public Element pop()
 	{
@@ -171,7 +236,9 @@ class Element
 	}
 	
 	/**
+	 * Returns the string representation of the element.
 	 * 
+	 * @return the string representation of the element.
 	 */
 	public String toString()
 	{
@@ -191,23 +258,9 @@ class Element
 	}
 	
 	/**
+	 * Returns the string representation of the attributes of the element.
 	 * 
-	 */
-	private boolean hasAttributes()
-	{
-		return !attributes.isEmpty();
-	}
-
-	/**
-	 * 
-	 */
-	private boolean hasChildren()
-	{
-		return !children.isEmpty();
-	}
-	
-	/**
-	 * 
+	 * @return the string representation of the attributes of the element.
 	 */
 	private String attributesString()
 	{
@@ -222,7 +275,9 @@ class Element
 	}
 
 	/**
+	 * Returns the string representation of the children of the element.
 	 * 
+	 * @return the string representation of the children of the element.
 	 */
 	private String childrenString()
 	{
