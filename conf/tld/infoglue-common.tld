@@ -112,6 +112,11 @@
 	    	<required>true</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
+	    <attribute>
+		    <name>encoding</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
   	 
 	<tag>

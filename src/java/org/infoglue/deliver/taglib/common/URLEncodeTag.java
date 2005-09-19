@@ -31,6 +31,7 @@ public class URLEncodeTag extends TemplateControllerTag {
 	private static final long serialVersionUID = 4050206323348354355L;
 	
 	private String value;
+	private String encoding;
 	
     public URLEncodeTag()
     {
@@ -41,8 +42,10 @@ public class URLEncodeTag extends TemplateControllerTag {
     {
 		try
         {
-		    System.out.println("Encoding:" + value);
-            setResultAttribute(this.getController().getVisualFormatter().encodeURI(value));
+            if(this.encoding == null)
+                setResultAttribute(this.getController().getVisualFormatter().encodeURI(value));
+            else
+                setResultAttribute(this.getController().getVisualFormatter().encodeURI(value, encoding));
         } 
 		catch (Exception e)
         {
@@ -55,5 +58,10 @@ public class URLEncodeTag extends TemplateControllerTag {
     public void setValue(String value) throws JspException
     {
         this.value = evaluateString("URLEncode", "value", value);
+    }
+
+    public void setEncoding(String encoding) throws JspException
+    {
+        this.encoding = encoding;
     }
 }

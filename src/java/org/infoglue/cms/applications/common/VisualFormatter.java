@@ -403,4 +403,13 @@ public class VisualFormatter
 		return URLEncoder.encode(s, encoding);
 	}
 
+	
+	public final String encodeURI(String s, String encoding) throws Exception
+	{
+		if(s == null)
+			return null;
+		
+		return URLEncoder.encode(s, encoding);
+	}
+
 }
