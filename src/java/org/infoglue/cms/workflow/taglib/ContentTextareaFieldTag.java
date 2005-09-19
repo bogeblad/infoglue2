@@ -20,12 +20,11 @@
 *
 * ===============================================================================
 */
-
 package org.infoglue.cms.workflow.taglib;
 
-
 /**
- *
+ * This class implements the <iw:textarea> tag, which presents an <textarea ... /> 
+ * form element where the value is taken from the propertyset associated with the workflow. 
  */
 public class ContentTextareaFieldTag extends ElementTag 
 {
@@ -53,7 +52,11 @@ public class ContentTextareaFieldTag extends ElementTag
 	}
 
 	/**
+	 * Sets the name attribute of the textarea element. 
+	 * As an side-effect, the value will also be set, where the value is
+	 * fetched from the propertyset using the specified name.
 	 * 
+	 * @param name the name to use.
 	 */
 	public void setName(final String name) 
 	{
@@ -61,18 +64,21 @@ public class ContentTextareaFieldTag extends ElementTag
 		getElement().addText(getPropertySet().getDataString(name));
 	}
 	
-	
 	/**
+	 * Sets the rows attribute of the textarea element.
 	 * 
-	 */
+	 * @param rows the rows to use.
+	 */ 
 	public void setRows(final String rows) 
 	{
 		getElement().addAttribute("rows", rows);
 	}
 
 	/**
+	 * Sets the cols attribute of the textarea element.
 	 * 
-	 */
+	 * @param columns the columns to use.
+	 */ 
 	public void setColumns(final String columns) 
 	{
 		getElement().addAttribute("cols", columns);

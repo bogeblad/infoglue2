@@ -29,22 +29,22 @@ import javax.servlet.jsp.JspException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * 
+ * This class implements the <common:size> tag, which returns the size of a collection.  
  */
 public class SizeTag extends AbstractTag 
 {
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
 	private static final long serialVersionUID = 8603406098980150888L;
 	
 	/**
-	 * 
+	 * The collection.
 	 */
 	private Collection collection;
 	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public SizeTag() 
 	{
@@ -52,7 +52,11 @@ public class SizeTag extends AbstractTag
 	}
 	
 	/**
+	 * Process the end tag for this instance.
+	 * Sets the specified attribute to the size of the collection.  
 	 * 
+	 * @return indication of whether to continue evaluating the JSP page.
+	 * @throws JspException if an error occurred while processing this tag.
 	 */
 	public int doEndTag() throws JspException
     {
@@ -61,7 +65,11 @@ public class SizeTag extends AbstractTag
     }
 
 	/**
-	 * TODO: change to setCollection
+	 * TODO: This class operates on collection; change name to setCollection.
+	 * 
+	 * Sets the collection attribute.
+	 * 
+	 * @param collection the collection to use.
 	 */
     public void setList(final String collection) throws JspException
     {
