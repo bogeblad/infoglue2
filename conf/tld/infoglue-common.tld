@@ -152,12 +152,12 @@
 		</attribute>
 	</tag>
 	<tag>
-	    <name>url</name>
+	    <name>urlBuilder</name>
 	    <tagclass>org.infoglue.deliver.taglib.common.URLTag</tagclass>
 		<bodycontent>JSP</bodycontent>
 	    <info></info>
 	    <attribute>
-		    <name>var</name>
+		    <name>id</name>
 	    	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
