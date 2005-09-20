@@ -178,12 +178,12 @@
 	    <bodycontent>empty</bodycontent>
 	    <info></info>
 	    <attribute>
-		    <name>name</name>
+		    <name>n</name>
 	    	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
-		    <name>value</name>
+		    <name>v</name>
 	    	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>

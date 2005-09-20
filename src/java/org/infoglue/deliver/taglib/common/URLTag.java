@@ -88,9 +88,9 @@ public class URLTag extends AbstractTag {
 	 */
 	public int doEndTag() throws JspException
     {
-		addQueryParameters();
-		produceResult(generateURL());
-		parameters = null;
+		//addQueryParameters();
+		//produceResult(generateURL());
+		//parameters = null;
 		return EVAL_PAGE;
     }
 	
