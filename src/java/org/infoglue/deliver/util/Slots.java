@@ -206,6 +206,11 @@ public class Slots {
 	 */
 	private int calculateMaxSlots(final int numberOfElements) 
 	{
+		if(numberOfElements == 0 || slotSize == 0)
+		{
+			return 0;
+		}
+		
 		final int mod = numberOfElements / slotSize;
 		final int div = numberOfElements % slotSize;
 		return mod + (div == 0 ? 0 : 1); 
