@@ -110,6 +110,8 @@ public class CacheController extends Thread
 	    
 		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 		cacheAdministrator.putInCache(key.toString(), value, groups);
+
+		logger.info("Done cacheObjectInAdvancedCache");
 	}	
 	
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key)

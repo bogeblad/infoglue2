@@ -167,6 +167,7 @@ public abstract class PageInvoker
 			}
 			
 			//Caching the pagePath
+			logger.info("Caching the pagePath...");
 			this.getDeliveryContext().setPagePath((String)CacheController.getCachedObject("pagePathCache", this.getDeliveryContext().getPageKey()));
 			if(this.getDeliveryContext().getPagePath() == null)
 			{
@@ -175,6 +176,7 @@ public abstract class PageInvoker
 				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page path if not disabled
 					CacheController.cacheObject("pagePathCache", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getPagePath());
 			}
+			logger.info("Done caching the pagePath...");	
 		}
 		else
 		{

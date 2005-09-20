@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.20 2005/09/02 22:36:46 mattias Exp $
+ * $Id: RegistryController.java,v 1.21 2005/09/20 21:47:33 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -173,6 +173,16 @@ public class RegistryController extends BaseController
 	    {
 	        getLogger().info("It was a meta info so lets check it for other stuff as well");
 		    
+	        SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersionWhichUsesContentVersionAsMetaInfo(oldContentVersion, db);
+		    if(siteNodeVersion != null)
+		    {
+		        getLogger().info("Going to use " + siteNodeVersion.getId() + " as reference");
+		        clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
+			    
+			    getComponents(siteNodeVersion, versionValue, db);
+			    getComponentBindings(siteNodeVersion, versionValue, db);
+		    }
+	        /*
 	        List siteNodeVersions = getSiteNodeVersionsWhichUsesContentVersionAsMetaInfo(oldContentVersion, db);
 	        getLogger().info("siteNodeVersions:" + siteNodeVersions.size());
 	        Iterator siteNodeVersionsIterator = siteNodeVersions.iterator();
@@ -188,6 +198,7 @@ public class RegistryController extends BaseController
 				    getComponentBindings(siteNodeVersion, versionValue, db);
 			    }
 	        }
+	        */
 	        
 		    getInlineSiteNodes(oldContentVersion, versionValue, db);
 		    getInlineContents(oldContentVersion, versionValue, db);
@@ -478,6 +489,8 @@ public class RegistryController extends BaseController
 	
 	public void getComponents(SiteNodeVersion siteNodeVersion, String versionValue, Database db) throws ConstraintException, SystemException, Exception
 	{
+	    List foundComponents = new ArrayList();
+	    
 	    Pattern pattern = Pattern.compile("contentId=\".*?\"");
 	    Matcher matcher = pattern.matcher(versionValue);
 	    while ( matcher.find() ) 
@@ -493,16 +506,21 @@ public class RegistryController extends BaseController
 	            contentId = new Integer(match.substring(contentStartIndex + 1, contentEndIndex));
 	            getLogger().info("contentId:" + contentId);
 	            
-	            RegistryVO registryVO = new RegistryVO();
-	            registryVO.setEntityId(contentId.toString());
-	            registryVO.setEntityName(Content.class.getName());
-	            registryVO.setReferenceType(RegistryVO.PAGE_COMPONENT);
-	            registryVO.setReferencingEntityId(siteNodeVersion.getSiteNodeVersionId().toString());
-	            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
-	            registryVO.setReferencingEntityCompletingId(siteNodeVersion.getOwningSiteNode().getSiteNodeId().toString());
-	            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
-	            
-	            this.create(registryVO, db);
+	            if(!foundComponents.contains(contentId))
+	            {
+		            RegistryVO registryVO = new RegistryVO();
+		            registryVO.setEntityId(contentId.toString());
+		            registryVO.setEntityName(Content.class.getName());
+		            registryVO.setReferenceType(RegistryVO.PAGE_COMPONENT);
+		            registryVO.setReferencingEntityId(siteNodeVersion.getSiteNodeVersionId().toString());
+		            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
+		            registryVO.setReferencingEntityCompletingId(siteNodeVersion.getOwningSiteNode().getSiteNodeId().toString());
+		            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+		            
+		            this.create(registryVO, db);
+		            
+		            foundComponents.add(contentId);
+	            }
 	        }
 	    }
 	}
@@ -513,6 +531,8 @@ public class RegistryController extends BaseController
 
 	public void getComponentBindings(SiteNodeVersion siteNodeVersion, String versionValue, Database db) throws ConstraintException, SystemException, Exception
 	{
+	    List foundComponents = new ArrayList();
+
 	    Pattern pattern = Pattern.compile("<binding entity=\".*?\" entityId=\".*?\">");
 	    Matcher matcher = pattern.matcher(versionValue);
 	    while ( matcher.find() ) 
@@ -540,20 +560,26 @@ public class RegistryController extends BaseController
 		            entityId = match.substring(entityIdStartIndex + 1, entityIdEndIndex);
 		            getLogger().info("entityId:" + entityId);
 
-		            RegistryVO registryVO = new RegistryVO();
-		            if(entityName.indexOf("Content") > -1)
-		                registryVO.setEntityName(Content.class.getName());
-		            else
-		                registryVO.setEntityName(SiteNode.class.getName());
-		                
-		            registryVO.setEntityId(entityId);
-		            registryVO.setReferenceType(RegistryVO.PAGE_COMPONENT_BINDING);
-		            registryVO.setReferencingEntityId(siteNodeVersion.getSiteNodeVersionId().toString());
-		            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
-		            registryVO.setReferencingEntityCompletingId(siteNodeVersion.getOwningSiteNode().getSiteNodeId().toString());
-		            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
-		            
-		            this.create(registryVO, db);
+		            String key = entityName + ":" + entityId;
+		            if(!foundComponents.contains(key))
+		            {	        
+			            RegistryVO registryVO = new RegistryVO();
+			            if(entityName.indexOf("Content") > -1)
+			                registryVO.setEntityName(Content.class.getName());
+			            else
+			                registryVO.setEntityName(SiteNode.class.getName());
+			                
+			            registryVO.setEntityId(entityId);
+			            registryVO.setReferenceType(RegistryVO.PAGE_COMPONENT_BINDING);
+			            registryVO.setReferencingEntityId(siteNodeVersion.getSiteNodeVersionId().toString());
+			            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
+			            registryVO.setReferencingEntityCompletingId(siteNodeVersion.getOwningSiteNode().getSiteNodeId().toString());
+			            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+			            
+			            this.create(registryVO, db);
+
+			            foundComponents.add(key);
+		            }
 		        }
 	        }
 	    }
@@ -1294,6 +1320,30 @@ public class RegistryController extends BaseController
         }
     	
 		return siteNodeVersions;		
+	}
+
+	/**
+	 * Gets siteNodeVersions which uses the metainfo
+	 */
+	
+	public SiteNodeVersion getLatestActiveSiteNodeVersionWhichUsesContentVersionAsMetaInfo(ContentVersion contentVersion, Database db) throws SystemException, Exception
+	{
+	    SiteNodeVersion siteNodeVersion = null;
+	    
+	    OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl snv WHERE snv.serviceBindings.availableServiceBinding.name = $1 AND snv.serviceBindings.bindingQualifyers.name = $2 AND snv.serviceBindings.bindingQualifyers.value = $3 AND snv.isActive = $4 ORDER BY snv.siteNodeVersionId desc");
+	    oql.bind("Meta information");
+		oql.bind("contentId");
+		oql.bind(contentVersion.getOwningContent().getId());
+		oql.bind(new Boolean(true));
+		
+		QueryResults results = oql.execute();
+		
+		if (results.hasMore()) 
+        {
+		    siteNodeVersion = (SiteNodeVersion)results.next();
+        }
+    	
+		return siteNodeVersion;		
 	}
 
 }
