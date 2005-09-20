@@ -76,6 +76,7 @@ public class URLTag extends AbstractTag {
 	 */
 	public int doStartTag() throws JspException 
 	{
+		System.out.println("start");
 		return EVAL_BODY_INCLUDE;
 	}
 	
