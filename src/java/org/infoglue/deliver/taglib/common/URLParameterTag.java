@@ -42,7 +42,7 @@ public class URLParameterTag extends AbstractTag
 	/**
 	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = -5102992432658309132L;
+	private static final long serialVersionUID = 8015304806886114032L;
 
 	/**
 	 * The name of the parameter.
