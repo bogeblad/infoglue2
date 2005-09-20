@@ -180,12 +180,12 @@
 	    <attribute>
 		    <name>name</name>
 	    	<required>true</required>
-	        <rtexprvalue>true</rtexprvalue>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
 		    <name>value</name>
 	    	<required>true</required>
-	        <rtexprvalue>true</rtexprvalue>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>
 </taglib>
