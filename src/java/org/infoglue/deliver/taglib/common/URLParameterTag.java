@@ -22,6 +22,7 @@
 */
 package org.infoglue.deliver.taglib.common;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
@@ -83,11 +84,14 @@ public class URLParameterTag extends AbstractTag
 	 */
 	protected Map getParameters() throws JspException
 	{
+		return new HashMap();
+		/*
 		if(getParent() == null || !(getParent() instanceof org.infoglue.deliver.taglib.common.URLTag))
 		{
 			throw new JspTagException("URLParameterTag must be used inside a URLTag");
 		}
 		return ((org.infoglue.deliver.taglib.common.URLTag) getParent()).getParameters();
+		*/
 	}
 	
 	/**

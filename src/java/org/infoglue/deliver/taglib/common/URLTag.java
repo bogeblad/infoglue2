@@ -76,7 +76,6 @@ public class URLTag extends AbstractTag {
 	 */
 	public int doStartTag() throws JspException 
 	{
-		parameters = new HashMap();
 		return EVAL_BODY_INCLUDE;
 	}
 	
@@ -102,6 +101,10 @@ public class URLTag extends AbstractTag {
 	 */
 	protected final Map getParameters()
 	{
+		if(parameters == null)
+		{
+			parameters = new HashMap();
+		}
 		return parameters;
 	}
 	
