@@ -73,7 +73,7 @@ public class URLParameterTag extends AbstractTag
 	public int doEndTag() throws JspException
     {
 		getParameters().put(name, value);
-		return super.doEndTag();
+		return EVAL_PAGE;
     }
 	
 	/**

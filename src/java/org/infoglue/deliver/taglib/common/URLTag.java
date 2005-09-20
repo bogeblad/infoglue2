@@ -43,7 +43,7 @@ public class URLTag extends AbstractTag {
 	/**
 	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = -5102992432658309132L;
+	private static final long serialVersionUID = -3691910169063207982L;
 
 	/**
 	 * The base url to use when constructing the url.
@@ -91,7 +91,7 @@ public class URLTag extends AbstractTag {
 		addQueryParameters();
 		produceResult(generateURL());
 		parameters = null;
-		return super.doEndTag();
+		return EVAL_PAGE;
     }
 	
 	/**
