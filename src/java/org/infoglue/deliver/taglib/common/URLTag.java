@@ -56,11 +56,6 @@ public class URLTag extends AbstractTag {
 	private String query;
 	
 	/**
-	 * 
-	 */
-	private String var;
-	
-	/**
 	 * The parameters to use when constructing the url.
 	 */
 	private Map parameters; 
@@ -95,42 +90,11 @@ public class URLTag extends AbstractTag {
 	public int doEndTag() throws JspException
     {
 		addQueryParameters();
-		produceResult2(generateURL());
+		produceResult(generateURL());
 		parameters = null;
 		return EVAL_PAGE;
     }
 
-	/**
-	 *
-	 */
-	protected void setResultAttribute2(Object value)
-	{
-		if(value == null)
-		{
-			pageContext.removeAttribute(var);
-		}
-		else
-		{
-			pageContext.setAttribute(var, value);
-		}
-		
-	}
-	
-	/**
-	 *
-	 */
-	protected void produceResult2(Object value) throws JspTagException
-	{
-	    if(var == null)
-	    {
-			write(value.toString());
-	    }
-		else
-		{
-			setResultAttribute2(value);
-		}
-	}
-	
 	/**
 	 * Returns the parameters to use when constructing the url.
 	 * 
@@ -251,10 +215,5 @@ public class URLTag extends AbstractTag {
 	public void setQuery(final String query) throws JspException
 	{
 		this.query = evaluateString("url", "query", query);
-	}
-	
-	public void setVar(final String var) 
-	{
-		this.var = var;
 	}
 }
