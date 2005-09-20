@@ -159,17 +159,17 @@
 	    <attribute>
 		    <name>id</name>
 	    	<required>false</required>
-	        <rtexprvalue>true</rtexprvalue>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
 		    <name>baseURL</name>
 	    	<required>false</required>
-	        <rtexprvalue>true</rtexprvalue>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
 		    <name>query</name>
 	    	<required>false</required>
-	        <rtexprvalue>true</rtexprvalue>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>
 	<tag>
