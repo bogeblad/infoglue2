@@ -173,7 +173,7 @@
 		</attribute>
 	</tag>
 	<tag>
-	    <name>parameter2</name>
+	    <name>ppp</name>
 	    <tagclass>org.infoglue.deliver.taglib.common.URLParameterTag</tagclass>
 	    <bodycontent>empty</bodycontent>
 	    <info></info>
