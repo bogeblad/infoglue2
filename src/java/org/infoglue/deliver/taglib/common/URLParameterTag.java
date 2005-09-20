@@ -83,12 +83,11 @@ public class URLParameterTag extends AbstractTag
 	 */
 	protected Map getParameters() throws JspException
 	{
-		final URLTag parent = (URLTag) findAncestorWithClass(this, URLTag.class);
-		if(parent == null)
+		if(getParent() == null || !(getParent() instanceof org.infoglue.deliver.taglib.common.URLTag))
 		{
 			throw new JspTagException("URLParameterTag must be used inside a URLTag");
 		}
-		return parent.getParameters();
+		return ((org.infoglue.deliver.taglib.common.URLTag) getParent()).getParameters();
 	}
 	
 	/**
