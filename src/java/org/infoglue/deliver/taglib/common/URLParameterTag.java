@@ -100,7 +100,7 @@ public class URLParameterTag extends AbstractTag
 	 * @param name the name to use.
 	 * @throws JspException if an error occurs while evaluating name parameter.
 	 */
-	public void setName(final String name) throws JspException
+	public void setN(final String name) throws JspException
 	{
 		//this.name = evaluateString("parameter", "name", name);
 	}
@@ -111,7 +111,7 @@ public class URLParameterTag extends AbstractTag
 	 * @param value the value to use.
 	 * @throws JspException if an error occurs while evaluating value parameter.
 	 */
-	public void setValue(final String value) throws JspException
+	public void setV(final String value) throws JspException
 	{
 		//this.value = evaluateString("parameter", "value", value);
 	}
