@@ -72,7 +72,7 @@ public class URLParameterTag extends AbstractTag
 	 */
 	public int doEndTag() throws JspException
     {
-		//getParameters().put(name, value);
+		getParameters().put(name, value);
 		return EVAL_PAGE;
     }
 	
@@ -84,14 +84,11 @@ public class URLParameterTag extends AbstractTag
 	 */
 	protected Map getParameters() throws JspException
 	{
-		return null;
-		/*
 		if(getParent() == null || !(getParent() instanceof org.infoglue.deliver.taglib.common.URLTag))
 		{
 			throw new JspTagException("URLParameterTag must be used inside a URLTag");
 		}
 		return ((org.infoglue.deliver.taglib.common.URLTag) getParent()).getParameters();
-		*/
 	}
 	
 	/**
@@ -100,9 +97,9 @@ public class URLParameterTag extends AbstractTag
 	 * @param name the name to use.
 	 * @throws JspException if an error occurs while evaluating name parameter.
 	 */
-	public void setN(final String name) throws JspException
+	public void setName(final String name) throws JspException
 	{
-		//this.name = evaluateString("parameter", "name", name);
+		this.name = evaluateString("parameter", "name", name);
 	}
 
 	/**
@@ -111,8 +108,8 @@ public class URLParameterTag extends AbstractTag
 	 * @param value the value to use.
 	 * @throws JspException if an error occurs while evaluating value parameter.
 	 */
-	public void setV(final String value) throws JspException
+	public void setValue(final String value) throws JspException
 	{
-		//this.value = evaluateString("parameter", "value", value);
+		this.value = evaluateString("parameter", "value", value);
 	}
 }

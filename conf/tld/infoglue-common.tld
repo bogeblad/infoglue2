@@ -154,7 +154,7 @@
 	<tag>
 	    <name>url</name>
 	    <tagclass>org.infoglue.deliver.taglib.common.URLTag</tagclass>
-	    <bodycontent>JSP</bodycontent>
+		<bodycontent>JSP</bodycontent>
 	    <info></info>
 	    <attribute>
 		    <name>id</name>
@@ -173,17 +173,17 @@
 		</attribute>
 	</tag>
 	<tag>
-	    <name>ppp</name>
+	    <name>parameter</name>
 	    <tagclass>org.infoglue.deliver.taglib.common.URLParameterTag</tagclass>
 	    <bodycontent>empty</bodycontent>
 	    <info></info>
 	    <attribute>
-		    <name>n</name>
+		    <name>name</name>
 	    	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
-		    <name>v</name>
+		    <name>value</name>
 	    	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
