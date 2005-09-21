@@ -61,7 +61,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.21 $ $Date: 2005/09/13 13:23:04 $
+ * @version $Revision: 1.22 $ $Date: 2005/09/21 10:10:46 $
  */
 public class WorkflowFacade
 {
@@ -102,7 +102,8 @@ public class WorkflowFacade
 
 	/**
 	 * Constructs a WorkflowFacade with the given owner.
-	 * @param owner
+	 * 
+	 * @param owner the owner of the workflow.
 	 */
 	public WorkflowFacade(final Owner owner)
 	{
@@ -200,11 +201,16 @@ public class WorkflowFacade
 	}
 
 	/**
+	 * Initializes the workflow.  
+	 * A <code>DatabaseSession</code> object whose lifecycle is handled by this method is inserted into the <code>inputs</code>.
 	 * 
+	 * @param name the name of the workflow to initialize
+	 * @param initialAction the ID of the initial action to perform to get the workflow started.
+	 * @param inputs a map of inputs to use to initialize the workflow.
+	 * @throws SystemException if a workflow error occurs.
 	 */
-	private long doExtendedInitialize(String name, int initialAction, Map inputs) throws WorkflowException
+	private long doExtendedInitialize(final String name, final int initialAction, final Map inputs) throws WorkflowException
 	{
-		logger.debug("##########################WorkflowFacade.doExtendedInitialize()########################## - START");
 		long result = 0;
 		final DatabaseSession db = new DatabaseSession();
 		try
@@ -213,13 +219,18 @@ public class WorkflowFacade
 			copy.putAll(inputs);
 			copy.put(workflow.getWorkflowDescriptor(name).getMetaAttributes().get(WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE), db);
 			result = workflow.initialize(name, initialAction, copy);
-		} catch(Exception e) {
+		} 
+		catch(Exception e) 
+		{
 			e.printStackTrace();
 			if(db != null)
+			{
 				db.setRollbackOnly();
-		} finally {
+			}
+		} 
+		finally 
+		{
 			db.releaseDB();
-			logger.debug("##########################WorkflowFacade.doExtendedInitialize()########################## - END");
 		}
 		return result;
 	}
@@ -233,33 +244,47 @@ public class WorkflowFacade
 	public void doAction(int actionId, Map inputs) throws WorkflowException
 	{
 		if (!isActive())
+		{
 			throw new InvalidActionException("Workflow " + workflowId + " is no longer active");
+		}
 
 		if(useDatabaseExtension(workflowDescriptor))
+		{
 			doExtendedAction(actionId, inputs);
+		}
 		else
+		{
 			workflow.doAction(workflowId, actionId, inputs);
+		}
 	}
-	
+
 	/**
+	 * Performs an action using the given inputs.
+	 * A <code>DatabaseSession</code> object whose lifecycle is handled by this method is inserted into the <code>inputs</code>.
 	 * 
+	 * @param actionId the ID of the action to perform
+	 * @param inputs a map of inputs to the action
+	 * @throws WorkflowException if a workflow error occurs, or if the underlying workflow is not active
 	 */
-	private void doExtendedAction(int actionId, Map inputs) throws WorkflowException
+	private void doExtendedAction(final int actionId, final Map inputs) throws WorkflowException
 	{
-		logger.debug("##########################WorkflowFacade.invokeAction()########################## - START");
 		final DatabaseSession db = new DatabaseSession();
-		try {
+		try 
+		{
 			final Map copy = new HashMap();
 			copy.putAll(inputs);
 			copy.put(workflowDescriptor.getMetaAttributes().get(WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE), db);
 			workflow.doAction(workflowId, actionId, copy);
-		} catch(Exception e) {
+		} 
+		catch(Exception e) 
+		{
 			e.printStackTrace();
 			if(db != null)
 				db.setRollbackOnly();
-		} finally {
+		} 
+		finally 
+		{
 			db.releaseDB();
-			logger.debug("##########################WorkflowFacade.invokeAction()########################## - END");
 		}
 	}
 
@@ -282,7 +307,8 @@ public class WorkflowFacade
 	}
 
 	/**
-	 * Indicates whether the underlying workflow is active
+	 * Indicates whether the underlying workflow is active.
+	 * 
 	 * @return true if the underlying workflow's state is WorkflowEntry.ACTIVATED, otherwise returns false.
 	 */
 	public boolean isActive()
@@ -292,6 +318,7 @@ public class WorkflowFacade
 
 	/**
 	 * Indicates whether the underlying workflow is finished.
+	 * 
 	 * @return true if the underlying workflow's state is WorkflowEntry.KILLED or WorkflowEntry.COMPLETED, otherwise returns false.
 	 */
 	public boolean isFinished()
@@ -317,6 +344,7 @@ public class WorkflowFacade
 
 	/**
 	 * Returns a list of all active workflows.
+	 * 
 	 * @return a list of WorkflowVOs representing all active workflows
 	 * @throws SystemException if an error occurs finding the active workflows
 	 */
@@ -335,7 +363,11 @@ public class WorkflowFacade
 	}
 	
 	/**
+	 * Returns a list of workflows owned by the specified principal. If the principal is
+	 * an administrator, all active workflows are returned.
 	 * 
+	 * @param principal the principal.
+	 * @return the workflows owned by the specified principal.
 	 */
 	public List getMyActiveWorkflows(final InfoGluePrincipal principal) throws SystemException
 	{
@@ -353,7 +385,11 @@ public class WorkflowFacade
 	}
 	
 	/**
+	 * Creates value object for all workflows having the specified owner.
 	 * 
+	 * @param owner the owner.
+	 * @return the value objects.
+	 * @throws SystemException if an error occurs when creating the value objects.
 	 */
 	private final Set createWorkflowsForOwner(final Owner owner) throws SystemException
 	{
@@ -525,11 +561,15 @@ public class WorkflowFacade
 	}
 
 	/**
+	 * Returns the title of the workflow instance.
 	 * 
+	 * @return the title of the workflow instance.
 	 */
 	private String getWorkflowTitle() {
 		if(!workflowDescriptor.getMetaAttributes().containsKey(WORKFLOW_TITLE_EXTENSION_META_ATTRIBUTE))
+		{
 			return null;
+		}
 		
 		final String key = (String) workflowDescriptor.getMetaAttributes().get(WORKFLOW_TITLE_EXTENSION_META_ATTRIBUTE);
 		final PropertySet ps = getPropertySet();
