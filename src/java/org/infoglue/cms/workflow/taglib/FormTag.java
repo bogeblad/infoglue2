@@ -28,7 +28,9 @@ import java.text.MessageFormat;
 import javax.servlet.jsp.JspException;
 
 /**
- *
+ * This class implements the <iw:form> tag, which presents an <form ... /> element 
+ * with all the attributes and hidden fields properly initialized 
+ * as required by the workflow framework.  
  */
 public class FormTag extends WorkflowTag 
 {
@@ -66,7 +68,7 @@ public class FormTag extends WorkflowTag
 	}
 
 	/**
-	 * Process the start tag. Writs the start taag of the form element and the required hidden fields
+	 * Process the start tag. Writes the start tag of the form element and the required hidden fields
 	 * to the output stream.
 	 * 
 	 * @return indication of whether to evaluate the body or not.

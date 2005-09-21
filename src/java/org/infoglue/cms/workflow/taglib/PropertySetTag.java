@@ -26,7 +26,10 @@ package org.infoglue.cms.workflow.taglib;
 import javax.servlet.jsp.JspException;
 
 /**
+ * This class implements the <iw:property> tag, which fetches a value from the propertyset and
  * 
+ * - stores it as a string in a page context variable (if the <code>id</code> attribute is set).
+ * - writes the value to the output stream.
  */
 public class PropertySetTag extends WorkflowTag 
 {
@@ -34,9 +37,9 @@ public class PropertySetTag extends WorkflowTag
 	 * The universal version identifier.
 	 */
 	private static final long serialVersionUID = -5671251095976313163L;
-	
+
 	/**
-	 * 
+	 * The lookup key.
 	 */
 	private String key;
 	
@@ -49,16 +52,21 @@ public class PropertySetTag extends WorkflowTag
     }
 
 	/**
+	 * Process the end tag. Fetches the value from the propertyset using the specified key and
+	 * either stores the result in a context variable or writes it to the output stream.
 	 * 
+	 * @return indication of whether to continue evaluating the JSP page.
+	 * @throws JspException if an error occurs when producing the result.
 	 */
 	public int doEndTag() throws JspException {
-		System.out.println("///////" + getPropertySet().getAsString(key));
 		produceResult(getPropertySet().getAsString(key));
         return EVAL_PAGE;
     }
 
 	/**
+	 * Sets the key attribute to the specified key.
 	 * 
+	 * @param key the key to use.
 	 */
     public void setKey(final String key) 
     {
