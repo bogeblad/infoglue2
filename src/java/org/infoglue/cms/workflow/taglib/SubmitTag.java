@@ -23,14 +23,15 @@
 package org.infoglue.cms.workflow.taglib;
 
 /**
- *
+ * This class implements the <iw:submit> tag, which presents an <button type="submit" ... /> 
+ * form element which is used for executing a specific workflow action. 
  */
 public class SubmitTag extends ElementTag 
 {
 	/**
 	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = -3441813821318937907L;
+	private static final long serialVersionUID = -7990348229256840043L;
 
 	/**
 	 * Default constructor.
@@ -51,7 +52,9 @@ public class SubmitTag extends ElementTag
 	}
     
 	/**
+	 * Sets the id of the action that will be executed when pressing the button.
 	 * 
+	 * @param id the action id.
 	 */
 	public void setActionID(final String id) 
 	{
@@ -59,18 +62,12 @@ public class SubmitTag extends ElementTag
     }
 
 	/**
+	 * Sets the value attribute of the button element.
 	 * 
-	 */
+	 * @param value the value to use.
+	 */ 
 	public void setValue(final String value) 
 	{
 		getElement().addAttribute("value", value);
     }
-
-	/**
-	 * 
-	 */
-	public void setName(final String name) 
-	{
-		getElement().addAttribute("name", name);
-	}
 }
