@@ -23,12 +23,14 @@
 package org.infoglue.cms.util.workflow;
 
 /**
- * 
+ * This interface represents the owner of a workflow.
  */
 public interface Owner 
 {
 	/**
+	 * Returns the identifier of the owner.
 	 * 
+	 * @return the identifier of the owner.
 	 */
 	String getIdentifier();
 }
