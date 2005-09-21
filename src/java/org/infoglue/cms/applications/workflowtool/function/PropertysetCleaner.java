@@ -25,12 +25,12 @@ package org.infoglue.cms.applications.workflowtool.function;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * This function is used for cleaning the propertyset before terminating a workflow.
  */
 public class PropertysetCleaner extends InfoglueFunction 
 {
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public PropertysetCleaner() 
 	{ 
@@ -38,7 +38,9 @@ public class PropertysetCleaner extends InfoglueFunction
 	}
 
 	/**
+	 * Removes all data from the propertyset associated with the workflow.
 	 * 
+	 * @throws WorkflowException if an exception occurs while cleaning the propertyset.
 	 */
 	protected final void execute() throws WorkflowException 
 	{

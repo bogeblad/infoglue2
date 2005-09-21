@@ -26,19 +26,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 
+ * Bean class used for populating content version attributes from
+ * the request and/or the property set.
  */
 public class ContentVersionValues 
 {
 	/**
-	 * 
+	 * A mapping from attribute names to attribute values.
 	 */
-	private final Map values = new HashMap();
-
-	
+	private final Map values = new HashMap(); // <String> -> <String>
 	
 	/**
-	 * 
+	 * Default constructor. 
 	 */
 	public ContentVersionValues() 
 	{ 
@@ -46,7 +45,10 @@ public class ContentVersionValues
 	}
 	
 	/**
+	 * Returns the value of the attribute with the specified name. 
 	 * 
+	 * @param name the name of the attribute.
+	 * @return the value of the attribute with the specified name. 
 	 */
 	public String get(final String name) 
 	{ 
@@ -54,7 +56,10 @@ public class ContentVersionValues
 	}
 
 	/**
+	 * Sets the value of the specified attribute.
 	 * 
+	 * @param name the name of the attribute.
+	 * @param value the new value.
 	 */
 	public void set(final String name, final String value) 
 	{ 
@@ -62,7 +67,10 @@ public class ContentVersionValues
 	}
 
 	/**
+	 * Returns true if the attribute with the specified name exists; false otherwise.
 	 * 
+	 * @param the name of the attribute.
+	 * @return true if the attribute with the specified name exists; false otherwise.
 	 */
 	public boolean contains(final String name) 
 	{ 

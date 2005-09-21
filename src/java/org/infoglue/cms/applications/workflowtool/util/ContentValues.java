@@ -26,44 +26,42 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 
+ * Bean class used for populating content attributes from the request and/or the property set.
  */
 public class ContentValues 
 {
 	/**
-	 * 
+	 * The key used when populating the publish date attribute.
 	 */
 	public static final String PUBLISH_DATE_TIME = "PublishDateTime";
 
 	/**
-	 * 
+	 * The key used when populating the expire date attribute.
 	 */
-	public static final String EXPIRE_DATE_TIME  = "ExpireDateTime";
+	public static final String EXPIRE_DATE_TIME = "ExpireDateTime";
 
 	/**
-	 * 
+	 * The key used when populating the name attribute.
 	 */
-	public static final String NAME  = "Name";
+	public static final String NAME = "Name";
 	
 	/**
-	 * 
+	 * The publish date of the content.
 	 */
 	private Date publishDateTime;
 
 	/**
-	 * 
+	 * The expire date of the content.
 	 */
 	private Date expireDateTime;
 
 	/**
-	 * 
+	 * The name of the content. 
 	 */
 	private String name;
-
-	
 	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public ContentValues() 
 	{ 
@@ -71,7 +69,9 @@ public class ContentValues
 	}
 
 	/**
+	 * Returns the name of the content.
 	 * 
+	 * @return the name of the content.
 	 */
 	public String getName() 
 	{ 
@@ -79,7 +79,9 @@ public class ContentValues
 	}
 	
 	/**
-	 *
+	 * Returns the publish date of the content.
+	 * 
+	 * @return the publish date of the content.
 	 */
 	public Date getPublishDateTime() 
 	{ 
@@ -87,7 +89,9 @@ public class ContentValues
 	}
 
 	/**
-	 *
+	 * Returns the expire date of the content.
+	 * 
+	 * @return the expire date of the content.
 	 */
 	public Date getExpireDateTime() 
 	{ 
@@ -95,7 +99,9 @@ public class ContentValues
 	}
 
 	/**
+	 * Sets the name of the content to the specified value.
 	 * 
+	 * @param name the new name.
 	 */
 	public void setName(final String name) 
 	{
@@ -103,7 +109,9 @@ public class ContentValues
 	}
 	
 	/**
-	 *
+	 * Sets the publish date of the content to the specified value.
+	 * 
+	 * @param name the new name.
 	 */
 	public void setPublishDateTime(final String publishDateTime) 
 	{
@@ -111,7 +119,9 @@ public class ContentValues
 	}
 	
 	/**
-	 *
+	 * Sets the expire date of the content to the specified value.
+	 * 
+	 * @param name the new name.
 	 */
 	public void setExpireDateTime(final String expireDateTime) 
 	{
@@ -119,7 +129,10 @@ public class ContentValues
 	}
 
 	/**
-	 *
+	 * Converts the specified string to a date or null if the string is unparsable.
+	 * 
+	 * @param dateString the string to parse.
+	 * @return the date.
 	 */
 	private static Date getDate(final String dateString) 
 	{
@@ -132,5 +145,4 @@ public class ContentValues
 			return null;
 		}
 	}
-
 }

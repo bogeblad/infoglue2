@@ -52,7 +52,6 @@ public class SizeTag extends AbstractTag
 	}
 	
 	/**
-	 * Process the end tag for this instance.
 	 * Sets the specified attribute to the size of the collection.  
 	 * 
 	 * @return indication of whether to continue evaluating the JSP page.
