@@ -39,7 +39,7 @@ public class CategoryWithNameTag extends AbstractTag
 	 * The universal version identifier.
 	 */
 	private static final long serialVersionUID = 6455221936074988498L;
-
+	
 	/**
 	 * The name of the category.
 	 */
@@ -68,9 +68,10 @@ public class CategoryWithNameTag extends AbstractTag
 	/**
 	 * Finds the category with the specified name.
 	 * 
-	 * @return the categoty value object with the children populated.
+	 * @return the category value object with the children populated.
+	 * @throws JspException if an error occurs when fetching the category.
 	 */
-	private CategoryVO findCategory() throws JspTagException 
+	private CategoryVO findCategory() throws JspException 
 	{
 		try 
 		{

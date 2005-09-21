@@ -25,7 +25,9 @@ package org.infoglue.cms.workflow.taglib;
 
 /**
  * This class implements the <iw:checkbox> tag, which presents an <input type="checkbox" ... /> 
- * form element where the checked status is taken from the propertyset associated with the workflow. 
+ * form element representing a content/content version attribute. 
+ * The value of the content/content version attribute is fetched (with the name of the input element as a key) 
+ * from the propertyset associated with the workflow. 
  */
 public class ContentCheckboxFieldTag extends ContentBooleanFieldTag 
 {

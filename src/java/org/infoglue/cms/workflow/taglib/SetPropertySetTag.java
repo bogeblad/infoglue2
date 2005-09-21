@@ -26,7 +26,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 /**
- * 
+ * This class implements the <iw:setproperty> tag, which stores a value as a
+ * data field in the propertyset associated with the workflow.
  */
 public class SetPropertySetTag extends WorkflowTag
 {
@@ -36,12 +37,12 @@ public class SetPropertySetTag extends WorkflowTag
 	private static final long serialVersionUID = -4937344683246274243L;
 
 	/**
-	 * 
+	 * The propertyset key.
 	 */
 	private String key;
 	
 	/**
-	 * 
+	 * The propertyset value.
 	 */
 	private String value;
 	
@@ -54,7 +55,10 @@ public class SetPropertySetTag extends WorkflowTag
     }
 
 	/**
+	 * Process the end tag. Stores the specified value as a data field in the propertyset.
 	 * 
+	 * @return indication of whether to continue evaluating the JSP page.
+	 * @throws JspException if an error occurs when storing the the value in the propertyset.
 	 */
 	public int doEndTag() throws JspException 
 	{
@@ -71,7 +75,9 @@ public class SetPropertySetTag extends WorkflowTag
     }
 	
 	/**
+	 * Sets the key attribute to the specified key.
 	 * 
+	 * @param key the key to use.
 	 */
     public void setKey(final String key) 
 	{
@@ -79,7 +85,9 @@ public class SetPropertySetTag extends WorkflowTag
     }
 
 	/**
+	 * Sets the value attribute to the specified value.
 	 * 
+	 * @param key the value to use.
 	 */
     public void setValue(final String value) 
 	{

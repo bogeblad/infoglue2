@@ -31,24 +31,28 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.entities.management.CategoryVO;
 
 /**
- * 
+ * This class implements the <iw:categorySelector> tag, which presents an <select ... >...</select> 
+ * form element representing a category and where each option element represents a child of the root
+ * category.
+ * The value of the selected element is fetched (with the name of the select element as a key) 
+ * from the propertyset associated with the workflow. 
  */
 public class CategorySelector extends ElementTag 
 {
 	/**
 	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = 8780937592170697001L;
+	private static final long serialVersionUID = 7831749037593672903L;
 
 	/**
-	 * 
+	 * The category to use when populating the option elements.
 	 */
 	private CategoryVO rootCategoryVO;
 	
 	/**
-	 * 
+	 * The selected category. 
 	 */
-	private String elementValue;
+	private String selected;
 	
 	/**
 	 * Default constructor.
@@ -59,11 +63,27 @@ public class CategorySelector extends ElementTag
 	}
 
 	/**
+	 * Process the end tag. Creates the option elements and writes the select
+	 * element to the output stream.
 	 * 
+	 * @return indication of whether to continue evaluating the JSP page.
+	 * @throws JspException if an I/O error occurs when writing to the output stream.
 	 */
 	public int doEndTag() throws JspException 
 	{
-		for(final Iterator i = rootCategoryVO.getChildren().iterator(); i.hasNext();) {
+		createOptions();
+		rootCategoryVO  = null;
+		selected   = null;
+		return super.doEndTag();
+	}
+	
+	/**
+	 * Creates the option elements.
+	 */
+	private void createOptions()
+	{
+		for(final Iterator i = rootCategoryVO.getChildren().iterator(); i.hasNext();) 
+		{
 			final CategoryVO categoryVO = (CategoryVO) i.next();
 			final String name           = categoryVO.getName();
 			final String value          = categoryVO.getId().toString();
@@ -71,11 +91,8 @@ public class CategorySelector extends ElementTag
 			getElement().addChild("option")
 				.addText(name)
 				.addAttribute("value", value)
-				.addAttribute("selected", "selected", value != null && elementValue != null && value.equals(elementValue));
+				.addAttribute("selected", "selected", value != null && selected != null && value.equals(selected));
 		}
-		rootCategoryVO = null;
-		elementValue   = null;
-		return super.doEndTag();
 	}
 	
 	/**
@@ -89,7 +106,9 @@ public class CategorySelector extends ElementTag
 	}
 	
 	/**
+	 * Sets the label of the first option element.
 	 * 
+	 * @param label the label to use.
 	 */
 	public void setDefaultLabel(final String label) 
 	{
@@ -97,26 +116,35 @@ public class CategorySelector extends ElementTag
 	}
 	
 	/**
+	 * Sets the path of the root category.
 	 * 
+	 * @param path the path to use.
+	 * @throws JspException if an error occurs when fetching the category.
 	 */
-	public void setCategoryPath(final String path) throws JspTagException
+	public void setCategoryPath(final String path) throws JspException
 	{
 		rootCategoryVO = getRootCategory(path);
 	}
 
 	/**
+	 * Sets the name attribute of the select element to the specified value. 
 	 * 
+	 * @param name the name to use.
 	 */
 	public void setName(final String name) 
 	{
 		getElement().addAttribute("name", name);
-		this.elementValue = getPropertySet().getDataString(name);
+		selected = getPropertySet().getDataString(name);
 	}
 	
 	/**
+	 * Finds the category with the specified path.
 	 * 
+	 * @return the category value object with the children populated.
+	 * @throws JspException if an error occurs when fetching the category.
 	 */
-	private CategoryVO getRootCategory(final String path) throws JspTagException {
+	private CategoryVO getRootCategory(final String path) throws JspException 
+	{
 		try 
 		{
 			final CategoryVO categoryVO = CategoryController.getController().findByPath(path);
