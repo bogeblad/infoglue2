@@ -24,28 +24,24 @@ package org.infoglue.cms.workflow.taglib;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * 
+ * This class implements the <iw:categoryWithName> tag, which stores a category value
+ * object (with the children populated) in a page context variable.
  */
-public class CategoryWithNameTag extends TagSupport 
+public class CategoryWithNameTag extends AbstractTag 
 {
 	/**
 	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = -534019735162349201L;
+	private static final long serialVersionUID = 6455221936074988498L;
 
 	/**
-	 * 
-	 */
-	private String id;
-
-	/**
-	 * 
+	 * The name of the category.
 	 */
 	private String name;
 	
@@ -58,24 +54,25 @@ public class CategoryWithNameTag extends TagSupport
 	}
 	
 	/**
-	 * 
+	 * Process the end tag. Stores the category value object in a page context variable.
 	 */
     public int doEndTag() throws JspException 
     {
-		processCategory();
+    	setResultAttribute(findCategory());
         return EVAL_PAGE;
     }
 
 	/**
+	 * Finds the category with the specified name.
 	 * 
+	 * @return the categoty value object with the children populated.
 	 */
-	private void processCategory() throws JspTagException 
+	private CategoryVO findCategory() throws JspTagException 
 	{
 		try 
 		{
 			final CategoryVO categoryVO = CategoryController.getController().findByPath(name);
-			final CategoryVO categoryVOWithChildren = CategoryController.getController().findWithChildren(categoryVO.getId());
-			setResultAttribute(categoryVOWithChildren);
+			return CategoryController.getController().findWithChildren(categoryVO.getId());
 		} 
 		catch(Exception e) 
 		{
@@ -85,23 +82,9 @@ public class CategoryWithNameTag extends TagSupport
 	}
 	
 	/**
+	 * Sets the name attribute to the specified name.
 	 * 
-	 */
-	protected void setResultAttribute(final CategoryVO categoryVO) 
-	{
-		pageContext.setAttribute(id, categoryVO);
-	}
-
-	/**
-	 * 
-	 */
-	public void setId(final String id) 
-	{
-		this.id = id;
-	}
-
-	/**
-	 * 
+	 * @param name the name to use.
 	 */
 	public void setName(final String name) 
 	{
