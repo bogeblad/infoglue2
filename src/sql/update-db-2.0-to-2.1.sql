@@ -40,3 +40,23 @@ CREATE INDEX OWNER ON OS_CURRENTSTEP(OWNER);
 CREATE INDEX CALLER ON OS_CURRENTSTEP(CALLER);
 CREATE INDEX OWNER ON OS_HISTORYSTEP(OWNER);
 CREATE INDEX CALLER ON OS_HISTORYSTEP(CALLER);
+
+DROP INDEX referencingEntityName ON cmRegistry;
+DROP INDEX referencingEntityId ON cmRegistry;
+DROP INDEX entityName ON cmRegistry;
+DROP INDEX entityId ON cmRegistry;
+DROP INDEX referencingEntityComplName ON cmRegistry;
+DROP INDEX referencingEntityComplId ON cmRegistry;
+DROP INDEX categoryContVersionId ON cmContentCategory;
+DROP INDEX contVerDigAssetDigAssId ON cmContentVersionDigitalAsset;
+DROP INDEX contVerDigAssetContVerId ON cmContentVersionDigitalAsset;
+
+CREATE INDEX referencingEntityName ON cmRegistry(referencingEntityName);
+CREATE INDEX referencingEntityId ON cmRegistry(referencingEntityId);
+CREATE INDEX entityName ON cmRegistry(entityName);
+CREATE INDEX entityId ON cmRegistry(entityId);
+CREATE INDEX referencingEntityComplName ON cmRegistry(referencingEntityComplName);
+CREATE INDEX referencingEntityComplId ON cmRegistry(referencingEntityComplId);
+CREATE INDEX categoryContVersionId ON cmContentCategory(contentVersionId);
+CREATE INDEX contVerDigAssetDigAssId ON cmContentVersionDigitalAsset(digitalAssetId);
+CREATE INDEX contVerDigAssetContVerId ON cmContentVersionDigitalAsset(contentVersionId);
