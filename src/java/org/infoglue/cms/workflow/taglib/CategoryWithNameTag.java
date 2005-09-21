@@ -55,6 +55,9 @@ public class CategoryWithNameTag extends AbstractTag
 	
 	/**
 	 * Process the end tag. Stores the category value object in a page context variable.
+	 * 
+	 * @return indication of whether to continue evaluating the JSP page.
+	 * @throws JspException if an error occurred while processing this tag.
 	 */
     public int doEndTag() throws JspException 
     {

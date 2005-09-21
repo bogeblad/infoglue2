@@ -47,7 +47,7 @@ public abstract class ElementTag extends WorkflowTag
 	/**
 	 * Process the end tag. Writes the element to the output stream.
 	 * 
-	 * @return the evaluation result.
+	 * @return indication of whether to continue evaluating the JSP page.
 	 * @throws JspException if an I/O error occurs when writing to the output stream.
 	 */
 	public int doEndTag() throws JspException 

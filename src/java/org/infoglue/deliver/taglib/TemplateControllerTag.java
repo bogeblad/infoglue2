@@ -28,17 +28,25 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 /**
- * Base class for all Tags operating on the TemplateController.
+ * Base class for all tags using the TemplateController object.
  */
 public abstract class TemplateControllerTag extends AbstractTag 
 {
+	/**
+	 * Default constructor.
+	 */
 	protected TemplateControllerTag()
 	{
 		super();
 	}
 	
 	/**
+	 * Returns the template controller.
+	 * 
 	 * Note! Do not called this function before the PageContext is initialized.
+	 * 
+	 * @return the template controller.
+	 * @throws JspTagException if the template controller wasn't found.
 	 */
 	protected TemplateController getController() throws JspTagException
 	{
@@ -55,7 +63,7 @@ public abstract class TemplateControllerTag extends AbstractTag
 		catch(Exception e) 
 		{
 			e.printStackTrace();
-			throw new JspTagException("PageContext error: " + e.getMessage());
+			throw new JspTagException(e.getMessage());
 		}
 			
 		return controller;

@@ -38,22 +38,22 @@ public class FormTag extends WorkflowTag
 	private static final long serialVersionUID = -558848421886366918L;
 
 	/**
-	 * 
+	 * The key used for finding the form action in the request.
 	 */
-	private static final String RETURN_ADDRESS_PARAMETER = "returnAddress";
+	private static final String ACTION_ADDRESS_PARAMETER = "returnAddress";
 
 	/**
-	 * 
+	 * The template for the start tag of the form element.
 	 */
 	private static final String FORM_START = "<form name=\"form\" id=\"form\" method=\"get\" action=\"{0}\">";
 
 	/**
-	 * 
+	 * The template for the hiddens fields needed by all workflows (action and workflow id).
 	 */
 	private static final String HIDDEN = "<div><input id=\"{0}\" name=\"{0}\" type=\"hidden\" value=\"{1}\"/></div>";
 
 	/**
-	 * 
+	 * The template for the end tag of the form element.
 	 */
 	private static final String FORM_END = "</form>";
 
@@ -66,18 +66,25 @@ public class FormTag extends WorkflowTag
 	}
 
 	/**
+	 * Process the start tag. Writs the start taag of the form element and the required hidden fields
+	 * to the output stream.
 	 * 
+	 * @return indication of whether to evaluate the body or not.
+	 * @throws JspException if an I/O error occurs when writing to the output stream.
 	 */
 	public int doStartTag() throws JspException 
 	{
-		write(MessageFormat.format(FORM_START, new Object[] { getReturnAddress() }));
+		write(MessageFormat.format(FORM_START, new Object[] { getActionAddress() }));
 		write(MessageFormat.format(HIDDEN, new Object[] { ACTION_ID_PARAMETER, getActionID() }));
 		write(MessageFormat.format(HIDDEN, new Object[] { WORKFLOW_ID_PARAMETER,  getWorkflowID() }));
 		return EVAL_BODY_INCLUDE;
 	}
 
 	/**
+	 * Process the end tag. Writes the end tag of the form element to the output stream.
 	 * 
+	 * @return indication of whether to continue evaluating the JSP page.
+	 * @throws JspException if an I/O error occurs when writing to the output stream.
 	 */
 	public int doEndTag() throws JspException 
 	{
@@ -86,10 +93,12 @@ public class FormTag extends WorkflowTag
 	}
 
 	/**
+	 * Returns the action to use in the form.
 	 * 
+	 * @return the action to use in the form.
 	 */
-	private String getReturnAddress() 
+	private String getActionAddress() 
 	{
-		return pageContext.getRequest().getParameter(RETURN_ADDRESS_PARAMETER);
+		return pageContext.getRequest().getParameter(ACTION_ADDRESS_PARAMETER);
 	}
 }
