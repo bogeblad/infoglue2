@@ -27,66 +27,89 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 
 /**
- * 
+ * Criterias for the <code>ExtendedSearchController</code>.
  */
 public class ExtendedSearchCriterias 
 {
 	/**
-	 * 
+	 * Indicates that no date criteria should be used.
 	 */
 	public static final int NO_DATE_CRITERIA_TYPE   = 0;
+
+	/**
+	 * Indicates that the from date criteria should be used. 
+	 */
 	public static final int FROM_DATE_CRITERIA_TYPE = 1;
+
+	/**
+	 * Indicates that the to date criteria should be used. 
+	 */
 	public static final int TO_DATE_CRITERIA_TYPE   = 2;
+
+	/**
+	 * Indicates that the between date criteria should be used. 
+	 */
 	public static final int BOTH_DATE_CRITERIA_TYPE = 3;
 
 	/**
-	 * 
+	 * Only fetch content versions having at least the present state.
 	 */
 	private Integer stateId;
 	
 	/**
-	 * 
+	 * If present, only fetch content version that has at least one attribute fulfilling:
+	 * (a) the attribute is present in the <code>xmlAttributes</code> list.
+	 * (b) the value of the attribute contains the freetext value.
 	 */
 	private String freetext;
 	
 	/**
-	 * 
+	 * The list of content version attributes to search in the freetext search.
 	 */
-	private List xmlAttributes;
+	private List xmlAttributes; // type: <String>
 	
 	/**
-	 * 
+	 * If present, only fetch content versions with this language. 
 	 */
 	private LanguageVO languageVO;
 	
 	/**
-	 * 
+	 * If present, only fetch contents whose type is present in the list.
 	 */
-	private List contentTypeDefinitionVOs;
+	private List contentTypeDefinitionVOs; // type: <ContentTypeDefinitionVO>
 	
 	/**
-	 * 
+	 * If present, only fetch content versions fulfilling the category condition.
 	 */
 	private CategoryConditions categories;
 	
 	/**
-	 * 
+	 * If present, only fetch contents published after this date.
 	 */
 	private Timestamp fromDate;
 	
 	/**
-	 * 
+	 * If present, only fetch contents published before this date.
 	 */
 	private Timestamp toDate;
-	
-	
+
+	/**
+	 * Constructs a criteria object with the state critera set to <code>ContentVersionVO.WORKING_STATE</code>.
+	 */
+	public ExtendedSearchCriterias()
+	{
+		this(ContentVersionVO.WORKING_STATE.intValue());
+	}
 	
 	/**
+	 * Constructs a criteria object with the specified state critera.
 	 * 
+	 * @param stateId the stateId to use.
 	 */
 	public ExtendedSearchCriterias(final int stateId) 
 	{
@@ -95,7 +118,11 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Sets the freetext critera. 
+	 * Note that at least one attribute must be specified to enabled freetext search. 
 	 * 
+	 * @param freetext the freetext to use.
+	 * @param xmlAttributes the list of attribute names to use.
 	 */
 	public void setFreetext(final String freetext, final List xmlAttributes)
 	{
@@ -107,7 +134,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Sets the language criteria.
 	 * 
+	 * @param languageVO the language to use.
 	 */
 	public void setLanguage(final LanguageVO languageVO)
 	{
@@ -115,7 +144,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Sets the content type definition critiera.
 	 * 
+	 * @param contentTypeDefinitionVO the content type definition to use.
 	 */
 	public void setContentTypeDefinitions(final ContentTypeDefinitionVO contentTypeDefinitionVO)
 	{
@@ -127,7 +158,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Sets the content type definition critiera.
 	 * 
+	 * @param contentTypeDefinitionVOs the list of <code>ContentTypeDefinitionVO</code> to use.
 	 */
 	public void setContentTypeDefinitions(final List contentTypeDefinitionVOs)
 	{
@@ -138,7 +171,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Sets the category criteria.
 	 * 
+	 * @param categories the category condition to use.
 	 */
 	public void setCategoryConditions(final CategoryConditions categories)
 	{
@@ -146,7 +181,10 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Sets the date critiera. 
 	 * 
+	 * @param from the from date to use (null is used to indicate an open end).
+	 * @param to the to date to use (null is used to indicate an open end).
 	 */
 	public void setDates(final Date from, final Date to)
 	{
@@ -155,7 +193,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Returns true if the freetext criteria should be used; false otherwise.
 	 * 
+	 * @return true if the criteria should be used; false otherwise.
 	 */
 	public boolean hasFreetextCritera() 
 	{
@@ -163,7 +203,9 @@ public class ExtendedSearchCriterias
 	}
 
 	/**
+	 * Returns true if the language criteria should be used; false otherwise.
 	 * 
+	 * @return true if the criteria should be used; false otherwise.
 	 */
 	public boolean hasLanguageCriteria() 
 	{
@@ -171,7 +213,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Returns true if the content type definition criteria should be used; false otherwise.
 	 * 
+	 * @return true if the criteria should be used; false otherwise.
 	 */
 	public boolean hasContentTypeDefinitionVOsCriteria() 
 	{
@@ -179,7 +223,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Returns true if the category criteria should be used; false otherwise.
 	 * 
+	 * @return true if the criteria should be used; false otherwise.
 	 */
 	public boolean hasCategoryConditions() 
 	{
@@ -187,7 +233,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Returns the type of date critiera to use.
 	 * 
+	 * @return the type of date criteria to use.
 	 */
 	public int getDateCriteriaType()
 	{
@@ -207,7 +255,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Returns the state to use in the state criteria. 
 	 * 
+	 * @return the state.
 	 */
 	public Integer getStateId()
 	{
@@ -215,7 +265,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Returns the freetext to use in the freetext criteria. 
 	 * 
+	 * @return the freetext.
 	 */
 	public String getFreetext()
 	{
@@ -223,7 +275,9 @@ public class ExtendedSearchCriterias
 	}
 
 	/**
+	 * Returns the attributes to use in the freetext criteria. 
 	 * 
+	 * @return the list of attribute names.
 	 */
 	public List getXmlAttributes()
 	{
@@ -231,7 +285,9 @@ public class ExtendedSearchCriterias
 	}
 
 	/**
+	 * Returns the language to use in the language criteria. 
 	 * 
+	 * @return the language.
 	 */
 	public LanguageVO getLanguage()
 	{
@@ -239,7 +295,9 @@ public class ExtendedSearchCriterias
 	}
 	
 	/**
+	 * Returns the content type definitions to use in the content type definition criteria. 
 	 * 
+	 * @return the list of <code>ContentTypeDefinitionVO</code>:s.
 	 */
 	public List getContentTypeDefinitions()
 	{
@@ -247,7 +305,9 @@ public class ExtendedSearchCriterias
 	}
 
 	/**
+	 * Returns the category condition to use in the category condition criteria. 
 	 * 
+	 * @return the category condition.
 	 */
 	public CategoryConditions getCategories()
 	{
@@ -255,16 +315,20 @@ public class ExtendedSearchCriterias
 	}
 
 	/**
+	 * Returns the from date to use in the date criteria. 
 	 * 
+	 * @return the from date.
 	 */
 	public Timestamp getFromDate()
 	{
 		return this.fromDate;
 	}
-	/**
-	 * 
-	 */
 
+	/**
+	 * Returns the to date to use in the date criteria. 
+	 * 
+	 * @return the to date.
+	 */
 	public Timestamp getToDate()
 	{
 		return this.toDate;
