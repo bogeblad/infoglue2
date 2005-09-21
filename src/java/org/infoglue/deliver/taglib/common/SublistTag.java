@@ -31,50 +31,61 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * 
+ * This class implements the <common:sublist> tag, which stores the sublist of a specified list
+ * in the page context variable specified by the <code>id</code> attribute.  
  */
 public class SublistTag extends AbstractTag 
 {
 	/**
-	 * 
+	 * The universal version identifier.
 	 */
 	private static final long serialVersionUID = -8053523983744317359L;
 
 	/**
-	 * 
+	 * The list.
 	 */
 	private List list;
 	
 	/**
-	 * 
+	 * The start index of the sublist operation.
 	 */
 	private int startIndex;
 	
 	/**
-	 * 
+	 * The number of element to include in the sublist operation.
+	 * A zero value indicates all elements.
+	 * Depending on the size of the list, a different count may be used.
 	 */
 	private Integer count;
 	
 	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public SublistTag() 
 	{
 		super();
 	}
 	
+	/**
+	 * Process the end tag. Stores the sublist in the specified page context variable.  
+	 * 
+	 * @return indication of whether to continue evaluating the JSP page.
+	 * @throws JspException if an error occurred while processing this tag.
+	 */
 	public int doEndTag() throws JspException
     {
-		checkArguments();
+		checkAttributes();
 	    setResultAttribute(getSublist());
         return EVAL_PAGE;
     }
 
 	/**
+	 * Checks if all attributes has legal values. 
 	 * 
+	 * @throws JspException if any attribute has an illegal value.
 	 */
-	private void checkArguments() throws JspException
+	private void checkAttributes() throws JspException
 	{
 		if(list == null)
 		{
@@ -91,10 +102,11 @@ public class SublistTag extends AbstractTag
 	}
 	
 	/**
-	 * 
+	 * Returns the sublist using the specified attributes.
 	 */
-	private List getSublist() throws JspException
+	private List getSublist() 
 	{
+		// Don't use List.sublist()  
 		final List result = new ArrayList();
 		for(int i=startIndex; i<getRealCount(); ++i)
 		{
@@ -104,24 +116,46 @@ public class SublistTag extends AbstractTag
 	}
 	
 	/**
+	 * Returns the count to use which might be different from the specified count depending
+	 * on the size of the list. 
 	 * 
+	 * @return the count to use.
 	 */
-	private int getRealCount() {
+	private int getRealCount() 
+	{
 		return (count.intValue() == 0 || count.intValue() > list.size() - startIndex) ? list.size() - startIndex : count.intValue();
 	}
 	
+	/**
+	 * Sets the list attribute to the specified list.
+	 * 
+	 * @param list the list to use.
+	 * @throws JspException if an error occurs while evaluating the list.
+	 */
     public void setList(final String list) throws JspException
     {
-        this.list = evaluateList("sublistTag", "list", list);
+        this.list = evaluateList("sublist", "list", list);
     }
 
+	/**
+	 * Sets the start index attribute to the specified index.
+	 * 
+	 * @param index the index to use.
+	 */
     public void setStartIndex(final int startIndex)
     {
         this.startIndex = startIndex;
     }
 
+	/**
+	 * Sets the count attribute to the specified count. A count of zero
+	 * indicates all remaining elements.
+	 * 
+	 * @param count the count to use.
+	 * @throws JspException if an error occurs while evaluating the count.
+	 */
     public void setCount(final String count) throws JspException
     {
-        this.count = evaluateInteger("sublistTag", "count", count);
+        this.count = evaluateInteger("sublist", "count", count);
     }
 }
