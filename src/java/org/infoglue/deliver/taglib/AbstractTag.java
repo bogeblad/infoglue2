@@ -33,25 +33,31 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.taglibs.standard.tag.el.core.ExpressionUtil;
 
 /**
- * 
+ * Base class for all tags in the infoglue platform.
  */
 public abstract class AbstractTag extends TagSupport 
 {
 	/**
 	 * TODO: remove, use var instead.
+	 * 
+	 * Indicates (if present) the name of the page context variable to store the result in. 
 	 */
 	private String id;
 	
 	/**
-	 *
+	 * Default constructor.
 	 */
-	public AbstractTag()
+	protected AbstractTag()
 	{
 		super();
 	}
 
 	/**
 	 * TODO: remove, use var instead.
+	 * 
+	 * Sets the name of the page context variable to store the result in.
+	 * 
+	 * @param id the id to use.
 	 */
     public void setId(String id)
     {
@@ -59,7 +65,10 @@ public abstract class AbstractTag extends TagSupport
     }
 
 	/**
-	 *
+	 * Stores the <code>value</code> in the page context variable indicated by the <code>id</code> attribute.
+	 * If the <code>value</code> is null; the page context variable is removed instead.
+	 * 
+	 * @param value the value to store.
 	 */
 	protected void setResultAttribute(Object value)
 	{
@@ -71,11 +80,16 @@ public abstract class AbstractTag extends TagSupport
 		{
 			pageContext.setAttribute(id, value);
 		}
-		
 	}
 	
 	/**
-	 *
+	 * Depending on wheter the <code>id</code> attribute is set, does one of the following:
+	 * 
+	 * - stores the value in a page context variable (if the <code>id</code> attribute is set).
+	 * - writes the value to the output stream.
+	 * 
+	 * @param value the value.
+	 * @throws JspTagException if an exception occurs when storing/writing the value.
 	 */
 	protected void produceResult(Object value) throws JspTagException
 	{
@@ -107,9 +121,16 @@ public abstract class AbstractTag extends TagSupport
 			throw new JspTagException("IO error: " + e.getMessage());
 		}
 	}
-	
+
 	/**
-	 *
+	 * Evaluates an expression if present, but does not allow the expression to evaluate to <code>null</null>.
+	 * 
+	 * @param tagName the name of the tag.
+	 * @param attributeName the name of the attribute to evaluate.
+	 * @param expression the expression to evaluate.
+	 * @param expectedType the expected type of the evaluated expression.
+	 * @return the evaluated expression.
+	 * @throws JspException if an error occurs while evaluating the expression.
 	 */
 	protected Object evaluate(String tagName, String attributeName, String expression, Class expectedType) throws JspException
 	{
@@ -117,7 +138,13 @@ public abstract class AbstractTag extends TagSupport
 	}
 
 	/**
-	 *
+	 * Evaluates the expression which must evaluate to an Integer.
+	 * 
+	 * @param tagName the name of the tag.
+	 * @param attributeName the name of the attribute to evaluate.
+	 * @param expression the expression to evaluate.
+	 * @return the evaluated expression.
+	 * @throws JspException if an error occurs while evaluating the expression.
 	 */
 	protected Integer evaluateInteger(String tagName, String attributeName, String expression) throws JspException
 	{
@@ -125,7 +152,13 @@ public abstract class AbstractTag extends TagSupport
 	}
 
 	/**
-	 *
+	 * Evaluates the expression which must evaluate to a String.
+	 * 
+	 * @param tagName the name of the tag.
+	 * @param attributeName the name of the attribute to evaluate.
+	 * @param expression the expression to evaluate.
+	 * @return the evaluated expression.
+	 * @throws JspException if an error occurs while evaluating the expression.
 	 */
 	protected String evaluateString(String tagName, String attributeName, String expression) throws JspException
 	{
@@ -133,7 +166,13 @@ public abstract class AbstractTag extends TagSupport
 	}
 
 	/**
-	 *
+	 * Evaluates the expression which must evaluate to a Collection.
+	 * 
+	 * @param tagName the name of the tag.
+	 * @param attributeName the name of the attribute to evaluate.
+	 * @param expression the expression to evaluate.
+	 * @return the evaluated expression.
+	 * @throws JspException if an error occurs while evaluating the expression.
 	 */
 	protected Collection evaluateCollection(String tagName, String attributeName, String expression) throws JspException
 	{
@@ -141,7 +180,13 @@ public abstract class AbstractTag extends TagSupport
 	}
 
 	/**
-	 *
+	 * Evaluates the expression which must evaluate to a List.
+	 * 
+	 * @param tagName the name of the tag.
+	 * @param attributeName the name of the attribute to evaluate.
+	 * @param expression the expression to evaluate.
+	 * @return the evaluated expression.
+	 * @throws JspException if an error occurs while evaluating the expression.
 	 */
 	protected List evaluateList(String tagName, String attributeName, String expression) throws JspException
 	{

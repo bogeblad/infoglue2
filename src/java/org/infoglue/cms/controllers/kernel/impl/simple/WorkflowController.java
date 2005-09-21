@@ -114,7 +114,11 @@ public class WorkflowController extends BaseController
 	}
 	
 	/**
+	 * Returns the workflows owned by the specified principal.
 	 * 
+	 * @param userPrincipal a user principal.
+	 * @return a list of WorkflowVOs owned by the principal.
+	 * @throws SystemException if an error occurs while finding the workflows
 	 */
 	public List getMyCurrentWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
 	{
