@@ -33,7 +33,9 @@ import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * Base class containing logic used by both <code>InfoglueFunction</code> and <code>InfoglueCondition</code>.
+ * The main purpose of this class is to provide convenience methods for the parameters, arguments, and propertyset objects
+ * and to handle the <code>DatabaseSession</code> object.
  */
 public abstract class InfoglueWorkflowBase 
 {
@@ -81,8 +83,6 @@ public abstract class InfoglueWorkflowBase
 	 * The database associated with the current execution.
 	 */
 	private DatabaseSession workflowDatabase;
-	
-	
 	
 	/**
 	 * Default constructor.

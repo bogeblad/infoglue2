@@ -23,6 +23,7 @@
 package org.infoglue.cms.applications.workflowtool.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,43 +50,49 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 
+/**
+ * 
+ */
 public class ContentFactory 
 {
 	/**
-	 * 
+	 * The class logger. 
 	 */
     private final static Logger logger = Logger.getLogger(ContentFactory.class.getName());
 	
 	
 	/**
-	 * 
+	 * The content type.
 	 */
 	private final ContentTypeDefinitionVO contentTypeDefinitionVO;
 	
 	/**
-	 * 
+	 * The content bean.
 	 */
 	private final ContentValues contentValues;
 	
 	/**
-	 * 
+	 * The content version bean.
 	 */
 	private final ContentVersionValues contentVersionValues;
 	
 	/**
-	 * 
+	 * The creator.
 	 */
 	private final InfoGluePrincipal principal;
 
 	/**
-	 * 
+	 * The language associated with the content version.
 	 */
 	private final LanguageVO language;
 
-	
-	
 	/**
 	 * 
+	 * @param contentTypeDefinitionVO
+	 * @param contentValues
+	 * @param contentVersionValues
+	 * @param principal
+	 * @param language
 	 */
 	public ContentFactory(final ContentTypeDefinitionVO contentTypeDefinitionVO, final ContentValues contentValues, final ContentVersionValues contentVersionValues, final InfoGluePrincipal principal, final LanguageVO language) 
 	{
@@ -95,9 +102,14 @@ public class ContentFactory
 		this.principal               = principal;
 		this.language                = language;
 	}
-	
+
 	/**
 	 * 
+	 * @param parentContent
+	 * @param categories
+	 * @param db
+	 * @return
+	 * @throws ConstraintException
 	 */
 	public ContentVO create(final ContentVO parentContent, final Map categories, final Database db) throws ConstraintException 
 	{
@@ -114,12 +126,16 @@ public class ContentFactory
 
 	/**
 	 * 
+	 * @param contentVO
+	 * @param categories
+	 * @param db
+	 * @return
+	 * @throws ConstraintException
 	 */
 	public ContentVO update(final ContentVO contentVO, final Map categories, final Database db) throws ConstraintException 
 	{
 		populateContentVO(contentVO);
-		Document contentVersionDocument   = buildContentVersionDocument();
-		ContentVersionVO contentVersionVO = createContentVersionVO(contentVersionDocument.asXML());
+		final ContentVersionVO contentVersionVO = createContentVersionVO(buildContentVersionDocument().asXML());
 
 		if(validate(contentVO, contentVersionVO).isEmpty())
 		{
@@ -130,17 +146,20 @@ public class ContentFactory
 
 	/**
 	 * 
+	 * @return
 	 */
 	public ConstraintExceptionBuffer validate() 
 	{
 		final ContentVO contentVO               = createContentVO();
-		final Document contentVersionDocument   = buildContentVersionDocument();
-		final ContentVersionVO contentVersionVO = createContentVersionVO(contentVersionDocument.asXML());
+		final ContentVersionVO contentVersionVO = createContentVersionVO(buildContentVersionDocument().asXML());
 		return validate(contentVO, contentVersionVO);
 	}
-	
+
 	/**
 	 * 
+	 * @param contentVO
+	 * @param contentVersionVO
+	 * @return
 	 */
 	private ConstraintExceptionBuffer validate(final ContentVO contentVO, final ContentVersionVO contentVersionVO) 
 	{
@@ -151,6 +170,12 @@ public class ContentFactory
 
 	/**
 	 * 
+	 * @param parentContent
+	 * @param contentVO
+	 * @param contentVersionVO
+	 * @param categories
+	 * @param db
+	 * @return
 	 */
 	private ContentVO createContent(final ContentVO parentContent, final ContentVO contentVO, final ContentVersionVO contentVersionVO, final Map categories, final Database db) 
 	{
@@ -167,9 +192,14 @@ public class ContentFactory
 	    }
 		return null;
 	}
-	
+
 	/**
 	 * 
+	 * @param contentVO
+	 * @param contentVersionVO
+	 * @param categories
+	 * @param db
+	 * @return
 	 */
 	private ContentVO updateContent(final ContentVO contentVO, final ContentVersionVO contentVersionVO, final Map categories, final Database db) 
 	{
@@ -193,7 +223,11 @@ public class ContentFactory
 	}
 
 	/**
+	 * Deletes all content categories associated with the specified content version.
 	 * 
+	 * @param db the database to use in the operation.
+	 * @param contentVersion the content version.
+	 * @throws Exception if an exception occurs while deleting the content categories.
 	 */
 	private void deleteCategories(final Database db, final ContentVersion contentVersion) throws Exception 
 	{
@@ -202,6 +236,10 @@ public class ContentFactory
 
 	/**
 	 * 
+	 * @param db
+	 * @param contentVersion
+	 * @param categorieVOs
+	 * @throws Exception
 	 */
 	private void createCategories(final Database db, final ContentVersion contentVersion, final Map categorieVOs) throws Exception 
 	{
@@ -215,18 +253,27 @@ public class ContentFactory
 			}
 		}
 	}
-	
+
 	/**
 	 * 
+	 * @param db
+	 * @param contentVersion
+	 * @param attributeName
+	 * @param categoryVOs
+	 * @throws Exception
 	 */
 	private void createCategory(final Database db, final ContentVersion contentVersion, final String attributeName, final List categoryVOs) throws Exception 
 	{
 		final List categories = categoryVOListToCategoryList(db, categoryVOs);
 		ContentCategoryController.getController().create(categories, contentVersion, attributeName, db);
 	}
-	
+
 	/**
 	 * 
+	 * @param db the database to use in the operation.
+	 * @param categoryVOList
+	 * @return
+	 * @throws Exception
 	 */
 	private List categoryVOListToCategoryList(final Database db, final List categoryVOList) throws Exception 
 	{
@@ -239,9 +286,11 @@ public class ContentFactory
 		return result;
 	}
 	
-	
+
 	/**
+	 * Creates a new content value object and populates it using the content bean.
 	 * 
+	 * @return the content value object.
 	 */
 	private ContentVO createContentVO() 
 	{
@@ -251,61 +300,72 @@ public class ContentFactory
 	}
 
 	/**
+	 * Populates the specified content value object using the content bean.
 	 * 
+	 * @param contentVO the content value object.
 	 */
-	private ContentVO populateContentVO(final ContentVO contentVO) 
+	private void populateContentVO(final ContentVO contentVO) 
 	{
 		contentVO.setName(contentValues.getName());
 		contentVO.setPublishDateTime(contentValues.getPublishDateTime());
 		contentVO.setExpireDateTime(contentValues.getExpireDateTime());
 		contentVO.setIsBranch(Boolean.FALSE);
 		contentVO.setCreatorName(principal.getName());
-		return contentVO;
 	}
-	
+
 	/**
+	 * Creates a new content version value object with the specified version value.
 	 * 
+	 * @param versionValue the version value.
+	 * @return the content version value object.
 	 */
 	private ContentVersionVO createContentVersionVO(final String versionValue) 
 	{
-		ContentVersionVO contentVersion = new ContentVersionVO();
-		contentVersion.setVersionComment("TODO");
+		final ContentVersionVO contentVersion = new ContentVersionVO();
+		contentVersion.setVersionComment("");
 		contentVersion.setVersionModifier(principal.getName());
 		contentVersion.setVersionValue(versionValue);
 		return contentVersion;
 	}
-	
-	/**
-	 * 
-	 */
-	private Document buildContentVersionDocument() 
-	{
-		final DOMBuilder builder  = new DOMBuilder();
-		final Document document   = builder.createDocument();
-		final Element rootElement = builder.addElement(document, "TODO");
-		builder.addAttribute(rootElement, "xmlns", "x-schema:TODOSchema.xml");
-		final Element attributesRoot =  builder.addElement(rootElement, "attributes");
-		
-		final List attributes = getContentTypeAttributes();
-		buildAttributes(builder, attributesRoot, attributes);
-		
-		return document;
-	}
 
 	/**
+	 * Returns all attributes of the content type.
 	 * 
+	 * @return the attributes.
 	 */
-	private List getContentTypeAttributes() 
+	private Collection getContentTypeAttributes() 
 	{
 		return ContentTypeDefinitionController.getController().getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue());
 	}
 	
 	/**
+	 * Builds the content version value document using the content version bean.
 	 * 
+	 * @return the document.
 	 */
-	private void buildAttributes(final DOMBuilder domBuilder, final Element parentElement, final List attributes) 
+	private Document buildContentVersionDocument() 
+	{
+		final DOMBuilder builder  = new DOMBuilder();
+		final Document document   = builder.createDocument();
+		final Element rootElement = builder.addElement(document, "root");
+		builder.addAttribute(rootElement, "xmlns", "x-schema:Schema.xml");
+		final Element attributesRoot =  builder.addElement(rootElement, "attributes");
+		
+		buildAttributes(builder, attributesRoot);
+		
+		return document;
+	}
+
+	/**
+	 * Builds the attributes part of the content version value document.
+	 * 
+	 * @param domBuilder the document builder. 
+	 * @param parentElement the parent element of all the attributes.
+	 */
+	private void buildAttributes(final DOMBuilder domBuilder, final Element parentElement) 
 	{	
-		for(Iterator i=attributes.iterator(); i.hasNext(); ) 
+		final Collection typeAttributes = getContentTypeAttributes();
+		for(final Iterator i=typeAttributes.iterator(); i.hasNext(); ) 
 		{
 			final ContentTypeAttribute attribute = (ContentTypeAttribute) i.next();
 			final Element element = domBuilder.addElement(parentElement, attribute.getName());
