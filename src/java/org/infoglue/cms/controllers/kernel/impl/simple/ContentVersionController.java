@@ -331,6 +331,8 @@ public class ContentVersionController extends BaseController
 			}
 		}
     	
+		getLogger().info("getLatestContentVersionWithParent done...");
+		
 		return resultList;
 	}
    
