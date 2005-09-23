@@ -22,8 +22,10 @@
 */
 package org.infoglue.deliver.taglib.common;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -34,16 +36,20 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * This class implements the &lt;common:url&gt; tag, which creates an url
+ * This class implements the &lt;common:urlBuilder&gt; tag, which creates an url
  * from a base url (user supplied or taken from the request), 
  * a query string (user supplied ot taken from the reuest) and
  * any number of parameters specified using nested &lt;common:parameter&gt; tags.
  */
 public class URLTag extends AbstractTag {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4433903132736259601L;
+
+	/**
 	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = -3691910169063207982L;
 
 	/**
 	 * The base url to use when constructing the url.
@@ -58,7 +64,12 @@ public class URLTag extends AbstractTag {
 	/**
 	 * The parameters to use when constructing the url.
 	 */
-	private Map parameters; 
+	private List parameters; // type: <String>, format: <name>=<value>
+	
+	/**
+	 * The names of all parameters added.
+	 */
+	private Map parameterNames; // <type>: <String>-><String>
 	
 	/**
 	 * Default constructor.
@@ -76,7 +87,6 @@ public class URLTag extends AbstractTag {
 	 */
 	public int doStartTag() throws JspException 
 	{
-		System.out.println("start");
 		return EVAL_BODY_INCLUDE;
 	}
 	
@@ -92,6 +102,7 @@ public class URLTag extends AbstractTag {
 		addQueryParameters();
 		produceResult(generateURL());
 		parameters = null;
+		parameterNames = null;
 		return EVAL_PAGE;
     }
 
@@ -100,13 +111,36 @@ public class URLTag extends AbstractTag {
 	 * 
 	 * @return the parameters to use when constructing the url.
 	 */
-	protected final Map getParameters()
+	private List getParameters()
 	{
 		if(parameters == null)
 		{
-			parameters = new HashMap();
+			parameters = new ArrayList();
 		}
 		return parameters;
+	}
+	
+	/**
+	 * Returns the name of all parameters that has been added.
+	 * 
+	 * @return the name of all parameters that has been added.
+	 */
+	private Map getParameterNames()
+	{
+		if(parameterNames == null)
+		{
+			parameterNames = new HashMap();
+		}
+		return parameterNames;
+	}
+	
+	/**
+	 * 
+	 */
+	protected final void addParameter(final String name, final String value)
+	{
+		getParameters().add(name + "=" + value);
+		getParameterNames().put(name, name);
 	}
 	
 	/**
@@ -165,9 +199,9 @@ public class URLTag extends AbstractTag {
 				}
 				final String name  = parameter.nextToken();
 				final String value = parameter.hasMoreTokens() ? parameter.nextToken() : "";
-				if(!getParameters().containsKey(name))
+				if(!getParameterNames().containsKey(name))
 				{
-					getParameters().put(name, value);
+					addParameter(name, value);
 				}
 			}
 		}
@@ -183,11 +217,9 @@ public class URLTag extends AbstractTag {
 		if(!getParameters().isEmpty()) 
 		{
 			StringBuffer sb = new StringBuffer();
-			for(Iterator i = getParameters().keySet().iterator(); i.hasNext(); ) 
+			for(Iterator i = getParameters().iterator(); i.hasNext(); ) 
 			{
-				String name      = (String) i.next();
-				String value     = (String) getParameters().get(name);
-				String parameter = name + "=" + value;
+				String parameter = i.next().toString();
 				sb.append(parameter + (i.hasNext() ? "&" : ""));
 			}
 			return getBaseURL() + "?" + sb.toString();

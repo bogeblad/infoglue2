@@ -22,8 +22,6 @@
 */
 package org.infoglue.deliver.taglib.common;
 
-import java.util.Map;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
@@ -33,16 +31,14 @@ import org.infoglue.deliver.taglib.AbstractTag;
  * This class implements the &lt;common:parameter&gt; tag, which adds a parameter
  * to the parameters of the parent tag.
  *
- * If an parameter with the specified name exists, it will be overwritten.
- *
- *  Note! This tag can only be used as a child of &lt;common:url&gt;.
+ *  Note! This tag must have a &lt;common:urlBuilder&gt; ancestor.
  */
 public class URLParameterTag extends AbstractTag 
 {
 	/**
 	 * The universal version identifier.
 	 */
-	private static final long serialVersionUID = 8015304806886114032L;
+	private static final long serialVersionUID = 4482006814634520239L;
 
 	/**
 	 * The name of the parameter.
@@ -71,23 +67,23 @@ public class URLParameterTag extends AbstractTag
 	 */
 	public int doEndTag() throws JspException
     {
-		getParameters().put(name, value);
+		addParameter();
 		return EVAL_PAGE;
     }
 	
 	/**
-	 * Returns the parameter map from the parent tag.
+	 * Adds the parameter to the ancestor tag.
 	 * 
-	 * @return the parameters.
 	 * @throws JspException if the ancestor tag isn't a url tag.
 	 */
-	protected Map getParameters() throws JspException
+	protected void addParameter() throws JspException
 	{
-		if(getParent() == null || !(getParent() instanceof org.infoglue.deliver.taglib.common.URLTag))
+		final URLTag parent = (URLTag) findAncestorWithClass(this, URLTag.class);
+		if(parent == null)
 		{
-			throw new JspTagException("URLParameterTag must be used inside a URLTag");
+			throw new JspTagException("URLParameterTag must have a URLTag ancestor.");
 		}
-		return ((org.infoglue.deliver.taglib.common.URLTag) getParent()).getParameters();
+		((URLTag) parent).addParameter(name, value);
 	}
 	
 	/**
