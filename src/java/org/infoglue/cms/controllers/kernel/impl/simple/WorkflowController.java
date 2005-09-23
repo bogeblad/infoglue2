@@ -24,6 +24,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,11 +32,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowVO;
+import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.workflow.WorkflowFacade;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -84,7 +88,14 @@ public class WorkflowController extends BaseController
 	{
 		try
 		{
-			return new WorkflowFacade(principal, name, actionId, inputs).createWorkflowVO();
+			if(getIsAccessApproved(name, principal))
+			{
+				return new WorkflowFacade(principal, name, actionId, inputs).createWorkflowVO();
+			}
+			else
+			{
+				throw new Bug("You are not allowed to create " + name + " workflows.");
+			}
 		}
 		catch (Exception e)
 		{
@@ -97,9 +108,53 @@ public class WorkflowController extends BaseController
 	 * @param userPrincipal a user principal
 	 * @return a list WorkflowVOs representing available workflows
 	 */
-	public List getAvailableWorkflowVOList(InfoGluePrincipal userPrincipal)
+	public List getAvailableWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
 	{
-		return new WorkflowFacade(userPrincipal).getDeclaredWorkflows();
+		final List allWorkflows = new WorkflowFacade(userPrincipal).getDeclaredWorkflows();
+		final List accessibleWorkflows = new ArrayList();
+		for(final Iterator i = allWorkflows.iterator(); i.hasNext(); )
+		{
+			final WorkflowVO workflowVO = (WorkflowVO) i.next();
+			if(getIsAccessApproved(workflowVO.getName(), userPrincipal))
+			{
+				accessibleWorkflows.add(workflowVO);
+			}
+		}
+		
+		return accessibleWorkflows;
+	}
+
+	/**
+	 * This method returns true if the user should have access to the contentTypeDefinition sent in.
+	 */
+    
+	public boolean getIsAccessApproved(String workflowName, InfoGluePrincipal infoGluePrincipal) throws SystemException
+	{
+	    final String protectWorkflows = CmsPropertyHandler.getProperty("protectWorkflows");
+	    if(protectWorkflows == null && !protectWorkflows.equalsIgnoreCase("true"))
+	    {
+	    	return true;
+	    }
+	    	
+		getLogger().info("getIsAccessApproved for " + workflowName + " AND " + infoGluePrincipal);
+		boolean hasAccess = false;
+    	
+		Database db = CastorDatabaseService.getDatabase();
+		beginTransaction(db);
+
+		try
+		{ 
+			hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Workflow.Create", workflowName);
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+    
+		return hasAccess;
 	}
 
 	/**

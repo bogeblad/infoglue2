@@ -23,8 +23,13 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.ImageButton;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
@@ -38,14 +43,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
-import org.infoglue.cms.treeservice.ss.ManagementNodeImpl;
-
+import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.net.URLEncoder;
 
 /**
  * This class implements the action class for the framed page in the management tool.
@@ -626,6 +625,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 
 	private List getWorkflowDefinitionsButtons() throws Exception
 	{
+		
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateWorkflowDefinition!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newWorkflowDefinition"), "New WorkflowDefinition"));	
 		buttons.add(new ImageButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
@@ -637,6 +637,13 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		List buttons = new ArrayList();
 		this.name = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(this.workflowDefinitionId).getName();
 		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteWorkflowDefinition.header&yesDestination=" + URLEncoder.encode("DeleteWorkflowDefinition.action?workflowDefinitionId=" + this.workflowDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListWorkflowDefinition.action", "UTF-8") + "&message=tool.managementtool.deleteWorkflowDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinition.header"));
+	    final String protectWorkflows = CmsPropertyHandler.getProperty("protectWorkflows");
+	    if(protectWorkflows != null && protectWorkflows.equalsIgnoreCase("true"))
+	    {
+			String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewWorkflowDefinition.action?workflowDefinitionId=" + this.workflowDefinitionId, "UTF-8"), "UTF-8");
+			final WorkflowDefinitionVO workflowDefinition = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(this.workflowDefinitionId);
+			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Workflow&extraParameters=" + workflowDefinition.getName() +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header"));
+	    }
 		return buttons;				
 	}
 
