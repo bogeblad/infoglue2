@@ -34,10 +34,10 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * This class implements the <common:url> tag, which creates an url
+ * This class implements the &lt;common:url&gt; tag, which creates an url
  * from a base url (user supplied or taken from the request), 
  * a query string (user supplied ot taken from the reuest) and
- * any number of parameters specified using nested <common:parameter/> tags.
+ * any number of parameters specified using nested &lt;common:parameter&gt; tags.
  */
 public class URLTag extends AbstractTag {
 	/**
@@ -159,12 +159,12 @@ public class URLTag extends AbstractTag {
 			{
 				final String token = st.nextToken();
 				final StringTokenizer parameter = new StringTokenizer(token, "=");
-				if(parameter.countTokens() != 2)
+				if(parameter.countTokens() == 0 || parameter.countTokens() > 2)
 				{
 					throw new JspTagException("Illegal query parameter [" + token + "].");
 				}
 				final String name  = parameter.nextToken();
-				final String value = parameter.nextToken();
+				final String value = parameter.hasMoreTokens() ? parameter.nextToken() : "";
 				if(!getParameters().containsKey(name))
 				{
 					getParameters().put(name, value);
