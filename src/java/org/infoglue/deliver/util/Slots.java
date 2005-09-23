@@ -152,9 +152,8 @@ public class Slots {
 		final List result = new ArrayList();
 		final int start   = startSlot();
 		final int end     = Math.min(start + slotCount, maxSlots); 
-		//System.out.println("calculateVisibleSlots() : [" + start + "," + end + "]");
 		
-		for(int i=start; i<=end; ++i)
+		for(int i=start; i<end; ++i)
 			result.add(new Integer(i));
 		return result;
 	}
