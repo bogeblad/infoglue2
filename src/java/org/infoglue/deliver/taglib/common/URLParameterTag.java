@@ -22,7 +22,6 @@
 */
 package org.infoglue.deliver.taglib.common;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
@@ -31,12 +30,12 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * This class implements the <common:parameter> tag, which adds a parameter
+ * This class implements the &lt;common:parameter&gt; tag, which adds a parameter
  * to the parameters of the parent tag.
  *
  * If an parameter with the specified name exists, it will be overwritten.
  *
- *  Note! This tag can only be used as a child of <common:url>.
+ *  Note! This tag can only be used as a child of &lt;common:url&gt;.
  */
 public class URLParameterTag extends AbstractTag 
 {
