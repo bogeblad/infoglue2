@@ -36,22 +36,22 @@ import com.opensymphony.workflow.FunctionProvider;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * Base class for all infoglue workflow functions.
  */
 public abstract class InfoglueFunction extends InfoglueWorkflowBase implements FunctionProvider 
 {
 	/**
-	 * The key used to lookup the <code>HttpServletRequest</code> in the <code>parameters</code>.
+	 * The key used by the <code>request</code> in the <code>parameters</code>.
 	 */
 	private static final String REQUEST_PARAMETER = "request";
 	
 	/**
-	 * The key used to lookup the <code>principal</code> in the <code>parameters</code>.
+	 * The key used by the <code>principal</code> in the <code>parameters</code>.
 	 */
 	private static final String PRINCIPAL_PARAMETER = "principal";
 	
 	/**
-	 * The key used to lookup the <code>principal</code> in the <code>parameters</code>.
+	 * The key used by the <code>locale</code> in the <code>parameters</code>.
 	 */
 	private static final String LOCALE_PARAMETER = "locale";
 	
@@ -61,7 +61,7 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	private Locale locale;
 	
 	/**
-	 * 
+	 * The caller of the workflow.
 	 */
 	private InfoGluePrincipal principal;
 	
@@ -74,7 +74,12 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 
 	/**
+	 * Executes this function.
 	 * 
+	 * @param transientVars the transient variables of the current execution context.
+	 * @param args the arguments of the function.
+	 * @param ps the propertyset associated with the current workflow.
+	 * @throws WorkflowException if an error occurs during the execution.
 	 */
 	public final void execute(final Map transientVars, final Map args, final PropertySet ps) throws WorkflowException 
 	{
@@ -93,8 +98,10 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 	
 	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
-	 * Note! You must call <code>super.initialize()</code> first. 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException
 	{
@@ -104,7 +111,9 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 	
 	/**
+	 * Determine the locale associated with the current session.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	private void initializeLocale() throws WorkflowException
 	{
@@ -119,7 +128,9 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 	
 	/**
+	 * Determine the caller of the workflow.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	private void initializePrincipal() throws WorkflowException
 	{
@@ -134,7 +145,7 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 	
 	/**
-	 * 
+	 * Returns the session associated with the current execution.
 	 */
 	private Session getSession() throws WorkflowException
 	{
@@ -142,7 +153,9 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 	
 	/**
-	 *
+	 * Executes this function.
+	 * 
+	 * @throws WorkflowException if an error occurs during the execution.
 	 */
 	protected abstract void execute() throws WorkflowException;
 	
@@ -172,7 +185,9 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 	
 	/**
+	 * Returns the caller of the workflow.
 	 * 
+	 * @return the caller of the workflow.
 	 */
 	protected final InfoGluePrincipal getPrincipal()
 	{
@@ -181,6 +196,8 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	
 	/**
 	 * 
+	 * 
+	 * @param status
 	 */
 	protected final void setFunctionStatus(final String status) 
 	{

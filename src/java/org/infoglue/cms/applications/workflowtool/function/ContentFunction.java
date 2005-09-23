@@ -27,30 +27,32 @@ import org.infoglue.cms.entities.content.ContentVO;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * Base class for all functions operating on <code>ContentVO</code> objects.
  */
 public abstract class ContentFunction extends InfoglueFunction 
 {
 	/**
-	 * 
+	 * The key used by the <code>content</code> in the <code>parameters</code>.
 	 */
 	public static final String CONTENT_PARAMETER = "content";
 	
 	/**
-	 * 
+	 * The content parameter.
 	 */
 	private ContentVO contentVO;
 
 	/**
-	 * 
+	 * Default constructor.
 	 */
-	public ContentFunction() 
+	protected ContentFunction() 
 	{ 
 		super(); 
 	}
 	
 	/**
+	 * Returns the content parameter.
 	 * 
+	 * @return the content parameter.
 	 */
 	protected ContentVO getContentVO() 
 	{ 
@@ -58,7 +60,10 @@ public abstract class ContentFunction extends InfoglueFunction
 	}
 	
 	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{

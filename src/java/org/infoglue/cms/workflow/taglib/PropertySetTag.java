@@ -26,7 +26,7 @@ package org.infoglue.cms.workflow.taglib;
 import javax.servlet.jsp.JspException;
 
 /**
- * This class implements the <iw:property> tag, which fetches a value from the propertyset 
+ * This class implements the &lt;iw:property&gt; tag, which fetches a value from the propertyset 
  * associated with the workflow and
  * 
  * - stores it as a string in a page context variable (if the <code>id</code> attribute is set).

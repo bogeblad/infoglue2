@@ -29,7 +29,7 @@ import javax.servlet.jsp.JspException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * This class implements the <common:size> tag, which stores the size of a collection
+ * This class implements the &lt;common:size&gt; tag, which stores the size of a collection
  * in the page context variable specified by the <code>id</code> attribute.  
  */
 public class SizeTag extends AbstractTag 

@@ -23,7 +23,7 @@
 package org.infoglue.cms.workflow.taglib;
 
 /**
- * This class implements the <iw:submit> tag, which presents an <button type="submit" ... /> 
+ * This class implements the &lt;iw:submit&gt; tag, which presents an &lt;button type="submit" ... /&gt; 
  * form element which is used for executing a specific workflow action. 
  */
 public class SubmitTag extends ElementTag 

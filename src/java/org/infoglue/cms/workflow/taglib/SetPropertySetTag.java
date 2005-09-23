@@ -26,7 +26,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 /**
- * This class implements the <iw:setproperty> tag, which stores a value as a
+ * This class implements the &lt;iw:setproperty&gt; tag, which stores a value as a
  * data field in the propertyset associated with the workflow.
  */
 public class SetPropertySetTag extends WorkflowTag

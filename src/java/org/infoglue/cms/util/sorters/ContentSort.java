@@ -37,30 +37,35 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 /**
- * 
+ * A <code>CompoundComparable</code> is a compound comparable.
  */
-class SortComparable implements Comparable 
+class CompoundComparable implements Comparable 
 {
 	/**
-	 * 
+	 * The list of contained comparables.
 	 */
 	private final List comparables = new ArrayList();
 
 	/**
-	 * 
+	 * Each order in this list indicates how the comparable at the same position should be sorted (ascending or not).
 	 */
-	private final List orders = new ArrayList();
+	private final List orders = new ArrayList(); // type: <Boolean>
 	
 	/**
+	 * Compares two <code>CompoundComparable</code> objects by comparing all
+	 * contained comparable against each other.
 	 * 
+	 * @param o the object to ne compared.
+	 * @return a negative integer, zero, or a positive integer if this object is less than, 
+	 *         equal to, or greater than the specified object.
 	 */
 	public final int compareTo(final Object o) 
 	{
-		if(!(o instanceof SortComparable))
+		if(!(o instanceof CompoundComparable))
 		{
 			throw new ClassCastException();
 		}
-		final SortComparable other = (SortComparable) o;
+		final CompoundComparable other = (CompoundComparable) o;
 		if(other.comparables.size() != comparables.size())
 		{
 			throw new IllegalStateException("Trying to compare SortComparable with different number of elements.");
@@ -77,9 +82,14 @@ class SortComparable implements Comparable
 	}
 	
 	/**
+	 * Compares the n:th comparable of two <code>SortComparable</code> objects.
 	 * 
+	 * @param other the other <code>CompoundComparable</code> object.
+	 * @param index indicates which contained comparable to compare.
+	 * @return a negative integer, zero, or a positive integer if the n:th comparable of this object 
+	 *         is less than, equal to, or greater than the n:th comparable of the specified object.
 	 */
-	private final int compareTo(final SortComparable other, final int index) 
+	private final int compareTo(final CompoundComparable other, final int index) 
 	{
 		final Comparable c1      = (Comparable) comparables.get(index);
 		final Comparable c2      = (Comparable) other.comparables.get(index);
@@ -88,7 +98,10 @@ class SortComparable implements Comparable
 	}
 	
 	/**
+	 * Adds the specified comparable. The comparable will be sorted in the specified order.
 	 * 
+	 * @param c the comparable to add.
+	 * @param ascending indicates the sort order of the comparable.
 	 */
 	public final void add(final Comparable c, final boolean ascending) 
 	{
@@ -98,78 +111,107 @@ class SortComparable implements Comparable
 }
 
 /**
- * 
+ * A <code>SortElement</code> object is created for each content/content version
+ * to be sorted. If the <code>SortElement</code> is constructed using a content 
+ * and the content version is needed, the content version to use is decided by
+ * fetching the language used by the <code>TemplateController</code>.
+ * <p>
+ * Strictly speaking we never sort on a content or a content version, we are
+ * sorting on a content <strong>and</strong> the content version indicated by the
+ * language used by the <code>TemplateController</code> at the same time.
+ * </p>
  */
-class SortStruct implements Comparable 
+class SortElement implements Comparable 
 {
 	/**
-	 * 
+	 * The controller to use when interacting with the model.
 	 */
 	private final TemplateController controller;
 	
 	/**
-	 * 
+	 * The content version to sort.
 	 */
 	private ContentVersionVO contentVersionVO;
 
 	/**
-	 * 
+	 * The content to sort.
 	 */
 	private ContentVO contentVO;
 	
-	
 	/**
-	 * 
+	 * The comparable of the element to sort. 
 	 */
-	private final SortComparable sortComparable = new SortComparable(); 
+	private final CompoundComparable comparable = new CompoundComparable(); 
 
 	/**
+	 * Constructs a sort element for the specified content.
 	 * 
+	 * @param contentVO the content to sort.
+	 * @param controller the controller to use when interacting with the model.
 	 */
-	SortStruct(final TemplateController controller, final ContentVO contentVO) 
+	SortElement(final TemplateController controller, final ContentVO contentVO) 
 	{
 		this.controller = controller;
 		this.contentVO  = contentVO;
 	}
 
 	/**
+	 * Constructs a sort element for the specified content version.
 	 * 
+	 * @param contentVO the content to sort.
+	 * @param controller the controller to use when interacting with the model.
 	 */
-	SortStruct(final TemplateController controller, final ContentVersionVO contentVersionVO) 
+	SortElement(final TemplateController controller, final ContentVersionVO contentVersionVO) 
 	{
 		this.controller       = controller;
 		this.contentVersionVO = contentVersionVO;
 	}
 
 	/**
+	 * Use the specified content property in the sort.
 	 * 
+	 * @paran name the name of the content property.
+	 * @param ascending indicates the sort order to use when sorting on the specified property.
 	 */
 	public void addContentProperty(final String name, final boolean ascending) 
 	{
-		add(getProperty(getContentVO(), name), ascending);
+		comparable.add(getProperty(getContentVO(), name), ascending);
 	}
 
 	/**
+	 * Use the specified content version property in the sort.
 	 * 
+	 * @paran name the name of the content version property.
+	 * @param ascending indicates the sort order to use when sorting on the specified property.
 	 */
 	public void addContentVersionProperty(final String name, final boolean ascending) 
 	{
-		add(getProperty(getContentVersionVO(), name), ascending);
+		comparable.add(getProperty(getContentVersionVO(), name), ascending);
 	}
 
 	/**
+	 * Use the specified content version attribute in the sort. The type (Comparable) used when
+	 * sorting on the attribute will be the specified class.
 	 * 
+	 * @paran name the name of the content version attribute.
+	 * @param clazz indicates the <code>Comparable</code> to use when sorting on the attribute.
+	 * @param ascending indicates the sort order to use when sorting on the specified attribute.
 	 */
 	public void addContentVersionAttribute(final String name, final Class clazz, final boolean ascending) 
 	{
 		final Integer contentId  = getContentId();
 		final String stringValue = controller.getContentAttribute(contentId, controller.getLanguageId(), name); 
 		
-		add(castAttribute(name, clazz, stringValue), ascending);
+		comparable.add(castAttribute(name, clazz, stringValue), ascending);
 	}
 
 	/**
+	 * Cast the specified string value to the specified class.
 	 * 
+	 * @param name the name of the content version attribute (used for debug only).
+	 * @param clazz the class to cast to. Must implement the <code>Comparable</code> interface.
+	 * @param stringValue the value to cast.
+	 * @throws IllegalArgumentException if the cast fails.
 	 */
 	private Comparable castAttribute(final String name, final Class clazz, final String stringValue) 
 	{
@@ -195,7 +237,9 @@ class SortStruct implements Comparable
 	}
 	
 	/**
+	 * Returns the identifier of the content element.
 	 * 
+	 * @return the identifier.
 	 */
 	private Integer getContentId() 
 	{
@@ -203,7 +247,11 @@ class SortStruct implements Comparable
 	}
 	
 	/**
+	 * Returns the value of the specified property of the specified object.
 	 * 
+	 * @param o object whose property is to be extracted.
+	 * @param name the name of the property to be extracted.
+	 * @returns the value of the specified property of the specified object.
 	 */
 	private Comparable getProperty(final Object o, final String name) 
 	{
@@ -219,15 +267,10 @@ class SortStruct implements Comparable
 	}
 	
 	/**
+	 * Returns the content version value object. This is a convenience method as we don't
+	 * if the element was constructed using a content or a content version.
 	 * 
-	 */
-	private void add(final Comparable c, final boolean ascending) 
-	{
-		sortComparable.add(c, ascending);
-	}
-	
-	/**
-	 * 
+	 * @return the content version value object.
 	 */
 	ContentVersionVO getContentVersionVO() 
 	{
@@ -239,7 +282,10 @@ class SortStruct implements Comparable
 	}
 	
 	/**
+	 * Returns the content value object. This is a convenience method as we don't
+	 * if the element was constructed using a content or a content version.
 	 * 
+	 * @return the content value object.
 	 */
 	ContentVO getContentVO() 
 	{
@@ -251,37 +297,44 @@ class SortStruct implements Comparable
 	}
 
 	/**
+	 * Compares two <code>SortStruct</code> objects by comparing their <code>SortComparable</code>:s.
 	 * 
+	 * @param o the object to ne compared.
+	 * @return a negative integer, zero, or a positive integer if this object is less than, 
+	 *         equal to, or greater than the specified object.
 	 */
 	public final int compareTo(Object o) 
 	{
-		if(!(o instanceof SortStruct))
+		if(!(o instanceof SortElement))
 		{
 			throw new ClassCastException();
 		}
-		final SortStruct other = (SortStruct) o;
-		return sortComparable.compareTo(other.sortComparable);
+		final SortElement other = (SortElement) o;
+		return comparable.compareTo(other.comparable);
 	}
 }
 
 /**
- * 
+ * Utility class for sorting content/content version objects. 
+ * Any number of properties and/or attributes of the content/content versions can be used in the sort.
  */
 public class ContentSort 
 {
 	/**
-	 * 
+	 * The controller to use when interacting with the model.
 	 */
 	TemplateController controller;
 	
 	/**
-	 * 
+	 * The elements to sort.
 	 */
-	private final List structs = new ArrayList();
-	
+	private final List elements = new ArrayList(); // type: <SortElement>
 	
 	/**
+	 * Constructs a sorter for the specified elements.
 	 * 
+	 * @param controller the controller to use when interacting with the model.
+	 * @param elements the list of objects to sort.
 	 */
 	public ContentSort(final TemplateController controller, final Collection elements) 
 	{
@@ -290,7 +343,9 @@ public class ContentSort
 	}
 	
 	/**
+	 * Sets the elements to sort.
 	 * 
+	 * @param elements the list of objects to sort.
 	 */
 	private final void addElements(final Collection elements) 
 	{
@@ -318,7 +373,9 @@ public class ContentSort
 	}
 	
 	/**
+	 * Sets the elements to sort.
 	 * 
+	 * @param the list of <code>Content</code> objects to sort.
 	 */
 	private final void initializeWithContent(final Collection elements) 
 	{
@@ -329,7 +386,9 @@ public class ContentSort
 	}
 	
 	/**
+	 * Sets the elements to sort.
 	 * 
+	 * @param the list of <code>ContentVO</code> objects to sort.
 	 */
 	private final void initializeWithContentVO(final Collection elements) 
 	{
@@ -340,9 +399,11 @@ public class ContentSort
 	}
 	
 	/**
+	 * Sets the elements to sort.
 	 * 
+	 * @param the list of <code>ContentVersion</code> objects to sort.
 	 */
-	private final void  initializeWithContentVersion(final Collection elements) 
+	private final void initializeWithContentVersion(final Collection elements) 
 	{
 		for(final Iterator i=elements.iterator(); i.hasNext(); )
 		{
@@ -351,9 +412,11 @@ public class ContentSort
 	}
 	
 	/**
+	 * Sets the elements to sort.
 	 * 
+	 * @param the list of <code>ContentVersionVO</code> objects to sort.
 	 */
-	private final void  initializeWithContentVersionVO(final Collection elements) 
+	private final void initializeWithContentVersionVO(final Collection elements) 
 	{
 		for(final Iterator i=elements.iterator(); i.hasNext(); )
 		{
@@ -362,29 +425,39 @@ public class ContentSort
 	}
 	
 	/**
+	 * Use the specified content property in the sort.
 	 * 
+	 * @paran name the name of the content property.
+	 * @param ascending indicates the sort order to use when sorting on the specified property.
 	 */
 	public void addContentProperty(final String name, final boolean ascending) 
 	{
-		for(final Iterator i=structs.iterator(); i.hasNext(); )
+		for(final Iterator i=elements.iterator(); i.hasNext(); )
 		{
-			((SortStruct) i.next()).addContentProperty(name, ascending);
+			((SortElement) i.next()).addContentProperty(name, ascending);
 		}
 	}
 	
 	/**
+	 * Use the specified content version property in the sort.
 	 * 
+	 * @paran name the name of the content version property.
+	 * @param ascending indicates the sort order to use when sorting on the specified property.
 	 */
 	public void addContentVersionProperty(final String name, final boolean ascending) 
 	{
-		for(final Iterator i=structs.iterator(); i.hasNext(); )
+		for(final Iterator i=elements.iterator(); i.hasNext(); )
 		{
-			((SortStruct) i.next()).addContentVersionProperty(name, ascending);
+			((SortElement) i.next()).addContentVersionProperty(name, ascending);
 		}
 	}
 	
 	/**
+	 * Use the specified content version attribute in the sort. The type (Comparable) used when
+	 * sorting on the attribute will be <code>String</code>.
 	 * 
+	 * @paran name the name of the content version attribute.
+	 * @param ascending indicates the sort order to use when sorting on the specified attribute.
 	 */
 	public void addContentVersionAttribute(final String name, final boolean ascending) 
 	{
@@ -392,7 +465,12 @@ public class ContentSort
 	}
 	
 	/**
+	 * Use the specified content version attribute in the sort. The type (Comparable) used when
+	 * sorting on the attribute will be the specified class.
 	 * 
+	 * @paran name the name of the content version attribute.
+	 * @param className indicates the name of the <code>Comparable</code> to use when sorting on the attribute.
+	 * @param ascending indicates the sort order to use when sorting on the specified attribute.
 	 */
 	public void addContentVersionAttribute(final String name, final String className, final boolean ascending) 
 	{
@@ -408,57 +486,70 @@ public class ContentSort
 	}
 	
 	/**
+	 * Use the specified content version attribute in the sort. The type (Comparable) used when
+	 * sorting on the attribute will be the specified class.
 	 * 
+	 * @paran name the name of the content version attribute.
+	 * @param clazz indicates the <code>Comparable</code> to use when sorting on the attribute.
+	 * @param ascending indicates the sort order to use when sorting on the specified attribute.
 	 */
-	public void addContentVersionAttribute(final String name, final Class c, final boolean ascending) 
+	public void addContentVersionAttribute(final String name, final Class clazz, final boolean ascending) 
 	{
-		for(final Iterator i=structs.iterator(); i.hasNext(); )
+		for(final Iterator i=elements.iterator(); i.hasNext(); )
 		{
-			((SortStruct) i.next()).addContentVersionAttribute(name, c, ascending);
+			((SortElement) i.next()).addContentVersionAttribute(name, clazz, ascending);
 		}
 	}
 
 	/**
+	 * Adds the specified <code>ContentVO</code> object to the elements to sort.
 	 * 
+	 * @param contentVO the element to sort.
 	 */
 	private void addElement(final ContentVO contentVO) 
 	{
-		structs.add(new SortStruct(controller, contentVO));
+		elements.add(new SortElement(controller, contentVO));
 	}
 	
 	/**
+	 * Adds the specified <code>ContentVersionVO</code> object to the elements to sort.
 	 * 
+	 * @param contentVO the element to sort.
 	 */
 	private void addElement(final ContentVersionVO contentVersionVO) 
 	{
-		structs.add(new SortStruct(controller, contentVersionVO));
+		elements.add(new SortElement(controller, contentVersionVO));
 	}
 	
 	/**
+	 * Returns a list of sorted <code>ContentVO</code> objects.
 	 * 
+	 * @return the sorted list.
 	 */
 	public List getContentResult() 
 	{
-		Collections.sort(structs);
+		Collections.sort(elements);
 		final List result = new ArrayList();
-		for(final Iterator i=structs.iterator(); i.hasNext(); ) 
+		for(final Iterator i=elements.iterator(); i.hasNext(); ) 
 		{
-			final SortStruct struct = (SortStruct) i.next();
+			final SortElement struct = (SortElement) i.next();
 			result.add(struct.getContentVO());
 		}
 		return result;
 	}
 
 	/**
+	 * Returns a list of sorted <code>ContentVersionVO</code> objects.
 	 * 
+	 * @return the sorted list.
 	 */
 	public List getContentVersionResult() 
 	{
-		Collections.sort(structs);
+		Collections.sort(elements);
 		final List result = new ArrayList();
-		for(final Iterator i=structs.iterator(); i.hasNext(); ) 
+		for(final Iterator i=elements.iterator(); i.hasNext(); ) 
 		{
-			final SortStruct struct = (SortStruct) i.next();
+			final SortElement struct = (SortElement) i.next();
 			result.add(struct.getContentVersionVO());
 		}
 		return result;

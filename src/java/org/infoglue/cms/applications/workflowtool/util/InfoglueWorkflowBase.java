@@ -45,22 +45,22 @@ public abstract class InfoglueWorkflowBase
 	private final static Logger logger = Logger.getLogger(InfoglueWorkflowBase.class.getName());
 	
 	/**
-	 * 
+	 * The prefix for all keys representing workflow specific information in the propertyset.
 	 */
 	public static final String WORKFLOW_PROPERTYSET_PREFIX = "workflow_";
 	
 	/**
-	 * 
+	 * The key used for storing the function status in the propertyset.
 	 */
 	public static final String FUNCTION_STATUS_PROPERTYSET_KEY = WORKFLOW_PROPERTYSET_PREFIX + "status";
 
 	/**
-	 * 
+	 * The prefix for all keys representing errors in the propertyset.
 	 */
 	public static final String ERROR_PROPERTYSET_PREFIX = "error_";
 
 	/**
-	 * The key used to lookup the <code>DatabaseSession</code> in the <code>parameters</code>.
+	 * The key used by the <code>DatabaseSession</code> in the <code>parameters</code>.
 	 */
 	private static final String DB_PARAMETER = "db";
 	
@@ -93,8 +93,10 @@ public abstract class InfoglueWorkflowBase
 	}
 
 	/**
+	 * Method used for initializing the object; will be called before any execution is performed.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
-	 * Note! You must call <code>super.initialize()</code> first. 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException
 	{
@@ -116,7 +118,11 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * The preferred way to throw an exception from a subclass. 
+	 * Logs the error, sets the mode of the database to rollback only and throws an exception.
 	 * 
+	 * @param message the exception message.
+	 * @throws WorkflowException always throws an exception with the specified message.
 	 */
 	protected void throwException(final String message) throws WorkflowException
 	{
@@ -124,11 +130,16 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * The preferred way to throw an exception from a subclass. 
+	 * Logs the error, sets the mode of the database to rollback only and throws an exception.
 	 * 
+	 * @param e the exception to chain. 
+	 * @throws WorkflowException always throws an exception. If the specified exception is a
+	 * workflow exception, that exception is thrown. Otherwise a chained workflow exception is thrown.
 	 */
 	protected void throwException(final Exception e) throws WorkflowException
 	{
-		logger.error(e.getMessage());
+		logger.error(e.getMessage(), e);
 		workflowDatabase.setRollbackOnly();
 		throw (e instanceof WorkflowException) ? (WorkflowException) e : new WorkflowException(e);
 	}
@@ -174,15 +185,23 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Returns true if the specified parameter exists; false otherwise.
 	 *  
+	 * @param name the name of the parameter.
+	 * @return true if the specified parameter exists; false otherwise.
 	 */
-	protected final boolean parameterExists(final String key) throws WorkflowException 
+	protected final boolean parameterExists(final String key) 
 	{
 		return parameters.containsKey(key);
 	}
 	
 	/**
-	 *
+	 * Returns the specified parameter if it exists; otherwise an exception is thrown.
+	 * Only use this method if the parameter is absolutely required.
+	 * 
+	 * @param name the name of the parameter.
+	 * @return the specified parameter.
+	 * @throws WorkflowException if the specified parameter doesn't exists.
 	 */
 	protected final Object getParameter(final String key) throws WorkflowException 
 	{
@@ -190,7 +209,11 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
-	 *  
+	 * Returns the specified parameter if it exists; otherwise the default value.
+	 * 
+	 * @param name the name of the parameter.
+	 * @param defaultValue the default value.
+	 * @return the specified parameter if it exists; otherwise the default value.
 	 */
 	protected final Object getParameter(final String key, final Object defaultValue) throws WorkflowException 
 	{
@@ -198,7 +221,12 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Returns the specified parameter. If the parameter is required and not found, an exception is thrown.
 	 * 
+	 * @param key the key.
+	 * @param required indicates if the parameter is required.
+	 * @return the specified parameter.
+	 * @throws WorkflowException if a required parameter is missing.
 	 */
 	protected final Object getParameter(final String key, final boolean required) throws WorkflowException 
 	{
@@ -213,7 +241,10 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
-	 *  
+	 * Stores the specified parameter.
+	 * 
+	 * @param key the lookup key.
+	 * @param value the value.
 	 */
 	protected final void setParameter(final String key, final Object value)
 	{
@@ -221,7 +252,9 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Returns the parameters (transient variables) of the current execution context.
 	 * 
+	 * @return the parameters (transient variables) of the current execution context.
 	 */
 	protected final Map getParameters()
 	{
@@ -229,7 +262,9 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Returns true if the specified property exists; false otherwise.
 	 * 
+	 * @return true if the specified property exists; false otherwise.
 	 */
 	protected final boolean propertySetContains(final String key)
 	{
@@ -237,7 +272,9 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Returns the specified data property as a string.
 	 * 
+	 * @param key the key.
 	 */
 	protected final String getPropertySetDataString(final String key)
 	{
@@ -245,7 +282,10 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Stores the specified data property.
 	 * 
+	 * @param key the key.
+	 * @param value the value.
 	 */
 	protected final void setPropertySetDataString(final String key, final String value)
 	{
@@ -253,7 +293,9 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Returns the specified string property.
 	 * 
+	 * @param key the key.
 	 */
 	protected final String getPropertySetString(final String key)
 	{
@@ -261,7 +303,10 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Stores the specified string property.
 	 * 
+	 * @param key the key.
+	 * @param value the value.
 	 */
 	protected final void setPropertySetString(final String key, final String value)
 	{
@@ -269,7 +314,9 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Removes the property with the specified key from the propertyset.
 	 * 
+	 * @param key the property key.
 	 */
 	protected final void removeFromPropertySet(final String key)
 	{
@@ -277,7 +324,12 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Removes the property with the specified key from the propertyset. 
+	 * If key is a prefix, all properties having keys starting with the specified key
+	 * will be removed. 
 	 * 
+	 * @param key the property key.
+	 * @param isPrefix indicates if the key should be used as key prefix.
 	 */
 	protected final void removeFromPropertySet(final String key, final boolean isPrefix)
 	{
@@ -285,7 +337,9 @@ public abstract class InfoglueWorkflowBase
 	}
 
 	/**
+	 * Returns the propertyset associated with the current workflow.
 	 * 
+	 * @return the propertyset associated with the current workflow.
 	 */
 	protected final InfogluePropertySet getPropertySet()
 	{
@@ -303,7 +357,10 @@ public abstract class InfoglueWorkflowBase
 	}
 	
 	/**
+	 * Returns the database associated with the current execution.
 	 * 
+	 * @return the database associated with the current execution.
+	 * @throws WorkflowException if an error occurs when opening/starting the database/transaction.  
 	 */
 	protected final Database getDatabase() throws WorkflowException 
 	{

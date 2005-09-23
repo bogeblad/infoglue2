@@ -31,7 +31,7 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * This class implements the <common:sublist> tag, which stores the sublist of a specified list
+ * This class implements the &lt;common:sublist&gt; tag, which stores the sublist of a specified list
  * in the page context variable specified by the <code>id</code> attribute.  
  */
 public class SublistTag extends AbstractTag 

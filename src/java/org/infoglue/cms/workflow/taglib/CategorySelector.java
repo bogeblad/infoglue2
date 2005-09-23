@@ -31,7 +31,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.entities.management.CategoryVO;
 
 /**
- * This class implements the <iw:categorySelector> tag, which presents an <select ... >...</select> 
+ * This class implements the &lt;iw:categorySelector&gt; tag, which presents an &lt;select ... &gt;...&lt;/select&gt; 
  * form element representing a category and where each option element represents a child of the root
  * category.
  * The value of the selected element is fetched (with the name of the select element as a key) 

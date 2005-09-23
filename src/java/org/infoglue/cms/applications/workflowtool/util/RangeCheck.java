@@ -28,42 +28,42 @@ package org.infoglue.cms.applications.workflowtool.util;
 public class RangeCheck 
 {
 	/**
-	 * Return if the checked value is inside the range.
+	 * Return code if the checked value is inside the range.
 	 */
 	public static final int OK = 0;
 	
 	/**
-	 * Return if the checked value is outside the range and the range is [x,x].
+	 * Return code if the checked value is outside the range and the range is [x,x].
 	 */
 	public static final int EXACTLY = 1;
 	
 	/**
-	 * Return if the checked value is outside the range and the range is [1,1].
+	 * Return code if the checked value is outside the range and the range is [1,1].
 	 */
 	public static final int EXACTLY_ONE = 2;
 	
 	/**
-	 * Return if the checked value is outside the range and the range is ],x].
+	 * Return code if the checked value is outside the range and the range is ],x].
 	 */
 	public static final int LESS_THAN = 3;
 	
 	/**
-	 * Return if the checked value is outside the range and the range is [x,[.
+	 * Return code if the checked value is outside the range and the range is [x,[.
 	 */
 	public static final int GREATER_THAN = 4;
 
 	/**
-	 * Return if the checked value is outside the range and the range is [1,[.
+	 * Return code if the checked value is outside the range and the range is [1,[.
 	 */
 	public static final int GREATER_THAN_ONE = 5;
 	
 	/**
-	 * Return if the checked value is outside the range and the range is [x,y].
+	 * Return code if the checked value is outside the range and the range is [x,y].
 	 */
 	public static final int BETWEEN = 6;
 	
 	/**
-	 * Return if the checked value is outside the range and the range is [1,y].
+	 * Return code if the checked value is outside the range and the range is [1,y].
 	 */
 	public static final int BETWEEN_ONE_AND_MANY = 7;
 	
@@ -113,7 +113,7 @@ public class RangeCheck
 	 * Checks if the specified value is within the range.
 	 * 
 	 * @param value the value to check.
-	 * @return an integer representing the result (one of the static fields of this class).
+	 * @return a code representing the result.
 	 */
 	public final int check(final int value)
 	{

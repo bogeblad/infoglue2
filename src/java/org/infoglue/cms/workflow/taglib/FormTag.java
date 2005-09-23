@@ -28,7 +28,7 @@ import java.text.MessageFormat;
 import javax.servlet.jsp.JspException;
 
 /**
- * This class implements the <iw:form> tag, which presents an <form ... /> element 
+ * This class implements the &lt;iw:form&gt; tag, which presents an &lt;form ... /&gt; element 
  * with all the attributes and hidden fields properly initialized 
  * as required by the workflow framework.  
  */

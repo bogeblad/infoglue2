@@ -30,7 +30,7 @@ import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
- * This class implements the <iw:categoryWithName> tag, which stores a category value
+ * This class implements the &lt;iw:categoryWithName&gt; tag, which stores a category value
  * object (with the children populated) in a page context variable.
  */
 public class CategoryWithNameTag extends AbstractTag 
