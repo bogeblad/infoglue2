@@ -48,12 +48,12 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	/**
 	 * The key used by the <code>principal</code> in the <code>parameters</code>.
 	 */
-	private static final String PRINCIPAL_PARAMETER = "principal";
+	public static final String PRINCIPAL_PARAMETER = "principal";
 	
 	/**
 	 * The key used by the <code>locale</code> in the <code>parameters</code>.
 	 */
-	private static final String LOCALE_PARAMETER = "locale";
+	public static final String LOCALE_PARAMETER = "locale";
 	
 	/**
 	 * The locale associated with the current session.
