@@ -36,7 +36,7 @@ public class Slots {
 	private final List allElements;
 
 	/**
-	 * The index of the current slot. 
+	 * The index of the current slot.
 	 */
 	private final int currentSlot;
 	
@@ -125,13 +125,21 @@ public class Slots {
 	private void validateArguments() 
 	{
 		if(slotSize <= 0)
+		{
 			throw new IllegalArgumentException("Slot size must be a positive number.");
+		}
 		if(slotCount <= 0)
+		{
 			throw new IllegalArgumentException("Slot count must be a positive number.");
+		}
 		if(currentSlot <= 0)
+		{
 			throw new IllegalArgumentException("Current slot must be a positive number.");
+		}
 		if(currentSlot > maxSlots)
+		{
 			throw new IllegalArgumentException("Current slot is not a valid slot [" + currentSlot + ">" + maxSlots + "]");
+		}
 	}
 	
 	/**
@@ -139,8 +147,6 @@ public class Slots {
 	 */
 	private List calculateVisibleElements() 
 	{
-		//System.out.println("calculateVisibleElements() : [" + getFromElementIndex() + "," + getToElementIndex() + "]");
-
 		return allElements.subList(getFromElementIndex(), getToElementIndex());
 	}
 
@@ -151,10 +157,12 @@ public class Slots {
 	{
 		final List result = new ArrayList();
 		final int start   = startSlot();
-		final int end     = Math.min(start + slotCount, maxSlots); 
+		final int end     = Math.min(start + slotCount - 1, maxSlots); 
 		
-		for(int i=start; i<end; ++i)
+		for(int i=start; i<=end; ++i)
+		{
 			result.add(new Integer(i));
+		}
 		return result;
 	}
 
@@ -164,7 +172,9 @@ public class Slots {
 	private int startSlot() 
 	{
 		if(slotCount >= maxSlots)
+		{
 			return 1;
+		}
 		return Math.max(1, currentSlot - ((slotCount - 1) / 2)); 	
 	}
 	
@@ -182,22 +192,6 @@ public class Slots {
 	private int getToElementIndex()
 	{
 		return Math.min(getFromElementIndex() + slotSize, allElements.size()); 
-	}
-	
-	/**
-	 * 
-	 */
-	private int maxSlotsBefore()
-	{
-		return currentSlot - 1;
-	}
-	
-	/**
-	 * 
-	 */
-	private int maxSlotsAfter() 
-	{
-		return maxSlots - currentSlot;
 	}
 	
 	/**
