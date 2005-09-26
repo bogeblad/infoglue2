@@ -22,11 +22,10 @@
  */
 package org.infoglue.cms.applications.workflowtool.function;
 
-import org.infoglue.cms.applications.workflowtool.function.InfoglueFunction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.entities.management.Repository;
 
 import com.opensymphony.workflow.WorkflowException;
 
@@ -36,49 +35,37 @@ import com.opensymphony.workflow.WorkflowException;
 public class PathContentProvider extends InfoglueFunction 
 {
 	/**
-	 * Indicates how the arguments PATH_ARGUMENT and REPOSITORY_NAME_ARGUMENT should be used.
-	 * If the mode is PROPERTYSET_MODE_ARGUMENT, then the arguments specifies propertyset keys.
-	 * Otherwise, the arguments specifies the values to use.
-	 */
-	private static final String MODE_ARGUMENT = "mode";
-	
-	/**
-	 * 
-	 */
-	private static final String PROPERTYSET_MODE_ARGUMENT = "propertyset";
-	
-	/**
-	 * 
+	 * The name of the parameter argument.
 	 */
 	private static final String PARAMETER_NAME_ARGUMENT = "parameter";
 	
 	/**
-	 * 
+	 * The name of the path argument.
 	 */
 	private static final String PATH_ARGUMENT = "path";
 	
 	/**
-	 * 
+	 * The name of the repository argument.
 	 */
 	private static final String REPOSITORY_NAME_ARGUMENT = "repository";
 	
 	/**
-	 * 
+	 * The key used to store the content in the <code>parameters</code>.
 	 */
 	private String parameter;
 	
 	/**
-	 * 
+	 * The name of the repository.
 	 */
 	private String repositoryName;
 	
 	/**
-	 * 
+	 * The path identifying the content inside the specified <code>repository</code>.
 	 */
 	private String path;
 	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public PathContentProvider() 
 	{
@@ -90,9 +77,14 @@ public class PathContentProvider extends InfoglueFunction
 	 */
 	protected void execute() throws WorkflowException 
 	{
-		try 
+		try
 		{
-			final RepositoryVO repository = RepositoryController.getController().getRepositoryWithName(repositoryName, getDatabase()).getValueObject();
+			getLogger().debug("Using repository=["+ repositoryName + "] path=["+ path + "]");
+			final Repository repository = RepositoryController.getController().getRepositoryWithName(repositoryName, getDatabase());
+			if(repository == null)
+			{
+				throwException("No repository with the name [" + repositoryName + "] found.");
+			}
 			final ContentVO contentVO = ContentController.getContentController().getContentVOWithPath(repository.getId(), path, false, getPrincipal(), getDatabase());
 			setParameter(parameter, contentVO);
 		} 
@@ -103,39 +95,16 @@ public class PathContentProvider extends InfoglueFunction
 	}
 
 	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{
 		super.initialize();
 		parameter      = getArgument(PARAMETER_NAME_ARGUMENT);
-		path           = getPath();
-		repositoryName = getRepositoryName();
-	}
-	
-	/**
-	 * 
-	 */
-	private boolean isPropertysetMode() throws WorkflowException
-	{
-		final boolean b = argumentExists(MODE_ARGUMENT) ? PROPERTYSET_MODE_ARGUMENT.equals(getArgument(MODE_ARGUMENT)) : false;
-		getLogger().debug("Using " + (b ? "propertyset" : "normal") + " mode.");
-		return b;
-	}
-	
-	/**
-	 * 
-	 */
-	private String getRepositoryName() throws WorkflowException
-	{
-		return isPropertysetMode() ? getPropertySetString(getArgument(REPOSITORY_NAME_ARGUMENT)) : getArgument(REPOSITORY_NAME_ARGUMENT);
-	}
-
-	/**
-	 * 
-	 */
-	private String getPath() throws WorkflowException
-	{
-		return isPropertysetMode() ? getPropertySetString(getArgument(PATH_ARGUMENT)) : getArgument(PATH_ARGUMENT);
+		path           = getArgument(PATH_ARGUMENT);
+		repositoryName = getArgument(REPOSITORY_NAME_ARGUMENT);
 	}
 }
