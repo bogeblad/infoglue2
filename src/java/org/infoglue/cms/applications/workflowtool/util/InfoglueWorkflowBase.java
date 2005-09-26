@@ -85,6 +85,12 @@ public abstract class InfoglueWorkflowBase
 	private DatabaseSession workflowDatabase;
 	
 	/**
+	 * If <code>throwException</code> is used inside both <code>try</code> and <code>catch</catch>
+	 * then it will be logged twice. To get ride of this, the lastException is tracked.
+	 */
+	private Exception lastException;
+	
+	/**
 	 * Default constructor.
 	 */
 	public InfoglueWorkflowBase() 
@@ -139,7 +145,11 @@ public abstract class InfoglueWorkflowBase
 	 */
 	protected void throwException(final Exception e) throws WorkflowException
 	{
-		logger.error(e.getMessage(), e);
+		if(lastException != e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+		lastException = e;
 		workflowDatabase.setRollbackOnly();
 		throw (e instanceof WorkflowException) ? (WorkflowException) e : new WorkflowException(e);
 	}
