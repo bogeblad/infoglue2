@@ -61,7 +61,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.22 $ $Date: 2005/09/21 10:10:46 $
+ * @version $Revision: 1.23 $ $Date: 2005/09/26 06:51:29 $
  */
 public class WorkflowFacade
 {
@@ -190,9 +190,13 @@ public class WorkflowFacade
 		try
 		{
 			if(useDatabaseExtension(workflow.getWorkflowDescriptor(name)))
+			{
 				setWorkflowIdAndDescriptor(doExtendedInitialize(name, initialAction, inputs));
+			}
 			else
+			{
 				setWorkflowIdAndDescriptor(workflow.initialize(name, initialAction, inputs));
+			}
 		}
 		catch (Exception e)
 		{
@@ -227,6 +231,7 @@ public class WorkflowFacade
 			{
 				db.setRollbackOnly();
 			}
+			throw (e instanceof WorkflowException) ? (WorkflowException) e : new WorkflowException(e);
 		} 
 		finally 
 		{
@@ -280,7 +285,10 @@ public class WorkflowFacade
 		{
 			e.printStackTrace();
 			if(db != null)
+			{
 				db.setRollbackOnly();
+			}
+			throw (e instanceof WorkflowException) ? (WorkflowException) e : new WorkflowException(e);
 		} 
 		finally 
 		{
@@ -565,7 +573,8 @@ public class WorkflowFacade
 	 * 
 	 * @return the title of the workflow instance.
 	 */
-	private String getWorkflowTitle() {
+	private String getWorkflowTitle() 
+	{
 		if(!workflowDescriptor.getMetaAttributes().containsKey(WORKFLOW_TITLE_EXTENSION_META_ATTRIBUTE))
 		{
 			return null;
@@ -660,7 +669,8 @@ public class WorkflowFacade
 	 * 
 	 * @return true if the extension should be used, false otherwise.
 	 */
-	private boolean useTitleExtension(final WorkflowDescriptor descriptor) {
+	private boolean useTitleExtension(final WorkflowDescriptor descriptor) 
+	{
 		return descriptor.getMetaAttributes().containsKey(WORKFLOW_TITLE_EXTENSION_META_ATTRIBUTE);
 	}
 
@@ -669,7 +679,8 @@ public class WorkflowFacade
 	 * 
 	 * @return true if the extension should be used, false otherwise.
 	 */
-	private boolean useDatabaseExtension(final WorkflowDescriptor descriptor) {
+	private boolean useDatabaseExtension(final WorkflowDescriptor descriptor) 
+	{
 		return descriptor.getMetaAttributes().containsKey(WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE);
 	}	
 }
