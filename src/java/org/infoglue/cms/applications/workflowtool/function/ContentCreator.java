@@ -97,6 +97,7 @@ public class ContentCreator extends ContentFunction
 			ContentVO newContentVO = null;
 			if(getContentVO() == null)
 			{
+				parentFontentVO = (ContentVO) getParameter(FOLDER_PARAMETER);
 				newContentVO = factory.create(parentFontentVO, categories, getDatabase());
 			}
 			else
@@ -130,6 +131,5 @@ public class ContentCreator extends ContentFunction
 		categories              = (Map)                     getParameter(CategoryProvider.CATEGORIES_PARAMETER, new HashMap());
 		contentValues           = (ContentValues)           getParameter(ContentPopulator.CONTENT_VALUES_PARAMETER);
 		contentVersionValues    = (ContentVersionValues)    getParameter(ContentPopulator.CONTENT_VERSION_VALUES_PARAMETER);
-		parentFontentVO         = (ContentVO)               getParameter(FOLDER_PARAMETER);
 	}
 }
