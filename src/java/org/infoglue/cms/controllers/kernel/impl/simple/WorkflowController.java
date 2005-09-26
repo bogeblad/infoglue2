@@ -92,10 +92,7 @@ public class WorkflowController extends BaseController
 			{
 				return new WorkflowFacade(principal, name, actionId, inputs).createWorkflowVO();
 			}
-			else
-			{
-				throw new Bug("You are not allowed to create " + name + " workflows.");
-			}
+			throw new Bug("You are not allowed to create " + name + " workflows.");
 		}
 		catch (Exception e)
 		{
