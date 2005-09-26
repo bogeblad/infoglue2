@@ -85,6 +85,11 @@ public class RoleController extends BaseController
 		return (RoleVO) getVOWithId(RoleImpl.class, roleName);
 	}
 
+	public RoleVO getRoleVOWithId(String roleName, Database db) throws SystemException, Bug
+	{
+		return (RoleVO) getVOWithId(RoleImpl.class, roleName, db);
+	}
+
     // Simple, without db
 	/*
     public static Role getRoleWithId(Integer roleId) throws SystemException, Bug

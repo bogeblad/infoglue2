@@ -27,8 +27,10 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
@@ -85,6 +87,11 @@ public class GroupController extends BaseController
 	public GroupVO getGroupVOWithId(String groupName) throws SystemException, Bug
 	{
 		return (GroupVO) getVOWithId(GroupImpl.class, groupName);
+	}
+
+	public GroupVO getGroupVOWithId(String groupName, Database db) throws SystemException, Bug
+	{
+		return (GroupVO) getVOWithId(GroupImpl.class, groupName, db);
 	}
 
     // Simple, without db

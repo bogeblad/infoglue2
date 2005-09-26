@@ -608,7 +608,7 @@ public abstract class BaseController
 	 * This method fetches one object in read only mode and returns it's value object.
 	 */
 	
-	private static BaseEntityVO getVOWithId(Class arg, String id, Database db) throws SystemException, Bug
+	public static BaseEntityVO getVOWithId(Class arg, String id, Database db) throws SystemException, Bug
 	{
 		IBaseEntity vo = null;
 		try
