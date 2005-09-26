@@ -23,6 +23,7 @@
 package org.infoglue.cms.applications.workflowtool.function.defaultvalue;
 
 import com.opensymphony.workflow.WorkflowException;
+import com.opensymphony.workflow.util.ScriptVariableParser;
 
 public class StringPopulator extends Populator {
 	/**
@@ -53,6 +54,8 @@ public class StringPopulator extends Populator {
 	 */
 	protected void populate(final String name, final String value) throws WorkflowException 
 	{
-		doPopulate(name, value);
+		final String translatedValue = ScriptVariableParser.translateVariables(value, getParameters(), getPropertySet()).toString();
+		getLogger().debug("name=["+name+"], value=["+value+"], translatedValue=["+translatedValue+"]");
+		doPopulate(name, translatedValue);
 	}
 }
