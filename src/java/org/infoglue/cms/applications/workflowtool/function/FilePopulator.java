@@ -30,32 +30,46 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
+ * This function is used for populating the propertyset with the contents of a file (stored relative the <code>contextRootPath</code>). 
+ * <p>The variables (that is <code>${...}</code>) in the content of the file will be translated.</p>
  * 
+ * <h1 class="workflow">Context in</h1>
+ * <table class="workflow">
+ *   <thead class="workflow">
+ *     <tr class="workflow"><th class="workflow">Name</th><th class="workflow">Type</th><th class="workflow">Required</th><th class="workflow">Default</th><th class="workflow">Comments</th></tr>
+ *   </thead>
+ *   <tbody class="workflow">
+ *     <tr class="workflow"><td class="workflow">path</td><td class="workflow">argument</td><td class="workflow">true</td><td class="workflow">-</td><td class="workflow_comment">The path of the file (relative the <code>contextRootPath</code>).</td></tr>
+ *     <tr class="workflow"><td class="workflow">key</td><td class="workflow">argument</td><td class="workflow">true</td><td class="workflow">-</td><td class="workflow_comment">The key to use when storing the result in the propertyset.</td></tr>
+ *   </tbody>
+ * </table>
+ * <h1 class="workflow">Context out</h1>
+ * <p>The propertyset entry with the specified key will contain the translated content of the file.</p>
  */
 public class FilePopulator extends InfoglueFunction 
 {
 	/**
-	 * 
+	 * The name of the path argument.
 	 */
 	private static final String PATH_ARGUMENT = "path";
 	
 	/**
-	 * 
+	 * The name of the key argument.
 	 */
 	private static final String PROPERTYSET_KEY_ARGUMENT = "key";
 	
 	/**
-	 * 
+	 * The path of the file (relative the <code>contextRootPath</code>).
 	 */
 	private String path;
 	
 	/**
-	 * 
+	 * The key to use when storing the result in the propertyset.
 	 */
 	private String key;
 	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public FilePopulator() 
 	{
@@ -63,7 +77,10 @@ public class FilePopulator extends InfoglueFunction
 	}
 
 	/**
+	 * Executes this function. Loads the file, translates the content and stores
+	 * the result in the propertyset.
 	 * 
+	 * @throws WorkflowException if an error occurs during the execution.
 	 */
 	protected void execute() throws WorkflowException 
 	{
@@ -83,7 +100,9 @@ public class FilePopulator extends InfoglueFunction
 	}
 	
 	/**
+	 * Returns the full path of the file.
 	 * 
+	 * @return the full path of the file.
 	 */
 	private String getFullPath()
 	{
@@ -91,8 +110,8 @@ public class FilePopulator extends InfoglueFunction
 	}
 
 	/**
-	 * Method used for initializing the object; will be called before <code>execute</code> is called.
-	 * Note! You must call <code>super.initialize()</code> first.
+	 * Method used for initializing the function; will be called before <code>execute</code> is called.
+	 * <p><strong>Note</strong>! You must call <code>super.initialize()</code> first.</p>
 	 * 
 	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
