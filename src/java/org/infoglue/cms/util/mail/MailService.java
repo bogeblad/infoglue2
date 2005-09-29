@@ -46,6 +46,29 @@ public class MailService
         this.session = session;
     }
 
+    /**
+     * 
+     */
+    public MimeMessage createMessage()
+    {
+    	return new MimeMessage(this.session);
+    }
+    
+    /**
+     * 
+     */
+    public void send(final Message message) throws SystemException
+    {
+	    try 
+	    {
+			Transport.send(message);
+	    } 
+	    catch(MessagingException e) 
+	    {
+	    	e.printStackTrace();
+	      	throw new SystemException("Unable to send message.", e);
+	    }
+    }
 
 	/**
 	 *
@@ -57,16 +80,7 @@ public class MailService
 	 */
 	public void send(String from, String to, String subject, String content) throws SystemException 
 	{
-	    final Message message = createMessage(from, to, subject, content);
-	 
-	    try 
-	    {
-			Transport.send(message);
-	    } 
-	    catch(MessagingException e) 
-	    {
-	      	throw new SystemException("Unable to send message.", e);
-	    }
+	    send(createMessage(from, to, subject, content));
 	}
 
 	/**
