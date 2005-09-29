@@ -54,7 +54,7 @@ public class StringPopulator extends Populator {
 	 */
 	protected void populate(final String name, final String value) throws WorkflowException 
 	{
-		final String translatedValue = ScriptVariableParser.translateVariables(value, getParameters(), getPropertySet()).toString();
+		final String translatedValue = translate(value);
 		getLogger().debug("name=["+name+"], value=["+value+"], translatedValue=["+translatedValue+"]");
 		doPopulate(name, translatedValue);
 	}
