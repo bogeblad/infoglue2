@@ -56,7 +56,7 @@ class Parameter
 }
 
 /**
- * Don't use. Untested.
+ * 
  */
 public class DynamicWebservice 
 {
@@ -125,6 +125,10 @@ public class DynamicWebservice
 	 */
 	private Object result;
 	
+	/**
+	 * 
+	 */
+	private DynamicWebserviceSerializer serializer;
 	
 	
 	/**
@@ -134,6 +138,7 @@ public class DynamicWebservice
 	{
 		super();
 		configureStandardMappings();
+		serializer = new DynamicWebserviceSerializer(standardMappings);
 		addArgument(PRINCIPAL_ARGUMENT_NAME, remotePrincipal.getName());
 	}
 
@@ -164,6 +169,7 @@ public class DynamicWebservice
 	 */
 	private void configureStandardMappings()
 	{
+		standardMappings.put(Boolean.class, XMLType.XSD_BASE64);
 		standardMappings.put(Boolean.class, XMLType.XSD_BOOLEAN);
 		standardMappings.put(Double.class,  XMLType.XSD_DOUBLE);
 		standardMappings.put(Float.class,   XMLType.XSD_FLOAT);
@@ -204,7 +210,7 @@ public class DynamicWebservice
 		{
 			final Class clazz = (Class) i.next();
 			final QName type  = (QName) mappings.get(clazz);
-	        call.registerTypeMapping(clazz, type, BeanSerializerFactory.class, BeanDeserializerFactory.class);
+			call.registerTypeMapping(clazz, type, BeanSerializerFactory.class, BeanDeserializerFactory.class);
 		}
 	}
 	
@@ -260,10 +266,8 @@ public class DynamicWebservice
 	{
 		assertNameNotNull(name);
 
-		final Class c = assertHomogeneous(value);
-		mappingForClass(c);
-		logger.debug("addArgument=[" + name + "," + value + " (" + c.getName() + ")" + "] - ");
-		addArgument(name, XMLType.SOAP_ARRAY, toArray(value));
+		logger.debug("addArgument=[" + name + "," + value + "] (Map)");
+		addArgument(name, XMLType.SOAP_ARRAY, serializer.serializeMap(value).toArray());
 	}
 	
 	/**
@@ -273,35 +277,8 @@ public class DynamicWebservice
 	{
 		assertNameNotNull(name);
 
-		final Class c = assertHomogeneous(value);
-		mappingForClass(c);
-		logger.debug("addArgument=[" + name + "," + value + " (" + c.getName() + ")" + "] - ");
-		addArgument(name, XMLType.SOAP_ARRAY, toArray(value));
-	}
-	
-	/**
-	 * 
-	 */
-	private Object[] toArray(final Collection collection) 
-	{
-		return (collection == null) ? new Object[0] : collection.toArray();
-	}
-	
-	/**
-	 * 
-	 */
-	private Object[] toArray(final Map map) {
-		final Object[] array = new Object[map==null ? 0 : map.size() * 2];
-		int i = 0;
-		if(map != null)
-			for(final Iterator iterator = map.keySet().iterator(); iterator.hasNext(); i += 2)
-			{
-				final Object key = iterator.next();
-				final Object value = map.get(key);
-				array[i] = key;
-				array[i+1] = value;
-			}
-		return array;
+		logger.debug("addArgument=[" + name + "," + value + "] (Collection)");
+		addArgument(name, XMLType.SOAP_ARRAY, serializer.serializeCollection(value).toArray());
 	}
 	
 	/**
@@ -310,42 +287,9 @@ public class DynamicWebservice
 	private void assertNameNotNull(final String argument) 
 	{
 		if(argument == null)
+		{
 			throw new IllegalArgumentException("A parameter name can't be null.");
-	}
-	
-	/**
-	 * 
-	 */
-	private Class assertHomogeneous(final Collection collection)
-	{
-		if(collection.isEmpty())
-			return Object.class;
-		final Class c = collection.toArray()[0].getClass();
-		assertHomogeneous(collection, c);
-		return c;
-	}
-	
-	/**
-	 * 
-	 */
-	private Class assertHomogeneous(final Map map)
-	{
-		if(map.isEmpty())
-			return Object.class;
-		final Class c = map.keySet().toArray()[0].getClass();
-		assertHomogeneous(map.keySet(), c);
-		assertHomogeneous(map.values(), c);
-		return c;
-	}
-	
-	/**
-	 * 
-	 */
-	private void assertHomogeneous(final Collection collection, final Class c)
-	{
-		for(final Iterator i = collection.iterator(); i.hasNext(); )
-			if(!c.equals(i.next().getClass()))
-				throw new IllegalArgumentException("All key/values must have the same type.");
+		}
 	}
 	
 	/**
@@ -363,11 +307,17 @@ public class DynamicWebservice
 	private QName mappingForClass(final Class c)
 	{
 		if(c == null)
+		{
 			return null;
+		}
 		if(standardMappings.containsKey(c))
+		{
 			return (QName) standardMappings.get(c);
+		}
 		if(mappings.containsKey(c))
+		{
 			return (QName) mappings.get(c);
+		}
 		return addMapping(c);
 	}
 
@@ -376,8 +326,8 @@ public class DynamicWebservice
 	 */
 	private QName addMapping(final Class c) {
 		final String className = getClassName(c);
-        final QName type = new QName(DEFAULT_NAMESPACE_URI + className, className);
-        mappings.put(c, type);
+		final QName type = new QName(DEFAULT_NAMESPACE_URI + className, className);
+		mappings.put(c, type);
 		logger.debug("addMapping=[" + c.getName() + "," + type + "]");
 		return type;
 	}
