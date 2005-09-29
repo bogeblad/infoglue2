@@ -106,7 +106,7 @@ public abstract class InfoglueWorkflowBase
 
 	/**
 	 * Method used for initializing the object; will be called before any execution is performed.
-	 * Note! You must call <code>super.initialize()</code> first.
+	 * <p><strong>Note</strong>! You must call <code>super.initialize()</code> first.</p>
 	 * 
 	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
