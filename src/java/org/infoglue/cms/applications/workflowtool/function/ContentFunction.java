@@ -22,7 +22,12 @@
 */
 package org.infoglue.cms.applications.workflowtool.function;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 
 import com.opensymphony.workflow.WorkflowException;
 
@@ -32,15 +37,35 @@ import com.opensymphony.workflow.WorkflowException;
 public abstract class ContentFunction extends InfoglueFunction 
 {
 	/**
-	 * The key used by the <code>content</code> in the <code>parameters</code>.
+	 * 
 	 */
 	public static final String CONTENT_PARAMETER = "content";
 	
 	/**
-	 * The content parameter.
+	 * 
+	 */
+	public static final String CONTENT_VERSION_PARAMETER = "contentVersion";
+	
+	/**
+	 *
+	 */
+	private Content content;
+	
+	/**
+	 *
 	 */
 	private ContentVO contentVO;
 
+	/**
+	 *
+	 */
+	private ContentVersion contentVersion;
+	
+	/**
+	 *
+	 */
+	private ContentVersionVO contentVersionVO;
+	
 	/**
 	 * Default constructor.
 	 */
@@ -50,13 +75,78 @@ public abstract class ContentFunction extends InfoglueFunction
 	}
 	
 	/**
-	 * Returns the content parameter.
 	 * 
-	 * @return the content parameter.
 	 */
 	protected ContentVO getContentVO() 
 	{ 
 		return contentVO; 
+	}
+	
+	/**
+	 * 
+	 */
+	protected ContentVersionVO getContentVersionVO() 
+	{ 
+		return contentVersionVO; 
+	}
+	
+	/**
+	 * 
+	 */
+	protected Content getContent() 
+	{
+		if(contentVO != null && content == null)
+		{
+			try 
+			{
+				content = ContentController.getContentController().getContentWithId(contentVO.getContentId(), getDatabase());
+			}
+			catch(Exception e)
+			{
+				// shouldn't happen; just return null...
+			}
+		}
+		return content;
+	}
+	
+	/**
+	 * 
+	 */
+	protected ContentVersion getContentVersion() 
+	{
+		if(contentVersionVO != null && contentVersion == null)
+		{
+			try 
+			{
+				contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), getDatabase());
+			}
+			catch(Exception e)
+			{
+				// shouldn't happen; just return null...
+			}
+		}
+		return contentVersion;
+	}
+	
+	/**
+	 * 
+	 */
+	protected String getAttribute(final String name, final boolean escapeHTML) throws WorkflowException
+	{
+		if(contentVersionVO == null)
+		{
+			throwException("No content version.");
+		}
+		String value = "";
+		try 
+		{
+			value = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, name, escapeHTML);
+		}
+		catch(Exception e)
+		{
+			throwException(e);
+		}
+		return value;
 	}
 	
 	/**
@@ -68,6 +158,7 @@ public abstract class ContentFunction extends InfoglueFunction
 	protected void initialize() throws WorkflowException 
 	{
 		super.initialize();
-		contentVO = (ContentVO) getParameter(CONTENT_PARAMETER, false);
+		contentVO        = (ContentVO)        getParameter(CONTENT_PARAMETER, false);
+		contentVersionVO = (ContentVersionVO) getParameter(CONTENT_VERSION_PARAMETER, false);
 	}
 }
