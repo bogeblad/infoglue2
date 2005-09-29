@@ -33,10 +33,13 @@ public final class BrowserBean implements Serializable
 	private String languages           = null;
 	private boolean netEnabled        = false;
 
-	private boolean ie  = false;
-	private boolean ns7 = false;
-	private boolean ns6 = false;
-	private boolean ns4 = false;
+	private boolean ie  	= false;
+	private boolean ns7 	= false;
+	private boolean ns6 	= false;
+	private boolean ns4 	= false;
+	private boolean opera  	= false;
+	private boolean mozilla = false;
+	private boolean safari  = false;
 	
 	private String os;
 
@@ -63,6 +66,14 @@ public final class BrowserBean implements Serializable
 		{
 			this.ie = true;
 		}
+		else if(user.indexOf("safari") != -1)
+		{
+			this.safari = true;
+		}
+		else if(user.indexOf("gecko") != -1)
+		{
+			this.mozilla = true;
+		}
 		else if(user.indexOf("netscape/7") != -1)
 		{
 			this.ns7 = true;
@@ -75,6 +86,10 @@ public final class BrowserBean implements Serializable
 		{
 			this.ns4 = true;
 		}
+		else if(user.indexOf("opera") != -1)
+		{
+			this.opera = true;
+		}
 
 		if(user.indexOf(".net clr") != -1)
 			this.netEnabled = true;
@@ -82,21 +97,26 @@ public final class BrowserBean implements Serializable
 
 	private void initOs() 
 	{
-        if (this.useragent.indexOf("win") > -1)
+	    String user = useragent.toLowerCase();
+        if (user.indexOf("win") > -1)
         {
-            if (this.useragent.indexOf("windows 95") > -1 || this.useragent.indexOf("win95") > -1)
+            if (user.indexOf("windows 95") > -1 || user.indexOf("win95") > -1)
             {
                 this.os = "Windows 95";
             } 
-            else if (this.useragent.indexOf("windows 98") > -1 || this.useragent.indexOf("win98") > -1)
+            else if (user.indexOf("windows 98") > -1 || user.indexOf("win98") > -1)
             {
                 this.os = "Windows 98";
             } 
-            else if (this.useragent.indexOf("windows nt") > -1 || this.useragent.indexOf("winnt") > -1)
+            else if (user.indexOf("windows nt 5.1") > -1 || user.indexOf("winnt") > -1)
+            {
+                this.os = "Windows XP";
+            } 
+            else if (user.indexOf("windows nt") > -1 || user.indexOf("winnt") > -1)
             {
                 this.os = "Windows NT";
             } 
-            else if (this.useragent.indexOf("win16") > -1 || this.useragent.indexOf("windows 3.") > -1)
+            else if (user.indexOf("win16") > -1 || user.indexOf("windows 3.") > -1)
             {
                 this.os = "Windows 3.x";
             }
@@ -104,13 +124,13 @@ public final class BrowserBean implements Serializable
                 this.os = "Windows";
 
         } 
-        else if (this.useragent.indexOf("Mac") > -1)
+        else if (user.indexOf("Mac") > -1)
         {
-            if (this.useragent.indexOf("Mac_PowerPC") > -1 || this.useragent.indexOf("Mac_PPC") > -1)
+            if (user.indexOf("Mac_PowerPC") > -1 || user.indexOf("Mac_PPC") > -1)
             {
                 this.os = "Macintosh Power PC";
             } 
-            else if (this.useragent.indexOf("Macintosh") > -1)
+            else if (user.indexOf("Macintosh") > -1)
             {
                 this.os = "Macintosh";
             } 
@@ -118,6 +138,14 @@ public final class BrowserBean implements Serializable
             {
                 this.os = "Mac";
             }
+        }
+        else if (user.indexOf("inux") > -1)
+        {
+            this.os = "Linux";
+        }
+        else
+        {
+            this.os = "Other";
         }
     }	
 	
@@ -159,5 +187,35 @@ public final class BrowserBean implements Serializable
     public String getOs()
     {
         return os;
+    }
+    
+    public boolean isMozilla()
+    {
+        return mozilla;
+    }
+    
+    public boolean isNs4()
+    {
+        return ns4;
+    }
+    
+    public boolean isNs6()
+    {
+        return ns6;
+    }
+    
+    public boolean isNs7()
+    {
+        return ns7;
+    }
+    
+    public boolean isOpera()
+    {
+        return opera;
+    }
+    
+    public boolean isSafari()
+    {
+        return safari;
     }
 }
