@@ -206,7 +206,7 @@ class SortElement implements Comparable
 	}
 
 	/**
-	 * Cast the specified string value to the specified class.
+	 * Cast the specified string value to the specified class (which must be a <code>Comparable</code>.
 	 * 
 	 * @param name the name of the content version attribute (used for debug only).
 	 * @param clazz the class to cast to. Must implement the <code>Comparable</code> interface.
@@ -221,10 +221,6 @@ class SortElement implements Comparable
 		}
 		try 
 		{
-			if(clazz.isAssignableFrom(Comparable.class))
-			{
-				throw new IllegalArgumentException(clazz.getName() + " is not comparable.");
-			}
 			final Constructor ctor = clazz.getConstructor(new Class[] { String.class });
 			final String s = (Number.class.isAssignableFrom(clazz) && stringValue.equals("")) ? "0" : stringValue;
 			return (Comparable) ctor.newInstance(new Object[] { s });
