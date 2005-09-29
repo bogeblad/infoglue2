@@ -75,7 +75,10 @@ public class PropertysetPopulator extends InfoglueFunction
 	}
 	
 	/**
+	 * Method used for initializing the function; will be called before <code>execute</code> is called.
+	 * <p><strong>Note</strong>! You must call <code>super.initialize()</code> first.</p>
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{

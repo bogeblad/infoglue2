@@ -36,15 +36,22 @@ import com.opensymphony.workflow.WorkflowException;
  * <h1 class="workflow">Context in</h1>
  * <table class="workflow">
  *   <thead class="workflow">
- *     <tr class="workflow"><th class="workflow">Name</th><th class="workflow">Type</th><th class="workflow">Required</th><th class="workflow">Default</th><th class="workflow">Comments</th></tr>
+ *     <tr class="workflow"><th class="workflow">Name</th><th class="workflow">Type</th><th class="workflow">Class</th><th class="workflow">Required</th><th class="workflow">Default</th><th class="workflow">Comments</th></tr>
  *   </thead>
  *   <tbody class="workflow">
- *     <tr class="workflow"><td class="workflow">path</td><td class="workflow">argument</td><td class="workflow">true</td><td class="workflow">-</td><td class="workflow_comment">The path of the file (relative the <code>contextRootPath</code>).</td></tr>
- *     <tr class="workflow"><td class="workflow">key</td><td class="workflow">argument</td><td class="workflow">true</td><td class="workflow">-</td><td class="workflow_comment">The key to use when storing the result in the propertyset.</td></tr>
+ *     <tr class="workflow"><td class="workflow">path</td><td class="workflow">argument</td><td class="workflow">String</td><td class="workflow">true</td><td class="workflow">-</td><td class="workflow_comment">The path of the file (relative the <code>contextRootPath</code>).</td></tr>
+ *     <tr class="workflow"><td class="workflow">key</td><td class="workflow">argument</td><td class="workflow">String</td><td class="workflow">true</td><td class="workflow">-</td><td class="workflow_comment">The key to use when storing the result in the propertyset.</td></tr>
  *   </tbody>
  * </table>
  * <h1 class="workflow">Context out</h1>
- * <p>The propertyset entry with the specified key will contain the translated content of the file.</p>
+ * <table class="workflow">
+ *   <thead class="workflow">
+ *     <tr class="workflow"><th class="workflow">Name</th><th class="workflow">Type</th><th class="workflow">Class</th><th class="workflow">Comments</th></tr>
+ *   </thead>
+ *   <tbody class="workflow">
+ *     <tr class="workflow"><td class="workflow">&lt;key&gt;</td><td class="workflow">propertyset</td><td class="workflow">DataString</td><td class="workflow_comment">The translated file contents.</td></tr>
+ *   </tbody>
+ * </table>
  */
 public class FilePopulator extends InfoglueFunction 
 {
@@ -77,8 +84,7 @@ public class FilePopulator extends InfoglueFunction
 	}
 
 	/**
-	 * Executes this function. Loads the file, translates the content and stores
-	 * the result in the propertyset.
+	 * Loads the file, translates the content and stores the result in the propertyset.
 	 * 
 	 * @throws WorkflowException if an error occurs during the execution.
 	 */
