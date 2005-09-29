@@ -111,7 +111,9 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 	
 	/**
-	 * Determine the locale associated with the current session.
+	 * Determine the locale associated with the current session. If a locale is found in the
+	 * <code>parameters</code>, that locale will be used. Otherwise the locale will be taken 
+	 * from the <code>session</code>.
 	 * 
 	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
@@ -128,7 +130,9 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	}
 	
 	/**
-	 * Determine the caller of the workflow.
+	 * Determine the caller of the workflow. If a principal is found in the
+	 * <code>parameters</code>, that principal will be used. Otherwise the principal will be taken 
+	 * from the <code>session</code>.
 	 * 
 	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
