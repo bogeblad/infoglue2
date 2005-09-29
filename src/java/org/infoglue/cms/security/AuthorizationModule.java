@@ -131,7 +131,7 @@ public interface AuthorizationModule
 	 * @throws Bug
 	 */
 	
-	public List getFilteredUsers(String firstName, String lastName, String userName, String email, String[] roleIds) throws SystemException, Bug;
+	public List getFilteredUsers(String firstName, String lastName, String userName, String email, String[] roleIds) throws Exception;
 
 	/**
 	 * This method is used to create a new user.  

@@ -252,6 +252,16 @@ public abstract class BaseController
 		}
 	}    
 
+
+	// Delete entity
+	public static void deleteEntity(Class entClass, String id, Database db) throws Bug, SystemException, Exception
+	{
+		Object entity = getObjectWithId(entClass, id, db);
+		// Delete the entity
+		db.remove(entity);
+	}    
+
+	
 	// Delete entity
     public static void deleteEntity(Class entClass, Integer id, Database db) throws Bug, SystemException
     {

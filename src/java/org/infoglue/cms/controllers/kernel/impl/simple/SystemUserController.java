@@ -230,6 +230,11 @@ public class SystemUserController extends BaseController
         return getAllVOObjects(SystemUserImpl.class, "userName");
     }
 
+    public List getSystemUserVOList(Database db) throws SystemException, Bug
+    {
+        return getAllVOObjects(SystemUserImpl.class, "userName", db);
+    }
+
     
 	public List getFilteredSystemUserVOList(String firstName, String lastName, String userName, String email, String[] roleNames) throws SystemException, Bug
 	{
@@ -241,60 +246,7 @@ public class SystemUserController extends BaseController
 		{
 			beginTransaction(db);
 								
-			OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u");
-        	
-			QueryResults results = oql.execute(Database.ReadOnly);
-			
-			while (results.hasMore()) 
-			{
-				SystemUser extranetUser = (SystemUser)results.next();
-				boolean include = true;
-				
-				if(firstName != null && !firstName.equals("") && extranetUser.getFirstName().toLowerCase().indexOf(firstName.toLowerCase()) == -1)
-					include = false;
-				
-				if(lastName != null && !lastName.equals("") && extranetUser.getLastName().toLowerCase().indexOf(lastName.toLowerCase()) == -1)
-					include = false;
-				
-				if(userName != null && !userName.equals("") && extranetUser.getUserName().toLowerCase().indexOf(userName.toLowerCase()) == -1)
-					include = false;
-				
-				if(email != null && !email.equals("") && extranetUser.getEmail().toLowerCase().indexOf(email.toLowerCase()) == -1)
-					include = false;
-				
-				boolean hasRoles = true;
-				if(roleNames != null && roleNames.length > 0)
-				{	
-					for(int i=0; i < roleNames.length; i++)
-					{
-						String roleName = roleNames[i];
-						if(roleName != null && !roleName.equals(""))
-						{	
-							Collection roles = extranetUser.getRoles();
-							Iterator rolesIterator = roles.iterator();
-							boolean hasRole = false;
-							while(rolesIterator.hasNext())
-							{
-								Role role = (Role)rolesIterator.next();
-								if(role.getRoleName().equalsIgnoreCase(roleName))
-								{
-									hasRole = true;
-									break;
-								}
-							}
-							
-							if(!hasRole)
-							{
-								hasRoles = false;
-								break;
-							}
-						}
-					}					
-				}
-				
-				if(include && hasRoles)
-					filteredList.add(extranetUser);
-			}
+			List users = getFilteredSystemUserList(firstName, lastName, userName, email, roleNames, db);
 			
 			commitTransaction(db);
 		} 
@@ -307,7 +259,69 @@ public class SystemUserController extends BaseController
 		
 		return toVOList(filteredList);
 	}
-	
+
+	public List getFilteredSystemUserList(String firstName, String lastName, String userName, String email, String[] roleNames, Database db) throws SystemException, Bug, Exception
+	{
+		List filteredList = new ArrayList();
+		
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u");
+    	
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
+		{
+			SystemUser extranetUser = (SystemUser)results.next();
+			boolean include = true;
+			
+			if(firstName != null && !firstName.equals("") && extranetUser.getFirstName().toLowerCase().indexOf(firstName.toLowerCase()) == -1)
+				include = false;
+			
+			if(lastName != null && !lastName.equals("") && extranetUser.getLastName().toLowerCase().indexOf(lastName.toLowerCase()) == -1)
+				include = false;
+			
+			if(userName != null && !userName.equals("") && extranetUser.getUserName().toLowerCase().indexOf(userName.toLowerCase()) == -1)
+				include = false;
+			
+			if(email != null && !email.equals("") && extranetUser.getEmail().toLowerCase().indexOf(email.toLowerCase()) == -1)
+				include = false;
+			
+			boolean hasRoles = true;
+			if(roleNames != null && roleNames.length > 0)
+			{	
+				for(int i=0; i < roleNames.length; i++)
+				{
+					String roleName = roleNames[i];
+					if(roleName != null && !roleName.equals(""))
+					{	
+						Collection roles = extranetUser.getRoles();
+						Iterator rolesIterator = roles.iterator();
+						boolean hasRole = false;
+						while(rolesIterator.hasNext())
+						{
+							Role role = (Role)rolesIterator.next();
+							if(role.getRoleName().equalsIgnoreCase(roleName))
+							{
+								hasRole = true;
+								break;
+							}
+						}
+						
+						if(!hasRole)
+						{
+							hasRoles = false;
+							break;
+						}
+					}
+				}					
+			}
+			
+			if(include && hasRoles)
+				filteredList.add(extranetUser);
+		}
+		
+		return filteredList;
+	}
+
 	/*
 	 * CREATE
 	 * 
@@ -318,6 +332,18 @@ public class SystemUserController extends BaseController
         systemUser.setValueObject(systemUserVO);
         systemUser = (SystemUser) createEntity(systemUser);
         return systemUser.getValueObject();
+    }     
+
+	/*
+	 * CREATE
+	 * 
+	 */
+    public SystemUser create(SystemUserVO systemUserVO, Database db) throws ConstraintException, SystemException
+    {
+        SystemUser systemUser = new SystemUserImpl();
+        systemUser.setValueObject(systemUserVO);
+        systemUser = (SystemUser) createEntity(systemUser, db);
+        return systemUser;
     }     
 
 	/*
@@ -338,16 +364,7 @@ public class SystemUserController extends BaseController
 		{
 			//add validation here if needed
 			
-			systemUser = getSystemUserWithName(userName, db);
-			Collection roles = systemUser.getRoles();
-			Iterator rolesIterator = roles.iterator();
-			while(rolesIterator.hasNext())
-			{
-				Role role = (Role)rolesIterator.next();
-				role.getSystemUsers().remove(systemUser);
-			}
-
-			db.remove(systemUser);
+		    delete(userName, db);
 			
 			//If any of the validations or setMethods reported an error, we throw them up now before create.
 			ceb.throwIfNotEmpty();
@@ -368,7 +385,26 @@ public class SystemUserController extends BaseController
 		}
 
     }        
-	     
+
+    /*
+	 * DELETE
+	 * 
+	 */
+	 
+    public void delete(String userName, Database db) throws ConstraintException, SystemException, Exception
+    {
+		SystemUser systemUser = getSystemUserWithName(userName, db);
+		Collection roles = systemUser.getRoles();
+		Iterator rolesIterator = roles.iterator();
+		while(rolesIterator.hasNext())
+		{
+			Role role = (Role)rolesIterator.next();
+			role.getSystemUsers().remove(systemUser);
+		}
+
+		db.remove(systemUser);
+    }        
+
 
     public SystemUserVO update(SystemUserVO systemUserVO) throws ConstraintException, SystemException
     {
@@ -387,38 +423,7 @@ public class SystemUserController extends BaseController
 
         try
         {
-            //add validation here if needed
-			
-			systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
-			systemUser.getRoles().clear();
-			
-   			if(roleNames != null)
-			{
-				for (int i=0; i < roleNames.length; i++)
-	            {
-	            	Role role = RoleController.getController().getRoleWithName(roleNames[i], db);
-	            	systemUser.getRoles().add(role);
-					role.getSystemUsers().add(systemUser);
-	            }
-			}
-   			
-   			systemUser.getGroups().clear();
-			
-   			if(groupNames != null)
-			{
-				for (int i=0; i < groupNames.length; i++)
-	            {
-				    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
-	            	systemUser.getGroups().add(group);
-	            	group.getSystemUsers().add(systemUser);
-	            }
-			}
-			
-			systemUserVO.setPassword(systemUser.getPassword());
-			systemUser.setValueObject(systemUserVO);
-			
-            //If any of the validations or setMethods reported an error, we throw them up now before create.
-            ceb.throwIfNotEmpty();
+            systemUser = update(systemUserVO, roleNames, groupNames, db);
             
             commitTransaction(db);
         }
@@ -438,7 +443,39 @@ public class SystemUserController extends BaseController
         return systemUser.getValueObject();
     }        
 
+    public SystemUser update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames, Database db) throws ConstraintException, SystemException
+    {
+        SystemUser systemUser = systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
+		systemUser.getRoles().clear();
+		
+		if(roleNames != null)
+		{
+			for (int i=0; i < roleNames.length; i++)
+            {
+            	Role role = RoleController.getController().getRoleWithName(roleNames[i], db);
+            	systemUser.getRoles().add(role);
+				role.getSystemUsers().add(systemUser);
+            }
+		}
+		
+		systemUser.getGroups().clear();
+		
+		if(groupNames != null)
+		{
+			for (int i=0; i < groupNames.length; i++)
+            {
+			    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
+            	systemUser.getGroups().add(group);
+            	group.getSystemUsers().add(systemUser);
+            }
+		}
+		
+		systemUserVO.setPassword(systemUser.getPassword());
+		systemUser.setValueObject(systemUserVO);
 
+        return systemUser;
+    }     
+    
     public void updatePassword(String userName) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
@@ -448,41 +485,9 @@ public class SystemUserController extends BaseController
 
         try
         {
-            SystemUser systemUser = getSystemUserWithName(userName, db);
-            
-            String newPassword = PasswordGenerator.generate();
-            
-            systemUser.setPassword(newPassword);
-			
-            //If any of the validations or setMethods reported an error, we throw them up now before create.
-            ceb.throwIfNotEmpty();
+            updatePassword(userName, db);
             
             commitTransaction(db);
-        
-    		StringBuffer sb = new StringBuffer();
-    		sb.append("CMS notification: You or an administrator have requested a new password for your account (" + userName + "). \n");
-    		sb.append("\n");
-    		sb.append("The new password is '" + newPassword + "'.\n");
-    		sb.append("\n");
-    		sb.append("Please notify the administrator if this does not work. \n");
-    		sb.append("\n");
-    		sb.append("-----------------------------------------------------------------------\n");
-    		sb.append("This email was automatically generated and the sender is the CMS-system. \n");
-    		sb.append("Do not reply to this email. \n");
-    		
-    		try
-    		{
-    			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
-    			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
-    				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
-    	
-    			MailServiceFactory.getService().send(systemEmailSender, systemUser.getEmail(), "InfoGlue Information - Password changed!!", sb.toString());
-    		}
-    		catch(Exception e)
-    		{
-    			getLogger().error("The notification was not sent. Reason:" + e.getMessage(), e);
-    		}
-
         }
         catch(Exception e)
         {
@@ -492,11 +497,41 @@ public class SystemUserController extends BaseController
         }
     }        
 
+    public void updatePassword(String userName, Database db) throws ConstraintException, SystemException
+    {
+        SystemUser systemUser = getSystemUserWithName(userName, db);
+        
+        String newPassword = PasswordGenerator.generate();
+        
+        systemUser.setPassword(newPassword);
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("CMS notification: You or an administrator have requested a new password for your account (" + userName + "). \n");
+		sb.append("\n");
+		sb.append("The new password is '" + newPassword + "'.\n");
+		sb.append("\n");
+		sb.append("Please notify the administrator if this does not work. \n");
+		sb.append("\n");
+		sb.append("-----------------------------------------------------------------------\n");
+		sb.append("This email was automatically generated and the sender is the CMS-system. \n");
+		sb.append("Do not reply to this email. \n");
+		
+		try
+		{
+			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
+				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
+	
+			MailServiceFactory.getService().send(systemEmailSender, systemUser.getEmail(), "InfoGlue Information - Password changed!!", sb.toString());
+		}
+		catch(Exception e)
+		{
+			getLogger().error("The notification was not sent. Reason:" + e.getMessage(), e);
+		}
+    }        
+
     public void updatePassword(String userName, String oldPassword, String newPassword) throws ConstraintException, SystemException
     {
-        if(newPassword == null)
-            throw new ConstraintException("SystemUser.newPassword", "301");
-
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -507,12 +542,8 @@ public class SystemUserController extends BaseController
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
 
-            SystemUser systemUser = getSystemUser(db, userName, oldPassword);
-            if(systemUser == null)
-                throw new ConstraintException("SystemUser.oldPassword", "310");
+            updatePassword(userName, oldPassword, newPassword, db);
             
-            systemUser.setPassword(newPassword);
-			
             commitTransaction(db);
         }
         catch(ConstraintException ce)
@@ -526,7 +557,20 @@ public class SystemUserController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
+    }    
+    
+    public void updatePassword(String userName, String oldPassword, String newPassword, Database db) throws ConstraintException, SystemException, Exception
+    {
+        if(newPassword == null)
+            throw new ConstraintException("SystemUser.newPassword", "301");
+
+        SystemUser systemUser = getSystemUser(db, userName, oldPassword);
+        if(systemUser == null)
+            throw new ConstraintException("SystemUser.oldPassword", "310");
+            
+        systemUser.setPassword(newPassword);		
     }        
+
   
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller

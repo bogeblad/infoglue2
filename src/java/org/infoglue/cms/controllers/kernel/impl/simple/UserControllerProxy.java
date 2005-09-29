@@ -135,7 +135,7 @@ public class UserControllerProxy extends BaseController
 	 * This method returns a list of all sought for users
 	 */
 	
-    public List getFilteredUsers(String firstName, String lastName, String userName, String email, String[] roleNames) throws ConstraintException, SystemException
+    public List getFilteredUsers(String firstName, String lastName, String userName, String email, String[] roleNames) throws Exception
     {
     	List users = new ArrayList();
     	

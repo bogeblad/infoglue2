@@ -134,6 +134,14 @@ public class GroupController extends BaseController
         return group.getValueObject();
     }     
 
+    public Group create(GroupVO groupVO, Database db) throws ConstraintException, SystemException
+    {
+        Group group = new GroupImpl();
+        group.setValueObject(groupVO);
+        group = (Group) createEntity(group, db);
+        return group;
+    }     
+
     public void delete(GroupVO groupVO) throws ConstraintException, SystemException
     {
     	deleteEntity(GroupImpl.class, groupVO.getGroupName());
@@ -142,6 +150,11 @@ public class GroupController extends BaseController
 	public void delete(String groupName) throws ConstraintException, SystemException
 	{
 		deleteEntity(GroupImpl.class, groupName);
+	}        
+
+	public void delete(String groupName, Database db) throws ConstraintException, SystemException, Exception
+	{
+		deleteEntity(GroupImpl.class, groupName, db);
 	}        
 
 	// Get list of users accosiated with this group
@@ -196,6 +209,11 @@ public class GroupController extends BaseController
     	return (GroupVO) updateEntity(GroupImpl.class, (BaseEntityVO) groupVO);
     }        
 
+    public GroupVO update(GroupVO groupVO, Database db) throws ConstraintException, SystemException
+    {
+    	return (GroupVO) updateEntity(GroupImpl.class, (BaseEntityVO) groupVO, db);
+    }        
+
 
     public GroupVO update(GroupVO groupVO, String[] systemUsers) throws ConstraintException, SystemException
     {
@@ -209,21 +227,8 @@ public class GroupController extends BaseController
         try
         {
             //add validation here if needed
-			group = getGroupWithName(groupVO.getGroupName(), db);
-			group.getSystemUsers().clear();
 			
-   			if(systemUsers != null)
-			{
-				for (int i=0; i < systemUsers.length; i++)
-	            {
-	        		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(systemUsers[i], db);
-	        		
-	            	group.getSystemUsers().add(systemUser);
-					systemUser.getGroups().add(group);
-	            }
-			}
-           	
-            group.setValueObject(groupVO);
+            group = update(groupVO, systemUsers, db);
 
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -244,6 +249,27 @@ public class GroupController extends BaseController
         }
 
         return group.getValueObject();
+    }        
+
+    public Group update(GroupVO groupVO, String[] systemUsers, Database db) throws ConstraintException, SystemException
+    {
+		Group group = getGroupWithName(groupVO.getGroupName(), db);
+		group.getSystemUsers().clear();
+		
+		if(systemUsers != null)
+		{
+			for (int i=0; i < systemUsers.length; i++)
+            {
+        		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(systemUsers[i], db);
+        		
+            	group.getSystemUsers().add(systemUser);
+				systemUser.getGroups().add(group);
+            }
+		}
+       	
+        group.setValueObject(groupVO);
+
+        return group;
     }        
 
 	
@@ -276,6 +302,24 @@ public class GroupController extends BaseController
 		}		
 		
 		return groupVOList;
+	}
+	
+	/**
+	 * This method gets a list of Groups for a particular systemUser.
+	 * @param systemUserId
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public Collection getGroupList(String userName, Database db)  throws SystemException, Bug
+	{
+		Collection groupList = null;
+		
+		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+		groupList = systemUser.getGroups();
+		
+		return groupList;
 	}
 
 	/**

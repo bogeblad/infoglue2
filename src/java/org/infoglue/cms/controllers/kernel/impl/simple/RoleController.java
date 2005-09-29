@@ -116,14 +116,32 @@ public class RoleController extends BaseController
         return role.getValueObject();
     }     
 
+    public Role create(RoleVO roleVO, Database db) throws ConstraintException, SystemException
+    {
+        Role role = new RoleImpl();
+        role.setValueObject(roleVO);
+        role = (Role) createEntity(role, db);
+        return role;
+    }     
+
     public void delete(RoleVO roleVO) throws ConstraintException, SystemException
     {
     	deleteEntity(RoleImpl.class, roleVO.getRoleName());
     }        
 
+    public void delete(RoleVO roleVO, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	deleteEntity(RoleImpl.class, roleVO.getRoleName(), db);
+    }        
+
 	public void delete(String roleName) throws ConstraintException, SystemException
 	{
 		deleteEntity(RoleImpl.class, roleName);
+	}        
+
+	public void delete(String roleName, Database db) throws ConstraintException, SystemException, Exception
+	{
+		deleteEntity(RoleImpl.class, roleName, db);
 	}        
 
 	// Get list of users accosiated with this role
@@ -191,21 +209,7 @@ public class RoleController extends BaseController
         try
         {
             //add validation here if needed
-			role = getRoleWithName(roleVO.getRoleName(), db);
-			role.getSystemUsers().clear();
-			
-   			if(systemUsers != null)
-			{
-				for (int i=0; i < systemUsers.length; i++)
-	            {
-	        		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(systemUsers[i], db);
-	        		
-	            	role.getSystemUsers().add(systemUser);
-					systemUser.getRoles().add(role);
-	            }
-			}
-           	
-            role.setValueObject(roleVO);
+			role = update(roleVO, systemUsers, db);
 
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -228,7 +232,28 @@ public class RoleController extends BaseController
         return role.getValueObject();
     }        
 
-	
+    public Role update(RoleVO roleVO, String[] systemUsers, Database db) throws ConstraintException, SystemException
+    {
+        Role role = getRoleWithName(roleVO.getRoleName(), db);
+		role.getSystemUsers().clear();
+		
+		if(systemUsers != null)
+		{
+			for (int i=0; i < systemUsers.length; i++)
+            {
+        		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(systemUsers[i], db);
+        		
+            	role.getSystemUsers().add(systemUser);
+				systemUser.getRoles().add(role);
+            }
+		}
+       	
+        role.setValueObject(roleVO);
+
+        return role;
+    }        
+
+    
 	/**
 	 * This method gets a list of Roles for a particular systemUser.
 	 * @param systemUserId
@@ -258,6 +283,24 @@ public class RoleController extends BaseController
 		}		
 		
 		return roleVOList;
+	}
+	
+	/**
+	 * This method gets a list of Roles for a particular systemUser.
+	 * @param systemUserId
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public Collection getRoleList(String userName, Database db)  throws SystemException, Bug
+	{
+	    Collection roleList = null;
+		
+		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+		roleList = systemUser.getRoles();
+		
+		return roleList;
 	}
 
 	/**
