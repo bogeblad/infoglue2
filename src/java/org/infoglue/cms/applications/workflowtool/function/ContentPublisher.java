@@ -26,10 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 
 import com.opensymphony.workflow.WorkflowException;
@@ -52,22 +50,12 @@ public class ContentPublisher extends ContentFunction
 	/**
 	 * 
 	 */
-	private LanguageVO language;
-
-	
-	
-	/**
-	 * 
-	 */
 	protected void execute() throws WorkflowException 
 	{
-		if(getContentVO() != null)
+		setFunctionStatus(STATUS_NOK);
+		if(getContentVO() != null && getContentVersionVO() != null)
 		{
 			publish();
-		}
-		else
-		{
-			setFunctionStatus(STATUS_NOK);
 		}
 	}
 	
@@ -78,22 +66,16 @@ public class ContentPublisher extends ContentFunction
 	{
 		try 
 		{
-			final ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(getContentVO().getId(), language.getId(), getDatabase());
-			if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE)) 
+			if(getContentVersionVO().getStateId().equals(ContentVersionVO.WORKING_STATE)) 
 			{
 				final List events = new ArrayList();
-				ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", getPrincipal(), getContentVO().getId(), getDatabase(), events);
+				ContentStateController.changeState(getContentVersionVO().getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", getPrincipal(), getContentVO().getId(), getDatabase(), events);
 				PublicationController.getController().createAndPublish(createPublicationVO(), events, getPrincipal(), getDatabase());
 				setFunctionStatus(STATUS_OK);
 			} 
-			else 
-			{
-				setFunctionStatus(STATUS_NOK);
-			}
 		} 
 		catch(Exception e) 
 		{
-			setFunctionStatus(STATUS_NOK);
 			throwException(e);
 		}
 	}
@@ -108,14 +90,5 @@ public class ContentPublisher extends ContentFunction
 	    publicationVO.setDescription("Workflow publication by " + getPrincipal().getName());
 	    publicationVO.setRepositoryId(getContentVO().getRepositoryId());
 		return publicationVO;
-	}
-
-	/**
-	 * 
-	 */
-	protected void initialize() throws WorkflowException 
-	{
-		super.initialize();
-		language =  (LanguageVO) getParameter(LanguageProvider.LANGUAGE_PARAMETER);
 	}
 }
