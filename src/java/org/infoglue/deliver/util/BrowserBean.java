@@ -42,7 +42,11 @@ public final class BrowserBean implements Serializable
 	private boolean safari  = false;
 	
 	private String os;
-
+	private boolean isWindows = false;
+	private boolean isMac = false;
+	private boolean isLinux = false;
+	
+	
 	public void setRequest(HttpServletRequest req)
 	{
 		this.request = req;
@@ -100,6 +104,8 @@ public final class BrowserBean implements Serializable
 	    String user = useragent.toLowerCase();
         if (user.indexOf("win") > -1)
         {
+            this.isWindows = true;
+            
             if (user.indexOf("windows 95") > -1 || user.indexOf("win95") > -1)
             {
                 this.os = "Windows 95";
@@ -124,13 +130,15 @@ public final class BrowserBean implements Serializable
                 this.os = "Windows";
 
         } 
-        else if (user.indexOf("Mac") > -1)
+        else if (user.indexOf("mac") > -1)
         {
-            if (user.indexOf("Mac_PowerPC") > -1 || user.indexOf("Mac_PPC") > -1)
+            this.isMac = true;
+            
+            if (user.indexOf("mac_powerpc") > -1 || user.indexOf("mac_ppc") > -1)
             {
-                this.os = "Macintosh Power PC";
+                this.os = "macintosh power pc";
             } 
-            else if (user.indexOf("Macintosh") > -1)
+            else if (user.indexOf("macintosh") > -1)
             {
                 this.os = "Macintosh";
             } 
@@ -141,6 +149,7 @@ public final class BrowserBean implements Serializable
         }
         else if (user.indexOf("inux") > -1)
         {
+            this.isLinux = true;
             this.os = "Linux";
         }
         else
@@ -217,5 +226,20 @@ public final class BrowserBean implements Serializable
     public boolean isSafari()
     {
         return safari;
+    }
+    
+    public boolean isLinux()
+    {
+        return isLinux;
+    }
+    
+    public boolean isMac()
+    {
+        return isMac;
+    }
+    
+    public boolean isWindows()
+    {
+        return isWindows;
     }
 }
