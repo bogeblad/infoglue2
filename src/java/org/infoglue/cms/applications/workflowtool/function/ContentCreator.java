@@ -71,17 +71,17 @@ public class ContentCreator extends ContentFunction
 	private Map categories;
 	
 	/**
-	 * 
+	 * The content bean.
 	 */
 	private ContentValues contentValues;
 	
 	/**
-	 * 
+	 * The content version bean.
 	 */
 	private ContentVersionValues contentVersionValues;
 	
 	/**
-	 * 
+	 * The parent content to use when creating new content.
 	 */
 	private ContentVO parentFontentVO;
 	
@@ -91,6 +91,7 @@ public class ContentCreator extends ContentFunction
 	 */
 	protected void execute() throws WorkflowException 
 	{
+		setFunctionStatus(STATUS_NOK);
 		try 
 		{
 			final ContentFactory factory = new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, getPrincipal(), languageVO);
@@ -121,7 +122,10 @@ public class ContentCreator extends ContentFunction
 	}
 
 	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{
