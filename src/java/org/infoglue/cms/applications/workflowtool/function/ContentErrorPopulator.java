@@ -27,8 +27,6 @@ import org.infoglue.cms.applications.workflowtool.util.ContentValues;
 import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import com.opensymphony.workflow.WorkflowException;
 
@@ -82,54 +80,14 @@ public class ContentErrorPopulator extends ErrorPopulator
 	 */
 	protected void populate() throws WorkflowException
 	{
-		final ConstraintExceptionBuffer ceb = new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, getPrincipal(), language).validate();
-		for(ConstraintException e = ceb.toConstraintException(); e != null; e = e.getChainedException())
-		{
-			populateError(e);
-		}
+		populate(new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, getPrincipal(), language).validate());
 	}
 
 	/**
+	 * Method used for initializing the function; will be called before <code>execute</code> is called.
+	 * <p><strong>Note</strong>! You must call <code>super.initialize()</code> first.</p>
 	 * 
-	 */
-	private void populateError(final ConstraintException e) throws WorkflowException
-	{
-		setPropertySetString(getErrorKey(e), getStringManager().getString(e.getErrorCode()));
-	}
-	
-	/**
-	 * 
-	 */
-	private String getErrorKey(final ConstraintException e) 
-	{
-		// The field name has the form:
-		//   Content.<name> 
-		// or
-		//   ContentVersion.<name>
-		// 
-		// convert this to:
-		//   content_<name> 
-		// or
-		//   contentversion_<name>
-		// to better fit into the workflow framework.
-		
-		final String fieldName = e.getFieldName();
-		final int index = fieldName.indexOf('.');
-		if(index == -1) // play it safe 
-		{
-			return ERROR_PROPERTYSET_PREFIX + e.getFieldName();
-		}
-		final String before = fieldName.substring(0, index).toLowerCase();
-		final String after  = fieldName.substring(index + 1);
-		final String key    = ERROR_PROPERTYSET_PREFIX + before + "_" + after;
-
-		getLogger().debug("error field name converted from [" + fieldName  + "] to [" + before + "_" + after + "].");
-		
-		return key;
-	}
-
-	/**
-	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{
