@@ -39,6 +39,11 @@ public class ContentMover extends ContentFunction
 	public static final String DESTINATION_PARAMETER = "move_newParentFolder";
 	
 	/**
+	 * 
+	 */
+	private ContentVO destinationContentVO;
+	
+	/**
 	 *
 	 */
 	public ContentMover() 
@@ -53,25 +58,29 @@ public class ContentMover extends ContentFunction
 	{
 		if(getContentVO() != null)
 		{
-			move((ContentVO) getParameter(DESTINATION_PARAMETER));
+			try 
+			{
+				if(!getContentVO().getParentContentId().equals(destinationContentVO.getContentId()))
+				{
+					ContentController.getContentController().moveContent(getContentVO(), destinationContentVO.getId(), getDatabase());
+				}
+			} 
+			catch(Exception e) 
+			{
+				throwException(e);
+			}
 		}
 	}
 
 	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
-	private void move(final ContentVO destinationContentVO) throws WorkflowException 
+	protected void initialize() throws WorkflowException 
 	{
-		try 
-		{
-			if(!getContentVO().getParentContentId().equals(destinationContentVO.getContentId()))
-			{
-				ContentController.getContentController().moveContent(getContentVO(), destinationContentVO.getId(), getDatabase());
-			}
-		} 
-		catch(Exception e) 
-		{
-			throwException(e);
-		}
+		super.initialize();
+		this.destinationContentVO = (ContentVO) getParameter(DESTINATION_PARAMETER, (getContentVO() != null));
 	}
 }
