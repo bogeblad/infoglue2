@@ -142,7 +142,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 	    	validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
-	    	String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent();
+	    	String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + getRequest().getQueryString();
+
 	    	getLogger().info("pageKey:" + pageKey);
 	    	String pagePath	= null;
 	    	
@@ -296,7 +297,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 			validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
-			String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + this.showSimple + "_pagecomponentDecorated";
+			String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + getRequest().getQueryString() + "_" + this.showSimple + "_pagecomponentDecorated";
 			getLogger().info("A pageKey:" + pageKey);
 			String pagePath	= null;
 	    	

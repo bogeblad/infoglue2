@@ -150,7 +150,7 @@ public abstract class PageInvoker
 		logger.info("isPageCacheOn:" + isPageCacheOn);
 		String refresh = this.getRequest().getParameter("refresh");
 		
-		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")))
+		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))
 		{
 		    this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
 			if(this.pageString == null)
