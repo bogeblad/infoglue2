@@ -22,6 +22,7 @@
  */
 package org.infoglue.cms.applications.workflowtool.function.email;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
@@ -29,7 +30,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
+ * This function is used when an email should be sent to all members of a role.
  */
 public class RoleAddressProvider extends UsersAddressProvider {
 	/**
@@ -38,14 +39,12 @@ public class RoleAddressProvider extends UsersAddressProvider {
 	private static final String ROLE_ARGUMENT = "role";
 	
 	/**
-	 * 
+	 * The name of the role whose members should recieve an email.
 	 */
 	private String roleName;
-
-	
 	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public RoleAddressProvider() 
 	{
@@ -53,23 +52,28 @@ public class RoleAddressProvider extends UsersAddressProvider {
 	}
 	
 	/**
+	 * Returns the principals that should be the recipients of the email.
 	 * 
+	 * @return a Collection of <code>InfogluePrincipal</code>:s.
 	 */
-	protected Collection getUsers() throws WorkflowException
+	protected Collection getPrincipals() throws WorkflowException
 	{
 		try 
 		{
-			RoleControllerProxy.getController(getDatabase()).getInfoGluePrincipals(roleName);
+			return RoleControllerProxy.getController(getDatabase()).getInfoGluePrincipals(roleName);
 		}
 		catch(Exception e)
 		{
 			throwException(e);
 		}
-		return null;
+		return new ArrayList();
 	}
 	
 	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{

@@ -22,97 +22,77 @@
  */
 package org.infoglue.cms.applications.workflowtool.function.email;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-
-import javax.mail.internet.InternetAddress;
-
-import org.infoglue.cms.applications.workflowtool.function.ContentVersionFunction;
+import org.infoglue.cms.applications.workflowtool.function.ContentFunction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 
 import com.opensymphony.workflow.WorkflowException;
 
 /**
  * 
  */
-public class ContentVersionAddressProvider extends ContentVersionFunction 
+public class ContentVersionAddressProvider extends AddressProvider 
 {
 	/**
-	 * The name of the attributes argument.
+	 * The name of the attribute argument.
 	 */
-	private static final String ATTRIBUTES_ARGUMENT =
-"attributes";
+	private static final String ATTRIBUTE_ARGUMENT = "attribute";
 	
 	/**
-	 * The attribute argument value delimiter.
+	 * To name of the attribute containing the email.
 	 */
-	private static final String DELIMITER = ",";
-	
-	/**
-	 * The name of the attributes.
-	 */
-	private Collection attributeNames = new ArrayList();
-
-	/**
-	 * The addresses.
-	 */
-	private Collection addresses = new ArrayList(); // collection of <InternetAddress> 
-	
-	
+	private String attributeName;
 	
 	/**
 	 * 
+	 */
+	private ContentVersionVO contentVersionVO;
+	
+	/**
+	 * Default constructor.
 	 */
 	public ContentVersionAddressProvider() 
 	{
-		super(true);
+		super();
 	}
 
 	/**
-	 * 
+	 * Add all recipients. Note that empty email-addresses will be discarded
+	 * if the <code>required</code> attribute is <code>false</code>.
 	 */
-	protected void execute() throws WorkflowException 
+	protected void populate() throws WorkflowException
 	{
-		for(final Iterator names = attributeNames.iterator(); names.hasNext(); )
-		{
-			createAddress(names.next().toString());
-		}
-		setParameter(EmailFunction.TO_PARAMETER, addresses.toArray());
+		getLogger().debug("Creating email from the [" + attributeName + "] attribute.");
+		addRecipient(getAttribute());
 	}
-
+	
 	/**
 	 * 
 	 */
-	private void createAddress(final String attributeName) throws WorkflowException
+	private String getAttribute() throws WorkflowException
 	{
+		String value = "";
 		try 
 		{
-			addresses.add(new InternetAddress(getAttribute(attributeName, false)));
+			value = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
 		}
 		catch(Exception e)
 		{
 			throwException(e);
 		}
+		return value;
 	}
 	
 	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{
 		super.initialize();
-		initializeAttributeNames(getArgument(ATTRIBUTES_ARGUMENT));
-	}
-	
-	/**
-	 * 
-	 */
-	private void initializeAttributeNames(final String names)
-	{
-		for(final StringTokenizer st = new StringTokenizer(names, DELIMITER); st.hasMoreTokens(); )
-		{
-			attributeNames.add(st.nextToken());
-		}
+		attributeName    = getArgument(ATTRIBUTE_ARGUMENT);
+		contentVersionVO = (ContentVersionVO) getParameter(ContentFunction.CONTENT_VERSION_PARAMETER); 
 	}
 }

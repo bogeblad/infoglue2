@@ -22,31 +22,19 @@
  */
 package org.infoglue.cms.applications.workflowtool.function.email;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.mail.internet.InternetAddress;
-
-import org.infoglue.cms.applications.workflowtool.function.InfoglueFunction;
-import org.infoglue.cms.entities.management.SystemUser;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
- *
+ * This function is used when an email should be sent to a number of <code>SystemUser</code>:s.
  */
-public abstract class UsersAddressProvider extends InfoglueFunction {
+public abstract class UsersAddressProvider extends AddressProvider {
 	/**
-	 * The addresses.
-	 */
-	private Collection addresses = new ArrayList(); // collection of <InternetAddress>
-	
-	
-	
-	/**
-	 * 
+	 * Default constructor. 
 	 */
 	public UsersAddressProvider() 
 	{
@@ -54,49 +42,23 @@ public abstract class UsersAddressProvider extends InfoglueFunction {
 	}
 
 	/**
+	 * Returns the principals that should be the recipients of the email.
 	 * 
+	 * @return a Collection of <code>InfogluePrincipal</code>:s.
 	 */
-	protected abstract Collection getUsers() throws WorkflowException;
+	protected abstract Collection getPrincipals() throws WorkflowException;
 	
 	/**
-	 * 
+	 * Add all recipients. Note that empty email-addresses will be discarded
+	 * if the <code>required</code> attribute is <code>false</code>.
 	 */
-	protected final void execute() throws WorkflowException 
+	protected void populate() throws WorkflowException 
 	{
-		try {
-			for(Iterator users = getUsers().iterator(); users.hasNext(); )
-			{
-				createAddress((SystemUser) users.next());
-			}
-			setParameter(EmailFunction.TO_PARAMETER, addresses.toArray());
-		}
-		catch(Exception e)
+		for(final Iterator principals = getPrincipals().iterator(); principals.hasNext(); )
 		{
-			throwException(e);
-		}
-	}
-	
-	/**
-	 * Creates an address for the specified user.
-	 * 
-	 */
-	private void createAddress(final SystemUser user) throws WorkflowException
-	{
-		try 
-		{
-			final String email = user.getEmail();
-			if(email == null || email.length() == 0)
-			{
-				getLogger().warn("The [" + user.getUserName() + "] user has no email address.");
-			}
-			else
-			{
-				addresses.add(new InternetAddress(email));
-			}
-		}
-		catch(Exception e)
-		{
-			throwException(e);
+			final InfoGluePrincipal principal = (InfoGluePrincipal) principals.next();
+			getLogger().debug("Creating email for user [" + principal.getName() + "].");
+			addRecipient(principal.getEmail());
 		}
 	}
 }

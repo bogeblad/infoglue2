@@ -22,6 +22,7 @@
  */
 package org.infoglue.cms.applications.workflowtool.function.email;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
@@ -29,8 +30,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * 
- *
+ * This function is used when an email should be sent to all members of a group.
  */
 public class GroupAddressProvider extends UsersAddressProvider 
 {
@@ -40,14 +40,12 @@ public class GroupAddressProvider extends UsersAddressProvider
 	private static final String GROUP_ARGUMENT = "group";
 	
 	/**
-	 * 
+	 * The name of the group whose members should recieve an email.
 	 */
 	private String groupName;
 	
-	
-	
 	/**
-	 * 
+	 * Default constructor.
 	 */
 	public GroupAddressProvider() 
 	{
@@ -55,23 +53,28 @@ public class GroupAddressProvider extends UsersAddressProvider
 	}
 
 	/**
+	 * Returns the principals that should be the recipients of the email.
 	 * 
+	 * @return a Collection of <code>InfogluePrincipal</code>:s.
 	 */
-	protected Collection getUsers() throws WorkflowException
+	protected Collection getPrincipals() throws WorkflowException
 	{
 		try 
 		{
-			GroupControllerProxy.getController(getDatabase()).getInfoGluePrincipals(groupName);
+			return GroupControllerProxy.getController(getDatabase()).getInfoGluePrincipals(groupName);
 		}
 		catch(Exception e)
 		{
 			throwException(e);
 		}
-		return null;
+		return new ArrayList();
 	}
 	
 	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
 	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{

@@ -24,29 +24,39 @@ package org.infoglue.cms.applications.workflowtool.function.email;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.activation.DataHandler;
+import javax.mail.Address;
 import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.SendFailedException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.infoglue.cms.applications.workflowtool.function.ContentFunction;
 import org.infoglue.cms.applications.workflowtool.function.InfoglueFunction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.mail.ByteDataSource;
 import org.infoglue.cms.util.mail.MailService;
 import org.infoglue.cms.util.mail.MailServiceFactory;
+import org.infoglue.cms.util.mail.StringDataSource;
 
 import com.opensymphony.workflow.WorkflowException;
 
 /**
- * Note! This is a stub; will be finished soon...
+ * 
  */
-public class EmailFunction extends InfoglueFunction {
-	/**
-	 * 
-	 */
-	private static final String ENCODING = "UTF-8";
-	
+public class EmailFunction extends InfoglueFunction 
+{
 	/**
 	 * 
 	 */
@@ -60,17 +70,17 @@ public class EmailFunction extends InfoglueFunction {
 	/**
 	 * 
 	 */
+	public static final String ILLEGAL_ADDRESSES_PARAMETER = EMAIL_PARAMETER_PREFIX + "illegal";
+	
+	/**
+	 * 
+	 */
 	public static final String TO_PARAMETER = EMAIL_PARAMETER_PREFIX + "to";
 	
 	/**
 	 * 
 	 */
 	public static final String FROM_PARAMETER = EMAIL_PARAMETER_PREFIX + "from";
-
-	/**
-	 * 
-	 */
-	public static final String BODY_PARAMETER = EMAIL_PARAMETER_PREFIX + "body";
 	
 	/**
 	 * 
@@ -100,6 +110,16 @@ public class EmailFunction extends InfoglueFunction {
 	/**
 	 * 
 	 */
+	private static final String STATUS_OK = "status.email.ok";
+	
+	/**
+	 * 
+	 */
+	private static final String STATUS_NOK = "status.email.nok";
+	
+	/**
+	 * 
+	 */
 	private MailService service;
 	
 	/**
@@ -111,9 +131,17 @@ public class EmailFunction extends InfoglueFunction {
 	 * 
 	 */
 	private MimeMultipart multipart;
+
+	/**
+	 * 
+	 */
+	private Collection attachments = new ArrayList();
 	
-	
-	
+	/**
+	 * The illegal addresses.
+	 */
+	private Collection illegalAddresses; // type: <String>
+
 	/**
 	 * 
 	 */
@@ -127,15 +155,39 @@ public class EmailFunction extends InfoglueFunction {
 	 */
 	protected void execute() throws WorkflowException 
 	{
-		initializeMailService();
-		createMessage();
-		sendMessage();
+		setFunctionStatus(STATUS_NOK);
+		if(illegalAddresses.isEmpty())
+		{
+			initializeMailService();
+			getAttachments();
+			if(attachments.isEmpty())
+			{
+				createSimpleMessage();
+			}
+			else
+			{
+				createMultipartMessage();
+			}
+			sendMessage();
+		}
+		for(Iterator i=illegalAddresses.iterator(); i.hasNext(); )
+			System.out.println("illegal [" + i.next().toString() + "]");
 	}
 	
 	/**
 	 * 
 	 */
-	private void createMessage() throws WorkflowException
+	private void createSimpleMessage() throws WorkflowException
+	{
+		getLogger().debug("Creating simple message.");
+		initializeMessage();
+		initializeSimpleBody();
+	}
+
+	/**
+	 * 
+	 */
+	private void createMultipartMessage() throws WorkflowException
 	{
 		getLogger().debug("Creating message.");
 		initializeMessage();
@@ -143,17 +195,33 @@ public class EmailFunction extends InfoglueFunction {
 		createMainBodyPart();
 		createAttachments();
 	}
-
+	
 	/**
 	 * 
 	 */
 	private void initializeMessage() throws WorkflowException
 	{
 		getLogger().debug("Initializing message.");
-		//message = service.createMessage();
+		message = service.createMessage();
 		initializeTo();
 		initializeFrom();
 		initializeSubject();
+	}
+	
+	/**
+	 * 
+	 */
+	private void initializeSimpleBody() throws WorkflowException
+	{
+		getLogger().debug("Initializing simple body.");
+		try
+		{
+	    	message.setDataHandler(getDataHandler(getArgument(BODY_ARGUMENT), getArgument(BODY_TYPE_ARGUMENT)));
+		}
+		catch(Exception e)
+		{
+			throwException(e);
+		}
 	}
 	
 	/**
@@ -179,6 +247,23 @@ public class EmailFunction extends InfoglueFunction {
 	private void initializeTo() throws WorkflowException
 	{
 		getLogger().debug("Initializing to.");
+		try 
+		{
+			if(argumentExists(TO_ARGUMENT))
+			{
+				getLogger().debug("Adding 'to' from argument [" + getArgument(TO_ARGUMENT) + "].");
+		    	message.addRecipients(Message.RecipientType.TO, createAddresses(getArgument(TO_ARGUMENT)));
+			}
+			if(parameterExists(TO_PARAMETER))
+			{
+				getLogger().debug("Adding 'to' from parameters");
+		    	message.addRecipients(Message.RecipientType.TO, addressesToArray((List) getParameter(TO_PARAMETER)));
+			}
+		}
+		catch(Exception e)
+		{
+			throwException(e);
+		}
 	}
 	
 	/**
@@ -187,26 +272,23 @@ public class EmailFunction extends InfoglueFunction {
 	private void initializeFrom() throws WorkflowException
 	{
 		getLogger().debug("Initializing from.");
-		InternetAddress[] from = null;
-		if(argumentExists(FROM_ARGUMENT))
-		{
-			getLogger().debug("Fetching 'from' from arguments.");
-			from = createAddresses(getArgument(FROM_ARGUMENT)); // TODO : translateVariables
-		}
-		else
-		{
-			getLogger().debug("Fetching 'from' from parameters.");
-			from = (InternetAddress[]) getParameter(FROM_PARAMETER);
-		}
 		try 
 		{
-			message.addFrom(from);
+			if(argumentExists(FROM_ARGUMENT))
+			{
+				getLogger().debug("Adding 'from' from argument [" + getArgument(FROM_ARGUMENT) + "].");
+				message.addFrom(createAddresses(getArgument(FROM_ARGUMENT)));
+			}
+			if(parameterExists(FROM_PARAMETER))
+			{
+				getLogger().debug("Adding 'from' from parameter.");
+		    	message.addFrom(addressesToArray((List) getParameter(FROM_PARAMETER)));
+			}
 		}
 		catch(Exception e)
 		{
 			throwException(e);
 		}
-		
 	}
 	
 	/**
@@ -217,7 +299,7 @@ public class EmailFunction extends InfoglueFunction {
 		getLogger().debug("Initializing subject.");
 		try 
 		{
-			message.setSubject(getArgument(SUBJECT_ARGUMENT), ENCODING); // TODO : translateVariables
+			message.setSubject(getArgument(SUBJECT_ARGUMENT), UTF8_ENCODING);
 		}
 		catch(Exception e)
 		{
@@ -234,7 +316,7 @@ public class EmailFunction extends InfoglueFunction {
 		try 
 		{
 			final BodyPart part = new MimeBodyPart();
-			part.setContent(getBody(), getArgument(BODY_TYPE_ARGUMENT));
+	    	part.setDataHandler(getDataHandler(getArgument(BODY_ARGUMENT), getArgument(BODY_TYPE_ARGUMENT)));
 			multipart.addBodyPart(part);
 		}
 		catch(Exception e)
@@ -246,23 +328,54 @@ public class EmailFunction extends InfoglueFunction {
 	/**
 	 * 
 	 */
-	private String getBody() throws WorkflowException
+	private void createAttachments() throws WorkflowException
 	{
-		if(argumentExists(BODY_ARGUMENT))
+		getLogger().debug("Found " + attachments.size() + " attachments.");
+		for(final Iterator i = attachments.iterator(); i.hasNext(); )
 		{
-			getLogger().debug("Fetching 'body' from arguments.");
-			return getParameter(BODY_ARGUMENT).toString();
+			createAttachment((DigitalAsset) i.next());
 		}
-		getLogger().debug("Fetching 'body' from parameters.");
-		return getParameter(BODY_PARAMETER).toString();  // TODO : translateVariables
 	}
 	
 	/**
 	 * 
 	 */
-	private void createAttachments() throws WorkflowException
+	private void createAttachment(final DigitalAsset digitalAsset) throws WorkflowException
 	{
-		
+		try
+		{
+			final BodyPart part = new MimeBodyPart();
+	    	part.setDataHandler(getDataHandler(digitalAsset.getAssetBytes(), digitalAsset.getValueObject().getAssetContentType()));
+			part.setFileName(digitalAsset.getAssetFileName());
+	    	multipart.addBodyPart(part);
+		}
+		catch(Exception e)
+		{
+			throwException(e);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void getAttachments() throws WorkflowException
+	{
+		try
+		{
+			final ContentVersionVO contentVersionVO = (ContentVersionVO) getParameter(ContentFunction.CONTENT_VERSION_PARAMETER, false);
+			if(contentVersionVO != null)
+			{
+				final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getReadOnlyContentVersionWithId(contentVersionVO.getContentVersionId(), getDatabase()); 
+				if(contentVersion != null)
+				{
+					attachments = contentVersion.getDigitalAssets();
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			throwException(e);
+		}
 	}
 	
 	/**
@@ -270,29 +383,45 @@ public class EmailFunction extends InfoglueFunction {
 	 */
 	private InternetAddress[] createAddresses(final String s) throws WorkflowException
 	{
-		final Collection addresses = new ArrayList();
+		final List addresses = new ArrayList();
 		for(final StringTokenizer st = new StringTokenizer(s, ADDRESS_DELIMITER); st.hasMoreTokens(); )
 		{
-			addresses.add(createAddress(st.nextToken()));
+			final Address address = createAddress(st.nextToken());
+			if(address != null) // illegal address?
+			{
+				addresses.add(address);
+			}
 		}
-		return (InternetAddress[]) addresses.toArray();
+		return addressesToArray(addresses);
 	}
 	
 	/**
 	 * 
 	 */
-	private InternetAddress createAddress(final String email) throws WorkflowException
+	private InternetAddress[] addressesToArray(final List list)
 	{
-		InternetAddress address = null;
+		final InternetAddress[] addresses = new InternetAddress[list.size()];
+		for(int i = 0; i < list.size(); ++i)
+		{
+			addresses[i] = (InternetAddress) list.get(i);
+		}
+		return addresses;
+	}
+	
+	/**
+	 * 
+	 */
+	private InternetAddress createAddress(final String email)
+	{
 		try 
 		{
-			address = new InternetAddress(email);
+			return new InternetAddress(email);
 		}
 		catch(Exception e)
 		{
-			throwException(e);
+			illegalAddresses.add(email);
 		}
-		return address;
+		return null;
 	}
 	
 	/**
@@ -317,13 +446,80 @@ public class EmailFunction extends InfoglueFunction {
 	private void sendMessage() throws WorkflowException
 	{
 		getLogger().debug("Sending message.");
-		try 
+		if(illegalAddresses.isEmpty())
 		{
-			//service.send(message);
+			try 
+			{
+				service.send(message);
+				setFunctionStatus(STATUS_OK);
+			}
+			catch(SystemException e)
+			{
+				handleSendException(e);
+			}
 		}
-		catch(Exception e)
+	}
+
+	/**
+	 * 
+	 */
+	private void handleSendException(final SystemException e) throws WorkflowException
+	{
+		if(e.getCause() instanceof SendFailedException)
+		{
+			populateIllegalAddresses((SendFailedException) e.getCause());
+		}
+		else
 		{
 			throwException(e);
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void populateIllegalAddresses(final SendFailedException e)
+	{
+		final Address[] invalidAddresses = (e.getInvalidAddresses() == null) ? new Address[0] : e.getInvalidAddresses();
+		for(int i=0; i<invalidAddresses.length; ++i)
+		{
+			illegalAddresses.add(invalidAddresses[i].toString());
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private DataHandler getDataHandler(final String content, final String type)
+	{
+    	return new DataHandler(new StringDataSource(content, getContentType(type)));
+	}
+
+	/**
+	 * 
+	 */
+	private DataHandler getDataHandler(final byte[] content, final String type)
+	{
+    	return new DataHandler(new ByteDataSource(content, getContentType(type)));
+	}
+	
+	/**
+	 * 
+	 */
+	private String getContentType(final String type)
+	{
+		return type + ";charset=" + UTF8_ENCODING;		
+	}
+	
+	/**
+	 * Method used for initializing the object; will be called before <code>execute</code> is called.
+	 * Note! You must call <code>super.initialize()</code> first.
+	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
+	 */
+	protected void initialize() throws WorkflowException 
+	{
+		super.initialize();
+		this.illegalAddresses = (Collection) getParameter(EmailFunction.ILLEGAL_ADDRESSES_PARAMETER, new ArrayList());
 	}
 }
