@@ -87,6 +87,11 @@ public class ContentFactory
 	private final LanguageVO language;
 
 	/**
+	 * The database to use.
+	 */
+	private Database db;
+	
+	/**
 	 * 
 	 * @param contentTypeDefinitionVO
 	 * @param contentValues
@@ -113,13 +118,14 @@ public class ContentFactory
 	 */
 	public ContentVO create(final ContentVO parentContent, final Map categories, final Database db) throws ConstraintException 
 	{
-		ContentVO contentVO               = createContentVO();
-		Document contentVersionDocument   = buildContentVersionDocument();
-		ContentVersionVO contentVersionVO = createContentVersionVO(contentVersionDocument.asXML());
+		this.db = db;
+		final ContentVO contentVO = createContentVO();
+		final Document contentVersionDocument = buildContentVersionDocument();
+		final ContentVersionVO contentVersionVO = createContentVersionVO(contentVersionDocument.asXML());
 		
 		if(validate(contentVO, contentVersionVO).isEmpty())
 		{
-			return createContent(parentContent, contentVO, contentVersionVO, categories, db);
+			return createContent(parentContent, contentVO, contentVersionVO, categories);
 		}
 		return null;
 	}
@@ -128,18 +134,18 @@ public class ContentFactory
 	 * 
 	 * @param contentVO
 	 * @param categories
-	 * @param db
 	 * @return
 	 * @throws ConstraintException
 	 */
 	public ContentVO update(final ContentVO contentVO, final Map categories, final Database db) throws ConstraintException 
 	{
+		this.db = db;
 		populateContentVO(contentVO);
 		final ContentVersionVO contentVersionVO = createContentVersionVO(buildContentVersionDocument().asXML());
 
 		if(validate(contentVO, contentVersionVO).isEmpty())
 		{
-			return updateContent(contentVO, contentVersionVO, categories, db);
+			return updateContent(contentVO, contentVersionVO, categories);
 		}
 		return null;
 	}
@@ -174,16 +180,15 @@ public class ContentFactory
 	 * @param contentVO
 	 * @param contentVersionVO
 	 * @param categories
-	 * @param db
 	 * @return
 	 */
-	private ContentVO createContent(final ContentVO parentContent, final ContentVO contentVO, final ContentVersionVO contentVersionVO, final Map categories, final Database db) 
+	private ContentVO createContent(final ContentVO parentContent, final ContentVO contentVO, final ContentVersionVO contentVersionVO, final Map categories) 
 	{
 	    try 
 	    {
 			final Content content = ContentControllerProxy.getContentController().create(db, parentContent.getId(), contentTypeDefinitionVO.getId(), parentContent.getRepositoryId(), contentVO);
 			final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
-			createCategories(db, newContentVersion, categories);
+			createCategories(newContentVersion, categories);
 			return content.getValueObject();
 	    } 
 	    catch(Exception e) 
@@ -198,10 +203,9 @@ public class ContentFactory
 	 * @param contentVO
 	 * @param contentVersionVO
 	 * @param categories
-	 * @param db
 	 * @return
 	 */
-	private ContentVO updateContent(final ContentVO contentVO, final ContentVersionVO contentVersionVO, final Map categories, final Database db) 
+	private ContentVO updateContent(final ContentVO contentVO, final ContentVersionVO contentVersionVO, final Map categories) 
 	{
 		try 
 		{
@@ -211,8 +215,8 @@ public class ContentFactory
 			final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), language.getId(), db);
 			contentVersion.getValueObject().setVersionValue(contentVersionVO.getVersionValue());
 			
-			deleteCategories(db, contentVersion);
-			createCategories(db, contentVersion, categories);
+			deleteCategories(contentVersion);
+			createCategories(contentVersion, categories);
 			return content.getValueObject();
 	    } 
 		catch(Exception e) 
@@ -225,23 +229,21 @@ public class ContentFactory
 	/**
 	 * Deletes all content categories associated with the specified content version.
 	 * 
-	 * @param db the database to use in the operation.
 	 * @param contentVersion the content version.
 	 * @throws Exception if an exception occurs while deleting the content categories.
 	 */
-	private void deleteCategories(final Database db, final ContentVersion contentVersion) throws Exception 
+	private void deleteCategories(final ContentVersion contentVersion) throws Exception 
 	{
 		ContentCategoryController.getController().deleteByContentVersion(contentVersion.getId(), db);
 	}
 
 	/**
 	 * 
-	 * @param db
 	 * @param contentVersion
 	 * @param categorieVOs
 	 * @throws Exception
 	 */
-	private void createCategories(final Database db, final ContentVersion contentVersion, final Map categorieVOs) throws Exception 
+	private void createCategories(final ContentVersion contentVersion, final Map categorieVOs) throws Exception 
 	{
 		if(categorieVOs != null)
 		{
@@ -249,22 +251,21 @@ public class ContentFactory
 			{
 				String attributeName = (String) i.next();
 				List categoryVOs     = (List) categorieVOs.get(attributeName);
-				createCategory(db, contentVersion, attributeName, categoryVOs);
+				createCategory(contentVersion, attributeName, categoryVOs);
 			}
 		}
 	}
 
 	/**
 	 * 
-	 * @param db
 	 * @param contentVersion
 	 * @param attributeName
 	 * @param categoryVOs
 	 * @throws Exception
 	 */
-	private void createCategory(final Database db, final ContentVersion contentVersion, final String attributeName, final List categoryVOs) throws Exception 
+	private void createCategory(final ContentVersion contentVersion, final String attributeName, final List categoryVOs) throws Exception 
 	{
-		final List categories = categoryVOListToCategoryList(db, categoryVOs);
+		final List categories = categoryVOListToCategoryList(categoryVOs);
 		ContentCategoryController.getController().create(categories, contentVersion, attributeName, db);
 	}
 
@@ -275,7 +276,7 @@ public class ContentFactory
 	 * @return
 	 * @throws Exception
 	 */
-	private List categoryVOListToCategoryList(final Database db, final List categoryVOList) throws Exception 
+	private List categoryVOListToCategoryList(final List categoryVOList) throws Exception 
 	{
 		final List result = new ArrayList();
 		for(Iterator i=categoryVOList.iterator(); i.hasNext(); ) 
