@@ -1,6 +1,5 @@
 package org.infoglue.cms.webservices;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -12,6 +11,7 @@ import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.workflow.WorkflowFacade;
+import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 /**
  * This service is used for creating workflows from an external application.
@@ -20,17 +20,17 @@ public class RemoteWorkflowServiceImpl {
 	/**
 	 * The class logger.
 	 */
-    private final static Logger logger = Logger.getLogger(RemoteWorkflowServiceImpl.class.getName());
+	private final static Logger logger = Logger.getLogger(RemoteWorkflowServiceImpl.class.getName());
 	
-    /**
-     * The principal executing the workflow.
-     */
-    private InfoGluePrincipal principal;
+	/**
+	 * The principal executing the workflow.
+	 */
+	private InfoGluePrincipal principal;
     
-    /**
-     * The inputs to the workflow.
-     */
-    private Map inputs;
+	/**
+	 * The inputs to the workflow.
+	 */
+	private Map inputs;
     
 	/**
 	 * Default constructor.
@@ -52,12 +52,13 @@ public class RemoteWorkflowServiceImpl {
 	 * @param inputsArray the inputs to the workflow.
 	 * @return true if the workflow executed sucessfully; false otherwise.
 	 */
-	public Boolean start(final String principalName, final Integer languageId, final String workflowName, final Object[] inputsArray)
+	public Boolean start(final String principalName, final Integer languageId, final String workflowName, final Object[] inputsArray, final Object[] ppp)
 	{
 		try 
 		{
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
 			initializePrincipal(principalName, workflowName);
-			initializeInputs(arrayToMap(inputsArray), languageId);
+			initializeInputs((Map) serializer.deserialize(inputsArray), languageId);
 			
 			logger.debug("start(" + principalName + "," + workflowName + "," + languageId + "," + inputs + ")");
 			
@@ -85,37 +86,6 @@ public class RemoteWorkflowServiceImpl {
 	private boolean hasTerminated(final WorkflowVO workflowVO)
 	{
 		return new WorkflowFacade(principal, workflowVO.getIdAsPrimitive()).isFinished();
-	}
-	
-	/**
-	 * As you are discouraged to use <code>java.util.Collection</code> objects as arguments,
-	 * arrays are used instead. 
-	 * <code>java.util.Map</code> objects requires a special syntax where each key/value is
-	 * stored after each other in the array.
-	 * <p>
-	 * Example: the map <code>{ key1 => value1, key2 => value2 }</code> will be sent
-	 * as the array <code>{ key1, value1, key2, value2 }</code>.
-	 * </p> 
-	 * 
-	 * @param array the array to convert to a <code>Map</code>.
-	 * @throws SystemException if the length of the array is odd.
-	 */
-	private Map arrayToMap(final Object[] array) throws SystemException
-	{
-		if(array == null)
-		{
-			return new HashMap();
-		}
-		if(array.length % 2 != 0)
-		{
-			throw new SystemException("Illegal input array sent - uneven number of elements.");
-		}
-		final Map map = new HashMap();
-		for(int i=0; i<array.length; i += 2)
-		{
-			map.put(array[i], array[i+1]);
-		}
-		return map;
 	}
 
 	/**
