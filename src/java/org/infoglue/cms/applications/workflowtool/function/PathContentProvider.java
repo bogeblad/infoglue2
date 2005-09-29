@@ -24,7 +24,6 @@ package org.infoglue.cms.applications.workflowtool.function;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.Repository;
 
 import com.opensymphony.workflow.WorkflowException;
@@ -32,12 +31,17 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  *
  */
-public class PathContentProvider extends InfoglueFunction 
+public class PathContentProvider extends ContentProvider 
 {
 	/**
-	 * The name of the parameter argument.
+	 * 
 	 */
-	private static final String PARAMETER_NAME_ARGUMENT = "parameter";
+	private static final String CONTENT_PARAMETER_NAME_ARGUMENT = "contentParameterName";
+	
+	/**
+	 * 
+	 */
+	private static final String CONTENT_VERSION_PARAMETER_NAME_ARGUMENT = "contentVersionParameterName";
 	
 	/**
 	 * The name of the path argument.
@@ -50,11 +54,6 @@ public class PathContentProvider extends InfoglueFunction
 	private static final String REPOSITORY_NAME_ARGUMENT = "repository";
 	
 	/**
-	 * The key used to store the content in the <code>parameters</code>.
-	 */
-	private String parameter;
-	
-	/**
 	 * The name of the repository.
 	 */
 	private String repositoryName;
@@ -63,6 +62,16 @@ public class PathContentProvider extends InfoglueFunction
 	 * The path identifying the content inside the specified <code>repository</code>.
 	 */
 	private String path;
+	
+	/**
+	 * 
+	 */
+	private String contentParameterName;
+	
+	/**
+	 * 
+	 */
+	private String contentVersionParameterName;
 	
 	/**
 	 * Default constructor.
@@ -75,7 +84,23 @@ public class PathContentProvider extends InfoglueFunction
 	/**
 	 * 
 	 */
-	protected void execute() throws WorkflowException 
+	protected String getContentParameterName()
+	{
+		return contentParameterName;
+	}
+	
+	/**
+	 * 
+	 */
+	protected String getContentVersionParameterName()
+	{
+		return contentVersionParameterName;
+	}
+	
+	/**
+	 * 
+	 */
+	protected void initializeContentVO() throws WorkflowException
 	{
 		try
 		{
@@ -85,8 +110,7 @@ public class PathContentProvider extends InfoglueFunction
 			{
 				throwException("No repository with the name [" + repositoryName + "] found.");
 			}
-			final ContentVO contentVO = ContentController.getContentController().getContentVOWithPath(repository.getId(), path, false, getPrincipal(), getDatabase());
-			setParameter(parameter, contentVO);
+			setContentVO(ContentController.getContentController().getContentVOWithPath(repository.getId(), path, false, getPrincipal(), getDatabase()));
 		} 
 		catch(Exception e) 
 		{
@@ -103,8 +127,9 @@ public class PathContentProvider extends InfoglueFunction
 	protected void initialize() throws WorkflowException 
 	{
 		super.initialize();
-		parameter      = getArgument(PARAMETER_NAME_ARGUMENT);
-		path           = getArgument(PATH_ARGUMENT);
-		repositoryName = getArgument(REPOSITORY_NAME_ARGUMENT);
+		path                        = getArgument(PATH_ARGUMENT);
+		repositoryName              = getArgument(REPOSITORY_NAME_ARGUMENT);
+		contentParameterName        = getArgument(CONTENT_PARAMETER_NAME_ARGUMENT, ContentFunction.CONTENT_PARAMETER);
+		contentVersionParameterName = getArgument(CONTENT_VERSION_PARAMETER_NAME_ARGUMENT, ContentFunction.CONTENT_VERSION_PARAMETER);
 	}
 }
