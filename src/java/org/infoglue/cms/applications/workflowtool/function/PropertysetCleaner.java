@@ -26,6 +26,11 @@ import com.opensymphony.workflow.WorkflowException;
 
 /**
  * This function is used for cleaning the propertyset before terminating a workflow.
+ * 
+ * <h1 class="workflow">Context in</h1>
+ * <p>None.</p>
+ * <h1 class="workflow">Context out</h1>
+ * <p>None.</p>
  */
 public class PropertysetCleaner extends InfoglueFunction 
 {
