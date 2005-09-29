@@ -31,6 +31,7 @@ import org.infoglue.cms.util.workflow.DatabaseSession;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.WorkflowException;
+import com.opensymphony.workflow.util.ScriptVariableParser;
 
 /**
  * Base class containing logic used by both <code>InfoglueFunction</code> and <code>InfoglueCondition</code>.
@@ -43,6 +44,11 @@ public abstract class InfoglueWorkflowBase
 	 * The class logger.
 	 */
 	private final static Logger logger = Logger.getLogger(InfoglueWorkflowBase.class.getName());
+	
+	/**
+	 * The default encoding.
+	 */
+	protected static final String UTF8_ENCODING = "utf-8";
 	
 	/**
 	 * The prefix for all keys representing workflow specific information in the propertyset.
@@ -118,9 +124,9 @@ public abstract class InfoglueWorkflowBase
 	 */
 	protected void storeContext(final Map transientVars, final Map args, final PropertySet ps)
 	{
-		this.parameters  = transientVars;
-		this.arguments   = Collections.unmodifiableMap(args);
-		this.propertySet = new InfogluePropertySet(ps);
+		this.parameters     = transientVars;
+		this.arguments      = Collections.unmodifiableMap(args);
+		this.propertySet    = new InfogluePropertySet(ps);
 	}
 	
 	/**
@@ -346,6 +352,15 @@ public abstract class InfoglueWorkflowBase
 		propertySet.removeKeys(key, isPrefix);
 	}
 
+	/**
+	 * 
+	 */
+	protected final String translate(final String s) 
+	{
+		final Object o = ScriptVariableParser.translateVariables(s, parameters, propertySet);
+		return (o == null) ? null : o.toString();
+	}
+	
 	/**
 	 * Returns the propertyset associated with the current workflow.
 	 * 
