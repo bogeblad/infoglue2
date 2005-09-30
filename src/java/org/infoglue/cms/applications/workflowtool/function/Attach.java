@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.infoglue.cms.applications.workflowtool.util.Attachment;
+import org.infoglue.cms.applications.workflowtool.function.email.Attachment;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
