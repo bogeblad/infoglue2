@@ -20,7 +20,7 @@
 *
 * ===============================================================================
 */
-package org.infoglue.cms.applications.workflowtool.util;
+package org.infoglue.cms.applications.workflowtool.function.email;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,81 +31,23 @@ import org.infoglue.deliver.util.webservices.DynamicWebserviceElement;
 /**
  * 
  */
-public final class SimpleAttachment implements Attachment, DynamicWebserviceElement 
+public final class RemoteAttachment extends AbstractAttachment implements DynamicWebserviceElement 
 {
 	/**
 	 * 
 	 */
-	private byte[] bytes;
-
-	/**
-	 * 
-	 */
-	private String name;
-
-	/**
-	 * 
-	 */
-	private String contentType;
-	
-	/**
-	 * 
-	 */
-	public SimpleAttachment()
+	public RemoteAttachment()
 	{
 	}
 	
 	/**
 	 * 
 	 */
-	public SimpleAttachment(final String name, final String contentType, final byte[] bytes)
+	public RemoteAttachment(final String name, final String contentType, final byte[] bytes)
 	{
-		super();
-		this.name        = name;
-		this.contentType = contentType;
-		this.bytes       = bytes;
+		super(name, contentType, bytes);
 	}
 	
-	/**
-	 * 
-	 */
-	public byte[] getBytes() 
-	{
-		return bytes;
-	}
-
-	/**
-	 * 
-	 */
-	public String getName() 
-	{
-		return name;
-	}
-
-	/**
-	 * 
-	 */
-	public int getSize() 
-	{
-		return getBytes().length;
-	}
-
-	/**
-	 * 
-	 */
-	public String getContentType() 
-	{
-		return contentType;
-	}
-
-	/**
-	 * 
-	 */
-	public String toString()
-	{
-		return "<" + getSize() + "," + getName() + "," + getContentType() + ">";
-	}
-
 	/**
 	 * 
 	 */
@@ -127,8 +69,8 @@ public final class SimpleAttachment implements Attachment, DynamicWebserviceElem
 		{
 			throw new IllegalArgumentException("Illegal size");
 		}
-		this.name        = list.get(0).toString();
-		this.contentType = list.get(1).toString();
-		this.bytes       = Base64.decode(list.get(2).toString());
+		setName(list.get(0).toString());
+		setContentType(list.get(1).toString());
+		setBytes(Base64.decode(list.get(2).toString()));
 	}
 }

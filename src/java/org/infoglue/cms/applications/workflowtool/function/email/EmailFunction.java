@@ -38,12 +38,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.infoglue.cms.applications.workflowtool.function.ContentFunction;
 import org.infoglue.cms.applications.workflowtool.function.InfoglueFunction;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.mail.ByteDataSource;
 import org.infoglue.cms.util.mail.MailService;
@@ -81,6 +76,11 @@ public class EmailFunction extends InfoglueFunction
 	 * 
 	 */
 	public static final String FROM_PARAMETER = EMAIL_PARAMETER_PREFIX + "from";
+	
+	/**
+	 * 
+	 */
+	public static final String ATTACHMENTS_PARAMETER = "attachments";
 	
 	/**
 	 * 
@@ -194,7 +194,6 @@ public class EmailFunction extends InfoglueFunction
 		if(illegalAddresses.isEmpty())
 		{
 			initializeMailService();
-			getAttachments();
 			createMessage();
 			sendMessage();
 		}
@@ -374,20 +373,20 @@ public class EmailFunction extends InfoglueFunction
 		getLogger().debug("Found " + attachments.size() + " attachments.");
 		for(final Iterator i = attachments.iterator(); i.hasNext(); )
 		{
-			createAttachment((DigitalAsset) i.next());
+			createAttachment((Attachment) i.next());
 		}
 	}
 	
 	/**
 	 * 
 	 */
-	private void createAttachment(final DigitalAsset digitalAsset) throws WorkflowException
+	private void createAttachment(final Attachment attachment) throws WorkflowException
 	{
 		try
 		{
 			final BodyPart part = new MimeBodyPart();
-	    	part.setDataHandler(getDataHandler(digitalAsset.getAssetBytes(), digitalAsset.getValueObject().getAssetContentType()));
-			part.setFileName(digitalAsset.getAssetFileName());
+	    	part.setDataHandler(getDataHandler(attachment.getBytes(), attachment.getContentType()));
+			part.setFileName(attachment.getName());
 	    	multipart.addBodyPart(part);
 		}
 		catch(Exception e)
@@ -396,29 +395,6 @@ public class EmailFunction extends InfoglueFunction
 		}
 	}
 
-	/**
-	 * 
-	 */
-	private void getAttachments() throws WorkflowException
-	{
-		try
-		{
-			final ContentVersionVO contentVersionVO = (ContentVersionVO) getParameter(ContentFunction.CONTENT_VERSION_PARAMETER, false);
-			if(contentVersionVO != null)
-			{
-				final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getReadOnlyContentVersionWithId(contentVersionVO.getContentVersionId(), getDatabase()); 
-				if(contentVersion != null)
-				{
-					attachments = contentVersion.getDigitalAssets();
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			throwException(e);
-		}
-	}
-	
 	/**
 	 * 
 	 */
@@ -563,5 +539,6 @@ public class EmailFunction extends InfoglueFunction
 		super.initialize();
 		this.illegalAddresses = (Collection) getParameter(EmailFunction.ILLEGAL_ADDRESSES_PARAMETER, new ArrayList());
 		this.silentMode       = getArgument(SILENT_MODE_ARGUMENT, "false").equalsIgnoreCase("true");
+		this.attachments      = (Collection) getParameter(ATTACHMENTS_PARAMETER, new ArrayList());
 	}
 }

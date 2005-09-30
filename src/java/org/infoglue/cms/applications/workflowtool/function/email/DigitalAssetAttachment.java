@@ -20,30 +20,15 @@
 *
 * ===============================================================================
 */
-package org.infoglue.cms.applications.workflowtool.util;
+package org.infoglue.cms.applications.workflowtool.function.email;
 
-/**
- * 
- */
-public interface Attachment 
+public class DigitalAssetAttachment extends AbstractAttachment 
 {
 	/**
 	 * 
 	 */
-	public byte[] getBytes();
-	
-	/**
-	 * 
-	 */
-	public int getSize();
-	
-	/**
-	 * 
-	 */
-	public String getName();
-	
-	/**
-	 * 
-	 */
-	public String getContentType();
+	public DigitalAssetAttachment(final String name, final String contentType, final byte[] bytes)
+	{
+		super(name, contentType, bytes);
+	}
 }
