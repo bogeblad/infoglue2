@@ -70,6 +70,7 @@ public class Attach extends ContentFunction
 				for(final Iterator i = attachments.iterator(); i.hasNext(); )
 				{
 					final Attachment attachment = (Attachment) i.next();
+					getLogger().debug("Adding attachment : " + attachment);
 					DigitalAssetController.create(createDigitalAssetVO(attachment), getInputStream(attachment), getContentVersion(), getDatabase());
 				}
 			} 
