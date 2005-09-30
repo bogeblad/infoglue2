@@ -110,6 +110,11 @@ public class EmailFunction extends InfoglueFunction
 	/**
 	 * 
 	 */
+	private static final String SILENT_MODE_ARGUMENT = "silent";
+	
+	/**
+	 * 
+	 */
 	private static final String STATUS_OK = "status.email.ok";
 	
 	/**
@@ -143,6 +148,11 @@ public class EmailFunction extends InfoglueFunction
 	private Collection illegalAddresses; // type: <String>
 
 	/**
+	 * Indicates if a failure should be ignored.
+	 */
+	private boolean silentMode;
+	
+	/**
 	 * 
 	 */
 	public EmailFunction() 
@@ -155,23 +165,54 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	protected void execute() throws WorkflowException 
 	{
-		setFunctionStatus(STATUS_NOK);
+		setFunctionStatus(silentMode ? STATUS_OK : STATUS_NOK);
+		try
+		{
+			process();
+		}
+		catch(Exception e)
+		{
+			if(!silentMode)
+			{
+				throwException(e);
+			}
+			getLogger().warn("[silent mode]", e);
+		}
+		if(silentMode)
+		{
+			setParameter(ILLEGAL_ADDRESSES_PARAMETER, new ArrayList());
+		}
+		for(Iterator i=illegalAddresses.iterator(); i.hasNext(); )
+			System.out.println("illegal [" + i.next().toString() + "]");
+	}
+	
+	/**
+	 * 
+	 */
+	private void process() throws WorkflowException
+	{
 		if(illegalAddresses.isEmpty())
 		{
 			initializeMailService();
 			getAttachments();
-			if(attachments.isEmpty())
-			{
-				createSimpleMessage();
-			}
-			else
-			{
-				createMultipartMessage();
-			}
+			createMessage();
 			sendMessage();
 		}
-		for(Iterator i=illegalAddresses.iterator(); i.hasNext(); )
-			System.out.println("illegal [" + i.next().toString() + "]");
+	}
+	
+	/**
+	 * 
+	 */
+	private void createMessage() throws WorkflowException
+	{
+		if(attachments.isEmpty())
+		{
+			createSimpleMessage();
+		}
+		else
+		{
+			createMultipartMessage();
+		}
 	}
 	
 	/**
@@ -521,5 +562,6 @@ public class EmailFunction extends InfoglueFunction
 	{
 		super.initialize();
 		this.illegalAddresses = (Collection) getParameter(EmailFunction.ILLEGAL_ADDRESSES_PARAMETER, new ArrayList());
+		this.silentMode       = getArgument(SILENT_MODE_ARGUMENT, "false").equalsIgnoreCase("true");
 	}
 }
