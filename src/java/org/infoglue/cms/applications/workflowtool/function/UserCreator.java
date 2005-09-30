@@ -80,7 +80,7 @@ public class UserCreator extends InfoglueFunction
 		{
 			try
 			{
-				final UserControllerProxy controller = UserControllerProxy.getController();
+				final UserControllerProxy controller = UserControllerProxy.getController(getDatabase());
 				controller.createUser(systemUserVO);
 				controller.updateUser(systemUserVO, roleNames, groupNames);
 				setFunctionStatus(STATUS_OK);

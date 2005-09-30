@@ -85,7 +85,7 @@ public class RolesProvider extends InfoglueFunction {
 	{
 		try
 		{
-			roles.add(RoleControllerProxy.getController().getRole(roleName));
+			roles.add(RoleControllerProxy.getController(getDatabase()).getRole(roleName));
 		}
 		catch(Exception e)
 		{

@@ -85,7 +85,7 @@ public class GroupsProvider extends InfoglueFunction {
 	{
 		try
 		{
-			groups.add(GroupControllerProxy.getController().getGroup(groupName));
+			groups.add(GroupControllerProxy.getController(getDatabase()).getGroup(groupName));
 		}
 		catch(Exception e)
 		{
