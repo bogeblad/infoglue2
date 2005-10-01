@@ -68,8 +68,8 @@ public class RoleControllerProxy extends BaseController
 	
 	public AuthorizationModule getAuthorizationModule()
 	{
-		if(authorizationModule == null)
-		{
+		//if(authorizationModule == null)
+	    //{
 			try
 			{
 				authorizationModule = (AuthorizationModule)Class.forName(InfoGlueAuthenticationFilter.authorizerClass).newInstance();
@@ -80,7 +80,7 @@ public class RoleControllerProxy extends BaseController
 			{
 				e.printStackTrace();
 			}
-		}
+		//}
 	   
 		return authorizationModule;
 	}
