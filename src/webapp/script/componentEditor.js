@@ -326,15 +326,16 @@ function getScrollY() {
 
 function getEventPositionX(e) 
 {
+	var mX = 0;
+	
 	if (navigator.appName == "Microsoft Internet Explorer")
 	{
-		//scrollX = getScrollX();
-		//alert("ScollX:" + scrollX);
     	mX = event.clientX + getScrollX();
   	}
   	else 
   	{
-    	mX = e.pageX;
+    	if(e)
+	    	mX = e.pageX;
   	}
   	
   	return mX;
@@ -342,16 +343,16 @@ function getEventPositionX(e)
 
 function getEventPositionY(e) 
 {
+	var mY = 0;
+
 	if (navigator.appName == "Microsoft Internet Explorer")
 	{
-		//scrollY = getScrollY();
-		//alert("ScollY:" + scrollY);
-	
     	mY = event.clientY + getScrollY();
   	}
   	else 
   	{
-    	mY = e.pageY;
+		if(e)
+	    	mY = e.pageY;
   	}
   	
   	return mY;
@@ -739,13 +740,18 @@ function deleteComponent()
 	document.location.href = deleteUrl;
 }
 
-function showComponent() 
+function showComponent(e) 
 {
-	showComponentProperties("component" + componentId + "Properties");
+	if (!e) 
+		e = window.event;
+	showComponentProperties("component" + componentId + "Properties", e);
 }
 
-function showComponentProperties(id) 
+function showComponentProperties(id, event) 
 {
+	if (!event) 
+		event = window.event;
+
 	showDiv(id);
 
 	propertiesDiv = document.getElementById(id);
@@ -753,7 +759,7 @@ function showComponentProperties(id)
 	clientX = getEventPositionX(event);
 	clientY = getEventPositionY(event);
 	
-	var rightedge = document.body.clientWidth - clientX;
+	var rightedge = document.body.clientWidth;
 	var bottomedge = document.body.clientHeight - clientY;
 
 	menuDiv = propertiesDiv;
@@ -762,6 +768,8 @@ function showComponentProperties(id)
 		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
 	else
 		newLeft = (document.body.scrollLeft + clientX);
+	
+	newTop = (document.body.scrollTop + clientY);
 	
 	menuDiv.style.left 	= newLeft + "px";
 	menuDiv.style.top 	= newTop + "px";
