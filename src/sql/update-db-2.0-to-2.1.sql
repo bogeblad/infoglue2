@@ -60,3 +60,11 @@ CREATE INDEX referencingEntityComplId ON cmRegistry(referencingEntityComplId);
 CREATE INDEX categoryContVersionId ON cmContentCategory(contentVersionId);
 CREATE INDEX contVerDigAssetDigAssId ON cmContentVersionDigitalAsset(digitalAssetId);
 CREATE INDEX contVerDigAssetContVerId ON cmContentVersionDigitalAsset(contentVersionId);
+
+----------------------------------------------------------------------------------
+-- Add new interception point for workflows				                        --
+----------------------------------------------------------------------------------
+INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, description, usesExtraDataForAccessControl) VALUES 
+  (31,'Workflow','Workflow.Create','This point checks access to creating a new workflow',1);
+INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
+  (31, 1);
