@@ -50,7 +50,12 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
     {
     	return Action.INPUT;
     }
-	
+    
+    public String doInputStandalone() throws Exception
+    {
+    	return "inputStandalone";
+    }
+    
 	protected String doExecute() throws Exception 
 	{
 	    if(!newPassword.equals(verifiedNewPassword))
