@@ -502,7 +502,28 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getLogger().info("principal:" + principal);
 			if(principal == null)
 			{
-				try
+			    /*
+			    String dbpassword = "";
+			    String license = "";
+			    String password = dbpassword + license;
+
+			    MessageDigest md = MessageDigest.getInstance("MD5");
+			    md.update(password.getBytes());
+			    BigInteger hash = new BigInteger( 1, md.digest() );
+			    String hpassword = hash.toString(16);
+
+			    Cookie cookie_userid = new Cookie ("bbuserid", "3");
+			    cookie_userid.setDomain("your domain");
+			    cookie_userid.setMaxAge(365 * 24 * 60 * 60);
+			    response.addCookie(cookie_userid);
+
+			    Cookie cookie_password = new Cookie ("bbpassword", hpassword);
+			    cookie_password.setDomain("your domain");
+			    cookie_password.setMaxAge(365 * 24 * 60 * 60);
+			    response.addCookie(cookie_password);
+			    */
+			    
+			    try
 				{
 					principal = (Principal)CacheController.getCachedObject("userCache", "anonymous");
 					if(principal == null)
