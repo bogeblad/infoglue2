@@ -493,8 +493,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 		    String referer = this.getRequest().getHeader("Referer");
 			getLogger().info("referer:" + referer);
+			System.out.println("referer:" + referer);
 
-			if(referer == null)
+			if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
 				referer = "/"; 
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
@@ -549,6 +550,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					if(this.referer == null)
 						this.referer = this.getRequest().getHeader("Referer");
 					
+					if(this.referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
+						referer = "/"; 
+
 					if(principal.getName().equals("anonymous"))
 					{
 						getLogger().info("SiteNode is protected and user was anonymous - sending him to login page.");
