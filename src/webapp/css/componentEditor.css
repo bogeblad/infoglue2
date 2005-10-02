@@ -1,3 +1,7 @@
+/* 
+Component palette classes
+*/
+
 #paletteDiv {
 	position:absolute; 
 	background-color:#F4F4F4;
@@ -13,7 +17,6 @@
 	padding: 0px 0px 0px 0px;
 	line-height:100%;
 	}
-
 #paletteHandle {
 	padding-top:2px;
 	padding-bottom:2px;
@@ -47,7 +50,6 @@
 	font-size:10px;
 	height: 30px;
 	}
-
 #statusListBg {
 	position:absolute; 
 	top:65px; 
@@ -58,21 +60,6 @@
 	width:100%; 
 	height:15px;
 	}
-	
-.siteBody {
-	position:absolute; 
-	border: 0px solid blue; 
-	margin: 0px 0px 0px 0px; 
-	padding: 0px 0px 0px 0px;
-	}
-
-.tabPanel {
-	position:absolute; 
-	width:100%; 
-	height: 24px;
-	overflow: hidden;
-	}
-
 #paletteBody {
 	padding-top:2px;
 	padding-bottom:2px;
@@ -85,7 +72,176 @@
 	left:0px; 
 	top:0px;
 	}
+.tabPanel {
+	position:absolute; 
+	width:100%; 
+	height: 24px;
+	overflow: hidden;
+	}
+.thistab
+ {
+	font-family:verdana,arial,helvetica;
+	font-size:8pt;
+	font-weight: bold;
+	text-align:center;
+	color: #000000;
+	background:#cccccc;
+	border-top: solid thin white;
+	border-right: solid thin none;
+	border-left: solid thin white;
+	border-bottom: solid 0px white;
+	cursor:pointer;
+	visibility:inherited;
+	z-index:1;
+	overflow: auto;
+	space: nowrap;
+	padding:0px 4px 0px 4px;
+	}
+.tab
+ {
+	font-family:verdana,arial,helvetica;
+	font-size:8pt;
+	font-weight: normal;
+	text-align:center;
+	background:#999999;
+	color: #000000;
+	border-top: solid 1px black;
+	border-right: none 1px black;
+	border-left: solid 1px black;
+	border-bottom: solid 1px white;
+	cursor:pointer;
+	visibility:inherited;
+	z-index:20
+	overflow: auto;
+	space: nowrap;
+	padding:0px 4px 0px 4px;
+	}
+.igpalettetd {
+	background-color: #CCCCCC;
+	text-align: left;
+	height: 10px;
+	vertical-align: top;
+	border:0px solid blue;
+	awidth:1px;
+}
+.igpalettetd:hover {
+	background-color: #CCCCCC;
+	color			: #000000;
+}
+.igmenuitems {
+	padding-left:30px;
+	padding-right:10px;
+	padding-top:2px;
+	padding-bottom:2px;
+}
+.menudivider {
+	aborder: 1px solid #666666;
+	height: 1px;
+	//color: #666666;
+	awidth: 100px;
+	text-align: right;
+	margin: 0 0 0 auto;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
 
+.draggableItem {
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	space: nowrap;
+	}
+.components {
+	text-align: center;
+	background: #CCCCCC;
+	border-left: solid 1px white;
+	aborder-right: solid 1px white;
+	border-bottom: solid 1px black;
+	left:0px;
+	atop:20px;
+	width:100%;
+	height:30px;
+	cursor:pointer;
+	space: nowrap;
+	visibility:inherited;
+}
+.component {
+	text-align:center;
+	background:#CCCCCC;
+	cursor:pointer;
+	space: nowrap;
+	padding:0px 4px 0px 4px;
+	visibility:inherited;
+}
+.componentsBackground {
+ 	border-bottom: 1px solid gray; 
+ 	aborder-left: 1px solid white; 
+ 	aborder-right: 0px solid red; 
+ 	background:#CCCCCC; 
+ 	width:100%; 
+ 	height:24px; 
+ 	position:absolute; 
+ 	top:50px; 
+ 	left:10px; 
+ 	visibility: inherited;
+}
+.componentsStatus {
+	font-family:verdana,arial,helvetica;
+	font-size:8pt;
+	font-weight: normal;
+	aborder-right: 1px solid black;
+	aborder-left: thin solid white;
+	border-bottom: solid 1px black;
+	border-top: solid thin gray;
+	position:absolute; 
+	z-index:2; 
+	width:100%; 
+	top:60px; 
+	left:0px; 
+	height:16px; 
+	visibility:visible;
+	background:#CCCCCC;
+}
+.componentsStatusText {
+	font-family:verdana,arial,helvetica;
+	font-size:7pt;
+	font-weight: normal;
+}
+
+
+/*
+Buffer
+*/
+
+#buffer { 
+	position:	absolute;
+	z-index:	1000003;
+	height:		1em;
+	width:		1em;
+	background:	#777777;
+	border: 	0px solid black;
+	color:		#ffffff;
+	visibility:	hidden; 
+	top:		0px;
+	left:		0px;
+}
+	
+/* 
+Other classes
+*/
+	
+/*	
+.siteBody {
+	position: absolute; 
+	border: 0px solid blue; 
+	margin: 0px 0px 0px 0px; 
+	padding: 0px 0px 0px 0px;
+	}
+*/
+
+/* 
+Page components classes
+*/
+	
 #pageComponents {
 	position:absolute;
 	width:250px;
@@ -116,19 +272,11 @@
 	height: 380px;
 	overflow: auto;
 	}
-	
-#buffer { 
-	position:	absolute;
-	z-index:	1000003;
-	height:		1em;
-	width:		1em;
-	background:	#777777;
-	border: 	0px solid black;
-	color:		#ffffff;
-	visibility:	hidden; 
-	top:		0px;
-	left:		0px;
-}
+
+
+/*
+Edit on sight classes
+*/
 
 .skin0 {
 	position:absolute;
@@ -157,22 +305,39 @@
 	border:1px solid #666666;
 	visibility:hidden;
 }
-.igmenuitems {
-	padding-left:30px;
-	padding-right:10px;
-	padding-top:2px;
-	padding-bottom:2px;
-}
-.menudivider {
-	aborder: 1px solid #666666;
-	height: 1px;
-	//color: #666666;
-	awidth: 100px;
-	text-align: right;
-	margin: 0 0 0 auto;
-	padding-top: 5px;
-	padding-bottom: 5px;
-}
+
+/*
+Properties classes
+*/
+
+.componentProperties {
+	position:absolute;
+	width:350px;
+	background-color:#F4F4F4;
+	border:1px solid #333333;
+	z-index:1000003;
+	right:5px;
+	top:100px;
+	}
+
+.componentPropertiesHandle {
+	margin:2px;
+	padding:2px;
+	width:340px;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+#componentPropertiesBody {
+	margin:2px;
+	padding:2px;
+	width:340px;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
 .igPropertiesTable {
 	border:0px solid #FFFFFF;
 	text-align: left;
@@ -191,18 +356,6 @@
 }
 .igtr:hover {
 	background-color: #F9F9F9;
-	color			: #000000;
-}
-.igpalettetd {
-	background-color: #CCCCCC;
-	text-align: left;
-	height: 10px;
-	vertical-align: top;
-	border:0px solid blue;
-	awidth:1px;
-}
-.igpalettetd:hover {
-	background-color: #CCCCCC;
 	color			: #000000;
 }
 .igtd {
@@ -272,6 +425,10 @@ td.value {
 	font-size        : 8pt;
 	font-color		 : #333333;
 }
+
+/*
+Slot classes
+*/
 
 .emptyslot {
 	font-family      : verdana, arial, sans-serif;
@@ -345,12 +502,6 @@ input.propertytextfield {
 	filter:gray;
 }
 	
-.draggableItem {
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	space: nowrap;
-	}
-
 tr.lightyellow {
 	background-color : #FEF8D0;
 	height 			 : 14pt;
@@ -390,34 +541,6 @@ A.white:active {
 	font-weight:bold;
 	}
 	
-.componentProperties {
-	position:absolute;
-	width:350px;
-	background-color:#F4F4F4;
-	border:1px solid #333333;
-	z-index:1000003;
-	right:5px;
-	top:100px;
-	}
-
-.componentPropertiesHandle {
-	margin:2px;
-	padding:2px;
-	width:340px;
-	color:white;
-	background-color:navy;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	}
-
-#componentPropertiesBody {
-	margin:2px;
-	padding:2px;
-	width:340px;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	}
-	
 .slot {
 	border:0px solid #333333;
 	font-family:verdana, sans-serif;
@@ -450,45 +573,6 @@ select.mediumdrop {
 	height:12px;
 	space: nowrap;
 	}
-.thistab
- {
-	font-family:verdana,arial,helvetica;
-	font-size:8pt;
-	font-weight: bold;
-	text-align:center;
-	color: #000000;
-	background:#cccccc;
-	border-top: solid thin white;
-	border-right: solid thin none;
-	border-left: solid thin white;
-	border-bottom: solid 0px white;
-	cursor:pointer;
-	visibility:inherited;
-	z-index:1;
-	overflow: auto;
-	space: nowrap;
-	padding:0px 4px 0px 4px;
-	}
-.tab
- {
-	font-family:verdana,arial,helvetica;
-	font-size:8pt;
-	font-weight: normal;
-	text-align:center;
-	background:#999999;
-	color: #000000;
-	border-top: solid 1px black;
-	border-right: none 1px black;
-	border-left: solid 1px black;
-	border-bottom: solid 1px white;
-	cursor:pointer;
-	visibility:inherited;
-	z-index:20
-	overflow: auto;
-	space: nowrap;
-	padding:0px 4px 0px 4px;
-	}
-
 .acomponentsBackground {
 	border: 0px solid red; 
 	aborder-right: solid 1px none;
@@ -502,60 +586,3 @@ select.mediumdrop {
 	clip:rect(0px 10px 10px 0px); 
 	visibility:inherited;
 }	
-.components {
-	text-align: center;
-	background: #CCCCCC;
-	border-left: solid 1px white;
-	aborder-right: solid 1px white;
-	border-bottom: solid 1px black;
-	left:0px;
-	atop:20px;
-	width:100%;
-	height:30px;
-	cursor:pointer;
-	space: nowrap;
-	visibility:inherited;
-}
-.component {
-	text-align:center;
-	background:#CCCCCC;
-	cursor:pointer;
-	space: nowrap;
-	padding:0px 4px 0px 4px;
-	visibility:inherited;
-}
-.componentsBackground {
- 	border-bottom: 1px solid gray; 
- 	aborder-left: 1px solid white; 
- 	aborder-right: 0px solid red; 
- 	background:#CCCCCC; 
- 	width:100%; 
- 	height:24px; 
- 	position:absolute; 
- 	top:50px; 
- 	left:10px; 
- 	visibility: inherited;
-}
-.componentsStatus {
-	font-family:verdana,arial,helvetica;
-	font-size:8pt;
-	font-weight: normal;
-	aborder-right: 1px solid black;
-	aborder-left: thin solid white;
-	border-bottom: solid 1px black;
-	border-top: solid thin gray;
-	position:absolute; 
-	z-index:2; 
-	width:100%; 
-	top:60px; 
-	left:0px; 
-	height:16px; 
-	visibility:visible;
-	background:#CCCCCC;
-}
-.componentsStatusText {
-	font-family:verdana,arial,helvetica;
-	font-size:7pt;
-	font-weight: normal;
-}
-	

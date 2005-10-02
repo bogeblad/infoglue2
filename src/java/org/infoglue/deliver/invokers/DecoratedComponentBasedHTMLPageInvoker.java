@@ -355,6 +355,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 			if(component.getParentComponent() == null && bodyIndex > -1)
 			{
+				//String onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";
 				String onContextMenu = " class=\"siteBody\" onload=\"javascript:setToolbarInitialPosition();\"";
 				if(templateController.getDeliveryContext().getShowSimple())
 					onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";

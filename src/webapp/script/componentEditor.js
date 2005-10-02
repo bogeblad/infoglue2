@@ -750,11 +750,30 @@ function showComponentProperties(id)
 
 	propertiesDiv = document.getElementById(id);
 
+	clientX = getEventPositionX(event);
+	clientY = getEventPositionY(event);
+	
+	var rightedge = document.body.clientWidth - clientX;
+	var bottomedge = document.body.clientHeight - clientY;
+
+	menuDiv = propertiesDiv;
+	
+	if (rightedge < menuDiv.offsetWidth)
+		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
+	else
+		newLeft = (document.body.scrollLeft + clientX);
+	
+	menuDiv.style.left 	= newLeft + "px";
+	menuDiv.style.top 	= newTop + "px";
+	
+/*
 	newLeft = (getScrollX() + (document.body.clientWidth / 2) - (propertiesDiv.offsetWidth / 2));
 	newTop = (getScrollY() + (document.body.clientHeight / 2) - (propertiesDiv.offsetHeight / 2));
-	
+	alert("newTop:" + newTop);
+		
 	propertiesDiv.style.top = newTop + "px";	
 	propertiesDiv.style.left = newLeft + "px";	
+*/
 }
 
 function invokeAction() 
