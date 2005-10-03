@@ -486,9 +486,9 @@ function showEmptySlotMenu(event, compId, anInsertUrl)
 	
 	var rightedge = document.body.clientWidth - clientX;
 	var bottomedge = document.body.clientHeight - clientY;
-	
-	menuDiv = getActiveMenuDiv();
 
+	menuDiv = getActiveMenuDiv();
+	
 	if (rightedge < menuDiv.offsetWidth)
 		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
 	else
