@@ -122,35 +122,22 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 			//getLogger().info("Yes - we try to send the user back to:" + this.returnAddress);		
 			this.getHttpSession().setAttribute("infogluePrincipal", principal);
 			
-			/* START ON COOKIE REMEBERING
+			//START ON COOKIE REMEBERING
+			/*
 			DesEncryptionHelper encHelper = new DesEncryptionHelper();
-			
+
 			System.out.println("UserName:" + this.getRequest().getParameter("j_username"));
 		    Cookie cookie_userid = new Cookie("iguserid", this.getRequest().getParameter("j_username"));
-		    cookie_userid.setDomain("localhost");
-		    //cookie_userid.setDomain(this.getRequest().getServerName());
 		    cookie_userid.setMaxAge(30 * 24 * 60 * 60); //30 days
 		    this.getResponse().addCookie(cookie_userid);
-
+		    
 		    System.out.println("COOKIES SKALL VARA SATTA:::::");
-
 		    Cookie cookie_password = new Cookie ("igpassword", this.getRequest().getParameter("j_password"));
-		    cookie_userid.setDomain("localhost");
-		    //cookie_password.setDomain(this.getRequest().getServerName());
-		    cookie_password.setPath("/");
 		    cookie_password.setMaxAge(30 * 24 * 60 * 60);  //30 days
 		    this.getResponse().addCookie(cookie_password);
 
-		    Cookie cookie_username = new Cookie("igusername", this.getRequest().getParameter("j_username"));
-		    cookie_username.setDomain("localhost");
-		    cookie_username.setPath("/");
-		    //cookie_username.setDomain(this.getRequest().getServerName());
-		    cookie_username.setMaxAge(30 * 24 * 60 * 60); //30 days
-		    this.getResponse().addCookie(cookie_username);
-
 		    System.out.println("COOKIES SKALL VARA SATTA:::::");
 		    */
-			
 			this.getResponse().sendRedirect(this.returnAddress);
 		}
 		else
