@@ -212,12 +212,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 		while(versionIterator.hasNext())
 		{
 			ContentVersion contentVersionCandidate = (ContentVersion)versionIterator.next();	
-			//System.out.println("contentVersionCandidate:" + contentVersionCandidate.getId() + ":" + contentVersionCandidate.getIsActive() + ":" + contentVersionCandidate.getLanguage() + ":" + contentVersionCandidate.getStateId() + ":" + operatingMode);
-			//System.out.println("" + contentVersionCandidate.getIsActive().booleanValue());
-			//System.out.println("" + contentVersionCandidate.getLanguage().getId().intValue());
-			//System.out.println("" + languageId.intValue());
-			//System.out.println("" + contentVersionCandidate.getStateId().intValue());
-			//System.out.println("" + operatingMode.intValue());
+			//getLogger().info("contentVersionCandidate:" + contentVersionCandidate.getId() + ":" + contentVersionCandidate.getIsActive() + ":" + contentVersionCandidate.getLanguage() + ":" + contentVersionCandidate.getStateId() + ":" + operatingMode);
+			//getLogger().info("" + contentVersionCandidate.getIsActive().booleanValue());
+			//getLogger().info("" + contentVersionCandidate.getLanguage().getId().intValue());
+			//getLogger().info("" + languageId.intValue());
+			//getLogger().info("" + contentVersionCandidate.getStateId().intValue());
+			//getLogger().info("" + operatingMode.intValue());
 			
 			if(contentVersionCandidate.getIsActive().booleanValue() && contentVersionCandidate.getLanguage().getId().intValue() ==  languageId.intValue() && contentVersionCandidate.getStateId().intValue() >= operatingMode.intValue())
 			{

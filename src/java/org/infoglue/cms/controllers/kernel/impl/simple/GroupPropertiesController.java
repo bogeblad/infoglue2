@@ -923,9 +923,7 @@ public class GroupPropertiesController extends BaseController
 	    
 		try
 		{
-		    System.out.println("A");
 		    List groupPropertiesVOList = this.getGroupPropertiesVOList(groupName, languageId, db);
-		    System.out.println("B");
 		    Iterator iterator = groupPropertiesVOList.iterator();
 		    GroupPropertiesVO groupPropertyVO = null;
 		    while(iterator.hasNext())
@@ -936,10 +934,7 @@ public class GroupPropertiesController extends BaseController
 
 			if(groupPropertyVO != null && groupPropertyVO.getId() != null)
 			{
-			    System.out.println("C");
-
 		    	List propertiesCategoryList = PropertiesCategoryController.getController().findByPropertiesAttribute(attribute, GroupProperties.class.getName(), groupPropertyVO.getId(), db);
-			    System.out.println("D");
 
 		    	Iterator propertiesCategoryListIterator = propertiesCategoryList.iterator();
 		    	while(propertiesCategoryListIterator.hasNext())

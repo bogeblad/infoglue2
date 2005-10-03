@@ -997,7 +997,7 @@ public class ComponentLogic
 	    try
 		{
 	        String componentPropertiesXML = getPageComponentsString(this.templateController, siteNodeId, languageId, new Integer(-1));
-	        //System.out.println("componentPropertiesXML:" + componentPropertiesXML);
+	        //logger.info("componentPropertiesXML:" + componentPropertiesXML);
 	        
 	        HashMap property = null;
 			
@@ -1005,9 +1005,9 @@ public class ComponentLogic
 			{
 				Document document = XMLHelper.readDocumentFromByteArray(componentPropertiesXML.getBytes("UTF-8"));
 				String propertyXPath = "//component/properties/property[@name='" + propertyName + "']";
-				//System.out.println("propertyXPath:" + propertyXPath);
+				//logger.info("propertyXPath:" + propertyXPath);
 				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
-				//System.out.println("*********************************************************anl:" + anl.getLength());
+				//logger.info("*********************************************************anl:" + anl.getLength());
 								
 				for(int i=0; i < anl.getLength(); i++)
 				{
@@ -1133,7 +1133,7 @@ public class ComponentLogic
 			}
 		}
 
-        //System.out.println("Done..." + propertyName);
+        //logger.info("Done..." + propertyName);
 
 		return property;
 	}
@@ -1145,7 +1145,7 @@ public class ComponentLogic
 	private Map getComponentProperty(Integer siteNodeId, String propertyName, boolean useInheritance) throws Exception
 	{
 		//Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
-		//System.out.println("property1:" + property);
+		//logger.info("property1:" + property);
 		Map property = getInheritedComponentProperty(this.templateController, siteNodeId, this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);
 		
 		if(useInheritance)
@@ -1180,7 +1180,7 @@ public class ComponentLogic
 			}
 		}
 
-        //System.out.println("Done..." + propertyName);
+        //logger.info("Done..." + propertyName);
 
 		return property;
 	}

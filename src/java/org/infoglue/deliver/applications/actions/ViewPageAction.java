@@ -493,8 +493,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 		    String referer = this.getRequest().getHeader("Referer");
 			getLogger().info("referer:" + referer);
-			System.out.println("referer:" + referer);
-
+			
 			if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
 				referer = "/"; 
 			

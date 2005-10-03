@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.13 2005/09/02 16:40:13 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.14 2005/10/03 08:57:19 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -97,7 +97,7 @@ public class ContentCategoryController extends BaseController
 	 */
 	public List findByContentVersionAttribute(String attribute, Integer versionId) throws SystemException
 	{
-	    System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId + " no db " + System.currentTimeMillis());
+	    //System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId + " no db " + System.currentTimeMillis());
 	    
 	    /*
 	    List params = new ArrayList();
@@ -129,7 +129,7 @@ public class ContentCategoryController extends BaseController
 		}
 
 		
-		System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId + " no db " + System.currentTimeMillis());
+		//System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId + " no db " + System.currentTimeMillis());
 		return contentCategoryVOList;
 	}
 
@@ -344,9 +344,9 @@ public class ContentCategoryController extends BaseController
 		{
 		    ContentCategory contentCategory = (ContentCategory)getObjectWithId(ContentCategoryImpl.class, id, db);
 		    ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentCategory.getContentVersionId(), db);
-		    System.out.println("contentVersion:" + contentVersion.getContentCategories().size());
+		    //System.out.println("contentVersion:" + contentVersion.getContentCategories().size());
 		    contentVersion.getContentCategories().remove(contentCategory);
-		    System.out.println("contentVersion:" + contentVersion.getContentCategories().size());
+		    //System.out.println("contentVersion:" + contentVersion.getContentCategories().size());
 		    db.remove(contentCategory);
 		    
 			commitTransaction(db);

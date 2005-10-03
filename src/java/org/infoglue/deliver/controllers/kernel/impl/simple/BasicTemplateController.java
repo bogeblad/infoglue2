@@ -171,14 +171,6 @@ public class BasicTemplateController implements TemplateController
 	    this.urlComposer = URLComposer.getURLComposer(); 
 	}
 
-	/*public void getDatabaseStatus(String debugMessage)
-	{
-	    if(this.databaseWrapper.getDatabase() == null || this.databaseWrapper.getDatabase().isClosed() || !this.databaseWrapper.getDatabase().isActive())
-	        System.out.println(debugMessage + ": Invalid...");
-	    else
-	        System.out.println(debugMessage + ": OK...");
-
-	}*/
 	
 	/**
      * Gets the transaction the controller should work within. This is to limit the number of connections we use. 

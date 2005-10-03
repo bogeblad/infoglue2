@@ -124,11 +124,9 @@ public class BasicURLComposer extends URLComposer
             SiteNode currentSiteNode = SiteNodeController.getSiteNodeWithId(deliveryContext.getSiteNodeId(), db, true);
     		if(!siteNode.getRepository().getId().equals(currentSiteNode.getRepository().getId()))
     		{
-    		    //System.out.println("The repositories were not equal...");
     		    String dnsName = siteNode.getRepository().getDnsName();
     		    logger.debug("dnsName:" + dnsName);
-    		    //System.out.println("Here is the dns we are going to use instead:" + dnsName);
-    		  
+    		    
     		    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
     		    String keyword = "";
     		    if(operatingMode.equalsIgnoreCase("0"))
