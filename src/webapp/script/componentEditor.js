@@ -358,6 +358,44 @@ function getEventPositionY(e)
   	return mY;
 }
 
+function getWindowHeight()
+{
+	var y;
+	if (self.innerHeight) // all except Explorer
+	{
+		y = self.innerHeight;
+	}
+	else if (document.documentElement && document.documentElement.clientHeight)
+		// Explorer 6 Strict Mode
+	{
+		y = document.documentElement.clientHeight;
+	}
+	else if (document.body) // other Explorers
+	{
+		y = document.body.clientHeight;
+	}
+	return y;
+}
+
+function getWindowWidth()
+{
+	var x;
+	if (self.innerHeight) // all except Explorer
+	{
+		x = self.innerWidth;
+	}
+	else if (document.documentElement && document.documentElement.clientHeight)
+		// Explorer 6 Strict Mode
+	{
+		x = document.documentElement.clientWidth;
+	}
+	else if (document.body) // other Explorers
+	{
+		x = document.body.clientWidth;
+	}
+	return x;
+}
+
 function getActiveMenuDiv() 
 {
 	//alert("activeMenuId:" + activeMenuId);
@@ -406,22 +444,44 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl)
 	clientY = getEventPositionY(event);
 	
 	var rightedge = document.body.clientWidth - clientX;
-	var bottomedge = document.body.clientHeight - clientY;
-
-	menuDiv = getActiveMenuDiv();
+	//var bottomedge = document.body.clientHeight - clientY;
+	var bottomedge = getWindowHeight() - clientY;
 	
+	menuDiv = getActiveMenuDiv();
+
+/*	
 	if (rightedge < menuDiv.offsetWidth)
 		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
 	else
 		newLeft = (document.body.scrollLeft + clientX);
 	
-	//if (bottomedge < menuDiv.offsetHeight)
-	//	newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
-	//else
+	if (bottomedge < menuDiv.offsetHeight)
+		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
+	else
 		newTop = (document.body.scrollTop + clientY);
+*/
 
-	menuDiv.style.left 	= newLeft + "px";
-	menuDiv.style.top 	= newTop + "px";
+	//var offsetYInWindow = clientY - getScrollY();
+	//alert("getScrollY():" + getScrollY());
+	//alert("e.pageY:" + e.pageY);
+	//alert("getWindowHeight;" + getWindowHeight());
+	//alert("OffsetInWindow:" + offsetYInWindow);
+	//alert("clientY:" + clientY);
+	//alert("document.body.scrollTop:" + document.body.scrollTop);
+	//alert("bottomedge:" + bottomedge);
+	//alert("document.body.clientHeight:" + document.body.clientHeight);
+	//alert("menuDiv.offsetWidth:" + menuDiv.offsetWidth);
+	
+	if (rightedge < menuDiv.offsetWidth)
+		clientX = (clientX - menuDiv.offsetWidth);
+	
+	if (bottomedge < menuDiv.offsetHeight)
+		clientY = (clientY - menuDiv.offsetHeight);
+		
+	menuDiv.style.left 	= clientX + "px";
+	menuDiv.style.top 	= clientY + "px";
+	//menuDiv.style.left 	= newLeft + "px";
+	//menuDiv.style.top 	= newTop + "px";
 	
 	menuDiv.style.visibility = "visible";
 	
@@ -445,22 +505,34 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	clientY = getEventPositionY(event);
 	
 	var rightedge = document.body.clientWidth - clientX;
-	var bottomedge = document.body.clientHeight - clientY;
+	//var bottomedge = document.body.clientHeight - clientY;
+	var bottomedge = getWindowHeight() - clientY;
 
 	menuDiv = getActiveMenuDiv();
 	
+	/*
 	if (rightedge < menuDiv.offsetWidth)
 		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
 	else
 		newLeft = (document.body.scrollLeft + clientX);
 	
-	//if (bottomedge < menuDiv.offsetHeight)
-	//	newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
-	//else
+	if (bottomedge < menuDiv.offsetHeight)
+		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
+	else
 		newTop = (document.body.scrollTop + clientY);
+	*/
+	
+	if (rightedge < menuDiv.offsetWidth)
+		clientX = (clientX - menuDiv.offsetWidth);
+	
+	if (bottomedge < menuDiv.offsetHeight)
+		clientY = (clientY - menuDiv.offsetHeight);
+	
+	menuDiv.style.left 	= clientX + "px";
+	menuDiv.style.top 	= clientY + "px";
 
-	menuDiv.style.left 	= newLeft + "px";
-	menuDiv.style.top 	= newTop + "px";
+	//menuDiv.style.left 	= newLeft + "px";
+	//menuDiv.style.top 	= newTop + "px";
 	
 	menuDiv.style.visibility = "visible";
 	
@@ -485,22 +557,34 @@ function showEmptySlotMenu(event, compId, anInsertUrl)
 	clientY = getEventPositionY(event);
 	
 	var rightedge = document.body.clientWidth - clientX;
-	var bottomedge = document.body.clientHeight - clientY;
+	//var bottomedge = document.body.clientHeight - clientY;
+	var bottomedge = getWindowHeight() - clientY;
 
 	menuDiv = getActiveMenuDiv();
 	
+	/*
 	if (rightedge < menuDiv.offsetWidth)
 		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
 	else
 		newLeft = (document.body.scrollLeft + clientX);
 	
-	//if (bottomedge < menuDiv.offsetHeight)
-	//	newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
-	//else
+	if (bottomedge < menuDiv.offsetHeight)
+		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
+	else
 		newTop = (document.body.scrollTop + clientY);
+	*/
+	
+	if (rightedge < menuDiv.offsetWidth)
+		clientX = (clientX - menuDiv.offsetWidth);
+	
+	if (bottomedge < menuDiv.offsetHeight)
+		clientY = (clientY - menuDiv.offsetHeight);
+	
+	menuDiv.style.left 	= clientX + "px";
+	menuDiv.style.top 	= clientY + "px";
 
-	menuDiv.style.left 	= newLeft + "px";
-	menuDiv.style.top 	= newTop + "px";
+	//menuDiv.style.left 	= newLeft + "px";
+	//menuDiv.style.top 	= newTop + "px";
 
 	menuDiv.style.visibility = "visible";
 
