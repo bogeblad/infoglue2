@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -501,60 +502,44 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getLogger().info("principal:" + principal);
 			if(principal == null)
 			{
-			    /*
-			    String dbpassword = "";
-			    String license = "";
-			    String password = dbpassword + license;
-
-			    MessageDigest md = MessageDigest.getInstance("MD5");
-			    md.update(password.getBytes());
-			    BigInteger hash = new BigInteger( 1, md.digest() );
-			    String hpassword = hash.toString(16);
-
-			    Cookie cookie_userid = new Cookie ("bbuserid", "3");
-			    cookie_userid.setDomain("your domain");
-			    cookie_userid.setMaxAge(365 * 24 * 60 * 60);
-			    response.addCookie(cookie_userid);
-
-			    Cookie cookie_password = new Cookie ("bbpassword", hpassword);
-			    cookie_password.setDomain("your domain");
-			    cookie_password.setMaxAge(365 * 24 * 60 * 60);
-			    response.addCookie(cookie_password);
-			    */
-			    
-			    try
-				{
-					principal = (Principal)CacheController.getCachedObject("userCache", "anonymous");
-					if(principal == null)
+			    principal = loginWithCookies();
+			    			    
+			    if(principal == null)
+			    {
+				    try
 					{
-					    Map arguments = new HashMap();
-					    arguments.put("j_username", "anonymous");
-					    arguments.put("j_password", "anonymous");
-					    
-						principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+						principal = (Principal)CacheController.getCachedObject("userCache", "anonymous");
+						if(principal == null)
+						{
+						    Map arguments = new HashMap();
+						    arguments.put("j_username", "anonymous");
+						    arguments.put("j_password", "anonymous");
+						    
+							principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+							if(principal != null)
+								CacheController.cacheObject("userCache", "anonymous", principal);
+						}
+						
 						if(principal != null)
-							CacheController.cacheObject("userCache", "anonymous", principal);
-					}
-					
-					if(principal != null)
-					{
-					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
-					    
-						SiteNodeVersionVO siteNodeVersionVO = this.nodeDeliveryController.getActiveSiteNodeVersionVO(db, siteNodeId);
-						boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", siteNodeVersionVO.getId().toString());
-						if(!isAuthorized)
-						{	
-							getLogger().info("SiteNode is protected and user was not found - sending him to login page.");
-							String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
-							getResponse().sendRedirect(url);
-							isRedirected = true;
+						{
+						    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+						    
+							SiteNodeVersionVO siteNodeVersionVO = this.nodeDeliveryController.getActiveSiteNodeVersionVO(db, siteNodeId);
+							boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", siteNodeVersionVO.getId().toString());
+							if(!isAuthorized)
+							{	
+								getLogger().info("SiteNode is protected and user was not found - sending him to login page.");
+								String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+								getResponse().sendRedirect(url);
+								isRedirected = true;
+							}
 						}
 					}
-				}
-				catch(Exception e) 
-				{
-				    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
-				}
+					catch(Exception e) 
+					{
+					    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+					}
+			    }
 			}
 			else
 			{
@@ -603,6 +588,70 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 		return isRedirected;
 	}
+	
+	
+	/**
+	 * This method (if enabled in deliver.properties) checks for authentication cookies and 
+	 * logs the user in if available.
+	 * 
+	 * @return Principal
+	 * @throws Exception
+	 */
+	private Principal loginWithCookies() throws Exception
+	{
+	    Principal principal = null;
+	    
+	    boolean enableExtranetCookies = false;
+	    int extranetCookieTimeout = 43200; //30 days default
+	    String enableExtranetCookiesString = CmsPropertyHandler.getProperty("enableExtranetCookies");
+	    String extranetCookieTimeoutString = CmsPropertyHandler.getProperty("extranetCookieTimeout");
+	    if(enableExtranetCookiesString != null && enableExtranetCookiesString.equalsIgnoreCase("true"))
+	    {
+	        enableExtranetCookies = true;
+	    }
+	    if(extranetCookieTimeoutString != null)
+	    {
+	        try
+		    {
+	            extranetCookieTimeout = Integer.parseInt(extranetCookieTimeoutString.trim());
+		    }
+	        catch(Exception e) {}
+		}
+	
+	    if(enableExtranetCookies)
+	    {
+	        String userName = null;
+		    String password = null;
+		    Cookie[] cookies = this.getRequest().getCookies();
+		    for(int i=0; i<cookies.length; i++)
+		    {
+		        Cookie cookie = cookies[i];
+		        if(cookie.getName().equals("igextranetuserid"))
+		            userName = cookie.getValue();
+		        else if(cookie.getName().equals("igextranetpassword"))
+		            password = cookie.getValue();
+		    }
+		    
+		    if(userName != null && password != null)
+		    {
+		        DesEncryptionHelper encHelper = new DesEncryptionHelper();
+		        userName = encHelper.decrypt(userName);
+		        password = encHelper.decrypt(password);
+		        
+			    Map arguments = new HashMap();
+			    arguments.put("j_username", userName);
+			    arguments.put("j_password", password);
+			    
+				principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+				if(principal != null)
+				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+			    
+		    }
+	    }
+	    
+	    return principal;
+	}
+	
 	
 	/**
 	 * Setters and getters for all things sent to the page in the request

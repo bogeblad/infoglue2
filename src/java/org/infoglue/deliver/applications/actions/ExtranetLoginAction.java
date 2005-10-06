@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.HttpUtilities;
@@ -49,7 +50,7 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	private String errorMessage 	= "";
 	private String returnAddress 	= null;
 	private String referer 			= null;
-	
+	private String storeUserInfoCookie = null;
 	
 	public String doExecute() throws Exception 
 	{
@@ -122,23 +123,9 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 			//getLogger().info("Yes - we try to send the user back to:" + this.returnAddress);		
 			this.getHttpSession().setAttribute("infogluePrincipal", principal);
 			
-			//START ON COOKIE REMEBERING
-			/*
-			DesEncryptionHelper encHelper = new DesEncryptionHelper();
-
-			System.out.println("UserName:" + this.getRequest().getParameter("j_username"));
-		    Cookie cookie_userid = new Cookie("iguserid", this.getRequest().getParameter("j_username"));
-		    cookie_userid.setMaxAge(30 * 24 * 60 * 60); //30 days
-		    this.getResponse().addCookie(cookie_userid);
-		    
-		    System.out.println("COOKIES SKALL VARA SATTA:::::");
-		    Cookie cookie_password = new Cookie ("igpassword", this.getRequest().getParameter("j_password"));
-		    cookie_password.setMaxAge(30 * 24 * 60 * 60);  //30 days
-		    this.getResponse().addCookie(cookie_password);
-
-		    System.out.println("COOKIES SKALL VARA SATTA:::::");
-		    */
-			this.getResponse().sendRedirect(this.returnAddress);
+			handleCookies();
+			
+		    this.getResponse().sendRedirect(this.returnAddress);
 		}
 		else
 		{
@@ -170,6 +157,23 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		}
 		
 		return endodedString;
+	}
+	
+	/**
+	 * This method gets if extranet cookies are allowed or not.
+	 * @return
+	 */
+	
+	public boolean getEnableExtranetCookies()
+	{
+	    boolean enableExtranetCookies = false;
+	    String enableExtranetCookiesString = CmsPropertyHandler.getProperty("enableExtranetCookies");
+	    if(enableExtranetCookiesString != null && enableExtranetCookiesString.equalsIgnoreCase("true"))
+	    {
+	        enableExtranetCookies = true;
+	    }
+	    
+	    return enableExtranetCookies;
 	}
 	
 	public void setUserName(String userName)
@@ -237,4 +241,43 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		this.referer = referer;
 	}
 
+	private void handleCookies()
+	{
+	    if(storeUserInfoCookie == null || !storeUserInfoCookie.equalsIgnoreCase("true"))
+	        return;
+	    
+	    boolean enableExtranetCookies = getEnableExtranetCookies();
+	    int extranetCookieTimeout = 43200; //30 days default
+	    String extranetCookieTimeoutString = CmsPropertyHandler.getProperty("extranetCookieTimeout");
+	    if(extranetCookieTimeoutString != null)
+	    {
+	        try
+		    {
+	            extranetCookieTimeout = Integer.parseInt(extranetCookieTimeoutString.trim());
+		    }
+	        catch(Exception e) {}
+		}
+	
+	    if(enableExtranetCookies )
+	    {
+		    DesEncryptionHelper encHelper = new DesEncryptionHelper();
+	
+			String userName = this.getRequest().getParameter("j_username");
+		    String encryptedName = encHelper.encrypt(userName);
+			Cookie cookie_userid = new Cookie("igextranetuserid", encryptedName);
+		    cookie_userid.setMaxAge(30 * 24 * 60 * 60); //30 days
+		    this.getResponse().addCookie(cookie_userid);
+		    
+			String password = this.getRequest().getParameter("j_password");
+		    String encryptedPassword = encHelper.encrypt(password);
+		    Cookie cookie_password = new Cookie ("igextranetpassword", encryptedPassword);
+		    cookie_password.setMaxAge(30 * 24 * 60 * 60);  //30 days
+		    this.getResponse().addCookie(cookie_password);
+	    }
+	}
+	
+    public void setStoreUserInfoCookie(String storeUserInfoCookie)
+    {
+        this.storeUserInfoCookie = storeUserInfoCookie;
+    }
 }
