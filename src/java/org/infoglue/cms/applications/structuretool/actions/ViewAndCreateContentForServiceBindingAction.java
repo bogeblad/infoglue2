@@ -195,7 +195,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		}
 		*/
 		boolean hadMetaInfo = false;
-    	if(this.serviceBindingVO.getId() == null)
+		if(this.serviceBindingVO.getId() == null)
     	{
 			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
 			
@@ -287,8 +287,74 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		else
 		{
 			List boundContents = ContentController.getBoundContents(this.serviceBindingVO.getId()); 			
+			
 			if(boundContents.size() > 0)
 				this.contentVO = (ContentVO)boundContents.get(0);		 	
+			else
+			{
+			    //Something is broken.... lets try to patch it up by assigning what it should be.
+		    	List serviceDefinitions = AvailableServiceBindingController.getController().getServiceDefinitionVOList(this.availableServiceBindingId);
+		    	if(serviceDefinitions == null || serviceDefinitions.size() == 0)
+		    	{
+			    }
+		    	else if(serviceDefinitions.size() == 1)
+		    	{
+			        this.singleServiceDefinitionVO = (ServiceDefinitionVO)serviceDefinitions.get(0);	    
+		    	}
+		    	
+			    SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(this.siteNodeId);
+
+	    		getLogger().info("Something was broken so we must try and patch it up..");
+
+			    ContentVO parentFolderContentVO = null;
+
+			    ContentVO rootContentVO = ContentControllerProxy.getController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName());
+				if(rootContentVO != null)
+				{
+					List children = ContentController.getContentController().getContentChildrenVOList(rootContentVO.getId());
+					Iterator childrenIterator = children.iterator();
+					while(childrenIterator.hasNext())
+					{
+						ContentVO child = (ContentVO)childrenIterator.next();
+						if(child.getName().equalsIgnoreCase("Meta info folder"))
+						{
+							getLogger().info("Found the metainfo folder..");
+							parentFolderContentVO = child;
+							break;
+						}
+					}
+					
+					if(parentFolderContentVO == null)
+					{
+						parentFolderContentVO = new ContentVO();
+						parentFolderContentVO.setCreatorName(this.getInfoGluePrincipal().getName());
+						parentFolderContentVO.setIsBranch(new Boolean(true));
+						parentFolderContentVO.setName("Meta info folder");
+						parentFolderContentVO.setRepositoryId(this.repositoryId);
+	
+						parentFolderContentVO = ContentControllerProxy.getController().create(rootContentVO.getId(), null, this.repositoryId, parentFolderContentVO);
+					}
+				
+					this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
+					this.contentVO.setIsBranch(new Boolean(false));
+					this.contentVO.setName(siteNodeVO.getName() + " Metainfo");
+					this.contentVO.setRepositoryId(this.repositoryId);
+		
+					this.contentVO = ContentControllerProxy.getController().create(parentFolderContentVO.getId(), this.metaInfoContentTypeDefinitionId, this.repositoryId, this.contentVO);
+				
+					ServiceBindingVO serviceBindingVO = new ServiceBindingVO();
+					serviceBindingVO.setName(siteNodeVO.getName() + " Metainfo");
+					serviceBindingVO.setPath("/None specified/");
+				
+					String qualifyerXML = "<?xml version='1.0' encoding='ISO-8859-1'?><qualifyer><contentId>" + contentVO.getId() + "</contentId></qualifyer>";
+				
+					ServiceBindingController.create(this.serviceBindingVO, qualifyerXML, this.availableServiceBindingId, this.siteNodeVersionId, singleServiceDefinitionVO.getId());	
+	    		
+					return "success";
+	
+				}
+
+			}
 		}
 		
     	return "success";
