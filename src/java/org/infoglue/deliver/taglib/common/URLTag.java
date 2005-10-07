@@ -139,8 +139,8 @@ public class URLTag extends AbstractTag {
 	 */
 	protected final void addParameter(final String name, final String value)
 	{
-		getParameters().add(name + "=" + value);
-		getParameterNames().put(name, name);
+        getParameters().add(name + "=" + value);
+        getParameterNames().put(name, name);
 	}
 	
 	/**
@@ -222,7 +222,7 @@ public class URLTag extends AbstractTag {
 				String parameter = i.next().toString();
 				sb.append(parameter + (i.hasNext() ? "&" : ""));
 			}
-			return getBaseURL() + "?" + sb.toString();
+			return getBaseURL() + (sb.toString().length() > 0 ? "?" + sb.toString() : "");
 		}
 		return getBaseURL();
 	}
