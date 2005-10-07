@@ -59,7 +59,7 @@ public class IncludeTag extends TemplateControllerTag
 			    while(i.hasNext())
 			    {
 			        ContentVO contentVO = (ContentVO)i.next();
-			        if(contentVO.getName().equalsIgnoreCase("Referer JSP"))
+			        if(contentVO.getName().equalsIgnoreCase(contentName))
 	                {
 			            contentId = contentVO.getId();
 			            break;
@@ -71,11 +71,15 @@ public class IncludeTag extends TemplateControllerTag
 		    else
 		        template = this.getController().getContentAttribute(contentId, "Template");
 		    
-		    produceResult(this.getController().renderString(template));
+		    //System.out.println("template:" + template);
+		    String result = this.getController().renderString(template, false);
+		    //System.out.println("result:" + result);
+		    produceResult(result);
         } 
 		catch (Exception e)
         {
             e.printStackTrace();
+		    produceResult("");
         }
 		
         return EVAL_PAGE;
@@ -83,6 +87,7 @@ public class IncludeTag extends TemplateControllerTag
 
     public void setTemplate(String template) throws JspException
     {
+        this.contentId = null;
         this.template = evaluateString("includeTag", "template", template);
     }
     
@@ -93,11 +98,13 @@ public class IncludeTag extends TemplateControllerTag
     
     public void setRelationAttributeName(String relationAttributeName) throws JspException
     {
+        this.contentId = null;
         this.relationAttributeName = evaluateString("includeTag", "relationAttributeName", relationAttributeName);
     }
 
     public void setContentName(String contentName) throws JspException
     {
+        this.contentId = null;
         this.contentName = evaluateString("includeTag", "contentName", contentName);
     }
 }

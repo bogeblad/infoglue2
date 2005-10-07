@@ -4012,7 +4012,42 @@ public class BasicTemplateController implements TemplateController
 			
 		return result;
 	}	
-	
+
+	/**
+	 * This method allows a user to get any string rendered as a template.
+	 */
+
+	public String renderString(String template, boolean useSubContext) 
+	{
+		String result = "";
+		
+		try
+		{
+			Map context = new HashMap();
+			if(!useSubContext)
+			    context.put("templateLogic", this);
+			else
+			{
+			    context.put("inheritedTemplateLogic", this);
+				context.put("templateLogic", getTemplateController(this.siteNodeId, this.languageId, this.contentId, this.request, this.infoGluePrincipal, this.deliveryContext));
+			}
+			
+			// Add the templateLogicContext objects to this context. (SS - 040219)
+			context.putAll(templateLogicContext);
+			
+			StringWriter cacheString = new StringWriter();
+			PrintWriter cachedStream = new PrintWriter(cacheString);
+			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, template);
+			result = cacheString.toString();
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to do an include:" + e.getMessage(), e);
+		}
+			
+		return result;
+	}	
+
 	/**
 	 * This method allows the current template to include another template which is also rendered 
 	 * in the current context as if it were a part. The method assumes that the result can be cached.
