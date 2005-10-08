@@ -44,6 +44,10 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryC
 
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
+import com.opensymphony.oscache.base.events.CacheEntryEventListener;
+import com.opensymphony.oscache.base.events.CacheMapAccessEventListener;
+import com.opensymphony.oscache.extra.CacheEntryEventListenerImpl;
+import com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 import java.util.ArrayList;
@@ -60,6 +64,7 @@ public class CacheController extends Thread
 
     public static List notifications = new ArrayList();
     
+    private static Map eventListeners = new HashMap();
 	private static Map caches = new HashMap();
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
@@ -100,8 +105,19 @@ public class CacheController extends Thread
 	    //cacheObject(cacheName, key, value);
 	    
 	    if(!caches.containsKey(cacheName))
-		    caches.put(cacheName, new GeneralCacheAdministrator());
-		
+	    {
+	        GeneralCacheAdministrator cacheAdministrator = new GeneralCacheAdministrator();
+
+	        CacheEntryEventListenerImpl cacheEntryEventListener = new ExtendedCacheEntryEventListenerImpl();
+	        CacheMapAccessEventListenerImpl cacheMapAccessEventListener = new CacheMapAccessEventListenerImpl(); 
+	        
+	        cacheAdministrator.getCache().addCacheEventListener(cacheEntryEventListener, CacheEntryEventListener.class);
+	        cacheAdministrator.getCache().addCacheEventListener(cacheMapAccessEventListener, CacheMapAccessEventListener.class);
+	        caches.put(cacheName, cacheAdministrator);
+	        eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
+	        eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
+	    }
+	        
 	    logger.info("Putting " + cacheName + " with key: " + key + " in relation to:");
 	    for(int i=0; i<groups.length; i++)
 	    {
@@ -110,7 +126,7 @@ public class CacheController extends Thread
 	    
 		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 		cacheAdministrator.putInCache(key.toString(), value, groups);
-
+		
 		logger.info("Done cacheObjectInAdvancedCache");
 	}	
 	
@@ -166,6 +182,9 @@ public class CacheController extends Thread
 			    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
 		    	cacheInstance.flushAll();
 			}
+	    	caches.remove(cacheName);
+		    eventListeners.remove(cacheName + "_cacheEntryEventListener");
+		    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 		}
 	}
 		
@@ -189,7 +208,9 @@ public class CacheController extends Thread
 				{
 				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
 			    	cacheInstance.flushAll();
+			        eventListeners.clear();
 				}
+		    	i.remove();
 			}
 		}
 		else
@@ -345,6 +366,8 @@ public class CacheController extends Thread
 					    if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
 					    {
 					    	cacheInstance.flushAll();
+					    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
+						    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 					    	logger.info("clearing:" + e.getKey());
 					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
@@ -362,9 +385,14 @@ public class CacheController extends Thread
 					    else
 					    {
 							cacheInstance.flushAll();
+					    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
+						    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 							logger.info("clearing:" + e.getKey());
 					    }
 					}
+
+					i.remove();
+
 				}
 				else
 				{
@@ -537,6 +565,11 @@ public class CacheController extends Thread
         return caches;
     }
     
+    public static Map getEventListeners()
+    {
+        return eventListeners;
+    }
+
     public static GeneralCacheAdministrator getGeneralCache()
     {
         return generalCache;

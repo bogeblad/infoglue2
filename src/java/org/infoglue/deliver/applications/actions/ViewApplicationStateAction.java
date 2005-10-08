@@ -97,6 +97,13 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
         return list;
     }
+    
+    public String doGC() throws Exception
+    {
+        Runtime.getRuntime().gc();
+        return doExecute();
+    }
+    
     /**
      * This method is the application entry-point. The method does a lot of checks to see if infoglue
      * is installed correctly and if all resources needed are available.
@@ -105,6 +112,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
         states.add(getList("Maximum memory", "" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + " MB"));
+        states.add(getList("Used memory", "" + ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024) + " MB"));
         states.add(getList("Free memory", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Total memory", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB"));
         
@@ -175,6 +183,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	public Map getCaches()
 	{
 		return CacheController.getCaches();
+	}
+
+	public Map getEventListeners()
+	{
+		return CacheController.getEventListeners();
 	}
 
     public List getStates()

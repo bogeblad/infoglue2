@@ -226,7 +226,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			
 			elapsedTime = new Date().getTime() - start;
-			getLogger().warn("The page delivery took " + elapsedTime + "ms");
+			getLogger().info("The page delivery took " + elapsedTime + "ms");
 			
 			//getLogger().warn("Of that is " + contentAttributeTime + "ms from contentAttribute fetching...");
 			//getLogger().warn("and " + contentVersionTime + "ms from contentVersion fetching...");
@@ -253,11 +253,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			rollbackTime = 0;
 			closeTime = 0;
 			
-			getLogger().warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 	        
 	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
-	    	
-	        //closeTransaction(dbWrapper.getDatabase());
 		}
 		catch(Exception e)
 		{

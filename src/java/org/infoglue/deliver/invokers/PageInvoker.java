@@ -23,9 +23,19 @@
 
 package org.infoglue.deliver.invokers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.Inflater;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +53,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryContr
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.portal.PortalController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.CompressionHelper;
 
 /**
  * @author Mattias Bogeblad
@@ -55,6 +66,8 @@ import org.infoglue.deliver.util.CacheController;
 public abstract class PageInvoker
 {	
     private final static Logger logger = Logger.getLogger(PageInvoker.class.getName());
+
+	private static CompressionHelper compressionHelper = new CompressionHelper();
 
     private DatabaseWrapper dbWrapper				= null;
 	private HttpServletRequest request				= null;
@@ -152,14 +165,23 @@ public abstract class PageInvoker
 		
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))
 		{
-		    this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
-			if(this.pageString == null)
+		    byte[] cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+		    if(cachedCompressedData != null)
+		        this.pageString = compressionHelper.decompress(cachedCompressedData);
+		    //this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+		    if(this.pageString == null)
 			{
 				invokePage();
 				this.pageString = getPageString();
 				
 				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
-					CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities());
+				{
+					long startCompression = System.currentTimeMillis();
+					byte[] compressedData = compressionHelper.compress(this.pageString);		
+				    logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
+					CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities());
+					//CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities());
+				}
 			}
 			else
 			{
