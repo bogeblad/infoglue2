@@ -284,7 +284,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 				else
 				{
-					logger.warn("The current template is not a valid document. It does not comply with the simplest standards such as having a correct header.");
+					logger.info("The current template is not a valid document. It does not comply with the simplest standards such as having a correct header.");
 				}
 			}
 
@@ -307,7 +307,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			}
 			else
 			{
-				logger.warn("The current template is not a valid document. It does not comply with the simplest standards such as having a correct body.");
+				logger.info("The current template is not a valid document. It does not comply with the simplest standards such as having a correct body.");
 			}
 			
 			timer.printElapsedTime("Body handled");
