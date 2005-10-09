@@ -44,7 +44,7 @@ import org.infoglue.cms.security.InfoGlueRole;
 
 public class RoleControllerProxy extends BaseController 
 {
-	private static AuthorizationModule authorizationModule = null;
+	private AuthorizationModule authorizationModule = null;
 	private Database transactionObject = null;
 
 	public RoleControllerProxy(Database transactionObject)

@@ -45,7 +45,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 
 public class UserControllerProxy extends BaseController 
 {
-	private static AuthorizationModule authorizationModule = null;
+	private AuthorizationModule authorizationModule = null;
 	private Database transactionObject = null;
 	
 	public UserControllerProxy(Database transactionObject)

@@ -44,7 +44,7 @@ import org.infoglue.cms.security.InfoGlueGroup;
 
 public class GroupControllerProxy extends BaseController 
 {
-	private static AuthorizationModule authorizationModule = null;
+	private AuthorizationModule authorizationModule = null;
 	private Database transactionObject = null;
 
 	public GroupControllerProxy(Database transactionObject)

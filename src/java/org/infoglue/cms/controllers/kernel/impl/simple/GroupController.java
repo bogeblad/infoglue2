@@ -134,7 +134,7 @@ public class GroupController extends BaseController
         return group.getValueObject();
     }     
 
-    public Group create(GroupVO groupVO, Database db) throws ConstraintException, SystemException
+    public Group create(GroupVO groupVO, Database db) throws ConstraintException, SystemException, Exception
     {
         Group group = new GroupImpl();
         group.setValueObject(groupVO);

@@ -338,7 +338,7 @@ public class SystemUserController extends BaseController
 	 * CREATE
 	 * 
 	 */
-    public SystemUser create(SystemUserVO systemUserVO, Database db) throws ConstraintException, SystemException
+    public SystemUser create(SystemUserVO systemUserVO, Database db) throws ConstraintException, SystemException, Exception
     {
         SystemUser systemUser = new SystemUserImpl();
         systemUser.setValueObject(systemUserVO);

@@ -179,6 +179,12 @@ public abstract class BaseController
 
 
 	// Create entity inside an existing transaction
+    protected static Object createEntity(Object entity, Database db) throws SystemException, Bug, Exception
+    {
+        db.create(entity);
+        return entity;
+    }     
+/*
     protected static Object createEntity(Object entity, Database db) throws SystemException, Bug
     {
         try
@@ -197,7 +203,7 @@ public abstract class BaseController
         }
         return entity;
     }     
-
+*/
 
 	// Delete entity
     public static void deleteEntity(Class entClass, Integer id) throws Bug, SystemException

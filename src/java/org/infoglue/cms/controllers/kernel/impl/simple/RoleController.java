@@ -116,7 +116,7 @@ public class RoleController extends BaseController
         return role.getValueObject();
     }     
 
-    public Role create(RoleVO roleVO, Database db) throws ConstraintException, SystemException
+    public Role create(RoleVO roleVO, Database db) throws ConstraintException, SystemException, Exception
     {
         Role role = new RoleImpl();
         role.setValueObject(roleVO);
