@@ -394,6 +394,7 @@ public class SystemUserController extends BaseController
     public void delete(String userName, Database db) throws ConstraintException, SystemException, Exception
     {
 		SystemUser systemUser = getSystemUserWithName(userName, db);
+
 		Collection roles = systemUser.getRoles();
 		Iterator rolesIterator = roles.iterator();
 		while(rolesIterator.hasNext())
@@ -401,7 +402,15 @@ public class SystemUserController extends BaseController
 			Role role = (Role)rolesIterator.next();
 			role.getSystemUsers().remove(systemUser);
 		}
-
+		
+		Collection groups = systemUser.getGroups();
+		Iterator groupsIterator = groups.iterator();
+		while(groupsIterator.hasNext())
+		{
+			Group group = (Group)groupsIterator.next();
+			group.getSystemUsers().remove(systemUser);
+		}
+		
 		db.remove(systemUser);
     }        
 
