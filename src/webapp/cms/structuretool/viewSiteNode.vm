@@ -136,6 +136,14 @@ function editContent(contentId)
 		<td></td>
 	</tr>		
 	<tr>
+		<td>#editTextField("SiteNode.pageCacheKey" "pageCacheKey" $!pageCacheKey "30" "date" $readonly)</td>
+		<td><img src="images/trans.gif" width="20" height="1"></td>
+		<td>
+			&nbsp;
+		</td>
+		<td></td>
+	</tr>		
+	<tr>
 		<td colspan="4"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	

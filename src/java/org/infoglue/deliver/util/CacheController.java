@@ -27,6 +27,7 @@ package org.infoglue.deliver.util;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
@@ -56,6 +57,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import javax.servlet.http.HttpSession;
 
 
 public class CacheController extends Thread
@@ -664,4 +667,48 @@ public class CacheController extends Thread
         }
     }
 
+    /**
+     * Composer of the pageCacheKey.
+     * 
+     * @param siteNodeId
+     * @param languageId
+     * @param contentId
+     * @param userAgent
+     * @param queryString
+     * @return
+     */
+    
+    public static String getPageCacheKey(HttpSession session, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+    {
+    	String pageKey = null;
+    	String pageKeyProperty = CmsPropertyHandler.getProperty("pageKey");
+    	if(pageKeyProperty != null && pageKeyProperty.length() > 0)
+    	{    
+    	    pageKey = pageKeyProperty;
+    	    pageKey = pageKey.replaceAll("\\$siteNodeId", "" + siteNodeId);
+    	    pageKey = pageKey.replaceAll("\\$languageId", "" + languageId);
+    	    pageKey = pageKey.replaceAll("\\$contentId", "" + contentId);
+    	    pageKey = pageKey.replaceAll("\\$useragent", "" + userAgent);
+    	    pageKey = pageKey.replaceAll("\\$queryString", "" + queryString);
+    	    
+    	    int sessionAttributeStartIndex = pageKey.indexOf("$session.");
+    	    while(sessionAttributeStartIndex > -1)
+    	    {
+        	    int sessionAttributeEndIndex = pageKey.indexOf("_", sessionAttributeStartIndex);
+        	    String sessionAttribute = null;
+        	    if(sessionAttributeEndIndex > -1)
+        	        sessionAttribute = pageKey.substring(sessionAttributeStartIndex + 9, sessionAttributeEndIndex);
+        	    else
+        	        sessionAttribute = pageKey.substring(sessionAttributeStartIndex + 9);
+
+        	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
+    	    
+        	    sessionAttributeStartIndex = pageKey.indexOf("$session.", sessionAttributeEndIndex);
+    	    }
+    	}
+    	else
+    	    pageKey  = "" + siteNodeId + "_" + languageId + "_" + contentId + "_" + userAgent + "_" + queryString;
+    	
+    	return pageKey + extra;
+    }
 }
