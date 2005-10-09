@@ -63,6 +63,8 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Date;
 
+import javax.servlet.http.HttpSession;
+
 
 public class NodeDeliveryController extends BaseDeliveryController
 {
@@ -529,7 +531,53 @@ public class NodeDeliveryController extends BaseDeliveryController
 				
 		return isPageCacheDisabled;
 	}
+
+	/**
+	 * This method returns the pageCacheKey for the page.
+	 */
 	
+	public String getPageCacheKey(Database db, HttpSession session, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+	{
+	    String pageKey = CacheController.getPageCacheKey(session, siteNodeId, languageId, contentId, userAgent, queryString, extra);
+
+		try
+		{
+			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
+			if(latestSiteNodeVersionVO.getPageCacheKey() != null && latestSiteNodeVersionVO.getPageCacheKey().length() > 0)
+			{
+			    pageKey = latestSiteNodeVersionVO.getPageCacheKey();
+			    pageKey = pageKey.replaceAll("\\$siteNodeId", "" + siteNodeId);
+			    pageKey = pageKey.replaceAll("\\$languageId", "" + languageId);
+			    pageKey = pageKey.replaceAll("\\$contentId", "" + contentId);
+			    pageKey = pageKey.replaceAll("\\$useragent", "" + userAgent);
+			    pageKey = pageKey.replaceAll("\\$queryString", "" + queryString);
+	    	
+	    	    int sessionAttributeStartIndex = pageKey.indexOf("$session.");
+	    	    while(sessionAttributeStartIndex > -1)
+	    	    {
+	        	    int sessionAttributeEndIndex = pageKey.indexOf("_", sessionAttributeStartIndex);
+	        	    String sessionAttribute = null;
+	        	    if(sessionAttributeEndIndex > -1)
+	        	        sessionAttribute = pageKey.substring(sessionAttributeStartIndex + 9, sessionAttributeEndIndex);
+	        	    else
+	        	        sessionAttribute = pageKey.substring(sessionAttributeStartIndex + 9);
+
+	        	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
+	    	    
+	        	    sessionAttributeStartIndex = pageKey.indexOf("$session.", sessionAttributeEndIndex);
+	    	    }
+
+			}
+
+		}
+		catch(Exception e)
+		{
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion had a different pageCacheKey:" + e.getMessage(), e);
+		}
+
+		return pageKey;
+	}
+
 	/**
 	 * This method returns true if the if the page in question (ie sitenode) has editOnSight disabled.
 	 */
@@ -639,6 +687,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				
 		return protectedSiteNodeVersionId;
 	}
+
 
 	
 	/**

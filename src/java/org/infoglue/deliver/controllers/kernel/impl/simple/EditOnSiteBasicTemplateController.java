@@ -106,7 +106,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 				}
 				else
 				{
-					logger.warn("The current template is not a valid document. It does not comply with the simplest standards such as having a correct header.");
+					logger.info("The current template is not a valid document. It does not comply with the simplest standards such as having a correct header.");
 				}
 			}
 
@@ -121,7 +121,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 			}
 			else
 			{
-				logger.warn("The current template is not a valid document. It does not comply with the simplest standards such as having a correct body.");
+				logger.info("The current template is not a valid document. It does not comply with the simplest standards such as having a correct body.");
 			}
 			
 			decoratedTemplate = modifiedTemplate.toString();

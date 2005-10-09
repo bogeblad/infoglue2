@@ -64,7 +64,11 @@ public interface SiteNodeVersion extends IBaseEntity
 	public String getContentType();
 
 	public void setContentType(String contentType);
-	
+
+	public String getPageCacheKey();
+
+	public void setPageCacheKey(String pageCacheKey);
+
 	public Integer getDisableEditOnSight();
 
 	public void setDisableEditOnSight(Integer disableEditOnSight);

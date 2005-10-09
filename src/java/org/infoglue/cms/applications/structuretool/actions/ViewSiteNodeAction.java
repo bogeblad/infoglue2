@@ -286,6 +286,16 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		this.siteNodeVersionVO.setContentType(contentType);
 	}
 
+	public String getPageCacheKey()
+	{
+		return this.siteNodeVersionVO.getPageCacheKey();
+	}
+
+	public void setPageCacheKey(String pageCacheKey)
+	{
+		this.siteNodeVersionVO.setPageCacheKey(pageCacheKey);
+	}
+
 	public Integer getDisableEditOnSight()
 	{
 		return this.siteNodeVersionVO.getDisableEditOnSight();

@@ -55,6 +55,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	private Integer disablePageCache	= INHERITED;
 	private Integer disableEditOnSight	= INHERITED;
   	private String contentType 			= "text/html";
+  	private String pageCacheKey			= null;
   	
     private Integer siteNodeId			= null;
 	private String siteNodeName			= "";
@@ -148,6 +149,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	{ 
 		return null;
 	}
+	
 	public String getContentType()
 	{
 		return contentType;
@@ -157,6 +159,16 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	{
 		this.contentType = contentType;
 	}
+
+	public String getPageCacheKey()
+    {
+        return pageCacheKey;
+    }
+    
+	public void setPageCacheKey(String pageCacheKey)
+    {
+        this.pageCacheKey = pageCacheKey;
+    }
 
 	public Integer getDisableEditOnSight()
 	{
@@ -224,10 +236,12 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	    sb.append("disablePageCache:" + disablePageCache + '\n');
 	    sb.append("disableEditOnSight:" + disableEditOnSight + '\n');
 	    sb.append("contentType:" + contentType + '\n');
+	    sb.append("pageCacheKey:" + pageCacheKey + '\n');
 	    sb.append("siteNodeId:" + siteNodeId + '\n');
 	    sb.append("siteNodeName:" + siteNodeName + '\n');
 	    
 	    return sb.toString();
 	}
+
 }
         

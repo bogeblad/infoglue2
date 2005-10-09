@@ -143,16 +143,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 	    	validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
-	    	String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + getRequest().getQueryString();
-
-	    	getLogger().info("pageKey:" + pageKey);
-	    	String pagePath	= null;
-	    	
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.templateController 			= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
-			boolean isUserRedirected = false;
+	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
+	    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
+
+	    	getLogger().info("pageKey:" + pageKey);
+	    	String pagePath	= null;
+	    	
+	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
 			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 			if(protectedSiteNodeVersionId != null)
@@ -224,37 +225,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    }
 				}	
 			}
-			
-			elapsedTime = new Date().getTime() - start;
-			getLogger().info("The page delivery took " + elapsedTime + "ms");
-			
-			//getLogger().warn("Of that is " + contentAttributeTime + "ms from contentAttribute fetching...");
-			//getLogger().warn("and " + contentVersionTime + "ms from contentVersion fetching...");
-			//getLogger().warn("and " + serviceBindingTime + "ms from serviceBinding fetching...");
-			//getLogger().warn("and " + boundContentTime + "ms from boundContent fetching...");
-			//getLogger().warn("and " + inheritedServiceBindingTime + "ms from inheritedServiceBindingTime fetching...");
-			//getLogger().warn("and " + selectMatchingEntitiesTime + "ms from selectMatchingEntities fetching...");
-			//getLogger().warn("and " + isValidTime + "ms from isValidTime fetching...");
-			//getLogger().warn("and " + qualifyersTime + "ms from qualifyers fetching...");
-			//getLogger().warn("and " + sortQualifyersTime + "ms from sortQualifyers fetching...");
-			//getLogger().warn("and " + commitTime + "ms from commitTime fetching...");
-			//getLogger().warn("and " + rollbackTime + "ms from rollbackTime fetching...");
-			//getLogger().warn("and " + closeTime + "ms from closeTime fetching...");
-			contentAttributeTime = 0;
-			contentVersionTime = 0;
-			serviceBindingTime = 0;
-			boundContentTime = 0;
-			inheritedServiceBindingTime = 0;
-			selectMatchingEntitiesTime = 0;
-			isValidTime = 0;
-			qualifyersTime = 0;
-			sortQualifyersTime = 0;
-			commitTime = 0;
-			rollbackTime = 0;
-			closeTime = 0;
-			
-			getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
-	        
+				        
 	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
 		}
 		catch(Exception e)
@@ -268,7 +239,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    closeTransaction(dbWrapper.getDatabase());
 		}
 
-		
+		elapsedTime = new Date().getTime() - start;
+		getLogger().info("The page delivery took " + elapsedTime + "ms");			
+		getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+
         return NONE;
     }
     
@@ -296,14 +270,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 			validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
-			String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + getRequest().getQueryString() + "_" + this.showSimple + "_pagecomponentDecorated";
-			getLogger().info("A pageKey:" + pageKey);
-			String pagePath	= null;
-	    	
 			this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.templateController 			= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
-	
+
+			//String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + getRequest().getQueryString() + "_" + this.showSimple + "_pagecomponentDecorated";
+			//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
+	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
+
+			getLogger().info("A pageKey:" + pageKey);
+			String pagePath	= null;
+	    		
 			boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
 			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
@@ -354,12 +331,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 			
-			elapsedTime = new Date().getTime() - start;
-			getLogger().warn("The page delivery took " + elapsedTime + "ms");
-	        
 			StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
-	    	
-	        //closeTransaction(dbWrapper.getDatabase());
 		}
 		catch(Exception e)
 		{
@@ -371,6 +343,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 		    closeTransaction(dbWrapper.getDatabase());
 		}
+		
+		elapsedTime = new Date().getTime() - start;
+		getLogger().info("The page delivery took " + elapsedTime + "ms");
 		
 		return NONE;
 	}

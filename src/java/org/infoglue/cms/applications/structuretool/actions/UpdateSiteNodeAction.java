@@ -49,6 +49,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 	private Integer disablePageCache;
 	private Integer disableEditOnSight;
 	private String contentType;
+	private String pageCacheKey;
 
 	private ConstraintExceptionBuffer ceb;
 	
@@ -75,6 +76,8 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 
 			SiteNodeVersionVO siteNodeVersionVO = new SiteNodeVersionVO();
 			siteNodeVersionVO.setContentType(this.getContentType());
+			siteNodeVersionVO.setPageCacheKey(this.getPageCacheKey());
+			System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getPageCacheKey());
 			siteNodeVersionVO.setDisableEditOnSight(this.getDisableEditOnSight());
 			siteNodeVersionVO.setDisablePageCache(this.getDisablePageCache());
 			siteNodeVersionVO.setIsProtected(this.getIsProtected());
@@ -209,4 +212,13 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		this.isProtected = isProtected;
 	}
 
+    public String getPageCacheKey()
+    {
+        return pageCacheKey;
+    }
+    
+    public void setPageCacheKey(String pageCacheKey)
+    {
+        this.pageCacheKey = pageCacheKey;
+    }
 }

@@ -68,3 +68,9 @@ INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, descriptio
   (31,'Workflow','Workflow.Create','This point checks access to creating a new workflow',1);
 INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
   (31, 1);
+
+-- ---------------------------------------------------------------------------- --
+-- Adding new column to siteNodeVersion for special pageCacheKey                       --
+-- ---------------------------------------------------------------------------- --
+alter table cmSiteNodeVersion add pageCacheKey varchar(255);
+  

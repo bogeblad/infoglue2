@@ -41,3 +41,36 @@ CREATE INDEX "OS_CURRENTSTEP_OWNERINDEX" ON OS_CURRENTSTEP(OWNER);
 CREATE INDEX "OS_CURRENTSTEP_OWNERCALLER" ON OS_CURRENTSTEP(CALLER);
 CREATE INDEX "OS_HISTORYSTEP_OWNERINDEX" ON OS_HISTORYSTEP(OWNER);
 CREATE INDEX "OS_HISTORYSTEP_CALLERINDEX" ON OS_HISTORYSTEP(CALLER);
+
+DROP INDEX referencingEntityName ON cmRegistry;
+DROP INDEX referencingEntityId ON cmRegistry;
+DROP INDEX entityName ON cmRegistry;
+DROP INDEX entityId ON cmRegistry;
+DROP INDEX referencingEntityComplName ON cmRegistry;
+DROP INDEX referencingEntityComplId ON cmRegistry;
+DROP INDEX categoryContVersionId ON cmContentCategory;
+DROP INDEX contVerDigAssetDigAssId ON cmContentVersionDigitalAsset;
+DROP INDEX contVerDigAssetContVerId ON cmContentVersionDigitalAsset;
+
+CREATE INDEX referencingEntityName ON cmRegistry(referencingEntityName);
+CREATE INDEX referencingEntityId ON cmRegistry(referencingEntityId);
+CREATE INDEX entityName ON cmRegistry(entityName);
+CREATE INDEX entityId ON cmRegistry(entityId);
+CREATE INDEX referencingEntityComplName ON cmRegistry(referencingEntityComplName);
+CREATE INDEX referencingEntityComplId ON cmRegistry(referencingEntityComplId);
+CREATE INDEX categoryContVersionId ON cmContentCategory(contentVersionId);
+CREATE INDEX contVerDigAssetDigAssId ON cmContentVersionDigitalAsset(digitalAssetId);
+CREATE INDEX contVerDigAssetContVerId ON cmContentVersionDigitalAsset(contentVersionId);
+
+----------------------------------------------------------------------------------
+-- Add new interception point for workflows				                        --
+----------------------------------------------------------------------------------
+INSERT INTO cmInterceptionPoint (interceptionPointId, category, name, description, usesExtraDataForAccessControl) VALUES 
+  (31,'Workflow','Workflow.Create','This point checks access to creating a new workflow',1);
+INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) VALUES
+  (31, 1);
+
+-- ---------------------------------------------------------------------------- --
+-- Adding new column to siteNodeVersion for special pageCacheKey                       --
+-- ---------------------------------------------------------------------------- --
+alter table cmSiNoVer add pageCacheKey varchar(255);

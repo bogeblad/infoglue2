@@ -191,6 +191,16 @@ public class SiteNodeVersionImpl implements SiteNodeVersion
 		this.valueObject.setContentType(contentType);
 	}
 
+	public String getPageCacheKey()
+	{
+		return this.valueObject.getPageCacheKey();
+	}
+
+	public void setPageCacheKey(String pageCacheKey)
+	{
+		this.valueObject.setPageCacheKey(pageCacheKey);
+	}
+
 	public Integer getDisableEditOnSight()
 	{
 		return this.valueObject.getDisableEditOnSight();
