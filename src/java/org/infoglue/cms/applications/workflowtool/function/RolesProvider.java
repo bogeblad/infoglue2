@@ -23,14 +23,18 @@
 package org.infoglue.cms.applications.workflowtool.function;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 import com.opensymphony.workflow.WorkflowException;
 
-public class RolesProvider extends InfoglueFunction {
+public class RolesProvider extends InfoglueFunction 
+{
 	/**
 	 * 
 	 */
@@ -40,6 +44,51 @@ public class RolesProvider extends InfoglueFunction {
 	 * 
 	 */
 	private static final String ROLES_PROPERTYSET_PREFIX = "roles_";
+	
+	/**
+	 * 
+	 */
+	private static final String MODE_ARGUMENT = "mode";
+	
+	/**
+	 * 
+	 */
+	private static final int REQUEST_MODE = 0;
+	
+	/**
+	 * 
+	 */
+	private static final String REQUEST_MODE_NAME = "request";
+	
+	/**
+	 * 
+	 */
+	private static final int ARGUMENT_MODE = 1;
+	
+	/**
+	 * 
+	 */
+	private static final String ARGUMENT_MODE_NAME = "argument";
+	
+	/**
+	 * 
+	 */
+	private static final int PRINCIPAL_MODE = 2;
+	
+	/**
+	 * 
+	 */
+	private static final String PRINCIPAL_MODE_NAME = "principal";
+	
+	/**
+	 * 
+	 */
+	private static final String ROLES_ARGUMENT = "roles";
+
+	/**
+	 * 
+	 */
+	private int mode;
 	
 	/**
 	 * 
@@ -59,15 +108,51 @@ public class RolesProvider extends InfoglueFunction {
 	 */
 	protected void execute() throws WorkflowException 
 	{
-		populateRoles();
+		switch(mode)
+		{
+		case ARGUMENT_MODE:
+			populateRolesFromAttribute();
+			break;
+		case PRINCIPAL_MODE:
+			populateRolesFromPrincipal();
+			break;
+		default:
+			populateRolesFromRequest();
+			break;
+		}
 		setParameter(ROLES_PARAMETER, roles);
 	}
 	
 	/**
 	 * 
 	 */
-	private void populateRoles() throws WorkflowException
+	private void populateRolesFromAttribute() throws WorkflowException
 	{
+		getLogger().debug("Populating from attribute.");
+		for(final StringTokenizer st = new StringTokenizer(getArgument(ROLES_ARGUMENT), ","); st.hasMoreTokens(); )
+		{
+			populateRole(st.nextToken());
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void populateRolesFromPrincipal() throws WorkflowException
+	{
+		getLogger().debug("Populating from principal.");
+		for(final Iterator i = getPrincipal().getRoles().iterator(); i.hasNext(); )
+		{
+			roles.add(i.next());
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void populateRolesFromRequest() throws WorkflowException
+	{
+		getLogger().debug("Populating from request.");
 		for(final Iterator i = getParameters().keySet().iterator(); i.hasNext(); ) 
 		{
 			final String key = i.next().toString();
@@ -91,5 +176,29 @@ public class RolesProvider extends InfoglueFunction {
 		{
 			throwException(e);
 		}
+	}
+
+	/**
+	 * Method used for initializing the function; will be called before <code>execute</code> is called.
+	 * <p><strong>Note</strong>! You must call <code>super.initialize()</code> first.</p>
+	 * 
+	 * @throws WorkflowException if an error occurs during the initialization.
+	 */
+	protected void initialize() throws WorkflowException 
+	{
+		super.initialize();
+		this.mode = getMode(getArgument(MODE_ARGUMENT, REQUEST_MODE_NAME));
+	}
+	
+	/**
+	 * 
+	 */
+	private int getMode(final String modeName)
+	{
+		final Map modes = new HashMap();
+		modes.put(REQUEST_MODE_NAME, new Integer(REQUEST_MODE));
+		modes.put(ARGUMENT_MODE_NAME, new Integer(ARGUMENT_MODE));
+		modes.put(PRINCIPAL_MODE_NAME, new Integer(PRINCIPAL_MODE));
+		return modes.containsKey(modeName) ? ((Integer) modes.get(modeName)).intValue() : REQUEST_MODE;
 	}
 }

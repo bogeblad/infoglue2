@@ -48,7 +48,6 @@ public class UserCreator extends InfoglueFunction
 	 */
 	private SystemUserVO systemUserVO;
 	
-	
 	/**
 	 * 
 	 */
@@ -87,8 +86,7 @@ public class UserCreator extends InfoglueFunction
 			}
 			catch(Exception e)
 			{
-				System.out.println(e.getClass().getName());
-				//throwException(e);
+				throwException(e);
 			}
 		}
 	}
@@ -103,6 +101,7 @@ public class UserCreator extends InfoglueFunction
 		{
 			final InfoGlueRole role = (InfoGlueRole) roles.get(i);
 			names[i] = role.getName();
+			getLogger().debug("Adding role [" + role.getName() + "]");
 		}
 		return names;
 	}
@@ -117,6 +116,7 @@ public class UserCreator extends InfoglueFunction
 		{
 			final InfoGlueGroup group = (InfoGlueGroup) groups.get(i);
 			names[i] = group.getName();
+			getLogger().debug("Adding group [" + group.getName() + "]");
 		}
 		return names;
 	}
