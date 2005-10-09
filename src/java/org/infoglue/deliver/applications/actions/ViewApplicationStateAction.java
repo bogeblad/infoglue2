@@ -24,6 +24,7 @@
 package org.infoglue.deliver.applications.actions;
 
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
@@ -31,6 +32,9 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.io.*;
+
+import webwork.action.Action;
+import webwork.action.ActionContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,10 +115,15 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+        String sessionTimeout = CmsPropertyHandler.getProperty("session.timeout");
+		if(sessionTimeout == null)
+		    sessionTimeout = "1800";
+		
         states.add(getList("Maximum memory", "" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Used memory", "" + ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024) + " MB"));
         states.add(getList("Free memory", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Total memory", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB"));
+        states.add(getList("Number of sessions", "" + CmsSessionContextListener.getActiveSessions() + "(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)"));
         
         Database db = CastorDatabaseService.getDatabase();
 		
@@ -154,12 +163,10 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		{
 			getLogger().error(e.getMessage(), e);            
 		}
-		
+				
         return "success";
     }
-    
-
-    
+        
 	public boolean getIsApplicationSettingsOk()
 	{
 		return applicationSettingsOk;

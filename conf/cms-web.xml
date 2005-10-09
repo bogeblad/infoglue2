@@ -136,6 +136,9 @@
 	<listener>
 		<listener-class>org.infoglue.cms.util.CmsContextListener</listener-class>
 	</listener>
+	<listener>
+		<listener-class>org.infoglue.cms.util.CmsSessionContextListener</listener-class>
+	</listener>
 
 	<!-- Start Quarz -->
 	<servlet>
