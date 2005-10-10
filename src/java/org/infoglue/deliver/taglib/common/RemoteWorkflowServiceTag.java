@@ -140,9 +140,9 @@ public class RemoteWorkflowServiceTag extends AbstractTag
    /**
     * 
     */
-   public void setLanguageId(final Integer languageId) 
+   public void setLanguageId(final String languageId) throws JspException
    {
-	   this.languageId = languageId;
+	   this.languageId = evaluateInteger("remoteWorkflowService", "languageId", languageId);
    }
 
    /**
