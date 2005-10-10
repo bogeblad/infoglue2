@@ -467,7 +467,10 @@ public class EmailFunction extends InfoglueFunction
 		{
 			try 
 			{
-				service.send(message);
+				if(hasRecipients())
+				{
+					service.send(message);
+				}
 				setFunctionStatus(STATUS_OK);
 			}
 			catch(SystemException e)
@@ -477,6 +480,22 @@ public class EmailFunction extends InfoglueFunction
 		}
 	}
 
+	   /**
+    *
+    */
+	private boolean hasRecipients() throws WorkflowException
+	{
+		try
+		{               
+			return (message.getAllRecipients() != null) && message.getAllRecipients().length > 0;
+		}
+		catch(Exception e)
+		{
+			throwException(e);
+		}
+		return false;
+	} 
+   
 	/**
 	 * 
 	 */
