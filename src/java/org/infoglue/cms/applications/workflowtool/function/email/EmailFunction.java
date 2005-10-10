@@ -65,7 +65,12 @@ public class EmailFunction extends InfoglueFunction
 	/**
 	 * 
 	 */
-	public static final String ILLEGAL_ADDRESSES_PARAMETER = EMAIL_PARAMETER_PREFIX + "illegal";
+	public static final String ILLEGAL_ADDRESSES_PARAMETER = EMAIL_PARAMETER_PREFIX + "IllegalAddresses";
+	
+	/**
+	 * 
+	 */
+	public static final String ILLEGAL_ADDRESSES_PROPERTYSET_KEY = "email_IllegalAddresses";
 	
 	/**
 	 * 
@@ -178,12 +183,29 @@ public class EmailFunction extends InfoglueFunction
 			}
 			getLogger().warn("[silent mode]", e);
 		}
-		if(silentMode)
+		processIllegalAddresses();
+	}
+	
+	/**
+	 * 
+	 */
+	private void processIllegalAddresses()
+	{
+		if(illegalAddresses.isEmpty())
 		{
-			setParameter(ILLEGAL_ADDRESSES_PARAMETER, new ArrayList());
+			removeFromPropertySet(ILLEGAL_ADDRESSES_PROPERTYSET_KEY);
 		}
-		for(Iterator i=illegalAddresses.iterator(); i.hasNext(); )
-			System.out.println("illegal [" + i.next().toString() + "]");
+		else
+		{
+			final StringBuffer sb = new StringBuffer();
+			for(final Iterator i = illegalAddresses.iterator(); i.hasNext(); )
+			{
+				final String address = i.next().toString();
+				sb.append((sb.length() > 0 ? "," : "") + address);
+			}
+			setPropertySetDataString(ILLEGAL_ADDRESSES_PROPERTYSET_KEY, sb.toString());
+		}
+		setParameter(ILLEGAL_ADDRESSES_PARAMETER, new ArrayList());
 	}
 	
 	/**
@@ -256,7 +278,7 @@ public class EmailFunction extends InfoglueFunction
 		getLogger().debug("Initializing simple body.");
 		try
 		{
-	    	message.setDataHandler(getDataHandler(getArgument(BODY_ARGUMENT), getArgument(BODY_TYPE_ARGUMENT)));
+	    	message.setDataHandler(getDataHandler(translate(getArgument(BODY_ARGUMENT)), translate(getArgument(BODY_TYPE_ARGUMENT))));
 		}
 		catch(Exception e)
 		{
@@ -339,7 +361,7 @@ public class EmailFunction extends InfoglueFunction
 		getLogger().debug("Initializing subject.");
 		try 
 		{
-			message.setSubject(getArgument(SUBJECT_ARGUMENT), UTF8_ENCODING);
+			message.setSubject(translate(getArgument(SUBJECT_ARGUMENT)), UTF8_ENCODING);
 		}
 		catch(Exception e)
 		{
@@ -356,7 +378,7 @@ public class EmailFunction extends InfoglueFunction
 		try 
 		{
 			final BodyPart part = new MimeBodyPart();
-	    	part.setDataHandler(getDataHandler(getArgument(BODY_ARGUMENT), getArgument(BODY_TYPE_ARGUMENT)));
+	    	part.setDataHandler(getDataHandler(translate(getArgument(BODY_ARGUMENT)), translate(getArgument(BODY_TYPE_ARGUMENT))));
 			multipart.addBodyPart(part);
 		}
 		catch(Exception e)
