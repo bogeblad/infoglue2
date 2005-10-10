@@ -47,6 +47,16 @@ public abstract class ContentFunction extends InfoglueFunction
 	public static final String CONTENT_VERSION_PARAMETER = "contentVersion";
 	
 	/**
+	 * 
+	 */
+	private static final String CONTENT_PARAMETER_NAME_ARGUMENT = "contentParameterName";
+	
+	/**
+	 * 
+	 */
+	private static final String CONTENT_VERSION_PARAMETER_NAME_ARGUMENT = "contentVersionParameterName";
+	
+	/**
 	 *
 	 */
 	private Content content;
@@ -158,7 +168,7 @@ public abstract class ContentFunction extends InfoglueFunction
 	protected void initialize() throws WorkflowException 
 	{
 		super.initialize();
-		contentVO        = (ContentVO)        getParameter(CONTENT_PARAMETER, false);
-		contentVersionVO = (ContentVersionVO) getParameter(CONTENT_VERSION_PARAMETER, false);
+		contentVO        = (ContentVO)        getParameter(getArgument(CONTENT_PARAMETER_NAME_ARGUMENT, CONTENT_PARAMETER), false);
+		contentVersionVO = (ContentVersionVO) getParameter(getArgument(CONTENT_VERSION_PARAMETER_NAME_ARGUMENT, CONTENT_VERSION_PARAMETER), false);
 	}
 }
