@@ -95,7 +95,7 @@ public abstract class AbstractTag extends TagSupport
 	{
 	    if(id == null)
 	    {
-			write(value.toString());
+			write((value == null) ? "" : value.toString());
 	    }
 		else
 		{
