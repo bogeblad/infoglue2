@@ -119,7 +119,7 @@
 				addedContentId = contentId;
 			}
 
-			if(parentNode.myId == tree.myId) 
+			if(!parentNode || parentNode.myId == tree.myId) 
 			{
 				document.location.reload();
 				return;
