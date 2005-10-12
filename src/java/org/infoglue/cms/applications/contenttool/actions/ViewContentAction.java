@@ -116,7 +116,6 @@ public class ViewContentAction extends InfoGlueAbstractAction
         }
         catch(ConstraintException ce)
         {
-            ce.printStackTrace();
             throw ce;
         }
         catch(Exception e) 
