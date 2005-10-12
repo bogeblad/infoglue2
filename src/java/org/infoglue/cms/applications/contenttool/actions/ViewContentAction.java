@@ -114,7 +114,15 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	            return "success";
 	        }
         }
-        catch(Exception e) {e.printStackTrace();}
+        catch(ConstraintException ce)
+        {
+            ce.printStackTrace();
+            throw ce;
+        }
+        catch(Exception e) 
+        {
+            e.printStackTrace();
+        }
         
         return Action.NONE;
     }
