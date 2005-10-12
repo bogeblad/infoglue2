@@ -22,7 +22,7 @@
 		</layout>
 	</appender>
 	-->
-
+ 
 	<!-- Appender Chainsaw GUI Log viewer
 	<appender name="CHAINSAW" class="org.apache.log4j.net.SocketAppender">
 		<param name="remoteHost" value="localhost"/>
@@ -35,10 +35,27 @@
 	<!-- Use categories to control logging  -->
 	<!-- down to the package or class level	-->
 	<!-- ==================================	-->
-	
-	<category name="org.infoglue.deliver.applications.filters.PortalParameterFilter">
+
+	<category name="java.lang.Class">
+		<priority value="ERROR"/>
+	</category>
+
+<!--
+	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter">
+		<priority value="DEBUG"/>
+	</category>
+
+	<category name="org.infoglue.cms.applications.common.actions.VelocityServlet">
+		<priority value="DEBUG"/>
+	</category>
+-->
+	<category name="org.infoglue.cms.controllers.kernel.impl.simple.RegistryController">
 		<priority value="WARN"/>
 	</category>
+	<category name="org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController">
+		<priority value="WARN"/>
+	</category>
+
 	<category name="org.apache.commons.fileupload">
 		<priority value="WARN"/>
 	</category>
@@ -65,6 +82,10 @@
 
 	<category name="webwork">
 		<priority value="WARN"/>
+	</category>
+
+	<category name="webwork.util.BeanUtil">
+		<priority value="ERROR"/>
 	</category>
 
 	<category name="com.opensymphony.oscache">
