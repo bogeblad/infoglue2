@@ -550,7 +550,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private DataHandler getDataHandler(final String content, final String type)
 	{
-    	return new DataHandler(new StringDataSource(content, getContentType(type)));
+    	return new DataHandler(new StringDataSource(content, getContentType(type), UTF8_ENCODING));
 	}
 
 	/**
@@ -558,7 +558,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private DataHandler getDataHandler(final byte[] content, final String type)
 	{
-    	return new DataHandler(new ByteDataSource(content, getContentType(type)));
+    	return new DataHandler(new ByteDataSource(content, type));
 	}
 	
 	/**
