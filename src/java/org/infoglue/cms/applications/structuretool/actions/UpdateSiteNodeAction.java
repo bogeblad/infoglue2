@@ -77,7 +77,6 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			SiteNodeVersionVO siteNodeVersionVO = new SiteNodeVersionVO();
 			siteNodeVersionVO.setContentType(this.getContentType());
 			siteNodeVersionVO.setPageCacheKey(this.getPageCacheKey());
-			System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getPageCacheKey());
 			siteNodeVersionVO.setDisableEditOnSight(this.getDisableEditOnSight());
 			siteNodeVersionVO.setDisablePageCache(this.getDisablePageCache());
 			siteNodeVersionVO.setIsProtected(this.getIsProtected());
