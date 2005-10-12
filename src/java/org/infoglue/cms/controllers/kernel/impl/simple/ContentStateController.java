@@ -35,6 +35,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 
 
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class ContentStateController extends BaseController
 				ContentVersionVO newContentVersionVO = new ContentVersionVO();
 				newContentVersionVO.setStateId(stateId);
 				newContentVersionVO.setVersionComment("New working version");
-				newContentVersionVO.setModifiedDateTime(new Date());
+				newContentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 				newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
@@ -131,7 +132,7 @@ public class ContentStateController extends BaseController
 				ContentVersionVO newContentVersionVO = new ContentVersionVO();
 				newContentVersionVO.setStateId(stateId);
 				newContentVersionVO.setVersionComment(versionComment);
-				newContentVersionVO.setModifiedDateTime(new Date());
+				newContentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 				newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);

@@ -285,7 +285,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 						SiteNode parentSiteNode = siteNodeVersion.getOwningSiteNode().getParentSiteNode();
 						if(parentSiteNode != null)
 						{
-							siteNodeVersion = getLatestSiteNodeVersion(db, parentSiteNode.getSiteNodeId());
+							siteNodeVersion = getLatestSiteNodeVersion(db, parentSiteNode.getSiteNodeId(), false);
 							protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(siteNodeVersion.getSiteNodeVersionId(), db);
 						}
 					}
@@ -367,7 +367,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 						SiteNode parentSiteNode = SiteNodeController.getParentSiteNode(siteNodeVersion.getValueObject().getSiteNodeId(), db);
 						if(parentSiteNode != null)
 						{
-							siteNodeVersion = getLatestSiteNodeVersion(db, parentSiteNode.getSiteNodeId());
+							siteNodeVersion = getLatestSiteNodeVersion(db, parentSiteNode.getSiteNodeId(), false);
 							isSiteNodeVersionProtected = getIsSiteNodeVersionProtected(siteNodeVersion.getSiteNodeVersionId(), db);
 						}
 					}

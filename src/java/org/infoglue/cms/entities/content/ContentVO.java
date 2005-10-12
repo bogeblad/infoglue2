@@ -26,6 +26,7 @@ package org.infoglue.cms.entities.content;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.validators.*;
 
 
@@ -43,8 +44,8 @@ public class ContentVO implements BaseEntityVO
 	
     private java.lang.Integer contentId;
     private java.lang.String name			= "";
-    private java.util.Date publishDateTime  = new java.sql.Date(System.currentTimeMillis());
-    private java.util.Date expireDateTime   = new java.sql.Date(System.currentTimeMillis());
+    private java.util.Date publishDateTime  = DateHelper.getSecondPreciseDate();
+    private java.util.Date expireDateTime   = DateHelper.getSecondPreciseDate();
     private java.lang.Boolean isBranch		= new Boolean(false);              
 	private java.lang.Integer isProtected	= INHERITED;
 	private java.lang.Integer repositoryId  = null;

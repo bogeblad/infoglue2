@@ -25,6 +25,7 @@ package org.infoglue.cms.entities.structure;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,7 +46,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
     private Integer siteNodeVersionId;
     private Integer stateId       		= WORKING_STATE;
     private Integer versionNumber 		= new Integer(1);
-    private Date modifiedDateTime 		= new java.sql.Date(System.currentTimeMillis());
+    private Date modifiedDateTime 		= DateHelper.getSecondPreciseDate();
     private String versionComment 		= "";
     private String versionModifier		= null;
     private Boolean isCheckedOut  		= new Boolean(false);
@@ -55,7 +56,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	private Integer disablePageCache	= INHERITED;
 	private Integer disableEditOnSight	= INHERITED;
   	private String contentType 			= "text/html";
-  	private String pageCacheKey			= null;
+  	private String pageCacheKey			= "default";
   	
     private Integer siteNodeId			= null;
 	private String siteNodeName			= "";
@@ -167,7 +168,8 @@ public class SiteNodeVersionVO implements BaseEntityVO
     
 	public void setPageCacheKey(String pageCacheKey)
     {
-        this.pageCacheKey = pageCacheKey;
+	    if(pageCacheKey != null && !pageCacheKey.equalsIgnoreCase(""))
+	        this.pageCacheKey = pageCacheKey;
     }
 
 	public Integer getDisableEditOnSight()

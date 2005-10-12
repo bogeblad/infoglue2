@@ -44,6 +44,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 
 
 import java.util.Iterator;
@@ -181,7 +182,7 @@ public class SiteNodeStateController extends BaseController
 				SiteNodeVersionVO newSiteNodeVersionVO = new SiteNodeVersionVO();
 		    	newSiteNodeVersionVO.setStateId(stateId);
 				newSiteNodeVersionVO.setVersionComment("New working version");
-		    	newSiteNodeVersionVO.setModifiedDateTime(new Date());
+		    	newSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 				newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
 
 				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
@@ -211,7 +212,7 @@ public class SiteNodeStateController extends BaseController
 		    	newSiteNodeVersionVO.setStateId(stateId);
 		    	newSiteNodeVersionVO.setVersionComment(versionComment);
 				newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
-		    	newSiteNodeVersionVO.setModifiedDateTime(new Date()); 
+		    	newSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate()); 
 		    	
 				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
 				newSiteNodeVersionVO.setDisableEditOnSight(oldSiteNodeVersion.getDisableEditOnSight());

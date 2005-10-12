@@ -47,6 +47,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.mail.*;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
@@ -515,7 +516,7 @@ public class PublicationController extends BaseController
 			{
 				//The contentVersion in here is the version we have done something with...
 				PublicationDetail publicationDetail = new PublicationDetailImpl();
-				publicationDetail.setCreationDateTime(new Date());
+				publicationDetail.setCreationDateTime(DateHelper.getSecondPreciseDate());
 				publicationDetail.setDescription(event.getDescription());
 				publicationDetail.setEntityClass(entityClass);
 				publicationDetail.setEntityId(contentVersion.getId());
@@ -559,7 +560,7 @@ public class PublicationController extends BaseController
 			{
 				//The siteNodeVersion in here is the version we have done something with...
 				PublicationDetail publicationDetail = new PublicationDetailImpl();
-				publicationDetail.setCreationDateTime(new Date());
+				publicationDetail.setCreationDateTime(DateHelper.getSecondPreciseDate());
 				publicationDetail.setDescription(event.getDescription());
 				publicationDetail.setEntityClass(entityClass);
 				publicationDetail.setEntityId(siteNodeVersion.getId());

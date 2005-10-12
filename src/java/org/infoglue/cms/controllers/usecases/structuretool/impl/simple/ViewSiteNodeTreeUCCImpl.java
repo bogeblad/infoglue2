@@ -96,7 +96,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
 				SiteNodeVO newSiteNodeVO = siteNodeVO;
 				
             	//Also creates an initial meta info for the sitenode.
-        		SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, newSiteNodeVO.getId());
+        		SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, newSiteNodeVO.getId(), false);
         		Language masterLanguage 		= LanguageController.getController().getMasterLanguage(db, repositoryId);
         	   
         		Integer metaInfoContentTypeDefinitionId 		= null;

@@ -44,6 +44,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 
 import java.util.List;
 import java.util.Iterator;
@@ -147,7 +148,7 @@ public class SiteNodeVersionController extends BaseController
             
 			siteNodeVersion = new SiteNodeVersionImpl();
 			siteNodeVersion.setIsCheckedOut(new Boolean(false));
-			siteNodeVersion.setModifiedDateTime(new Date());
+			siteNodeVersion.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 			siteNodeVersion.setOwningSiteNode((SiteNodeImpl)siteNode);
 			siteNodeVersion.setStateId(new Integer(0));
 			siteNodeVersion.setVersionComment("Initial version");
@@ -335,7 +336,7 @@ public class SiteNodeVersionController extends BaseController
 	 * This is a method used to get the latest site node version of a sitenode within a given transaction.
 	 */
 
-	public SiteNodeVersion getLatestSiteNodeVersion(Database db, Integer siteNodeId) throws SystemException, Bug
+	public SiteNodeVersion getLatestSiteNodeVersion(Database db, Integer siteNodeId, boolean readOnly) throws SystemException, Bug
 	{
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -346,8 +347,12 @@ public class SiteNodeVersionController extends BaseController
 			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
 			oql.bind(siteNodeId);
         	
-			QueryResults results = oql.execute(Database.ReadOnly);
-			
+			QueryResults results = null;
+			if(readOnly)
+			    results = oql.execute(Database.ReadOnly);
+			else
+			    results = oql.execute();
+			    
 			if (results.hasMore()) 
 			{
 				siteNodeVersion = (SiteNodeVersion)results.next();
@@ -949,9 +954,12 @@ public class SiteNodeVersionController extends BaseController
 	
 	public SiteNodeVersionVO update(SiteNodeVersionVO siteNodeVersionVO, Database db) throws ConstraintException, SystemException, Exception
 	{
-    	registryController.updateSiteNodeVersion(getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db), db);
+	    SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
+    	registryController.updateSiteNodeVersion(siteNodeVersion, db);
 
-		return (SiteNodeVersionVO) updateEntity(SiteNodeVersionImpl.class, (BaseEntityVO)siteNodeVersionVO, db);
+    	siteNodeVersion.setValueObject(siteNodeVersionVO);
+    	return siteNodeVersionVO;
+		//return (SiteNodeVersionVO) updateEntity(SiteNodeVersionImpl.class, (BaseEntityVO)siteNodeVersionVO, db);
 	}    
 	
 	/**

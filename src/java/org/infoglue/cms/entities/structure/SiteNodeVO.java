@@ -27,6 +27,7 @@ import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.validators.*;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -36,8 +37,8 @@ public class SiteNodeVO implements BaseEntityVO
 
     private java.lang.Integer siteNodeId 	= null;
     private java.lang.String name			= "";
-    private java.util.Date publishDateTime 	= new java.sql.Date(System.currentTimeMillis());
-    private java.util.Date expireDateTime  	= new java.sql.Date(System.currentTimeMillis());
+    private java.util.Date publishDateTime 	= DateHelper.getSecondPreciseDate();
+    private java.util.Date expireDateTime  	= DateHelper.getSecondPreciseDate();
     private java.lang.Boolean isBranch		= new Boolean(false);             
   	private java.lang.Integer repositoryId 	= null;    
   	private java.lang.Integer siteNodeTypeDefinitionId = null;  
@@ -49,6 +50,7 @@ public class SiteNodeVO implements BaseEntityVO
   	{
   		//Initilizing the expireDateTime... 
   		Calendar calendar = Calendar.getInstance();
+  		calendar.setTime(DateHelper.getSecondPreciseDate());
   		calendar.add(Calendar.YEAR, 10);
   		expireDateTime = calendar.getTime();
   	}
