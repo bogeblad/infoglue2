@@ -158,10 +158,15 @@ public class ViewPageFilter implements Filter
 
                 end = System.currentTimeMillis();
 
-                logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
-
+                if(siteNodeId == null)
+                {
+                    logger.warn("Could not map URI " + requestURI + " --> " + siteNodeId);
+                    throw new SystemException("Could not map URI " + requestURI + " --> " + siteNodeId);
+                }
+                else
+                    logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
+                    
                 HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId);
-                //logger.info("wrappedHttpRequest:" + wrappedHttpRequest.getRequestURI() + "?" + wrappedHttpRequest.getQueryString());
                 wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
             } 
             catch (SystemException e) 

@@ -73,4 +73,4 @@ INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) 
 -- ---------------------------------------------------------------------------- --
 -- Adding new column to siteNodeVersion for special pageCacheKey                       --
 -- ---------------------------------------------------------------------------- --
-alter table cmSiNoVer add pageCacheKey varchar(255);
+alter table cmSiNoVer add pageCacheKey varchar(255) NOT NULL DEFAULT 'default';

@@ -543,7 +543,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
-			if(latestSiteNodeVersionVO.getPageCacheKey() != null && latestSiteNodeVersionVO.getPageCacheKey().length() > 0)
+			if(latestSiteNodeVersionVO.getPageCacheKey() != null && latestSiteNodeVersionVO.getPageCacheKey().length() > 0 && !latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
 			    pageKey = latestSiteNodeVersionVO.getPageCacheKey();
 			    pageKey = pageKey.replaceAll("\\$siteNodeId", "" + siteNodeId);
