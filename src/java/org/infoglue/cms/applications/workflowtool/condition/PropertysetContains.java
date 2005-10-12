@@ -56,6 +56,11 @@ public class PropertysetContains extends InfoglueCondition
 	protected boolean passesCondition() throws WorkflowException 
 	{
 		final String name = getArgument(NAME_ARGUMENT);
-		return propertySetContains(name) && getPropertySet().getAsString(name).equals(getArgument(VALUE_ARGUMENT));
+		if(propertySetContains(name))
+		{
+			final String value = getPropertySet().getAsString(name);
+			return (value != null) && value.equals(getArgument(VALUE_ARGUMENT));
+		}
+		return false;
 	}
 }
