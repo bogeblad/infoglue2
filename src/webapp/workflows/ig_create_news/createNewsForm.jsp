@@ -163,7 +163,7 @@
 										    <br />
 										    <br />
 										    Full text<br />
-										    <textarea name="fullText"></textarea>
+										    <textarea class="normaltextarea" name="fullText"></textarea>
 										    <br />
 										    <br />
 										    <input type="submit" value="Preview" />

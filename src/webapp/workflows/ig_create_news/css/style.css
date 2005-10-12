@@ -34,6 +34,7 @@ p  				{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif }
 
 textarea		{ width: 500px; height: 100px; border: 1px solid gray;}
 .longtextfield	{ width: 400px; height: 16px; border: 1px solid gray;}
+.normaltextarea	{ width: 500px; height: 100px; border: 1px solid gray;}
 
  /*printer styles*/ 
 @media print	{ 
