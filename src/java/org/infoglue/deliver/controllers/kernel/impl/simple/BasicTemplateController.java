@@ -63,8 +63,10 @@ import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
@@ -577,9 +579,24 @@ public class BasicTemplateController implements TemplateController
 	public InfoGluePrincipal getPrincipal()
 	{
 	    return this.infoGluePrincipal;
-		//return (InfoGluePrincipal) this.getHttpServletRequest().getSession().getAttribute("infogluePrincipal");
 	}
-	
+
+	/**
+	 * Returns a list of InfoGlueRoles
+	 */
+	public List getAllRoles() throws Exception
+	{
+	    return RoleControllerProxy.getController(this.getDatabase()).getAllRoles();
+	}
+
+	/**
+	 * Returns a list of InfoGlueGroups
+	 */
+	public List getAllGroups() throws Exception
+	{
+	    return GroupControllerProxy.getController(this.getDatabase()).getAllGroups();
+	}
+
     /**
      * This method returns the InfoGlue Principal requested
      * 
