@@ -70,8 +70,16 @@ public class InfogluePropertySet implements PropertySet {
 	 */
 	public void setDataString(final String key, final String value) throws PropertyException 
 	{
-		if(value != null)
+		if(value == null || value.length() == 0)
 		{
+			if(exists(key))
+			{
+				remove(key);
+			}
+		}
+		else
+		{
+			System.out.println("setDataString<" + value + ">");
 			try 
 			{
 				logger.debug("PropertysetHelper.setData(\"" + key + "\",\"" + value + "\")");
@@ -82,6 +90,7 @@ public class InfogluePropertySet implements PropertySet {
 				throw new PropertyException("Unable to set data for [" + key + "].");
 			}
 		}
+		
 	}
 
 	/**
