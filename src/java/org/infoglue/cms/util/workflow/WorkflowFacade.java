@@ -24,6 +24,7 @@
 package org.infoglue.cms.util.workflow;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,7 +62,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.23 $ $Date: 2005/09/26 06:51:29 $
+ * @version $Revision: 1.24 $ $Date: 2005/10/13 11:23:18 $
  */
 public class WorkflowFacade
 {
@@ -94,6 +95,11 @@ public class WorkflowFacade
 			throw new ExceptionInInitializerError(e);
 		}
 	}
+	
+	/**
+	 * Keep track of the workflows that is currently executing.
+	 */
+	private static final Collection currentWorkflows = new ArrayList();
 
 	private final AbstractWorkflow workflow;
 	private long workflowId;
@@ -253,13 +259,33 @@ public class WorkflowFacade
 			throw new InvalidActionException("Workflow " + workflowId + " is no longer active");
 		}
 
-		if(useDatabaseExtension(workflowDescriptor))
+		final Long id = new Long(workflowId);
+		synchronized(currentWorkflows)
 		{
-			doExtendedAction(actionId, inputs);
+			if(currentWorkflows.contains(id))
+			{
+				throw new WorkflowException("The selected workflow is executing...");
+			}
+			currentWorkflows.add(id);
 		}
-		else
+		
+		try
 		{
-			workflow.doAction(workflowId, actionId, inputs);
+			if(useDatabaseExtension(workflowDescriptor))
+			{
+				doExtendedAction(actionId, inputs);
+			}
+			else
+			{
+				workflow.doAction(workflowId, actionId, inputs);
+			}
+		}
+		finally
+		{
+			synchronized(currentWorkflows)
+			{
+				currentWorkflows.remove(id);
+			}
 		}
 	}
 
