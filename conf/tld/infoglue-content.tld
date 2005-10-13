@@ -174,7 +174,7 @@
         <attribute>
             <name>content</name>
             <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
+            <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
             <name>languageId</name>
