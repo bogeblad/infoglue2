@@ -98,18 +98,14 @@ public class DatabaseSession
 	 */
 	public void releaseDB() throws WorkflowException 
 	{
-		logger.debug("WorkflowDatabase.releaseDB()");
-		if(db != null && db.isActive()) 
+		logger.debug("releaseDB : " + (rollbackOnly ? "rollback" : "commit"));
+		if(rollbackOnly)
 		{
-			logger.debug("releaseDB : " + (rollbackOnly ? "rollback" : "commit"));
-			if(rollbackOnly)
-			{
-				rollback();
-			}
-			else
-			{
-				commit();
-			}
+			rollback();
+		}
+		else
+		{
+			commit();
 		}
 	}
 	
@@ -123,13 +119,11 @@ public class DatabaseSession
 		logger.debug("rollback()");
 		try 
 		{
-			db.rollback();
-			db.close();
-		} 
-		catch(Exception e) 
+			doRollback();
+		}
+		finally 
 		{
-			logger.error("Unable to rollback database; bailing out.", e);
-			throw new WorkflowException(e);
+			doClose();
 		}
 	}
 
@@ -143,22 +137,75 @@ public class DatabaseSession
 		logger.debug("commit()");
 		try 
 		{
-			db.commit();
-			db.close();
+			doCommit();
 		} 
 		catch(Exception e) 
 		{
-			try 
+			doRollback();
+			throw new WorkflowException(e);
+		}
+		finally 
+		{
+			doClose();
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void doCommit() throws WorkflowException
+	{
+		if(db != null && db.isActive())
+		{
+			try
 			{
-				logger.error("Unable to commit/close database; trying to rollback.", e);
+				logger.debug("doCommit()");
+				db.commit();
+			}
+			catch(Exception e)
+			{
+				logger.error(e);
+				throw new WorkflowException(e);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void doRollback() throws WorkflowException
+	{
+		if(db != null && db.isActive())
+		{
+			try
+			{
+				logger.debug("doRollback()");
 				db.rollback();
-				db.close();
-				throw e;
-			} 
-			catch(Exception ee) 
+			}
+			catch(Exception e)
 			{
-				logger.error("Unable to rollback database; bailing out.", ee);
-				throw new WorkflowException(ee);
+				logger.error(e);
+				throw new WorkflowException(e);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void doClose() throws WorkflowException
+	{
+		if(db != null && !db.isClosed())
+		{
+			try
+			{
+				logger.debug("doClose()");
+				db.close();
+			}
+			catch(Exception e)
+			{
+				logger.error(e);
+				throw new WorkflowException(e);
 			}
 		}
 	}
