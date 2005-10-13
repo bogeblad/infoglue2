@@ -59,14 +59,14 @@ public class ContentVersionTag extends TemplateControllerTag
 		return getController().getContentVersion(content.getContentId(), languageId, useLanguageFallback);
 	}
 	
-    public void setContent(Object content)
+    public void setContent(String contentExp) throws JspException
     {
-        this.content = (ContentVO) content;
+        this.content = (ContentVO)evaluate("contentVersion", "content", contentExp, ContentVO.class);
     }
     
-    public void setLanguageId(Integer languageId)
+    public void setLanguageId(String languageId) throws JspException
     {
-        this.languageId = languageId;
+        this.languageId = evaluateInteger("contentVersion", "languageId", languageId);;
     }
     
     public void setUseLanguageFallback(boolean useLanguageFallback)

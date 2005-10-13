@@ -25,6 +25,7 @@ package org.infoglue.deliver.taglib.management;
 
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
@@ -41,10 +42,16 @@ public class PrincipalTag extends TemplateControllerTag {
 
 	public int doEndTag() throws JspException
     {
-	    if(userName != null)
+	    if(userName != null && !userName.equals(""))
 	        setResultAttribute(getController().getPrincipal(userName));
 	    else if(contentVersion != null)
-	        setResultAttribute(getController().getPrincipal(contentVersion.getVersionModifier()));
+	    {
+	        String versionUserName = contentVersion.getVersionModifier();
+	        if(versionUserName != null && !versionUserName.equals(""))
+	            setResultAttribute(getController().getPrincipal(versionUserName));
+		    else
+		        throw new JspException("ContentVersion had no valid user:" + versionUserName);
+	    }
 	    else
 	        throw new JspException("Must state either userName or contentVersion");
 	    
@@ -56,8 +63,8 @@ public class PrincipalTag extends TemplateControllerTag {
         this.userName = evaluateString("principal", "userName", userName);
     }
     
-    public void setContentVersion(Object contentVersion)
+    public void setContentVersion(String contentVersionExp) throws JspException
     {
-        this.contentVersion = (ContentVersionVO) contentVersion;
+        this.contentVersion = (ContentVersionVO)evaluate("principal", "contentVersion", contentVersionExp, ContentVersionVO.class);
     }
 }

@@ -138,6 +138,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	{ 
 		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(db, templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", this.getDeliveryContext());		
 
+		if(contentVO == null)
+			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
+
 	    String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
 	    
@@ -158,10 +161,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		
 		String pageComponentsString = null;
-   			
-		if(contentVO == null)
-			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
-		
+   					
 		//logger.info("contentVO in getPageComponentsString: " + contentVO.getContentId());
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 	    pageComponentsString = templateController.getContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);

@@ -125,8 +125,13 @@
     <td colspan="4"><hr/></td>
   </tr>
   <tr>
+    <td colspan="4" class="text" align="center"><a href="jsp/PermGen.jsp">Click here for detailed memory info (On Java 5-setups only).</a></td>
+  </tr>
+<!--
+  <tr>
     <td colspan="4" class="text" align="center"><a href="ViewApplicationSettings.action">Click here for delivery settings</a></td>
   </tr>
+-->
 </table>
 </center>
 

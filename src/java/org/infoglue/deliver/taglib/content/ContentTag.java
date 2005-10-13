@@ -66,14 +66,14 @@ public class ContentTag extends ComponentLogicTag
 	        return null;
 	}
 	
-    public void setContentId(Integer contentId)
+    public void setContentId(String contentId) throws JspException
     {
-        this.contentId = contentId;
+        this.contentId = evaluateInteger("content", "contentId", contentId);
     }
 
-    public void setPropertyName(String propertyName)
+    public void setPropertyName(String propertyName) throws JspException
     {
-        this.propertyName = propertyName;
+        this.propertyName = evaluateString("content", "propertyName", propertyName);
     }
 
     public void setUseInheritance(boolean useInheritance)
