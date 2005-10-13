@@ -79,7 +79,6 @@ public class InfogluePropertySet implements PropertySet {
 		}
 		else
 		{
-			System.out.println("setDataString<" + value + ">");
 			try 
 			{
 				logger.debug("PropertysetHelper.setData(\"" + key + "\",\"" + value + "\")");
@@ -191,8 +190,8 @@ public class InfogluePropertySet implements PropertySet {
 	 * 
 	 */
 	public Object getAsActualType(String key) throws PropertyException
-	{ 
-		return delegate.getAsActualType(key); 
+	{
+		return delegate.exists(key) ? delegate.getAsActualType(key) : null; 
 	}
 
 	/**
