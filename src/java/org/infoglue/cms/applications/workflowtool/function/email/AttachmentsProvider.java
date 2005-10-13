@@ -50,7 +50,6 @@ public class AttachmentsProvider extends ContentFunction
 	{
 		final Collection digitalAssets = getDigitalAssets();
 		final Collection attachments   = new ArrayList();
-		System.out.println("***digitalAssets.size()=***" + digitalAssets.size());
 		for(final Iterator i = digitalAssets.iterator(); i.hasNext(); )
 		{
 			final DigitalAsset digitalAsset = (DigitalAsset) i.next();
@@ -64,26 +63,21 @@ public class AttachmentsProvider extends ContentFunction
 	 */
 	private Collection getDigitalAssets() throws WorkflowException
 	{
-		System.out.println("***1***");
 		if(getContentVersionVO() != null)
 		{
 			try
 			{
-				System.out.println("***2***");
 				final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getReadOnlyContentVersionWithId(getContentVersionVO().getContentVersionId(), getDatabase()); 
 				if(contentVersion != null)
 				{
-					System.out.println("***3***");
 					return contentVersion.getDigitalAssets();
 				}
-				System.out.println("***4***");
 			}
 			catch(Exception e)
 			{
 				throwException(e);
 			}
 		}
-		System.out.println("***5***");
 		return new ArrayList();
 	}
 }
