@@ -47,7 +47,7 @@ public class FormTag extends WorkflowTag
 	/**
 	 * The template for the start tag of the form element.
 	 */
-	private static final String FORM_START = "<form name=\"form\" id=\"form\" method=\"get\" action=\"{0}\">";
+	private static final String FORM_START = "<form name=\"form\" id=\"form\" method=\"post\" action=\"{0}\">";
 
 	/**
 	 * The template for the hiddens fields needed by all workflows (action and workflow id).
