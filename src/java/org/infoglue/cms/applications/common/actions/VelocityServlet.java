@@ -108,6 +108,7 @@ public class VelocityServlet extends WebWorkVelocityServlet
 		final HttpSession httpSession = request.getSession();
 		final Session session = new Session(httpSession);
 
+		
 		//<todo>this should definitely not be placed here
         if(session.getLocale() == null || session.getLocale().getLanguage() == null || session.getLocale().getLanguage().equalsIgnoreCase(""))
 		{
@@ -133,7 +134,6 @@ public class VelocityServlet extends WebWorkVelocityServlet
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-	    System.out.println("request.getRemoteUser():" + request.getRemoteUser());
 	    return ps.getString("principal_" + request.getRemoteUser() + "_languageCode");
 	}
 
@@ -142,7 +142,6 @@ public class VelocityServlet extends WebWorkVelocityServlet
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-	    System.out.println("request.getRemoteUser():" + request.getRemoteUser());
 	    
 	    return ps.getString("principal_" + request.getRemoteUser() + "_defaultToolId");
 	}
