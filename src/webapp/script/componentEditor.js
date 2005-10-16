@@ -64,13 +64,17 @@ var pageStructureDivHeightBody = "360px";
  
 function setCookie(name, value)
 {
-	if(document.cookie != document.cookie)
-		index = document.cookie.indexOf(name);
-	else
-		index = -1;
-	
-	if (index == -1)
-		document.cookie=name+"="+value+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+	var length = document.cookie.split(';').length;
+	if(length < 18)
+    {
+		if(document.cookie != document.cookie)
+			index = document.cookie.indexOf(name);
+		else
+			index = -1;
+		
+		if (index == -1)
+			document.cookie=name+"="+value+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+	}
 }
 
 /**
@@ -244,21 +248,7 @@ function moveDivDown(id)
 	var div = document.getElementById(id);
 
 	setCookie(toolbarLockPositionCookieName, "down");
-	floatDiv("paletteDiv", 0, -250).flt();
-	
-	//if(div)
-	//	div.style.top = position;
-	/*
-	
-	
-	if(document.cookie != document.cookie)
-		index = document.cookie.indexOf(toolbarTopPositionCookieName);
-	else
-		index = -1;
-	
-	if (index == -1)
-		document.cookie=toolbarTopPositionCookieName+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";	
-	*/
+	floatDiv("paletteDiv", 0, -250).flt();	
 }
 
 function moveDivUp(id)

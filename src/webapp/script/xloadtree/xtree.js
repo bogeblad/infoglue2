@@ -253,8 +253,33 @@ function WebFXCookie() {
 	if (document.cookie.length) { this.cookies = ' ' + document.cookie; }
 }
 
+var treeCookieName = "treePathCookie";
+
 WebFXCookie.prototype.setCookie = function (key, value) {
-	document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+	var length = document.cookie.split(';').length;
+	if(length < 10)
+		document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+
+	/*
+	var existingCookie = webFXTreeHandler.cookies.getCookie(treeCookieName);
+	if(existingCookie)
+	{
+		if(existingCookie.length < 400)
+		{
+			alert("existingCookie:" + existingCookie);
+			var allValues = existingCookie + "#" + key + "=" + escape(value);
+			
+			document.cookie = treeCookieName + "=" + escape(allValues)+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+		}
+	}
+	else
+	{
+		alert("No existingCookie....");
+		var allValues = key + "=" + escape(value);
+		
+		document.cookie = treeCookieName + "=" + escape(allValues)+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+	}
+	*/
 }
 
 WebFXCookie.prototype.getCookie = function (key) {
