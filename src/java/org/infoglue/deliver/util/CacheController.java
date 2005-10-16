@@ -591,7 +591,6 @@ public class CacheController extends Thread
 			while(i.hasNext())
 			{
 			    CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)i.next();
-		        
 			    String className = cacheEvictionBean.getClassName();
 			    String objectId = cacheEvictionBean.getObjectId();
 			    String objectName = cacheEvictionBean.getObjectName();
@@ -599,69 +598,77 @@ public class CacheController extends Thread
 				
 			    logger.info("className:" + className);
 				logger.info("objectId:" + objectId);
-			    //Should contain permissioncontrol later...
-		
-			    boolean isDependsClass = false;
-			    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
-			        isDependsClass = true;
-		
-			    CacheController.clearCaches(className, objectId);
-		
-			    logger.info("Updating className with id:" + className + ":" + objectId);
-				if(className != null)
-				{
-				    //Class[] types = {Class.forName(className)};
-				    Class type = Class.forName(className);
-				    
-				    if(!isDependsClass && className.equalsIgnoreCase(SystemUserImpl.class.getName()) || className.equalsIgnoreCase(RoleImpl.class.getName()) || className.equalsIgnoreCase(GroupImpl.class.getName()))
-				    {
-				        Object[] ids = {objectId};
-				        CacheController.clearCache(type, ids);
-					}
-				    else if(!isDependsClass)
-				    {
-				        Object[] ids = {new Integer(objectId)};
-					    CacheController.clearCache(type, ids);
-				    }
-				    
-					//If it's an contentVersion we should delete all images it might have generated from attributes.
-					/*
-					if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+
+				try
+			    {
+				    //Should contain permissioncontrol later...
+			
+				    boolean isDependsClass = false;
+				    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
+				        isDependsClass = true;
+			
+				    CacheController.clearCaches(className, objectId);
+			
+				    logger.info("Updating className with id:" + className + ":" + objectId);
+					if(className != null)
 					{
-					    logger.info("We should delete all images with contentVersionId " + objectId);
-						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
-					}
-					else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
-					{
-					    logger.info("We clear all small contents as well " + objectId);
-						Class typesExtra = SmallContentImpl.class;
-						Object[] idsExtra = {new Integer(objectId)};
-						CacheController.clearCache(typesExtra, idsExtra);
-		
-						logger.info("We clear all medium contents as well " + objectId);
-						Class typesExtraMedium = MediumContentImpl.class;
-						Object[] idsExtraMedium = {new Integer(objectId)};
-						CacheController.clearCache(typesExtraMedium, idsExtraMedium);
-					}
-					else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
-					{
-					    Class typesExtra = SmallAvailableServiceBindingImpl.class;
-						Object[] idsExtra = {new Integer(objectId)};
-						CacheController.clearCache(typesExtra, idsExtra);
-					}
-					else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
-					{
-					    Class typesExtra = SmallSiteNodeImpl.class;
-						Object[] idsExtra = {new Integer(objectId)};
-						CacheController.clearCache(typesExtra, idsExtra);
-					}
-					else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
-					{
-					    logger.info("We should delete all images with digitalAssetId " + objectId);
-						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
-					}
-				}
-				
+					    //Class[] types = {Class.forName(className)};
+					    Class type = Class.forName(className);
+					    
+					    if(!isDependsClass && className.equalsIgnoreCase(SystemUserImpl.class.getName()) || className.equalsIgnoreCase(RoleImpl.class.getName()) || className.equalsIgnoreCase(GroupImpl.class.getName()))
+					    {
+					        Object[] ids = {objectId};
+					        CacheController.clearCache(type, ids);
+						}
+					    else if(!isDependsClass)
+					    {
+					        Object[] ids = {new Integer(objectId)};
+						    CacheController.clearCache(type, ids);
+					    }
+					    
+						//If it's an contentVersion we should delete all images it might have generated from attributes.
+						/*
+						if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+						{
+						    logger.info("We should delete all images with contentVersionId " + objectId);
+							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
+						}
+						else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
+						{
+						    logger.info("We clear all small contents as well " + objectId);
+							Class typesExtra = SmallContentImpl.class;
+							Object[] idsExtra = {new Integer(objectId)};
+							CacheController.clearCache(typesExtra, idsExtra);
+			
+							logger.info("We clear all medium contents as well " + objectId);
+							Class typesExtraMedium = MediumContentImpl.class;
+							Object[] idsExtraMedium = {new Integer(objectId)};
+							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+						}
+						else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
+						{
+						    Class typesExtra = SmallAvailableServiceBindingImpl.class;
+							Object[] idsExtra = {new Integer(objectId)};
+							CacheController.clearCache(typesExtra, idsExtra);
+						}
+						else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
+						{
+						    Class typesExtra = SmallSiteNodeImpl.class;
+							Object[] idsExtra = {new Integer(objectId)};
+							CacheController.clearCache(typesExtra, idsExtra);
+						}
+						else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
+						{
+						    logger.info("We should delete all images with digitalAssetId " + objectId);
+							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+						}
+					}				    
+			    }
+			    catch(Exception e)
+			    {
+			        logger.warn("Cache eviction reported an error:" + e.getMessage(), e);
+			    }
+			    
 				i.remove();
 			}
         }
