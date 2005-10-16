@@ -375,15 +375,15 @@ public class CacheController extends Thread
 					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
 					    {
-					    	cacheInstance.flushGroup("contentVersion:" + entityId);
+					    	cacheInstance.flushGroup("contentVersion_" + entityId);
 					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-					    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion:" + entityId);
+					    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
 					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("Content") > 0 && useSelectivePageCacheUpdate)
 					    {
-					    	cacheInstance.flushGroup("content:" + entityId);
+					    	cacheInstance.flushGroup("content_" + entityId);
 					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-					    	logger.info("clearing " + e.getKey() + " with group " + "content:" + entityId);
+					    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);
 					    }
 					    else
 					    {

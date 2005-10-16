@@ -124,7 +124,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	public ContentVO getContentVO(Database db, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		deliveryContext.addUsedContent("content:" + contentId);
+		deliveryContext.addUsedContent("content_" + contentId);
 
 		ContentVO contentVO = (ContentVO)getVOWithId(SmallContentImpl.class, contentId, db);
 				
@@ -161,7 +161,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		
 		if(contentVersionVO != null)
-		    deliveryContext.addUsedContentVersion("contentVersion:" + contentVersionVO.getId());
+		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionVO.getId());
 		
 		return contentVersionVO;
 	}
@@ -229,7 +229,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		
 		if(contentVersion != null)
-		    deliveryContext.addUsedContentVersion("contentVersion:" + contentVersion.getId());
+		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersion.getId());
 		
 		return contentVersion;
 	}
@@ -268,7 +268,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			CacheController.cacheObject("contentAttributeCache", versionKey, contentVersionId);
 		}
 		//getLogger().info("Adding contentVersion:" + contentVersionId);
-		deliveryContext.addUsedContentVersion("contentVersion:" + contentVersionId);
+		deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
 		
 		return (attribute == null) ? "" : attribute;
 	}

@@ -156,7 +156,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		{
 		    //logger.info("Returning cached...");
 		    //logger.info("First added..." + versionKey + ":" + "contentVersion:" + contentVersionId);
-		    templateController.getDeliveryContext().addUsedContentVersion("contentVersion:" + contentVersionId);
+		    templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + contentVersionId);
 		    return cachedPageComponentsString;
 		}
 		

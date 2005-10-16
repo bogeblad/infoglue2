@@ -805,7 +805,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 						getLogger().info("candidateContent:" + candidateContent.getName());
 						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
 						{
-							deliveryContext.addUsedContent("content:" + candidate.getId());
+							deliveryContext.addUsedContent("content_" + candidate.getId());
 
 						    boundContentVOList.add(candidate);    
 						}
