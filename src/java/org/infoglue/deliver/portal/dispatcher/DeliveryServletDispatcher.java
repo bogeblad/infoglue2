@@ -38,7 +38,7 @@ import webwork.util.ServletValueStack;
  *
  * @author Rickard Öberg (rickard@middleware-company.com)
  * @author Matt Baldree (matt@smallleap.com)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DeliveryServletDispatcher extends ServletDispatcher
 {
@@ -66,8 +66,6 @@ public class DeliveryServletDispatcher extends ServletDispatcher
            return;
        }
        
-      //aRequest = wrapRequest(aRequest);
-
       // Get action
       String servletPath = (String) aRequest.getAttribute("javax.servlet.include.servlet_path");
       if (servletPath == null)
@@ -82,14 +80,15 @@ public class DeliveryServletDispatcher extends ServletDispatcher
       String actionName = getActionName(servletPath);
       GenericDispatcher gd = new GenericDispatcher(actionName, false);
       ActionContext context = gd.prepareContext();
-      
+
       InfoGluePrincipal principal = (InfoGluePrincipal)aRequest.getSession().getAttribute("infogluePrincipal");
       if(principal != null)
           aRequest.setAttribute("infoglueRemoteUser", principal.getName());
 
       aRequest.setAttribute("webwork.request_url", aRequest.getRequestURL());
-      
+
       ServletActionContext.setContext(aRequest, aResponse, getServletContext(), actionName);
+
       gd.prepareValueStack();
       ActionResult ar = null;
       try 

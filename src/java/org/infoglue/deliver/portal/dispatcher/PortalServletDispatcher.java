@@ -60,7 +60,8 @@ public class PortalServletDispatcher extends DeliveryServletDispatcher {
 
     private static String uniqueContainerName;
 
-    public void init(ServletConfig config) throws ServletException {
+    public void init(ServletConfig config) throws ServletException 
+    {
         log.debug("init of servlet");
         // -- delegate to webwork servlet dispatcher init
         super.init(config);
@@ -70,28 +71,28 @@ public class PortalServletDispatcher extends DeliveryServletDispatcher {
         ServletConfigContainer.getContainer().setServletConfig(config);
 
         // -- start: init the pluto services -
-        try {
+        try 
+        {
             ServiceManager.init(config);
-        } catch (Throwable exc) {
+        } 
+        catch (Throwable exc) 
+        {
             log.error("Initialization failed!", exc);
-
-            throw (new javax.servlet.UnavailableException(
-                    "Initialization of one or more services failed."));
+            throw (new javax.servlet.UnavailableException("Initialization of one or more services failed."));
         }
 
-        try {
-
+        try 
+        {
             ServiceManager.postInit(config);
-
-        } catch (Throwable expos) {
-
+        } 
+        catch (Throwable expos) 
+        {
             log.error("Post initialization failed!", expos);
-
-            throw (new javax.servlet.UnavailableException(
-                    "Post initialization of one or more services failed."));
+            throw (new javax.servlet.UnavailableException("Post initialization of one or more services failed."));
         }
 
-        if (!PortletContainerFactory.getPortletContainer().isInitialized()) {
+        if (!PortletContainerFactory.getPortletContainer().isInitialized()) 
+        {
             uniqueContainerName = "pluto-" + System.currentTimeMillis();
 
             if (log.isInfoEnabled())
@@ -99,46 +100,51 @@ public class PortalServletDispatcher extends DeliveryServletDispatcher {
 
             PortletContainerEnvironment environment = new PortletContainerEnvironment();
 
-            environment.addContainerService(org.apache.pluto.portalImpl.services.log.Log
-                    .getService());
+            environment.addContainerService(org.apache.pluto.portalImpl.services.log.Log.getService());
             environment.addContainerService(FactoryManager.getService());
             environment.addContainerService(FactoryAccess.getInformationProviderContainerService());
             environment.addContainerService(FactoryAccess.getDynamicTitleContainerService());
 
             Properties properties = new Properties();
 
-            try {
-                PortletContainerFactory.getPortletContainer().init(uniqueContainerName, config,
-                        environment, properties);
-            } catch (Throwable exc) {
+            try 
+            {
+                PortletContainerFactory.getPortletContainer().init(uniqueContainerName, config, environment, properties);
+            } 
+            catch (Throwable exc) 
+            {
                 log.warn("Initialization of the portlet container failed!", exc);
                 //                throw (
                 //                    new javax.servlet.UnavailableException(
                 //                        "Initialization of the portlet container failed."));
             }
-        } else if (log.isInfoEnabled()) {
+        } 
+        else if (log.isInfoEnabled()) 
+        {
             log.info("PortletContainer already initialized");
         }
 
         // RSS Portlet test-hack-fix
-        System.setProperty("javax.xml.transform.TransformerFactory",
-                "org.apache.xalan.transformer.TransformerImpl");
+        System.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.transformer.TransformerImpl");
 
         log.info("Ready to serve you.");
     }
 
-    public void destroy() {
+    public void destroy() 
+    {
         super.destroy();
 
         if (log.isInfoEnabled())
             log.info("Shutting down portlet container. . .");
-        try {
+        try 
+        {
             PortletContainerFactory.getPortletContainer().shutdown();
 
             // destroy all services
-
             ServiceManager.destroy(getServletConfig());
-        } catch (Throwable t) {
+        } 
+        catch (Throwable t) 
+        {
             log("Destruction failed!", t);
         }
     }
