@@ -116,13 +116,13 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         } 
 		catch(AccessConstraintException e) 
 		{
-			logger.warn("AccessConstraintException " + e, e);
+			logger.info("AccessConstraintException " + e, e);
 			setErrors(e);
 			return ACCESS_DENIED;
 		} 
         catch(ConstraintException e) 
         {
-        	logger.warn("ConstraintException " + e, e);
+        	logger.info("ConstraintException " + e, e);
             setErrors(e);
             return INPUT;
         } 
