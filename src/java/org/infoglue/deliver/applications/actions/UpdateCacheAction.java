@@ -89,9 +89,10 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
     {
 		try
 		{  
-			getLogger().info("className:" + className);
+		    getLogger().info("className:" + className);
 			getLogger().info("objectId:" + objectId);
-		    //Should contain permissioncontrol later...
+		    	
+			//Should contain permissioncontrol later...
 
 		    boolean isDependsClass = false;
 		    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
@@ -224,6 +225,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		    getLogger().error(t.getMessage());
 		}
                 
+		this.getHttpSession().invalidate();
+		
         return NONE;
     }
     
