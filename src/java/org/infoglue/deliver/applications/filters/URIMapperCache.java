@@ -42,7 +42,7 @@ public class URIMapperCache
 {
     private static URIMapperCache instance = null;
     
-    private final String CACHE_NAME = "NavigationCache";
+    final String CACHE_NAME = "NavigationCache";
     
     public URIMapperCache()
     {

@@ -100,19 +100,20 @@ public class ViewPageFilter implements Filter
         long end, start = System.currentTimeMillis();
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        HttpSession httpSession = httpRequest.getSession(true);
         validateCmsProperties(httpRequest);
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
         logger.info("requestURI:" + requestURI);
         
         if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
         {
+            HttpSession httpSession = httpRequest.getSession(true);
+
             Integer repositoryId = null;
             Integer languageId = null;
 
             try
             {
-                repositoryId = getRepositoryId(httpRequest, httpSession);
+                repositoryId = getRepositoryId(httpRequest/*, httpSession*/);
                 languageId = getLanguageId(httpRequest, httpSession, repositoryId);
             }
             catch(Exception e)
@@ -189,7 +190,8 @@ public class ViewPageFilter implements Filter
         this.filterConfig = null;
     }
 
-    private void validateCmsProperties(HttpServletRequest request) {
+    private void validateCmsProperties(HttpServletRequest request) 
+    {
         if (CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT) == null) {
             CmsPropertyHandler.setProperty(
                 FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT,
@@ -197,19 +199,30 @@ public class ViewPageFilter implements Filter
         }
     }
 
-    private Integer getRepositoryId(HttpServletRequest request, HttpSession session) throws ServletException, Exception 
+    private Integer getRepositoryId(HttpServletRequest request/*, HttpSession session*/) throws ServletException, Exception 
     {
+        /*
         if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) 
         {
             logger.info("Fetching repositoryId from session");
             return (Integer) session.getAttribute(FilterConstants.REPOSITORY_ID);
         }
+        */
 
         logger.info("Trying to lookup repositoryId");
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
         logger.info("serverName:" + serverName);
 
+        String repCacheKey = "" + serverName + "_" + portNumber;
+        Integer repositoryId = (Integer)CacheController.getCachedObject(uriCache.CACHE_NAME, repCacheKey);
+        if (repositoryId != null) 
+        {
+            logger.info("Using cached repositoryId");
+            return repositoryId;
+        }
+
+        
         RepositoryVO repository = null;
         
         Database db = CastorDatabaseService.getDatabase();
@@ -255,7 +268,8 @@ public class ViewPageFilter implements Filter
         if (repository == null)
             throw new ServletException("Unable to find a repository for server-name " + serverName);
 
-        session.setAttribute(FilterConstants.REPOSITORY_ID, repository.getRepositoryId());
+        CacheController.cacheObject(uriCache.CACHE_NAME, repCacheKey, repository.getRepositoryId());
+        //session.setAttribute(FilterConstants.REPOSITORY_ID, repository.getRepositoryId());
         return repository.getRepositoryId();
     }
 
