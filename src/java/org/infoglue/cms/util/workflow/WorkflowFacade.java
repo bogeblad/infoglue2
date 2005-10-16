@@ -62,7 +62,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.24 $ $Date: 2005/10/13 11:23:18 $
+ * @version $Revision: 1.25 $ $Date: 2005/10/16 12:01:08 $
  */
 public class WorkflowFacade
 {
@@ -254,14 +254,13 @@ public class WorkflowFacade
 	 */
 	public void doAction(int actionId, Map inputs) throws WorkflowException
 	{
-		if (!isActive())
-		{
-			throw new InvalidActionException("Workflow " + workflowId + " is no longer active");
-		}
-
 		final Long id = new Long(workflowId);
 		synchronized(currentWorkflows)
 		{
+			if(!isActive())
+			{
+				throw new InvalidActionException("Workflow " + workflowId + " is no longer active");
+			}
 			if(currentWorkflows.contains(id))
 			{
 				throw new WorkflowException("The selected workflow is executing...");
