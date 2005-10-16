@@ -121,8 +121,10 @@ public class SiteNodeVersionController extends BaseController
 		        db.remove(serviceBinding);
 		    }
 		    
-			siteNode.getSiteNodeVersions().remove(siteNodeVersion);
-			db.remove(siteNodeVersion);
+		    if(siteNode != null)
+		        siteNode.getSiteNodeVersions().remove(siteNodeVersion);
+			
+		    db.remove(siteNodeVersion);
 		}
 		catch(Exception e)
 		{

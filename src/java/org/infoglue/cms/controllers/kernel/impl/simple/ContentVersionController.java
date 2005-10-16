@@ -671,7 +671,8 @@ public class ContentVersionController extends BaseController
 
 		Content content = contentVersion.getOwningContent();
 
-		content.getContentVersions().remove(contentVersion);
+		if(content != null)
+		    content.getContentVersions().remove(contentVersion);
 
 		db.remove(contentVersion);
 	}

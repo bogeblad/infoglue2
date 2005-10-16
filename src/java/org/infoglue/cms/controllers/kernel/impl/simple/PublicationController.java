@@ -666,6 +666,7 @@ public class PublicationController extends BaseController
 			while (i.hasNext())
 			{
 				PublicationDetail publicationDetail = (PublicationDetail)i.next();
+				logger.info("publicationDetail:" + publicationDetail.getId() + ":" + publicationDetail.getTypeId());
 				//We unpublish them as long as they are not unpublish-requests.
 				if(publicationDetail.getTypeId().intValue() != PublicationDetailVO.UNPUBLISH_LATEST.intValue())
 				{
@@ -734,8 +735,8 @@ public class PublicationController extends BaseController
 			}
 			else if(publicationDetail.getEntityClass().equals(SiteNodeVersion.class.getName()))
 			{
-			 	SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(publicationDetail.getEntityId(), db);
-				siteNodeVersion.setIsActive(new Boolean(false));
+			    SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(publicationDetail.getEntityId(), db);
+			    siteNodeVersion.setIsActive(new Boolean(false));
 				repositoryId = siteNodeVersion.getOwningSiteNode().getRepository().getId();
 			}
 	
@@ -749,7 +750,7 @@ public class PublicationController extends BaseController
 		}
 		catch(Exception e)
 		{
-		    logger.info("Could not republish entity:" + e.getMessage(), e);
+		    logger.info("Could not unpublish entity:" + e.getMessage(), e);
 		}
 	}
 	
@@ -762,30 +763,53 @@ public class PublicationController extends BaseController
 
 		try
 		{
+		    boolean createEvent = false;
+		    
 			if(publicationDetail.getEntityClass().equals(ContentVersion.class.getName()))
 			{
 				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(publicationDetail.getEntityId(), db);
-				contentVersion.setIsActive(new Boolean(true));
-				repositoryId = contentVersion.getOwningContent().getRepository().getId();
+				if(contentVersion.getOwningContent() != null)
+				{
+					contentVersion.setIsActive(new Boolean(true));
+					repositoryId = contentVersion.getOwningContent().getRepository().getId();
+			 	    createEvent = true;
+				}
+			 	else
+			 	{
+			 	    logger.warn("The contentVersion:" + contentVersion.getId() + " had no content - this should never happen, investigate why. Removing invalid content version.");
+					ContentVersionController.getContentVersionController().delete(contentVersion, db);
+			 	}
 			}
 			else if(publicationDetail.getEntityClass().equals(SiteNodeVersion.class.getName()))
 			{
 			 	SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(publicationDetail.getEntityId(), db);
-				siteNodeVersion.setIsActive(new Boolean(true));
-				repositoryId = siteNodeVersion.getOwningSiteNode().getRepository().getId();
+			 	if(siteNodeVersion.getOwningSiteNode() != null)
+			 	{
+			 	    siteNodeVersion.setIsActive(new Boolean(true));
+			 	    repositoryId = siteNodeVersion.getOwningSiteNode().getRepository().getId();
+			 	    createEvent = true;
+			 	}
+			 	else
+			 	{
+			 	    logger.warn("The siteNodeVersion:" + siteNodeVersion.getId() + " had no siteNode - this should never happen, investigate why. Removing invalid sitenode version.");
+			 	    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
+			 	}
 			}
 	
-			EventVO eventVO = new EventVO();
-			eventVO.setDescription(publicationDetail.getDescription());
-			eventVO.setEntityClass(publicationDetail.getEntityClass());
-			eventVO.setEntityId(publicationDetail.getEntityId());
-			eventVO.setName(publicationDetail.getName());
-			eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
-			EventController.create(eventVO, repositoryId, infoGluePrincipal, db);
+			if(createEvent)
+			{
+				EventVO eventVO = new EventVO();
+				eventVO.setDescription(publicationDetail.getDescription());
+				eventVO.setEntityClass(publicationDetail.getEntityClass());
+				eventVO.setEntityId(publicationDetail.getEntityId());
+				eventVO.setName(publicationDetail.getName());
+				eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+				EventController.create(eventVO, repositoryId, infoGluePrincipal, db);
+			}
 		}
 		catch(Exception e)
 		{
-		    logger.info("Could not republish entity:" + e.getMessage(), e);
+		    logger.warn("Could not republish entity:" + e.getMessage(), e);
 		}
 	}
 
