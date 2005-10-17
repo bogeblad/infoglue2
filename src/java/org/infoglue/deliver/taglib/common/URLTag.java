@@ -206,7 +206,7 @@ public class URLTag extends AbstractTag {
 				final String value = parameter.hasMoreTokens() ? parameter.nextToken() : "";
 				if(!getParameterNames().containsKey(name))
 				{
-				    if(excludedQueryStringParameters.indexOf(name) > -1)
+				    if(excludedQueryStringParameters != null && excludedQueryStringParameters.indexOf(name) > -1)
 				        addParameter(name, value);
 				}
 			}
