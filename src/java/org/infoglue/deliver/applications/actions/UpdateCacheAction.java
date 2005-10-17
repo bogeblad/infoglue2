@@ -79,6 +79,15 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	
     }
     
+    /**
+     * This method will just reply to a testcall. 
+     */
+         
+    public String doTest() throws Exception
+    {
+        this.getResponse().getWriter().println("test ok - cache action available");
+        return NONE;
+    }
     
     /**
      * This method is the application entry-point. The parameters has been set through the setters

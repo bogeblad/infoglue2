@@ -40,6 +40,8 @@ import org.infoglue.cms.entities.management.ValidationItem;
 import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.deliver.util.HttpHelper;
 
 import webwork.action.Action;
 
@@ -90,7 +92,8 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         try
         {
             validateDB(db);           
-            validateDigitalAssetHandling(db);           
+            validateDigitalAssetHandling(db);
+            validateCacheNotification();
                 
 	        db.commit();
         }
@@ -143,6 +146,67 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         catch(Exception e)
         {
             e.printStackTrace();
+            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
+        }
+    }
+
+    private void validateCacheNotification()
+    {
+        String name = "Cache notifications";
+        String description = "We try to verify the cache update action on all known servers.";
+
+        try
+        {
+    		String appPrefix = "internalDeliverUrl";
+    		
+    		int i = 0;
+    		String deliverUrl = null;
+    		while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
+    		{ 
+    		    String address = deliverUrl + "/UpdateCache!test.action";
+    			
+    			try
+    			{
+	    		    HttpHelper httpHelper = new HttpHelper();
+	    			String response = httpHelper.getUrlContent(address);
+	    			if(response.indexOf("test ok") == -1)
+	    			    throw new Exception("Got wrong answer");
+	    			
+	    			addValidationItem(name, description, true, "Test succeeded on " + address + ": " + response);
+    			}
+    			catch(Exception e)
+    			{
+    			    addValidationItem(name, description, false, "Test failed on " + address + ":" + e.getMessage());
+    			}
+    			i++;
+    		}
+
+    		appPrefix = "publicDeliverUrl";
+    		
+    		i = 0;
+    		deliverUrl = null;
+    		while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
+    		{ 
+    		    String address = deliverUrl + "/UpdateCache!test.action";
+    			
+    			try
+    			{
+	    		    HttpHelper httpHelper = new HttpHelper();
+	    			String response = httpHelper.getUrlContent(address);
+	    			if(response.indexOf("test ok") == -1)
+	    			    throw new Exception("Got wrong answer");
+	    			
+    			    addValidationItem(name, description, true, "Test succeeded on " + address + ": " + response);
+    			}
+    			catch(Exception e)
+    			{
+    			    addValidationItem(name, description, false, "Test failed on " + address + ":" + e.getMessage());
+    			}
+    			i++;
+    		}
+        }
+        catch(Exception e)
+        {
             addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
         }
     }
