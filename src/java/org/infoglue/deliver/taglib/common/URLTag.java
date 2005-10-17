@@ -62,6 +62,11 @@ public class URLTag extends AbstractTag {
 	private String query;
 	
 	/**
+	 * The parameter names to exclude from the quertyString. Commasseperated string.
+	 */
+	private String excludedQueryStringParameters;
+	
+	/**
 	 * The parameters to use when constructing the url.
 	 */
 	private List parameters; // type: <String>, format: <name>=<value>
@@ -201,7 +206,8 @@ public class URLTag extends AbstractTag {
 				final String value = parameter.hasMoreTokens() ? parameter.nextToken() : "";
 				if(!getParameterNames().containsKey(name))
 				{
-					addParameter(name, value);
+				    if(excludedQueryStringParameters.indexOf(name) > -1)
+				        addParameter(name, value);
 				}
 			}
 		}
@@ -248,4 +254,10 @@ public class URLTag extends AbstractTag {
 	{
 		this.query = evaluateString("url", "query", query);
 	}
+	
+    public void setExcludedQueryStringParameters(String excludedQueryStringParameters) throws JspException
+    {
+        this.excludedQueryStringParameters = evaluateString("url", "excludedQueryStringParameters", excludedQueryStringParameters);
+    }
+
 }
