@@ -27,7 +27,8 @@ import javax.servlet.jsp.JspException;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-public class PageUrlTag extends ComponentLogicTag {
+public class PageUrlTag extends ComponentLogicTag
+{
 	/**
 	 * 
 	 */
