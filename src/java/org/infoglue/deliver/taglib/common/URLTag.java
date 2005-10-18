@@ -34,6 +34,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.deliver.taglib.AbstractTag;
+import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 /**
  * This class implements the &lt;common:urlBuilder&gt; tag, which creates an url
@@ -41,7 +42,7 @@ import org.infoglue.deliver.taglib.AbstractTag;
  * a query string (user supplied ot taken from the reuest) and
  * any number of parameters specified using nested &lt;common:parameter&gt; tags.
  */
-public class URLTag extends AbstractTag {
+public class URLTag extends TemplateControllerTag {
 	/**
 	 * 
 	 */
@@ -155,7 +156,14 @@ public class URLTag extends AbstractTag {
 	 */
 	private String getBaseURL()
 	{
-		return (baseURL == null) ? getRequest().getRequestURL().toString() : baseURL;
+	    try
+	    {
+	        return (baseURL == null) ? this.getController().getCurrentPageUrl().toString() : baseURL;	        
+	    }
+	    catch(Exception e)
+	    {
+	        return (baseURL == null) ? getRequest().getRequestURL().toString() : baseURL;
+	    }
 	}
 	
 	/**
