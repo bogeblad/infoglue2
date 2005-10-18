@@ -1102,10 +1102,11 @@ public class NodeDeliveryController extends BaseDeliveryController
             SiteNode siteNode = (SiteNode) results.next();
             if (path == null || path.length() == 0) 
             {
+                logger.info("Returning siteNode:" + siteNode.getName());
                 return siteNode.getSiteNodeId();
             }
             
-            // getLogger().info("Site : "+siteNode.getSiteNodeId());
+            logger.info("Continued with siteNode: " + siteNode.getName());
             ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME, deliveryContext);
             if(content != null) 
             {
@@ -1226,21 +1227,23 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        int idx = path.length;
 	        while (idx >= 0) 
 	        {
-	        	//getLogger().info("Looking for cache nodeName at index "+idx);
+	        	//logger.info("Looking for cached nodeName at index "+idx);
 	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, idx);
 	            if (siteNodeId != null)
 	                break;
 	            idx = idx - 1;
 	        }
-	        //getLogger().info("Idx = "+idx);
+	        //logger.info("Idx = "+idx);
 	        for (int i = idx;i < path.length; i++) 
 	        {
 	            if (i < 0) 
 	            {
+	    	        //logger.info("Getting root node");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, attributeName, null, languageId, deliveryContext);
 	            } 
 	            else 
 	            {
+	    	        //logger.info("Getting normal");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], attributeName, siteNodeId, languageId, deliveryContext);
 	            }
 	            
@@ -1248,7 +1251,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	                uriCache.addCachedSiteNodeId(repositoryId, path, i+1, siteNodeId);
 	        }
 	     
-	        closeTransaction(db);
+	        commitTransaction(db);
 	    }
 		catch(Exception e)
 		{

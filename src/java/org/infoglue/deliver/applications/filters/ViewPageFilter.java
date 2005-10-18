@@ -123,6 +123,7 @@ public class ViewPageFilter implements Filter
             
             Integer siteNodeId = null;
             String[] nodeNames = splitString(requestURI, "/");
+            logger.info("nodeNames:" + nodeNames.length);
             //logger.info("RepositoryId.: "+repositoryId);
             //logger.info("LanguageId...: "+languageId);
             //logger.info("RequestURI...: "+requestURI);
@@ -159,6 +160,7 @@ public class ViewPageFilter implements Filter
                 while(repositorVOListIterator.hasNext())
                 {
                     RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
+                    logger.info("Getting node from:" + repositoryVO.getName());
                     siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO.getId(), nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
                     if(siteNodeId != null)
                         break;

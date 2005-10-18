@@ -125,7 +125,7 @@ public class BasicURLComposer extends URLComposer
     		if(!siteNode.getRepository().getId().equals(currentSiteNode.getRepository().getId()))
     		{
     		    String dnsName = siteNode.getRepository().getDnsName();
-    		    logger.debug("dnsName:" + dnsName);
+    		    logger.info("dnsName:" + dnsName + " for siteNode " + siteNode.getName());
     		    
     		    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
     		    String keyword = "";
@@ -136,25 +136,28 @@ public class BasicURLComposer extends URLComposer
     		    if(operatingMode.equalsIgnoreCase("3"))
     		        keyword = "live=";
     		    
-    		    int startIndex = dnsName.indexOf(keyword);
-    		    if(startIndex != -1)
+    		    if(dnsName != null)
     		    {
-    		        int endIndex = dnsName.indexOf(",", startIndex);
-        		    if(endIndex > -1)
-    		            dnsName = dnsName.substring(startIndex, endIndex);
-    		        else
-    		            dnsName = dnsName.substring(startIndex);
-    		        
-    		        dnsName = dnsName.split("=")[1];
-    		    }
-    		    else
-    		    {
-    		        int endIndex = dnsName.indexOf(",");
-    		        if(endIndex > -1)
-    		            dnsName = dnsName.substring(0, endIndex);
-    		        else
-    		            dnsName = dnsName.substring(0);
-    		        
+	    		    int startIndex = dnsName.indexOf(keyword);
+	    		    if(startIndex != -1)
+	    		    {
+	    		        int endIndex = dnsName.indexOf(",", startIndex);
+	        		    if(endIndex > -1)
+	    		            dnsName = dnsName.substring(startIndex, endIndex);
+	    		        else
+	    		            dnsName = dnsName.substring(startIndex);
+	    		        
+	    		        dnsName = dnsName.split("=")[1];
+	    		    }
+	    		    else
+	    		    {
+	    		        int endIndex = dnsName.indexOf(",");
+	    		        if(endIndex > -1)
+	    		            dnsName = dnsName.substring(0, endIndex);
+	    		        else
+	    		            dnsName = dnsName.substring(0);
+	    		        
+	    		    }
     		    }
     		    
     		    context = dnsName + context;
