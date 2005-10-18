@@ -1060,8 +1060,7 @@ public class NodeDeliveryController extends BaseDeliveryController
         getLogger().info("parentSiteNodeId:" + parentSiteNodeId);
         getLogger().info("languageId:" + languageId);
         */
-    	
-        if (repositoryId == null || repositoryId.intValue() == -1) 
+    	if (repositoryId == null || repositoryId.intValue() == -1) 
         {
             repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
             getLogger().info("RepositoryId not specifed - Resolved master repository to "+repositoryId);
@@ -1127,8 +1126,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext);
                     }
                     
-                    getLogger().info(attributeName + " ["+pathCandidate+"]==[" + path + "]");
-                    if (pathCandidate != null && pathCandidate.equals(path)) 
+                    getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
+                    if (pathCandidate != null && pathCandidate.trim().equals(path)) 
                     {
                         return siteNode.getSiteNodeId();
                     }

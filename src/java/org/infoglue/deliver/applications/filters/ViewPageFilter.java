@@ -219,9 +219,11 @@ public class ViewPageFilter implements Filter
         logger.info("Trying to lookup repositoryId");
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
+        String repositoryName = request.getParameter("repositoryName");
         logger.info("serverName:" + serverName);
+        logger.info("repositoryName:" + repositoryName);
 
-        String repCacheKey = "" + serverName + "_" + portNumber;
+        String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName;
         List repositoryVOList = (List)CacheController.getCachedObject(uriCache.CACHE_NAME, repCacheKey);
         if (repositoryVOList != null) 
         {
@@ -240,7 +242,7 @@ public class ViewPageFilter implements Filter
         {
     		try 
             {
-                repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoriesFromServerName(db, serverName, portNumber);
+                repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoriesFromServerName(db, serverName, portNumber, repositoryName);
                 logger.info("repositories:" + repositories);
             } 
             catch (Exception e) 

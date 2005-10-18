@@ -91,7 +91,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	}
 	
 
-	public List getRepositoriesFromServerName(Database db, String serverName, String portNumber) throws SystemException, Exception
+	public List getRepositoriesFromServerName(Database db, String serverName, String portNumber, String repositoryName) throws SystemException, Exception
     {
 	    List repositories = new ArrayList();
 	    
@@ -115,8 +115,17 @@ public class RepositoryDeliveryController extends BaseDeliveryController
                 
             	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) != -1) || dnsName.indexOf(serverName + ":" + portNumber) != -1) 
                 {
-                    repositories.add(repository.getValueObject());
-                }
+            	    if(repositoryName != null && repositoryName.length() > 0)
+            	    {
+            	        getLogger().info("Has to check repositoryName also:" + repositoryName);
+                        if(repository.getValueObject().getName().equalsIgnoreCase(repositoryName))
+            	            repositories.add(repository.getValueObject());
+            	    }
+            	    else
+            	    {
+            	        repositories.add(repository.getValueObject());
+            	    }
+            	}
             }
         }
         
