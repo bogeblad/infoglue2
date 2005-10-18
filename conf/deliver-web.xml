@@ -14,7 +14,8 @@
                 /scripts/*,
                 /script/*,
                 /css/*,
-                /images/*
+                /images/*,
+                /img/*,
             </param-value>
         </init-param>
     </filter>
@@ -52,7 +53,8 @@
                 /images/*,
                 *.gif,
                 *.jpg,
-                *.png
+                *.png,
+				*.ico
             </param-value>
         </init-param>
         <!--
@@ -75,7 +77,6 @@
 		<url-pattern>*.action</url-pattern>
 	</filter-mapping>
 
-	<!-- added by portal in order to wrap the request -->
     <filter-mapping>
         <filter-name>PortalFilter</filter-name>
         <url-pattern>/*</url-pattern>
