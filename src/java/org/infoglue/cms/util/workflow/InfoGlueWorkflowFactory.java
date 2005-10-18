@@ -32,6 +32,7 @@ import com.opensymphony.workflow.loader.WorkflowLoader;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
 
 import java.io.*;
@@ -266,9 +267,13 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
     {
         try 
         {
+            String encoding = CmsPropertyHandler.getProperty("workflowEncoding");
+            if(encoding == null || encoding.length() == 0 || encoding.equalsIgnoreCase("@workflowEncoding@"))
+                encoding = "UTF-8";
+            
             //System.out.println("c.workflowDefinitionVO.getValue():\n" + c.workflowDefinitionVO.getValue());
             //c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes("ISO-8859-1")) , validate);
-            c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes("UTF-8")) , validate);
+            c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes(encoding)) , validate);
         } 
         catch (Exception e) 
         {
