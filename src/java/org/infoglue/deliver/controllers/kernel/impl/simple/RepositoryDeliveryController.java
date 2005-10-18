@@ -91,8 +91,10 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	}
 	
 
-	public RepositoryVO getRepositoryFromServerName(Database db, String serverName, String portNumber) throws SystemException, Exception
+	public List getRepositoriesFromServerName(Database db, String serverName, String portNumber) throws SystemException, Exception
     {
+	    List repositories = new ArrayList();
+	    
         OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE is_defined(r.dnsName)");
         QueryResults results = oql.execute(Database.ReadOnly);
         while (results.hasMore()) 
@@ -113,12 +115,12 @@ public class RepositoryDeliveryController extends BaseDeliveryController
                 
             	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) != -1) || dnsName.indexOf(serverName + ":" + portNumber) != -1) 
                 {
-                    return repository.getValueObject();
+                    repositories.add(repository.getValueObject());
                 }
             }
         }
         
-        return null;
+        return repositories;
     }
  	
     private String[] splitStrings(String str)
