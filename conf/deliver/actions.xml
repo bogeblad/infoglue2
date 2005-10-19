@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.2 2005/06/12 10:46:37 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.3 2005/10/19 13:07:48 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -12,6 +12,12 @@
 	<action name="org.infoglue.cms.applications.common.actions.PerformanceTestAction" alias="PerformanceTest">
 		<view name="error">/cms/managementtool/performanceResult.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- Error Action -->
+	<action name="org.infoglue.deliver.applications.actions.ErrorPageAction" alias="ErrorPage">
+		<view name="success">/deliver/error.vm</view>
+		<view name="error">/deliver/error.vm</view>
 	</action>
 
 
@@ -92,6 +98,7 @@
 
 	<!-- Site Delivery -->
 	<action name="org.infoglue.deliver.applications.actions.ViewPageAction" alias="ViewPage">
+		<!--<view name="error">/deliver/error.vm</view>-->
 		<view name="error">/deliver/error.vm</view>
 	</action>
 

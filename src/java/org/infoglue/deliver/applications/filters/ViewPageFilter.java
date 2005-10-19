@@ -92,7 +92,7 @@ public class ViewPageFilter implements Filter
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException 
-    {
+    {       
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if (enableNiceURI == null)
             enableNiceURI = "false";
@@ -103,99 +103,124 @@ public class ViewPageFilter implements Filter
         validateCmsProperties(httpRequest);
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
         logger.info("requestURI:" + requestURI);
-        
-        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
+
+        try
         {
-            HttpSession httpSession = httpRequest.getSession(true);
 
-            List repositoryVOList = null;
-            Integer languageId = null;
+	        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
+	        {
+	            HttpSession httpSession = httpRequest.getSession(true);
+	
+	            List repositoryVOList = null;
+	            Integer languageId = null;
+	
+	            Database db = CastorDatabaseService.getDatabase();
+	    		
+	            BaseDeliveryController.beginTransaction(db);
 
-            try
-            {
-                repositoryVOList = getRepositoryId(httpRequest/*, httpSession*/);
-                languageId = getLanguageId(httpRequest, httpSession, repositoryVOList);
-            }
-            catch(Exception e)
-            {
-                throw new ServletException("An error occurred when looking for page:" + e.getMessage());
-            }
-            
-            Integer siteNodeId = null;
-            String[] nodeNames = splitString(requestURI, "/");
-            logger.info("nodeNames:" + nodeNames.length);
-            //logger.info("RepositoryId.: "+repositoryId);
-            //logger.info("LanguageId...: "+languageId);
-            //logger.info("RequestURI...: "+requestURI);
-
-            try 
-            {
-                InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
-                if (infoGluePrincipal == null) 
-                {
-                    try 
-                    {
-                        infoGluePrincipal = (InfoGluePrincipal) CacheController.getCachedObject("userCache", "anonymous");
-                        if (infoGluePrincipal == null) 
-                        {
-           				    Map arguments = new HashMap();
-        				    arguments.put("j_username", "anonymous");
-        				    arguments.put("j_password", "anonymous");
-        				    
-        					infoGluePrincipal = (InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments);
-        					if(infoGluePrincipal != null)
-        						CacheController.cacheObject("userCache", "anonymous", infoGluePrincipal);
-                            
-                        }
-                        //this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
-
-                    } 
-                    catch (Exception e) 
-                    {
-                        throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
-                    }
-                }
-
-                Iterator repositorVOListIterator = repositoryVOList.iterator();
-                while(repositorVOListIterator.hasNext())
-                {
-                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
-                    logger.info("Getting node from:" + repositoryVO.getName());
-                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO.getId(), nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
-                    if(siteNodeId != null)
-                        break;
-                }
-                
-                end = System.currentTimeMillis();
-
-                if(siteNodeId == null)
-                {
-                    logger.warn("Could not map URI " + requestURI + " --> " + siteNodeId);
-                    throw new SystemException("Could not map URI " + requestURI + " --> " + siteNodeId);
-                }
-                else
-                    logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
-                    
-                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId);
-                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
-            } 
-            catch (SystemException e) 
-            {
-                logger.error("Failed to resolve siteNodeId", e);
-                throw new ServletException(e);
-            } 
-            catch (Exception e) 
-            {
-                throw new ServletException(e);
-            }
-        } 
-        else 
-        {
-            filterChain.doFilter(httpRequest, httpResponse);
+	            try
+	            {
+	                repositoryVOList = getRepositoryId(httpRequest, db);
+	                languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, db);
+	                BaseDeliveryController.commitTransaction(db);
+	            }
+	            catch(Exception e)
+	            {
+	                BaseDeliveryController.rollbackTransaction(db);
+	                throw new SystemException("An error occurred when looking for page:" + e.getMessage());
+	            }
+	            
+	            Integer siteNodeId = null;
+	            String[] nodeNames = splitString(requestURI, "/");
+	            logger.info("nodeNames:" + nodeNames.length);
+	            //logger.info("RepositoryId.: "+repositoryId);
+	            //logger.info("LanguageId...: "+languageId);
+	            //logger.info("RequestURI...: "+requestURI);
+	
+	            try 
+	            {
+	                InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
+	                if (infoGluePrincipal == null) 
+	                {
+	                    try 
+	                    {
+	                        infoGluePrincipal = (InfoGluePrincipal) CacheController.getCachedObject("userCache", "anonymous");
+	                        if (infoGluePrincipal == null) 
+	                        {
+	           				    Map arguments = new HashMap();
+	        				    arguments.put("j_username", "anonymous");
+	        				    arguments.put("j_password", "anonymous");
+	        				    
+	        					infoGluePrincipal = (InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+	        					if(infoGluePrincipal != null)
+	        						CacheController.cacheObject("userCache", "anonymous", infoGluePrincipal);
+	                            
+	                        }
+	                        //this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
+	
+	                    } 
+	                    catch (Exception e) 
+	                    {
+	                        throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+	                    }
+	                }
+	
+	                Iterator repositorVOListIterator = repositoryVOList.iterator();
+	                while(repositorVOListIterator.hasNext())
+	                {
+	                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
+	                    logger.info("Getting node from:" + repositoryVO.getName());
+	                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO.getId(), nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
+	                    if(siteNodeId != null)
+	                        break;
+	                }
+	                
+	                end = System.currentTimeMillis();
+	
+	                if(siteNodeId == null)
+	                {
+	                    logger.warn("Could not map URI " + requestURI + " --> " + siteNodeId);
+	                    throw new ServletException("Could not map URI " + requestURI + " --> " + siteNodeId);
+	                }
+	                else
+	                    logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
+	                    
+	                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId);
+	                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
+	            } 
+	            catch (SystemException e) 
+	            {
+	                logger.error("Failed to resolve siteNodeId", e);
+	                throw new ServletException(e);
+	            } 
+	            catch (Exception e) 
+	            {
+	                throw new ServletException(e);
+	            }
+	            
+	        } 
+	        else 
+	        {
+	            filterChain.doFilter(httpRequest, httpResponse);
+	        }    
         }
+        catch (SystemException se) 
+        {
+            httpRequest.setAttribute("responseCode", "500");
+            httpRequest.setAttribute("error", se);
+            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+        }
+        catch (Exception e) 
+        {
+            httpRequest.setAttribute("responseCode", "404");
+            httpRequest.setAttribute("error", e);
+            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+        }
+
     }
 
-    public void destroy() {
+    public void destroy() 
+    {
         this.filterConfig = null;
     }
 
@@ -208,7 +233,7 @@ public class ViewPageFilter implements Filter
         }
     }
 
-    private List getRepositoryId(HttpServletRequest request/*, HttpSession session*/) throws ServletException, Exception 
+    private List getRepositoryId(HttpServletRequest request, Database db) throws ServletException, SystemException, Exception 
     {
         /*
         if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) 
@@ -234,47 +259,20 @@ public class ViewPageFilter implements Filter
         }
 
         
-        List repositories = new ArrayList();
-        
-        Database db = CastorDatabaseService.getDatabase();
-		
-        BaseDeliveryController.beginTransaction(db);
-
-        try
+        List repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoriesFromServerName(db, serverName, portNumber, repositoryName);
+        logger.info("repositories:" + repositories);
+    
+        if (repositories.size() == 0) 
         {
-    		try 
+            try 
             {
-                repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoriesFromServerName(db, serverName, portNumber, repositoryName);
-                logger.info("repositories:" + repositories);
+                repositories.add(RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db));
             } 
-            catch (Exception e) 
+            catch (Exception e1) 
             {
-                logger.info("Failed to map servername " + serverName + " to a repository");
+                logger.error("Failed to lookup master repository");
             }
-
-            if (repositories.size() == 0) 
-            {
-                try 
-                {
-                    BaseDeliveryController.beginTransaction(db);
-
-                    repositories.add(RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db));
-                    
-                    BaseDeliveryController.closeTransaction(db);
-                } 
-                catch (Exception e1) 
-                {
-                    logger.error("Failed to lookup master repository");
-                }
-            }
-
-            BaseDeliveryController.closeTransaction(db);
         }
-        catch (Exception e1) 
-        {
-            logger.error("Failed to lookup master repository");
-            BaseDeliveryController.rollbackTransaction(db);
-        }       
 
         if (repositories.size() == 0)
             throw new ServletException("Unable to find a repository for server-name " + serverName);
@@ -284,7 +282,7 @@ public class ViewPageFilter implements Filter
         return repositories;
     }
 
-    private Integer getLanguageId(HttpServletRequest request, HttpSession session, List repositoryVOList) throws ServletException, Exception 
+    private Integer getLanguageId(HttpServletRequest request, HttpSession session, List repositoryVOList, Database db) throws ServletException, Exception 
     {
         Integer languageId = null;
         if (request.getParameter("languageId") != null) 
@@ -313,44 +311,30 @@ public class ViewPageFilter implements Filter
         logger.info("Looking for languageId for repository " + repositoryId);
         Locale requestLocale = request.getLocale();
         
-        Database db = CastorDatabaseService.getDatabase();
-		
-        BaseDeliveryController.beginTransaction(db);
+        try 
+        {
+            List availableLanguagesForRepository = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, repositoryId);
 
-        try
+            if (requestLocale != null) 
+            {
+                for (int i = 0; i < availableLanguagesForRepository.size(); i++) 
+                {
+                    LanguageVO language = (LanguageVO) availableLanguagesForRepository.get(i);
+                    logger.info("language:" + language.getLanguageCode());
+                    logger.info("browserLanguage:" + requestLocale.getLanguage());
+                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage())) {
+                        languageId = language.getLanguageId();
+                    }
+                }
+            }
+            if (languageId == null && availableLanguagesForRepository.size() > 0) {
+                languageId = ((LanguageVO) availableLanguagesForRepository.get(0)).getLanguageId();
+            }
+        } 
+        catch (Exception e) 
         {
-	        try 
-	        {
-	            List availableLanguagesForRepository = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, repositoryId);
-	
-	            if (requestLocale != null) 
-	            {
-	                for (int i = 0; i < availableLanguagesForRepository.size(); i++) 
-	                {
-	                    LanguageVO language = (LanguageVO) availableLanguagesForRepository.get(i);
-	                    logger.info("language:" + language.getLanguageCode());
-	                    logger.info("browserLanguage:" + requestLocale.getLanguage());
-	                    if (language.getLanguageCode().equalsIgnoreCase(requestLocale.getLanguage())) {
-	                        languageId = language.getLanguageId();
-	                    }
-	                }
-	            }
-	            if (languageId == null && availableLanguagesForRepository.size() > 0) {
-	                languageId = ((LanguageVO) availableLanguagesForRepository.get(0)).getLanguageId();
-	            }
-	        } 
-	        catch (Exception e) 
-	        {
-	            logger.error("Failed to fetch available languages for repository " + repositoryId);
-	        }
-	        
-	        BaseDeliveryController.closeTransaction(db);
+            logger.error("Failed to fetch available languages for repository " + repositoryId);
         }
-        catch (Exception e1) 
-        {
-            logger.error("Failed to lookup master repository");
-            BaseDeliveryController.rollbackTransaction(db);
-        }         
 	        
         if (languageId == null)
             throw new ServletException("Unable to determine language for repository " + repositoryId);

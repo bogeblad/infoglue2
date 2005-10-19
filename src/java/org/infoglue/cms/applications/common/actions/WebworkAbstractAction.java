@@ -197,7 +197,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
   	/**
    	 *
      */
-	private void setError(Throwable throwable, Throwable cause) 
+	public void setError(Throwable throwable, Throwable cause) 
   	{
     	this.error = new Error(throwable, cause);
   	}
