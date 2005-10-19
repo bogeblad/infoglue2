@@ -45,7 +45,16 @@ FCKToolbarFontFormatCombo.prototype.GetLabel=function(){
 	return FCKLang.FontFormat;
 };
 FCKToolbarFontFormatCombo.prototype.CreateItems=function(targetSpecialCombo){
-	var aNames=FCKLang['FontFormats'].split(';');
+	
+	if(FCKConfig.FontFormatNames)
+	{
+		var aNames=FCKConfig.FontFormatNames.split(';');
+	}
+	else
+	{
+		var aNames=FCKLang['FontFormats'].split(';');
+	}
+	
 	var oNames={p:aNames[0],pre:aNames[1],address:aNames[2],h1:aNames[3],h2:aNames[4],h3:aNames[5],h4:aNames[6],h5:aNames[7],h6:aNames[8],div:aNames[9]};
 	var aTags=FCKConfig.FontFormats.split(';');
 	for (var i=0;i<aTags.length;i++) {

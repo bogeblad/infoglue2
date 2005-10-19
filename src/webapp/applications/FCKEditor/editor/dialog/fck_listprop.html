@@ -24,6 +24,7 @@
 		<script type="text/javascript">
 
 var oEditor = window.parent.InnerDialogLoaded() ;
+var FCKConfig	= oEditor.FCKConfig ;
 
 // Gets the document DOM
 var oDOM = oEditor.FCK.EditorDocument ;
@@ -107,9 +108,30 @@ function Ok()
 							<td>
 								<span>List style</span><br>
 								<select id="selStyle" style="DISPLAY: block">
-									<option value="normallist" selected>Normal</option>
-									<option value="linklist">Punktlista med l&auml;nkar</option>
-									<option value="textlist">Punktlista utan l&auml;nkar</option>
+								<script type="text/javascript">
+									
+									//alert("FCKConfig.ListClasses:" + FCKConfig.ListClasses);
+									//alert("FCKConfig.ListClassesNames:" + FCKConfig.ListClassesNames);
+									if(FCKConfig.ListClasses && FCKConfig.ListClassesNames)
+									{
+										document.write("<option value=\"\" fckLang=\"DlgLnkStyleLinkIcon\" selected=\"selected\">None</option>");
+									
+										var listClasses=FCKConfig.ListClasses.split(',');
+										var listClassesNames=FCKConfig.ListClassesNames.split(',');
+										for (var i=0;i<listClasses.length;i++)
+										{
+											listClass = listClasses[i]; 
+											listClassName = listClassesNames[i]; 
+											document.write("<option value=\"" + listClass + "\" fckLang=\"DlgLnkStyleLinkIcon\">" + listClassName + "</option>");
+										}
+									}
+									else
+									{
+										document.write("<option value=\"normallist\" selected>Normal</option>");
+										document.write("<option value=\"linklist\">Punktlista med l&auml;nkar</option>");
+										document.write("<option value=\"textlist\">Punktlista utan l&auml;nkar</option>");
+									}
+								</script>
 								</select>
 								&nbsp;
 							</td>
