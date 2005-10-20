@@ -240,26 +240,40 @@ public class EventController extends BaseController
         	oql.bind(EventVO.UNPUBLISH_LATEST);
         	oql.bind(repositoryId);
         	
-        	QueryResults results = oql.execute(Database.ReadOnly);
+        	QueryResults results = oql.execute();
 			
 			while (results.hasMore()) 
             {
             	Event event = (Event)results.next();
+    		    //logger.warn("event:" + event.getId());
+            	//logger.warn("entityClass:" + event.getEntityClass());
+            	//logger.warn("entityId:" + event.getEntityId());
 
+            	boolean isBroken = false;
             	boolean isValid = true;
             	try
             	{
 	            	if(event.getEntityClass().equalsIgnoreCase(ContentVersion.class.getName()))
 	            	{
 	            		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
-	            		if(contentVersion == null)
+	        		    //logger.warn("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
+	            		if(contentVersion == null || contentVersion.getOwningContent() == null)
+	            		{
+							isBroken = true;
 							isValid = false;
+							ContentVersionController.getContentVersionController().delete(contentVersion, db);
+	            		}
 	            	}
 					else if(event.getEntityClass().equalsIgnoreCase(SiteNodeVersion.class.getName()))
 					{
 						SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db);
-						if(siteNodeVersion == null)
-							isValid = false;
+	        		    //logger.warn("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getOwningSiteNode());
+						if(siteNodeVersion == null || siteNodeVersion.getOwningSiteNode() == null)
+						{
+						    isBroken = true;
+						    isValid = false;
+						    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
+						}
 					}
 				}
 				catch(Exception e)
@@ -268,8 +282,11 @@ public class EventController extends BaseController
 					//delete(event, db);
 				}
 					
-				if(isValid)
+				if(isValid && !isBroken)
 	            	events.add(event.getValueObject());
+            
+				if(isBroken)
+				    delete(event, db);
             }
             
             commitTransaction(db);
