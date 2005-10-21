@@ -68,6 +68,11 @@ public class URLTag extends TemplateControllerTag {
 	private String excludedQueryStringParameters;
 	
 	/**
+	 * The parameter that controls if the full servername etc should be included in the base url.
+	 */
+	private boolean fullBaseUrl = false;
+	
+	/**
 	 * The parameters to use when constructing the url.
 	 */
 	private List parameters; // type: <String>, format: <name>=<value>
@@ -158,7 +163,15 @@ public class URLTag extends TemplateControllerTag {
 	{
 	    try
 	    {
-	        return (baseURL == null) ? this.getController().getCurrentPageUrl().toString() : baseURL;	        
+	        if(this.fullBaseUrl)
+	        {
+	            int indexOfProtocol = getRequest().getRequestURL().indexOf("://");
+	            int indexFirstSlash = getRequest().getRequestURL().indexOf("/", indexOfProtocol + 3);
+	            String base = getRequest().getRequestURL().substring(0, indexFirstSlash);
+	            return (baseURL == null) ? base + this.getController().getCurrentPageUrl().toString() : baseURL;	        
+	        }
+		    else
+		        return (baseURL == null) ? this.getController().getCurrentPageUrl().toString() : baseURL;	        
 	    }
 	    catch(Exception e)
 	    {
@@ -268,4 +281,8 @@ public class URLTag extends TemplateControllerTag {
         this.excludedQueryStringParameters = evaluateString("url", "excludedQueryStringParameters", excludedQueryStringParameters);
     }
 
+    public void setFullBaseUrl(boolean fullBaseUrl)
+    {
+        this.fullBaseUrl = fullBaseUrl;
+    }
 }

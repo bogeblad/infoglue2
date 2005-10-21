@@ -176,6 +176,11 @@
 	    	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
+	    <attribute>
+		    <name>fullBaseUrl</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
 	</tag>
 	<tag>
 	    <name>parameter</name>

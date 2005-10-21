@@ -2849,6 +2849,28 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method deliveres a String with the URL to the page asked for.
+	 * As the siteNode can have multiple bindings the method requires a bindingName 
+	 * which refers to the AvailableServiceBinding.name-attribute. 
+	 */
+	 
+	public String getPageBaseUrl() 
+	{
+		String pageUrl = "";
+		
+		try
+		{
+			pageUrl = this.nodeDeliveryController.getPageBaseUrl(getDatabase());
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get page url the current url:" + e.getMessage(), e);
+		}
+				
+		return pageUrl;
+	}
+
+	/**
 	 * Getter for the current siteNode
 	 */
 	
