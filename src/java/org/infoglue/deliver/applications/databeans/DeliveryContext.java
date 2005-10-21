@@ -96,6 +96,8 @@ public class DeliveryContext implements UsageListener
 	
 	//private InfoGluePrincipal infoGluePrincipal = null;
 	
+	//This variable sets if all urls generated should contain the server name etc.
+	private boolean useFullUrl = false;
 	
 	public static DeliveryContext getDeliveryContext()
 	{
@@ -333,5 +335,15 @@ public class DeliveryContext implements UsageListener
     public void setDisablePageCache(boolean disablePageCache)
     {
         this.disablePageCache = disablePageCache;
+    }
+    
+    public boolean getUseFullUrl()
+    {
+        return useFullUrl;
+    }
+    
+    public void setUseFullUrl(boolean useFullUrl)
+    {
+        this.useFullUrl = useFullUrl;
     }
 }

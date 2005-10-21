@@ -53,7 +53,7 @@ public class BasicURLComposer extends URLComposer
     }
 
 
-    public String composeDigitalAssetUrl(String dnsName, String filename)
+    public String composeDigitalAssetUrl(String dnsName, String filename, DeliveryContext deliveryContext)
     {
         String disableEmptyUrls = CmsPropertyHandler.getProperty("disableEmptyUrls");
         if((filename == null || filename.equals("")) && (disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("no")))
@@ -72,6 +72,15 @@ public class BasicURLComposer extends URLComposer
         if(enableNiceURI.equalsIgnoreCase("true") || useDNSNameInUrls.equalsIgnoreCase("false"))
         {
 	        StringBuffer sb = new StringBuffer(256);
+	        
+	        if(deliveryContext.getUseFullUrl())
+	        {
+		        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
+	            int indexOfProtocol = originalUrl.indexOf("://");
+	            int indexFirstSlash = originalUrl.indexOf("/", indexOfProtocol + 3);
+	            String base = originalUrl.substring(0, indexFirstSlash);
+	            sb.append(base);
+	        }
 	        
 	        String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
 	        String digitalAssetPath = CmsPropertyHandler.getProperty("digitalAssetBaseUrl");
@@ -163,9 +172,18 @@ public class BasicURLComposer extends URLComposer
     		    context = dnsName + context;
 
     		}
-            
-            StringBuffer sb = new StringBuffer(26);
-	        
+
+            StringBuffer sb = new StringBuffer(256);
+
+            if(deliveryContext.getUseFullUrl())
+	        {
+		        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
+	            int indexOfProtocol = originalUrl.indexOf("://");
+	            int indexFirstSlash = originalUrl.indexOf("/", indexOfProtocol + 3);
+	            String base = originalUrl.substring(0, indexFirstSlash);
+	            sb.append(base);
+	        }
+
 	        sb.append(context);
 	        
 	        try 
@@ -223,6 +241,16 @@ public class BasicURLComposer extends URLComposer
             }
             else
             {
+                StringBuffer sb = new StringBuffer(256);
+                if(deliveryContext.getUseFullUrl())
+    	        {
+    		        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
+    	            int indexOfProtocol = originalUrl.indexOf("://");
+    	            int indexFirstSlash = originalUrl.indexOf("/", indexOfProtocol + 3);
+    	            String base = originalUrl.substring(0, indexFirstSlash);
+    	            sb.append(base);
+    	        }
+                
                 String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
     	        
                 if(siteNodeId == null)
@@ -235,16 +263,18 @@ public class BasicURLComposer extends URLComposer
 	    			contentId = new Integer(-1);
 	
 	            String arguments = "siteNodeId=" + siteNodeId + getRequestArgumentDelimiter() + "languageId=" + languageId + getRequestArgumentDelimiter() + "contentId=" + contentId;
-	            String url = servletContext + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
 	            
 				if(deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
 				{
-					url = servletContext + "/" + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
+				    sb.append(servletContext + "/" + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments);
 				}
-
+				else
+				{
+				    sb.append(servletContext + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments);
+		        }
 	            //getLogger().info("url:" + url);
 
-	            return url;            
+	            return sb.toString();            
             }
         }
     }

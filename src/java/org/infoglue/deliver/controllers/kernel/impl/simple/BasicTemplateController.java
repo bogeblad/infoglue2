@@ -1488,6 +1488,7 @@ public class BasicTemplateController implements TemplateController
 		return getParsedContentAttribute(contentId, attributeName);
 	}
 	
+
 	/**
 	 * This method deliveres a list of strings which represents all assetKeys for a content.
 	 */
@@ -1781,7 +1782,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    assetUrl = ExtranetController.getController().getPrincipalAssetUrl(this.getDatabase(), principal, assetKey, languageId, siteNodeId, useLanguageFallback);
+		    assetUrl = ExtranetController.getController().getPrincipalAssetUrl(this.getDatabase(), principal, assetKey, languageId, siteNodeId, useLanguageFallback, deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -1803,7 +1804,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    assetUrl = ExtranetController.getController().getPrincipalThumbnailAssetUrl(this.getDatabase(), principal, assetKey, languageId, siteNodeId, useLanguageFallback, width, height);
+		    assetUrl = ExtranetController.getController().getPrincipalThumbnailAssetUrl(this.getDatabase(), principal, assetKey, languageId, siteNodeId, useLanguageFallback, width, height, deliveryContext);
 		}
 		catch(Exception e)
 		{
@@ -2364,7 +2365,7 @@ public class BasicTemplateController implements TemplateController
 				dnsName = siteNode.getRepository().getDnsName();
 
 			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
+			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		catch(Exception e)
 		{
@@ -2408,7 +2409,7 @@ public class BasicTemplateController implements TemplateController
 				dnsName = siteNode.getRepository().getDnsName();
 
 			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
+			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		catch(Exception e)
 		{
@@ -2567,7 +2568,7 @@ public class BasicTemplateController implements TemplateController
 				dnsName = siteNode.getRepository().getDnsName();
 
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		catch(Exception e)
 		{
@@ -2694,7 +2695,7 @@ public class BasicTemplateController implements TemplateController
 				dnsName = siteNode.getRepository().getDnsName();
 				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		catch(Exception e)
 		{

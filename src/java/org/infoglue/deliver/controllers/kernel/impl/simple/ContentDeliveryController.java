@@ -477,7 +477,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	private String getLanguageIndependentAssetUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String assetUrl = "";
-		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
+		assetUrl = urlComposer.composeDigitalAssetUrl("", "", deliveryContext); 
 		
 		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey, deliveryContext);
 		if(digitalAsset != null)
@@ -493,7 +493,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				dnsName = siteNode.getRepository().getDnsName();
 				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		return assetUrl;	
 	}
@@ -502,7 +502,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	private String getLanguageIndependentAssetThumbnailUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, int width, int height, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String assetUrl = "";
-		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
+		assetUrl = urlComposer.composeDigitalAssetUrl("", "", deliveryContext); 
 		
 		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey, deliveryContext);
 		if(digitalAsset != null)
@@ -519,7 +519,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				dnsName = siteNode.getRepository().getDnsName();
 				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
 		}
 		return assetUrl;	
 	}
@@ -563,7 +563,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 
 				//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 			}
 			else
 			{
@@ -586,7 +586,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getAssetUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback;
+	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
 		getLogger().info("assetCacheKey:" + assetCacheKey);
 		String cacheName = "assetUrlCache";
 		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
@@ -597,7 +597,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		
 		String assetUrl = "";
-		assetUrl = urlComposer.composeDigitalAssetUrl("", ""); 
+		assetUrl = urlComposer.composeDigitalAssetUrl("", "", deliveryContext); 
 		
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
 		ContentVO contentVO = this.getContentVO(db, contentId, deliveryContext);
@@ -619,7 +619,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 					
 				//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 			}
 			else if(useLanguageFallback)
 			{
@@ -649,7 +649,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 						dnsName = siteNode.getRepository().getDnsName();
 						
 					//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
-					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName); 
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 				}
 				else if(useLanguageFallback)
 				{
@@ -705,7 +705,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 
 				//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName); 
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
 			}
 			else
 			{
@@ -760,7 +760,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 				
 				//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName); 
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
 			}
 			else
 			{
@@ -837,7 +837,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 					
 				//archiveBaseUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName.substring(0, fileName.lastIndexOf("."));
-				archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName.substring(0, fileName.lastIndexOf("."))); 
+				archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
 			}
         }				
 		

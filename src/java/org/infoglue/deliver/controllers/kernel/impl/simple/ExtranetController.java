@@ -59,6 +59,7 @@ import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 
 /**
  * @author Mattias Bogeblad
@@ -412,7 +413,7 @@ public class ExtranetController extends BaseDeliveryController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalAssetUrl(Database db, InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId, Integer siteNodeId, boolean useLanguageFallback) throws Exception
+	public String getPrincipalAssetUrl(Database db, InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext) throws Exception
 	{
 		String assetUrl = "";
 		
@@ -442,7 +443,7 @@ public class ExtranetController extends BaseDeliveryController
 			        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 			        {
 			            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-			            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
+			            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository(), deliveryContext);
 			            getLogger().info("assetUrl:" + assetUrl);
 			            break;
 			        }
@@ -474,7 +475,7 @@ public class ExtranetController extends BaseDeliveryController
 					        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 					        {
 					            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
+					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository(), deliveryContext);
 					            break;
 					        }
 					    }
@@ -487,7 +488,7 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
 				if(!masterLanguageVO.getLanguageId().equals(languageId))
-					return getPrincipalAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback);
+					return getPrincipalAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, deliveryContext);
 			}
 		}
 
@@ -515,7 +516,7 @@ public class ExtranetController extends BaseDeliveryController
 					        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 					        {
 					            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository());
+					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository(), deliveryContext);
 					            break;
 					        }
 					    }
@@ -528,7 +529,7 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
 				if(!masterLanguageVO.getLanguageId().equals(languageId))
-					return getPrincipalAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback);
+					return getPrincipalAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, deliveryContext);
 			}
 		}
 
@@ -542,7 +543,7 @@ public class ExtranetController extends BaseDeliveryController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalThumbnailAssetUrl(Database db, InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height) throws Exception
+	public String getPrincipalThumbnailAssetUrl(Database db, InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, int width, int height, DeliveryContext deliveryContext) throws Exception
 	{
 		String assetUrl = "";
 		
@@ -565,7 +566,7 @@ public class ExtranetController extends BaseDeliveryController
 			        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 			        {
 			            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-			            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height);
+			            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height, deliveryContext);
 			            break;
 			        }
 			    }
@@ -596,7 +597,7 @@ public class ExtranetController extends BaseDeliveryController
 					        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 					        {
 					            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height);
+					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height, deliveryContext);
 					            break;
 					        }
 					    }
@@ -609,7 +610,7 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
 				if(!masterLanguageVO.getLanguageId().equals(languageId))
-					return getPrincipalThumbnailAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, width, height);
+					return getPrincipalThumbnailAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, width, height, deliveryContext);
 			}
 		}
 	
@@ -637,7 +638,7 @@ public class ExtranetController extends BaseDeliveryController
 					        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 					        {
 					            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
-					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height);
+					            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetThumbnailUrl(digitalAsset, siteNode.getRepository(), width, height, deliveryContext);
 					            break;
 					        }
 					    }
@@ -650,7 +651,7 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
 				if(!masterLanguageVO.getLanguageId().equals(languageId))
-					return getPrincipalThumbnailAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, width, height);
+					return getPrincipalThumbnailAssetUrl(db, infoGluePrincipal, assetKey, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, width, height, deliveryContext);
 			}
 		}
 	

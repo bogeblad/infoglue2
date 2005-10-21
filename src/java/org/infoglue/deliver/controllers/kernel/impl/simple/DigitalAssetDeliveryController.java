@@ -30,6 +30,7 @@ import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.util.graphics.ThumbnailGenerator;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 
 import java.io.*;
@@ -79,7 +80,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
 
-	public String getAssetUrl(DigitalAsset digitalAsset, Repository repository) throws SystemException, Exception
+	public String getAssetUrl(DigitalAsset digitalAsset, Repository repository, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String assetUrl = "";
 		
@@ -94,7 +95,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
 				dnsName = repository.getDnsName();
 				
-			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, fileName); 
+			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 
 		return assetUrl;
@@ -106,7 +107,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
 
-	public String getAssetThumbnailUrl(DigitalAsset digitalAsset, Repository repository, int width, int height) throws SystemException, Exception
+	public String getAssetThumbnailUrl(DigitalAsset digitalAsset, Repository repository, int width, int height, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String assetUrl = "";
 		
@@ -123,7 +124,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
 				dnsName = repository.getDnsName();
 				
-			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, thumbnailFileName); 
+			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
 		}
 
 		return assetUrl;

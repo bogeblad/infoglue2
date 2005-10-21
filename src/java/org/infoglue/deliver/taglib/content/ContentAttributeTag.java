@@ -48,6 +48,7 @@ public class ContentAttributeTag extends ComponentLogicTag
     private boolean disableEditOnSight 	= false;
     private boolean useInheritance		= true;
     private boolean parse				= false;
+    private boolean fullBaseUrl			= false;
     
     public ContentAttributeTag()
     {
@@ -56,6 +57,10 @@ public class ContentAttributeTag extends ComponentLogicTag
     
     public int doEndTag() throws JspException
     {
+        boolean previousSetting = getController().getDeliveryContext().getUseFullUrl();
+        if(previousSetting != fullBaseUrl)
+            getController().getDeliveryContext().setUseFullUrl(fullBaseUrl);
+            
         if(contentId != null)
         {
             if(!parse)
@@ -74,6 +79,10 @@ public class ContentAttributeTag extends ComponentLogicTag
         {
             throw new JspException("You must specify either contentId or attributeName");
         }
+
+        //Resetting the full url to the previous state
+        getController().getDeliveryContext().setUseFullUrl(previousSetting);
+
         return EVAL_PAGE;
     }
 
@@ -105,5 +114,10 @@ public class ContentAttributeTag extends ComponentLogicTag
     public void setContentId(final String contentId) throws JspException
     {
         this.contentId = evaluateInteger("contentAttribute", "contentId", contentId);
+    }
+    
+    public void setFullBaseUrl(boolean fullBaseUrl)
+    {
+        this.fullBaseUrl = fullBaseUrl;
     }
 }
