@@ -154,7 +154,8 @@ public abstract class PageInvoker
 
 	public void deliverPage() throws Exception
 	{
-		logger.info("C PageKey:" + this.getDeliveryContext().getPageKey());
+		logger.info("PageKey:" + this.getDeliveryContext().getPageKey());
+		logger.info("PageCache:" + this.getDeliveryContext().getDisablePageCache());
 		
 		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.getTemplateController().getLanguageId());
 		logger.info("languageVO:" + languageVO);

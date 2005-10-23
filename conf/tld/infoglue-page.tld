@@ -18,4 +18,26 @@
     	</attribute>
     </tag>
 
+	<tag>
+        <name>DeliverContext</name>
+        <tagclass>org.infoglue.deliver.taglib.page.DeliverContextTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>Setters for DeliverContext parameters</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useFullUrl</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>disablePageCache</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    </tag>
+
 </taglib>
