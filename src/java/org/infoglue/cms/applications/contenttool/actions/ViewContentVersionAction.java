@@ -382,7 +382,10 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
     public java.lang.Integer getContentVersionId()
     {
-        return this.contentVersionVO.getContentVersionId();
+        if(this.contentVersionVO != null)
+            return this.contentVersionVO.getContentVersionId();
+        else 
+            return null;
     }
     
     public void setContentVersionId(java.lang.Integer contentVersionId)
@@ -422,12 +425,14 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	
 	public void setStateId(Integer stateId)
 	{
-		this.contentVersionVO.setStateId(stateId);
+	    if(this.contentVersionVO != null)
+	        this.contentVersionVO.setStateId(stateId);
 	}
 
 	public void setVersionComment(String versionComment)
 	{
-		this.contentVersionVO.setVersionComment(versionComment);
+	    if(this.contentVersionVO != null)
+	        this.contentVersionVO.setVersionComment(versionComment);
 	}
 
 	public void setDigitalAssetId(Integer digitalAssetId)
