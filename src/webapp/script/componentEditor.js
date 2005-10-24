@@ -215,7 +215,7 @@ function setToolbarInitialPosition()
 	if(toolbarLockPosition == "up")
 		floatDiv("paletteDiv", 0, 0).flt();
 	else if(toolbarLockPosition == "down")
-		floatDiv("paletteDiv", 0, -250).flt();
+		floatDiv("paletteDiv", 0, -80).flt();
 	else
 		this.document.getElementById('paletteDiv').style.top=defaultToolbarTopPosition;
 		
@@ -242,13 +242,14 @@ function setToolbarInitialPosition()
 function moveDivDown(id)
 {
 	//alert("clientHeight:" + this.parent.document.body.clientHeight);
+	//alert("windowHeight:" + getWindowHeight())
 	position = this.parent.document.body.clientHeight - 120 + "px";
 	//position = "500px";
 
 	var div = document.getElementById(id);
 
 	setCookie(toolbarLockPositionCookieName, "down");
-	floatDiv("paletteDiv", 0, -250).flt();	
+	floatDiv("paletteDiv", 0, -80).flt();	
 }
 
 function moveDivUp(id)
