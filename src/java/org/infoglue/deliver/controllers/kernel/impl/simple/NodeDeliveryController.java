@@ -1230,21 +1230,22 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        	//logger.info("Looking for cached nodeName at index "+idx);
 	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, numberOfPaths);
 
-	            numberOfPaths = numberOfPaths - 1;
 	            if (siteNodeId != null)
 	                break;
+
+	            numberOfPaths = numberOfPaths - 1;
 	        }
-	        //logger.info("Idx = "+idx);
+	        logger.info("numberOfPaths = "+numberOfPaths);
 	        for (int i = numberOfPaths;i < path.length; i++) 
 	        {
 	            if (i < 0) 
 	            {
-	    	        //logger.info("Getting root node");
+	    	        logger.info("Getting root node");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, attributeName, null, languageId, deliveryContext);
 	            } 
 	            else 
 	            {
-	    	        //logger.info("Getting normal");
+	    	        logger.info("Getting normal");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], attributeName, siteNodeId, languageId, deliveryContext);
 	            }
 	            
