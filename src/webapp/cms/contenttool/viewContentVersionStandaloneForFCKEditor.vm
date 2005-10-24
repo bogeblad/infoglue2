@@ -318,6 +318,25 @@
 		<td colspan="3">$ui.getString("tool.contenttool.versionLastUpdatedByLabel") $contentVersionVO.versionModifier</td>
 	</tr>
 	#end
+	
+	<tr>
+		<td colspan="3"><img src="images/trans.gif" width="1" height="5"/></td>
+	</tr>
+	<tr>
+		<input type="hidden" name="contentId" value="$!contentId">
+		#if("$!contentVersionId" != "")
+		<input type="hidden" name="contentVersionId" value="$!contentVersionId">
+		#end
+		<input type="hidden" name="repositoryId" value="$!repositoryId">
+		<td colspan="3">
+			#if($readonly == "")
+			<a href="javascript:validateAndSubmitContentFormThenClose();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
+			#end
+			<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a></td>
+		</td>
+	</tr>
+	
 </table>	
  
 <table border="0" width="500">	
