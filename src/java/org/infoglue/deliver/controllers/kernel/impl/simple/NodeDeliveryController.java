@@ -1224,17 +1224,18 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 	        URIMapperCache uriCache = URIMapperCache.getInstance();
 	
-	        int idx = path.length;
-	        while (idx >= 0) 
+	        int numberOfPaths = path.length;
+	        while (numberOfPaths >= 0) 
 	        {
 	        	//logger.info("Looking for cached nodeName at index "+idx);
-	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, idx);
+	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, numberOfPaths);
+
+	            numberOfPaths = numberOfPaths - 1;
 	            if (siteNodeId != null)
 	                break;
-	            idx = idx - 1;
 	        }
 	        //logger.info("Idx = "+idx);
-	        for (int i = idx;i < path.length; i++) 
+	        for (int i = numberOfPaths;i < path.length; i++) 
 	        {
 	            if (i < 0) 
 	            {
