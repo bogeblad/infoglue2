@@ -89,7 +89,9 @@ public class SimpleCategoryProvider extends CategoryProvider
 		for(Iterator i = rootCategory.getChildren().iterator(); i.hasNext();) 
 		{
 			final CategoryVO categoryVO = (CategoryVO) i.next();
-			if(parameterExists(getCategoryKey(categoryVO))) 
+			final String key = getCategoryKey(categoryVO);
+			final String value = getRequestParameter(key);
+			if(parameterExists(key) && value != null && value.equals("1")) 
 			{
 				setPropertySetDataString(getCategoryKey(categoryVO), "1");
 				result.add(categoryVO);
