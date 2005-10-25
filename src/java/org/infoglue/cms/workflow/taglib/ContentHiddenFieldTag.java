@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.workflow.taglib;
 
+import javax.servlet.jsp.JspException;
+
 /**
  * This class implements the &lt;iw:hidden&gt; tag, which presents an &lt;input type="hidden" ... /&gt; 
  * form element representing a content/content version attribute. 
@@ -60,10 +62,13 @@ public class ContentHiddenFieldTag extends ElementTag
 	 * fetched from the propertyset using the specified name.
 	 * 
 	 * @param name the name to use.
+	 * @throws JspException if an error occurs while evaluating the attribute.
 	 */
-	public void setName(final String name) 
+	public void setName(final String name) throws JspException
 	{
-		getElement().addAttribute("name", name);
-		getElement().addAttribute("value", getPropertySet().getDataString(name));
+		final String evaluatedName = evaluateString("contentHiddenField", "name", name);
+		
+		getElement().addAttribute("name", evaluatedName);
+		getElement().addAttribute("value", getPropertySet().getDataString(evaluatedName));
 	}
 }

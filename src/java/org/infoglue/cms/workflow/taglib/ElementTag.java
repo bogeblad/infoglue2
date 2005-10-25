@@ -89,39 +89,43 @@ public abstract class ElementTag extends WorkflowTag
 	 * Sets the id attribute of the html element.
 	 * 
 	 * @param id the id to use.
+	 * @throws JspException if an error occurs while evaluating the attribute.
 	 */ 
-    public void setIdAttr(final String id) 
+    public void setIdAttr(final String id) throws JspException
     {
-    	getElement().addAttribute("id", id);
+    	getElement().addAttribute("id", evaluateString("element", "idAttr", id));
     }
 
 	/**
 	 * Sets the class attribute of the html element.
 	 * 
 	 * @param cssClass the class to use.
+	 * @throws JspException if an error occurs while evaluating the attribute.
 	 */ 
-    public void setCssClass(final String cssClass) 
+    public void setCssClass(final String cssClass) throws JspException
     {
-    	getElement().addAttribute("class", cssClass);
+    	getElement().addAttribute("class", evaluateString("element", "cssClass", cssClass));
     }
 
 	/**
 	 * Sets the title attribute of the html element.
 	 * 
 	 * @param title the title to use.
+	 * @throws JspException if an error occurs while evaluating the attribute.
 	 */ 
-    public void setTitle(final String title) 
+    public void setTitle(final String title) throws JspException
     {
-    	getElement().addAttribute("title", title);
+    	getElement().addAttribute("title", evaluateString("element", "title", title));
     }
 
 	/**
 	 * Sets the style attribute of the html element.
 	 * 
 	 * @param style the style to use.
+	 * @throws JspException if an error occurs while evaluating the attribute.
 	 */ 
-    public void setStyle(final String style) 
+    public void setStyle(final String style) throws JspException
     {
-    	getElement().addAttribute("style", style);
+    	getElement().addAttribute("style", evaluateString("element", "style", style));
     }
 }
