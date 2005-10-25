@@ -73,4 +73,18 @@ INSERT INTO cmInterceptionPointInterceptor (interceptionPointId, interceptorId) 
 -- Adding new column to siteNodeVersion for special pageCacheKey                --
 -- ---------------------------------------------------------------------------- --
 alter table cmSiteNodeVersion add pageCacheKey varchar(255) NOT NULL default 'default';
+
+
+-- ---------------------------------------------------------------------------- --
+-- Adding new table to support redirecting old pages                            --
+-- ---------------------------------------------------------------------------- --
+CREATE TABLE cmRedirects (
+  id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  url TEXT NOT NULL,
+  redirectUrl TEXT NOT NULL,
+  PRIMARY KEY(id)
+) TYPE = MYISAM;
+
+ALTER TABLE cmredirects ADD FULLTEXT url(url), ADD FULLTEXT redirectUrl(redirectUrl);
+
   
