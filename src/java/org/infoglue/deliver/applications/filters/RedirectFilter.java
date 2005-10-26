@@ -26,6 +26,7 @@ package org.infoglue.deliver.applications.filters;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -50,7 +51,10 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.Redirect;
+import org.infoglue.cms.entities.management.RedirectVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -88,47 +92,55 @@ public class RedirectFilter implements Filter
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
         logger.info("Redirect filter requestURI:" + requestURI);
+        System.out.println("Redirect filter requestURI:" + requestURI);
 
         try
         {
-
-            Database db = CastorDatabaseService.getDatabase();
-    		
-            BaseDeliveryController.beginTransaction(db);
-
             try
             {
-                /*
-                Map redirectMap = getRedirectMap();
-                
-                String redirectAddress = (String)redirectMap.get(requestURI);
-                if(redirectAddress != null)
+                Collection cachedRedirects = (Collection)CacheController.getCachedObject("redirectCache", "allRedirects");
+                if(cachedRedirects == null)
                 {
-                    httpResponse.sendRedirect(redirectAddress);
+                    cachedRedirects = RedirectController.getController().getRedirectVOList();
+                    CacheController.cacheObject("redirectCache", "allRedirects", cachedRedirects);
                 }
-                */
                 
-                BaseDeliveryController.commitTransaction(db);
+                Iterator redirectsIterator = cachedRedirects.iterator();
+                while(redirectsIterator.hasNext())
+                {
+                    RedirectVO redirect = (RedirectVO)redirectsIterator.next(); 
+                    System.out.println("url:" + redirect.getUrl());
+                    if(requestURI.equalsIgnoreCase(redirect.getUrl()))
+                    {
+                        httpResponse.sendRedirect(redirect.getRedirectUrl());
+                        return;
+                    }
+                }
             }
             catch(Exception e)
             {
-                BaseDeliveryController.rollbackTransaction(db);
+                e.printStackTrace();
                 throw new SystemException("An error occurred when looking for page:" + e.getMessage());
             }
 	            
         }
         catch (SystemException se) 
         {
+            se.printStackTrace();
             httpRequest.setAttribute("responseCode", "500");
             httpRequest.setAttribute("error", se);
             httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
         }
         catch (Exception e) 
         {
+            e.printStackTrace();
             httpRequest.setAttribute("responseCode", "404");
             httpRequest.setAttribute("error", e);
             httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
         }
+        
+        filterChain.doFilter(httpRequest, httpResponse);
+
     }
 
     public void destroy() 

@@ -1180,5 +1180,21 @@
 	    </field>
   	</class>
 
+  	<!--  Mapping for Redirect entity  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.RedirectImpl" identity="redirectId" key-generator="SEQUENCE">
+	    <description>Redirect</description>
+	    <cache-type type="unlimited" capacity="1000"/>
+	    <map-to table="cmRedirect"/>
+	    <field name="redirectId" type="java.lang.Integer">
+	      <sql name="id" type="integer" dirty="check" />
+	    </field>
+	    <field name="url" type="java.lang.String">
+	      <sql name="url" type="varchar" dirty="check" />
+	    </field>
+	    <field name="redirectUrl" type="java.lang.String">
+	      <sql name="redirectUrl" type="varchar" dirty="ignore" />
+	    </field>
+  	</class>
+
 </mapping>
 

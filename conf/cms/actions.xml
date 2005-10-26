@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.9 2005/10/02 10:45:17 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.10 2005/10/26 16:01:39 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1290,6 +1290,33 @@
 		<view name="input">/cms/managementtool/createWorkflowDefinition.vm</view>
 		<view name="success">ViewWorkflowDefinition.action?workflowDefinitionId=${workflowDefinitionId}</view>
 		<view name="saveAndExit">ViewListWorkflowDefinition.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- Repository -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListRedirectAction" alias="ViewListRedirect">
+		<view name="success">/cms/managementtool/viewListRedirect.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRedirectAction" alias="ViewRedirect">
+		<view name="success">/cms/managementtool/viewRedirect.vm</view>
+		<view name="successLocal">/cms/managementtool/viewRedirectLocal.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateRedirectAction" alias="UpdateRedirect">
+		<view name="input">/cms/managementtool/viewRedirect.vm</view>
+		<view name="success">ViewRedirect.action</view>
+		<view name="saveAndExit">ViewListRedirect.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteRedirectAction" alias="DeleteRedirect">
+		<view name="success">ViewListRedirect.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+		<view name="input">/cms/contenttool/showConstraintException.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.CreateRedirectAction" alias="CreateRedirect">
+		<view name="input">/cms/managementtool/createRedirect.vm</view>
+		<view name="success">ViewRedirect.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<SCRIPT LANGUAGE="JavaScript">
+function reloadMenu()
+		{
+			menuFrame = parent.header;
+			menuFrame.location.reload();
+		}
+</SCRIPT>
+
+#beginManagementTool("tool.managementtool.redirectList.header" "tool.managementtool.redirectList.header" "")
+
+#set($lvConstraint = 1) 
+#lvHead(["Url","RedirectUrl"] "tool.managementtool.deleteRedirects.header" "DeleteRedirect.action" "ViewListRedirect.action?title=Redirects" "tool.managementtool.deleteRedirects.text")
+
+#set($cnt = 0)
+#foreach ($redirectVO in $redirects)
+	#set( $redirectId = $redirectVO.getRedirectId() ) 
+	
+	#set( $rowUrl = "ViewRedirect.action?redirectId=$redirectVO.getRedirectId()&title=Redirect%20details")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$redirectVO.getUrl()'/> <a href=$rowUrl>$redirectVO.getUrl()</a>","$redirectVO.getRedirectUrl()"])
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $redirectId)
+#end
+#lvEnd()
+<script>reloadMenu()</script>
+#endManagementTool()

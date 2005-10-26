@@ -26,6 +26,7 @@ package org.infoglue.deliver.applications.filters;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -50,7 +51,9 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RedirectVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -179,6 +182,13 @@ public class ViewPageFilter implements Filter
 	
 	                if(siteNodeId == null)
 	                {
+	                    String redirectUrl = this.getRedirectUrl(requestURI);
+	                    if(redirectUrl != null && redirectUrl.length() > 0)
+	                    {
+		                    httpResponse.sendRedirect(redirectUrl);
+		                    return;
+	                    }
+	                    
 	                    logger.warn("Could not map URI " + requestURI + " --> " + siteNodeId);
 	                    throw new ServletException("Could not map URI " + requestURI + " --> " + siteNodeId);
 	                }
@@ -379,6 +389,43 @@ public class ViewPageFilter implements Filter
             new IGHttpServletRequest(request, siteNodeId, languageId);
 
         return wrappedRequest;
+    }
+    
+    /**
+     * This method checks if there is a redirect that should be used instead.
+     * @param requestURI
+     * @throws Exception
+     */
+    
+    private String getRedirectUrl(String requestURI) throws Exception
+    {
+        try
+        {
+            Collection cachedRedirects = (Collection)CacheController.getCachedObject("redirectCache", "allRedirects");
+            if(cachedRedirects == null)
+            {
+                cachedRedirects = RedirectController.getController().getRedirectVOList();
+                CacheController.cacheObject("redirectCache", "allRedirects", cachedRedirects);
+            }
+            
+            Iterator redirectsIterator = cachedRedirects.iterator();
+            while(redirectsIterator.hasNext())
+            {
+                RedirectVO redirect = (RedirectVO)redirectsIterator.next(); 
+                System.out.println("url:" + redirect.getUrl());
+                if(requestURI.equalsIgnoreCase(redirect.getUrl()))
+                {
+                    return redirect.getRedirectUrl();
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new SystemException("An error occurred when looking for page:" + e.getMessage());
+        }
+        
+        return null;
     }
 
     private class IGHttpServletRequest extends HttpServletRequestWrapper {

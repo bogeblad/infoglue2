@@ -36,6 +36,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
@@ -76,6 +77,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 	private Integer interceptorId = null;
 	private Integer categoryId = null;
 	private Integer workflowDefinitionId = null;
+	private Integer redirectId = null;
 	
 	private String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
 	
@@ -283,10 +285,21 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
         this.workflowDefinitionId = workflowDefinitionId;
     }
 
+    public Integer getRedirectId()
+    {
+        return redirectId;
+    }
+    
+    public void setRedirectId(Integer redirectId)
+    {
+        this.redirectId = redirectId;
+    }
+
 	public List getButtons()
 	{
 		getLogger().info("Title:" + this.title);
 		getLogger().info("toolbarKey:" + this.toolbarKey);
+		System.out.println("toolbarKey:" + this.toolbarKey);
 
 		try
 		{
@@ -346,6 +359,10 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 				return getPortletsButtons();
 			//if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.portlet.header"))
 			//	return getPortletDetailsButtons();
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.redirectList.header"))
+				return getRedirectsButtons();
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewRedirect.header"))
+				return getRedirectDetailsButtons();
 			
 		}
 		catch(Exception e) {e.printStackTrace();}			
@@ -623,6 +640,32 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=" + interceptionPointCategory + "&extraParameters=" + extraParameter +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header");
 	}
 
+	private List getRedirectsButtons() throws Exception
+	{
+		
+		List buttons = new ArrayList();
+		buttons.add(new ImageButton("CreateRedirect!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newRedirect"), "New Redirect"));	
+		buttons.add(new ImageButton(true, "javascript:submitListForm('redirect');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRedirect"), "tool.managementtool.deleteRedirects.header"));
+		return buttons;
+	}
+	
+	private List getRedirectDetailsButtons() throws Exception
+	{
+		List buttons = new ArrayList();
+		this.name = RedirectController.getController().getRedirectVOWithId(this.redirectId).getUrl();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRedirect.header&yesDestination=" + URLEncoder.encode("DeleteRedirect.action?redirectId=" + this.redirectId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListWorkflowDefinition.action", "UTF-8") + "&message=tool.managementtool.deleteWorkflowDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinition.header"));
+		return buttons;				
+	}
+
+	private List getPortletsButtons() throws Exception
+	{
+		List buttons = new ArrayList();
+		buttons.add(new ImageButton("UploadPortlet.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newPortlet"), "New Portlet"));	
+		//buttons.add(new ImageButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
+		return buttons;
+	}
+
+	
 	private List getWorkflowDefinitionsButtons() throws Exception
 	{
 		
@@ -645,14 +688,6 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Workflow&extraParameters=" + workflowDefinition.getName() +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header"));
 	    }
 		return buttons;				
-	}
-
-	private List getPortletsButtons() throws Exception
-	{
-		List buttons = new ArrayList();
-		buttons.add(new ImageButton("UploadPortlet.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newPortlet"), "New Portlet"));	
-		//buttons.add(new ImageButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
-		return buttons;
 	}
 
 }

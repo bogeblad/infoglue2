@@ -78,13 +78,13 @@ alter table cmSiteNodeVersion add pageCacheKey varchar(255) NOT NULL default 'de
 -- ---------------------------------------------------------------------------- --
 -- Adding new table to support redirecting old pages                            --
 -- ---------------------------------------------------------------------------- --
-CREATE TABLE cmRedirects (
+CREATE TABLE cmRedirect (
   id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   url TEXT NOT NULL,
   redirectUrl TEXT NOT NULL,
   PRIMARY KEY(id)
 ) TYPE = MYISAM;
 
-ALTER TABLE cmredirects ADD FULLTEXT url(url), ADD FULLTEXT redirectUrl(redirectUrl);
+ALTER TABLE cmRedirect ADD FULLTEXT url(url), ADD FULLTEXT redirectUrl(redirectUrl);
 
   

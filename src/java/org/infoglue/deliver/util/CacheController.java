@@ -346,6 +346,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("redirectCache") && entity.indexOf("Redirect") > 0)
+				{
+					clear = true;
+				}
 				
 				
 				if(clear)
@@ -446,6 +450,7 @@ public class CacheController extends Thread
 			clearCache(CategoryImpl.class);
 			clearCache(ContentCategoryImpl.class);
 			clearCache(RegistryImpl.class);
+			clearCache(RedirectImpl.class);
 			
 			clearCache(InterceptionPointImpl.class);
 			clearCache(InterceptorImpl.class);
