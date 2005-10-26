@@ -40,6 +40,7 @@ public final class BrowserBean implements Serializable
 	private boolean opera  	= false;
 	private boolean mozilla = false;
 	private boolean safari  = false;
+	private boolean firefox = false;
 	
 	private String os;
 	private boolean isWindows = false;
@@ -77,6 +78,8 @@ public final class BrowserBean implements Serializable
 		else if(user.indexOf("gecko") != -1)
 		{
 			this.mozilla = true;
+			if(user.indexOf("firefox") != -1)
+			    this.firefox = true;
 		}
 		else if(user.indexOf("netscape/7") != -1)
 		{
@@ -241,5 +244,10 @@ public final class BrowserBean implements Serializable
     public boolean isWindows()
     {
         return isWindows;
+    }
+    
+    public boolean isFirefox()
+    {
+        return firefox;
     }
 }
