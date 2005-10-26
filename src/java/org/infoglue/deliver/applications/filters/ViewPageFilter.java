@@ -182,7 +182,7 @@ public class ViewPageFilter implements Filter
 	
 	                if(siteNodeId == null)
 	                {
-	                    String redirectUrl = this.getRedirectUrl(requestURI);
+	                    String redirectUrl = RedirectController.getController().getRedirectUrl(httpRequest);
 	                    if(redirectUrl != null && redirectUrl.length() > 0)
 	                    {
 		                    httpResponse.sendRedirect(redirectUrl);
@@ -391,42 +391,6 @@ public class ViewPageFilter implements Filter
         return wrappedRequest;
     }
     
-    /**
-     * This method checks if there is a redirect that should be used instead.
-     * @param requestURI
-     * @throws Exception
-     */
-    
-    private String getRedirectUrl(String requestURI) throws Exception
-    {
-        try
-        {
-            Collection cachedRedirects = (Collection)CacheController.getCachedObject("redirectCache", "allRedirects");
-            if(cachedRedirects == null)
-            {
-                cachedRedirects = RedirectController.getController().getRedirectVOList();
-                CacheController.cacheObject("redirectCache", "allRedirects", cachedRedirects);
-            }
-            
-            Iterator redirectsIterator = cachedRedirects.iterator();
-            while(redirectsIterator.hasNext())
-            {
-                RedirectVO redirect = (RedirectVO)redirectsIterator.next(); 
-                System.out.println("url:" + redirect.getUrl());
-                if(requestURI.equalsIgnoreCase(redirect.getUrl()))
-                {
-                    return redirect.getRedirectUrl();
-                }
-            }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            throw new SystemException("An error occurred when looking for page:" + e.getMessage());
-        }
-        
-        return null;
-    }
 
     private class IGHttpServletRequest extends HttpServletRequestWrapper {
         Map requestParameters = new HashMap();

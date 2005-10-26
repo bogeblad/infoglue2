@@ -90,39 +90,18 @@ public class RedirectFilter implements Filter
         long end, start = System.currentTimeMillis();
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
-        logger.info("Redirect filter requestURI:" + requestURI);
-        System.out.println("Redirect filter requestURI:" + requestURI);
-
+        //String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
+        String requestURL = httpRequest.getRequestURL().toString();
+        logger.info("Redirect filter requestURL:" + requestURL);
+        
         try
         {
-            try
+            String redirectUrl = RedirectController.getController().getRedirectUrl(httpRequest);
+            if(redirectUrl != null && redirectUrl.length() > 0)
             {
-                Collection cachedRedirects = (Collection)CacheController.getCachedObject("redirectCache", "allRedirects");
-                if(cachedRedirects == null)
-                {
-                    cachedRedirects = RedirectController.getController().getRedirectVOList();
-                    CacheController.cacheObject("redirectCache", "allRedirects", cachedRedirects);
-                }
-                
-                Iterator redirectsIterator = cachedRedirects.iterator();
-                while(redirectsIterator.hasNext())
-                {
-                    RedirectVO redirect = (RedirectVO)redirectsIterator.next(); 
-                    System.out.println("url:" + redirect.getUrl());
-                    if(requestURI.equalsIgnoreCase(redirect.getUrl()))
-                    {
-                        httpResponse.sendRedirect(redirect.getRedirectUrl());
-                        return;
-                    }
-                }
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-                throw new SystemException("An error occurred when looking for page:" + e.getMessage());
-            }
-	            
+                httpResponse.sendRedirect(redirectUrl);
+                return;
+            }	            
         }
         catch (SystemException se) 
         {

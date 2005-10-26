@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.entities.management;
 
+import java.util.regex.Pattern;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.RedirectImpl;
 import org.infoglue.cms.util.*;
@@ -33,7 +35,8 @@ public class RedirectVO implements BaseEntityVO
     private java.lang.Integer redirectId;
     private java.lang.String url;
     private java.lang.String redirectUrl;
-        
+    private Pattern urlCompiledPattern;
+    
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#getId()
 	 */
@@ -91,5 +94,12 @@ public class RedirectVO implements BaseEntityVO
     	return ceb;
 	}
         
+    public Pattern getUrlCompiledPattern()
+    {
+        if(this.urlCompiledPattern == null)
+            this.urlCompiledPattern = Pattern.compile(url);
+        
+        return this.urlCompiledPattern;
+    }
 }
         
