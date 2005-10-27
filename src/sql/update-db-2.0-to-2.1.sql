@@ -85,6 +85,4 @@ CREATE TABLE cmRedirect (
   PRIMARY KEY(id)
 ) TYPE = MYISAM;
 
-ALTER TABLE cmRedirect ADD FULLTEXT url(url), ADD FULLTEXT redirectUrl(redirectUrl);
-
   
