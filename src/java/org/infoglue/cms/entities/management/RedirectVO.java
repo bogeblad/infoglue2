@@ -94,12 +94,5 @@ public class RedirectVO implements BaseEntityVO
     	return ceb;
 	}
         
-    public Pattern getUrlCompiledPattern()
-    {
-        if(this.urlCompiledPattern == null)
-            this.urlCompiledPattern = Pattern.compile(url);
-        
-        return this.urlCompiledPattern;
-    }
 }
         

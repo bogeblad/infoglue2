@@ -105,8 +105,10 @@ public class RedirectController extends BaseController
     {
         try
         {
-            String requestURL = request.getRequestURL().toString();
-            logger.info("requestURL:" + requestURL);
+            //String requestURL = request.getRequestURL().toString();
+            String requestURI = getContextRelativeURI(request);
+            //System.out.println("requestURL:" + requestURL);
+            logger.info("requestURI:" + requestURI);
             
             Collection cachedRedirects = (Collection)CacheController.getCachedObject("redirectCache", "allRedirects");
             if(cachedRedirects == null)
@@ -120,14 +122,12 @@ public class RedirectController extends BaseController
             {
                 RedirectVO redirect = (RedirectVO)redirectsIterator.next(); 
                 logger.info("url:" + redirect.getUrl());
-                if(redirect.getUrlCompiledPattern().matcher(requestURL).matches())
+                if(requestURI.startsWith(redirect.getUrl()))
                 {
-                    System.out.println("requestURL:" + requestURL);
-                    System.out.println("url:" + redirect.getUrl());
-                    System.out.println("redirectUrl:" + redirect.getRedirectUrl());
-                    String remainingURL = requestURL.replaceAll(redirect.getUrl(), "");
-                    System.out.println("remainingURL:" + remainingURL);
-                    return redirect.getRedirectUrl() + remainingURL + (request.getQueryString().length() > 0 ? "?" + request.getQueryString() : "");
+                    logger.info("redirectUrl:" + redirect.getRedirectUrl());
+                    String remainingURI = requestURI.replaceAll(redirect.getUrl(), "");
+                    logger.info("remainingURI:" + remainingURI);
+                    return redirect.getRedirectUrl() + remainingURI + (request.getQueryString() != null && request.getQueryString().length() > 0 ? "?" + request.getQueryString() : "");
                 }
             }
         }
@@ -139,6 +139,18 @@ public class RedirectController extends BaseController
         
         return null;
     }
+    
+    private String getContextRelativeURI(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        if (contextPath != null && requestURI.length() > 0) {
+            requestURI = requestURI.substring(contextPath.length(), requestURI.length());
+        }
+        if (requestURI.length() == 0)
+            return "/";
+        return requestURI;
+    }
+
 
 
 	/**
