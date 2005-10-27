@@ -76,6 +76,6 @@ CREATE TABLE cmRedirect
 (
 	id				number NOT NULL,
 	url				VARCHAR2(1024) NOT NULL,
-	redirectUrl		varchar2(1024)
+	redirectUrl		varchar2(1024) NOT NULL,
 	PRIMARY KEY (id)
 );
