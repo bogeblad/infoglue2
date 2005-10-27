@@ -272,7 +272,7 @@
 	</tag>
 
     <tag>
-	    <name>CropText</name>
+	    <name>cropText</name>
 	    <tagclass>org.infoglue.deliver.taglib.common.CropTextTag</tagclass>
 	    <bodycontent>empty</bodycontent>
 	    <info></info>
@@ -298,6 +298,11 @@
 		</attribute>
 	    <attribute>
 		    <name>suffix</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>adjustForEntities</name>
 	    	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>

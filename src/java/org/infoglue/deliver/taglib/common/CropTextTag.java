@@ -60,6 +60,11 @@ public class CropTextTag extends AbstractTag
 	private String suffix = "...";
 
 	/**
+	 * States whether or not to account for entities like &auml; etc.
+	 */
+	private boolean adjustForEntities = true;
+	
+	/**
 	 * Default constructor.
 	 */
 	public CropTextTag() 
@@ -75,6 +80,23 @@ public class CropTextTag extends AbstractTag
 	 */
 	public int doEndTag() throws JspException
     {
+	    if(adjustForEntities)
+	    {
+		    int startEntity = text.indexOf("&");
+		    while(startEntity > -1 && startEntity < maxLength)
+		    {
+			    int endEntity = text.indexOf(";", startEntity);
+			    if(endEntity != -1)
+		        {
+		            maxLength = maxLength + (endEntity - startEntity);
+		        }
+		        if(endEntity != -1)
+			        startEntity = text.indexOf("&", endEntity);
+		        else
+		            startEntity = text.indexOf("&", startEntity + 1);    
+		    }
+	    }
+	    
 	    String modifiedText = text;
 	    if(maxLength > -1)
 	    {
@@ -113,5 +135,10 @@ public class CropTextTag extends AbstractTag
     public void setText(String text) throws JspException
     {
         this.text = evaluateString("cropText", "text", text);
+    }
+    
+    public void setAdjustForEntities(boolean adjustForEntities)
+    {
+        this.adjustForEntities = adjustForEntities;
     }
 }
