@@ -122,7 +122,12 @@ public class RedirectController extends BaseController
                 logger.info("url:" + redirect.getUrl());
                 if(redirect.getUrlCompiledPattern().matcher(requestURL).matches())
                 {
-                    return redirect.getRedirectUrl();
+                    System.out.println("requestURL:" + requestURL);
+                    System.out.println("url:" + redirect.getUrl());
+                    System.out.println("redirectUrl:" + redirect.getRedirectUrl());
+                    String remainingURL = requestURL.replaceAll(redirect.getUrl(), "");
+                    System.out.println("remainingURL:" + remainingURL);
+                    return redirect.getRedirectUrl() + remainingURL + (request.getQueryString().length() > 0 ? "?" + request.getQueryString() : "");
                 }
             }
         }

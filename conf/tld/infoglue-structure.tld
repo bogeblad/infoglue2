@@ -313,6 +313,11 @@
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
+    	    <name>numberOrder</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
     	    <name>type</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>

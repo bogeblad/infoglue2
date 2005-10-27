@@ -47,6 +47,7 @@ public class SortPagesTag extends TemplateControllerTag
 	
 	private String sortProperty = "NavigationTitle";
 	private String sortOrder 	= "asc";
+	private boolean numberOrder = false; 
 	private String type			= "PageComparator";
 	private String namesInOrderString = null;
 	
@@ -66,7 +67,7 @@ public class SortPagesTag extends TemplateControllerTag
 	    if(this.type.equalsIgnoreCase("HardcodedPageComparator") || namesInOrderString != null)
 	        this.comparator = new HardcodedPageComparator(sortProperty, sortOrder, namesInOrderString, getController());
 	    else
-	        this.comparator = new PageComparator(sortProperty, sortOrder, getController());
+	        this.comparator = new PageComparator(sortProperty, sortOrder, numberOrder, getController());
 	        
 	    Collections.sort(input, comparator);
 		produceResult(input);
@@ -110,4 +111,9 @@ public class SortPagesTag extends TemplateControllerTag
 	{
 	    this.namesInOrderString = namesInOrderString;
 	}
+	
+    public void setNumberOrder(boolean numberOrder)
+    {
+        this.numberOrder = numberOrder;
+    }
 }

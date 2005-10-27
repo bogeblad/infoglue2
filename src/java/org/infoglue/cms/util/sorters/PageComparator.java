@@ -21,12 +21,14 @@ public class PageComparator implements Comparator
 
 	private String sortProperty;
 	private String sortOrder;
+	private boolean numberOrder;
 	private TemplateController templateController;
 
-	public PageComparator(String sortProperty, String sortOrder, TemplateController templateController)
+	public PageComparator(String sortProperty, String sortOrder, boolean numberOrder, TemplateController templateController)
 	{
 		this.sortProperty = sortProperty;
 		this.sortOrder = sortOrder;
+		this.numberOrder = numberOrder;
 		this.templateController = templateController;
 	}
 
@@ -45,12 +47,63 @@ public class PageComparator implements Comparator
 		    
 		    valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
 			valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);
+		
+		    if(this.numberOrder)
+		    {
+		        try
+		        {
+		            if(valueOne != null && !valueOne.equals(""))
+		                valueOne = (Comparable)new Long(valueOne.toString());
+		            else
+		            {
+		                if(sortOrder.equalsIgnoreCase("desc"))
+		                    valueOne = (Comparable)new Long(Long.MIN_VALUE);
+		                else
+		                    valueOne = (Comparable)new Long(Long.MAX_VALUE);
+		            }
+		        }
+		        catch(Exception e)
+		        {
+		            logger.info("Not a number..." + e.getMessage());
+		        }
+		        
+		        try
+		        {
+		            if(valueTwo != null && !valueTwo.equals(""))
+		                valueTwo = (Comparable)new Long(valueTwo.toString());
+		            else
+		            {
+		                if(sortOrder.equalsIgnoreCase("desc"))
+		                    valueTwo = (Comparable)new Long(Long.MIN_VALUE);
+		                else
+		                    valueTwo = (Comparable)new Long(Long.MAX_VALUE);
+		            }
+		        }
+		        catch(Exception e)
+		        {
+		            logger.info("Not a number..." + e.getMessage());
+		        }
+		    }
 		}
 
 	    if(sortOrder.equalsIgnoreCase("desc"))
-		    return valueTwo.compareTo(valueOne);
-		else
+	    {  
+	        if((valueOne != null && !valueOne.toString().equalsIgnoreCase("")) && (valueTwo == null || valueTwo.toString().equalsIgnoreCase("")))
+	            return -1;
+		    if((valueTwo != null && !valueTwo.toString().equalsIgnoreCase("")) && (valueOne == null || valueOne.toString().equalsIgnoreCase("")))
+	            return 1;
+	        
+	        return valueTwo.compareTo(valueOne);
+	    }
+	    else
+		{
+		    if((valueOne != null && !valueOne.toString().equalsIgnoreCase("")) && (valueTwo == null || valueTwo.toString().equalsIgnoreCase("")))
+	            return -1;
+		    if((valueTwo != null && !valueTwo.toString().equalsIgnoreCase("")) && (valueOne == null || valueOne.toString().equalsIgnoreCase("")))
+	            return 1;
+	        
 		    return valueOne.compareTo(valueTwo);
+		}
 	}
 
 	private Comparable getProperty(Object o, String property)
@@ -59,9 +112,25 @@ public class PageComparator implements Comparator
 		{
 			Object propertyObject = PropertyUtils.getProperty(o, sortProperty);
 			if(propertyObject instanceof String)
-				return (Comparable)propertyObject.toString().toLowerCase();
+			{
+			    if(this.numberOrder)
+			    {
+			        try
+			        {
+			            return (Comparable)new Long(propertyObject.toString());
+			        }
+			        catch(Exception e)
+			        {
+			            logger.info("Not a number..." + e.getMessage());
+			        }
+			    }
+			    
+			    return (Comparable)propertyObject.toString().toLowerCase();
+			}
 			else
+			{
 				return (Comparable)propertyObject;
+			}
 		}
 		catch (Exception e)
 		{
