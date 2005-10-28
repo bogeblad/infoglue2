@@ -287,6 +287,10 @@ public class ServiceBindingController extends BaseController
 					}
 				}
 			}
+			
+			SiteNodeVersion siteNodeVersion = serviceBinding.getSiteNodeVersion();
+			if(siteNodeVersion.getOwningSiteNode() == null)
+			    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
 		}			
 	}       
 	
