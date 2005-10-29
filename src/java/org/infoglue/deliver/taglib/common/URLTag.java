@@ -176,7 +176,7 @@ public class URLTag extends TemplateControllerTag
 	    String newBaseUrl = "";
 	    try
 	    {
-    	    logger.error("fullBaseUrl:" + fullBaseUrl);
+    	    logger.info("fullBaseUrl:" + fullBaseUrl);
 	        if(this.fullBaseUrl)
 	        {
 	            int indexOfProtocol = getRequest().getRequestURL().indexOf("://");
@@ -195,10 +195,10 @@ public class URLTag extends TemplateControllerTag
 	    }
 	    catch(Exception e)
 	    {
-	        logger.error("Error:", e);
+	        logger.warn("Error:", e);
 	        newBaseUrl = (baseURL == null) ? getRequest().getRequestURL().toString() : baseURL;
 	    }
-	    logger.error("newBaseUrl:" + newBaseUrl);
+	    logger.info("newBaseUrl:" + newBaseUrl);
 	    return newBaseUrl;
 	}
 	
@@ -272,7 +272,10 @@ public class URLTag extends TemplateControllerTag
 				String parameter = i.next().toString();
 				sb.append(parameter + (i.hasNext() ? "&" : ""));
 			}
-			return getBaseURL() + (sb.toString().length() > 0 ? "?" + sb.toString() : "");
+			if(getBaseURL().indexOf("?") > -1)
+			    return getBaseURL() + (sb.toString().length() > 0 ? "&" + sb.toString() : "");
+			else
+			    return getBaseURL() + (sb.toString().length() > 0 ? "?" + sb.toString() : "");
 		}
 		return getBaseURL();
 	}
