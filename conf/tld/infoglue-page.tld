@@ -19,8 +19,8 @@
     </tag>
 
 	<tag>
-        <name>deliverContext</name>
-        <tagclass>org.infoglue.deliver.taglib.page.DeliverContextTag</tagclass>
+        <name>deliveryContext</name>
+        <tagclass>org.infoglue.deliver.taglib.page.DeliveryContextTag</tagclass>
         <bodycontent>empty</bodycontent>
         <info>Setters for DeliverContext parameters</info>
         <attribute>
