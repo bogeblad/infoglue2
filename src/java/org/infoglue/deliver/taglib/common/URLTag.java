@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
+import org.apache.log4j.Logger;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
@@ -42,8 +44,12 @@ import org.infoglue.deliver.taglib.TemplateControllerTag;
  * a query string (user supplied ot taken from the reuest) and
  * any number of parameters specified using nested &lt;common:parameter&gt; tags.
  */
-public class URLTag extends TemplateControllerTag {
-	/**
+public class URLTag extends TemplateControllerTag 
+{
+
+    private final static Logger logger = Logger.getLogger(URLTag.class.getName());
+
+    /**
 	 * 
 	 */
 	private static final long serialVersionUID = 4433903132736259601L;
@@ -81,6 +87,12 @@ public class URLTag extends TemplateControllerTag {
 	 * The names of all parameters added.
 	 */
 	private Map parameterNames; // <type>: <String>-><String>
+	
+	/**
+	 * Tells the tag if the nice uri option should be disabled if enabled.
+	 */
+	
+	private boolean disableNiceURI = false;
 	
 	/**
 	 * Default constructor.
@@ -161,28 +173,33 @@ public class URLTag extends TemplateControllerTag {
 	 */
 	private String getBaseURL()
 	{
+	    String newBaseUrl = "";
 	    try
 	    {
+    	    logger.error("fullBaseUrl:" + fullBaseUrl);
 	        if(this.fullBaseUrl)
 	        {
 	            int indexOfProtocol = getRequest().getRequestURL().indexOf("://");
 	            int indexFirstSlash = getRequest().getRequestURL().indexOf("/", indexOfProtocol + 3);
 	            String base = getRequest().getRequestURL().substring(0, indexFirstSlash);
 	            String currentPageUrl = this.getController().getCurrentPageUrl().toString();
-	            currentPageUrl = currentPageUrl.split("?")[0];
-	            return (baseURL == null) ? base + currentPageUrl : baseURL;	        
+	            currentPageUrl = currentPageUrl.split("\\?")[0];
+	            newBaseUrl = (baseURL == null) ? base + currentPageUrl : baseURL;	        
 	        }
 		    else
 		    {
 		        String currentPageUrl = this.getController().getCurrentPageUrl().toString();
-	            currentPageUrl = currentPageUrl.split("?")[0];
-		        return (baseURL == null) ? currentPageUrl : baseURL;	        
+	            currentPageUrl = currentPageUrl.split("\\?")[0];
+	            newBaseUrl = (baseURL == null) ? currentPageUrl : baseURL;	        
 		    }
 	    }
 	    catch(Exception e)
 	    {
-	        return (baseURL == null) ? getRequest().getRequestURL().toString() : baseURL;
+	        logger.error("Error:", e);
+	        newBaseUrl = (baseURL == null) ? getRequest().getRequestURL().toString() : baseURL;
 	    }
+	    logger.error("newBaseUrl:" + newBaseUrl);
+	    return newBaseUrl;
 	}
 	
 	/**
@@ -290,5 +307,10 @@ public class URLTag extends TemplateControllerTag {
     public void setFullBaseUrl(boolean fullBaseUrl)
     {
         this.fullBaseUrl = fullBaseUrl;
+    }
+    
+    public void setDisableNiceURI(boolean disableNiceURI)
+    {
+        this.disableNiceURI = disableNiceURI;
     }
 }

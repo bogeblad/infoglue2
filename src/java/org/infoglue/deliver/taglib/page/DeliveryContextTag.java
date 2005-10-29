@@ -55,4 +55,9 @@ public class DeliveryContextTag extends TemplateControllerTag
 	{
 	    getController().getDeliveryContext().setDisablePageCache(disablePageCache);
 	}
+
+	public void setDisableNiceUri(boolean disableNiceUri) throws JspException
+	{
+	    getController().getDeliveryContext().setDisableNiceUri(disableNiceUri);
+	}
 }

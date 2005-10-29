@@ -125,7 +125,7 @@ public class BasicURLComposer extends URLComposer
         if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
             useDNSNameInUrls = "false";
 
-        if(enableNiceURI.equalsIgnoreCase("true") && deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") == -1)
+        if(enableNiceURI.equalsIgnoreCase("true") && deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") == -1 && !deliveryContext.getDisableNiceUri())
         {
             String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
             
@@ -287,7 +287,7 @@ public class BasicURLComposer extends URLComposer
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
         
-        if(enableNiceURI.equalsIgnoreCase("true"))
+        if(enableNiceURI.equalsIgnoreCase("true") && !deliveryContext.getDisableNiceUri())
         {
             if (pageUrl.indexOf("?") == -1) 
 	        {

@@ -99,6 +99,9 @@ public class DeliveryContext implements UsageListener
 	//This variable sets if all urls generated should contain the server name etc.
 	private boolean useFullUrl = false;
 	
+	//The variable sets if url generation should skip niceUris
+	private boolean disableNiceUri = false;
+	
 	public static DeliveryContext getDeliveryContext()
 	{
 		return new DeliveryContext();
@@ -345,5 +348,15 @@ public class DeliveryContext implements UsageListener
     public void setUseFullUrl(boolean useFullUrl)
     {
         this.useFullUrl = useFullUrl;
+    }
+
+    public boolean getDisableNiceUri()
+    {
+        return this.disableNiceUri;
+    }
+    
+    public void setDisableNiceUri(boolean disableNiceUri)
+    {
+        this.disableNiceUri = disableNiceUri;
     }
 }
