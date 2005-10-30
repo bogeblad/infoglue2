@@ -1105,7 +1105,27 @@ public interface TemplateController
      */
     public abstract Locale getLocale() throws SystemException;
 
-    
+    /**
+	 * This method sets a cookie.
+	 * 
+	 * @param cookieName
+	 * @param value
+	 * @param domain
+	 * @param path
+	 * @param maxAge
+	 */
+
+	public void setCookie(String cookieName, String value, String domain, String path, Integer maxAge);
+	
+    /**
+	 * This method gets a cookie.
+	 * 
+	 * @param cookieName
+	 */
+
+	public String getCookie(String cookieName);
+
+	
     public DeliveryContext getDeliveryContext(); 
 
     public void setDeliveryContext(DeliveryContext deliveryContext);

@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -4721,6 +4722,50 @@ public class BasicTemplateController implements TemplateController
 	    }
 	    
 		return workflowSteps;
+	}
+	
+	/**
+	 * This method sets a cookie.
+	 * 
+	 * @param cookieName
+	 * @param value
+	 * @param domain
+	 * @param path
+	 * @param maxAge
+	 */
+
+	public void setCookie(String cookieName, String value, String domain, String path, Integer maxAge)
+	{
+	    Cookie cookie = new Cookie(cookieName, value);
+	    if(domain != null)
+	        cookie.setDomain(domain);
+		
+	    if(path != null)
+	        cookie.setPath(path);
+	    
+	    if(maxAge != null)
+	        cookie.setMaxAge(maxAge.intValue());
+	    
+	    this.deliveryContext.getHttpServletResponse().addCookie(cookie);	    
+	}
+	
+	/**
+	 * This method gets a cookie.
+	 * 
+	 * @param cookieName
+	 */
+
+	public String getCookie(String cookieName)
+	{
+	    Cookie[] cookies = this.getDeliveryContext().getHttpServletRequest().getCookies();
+	    for(int i=0; i<cookies.length; i++)
+	    {
+	        Cookie cookie = cookies[i];
+	        if(cookie.getName().equals(cookieName))
+	            return cookie.getValue();
+	    }
+	    
+	    return null;
 	}
 	
 	/**
