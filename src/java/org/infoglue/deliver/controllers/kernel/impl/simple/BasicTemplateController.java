@@ -4757,7 +4757,7 @@ public class BasicTemplateController implements TemplateController
 
 	public String getCookie(String cookieName)
 	{
-	    Cookie[] cookies = this.getDeliveryContext().getHttpServletRequest().getCookies();
+	    Cookie[] cookies = this.request.getCookies();
 	    for(int i=0; i<cookies.length; i++)
 	    {
 	        Cookie cookie = cookies[i];
