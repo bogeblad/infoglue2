@@ -564,14 +564,14 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 	        	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
 	    	    
-	        	    sessionAttributeStartIndex = pageKey.indexOf("$session.", sessionAttributeEndIndex);
+	        	    sessionAttributeStartIndex = pageKey.indexOf("$session.");
 	    	    }
 
 	    	    int cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
 	    	    while(cookieAttributeStartIndex > -1)
 	    	    {
 	        	    int cookieAttributeEndIndex = pageKey.indexOf("_", cookieAttributeStartIndex);
-	        	    String cookieAttribute = null;
+		    	    String cookieAttribute = null;
 	        	    if(cookieAttributeEndIndex > -1)
 	        	        cookieAttribute = pageKey.substring(cookieAttributeStartIndex + 8, cookieAttributeEndIndex);
 	        	    else
@@ -579,7 +579,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 	        	    pageKey = pageKey.replaceAll("\\$cookie." + cookieAttribute, "" + templateController.getCookie(cookieAttribute));    	    
 	    	    
-	        	    cookieAttributeStartIndex = pageKey.indexOf("$cookie.", cookieAttributeEndIndex);
+	        	    cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
 	    	    }
 
 			}

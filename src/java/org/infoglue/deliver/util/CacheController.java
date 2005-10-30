@@ -716,7 +716,7 @@ public class CacheController extends Thread
 
         	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
     	    
-        	    sessionAttributeStartIndex = pageKey.indexOf("$session.", sessionAttributeEndIndex);
+        	    sessionAttributeStartIndex = pageKey.indexOf("$session.");
     	    }
     	    
     	    int cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
@@ -731,7 +731,7 @@ public class CacheController extends Thread
 
         	    pageKey = pageKey.replaceAll("\\$cookie." + cookieAttribute, "" + templateController.getCookie(cookieAttribute));    	    
     	    
-        	    cookieAttributeStartIndex = pageKey.indexOf("$cookie.", cookieAttributeEndIndex);
+        	    cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
     	    }
 
     	}
