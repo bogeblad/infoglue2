@@ -536,9 +536,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the pageCacheKey for the page.
 	 */
 	
-	public String getPageCacheKey(Database db, HttpSession session, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+	public String getPageCacheKey(Database db, HttpSession session, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
 	{
-	    String pageKey = CacheController.getPageCacheKey(session, siteNodeId, languageId, contentId, userAgent, queryString, extra);
+	    String pageKey = CacheController.getPageCacheKey(session, templateController, siteNodeId, languageId, contentId, userAgent, queryString, extra);
 
 		try
 		{
@@ -565,6 +565,21 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
 	    	    
 	        	    sessionAttributeStartIndex = pageKey.indexOf("$session.", sessionAttributeEndIndex);
+	    	    }
+
+	    	    int cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
+	    	    while(cookieAttributeStartIndex > -1)
+	    	    {
+	        	    int cookieAttributeEndIndex = pageKey.indexOf("_", cookieAttributeStartIndex);
+	        	    String cookieAttribute = null;
+	        	    if(cookieAttributeEndIndex > -1)
+	        	        cookieAttribute = pageKey.substring(cookieAttributeStartIndex + 8, cookieAttributeEndIndex);
+	        	    else
+	        	        cookieAttribute = pageKey.substring(cookieAttributeStartIndex + 8);
+
+	        	    pageKey = pageKey.replaceAll("\\$cookie." + cookieAttribute, "" + templateController.getCookie(cookieAttribute));    	    
+	    	    
+	        	    cookieAttributeStartIndex = pageKey.indexOf("$cookie.", cookieAttributeEndIndex);
 	    	    }
 
 			}

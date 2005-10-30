@@ -42,6 +42,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
@@ -690,7 +691,7 @@ public class CacheController extends Thread
      * @return
      */
     
-    public static String getPageCacheKey(HttpSession session, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+    public static String getPageCacheKey(HttpSession session, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
     {
     	String pageKey = null;
     	String pageKeyProperty = CmsPropertyHandler.getProperty("pageKey");
@@ -717,6 +718,22 @@ public class CacheController extends Thread
     	    
         	    sessionAttributeStartIndex = pageKey.indexOf("$session.", sessionAttributeEndIndex);
     	    }
+    	    
+    	    int cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
+    	    while(cookieAttributeStartIndex > -1)
+    	    {
+        	    int cookieAttributeEndIndex = pageKey.indexOf("_", cookieAttributeStartIndex);
+        	    String cookieAttribute = null;
+        	    if(cookieAttributeEndIndex > -1)
+        	        cookieAttribute = pageKey.substring(cookieAttributeStartIndex + 8, cookieAttributeEndIndex);
+        	    else
+        	        cookieAttribute = pageKey.substring(cookieAttributeStartIndex + 8);
+
+        	    pageKey = pageKey.replaceAll("\\$cookie." + cookieAttribute, "" + templateController.getCookie(cookieAttribute));    	    
+    	    
+        	    cookieAttributeStartIndex = pageKey.indexOf("$cookie.", cookieAttributeEndIndex);
+    	    }
+
     	}
     	else
     	    pageKey  = "" + siteNodeId + "_" + languageId + "_" + contentId + "_" + userAgent + "_" + queryString;
