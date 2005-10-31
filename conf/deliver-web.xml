@@ -31,7 +31,7 @@
 		<filter-class>org.infoglue.cms.util.SetCharacterEncodingFilter</filter-class>
 		<init-param>
 			<param-name>encoding</param-name>
-			<param-value>UTF-8</param-value>
+			<param-value>ISO-8859-1</param-value>
 		</init-param>
 	</filter>
 
@@ -79,7 +79,7 @@
 
 	<filter-mapping>
 		<filter-name>Set Character Encoding</filter-name>
-		<url-pattern>*.action</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
     <filter-mapping>
