@@ -496,6 +496,34 @@ public class ComponentLogic
 
 		return propertyValue;
 	}
+
+	public String getPropertyValue(Integer siteNodeId, String propertyName, boolean useLangaugeFallback, boolean useInheritance) throws SystemException
+	{
+		String propertyValue = "";
+
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), templateController.getLanguageId());
+
+		Map property = getInheritedComponentProperty(siteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			if(property != null)
+			{
+				propertyValue = (String)property.get("path");
+				if(propertyValue == null)
+				{
+					Iterator keysIterator = property.keySet().iterator();
+					while(keysIterator.hasNext())
+					{
+						String key = (String)keysIterator.next();
+					}
+				}
+			}
+		}
+
+		return propertyValue;
+	}
+
+
 	
 	public ContentVO getBoundContent(String propertyName)
 	{

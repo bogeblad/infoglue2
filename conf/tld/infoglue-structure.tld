@@ -195,6 +195,11 @@
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
+    	    <name>siteNodeId</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
     	    <name>propertyName</name>
         	<required>true</required>
 	        <rtexprvalue>true</rtexprvalue>
