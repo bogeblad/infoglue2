@@ -21,14 +21,18 @@ public class HardcodedPageComparator implements Comparator
 
 	private String sortProperty;
 	private String sortOrder;
+	private boolean numberOrder;
+	private String nameProperty;
 	private String namesInOrderString;
 	
 	private TemplateController templateController;
 
-	public HardcodedPageComparator(String sortProperty, String sortOrder, String namesInOrderString, TemplateController templateController)
+	public HardcodedPageComparator(String sortProperty, String sortOrder, boolean numberOrder, String nameProperty, String namesInOrderString, TemplateController templateController)
 	{
 		this.sortProperty = sortProperty;
 		this.sortOrder = sortOrder;
+		this.numberOrder = numberOrder;
+		this.nameProperty = nameProperty;
 		this.namesInOrderString = namesInOrderString;
 		this.templateController = templateController;
 	}
@@ -40,6 +44,9 @@ public class HardcodedPageComparator implements Comparator
 	    Comparable valueOne = getProperty(o1, sortProperty);
 		Comparable valueTwo = getProperty(o2, sortProperty);
 		
+		Comparable valueOneName = getProperty(o1, nameProperty);
+		Comparable valueTwoName = getProperty(o2, nameProperty);
+		
 		if(valueOne == null)
 		{
 		    WebPage webPage1 = (WebPage)o1;
@@ -47,29 +54,67 @@ public class HardcodedPageComparator implements Comparator
 		    
 		    Integer meta1Id = webPage1.getMetaInfoContentId(); //this.templateController.getMetaInformationContentId(webPage1.getSiteNodeId());
 		    Integer meta2Id = webPage2.getMetaInfoContentId(); //this.templateController.getMetaInformationContentId(webPage2.getSiteNodeId());
-		    
+
 		    valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
 			valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);
+
+			if(valueOneName == null)
+			{
+			    valueOneName = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), nameProperty);
+				valueTwoName = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), nameProperty);
+			}
+			
+		    if(this.numberOrder)
+		    {
+		        try
+		        {
+		            if(valueOne != null && !valueOne.equals(""))
+		                valueOne = (Comparable)new Long(valueOne.toString());
+		            else
+		            {
+		                if(sortOrder.equalsIgnoreCase("desc"))
+		                    valueOne = (Comparable)new Long(Long.MIN_VALUE);
+		                else
+		                    valueOne = (Comparable)new Long(Long.MAX_VALUE);
+		            }
+		        }
+		        catch(Exception e)
+		        {
+		            logger.info("Not a number..." + e.getMessage());
+		        }
+		        
+		        try
+		        {
+		            if(valueTwo != null && !valueTwo.equals(""))
+		                valueTwo = (Comparable)new Long(valueTwo.toString());
+		            else
+		            {
+		                if(sortOrder.equalsIgnoreCase("desc"))
+		                    valueTwo = (Comparable)new Long(Long.MIN_VALUE);
+		                else
+		                    valueTwo = (Comparable)new Long(Long.MAX_VALUE);
+		            }
+		        }
+		        catch(Exception e)
+		        {
+		            logger.info("Not a number..." + e.getMessage());
+		        }
+		    }
 		}
 
-		/*
-	    if(sortOrder.equalsIgnoreCase("desc"))
-		    return valueTwo.compareTo(valueOne);
-		else
-		    return valueOne.compareTo(valueTwo);
-		*/
-		
-		if(after(valueOne, valueTwo))
+		if(after(valueOne, valueTwo, valueOneName, valueTwoName))
 		    return 1;
 		else
 		    return -1;
 	}
 
-	private boolean after(Comparable valueOne, Comparable valueTwo)
+	private boolean after(Comparable valueOne, Comparable valueTwo, Comparable valueOneName, Comparable valueTwoName)
 	{	    
-	    int index1 = namesInOrderString.indexOf(valueOne.toString());
-	    int index2 = namesInOrderString.indexOf(valueTwo.toString());
+	    int index1 = namesInOrderString.indexOf(valueOneName.toString());
+	    int index2 = namesInOrderString.indexOf(valueTwoName.toString());
 	    
+	    //System.out.println("" + valueOneName.toString() + ":" + index1);
+	    //System.out.println("" + valueTwoName.toString() + ":" + index2);
 	    if(index1 != -1 && index2 != -1)
 	    {
 	        if(index1 > index2)
@@ -85,17 +130,34 @@ public class HardcodedPageComparator implements Comparator
 	            return false;
 	        else
 	        {
+	            int result;
+	    	    if(sortOrder.equalsIgnoreCase("desc"))
+	    	    {  
+	    	        if((valueOne != null && !valueOne.toString().equalsIgnoreCase("")) && (valueTwo == null || valueTwo.toString().equalsIgnoreCase("")))
+	    	            result = -1;
+	    		    if((valueTwo != null && !valueTwo.toString().equalsIgnoreCase("")) && (valueOne == null || valueOne.toString().equalsIgnoreCase("")))
+	    		        result = 1;
+	    	        
+	    		    result = valueTwo.compareTo(valueOne);
+	    	    }
+	    	    else
+	    		{
+	    		    if((valueOne != null && !valueOne.toString().equalsIgnoreCase("")) && (valueTwo == null || valueTwo.toString().equalsIgnoreCase("")))
+	    		        result = -1;
+	    		    if((valueTwo != null && !valueTwo.toString().equalsIgnoreCase("")) && (valueOne == null || valueOne.toString().equalsIgnoreCase("")))
+	    		        result = 1;
+	    	        
+	    		    result = valueOne.compareTo(valueTwo);
+	    		}
+	    	    
+	    	    if(result > 0)
+	    	        return true;
+	    	    else
+	    	        return false;
+	    	    
+	            /*
 		        if(sortOrder.equalsIgnoreCase("desc"))
 		        {
-		            /*
-		            if(valueOne.toString().equalsIgnoreCase("Nyheter"))
-		            {
-		                System.out.println("valueOne: " + valueOne);
-		                System.out.println("valueTwo: " + valueTwo);
-		                System.out.println("compare:" + valueTwo.compareTo(valueOne));
-		            }
-		            */
-		            
 		            if(valueTwo.compareTo(valueOne) < 0)
 		                return false;
 		            else
@@ -108,6 +170,7 @@ public class HardcodedPageComparator implements Comparator
 		            else
 		                return true;
 			    }
+			    */
 	        }
 	    }
 	}

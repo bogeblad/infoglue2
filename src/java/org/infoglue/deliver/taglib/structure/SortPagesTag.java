@@ -46,6 +46,7 @@ public class SortPagesTag extends TemplateControllerTag
 	private List input = new ArrayList();
 	
 	private String sortProperty = "NavigationTitle";
+	private String nameProperty = "NavigationTitle";
 	private String sortOrder 	= "asc";
 	private boolean numberOrder = false; 
 	private String type			= "PageComparator";
@@ -65,7 +66,7 @@ public class SortPagesTag extends TemplateControllerTag
 	public int doEndTag() throws JspException
     {
 	    if(this.type.equalsIgnoreCase("HardcodedPageComparator") || namesInOrderString != null)
-	        this.comparator = new HardcodedPageComparator(sortProperty, sortOrder, namesInOrderString, getController());
+	        this.comparator = new HardcodedPageComparator(sortProperty, sortOrder, numberOrder, nameProperty, namesInOrderString, getController());
 	    else
 	        this.comparator = new PageComparator(sortProperty, sortOrder, numberOrder, getController());
 	        
