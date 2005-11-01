@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.3 2005/10/19 13:07:48 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.4 2005/11/01 13:19:24 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -98,7 +98,6 @@
 
 	<!-- Site Delivery -->
 	<action name="org.infoglue.deliver.applications.actions.ViewPageAction" alias="ViewPage">
-		<!--<view name="error">/deliver/error.vm</view>-->
 		<view name="error">/deliver/error.vm</view>
 	</action>
 
