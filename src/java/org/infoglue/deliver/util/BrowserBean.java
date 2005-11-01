@@ -67,7 +67,12 @@ public final class BrowserBean implements Serializable
 	private void inituseragent()
 	{
 		String user = useragent.toLowerCase();
-		if(user.indexOf("msie") != -1) 
+		
+		if(user.indexOf("opera") != -1)
+		{
+			this.opera = true;
+		}
+		else if(user.indexOf("msie") != -1) 
 		{
 			this.ie = true;
 		}
@@ -92,10 +97,6 @@ public final class BrowserBean implements Serializable
 		else if(user.indexOf("mozilla") != -1)
 		{
 			this.ns4 = true;
-		}
-		else if(user.indexOf("opera") != -1)
-		{
-			this.opera = true;
 		}
 
 		if(user.indexOf(".net clr") != -1)
