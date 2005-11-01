@@ -232,7 +232,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
-			throw new SystemException(e.getMessage());
+
+			getRequest().setAttribute("responseCode", "500");
+			getRequest().setAttribute("error", e);
+			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
+
+			//throw new SystemException(e.getMessage());
 		}
 		finally
 		{

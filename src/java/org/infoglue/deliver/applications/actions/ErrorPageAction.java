@@ -24,10 +24,13 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.actions.Error;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.CharResponseWrapper;
 
 
 /**
@@ -63,8 +66,24 @@ public class ErrorPageAction extends InfoGlueAbstractAction
                 
         //System.out.println("responseCode:" + responseCode);
         this.getResponse().setStatus(responseCode);
-        
-        return SUCCESS;
+
+        String errorUrl = CmsPropertyHandler.getProperty("errorUrl");
+        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
+        {
+            if(errorUrl.indexOf("http") > -1)
+                this.getResponse().sendRedirect(errorUrl);
+            else
+            {
+                RequestDispatcher dispatch = this.getRequest().getRequestDispatcher(errorUrl);
+                this.getRequest().setAttribute("error", e);
+                //dispatch.forward(this.getRequest(), this.getResponse());
+                dispatch.include(this.getRequest(), this.getResponse());
+            }
+            
+            return NONE;
+        }
+        else
+            return SUCCESS;
     }
 
     public int getResponseCode()
