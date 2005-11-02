@@ -88,21 +88,27 @@ public class PortalController {
      *             thrown in case of an exception while initializing the
      *             portlet.
      */
-    public PortletWindowIG getPortletWindow(String portletID, String windowID)
-            throws NameNotFoundException, PortalException {
-        try {
-            PortletWindowRegistryService windowService = (PortletWindowRegistryService) ServiceManager
-                    .getService(PortletWindowRegistryService.class);
+    public PortletWindowIG getPortletWindow(String portletID, String windowID) throws NameNotFoundException, PortalException 
+    {
+        try 
+        {
+            PortletWindowRegistryService windowService = (PortletWindowRegistryService) ServiceManager.getService(PortletWindowRegistryService.class);
             PortletWindow renderWindow = windowService.createPortletWindow(windowID, portletID);
-            log.warn("Portlet window of " + portletID + "," + windowID + ": " + renderWindow);
+            log.info("Portlet window of " + portletID + "," + windowID + ": " + renderWindow);
             return new PortletWindowIGImpl(renderWindow, request, response);
-        } catch (PortletException e) {
+        } 
+        catch (PortletException e) 
+        {
             log.error("", e);
             throw new PortalException(e);
-        } catch (PortletContainerException e) {
+        } 
+        catch (PortletContainerException e) 
+        {
             log.error("", e);
             throw new PortalException(e);
-        } catch (Throwable e) {
+        } 
+        catch (Throwable e) 
+        {
             log.error("", e);
             throw new PortalException(e);
         }
