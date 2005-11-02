@@ -84,7 +84,7 @@ public class ThumbnailGenerator
 		if(thumbHeight < 1)
 		    thumbHeight = 1;
 		    
-		if(CmsPropertyHandler.getProperty("externalThumbnailGeneration") != null && CmsPropertyHandler.getProperty("externalThumbnailGeneration").equalsIgnoreCase(""))
+		if(CmsPropertyHandler.getProperty("externalThumbnailGeneration") != null && !CmsPropertyHandler.getProperty("externalThumbnailGeneration").equalsIgnoreCase(""))
 		{
 		    String[] args = new String[5];
 		    
