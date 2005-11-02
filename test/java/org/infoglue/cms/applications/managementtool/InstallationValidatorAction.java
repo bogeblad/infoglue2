@@ -279,7 +279,6 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
     private void dumpDigitalAsset(DigitalAssetVO digitalAssetVO, Database db) throws Exception
     {
         String url = DigitalAssetController.getController().getDigitalAssetUrl(digitalAssetVO, db);
-        System.out.println("url:" + url);
         if(url == null || url.length() == 0)
         {
             throw new SystemException("The system could not dump the asset to the filesystem and get the url.");            

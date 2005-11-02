@@ -299,8 +299,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 	{
 		getLogger().info("Title:" + this.title);
 		getLogger().info("toolbarKey:" + this.toolbarKey);
-		System.out.println("toolbarKey:" + this.toolbarKey);
-
+		
 		try
 		{
 			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.repositoryList.header"))
