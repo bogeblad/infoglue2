@@ -65,6 +65,7 @@ public class ErrorPageAction extends InfoGlueAbstractAction
         }
                 
         //System.out.println("responseCode:" + responseCode);
+        this.getResponse().setContentType("text/html; charset=UTF-8");
         this.getResponse().setStatus(responseCode);
 
         String errorUrl = CmsPropertyHandler.getProperty("errorUrl");
