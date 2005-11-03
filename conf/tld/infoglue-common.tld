@@ -361,5 +361,47 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+    <tag>
+	    <name>transformText</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.TextTransformTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>text</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>htmlEncode</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>replaceLineBreaks</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>lineBreakReplacer</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>replaceString</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>replaceWithString</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
     
 </taglib>
