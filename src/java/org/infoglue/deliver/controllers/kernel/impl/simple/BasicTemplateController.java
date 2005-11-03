@@ -4757,12 +4757,15 @@ public class BasicTemplateController implements TemplateController
 
 	public String getCookie(String cookieName)
 	{
-	    Cookie[] cookies = this.request.getCookies();
-	    for(int i=0; i<cookies.length; i++)
+	    if(this.request != null)
 	    {
-	        Cookie cookie = cookies[i];
-	        if(cookie.getName().equals(cookieName))
-	            return cookie.getValue();
+		    Cookie[] cookies = this.request.getCookies();
+		    for(int i=0; i<cookies.length; i++)
+		    {
+		        Cookie cookie = cookies[i];
+		        if(cookie.getName().equals(cookieName))
+		            return cookie.getValue();
+		    }
 	    }
 	    
 	    return null;

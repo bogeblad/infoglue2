@@ -588,6 +588,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		catch(Exception e)
 		{
 			getLogger().warn("An error occurred trying to get if the siteNodeVersion had a different pageCacheKey:" + e.getMessage(), e);
+			e.printStackTrace();
 		}
 
 		return pageKey;
