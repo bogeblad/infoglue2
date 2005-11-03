@@ -87,10 +87,19 @@ public class ViewPageFilter implements Filter
         this.filterConfig = filterConfig;
         String filterURIs = filterConfig.getInitParameter(FilterConstants.FILTER_URIS_PARAMETER);
         uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","));
-        attributeName = filterConfig.getInitParameter(FilterConstants.ATTRIBUTE_NAME_PARAMETER);
-        logger.info("attributeName:" + attributeName);
+
+        attributeName = CmsPropertyHandler.getProperty("niceURIAttributeName");
+        logger.info("attributeName from properties:" + attributeName);
+        
+        if(attributeName == null || attributeName.indexOf("@") > -1)
+            attributeName = filterConfig.getInitParameter(FilterConstants.ATTRIBUTE_NAME_PARAMETER);
+        
+        logger.info("attributeName from web.xml, filter parameters:" + attributeName);
         if(attributeName == null || attributeName.equals(""))
             attributeName = "NavigationTitle";
+
+        logger.info("attributeName used:" + attributeName);
+
         uriCache = new URIMapperCache();
     }
 
