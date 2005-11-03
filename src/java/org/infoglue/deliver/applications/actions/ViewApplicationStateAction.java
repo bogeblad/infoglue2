@@ -27,6 +27,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 import org.infoglue.deliver.util.CacheController;
@@ -42,6 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.File;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This is the action that shows the application state and also can be used to set up surveilence.
@@ -79,6 +82,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         CacheController.clearCache(cacheName);
         
+        this.getHttpSession().invalidate();
+        
         return "cleared";
     }
 
@@ -89,6 +94,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null);
+        
+        this.getHttpSession().invalidate();
         
         return "cleared";
     }
@@ -105,6 +112,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     public String doGC() throws Exception
     {
         Runtime.getRuntime().gc();
+        
         return doExecute();
     }
     
@@ -115,6 +123,20 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+        long start = System.currentTimeMillis();
+        List allowedAdminIPList = ServerNodeController.getController().getAllowedAdminIPList();
+        //System.out.println("Remote host:" + this.getRequest().getRemoteAddr());
+        //System.out.println("Lookup took: " + (System.currentTimeMillis() - start) + "ms");
+        if(!allowedAdminIPList.contains(this.getRequest().getRemoteAddr()))
+        {
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        
         String sessionTimeout = CmsPropertyHandler.getProperty("session.timeout");
 		if(sessionTimeout == null)
 		    sessionTimeout = "1800";
@@ -164,6 +186,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 			getLogger().error(e.getMessage(), e);            
 		}
 				
+		this.getHttpSession().invalidate();
+		
         return "success";
     }
         

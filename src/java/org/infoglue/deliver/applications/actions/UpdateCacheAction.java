@@ -25,9 +25,13 @@
 package org.infoglue.deliver.applications.actions;
 
 import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.util.*;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
@@ -86,6 +90,9 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
     public String doTest() throws Exception
     {
         this.getResponse().getWriter().println("test ok - cache action available");
+        
+        this.getHttpSession().invalidate();
+        
         return NONE;
     }
     
@@ -96,20 +103,35 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+        String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+		
+        if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
+        {
+	        long start = System.currentTimeMillis();
+	        List allowedAdminIPList = ServerNodeController.getController().getAllowedAdminIPList();
+	        //System.out.println("Remote host:" + this.getRequest().getRemoteAddr());
+	        //System.out.println("Lookup took: " + (System.currentTimeMillis() - start) + "ms");
+	        if(!allowedAdminIPList.contains(this.getRequest().getRemoteAddr()))
+	        {
+	            this.getResponse().setContentType("text/plain");
+	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+	            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+	            
+	            return NONE;
+	        }
+        }
+        
 		try
 		{  
 		    getLogger().info("className:" + className);
 			getLogger().info("objectId:" + objectId);
 		    	
-			//Should contain permissioncontrol later...
-
-		    boolean isDependsClass = false;
-		    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
-		        isDependsClass = true;
+		    //boolean isDependsClass = false;
+			//if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
+			//    isDependsClass = true;
 
 			//Iterate through all registered listeners and call them... dont place logic here... have specialized handlers.			
 
-			String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
 			if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 			{
 			    getLogger().info("className:" + className);
