@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.10 2005/10/26 16:01:39 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.11 2005/11/03 21:53:25 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1293,7 +1293,7 @@
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
-	<!-- Repository -->
+	<!-- Redirect -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListRedirectAction" alias="ViewListRedirect">
 		<view name="success">/cms/managementtool/viewListRedirect.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -1317,6 +1317,17 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.CreateRedirectAction" alias="CreateRedirect">
 		<view name="input">/cms/managementtool/createRedirect.vm</view>
 		<view name="success">ViewRedirect.action</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- ServerNodes -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListServerNodeAction" alias="ViewListServerNode">
+		<view name="success">/cms/managementtool/viewListServerNode.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateServerNodeAction" alias="UpdateServerNodes">
+		<view name="input">/cms/managementtool/viewListServerNode.vm</view>
+		<view name="success">ViewListServerNode.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

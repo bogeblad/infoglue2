@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.serverNodeList.header" "tool.managementtool.serverNodeList.header" "")
+
+<div class="fullymarginalized">
+
+<table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
+<form name="editForm" method="POST" action="ViewListServerNode!save.action">
+	<tr>
+		<td>
+			<p>#editTextField("ServerNode.allowedAdminIP" "allowedAdminIP" $!allowedAdminIP "51" "normaltextfield" "")</p>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>
+			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
+			<!--<a href="javascript:saveAndExit(document.editForm, 'ViewRepositoryProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>-->
+			<!--<a href="ViewRepository.action?repositoryId=$repositoryId"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>-->
+		</td>
+	</tr>
+
+<input type="hidden" name="repositoryId" value="$!repositoryId">
+</form>
+</table>
+</div>
+
+</body>
+</html>
+
+
