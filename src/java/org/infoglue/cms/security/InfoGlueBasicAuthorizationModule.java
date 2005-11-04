@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -46,6 +47,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 
 /**
  * @author Mattias Bogeblad
@@ -55,6 +57,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class InfoGlueBasicAuthorizationModule extends BaseController implements AuthorizationModule
 {
+    private final static Logger logger = Logger.getLogger(InfoGlueBasicAuthorizationModule.class.getName());
+
 	private Properties extraProperties = null;
 	private Database transactionObject 	= null;
 	
@@ -92,6 +96,12 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	
 	public InfoGluePrincipal getAuthorizedInfoGluePrincipal(String userName) throws Exception
 	{
+	    if(userName == null || userName.equals(""))
+	    {
+	        logger.warn("userName was null or empty - fix your templates:" + userName);
+	        return null;
+	    }
+	    
 		InfoGluePrincipal infogluePrincipal = null;
 		
 		String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
@@ -116,29 +126,37 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					beginTransaction(db);
 					
 					SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
-					Iterator roleListIterator = systemUser.getRoles().iterator();
-					while(roleListIterator.hasNext())
+					if(systemUser != null)
 					{
-						Role role = (Role)roleListIterator.next();
-						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
-						roles.add(infoGlueRole);
+						Iterator roleListIterator = systemUser.getRoles().iterator();
+						while(roleListIterator.hasNext())
+						{
+							Role role = (Role)roleListIterator.next();
+							InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
+							roles.add(infoGlueRole);
+						}
+		
+						Iterator groupListIterator = systemUser.getGroups().iterator();
+						while(groupListIterator.hasNext())
+						{
+						    Group group = (Group)groupListIterator.next();
+							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
+							groups.add(infoGlueGroup);
+						}
+		
+						infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator);
 					}
-	
-					Iterator groupListIterator = systemUser.getGroups().iterator();
-					while(groupListIterator.hasNext())
+					else
 					{
-					    Group group = (Group)groupListIterator.next();
-						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
-						groups.add(infoGlueGroup);
+					    logger.warn("Could not find user with userName '" + userName + "' - fix your template logic.");
+					    infogluePrincipal = null;
 					}
-	
-					infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator);
 					
 					commitTransaction(db);
 				} 
 				catch (Exception e) 
 				{
-					getLogger().info("An error occurred so we should not complete the transaction:" + e);
+					getLogger().info("An error occurred trying to get SystemUser for " + userName + ":" + e);
 					rollbackTransaction(db);
 					throw new SystemException(e.getMessage());
 				}
