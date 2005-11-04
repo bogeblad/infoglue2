@@ -123,6 +123,10 @@ public class DigitalAssetController extends BaseController
 		contentVersions.add(contentVersion);
 		logger.info("Added contentVersion:" + contentVersion.getId());
 	
+		System.out.println("contentVersion:" + contentVersion.getId());
+		System.out.println("digitalAssetVO:" + digitalAssetVO.getId() + ":" + digitalAssetVO.getAssetFileName() + ":" + digitalAssetVO.getAssetFileSize());
+		System.out.println("IS:" + is.available());
+		
 		digitalAsset = new DigitalAssetImpl();
 		digitalAsset.setValueObject(digitalAssetVO.createCopy());
 		digitalAsset.setAssetBlob(is);
