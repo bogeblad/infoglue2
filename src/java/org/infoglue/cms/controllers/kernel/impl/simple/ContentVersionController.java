@@ -616,14 +616,15 @@ public class ContentVersionController extends BaseController
 		getLogger().info("Content:" + content.getContentId() + ":" + db.isPersistent(content));
 		contentVersion.setOwningContent((ContentImpl)content);
 		
-		if(oldContentVersionId != null && oldContentVersionId.intValue() != -1)
-		    copyDigitalAssets(getContentVersionWithId(oldContentVersionId, db), contentVersion, db);
-		    //contentVersion.setDigitalAssets(getContentVersionWithId(oldContentVersionId, db).getDigitalAssets());
-		
 		contentVersion.setValueObject(contentVersionVO);
         db.create(contentVersion); 
-		content.getContentVersions().add(contentVersion);
-		
+
+        content.getContentVersions().add(contentVersion);
+
+        if(oldContentVersionId != null && oldContentVersionId.intValue() != -1)
+		    copyDigitalAssets(getContentVersionWithId(oldContentVersionId, db), contentVersion, db);
+		    //contentVersion.setDigitalAssets(getContentVersionWithId(oldContentVersionId, db).getDigitalAssets());
+				
         return contentVersion;
     }     
 
