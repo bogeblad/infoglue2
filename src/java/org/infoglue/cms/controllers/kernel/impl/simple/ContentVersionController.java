@@ -900,37 +900,23 @@ public class ContentVersionController extends BaseController
 	 * This method returns the version previous to the one sent in.
 	 */
 	
-	public ContentVersionVO getPreviousActiveContentVersionVO(Integer contentId, Integer languageId, Integer contentVersionId) throws SystemException, Bug
+	public ContentVersionVO getPreviousActiveContentVersionVO(Integer contentId, Integer languageId, Integer contentVersionId, Database db) throws SystemException, Bug, Exception
     {
-    	Database db = CastorDatabaseService.getDatabase();
     	ContentVersionVO contentVersionVO = null;
 
-        beginTransaction(db);
-
-        try
-        {           
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.isActive = $3 AND cv.contentVersionId < $4 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	oql.bind(languageId);
-        	oql.bind(new Boolean(true));
-        	oql.bind(contentVersionId);
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-            {
-            	ContentVersion contentVersion = (ContentVersion)results.next();
-            	getLogger().info("found one:" + contentVersion.getValueObject());
-            	contentVersionVO = contentVersion.getValueObject();
-            }
-            
-            commitTransaction(db);
-        }
-        catch(Exception e)
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.isActive = $3 AND cv.contentVersionId < $4 ORDER BY cv.contentVersionId desc");
+    	oql.bind(contentId);
+    	oql.bind(languageId);
+    	oql.bind(new Boolean(true));
+    	oql.bind(contentVersionId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
+        	ContentVersion contentVersion = (ContentVersion)results.next();
+        	getLogger().info("found one:" + contentVersion.getValueObject());
+        	contentVersionVO = contentVersion.getValueObject();
         }
     	
 		return contentVersionVO;

@@ -594,38 +594,22 @@ public class SiteNodeVersionController extends BaseController
 	 * This method returns the version previous to the one sent in.
 	 */
 	
-	public static SiteNodeVersionVO getPreviousActiveSiteNodeVersionVO(Integer siteNodeId, Integer siteNodeVersionId) throws SystemException, Bug
+	public SiteNodeVersionVO getPreviousActiveSiteNodeVersionVO(Integer siteNodeId, Integer siteNodeVersionId, Database db) throws SystemException, Bug, Exception
     {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
     	SiteNodeVersionVO siteNodeVersionVO = null;
 
-        beginTransaction(db);
-
-        try
-        {           
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.isActive = $2 AND cv.siteNodeVersionId < $3 ORDER BY cv.siteNodeVersionId desc");
-        	oql.bind(siteNodeId);
-        	oql.bind(new Boolean(true));
-        	oql.bind(siteNodeVersionId);
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-            {
-            	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
-            	logger.info("found one:" + siteNodeVersion.getValueObject());
-            	siteNodeVersionVO = siteNodeVersion.getValueObject();
-            }
-            
-            commitTransaction(db);
-        }
-        catch(Exception e)
+    	OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.isActive = $2 AND cv.siteNodeVersionId < $3 ORDER BY cv.siteNodeVersionId desc");
+    	oql.bind(siteNodeId);
+    	oql.bind(new Boolean(true));
+    	oql.bind(siteNodeVersionId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
         {
-            logger.error("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
+        	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+        	logger.info("found one:" + siteNodeVersion.getValueObject());
+        	siteNodeVersionVO = siteNodeVersion.getValueObject();
         }
     	
 		return siteNodeVersionVO;

@@ -203,7 +203,7 @@ public class PublicationController extends BaseController
 	        			Content content = contentVersion.getOwningContent();
 	        			Language language = contentVersion.getLanguage();
 	        			//event.setEntityId(ContentVersionController.getPreviousContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
-	        			event.setEntityId(ContentVersionController.getContentVersionController().getPreviousActiveContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
+	        			event.setEntityId(ContentVersionController.getContentVersionController().getPreviousActiveContentVersionVO(content.getId(), language.getId(), contentVersion.getId(), db).getId());
 	        			ContentVersionController.getContentVersionController().delete(contentVersion, db);
         			}
 	        	}
@@ -219,7 +219,7 @@ public class PublicationController extends BaseController
         			{
 		        		SiteNode siteNode = siteNodeVersion.getOwningSiteNode();
 	        			//event.setEntityId(SiteNodeVersionController.getPreviousSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
-	        			event.setEntityId(SiteNodeVersionController.getPreviousActiveSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
+	        			event.setEntityId(SiteNodeVersionController.getController().getPreviousActiveSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId(), db).getId());
 	        			SiteNodeVersionController.getController().delete(siteNodeVersion, db);
 	        			//db.remove(siteNodeVersion);
         			}
@@ -289,7 +289,7 @@ public class PublicationController extends BaseController
 							Content content = contentVersion.getOwningContent();
 							Language language = contentVersion.getLanguage();
 							//event.setEntityId(ContentVersionController.getPreviousContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
-							event.setEntityId(ContentVersionController.getContentVersionController().getPreviousActiveContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
+							event.setEntityId(ContentVersionController.getContentVersionController().getPreviousActiveContentVersionVO(content.getId(), language.getId(), contentVersion.getId(), db).getId());
 							ContentVersionController.getContentVersionController().delete(contentVersion, db);
 						}
 					}
@@ -305,7 +305,7 @@ public class PublicationController extends BaseController
 						{
 							SiteNode siteNode = siteNodeVersion.getOwningSiteNode();
 							//event.setEntityId(SiteNodeVersionController.getPreviousSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
-							event.setEntityId(SiteNodeVersionController.getPreviousActiveSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
+							event.setEntityId(SiteNodeVersionController.getController().getPreviousActiveSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId(), db).getId());
 							SiteNodeVersionController.getController().delete(siteNodeVersion, db);
 							//db.remove(siteNodeVersion);
 						}
