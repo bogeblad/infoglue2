@@ -164,23 +164,32 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			else
 			{
 			    SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, transactionObject);
-				Iterator roleListIterator = systemUser.getRoles().iterator();
-				while(roleListIterator.hasNext())
+			    
+			    if(systemUser != null)
+			    {
+				    Iterator roleListIterator = systemUser.getRoles().iterator();
+					while(roleListIterator.hasNext())
+					{
+						Role role = (Role)roleListIterator.next();
+						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
+						roles.add(infoGlueRole);
+					}
+	
+					Iterator groupListIterator = systemUser.getGroups().iterator();
+					while(groupListIterator.hasNext())
+					{
+					    Group group = (Group)groupListIterator.next();
+						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
+						groups.add(infoGlueGroup);
+					}
+	
+					infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator);
+			    }
+				else
 				{
-					Role role = (Role)roleListIterator.next();
-					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
-					roles.add(infoGlueRole);
+				    logger.warn("Could not find user with userName '" + userName + "' - fix your template logic.");
+				    infogluePrincipal = null;
 				}
-
-				Iterator groupListIterator = systemUser.getGroups().iterator();
-				while(groupListIterator.hasNext())
-				{
-				    Group group = (Group)groupListIterator.next();
-					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
-					groups.add(infoGlueGroup);
-				}
-
-				infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator);
 			}
 		}
 		
