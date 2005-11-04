@@ -127,7 +127,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     {
     	//CacheController.evictWaitingCache();
 
-    	long start			= new Date().getTime();
+    	long start			= System.currentTimeMillis();
     	long elapsedTime 	= 0;
     	
     	getLogger().info("************************************************");
@@ -245,7 +245,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    closeTransaction(dbWrapper.getDatabase());
 		}
 
-		elapsedTime = new Date().getTime() - start;
+		elapsedTime = System.currentTimeMillis() - start;
 		if(elapsedTime > 5000)
 		{
 		    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
