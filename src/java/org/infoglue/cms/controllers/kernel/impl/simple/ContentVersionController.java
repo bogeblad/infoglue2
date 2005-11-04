@@ -977,7 +977,8 @@ public class ContentVersionController extends BaseController
 		    getLogger().info("Copying digitalAssets " + digitalAsset.getAssetKey());
 		    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
 		    
-		    DigitalAssetController.create(digitalAssetVO, digitalAsset.getAssetBlob(), newContentVersion, db);
+		    DigitalAssetController.create(digitalAssetVO, DigitalAssetController.getController().getAssetInputStream(digitalAsset), newContentVersion, db);
+		    //DigitalAssetController.create(digitalAssetVO, digitalAsset.getAssetBlob(), newContentVersion, db);
 		    getLogger().info("digitalAssets:" + digitalAssets.size());
 		}
 		//newContentVersion.setDigitalAssets(digitalAssets);

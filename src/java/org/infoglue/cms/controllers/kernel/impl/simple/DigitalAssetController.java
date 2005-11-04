@@ -644,6 +644,20 @@ public class DigitalAssetController extends BaseController
     }
 
 	/**
+	 * This is a method that stores the asset on disk if not there allready and returns the asset as an InputStream
+	 * from that location. To avoid trouble with in memory blobs.
+	 */
+	
+	public InputStream getAssetInputStream(DigitalAsset digitalAsset) throws Exception
+	{
+	    String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+		String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+		dumpDigitalAsset(digitalAsset, fileName, filePath);
+		System.out.println("Returning InputStream from file:" + filePath + File.separator + fileName);
+		return new FileInputStream(filePath + File.separator + fileName);
+	}
+
+	/**
 	 * This method should return a String containing the URL for this digital asset.
 	 */
 
