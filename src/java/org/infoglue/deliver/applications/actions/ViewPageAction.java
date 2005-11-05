@@ -115,6 +115,25 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	public static long rollbackTime = 0;
 	public static long closeTime = 0;
 	
+	private static int maxClientsInt = 0;
+	
+	static
+	{
+	    final String maxClients = CmsPropertyHandler.getProperty("maxClients");
+        if(maxClients != null && !maxClients.equals("") && maxClients.indexOf("@") == -1)
+        {
+            try
+            {
+                maxClientsInt = new Integer(maxClients).intValue();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+	}
+	
     public static int getNumberOfCurrentRequests()
     {
         synchronized(currentRequests)
@@ -196,7 +215,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
     	//CacheController.evictWaitingCache();
-        if(getNumberOfCurrentRequests() > 100)
+        if(maxClientsInt != 0 && getNumberOfCurrentRequests() > maxClientsInt)
         {
 			getResponse().setContentType("text/html; charset=UTF-8");
 			getRequest().setAttribute("responseCode", "500");
