@@ -1166,30 +1166,45 @@ public class ContentVersionController extends BaseController
 	            getLogger().info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
 	            {
-	                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
-	                SiteNodeVersion relatedSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
-	                if(relatedSiteNodeVersion != null && content.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
+	                try
 	                {
-	                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
+		                SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
+		                SiteNodeVersion relatedSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
+		                if(relatedSiteNodeVersion != null && content.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
+		                {
+		                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
+		                }
+	                }
+	                catch(Exception e)
+	                {
+	                    getLogger().warn("The related siteNode with id:" + registryVO.getEntityId() + " could not be loaded.", e);
 	                }
 	                
 	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
 	            }
 	            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
 	            {
-	                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
-	                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-	                getLogger().info("relatedContentVersions:" + relatedContentVersions.size());
-	                
-	                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
-	                while(relatedContentVersionsIterator.hasNext())
+	                try
 	                {
-	                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
-		                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+		                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
+		                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
+		                getLogger().info("relatedContentVersions:" + relatedContentVersions.size());
+		                
+		                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
+		                while(relatedContentVersionsIterator.hasNext())
 		                {
-		                    contentVersionVOList.add(relatedContentVersion.getValueObject());
-		                    getLogger().info("Added:" + relatedContentVersion.getId());
-			            }
+		                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
+			                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+			                {
+			                    contentVersionVOList.add(relatedContentVersion.getValueObject());
+			                    getLogger().info("Added:" + relatedContentVersion.getId());
+				            }
+		
+		                }
+	                }
+	                catch(Exception e)
+	                {
+	                    getLogger().warn("The related content with id:" + registryVO.getEntityId() + " could not be loaded.", e);
 	                }
 	                
 	    		    checkedContents.add(new Integer(registryVO.getEntityId()));
