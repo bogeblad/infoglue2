@@ -57,6 +57,7 @@ import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -97,6 +98,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	//A possibility to set the referer address
 	private String referer = null;
 
+	//For statistics only and debug
+	private static Map currentRequests = new HashMap();
 	public static long contentVersionTime = 0;
 	public static long serviceBindingTime = 0;
 	public static long contentAttributeTime = 0;
@@ -109,6 +112,55 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	public static long commitTime = 0;
 	public static long rollbackTime = 0;
 	public static long closeTime = 0;
+	
+    public static int getNumberOfCurrentRequests()
+    {
+        synchronized(currentRequests)
+        {
+            return currentRequests.size();
+        }
+    }
+
+    public static int getAverageTimeSpentOnOngoingRequests()
+    {
+        if(getNumberOfCurrentRequests() > 0)
+        {
+	        long elapsedTime = 0;
+	        long now = System.currentTimeMillis();
+	        synchronized(currentRequests)
+	        {
+	            Iterator i = currentRequests.values().iterator();
+		        while(i.hasNext())
+		        {
+		            Long startTime = (Long)i.next();
+		            elapsedTime = elapsedTime + (now - startTime.longValue());
+		        }
+	        }
+	        
+	        return (int)elapsedTime / getNumberOfCurrentRequests();
+        }
+        return 0;
+    }
+
+    public static long getMaxTimeSpentOnOngoingRequests()
+    {
+        long firstStart = System.currentTimeMillis();
+        synchronized(currentRequests)
+        {
+	        Iterator i = currentRequests.values().iterator();
+	        while(i.hasNext())
+	        {
+	            Long startTime = (Long)i.next();
+	            if(startTime.longValue() < firstStart)
+	                firstStart = startTime.longValue();
+	        }
+        }
+        
+        long now = System.currentTimeMillis();
+        
+        return (now - firstStart);
+    }
+
 	
 	/**
 	 * The constructor for this action - contains nothing right now.
@@ -126,8 +178,20 @@ public class ViewPageAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
     	//CacheController.evictWaitingCache();
+        if(getNumberOfCurrentRequests() > 100)
+        {
+			getResponse().setContentType("text/html; charset=UTF-8");
+			getRequest().setAttribute("responseCode", "500");
+			getRequest().getRequestDispatcher("/ErrorPage.action").include(getRequest(), getResponse());
 
-    	long start			= System.currentTimeMillis();
+            return NONE;
+        }
+            
+    	long start = System.currentTimeMillis();
+    	synchronized(currentRequests)
+    	{
+    	    currentRequests.put("" + start, new Long(start));
+    	}
     	long elapsedTime 	= 0;
     	
     	getLogger().info("************************************************");
@@ -246,6 +310,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 
 		elapsedTime = System.currentTimeMillis() - start;
+		synchronized(currentRequests)
+    	{
+		    currentRequests.remove("" + start);
+    	}
+		
 		if(elapsedTime > 5000)
 		{
 		    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
@@ -698,4 +767,5 @@ public class ViewPageAction extends InfoGlueAbstractAction
     {
         this.showSimple = showSimple;
     }
+    
 }

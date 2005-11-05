@@ -146,6 +146,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Free memory", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Total memory", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Number of sessions", "" + CmsSessionContextListener.getActiveSessions() + "(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)"));
+        states.add(getList("Number of request being handled now", "" + ViewPageAction.getNumberOfCurrentRequests() + "(average request take " + (ViewPageAction.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + ViewPageAction.getMaxTimeSpentOnOngoingRequests() + ")"));
         
         Database db = CastorDatabaseService.getDatabase();
 		
