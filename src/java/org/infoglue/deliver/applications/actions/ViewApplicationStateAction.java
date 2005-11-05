@@ -82,7 +82,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         CacheController.clearCache(cacheName);
         
-        this.getHttpSession().invalidate();
+        //this.getHttpSession().invalidate();
         
         return "cleared";
     }
@@ -95,7 +95,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null);
         
-        this.getHttpSession().invalidate();
+        //this.getHttpSession().invalidate();
         
         return "cleared";
     }
@@ -187,7 +187,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 			getLogger().error(e.getMessage(), e);            
 		}
 				
-		this.getHttpSession().invalidate();
+		//this.getHttpSession().invalidate();
 		
         return "success";
     }

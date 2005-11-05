@@ -91,7 +91,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
     {
         this.getResponse().getWriter().println("test ok - cache action available");
         
-        this.getHttpSession().invalidate();
+        //this.getHttpSession().invalidate();
         
         return NONE;
     }
@@ -256,7 +256,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		    getLogger().error(t.getMessage());
 		}
                 
-		this.getHttpSession().invalidate();
+		//this.getHttpSession().invalidate();
 		
         return NONE;
     }
