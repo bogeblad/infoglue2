@@ -37,6 +37,7 @@ public class ChangeContentStateAction extends InfoGlueAbstractAction
 	private Integer stateId;
 	private Integer languageId;
 	private String versionComment;
+	private boolean overrideVersionModifyer = false;
 	private String attributeName;
 	
 	//private ContentVO contentVO = new ContentVO();	
@@ -57,7 +58,7 @@ public class ChangeContentStateAction extends InfoGlueAbstractAction
     	}
 
     	List events = new ArrayList();
-		ContentStateController.changeState(getContentVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getContentId(), events);
+		ContentStateController.changeState(getContentVersionId(), getStateId(), getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), getContentId(), events);
 		
 		this.contentVersionId = null;
 		
@@ -73,7 +74,7 @@ public class ChangeContentStateAction extends InfoGlueAbstractAction
 		}
 
     	List events = new ArrayList();
-		ContentStateController.changeState(getContentVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getContentId(), events);
+		ContentStateController.changeState(getContentVersionId(), getStateId(), getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), getContentId(), events);
 
 		this.contentVersionId = null;
 		
@@ -140,4 +141,13 @@ public class ChangeContentStateAction extends InfoGlueAbstractAction
 		this.attributeName = attributeName;
 	}
 
+    public boolean getOverrideVersionModifyer()
+    {
+        return overrideVersionModifyer;
+    }
+    
+    public void setOverrideVersionModifyer(boolean overrideVersionModifyer)
+    {
+        this.overrideVersionModifyer = overrideVersionModifyer;
+    }
 }

@@ -74,7 +74,7 @@ public class SiteNodeStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
+    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
     {
         SiteNodeVersion newSiteNodeVersion = null; 
         
@@ -88,62 +88,8 @@ public class SiteNodeStateController extends BaseController
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getSiteNodeVersionWithIdAsReadOnly(oldSiteNodeVersionId, db);
 			logger.info("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getStateId());
 			
-			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, infoGluePrincipal, siteNodeId, db, resultingEvents);
-        				
-			/*
-			List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
-			Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
-			
-			Integer metaInfoAvailableServiceBindingId = null;
-			Integer serviceBindingId = null;
-			AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
-			if(availableServiceBinding != null)
-				metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
-			
-			Collection serviceBindings = siteNodeVersion.getServiceBindings();
-			Iterator serviceBindingIterator = serviceBindings.iterator();
-			while(serviceBindingIterator.hasNext())
-			{
-				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-				if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
-				{
-					serviceBindingId = serviceBinding.getId();
-					break;
-				}
-			}
-
-			if(serviceBindingId != null)
-			{
-				List boundContents = ContentController.getBoundContents(serviceBindingId); 
-				logger.info("boundContents:" + boundContents.size());
-				if(boundContents.size() > 0)
-				{
-					ContentVO contentVO = (ContentVO)boundContents.get(0);
-					logger.info("contentVO:" + contentVO.getId());
-					
-					Iterator languageIterator = languages.iterator();
-					while(languageIterator.hasNext())
-					{
-						Language language = (Language)languageIterator.next();
-						ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
-						
-						logger.info("language:" + language.getId());
-						logger.info("contentVersion:" + contentVersion);
-	
-						if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
-							throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
-		
-						if(contentVersion != null && contentVersion.getStateId().equals(siteNodeVersion.getStateId()))
-						{
-							getLogger().info("changing state on contentVersion:" + contentVersion.getId());
-							List events = new ArrayList();
-							ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, infoGluePrincipal, contentVO.getId(), db, events);
-						}
-					}
-				}
-			}
-			*/
-			
+			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, siteNodeId, db, resultingEvents);
+        							
         	commitTransaction(db);
         }
         catch(Exception e)
@@ -163,7 +109,7 @@ public class SiteNodeStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
+    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
     {
 		SiteNodeVersion newSiteNodeVersion = null;
 		
@@ -182,9 +128,12 @@ public class SiteNodeStateController extends BaseController
 				SiteNodeVersionVO newSiteNodeVersionVO = new SiteNodeVersionVO();
 		    	newSiteNodeVersionVO.setStateId(stateId);
 				newSiteNodeVersionVO.setVersionComment("New working version");
-		    	newSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
-				newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
-
+				newSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
+				if(overrideVersionModifyer)
+				    newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
+				else
+				    newSiteNodeVersionVO.setVersionModifier(oldSiteNodeVersion.getVersionModifier());
+				    
 				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
 				newSiteNodeVersionVO.setPageCacheKey(oldSiteNodeVersion.getPageCacheKey());
 				newSiteNodeVersionVO.setDisableEditOnSight(oldSiteNodeVersion.getDisableEditOnSight());
@@ -212,8 +161,12 @@ public class SiteNodeStateController extends BaseController
 		    	SiteNodeVersionVO newSiteNodeVersionVO = new SiteNodeVersionVO();
 		    	newSiteNodeVersionVO.setStateId(stateId);
 		    	newSiteNodeVersionVO.setVersionComment(versionComment);
-				newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
-		    	newSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate()); 
+				if(overrideVersionModifyer)
+				    newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
+				else
+				    newSiteNodeVersionVO.setVersionModifier(oldSiteNodeVersion.getVersionModifier());
+				
+				newSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate()); 
 		    	
 				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
 				newSiteNodeVersionVO.setPageCacheKey(oldSiteNodeVersion.getPageCacheKey());
@@ -244,7 +197,7 @@ public class SiteNodeStateController extends BaseController
 				newSiteNodeVersion = oldSiteNodeVersion;
 	    	}
 	    	
-			changeStateOnMetaInfo(db, oldSiteNodeVersion, stateId, versionComment, infoGluePrincipal, resultingEvents);
+			changeStateOnMetaInfo(db, oldSiteNodeVersion, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, resultingEvents);
         }
         catch(Exception e)
         {
@@ -264,7 +217,7 @@ public class SiteNodeStateController extends BaseController
      * @throws SystemException
      * @throws Exception
      */
-    private void changeStateOnMetaInfo(Database db, SiteNodeVersion siteNodeVersion, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, List events) throws ConstraintException, SystemException, Exception
+    private void changeStateOnMetaInfo(Database db, SiteNodeVersion siteNodeVersion, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, List events) throws ConstraintException, SystemException, Exception
     {
         List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
 		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
@@ -317,7 +270,7 @@ public class SiteNodeStateController extends BaseController
 					{
 					    getLogger().info("State on current:" + contentVersion.getStateId());
 					    getLogger().info("changing state on contentVersion:" + contentVersion.getId());
-						ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, infoGluePrincipal, contentVO.getId(), db, events);
+						ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, contentVO.getId(), db, events);
 					}
 				}
 			}

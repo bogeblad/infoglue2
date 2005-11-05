@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentStateControllerTest.java,v 1.2 2005/04/12 21:18:46 mattias Exp $
+ * $Id: ContentStateControllerTest.java,v 1.3 2005/11/05 14:28:41 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -122,7 +122,7 @@ public class ContentStateControllerTest extends InfoGlueTestCase
 		assertTrue("testContentCategory data not returned", found.contains(testContentCategory));
 
 		List events = new ArrayList();
-		ContentVersion newVersion = ContentStateController.changeState(testContentVersion.getId(), stateId, getName(), getAdminPrincipal(), null, events);
+		ContentVersion newVersion = ContentStateController.changeState(testContentVersion.getId(), stateId, getName(), false, getAdminPrincipal(), null, events);
 		testEventContentVersion = newVersion.getValueObject();
 
 		List newFound = contentCategoryStore.findByContentVersion(newVersion.getId());

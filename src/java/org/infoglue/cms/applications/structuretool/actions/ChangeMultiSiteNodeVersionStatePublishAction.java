@@ -49,6 +49,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 	private List contentVersionId = new ArrayList();
 	private Integer stateId;
 	private String versionComment;
+	private boolean overrideVersionModifyer = false;
 	private Integer repositoryId;
 	private String attemptDirectPublishing = "false";
 
@@ -69,7 +70,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
 			getLogger().info("Publishing:" + siteNodeVersionId);
-			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
+			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), null, events);
 		}
 
 		setContentVersionId( getRequest().getParameterValues("selContentVersions") );
@@ -79,7 +80,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		{
 			Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
 			getLogger().info("Publishing:" + contentVersionId);
-			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
+			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), null, events);
 		}
 
 		if(attemptDirectPublishing.equalsIgnoreCase("true"))
@@ -88,7 +89,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
 		    publicationVO.setDescription(getVersionComment());
 		    publicationVO.setRepositoryId(repositoryId);
-		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.getInfoGluePrincipal());
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, overrideVersionModifyer, this.getInfoGluePrincipal());
 		}
 
        	return "success";
@@ -160,5 +161,15 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
     public void setAttemptDirectPublishing(String attemptDirectPublishing)
     {
         this.attemptDirectPublishing = attemptDirectPublishing;
+    }
+    
+    public boolean getOverrideVersionModifyer()
+    {
+        return overrideVersionModifyer;
+    }
+    
+    public void setOverrideVersionModifyer(boolean overrideVersionModifyer)
+    {
+        this.overrideVersionModifyer = overrideVersionModifyer;
     }
 }

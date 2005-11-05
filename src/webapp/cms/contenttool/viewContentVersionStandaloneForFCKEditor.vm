@@ -108,12 +108,13 @@
 	{
 		stateId 	  = document.editForm.stateId.value;
 		languageId    = document.editForm.languageId.value;
-		contentId 	  = document.editForm.contentId.value;
+		contentId 	  = document.getElementById("contentId").value;
 		attributeName = document.editForm.attributeName.value;
 		
 		if (confirm('$ui.getString("tool.contenttool.stateChangeQuestion")'))
 		{
-			window.location.href="ChangeContentState!standalone.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName;
+			var url = "ChangeContentState!standalone.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName;
+			window.location.href=url;
 		}
 	}
 	
@@ -967,7 +968,7 @@
 		<td colspan="3">&nbsp;</td>
 	</tr>
 	<tr>
-		<input type="hidden" name="contentId" value="$!contentId">
+		<input type="hidden" id="contentId" name="contentId" value="$!contentId">
 		<input type="hidden" name="contentVersionId" value="$!contentVersionId">
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<td colspan="3">

@@ -63,6 +63,7 @@
 		{
 			var listForm = document.listForm;
 			var commentElm = document.getElementById("xversionComment");
+			var overrideVersionModifyerElm = document.getElementById("xoverrideVersionModifyer");
 			if (checkMarkedVersions() == 0)
 			{
 				alert('Select one or more versions to publish');
@@ -72,6 +73,11 @@
 			{
 				listForm.action = "UnpublishContentVersion.action"
 				listForm.versionComment.value = commentElm.value;
+				if(overrideVersionModifyerElm.checked == true)
+					listForm.overrideVersionModifyer.value = overrideVersionModifyerElm.value;
+				else
+					listForm.overrideVersionModifyer.value = "false";
+				
 				listForm.attemptDirectPublishing.value = attemptDirectPublishing;
 				listForm.submit();
 			}
@@ -96,6 +102,13 @@
 			<tr>
 				<td colspan="3">#editTextArea("ContentVersion.versionComment" "xversionComment" $!versionComment "10" "10" "normaltextarea")</td>
 			</tr>		
+			<tr>
+				<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+			</tr>
+			<tr>
+				<td colspan="3">#yesNoCheckBox("ContentVersion.overrideVersionModifyer" "xoverrideVersionModifyer" "true" $ui.getString('tool.common.yes'))</td>
+			</tr>	
+			
 		</table>
 	</td>
 	<td align="right" valign="top">
@@ -141,6 +154,7 @@
 
 #hiddenField("contentId" $contentId)
 #hiddenField("versionComment" $!versionComment)
+#hiddenField("overrideVersionModifyer" $!overrideVersionModifyer)
 #hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
 #hiddenField("repositoryId" $!repositoryId)
 

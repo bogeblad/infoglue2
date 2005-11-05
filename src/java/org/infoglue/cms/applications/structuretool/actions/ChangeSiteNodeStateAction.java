@@ -36,6 +36,7 @@ public class ChangeSiteNodeStateAction extends InfoGlueAbstractAction
 	private Integer siteNodeVersionId;
 	private Integer stateId;
 	private String versionComment;
+	private boolean overrideVersionModifyer = false;
 	
 	//private SiteNodeVO siteNodeVO = new SiteNodeVO();	
 	//private SiteNodeVersionVO siteNodeVersionVO = new SiteNodeVersionVO();	
@@ -55,7 +56,7 @@ public class ChangeSiteNodeStateAction extends InfoGlueAbstractAction
     	}
 
     	List events = new ArrayList();
-		SiteNodeStateController.getController().changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.getInfoGluePrincipal(), getSiteNodeId(), events);
+		SiteNodeStateController.getController().changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), getSiteNodeId(), events);
 		
        	return "success";
     }
@@ -100,4 +101,13 @@ public class ChangeSiteNodeStateAction extends InfoGlueAbstractAction
 		return this.stateId;
 	}
             
+    public boolean getOverrideVersionModifyer()
+    {
+        return overrideVersionModifyer;
+    }
+    
+    public void setOverrideVersionModifyer(boolean overrideVersionModifyer)
+    {
+        this.overrideVersionModifyer = overrideVersionModifyer;
+    }
 }

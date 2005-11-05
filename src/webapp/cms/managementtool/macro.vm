@@ -542,7 +542,10 @@
 #end
 
 
-
+#macro(yesNoCheckBox $fieldNameKey $fieldName $value $label)
+$ui.getString("entity.${fieldNameKey}.label")<br/>
+<input type="checkbox" id="$fieldName" name="$fieldName" value="$value">$label</input>
+#end
 
 #macro(yesNoDropDown $fieldNameKey $fieldName $value)
 <table>

@@ -31,6 +31,12 @@
 		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	<tr>
+		<td colspan="3">#yesNoCheckBox("SiteNodeVersion.overrideVersionModifyer" "xoverrideVersionModifyer" "true" $ui.getString('tool.common.yes'))</td>
+	</tr>	
+	<tr>
+		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr>
 		<input type="hidden" name="siteNodeId" value="$!siteNodeId">
 		<input type="hidden" name="siteNodeVersionId" value="$!siteNodeVersionId">
 		<input type="hidden" name="stateId" value="$!stateId">

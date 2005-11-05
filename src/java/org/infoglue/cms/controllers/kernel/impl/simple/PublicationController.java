@@ -390,7 +390,7 @@ public class PublicationController extends BaseController
 	/**
 	 * This method creates a new publication with the concerned events carried out.
 	 */
-	public PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal) throws SystemException
+	public PublicationVO createAndPublish(PublicationVO publicationVO, List events, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal) throws SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
 
@@ -398,7 +398,7 @@ public class PublicationController extends BaseController
 		{
 	        beginTransaction(db);
 
-	        publicationVO = createAndPublish(publicationVO, events, infoGluePrincipal, db);
+	        publicationVO = createAndPublish(publicationVO, events, overrideVersionModifyer, infoGluePrincipal, db);
 	        
 	        commitTransaction(db);
 		}
@@ -414,7 +414,7 @@ public class PublicationController extends BaseController
 	/**
 	 * This method creates a new publication with the concerned events carried out.
 	 */
-	public PublicationVO createAndPublish(PublicationVO publicationVO, List events, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
+	public PublicationVO createAndPublish(PublicationVO publicationVO, List events, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
     {
 	   	logger.info("*********************************");
     	logger.info("Creating edition ");
@@ -429,7 +429,7 @@ public class PublicationController extends BaseController
 		while(eventIterator.hasNext())
 		{
 			EventVO event = (EventVO)eventIterator.next();
-			createPublicationInformation(publication, EventController.getEventWithId(event.getId(), db), infoGluePrincipal, db);
+			createPublicationInformation(publication, EventController.getEventWithId(event.getId(), db), overrideVersionModifyer, infoGluePrincipal, db);
 		}
 
 		db.create(publication);
@@ -481,7 +481,7 @@ public class PublicationController extends BaseController
 	 * Creates a connection between contentversion or siteNodeVersion and publication, ie adds a contentversion
 	 * to the publication.
 	 */
-	private static void createPublicationInformation(Publication publication, Event event, InfoGluePrincipal infoGluePrincipal, Database db) throws Exception
+	private static void createPublicationInformation(Publication publication, Event event, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db) throws Exception
 	{
 		String entityClass = event.getEntityClass();
 		Integer entityId   = event.getEntityId();
@@ -508,7 +508,7 @@ public class PublicationController extends BaseController
 			{
 			    List events = new ArrayList();
 				Integer contentId = oldContentVersion.getOwningContent().getContentId();
-	    		ContentVersion newContentVersion = ContentStateController.changeState(entityId, ContentVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, contentId, db, events);
+	    		ContentVersion newContentVersion = ContentStateController.changeState(entityId, ContentVersionVO.PUBLISHED_STATE, "Published", overrideVersionModifyer, infoGluePrincipal, contentId, db, events);
 	    		contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersion.getContentVersionId(), db);
 			}
 
@@ -552,7 +552,7 @@ public class PublicationController extends BaseController
 			{
 			    List events = new ArrayList();
 				Integer siteNodeId = oldSiteNodeVersion.getOwningSiteNode().getSiteNodeId();
-	    		SiteNodeVersion newSiteNodeVersion = SiteNodeStateController.getController().changeState(entityId, SiteNodeVersionVO.PUBLISHED_STATE, "Published", infoGluePrincipal, siteNodeId, db, events);
+	    		SiteNodeVersion newSiteNodeVersion = SiteNodeStateController.getController().changeState(entityId, SiteNodeVersionVO.PUBLISHED_STATE, "Published", overrideVersionModifyer, infoGluePrincipal, siteNodeId, db, events);
 	    		siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(newSiteNodeVersion.getSiteNodeVersionId(), db);
 			}
 

@@ -31,6 +31,13 @@
 		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	<tr>
+		<td colspan="3">#yesNoCheckBox("ContentVersion.overrideVersionModifyer" "overrideVersionModifyer" "true" $ui.getString('tool.common.yes'))</td>
+	</tr>	
+	
+	<tr>
+		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr>
 		<input type="hidden" name="contentId" value="$!contentId">
 		<input type="hidden" name="languageId" value="$!languageId">
 		<input type="hidden" name="contentVersionId" value="$!contentVersionId">

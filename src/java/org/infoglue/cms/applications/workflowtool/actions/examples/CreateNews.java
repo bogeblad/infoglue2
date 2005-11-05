@@ -171,7 +171,7 @@ public class CreateNews implements CustomWorkflowAction
             db.begin();
             
             List events = new ArrayList();
-            ContentVersion publishContentVersion = ContentStateController.changeState(newContentVersion.getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", infoGluePrincipal, newContent.getId(), events);
+            ContentVersion publishContentVersion = ContentStateController.changeState(newContentVersion.getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", true, infoGluePrincipal, newContent.getId(), events);
 
             db.commit();
         } 

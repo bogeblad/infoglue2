@@ -62,7 +62,7 @@ public class ContentStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer contentId, List resultingEvents) throws ConstraintException, SystemException
+    public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, List resultingEvents) throws ConstraintException, SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -72,7 +72,7 @@ public class ContentStateController extends BaseController
         beginTransaction(db);
 		try
 		{
-			newContentVersion = changeState(oldContentVersionId, stateId, versionComment, infoGluePrincipal, contentId, db, resultingEvents);
+			newContentVersion = changeState(oldContentVersionId, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, contentId, db, resultingEvents);
         	commitTransaction(db);
         }
         catch(Exception e)
@@ -91,7 +91,7 @@ public class ContentStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException
+	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException
 	{
 		ContentVersion newContentVersion = null;
 
@@ -111,7 +111,10 @@ public class ContentStateController extends BaseController
 				newContentVersionVO.setStateId(stateId);
 				newContentVersionVO.setVersionComment("New working version");
 				newContentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
-				newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
+				if(overrideVersionModifyer)
+				    newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
+			    else
+			        newContentVersionVO.setVersionModifier(oldContentVersion.getVersionModifier());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
 				
@@ -133,7 +136,10 @@ public class ContentStateController extends BaseController
 				newContentVersionVO.setStateId(stateId);
 				newContentVersionVO.setVersionComment(versionComment);
 				newContentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
-				newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
+				if(overrideVersionModifyer)
+				    newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
+			    else
+			        newContentVersionVO.setVersionModifier(oldContentVersion.getVersionModifier());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
 				

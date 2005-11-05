@@ -63,6 +63,7 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 	private Integer stateId;
 	private Integer languageId;
 	private String versionComment;
+	private boolean overrideVersionModifyer = false;
 	private String attemptDirectPublishing = "false";
 
 	
@@ -122,7 +123,7 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 		    publicationVO.setDescription(getVersionComment());
 		    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
 		    publicationVO.setRepositoryId(repositoryId);
-		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.getInfoGluePrincipal());
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.overrideVersionModifyer, this.getInfoGluePrincipal());
 		}
 		
        	return "success";
@@ -207,5 +208,15 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
     public void setRepositoryId(Integer repositoryId)
     {
         this.repositoryId = repositoryId;
+    }
+    
+    public boolean getOverrideVersionModifyer()
+    {
+        return overrideVersionModifyer;
+    }
+    
+    public void setOverrideVersionModifyer(boolean overrideVersionModifyer)
+    {
+        this.overrideVersionModifyer = overrideVersionModifyer;
     }
 }

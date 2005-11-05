@@ -69,8 +69,8 @@ public class ContentPublisher extends ContentFunction
 			if(getContentVersionVO().getStateId().equals(ContentVersionVO.WORKING_STATE)) 
 			{
 				final List events = new ArrayList();
-				ContentStateController.changeState(getContentVersionVO().getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", getPrincipal(), getContentVO().getId(), getDatabase(), events);
-				PublicationController.getController().createAndPublish(createPublicationVO(), events, getPrincipal(), getDatabase());
+				ContentStateController.changeState(getContentVersionVO().getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", false, getPrincipal(), getContentVO().getId(), getDatabase(), events);
+				PublicationController.getController().createAndPublish(createPublicationVO(), events, true, getPrincipal(), getDatabase());
 				setFunctionStatus(STATUS_OK);
 			} 
 		} 
