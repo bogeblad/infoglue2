@@ -123,10 +123,6 @@ public class DigitalAssetController extends BaseController
 		contentVersions.add(contentVersion);
 		logger.info("Added contentVersion:" + contentVersion.getId());
 	
-		System.out.println("contentVersion:" + contentVersion.getId());
-		System.out.println("digitalAssetVO:" + digitalAssetVO.getId() + ":" + digitalAssetVO.getAssetFileName() + ":" + digitalAssetVO.getAssetFileSize());
-		System.out.println("IS:" + is.available());
-		
 		digitalAsset = new DigitalAssetImpl();
 		digitalAsset.setValueObject(digitalAssetVO.createCopy());
 		digitalAsset.setAssetBlob(is);
@@ -653,7 +649,6 @@ public class DigitalAssetController extends BaseController
 	    String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 		String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 		dumpDigitalAsset(digitalAsset, fileName, filePath);
-		System.out.println("Returning InputStream from file:" + filePath + File.separator + fileName);
 		return new FileInputStream(filePath + File.separator + fileName);
 	}
 
