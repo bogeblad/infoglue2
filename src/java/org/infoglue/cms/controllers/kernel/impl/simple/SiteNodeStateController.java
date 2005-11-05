@@ -186,6 +186,7 @@ public class SiteNodeStateController extends BaseController
 				newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
 
 				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
+				newSiteNodeVersionVO.setPageCacheKey(oldSiteNodeVersion.getPageCacheKey());
 				newSiteNodeVersionVO.setDisableEditOnSight(oldSiteNodeVersion.getDisableEditOnSight());
 				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
 				newSiteNodeVersionVO.setIsProtected(oldSiteNodeVersion.getIsProtected());
@@ -215,6 +216,7 @@ public class SiteNodeStateController extends BaseController
 		    	newSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate()); 
 		    	
 				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
+				newSiteNodeVersionVO.setPageCacheKey(oldSiteNodeVersion.getPageCacheKey());
 				newSiteNodeVersionVO.setDisableEditOnSight(oldSiteNodeVersion.getDisableEditOnSight());
 				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
 				newSiteNodeVersionVO.setIsProtected(oldSiteNodeVersion.getIsProtected());
