@@ -55,9 +55,11 @@ import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 
 import java.net.URLEncoder;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -99,7 +101,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	private String referer = null;
 
 	//For statistics only and debug
-	private static Map currentRequests = new HashMap();
+	private static List currentRequests = new ArrayList();
 	public static long contentVersionTime = 0;
 	public static long serviceBindingTime = 0;
 	public static long contentAttributeTime = 0;
@@ -121,6 +123,26 @@ public class ViewPageAction extends InfoGlueAbstractAction
         }
     }
 
+    public static HttpServletRequest getLongestRequests()
+    {
+        HttpServletRequest longestRequest = null;
+        
+        long firstStart = System.currentTimeMillis();
+        synchronized(currentRequests)
+        {
+	        Iterator i = currentRequests.iterator();
+	        while(i.hasNext())
+	        {
+	            HttpServletRequest request = (HttpServletRequest)i.next();
+	            Long startTime = (Long)request.getAttribute("startTime");
+	            if(startTime.longValue() < firstStart)
+	                longestRequest = request;
+	        }
+        }
+        
+        return longestRequest;
+    }
+
     public static int getAverageTimeSpentOnOngoingRequests()
     {
         if(getNumberOfCurrentRequests() > 0)
@@ -129,10 +151,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        long now = System.currentTimeMillis();
 	        synchronized(currentRequests)
 	        {
-	            Iterator i = currentRequests.values().iterator();
+	            Iterator i = currentRequests.iterator();
 		        while(i.hasNext())
 		        {
-		            Long startTime = (Long)i.next();
+		            HttpServletRequest request = (HttpServletRequest)i.next();
+		            Long startTime = (Long)request.getAttribute("startTime");
 		            elapsedTime = elapsedTime + (now - startTime.longValue());
 		        }
 	        }
@@ -144,21 +167,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
     public static long getMaxTimeSpentOnOngoingRequests()
     {
-        long firstStart = System.currentTimeMillis();
-        synchronized(currentRequests)
+        HttpServletRequest request = getLongestRequests();
+        if(request != null)
         {
-	        Iterator i = currentRequests.values().iterator();
-	        while(i.hasNext())
-	        {
-	            Long startTime = (Long)i.next();
-	            if(startTime.longValue() < firstStart)
-	                firstStart = startTime.longValue();
-	        }
-        }
+            Long firstStart = (Long)request.getAttribute("startTime");
+            long now = System.currentTimeMillis();
+            
+            return (now - firstStart.longValue());
+        }    
         
-        long now = System.currentTimeMillis();
-        
-        return (now - firstStart);
+        return 0;
     }
 
 	
@@ -186,18 +204,23 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
             return NONE;
         }
-            
+        
+        HttpServletRequest request = getRequest();
+        
     	long start = System.currentTimeMillis();
     	synchronized(currentRequests)
     	{
-    	    currentRequests.put("" + start, new Long(start));
+    	    request.setAttribute("startTime", new Long(start));
+    	    currentRequests.add(request);
     	}
     	long elapsedTime 	= 0;
     	
     	getLogger().info("************************************************");
     	getLogger().info("* ViewPageAction was called....                *");
     	getLogger().info("************************************************");
-    	    	
+    	
+        request.setAttribute("progress", "ViewPageAction has been called");
+    	
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
 		
@@ -207,12 +230,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 	    	validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
+	        request.setAttribute("progress", "validateAndModifyInputParameters done");
+
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.templateController 			= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.templateController, this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 	    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
+
+	        request.setAttribute("progress", "pageKey found:" + pageKey);
 
 	    	getLogger().info("pageKey:" + pageKey);
 	    	String pagePath	= null;
@@ -250,6 +277,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            }
 	        }
 	
+	        request.setAttribute("progress", "handled portal action");
+
 	        getLogger().info("handled portal action");
 			
 			if(!isUserRedirected)
@@ -278,10 +307,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				{
 				    try
 				    {
+				        request.setAttribute("progress", "before pageInvoker is called on siteNode:" + siteNode.getName());
+
 						String invokerClassName = siteNode.getSiteNodeTypeDefinition().getInvokerClassName();
 				        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
 				        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), this.templateController, deliveryContext);
 				        pageInvoker.deliverPage();
+
+				        request.setAttribute("progress", "after pageInvoker was called");
 				    }
 				    catch(ClassNotFoundException e)
 				    {
@@ -306,14 +339,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
-		    closeTransaction(dbWrapper.getDatabase());
+			elapsedTime = System.currentTimeMillis() - start;
+			synchronized(currentRequests)
+	    	{
+			    currentRequests.remove(request);
+	    	}
+
+			closeTransaction(dbWrapper.getDatabase());
 		}
 
-		elapsedTime = System.currentTimeMillis() - start;
-		synchronized(currentRequests)
-    	{
-		    currentRequests.remove("" + start);
-    	}
 		
 		if(elapsedTime > 5000)
 		{
