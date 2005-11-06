@@ -183,6 +183,10 @@ public abstract class PageInvoker
 					CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities());
 					//CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities());
 				}
+				else
+				{
+				    logger.warn("Page caching was disabled for the page " + this.getDeliveryContext().getSiteNodeId() + " with pageKey " + this.getDeliveryContext().getPageKey() + " - modifying the logic to enable page caching would boast performance.");
+				}
 			}
 			else
 			{

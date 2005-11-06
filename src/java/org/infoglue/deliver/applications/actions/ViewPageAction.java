@@ -132,7 +132,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	//CacheController.evictWaitingCache();
         if(RequestAnalyser.getMaxClients() != 0 && RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients())
         {
-            logger.warn("Maximum number of clients reached in ViewPage. Responding with an error.");
+            logger.info("Maximum number of clients reached in ViewPage. Responding with an error.");
 			getResponse().setContentType("text/html; charset=UTF-8");
 			getRequest().setAttribute("responseCode", "503");
 			getRequest().getRequestDispatcher("/ErrorPage!busy.action").forward(getRequest(), getResponse());
@@ -284,7 +284,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 
 		
-		if(elapsedTime > 5000)
+		if(elapsedTime > 10000)
 		{
 		    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
 		    getLogger().warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
