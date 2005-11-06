@@ -76,7 +76,7 @@ import org.infoglue.deliver.util.RequestAnalyser;
 
 public class ViewPageFilter implements Filter 
 {
-    private final static Logger logger = Logger.getLogger(ViewPageFilter.class.getName());
+    public final static Logger logger = Logger.getLogger(ViewPageFilter.class.getName());
 
     private FilterConfig filterConfig = null;
     private URIMatcher uriMatcher = null;

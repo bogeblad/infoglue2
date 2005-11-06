@@ -71,7 +71,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ViewPageAction extends InfoGlueAbstractAction 
 {
-    private final static Logger logger = Logger.getLogger(ViewPageAction.class.getName());
+    public final static Logger logger = Logger.getLogger(ViewPageAction.class.getName());
 
 	//These are the standard parameters which uniquely defines which page to show.
 	private Integer siteNodeId = null;
@@ -129,7 +129,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
-    	//CacheController.evictWaitingCache();
+        //CacheController.evictWaitingCache();
         if(RequestAnalyser.getMaxClients() != 0 && RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients())
         {
             logger.info("Maximum number of clients reached in ViewPage. Responding with an error.");

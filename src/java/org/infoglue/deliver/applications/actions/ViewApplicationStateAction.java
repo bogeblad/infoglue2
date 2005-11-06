@@ -23,12 +23,14 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import org.apache.log4j.Level;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
@@ -89,10 +91,45 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     }
 
     /**
+     * This action allows setting of the loglevel on some basic classes.
+     */
+    public String doSetLogInfo() throws Exception
+    {
+        ViewPageFilter.logger.setLevel(Level.INFO);
+        ViewPageAction.logger.setLevel(Level.INFO);
+        
+        return "cleared";
+    }
+
+    /**
+     * This action allows setting of the loglevel on some basic classes.
+     */
+    public String doSetLogWarning() throws Exception
+    {
+        ViewPageFilter.logger.setLevel(Level.WARN);
+        ViewPageAction.logger.setLevel(Level.WARN);
+        
+        return "cleared";
+    }
+
+    /**
+     * This action allows setting of the loglevel on some basic classes.
+     */
+    public String doSetLogError() throws Exception
+    {
+        ViewPageFilter.logger.setLevel(Level.ERROR);
+        ViewPageAction.logger.setLevel(Level.ERROR);
+        
+        return "cleared";
+    }
+
+    /**
      * This action allows clearing of the caches manually.
      */
     public String doClearCaches() throws Exception
     {
+        doSetLogInfo(); //TODO - remove
+        
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null);
         
@@ -233,4 +270,5 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         this.cacheName = cacheName;
     }
+    
 }
