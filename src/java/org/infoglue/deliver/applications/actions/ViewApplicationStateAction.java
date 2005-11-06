@@ -30,6 +30,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.applications.filters.RedirectFilter;
 import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 import org.infoglue.deliver.util.CacheController;
@@ -97,7 +98,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         ViewPageFilter.logger.setLevel(Level.INFO);
         ViewPageAction.logger.setLevel(Level.INFO);
-        
+        RedirectFilter.logger.setLevel(Level.INFO);
+        CastorDatabaseService.logger.setLevel(Level.INFO);
+
         return "cleared";
     }
 
@@ -108,7 +111,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         ViewPageFilter.logger.setLevel(Level.WARN);
         ViewPageAction.logger.setLevel(Level.WARN);
-        
+        RedirectFilter.logger.setLevel(Level.WARN);
+        CastorDatabaseService.logger.setLevel(Level.WARN);
+
         return "cleared";
     }
 
@@ -119,7 +124,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         ViewPageFilter.logger.setLevel(Level.ERROR);
         ViewPageAction.logger.setLevel(Level.ERROR);
-        
+        RedirectFilter.logger.setLevel(Level.ERROR);
+        CastorDatabaseService.logger.setLevel(Level.ERROR);
+
         return "cleared";
     }
 
@@ -128,8 +135,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doClearCaches() throws Exception
     {
-        doSetLogInfo(); //TODO - remove
-        
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null);
         

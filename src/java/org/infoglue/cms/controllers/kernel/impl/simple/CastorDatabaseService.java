@@ -23,12 +23,15 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.JDO;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.exception.SystemException;
 
 public class CastorDatabaseService //extends DatabaseService
 {
+    public final static Logger logger = Logger.getLogger(CastorDatabaseService.class.getName());
+
     private static JDO jdo = null;
     
     public static JDO getJDO() throws SystemException
@@ -57,6 +60,7 @@ public class CastorDatabaseService //extends DatabaseService
     {
         try
         {
+            logger.info("Getting new databaseobject....");
             return getJDO().getDatabase();
         }
         catch(Exception e)

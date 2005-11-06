@@ -76,7 +76,7 @@ import org.infoglue.deliver.util.CacheController;
 
 public class RedirectFilter implements Filter 
 {
-    private final static Logger logger = Logger.getLogger(RedirectFilter.class.getName());
+    public final static Logger logger = Logger.getLogger(RedirectFilter.class.getName());
 
     private FilterConfig filterConfig = null;
 
