@@ -70,6 +70,7 @@
   <tr>
     <td colspan="4"><hr/></td>
   </tr>
+  <!--	
   <tr>
     <td class="label" bgcolor="gray">Test case</td>
     <td class="label" colspan="3" bgcolor="gray">Ok?</td>
@@ -93,6 +94,7 @@
   <tr>
     <td colspan="4"><hr/></td>
   </tr>
+  -->
   <tr>
     <td class="label" bgcolor="gray">InfoGlue cache name</td>
     <td class="label" bgcolor="gray">Cached items</td>
@@ -123,6 +125,13 @@
   </tr>
   <tr>
     <td colspan="4"><hr/></td>
+  </tr>
+  <tr>
+    <td colspan="4" class="text">
+    <a href="ViewApplicationState!setLogInfo.action">Set loglevel to info</a>
+    <a href="ViewApplicationState!setLogWarning.action">Set loglevel to warning</a>
+    <a href="ViewApplicationState!setLogError.action">Set loglevel to error</a>
+    </td>
   </tr>
   <tr>
     <td colspan="4" class="text" align="center"><a href="jsp/PermGen.jsp">Click here for detailed memory info (On Java 5-setups only).</a></td>
