@@ -217,7 +217,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
             logger.warn("Maximum number of clients reached. Responding with an error.");
 			getResponse().setContentType("text/html; charset=UTF-8");
 			getRequest().setAttribute("responseCode", "500");
-			getRequest().getRequestDispatcher("/ErrorPage.action").include(getRequest(), getResponse());
+			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
 
             return NONE;
         }
@@ -350,7 +350,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getResponse().setContentType("text/html; charset=UTF-8");
 			getRequest().setAttribute("responseCode", "500");
 			getRequest().setAttribute("error", e);
-			getRequest().getRequestDispatcher("/ErrorPage.action").include(getRequest(), getResponse());
+			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
 
 			//throw new SystemException(e.getMessage());
 		}
