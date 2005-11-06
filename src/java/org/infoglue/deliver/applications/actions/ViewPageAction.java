@@ -23,11 +23,13 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
@@ -39,19 +41,13 @@ import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
-import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.services.*;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 
 import java.net.URLEncoder;
 import java.security.Principal;
@@ -74,7 +70,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ViewPageAction extends InfoGlueAbstractAction 
 {
-	
+    private final static Logger logger = Logger.getLogger(ViewPageAction.class.getName());
+
 	//These are the standard parameters which uniquely defines which page to show.
 	private Integer siteNodeId = null;
 	private Integer contentId  = null; 
@@ -217,6 +214,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	//CacheController.evictWaitingCache();
         if(maxClientsInt != 0 && getNumberOfCurrentRequests() > maxClientsInt)
         {
+            logger.warn("Maximum number of clients reached. Responding with an error.");
 			getResponse().setContentType("text/html; charset=UTF-8");
 			getRequest().setAttribute("responseCode", "500");
 			getRequest().getRequestDispatcher("/ErrorPage.action").include(getRequest(), getResponse());
