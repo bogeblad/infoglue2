@@ -216,8 +216,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
         {
             logger.warn("Maximum number of clients reached. Responding with an error.");
 			getResponse().setContentType("text/html; charset=UTF-8");
-			getRequest().setAttribute("responseCode", "500");
-			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
+			getRequest().setAttribute("responseCode", "503");
+			getRequest().getRequestDispatcher("/ErrorPage!busy.action").forward(getRequest(), getResponse());
 
             return NONE;
         }
