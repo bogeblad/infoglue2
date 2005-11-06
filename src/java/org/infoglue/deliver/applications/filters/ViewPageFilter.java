@@ -66,6 +66,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryContr
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 
 /**
  *
@@ -105,13 +106,24 @@ public class ViewPageFilter implements Filter
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException 
     {       
+        long end, start = System.currentTimeMillis();
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+
+        if(RequestAnalyser.getMaxClients() != 0 && RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients())
+        {
+            logger.warn("Maximum number of clients reached in ViewPageFilter. Responding with an error.");
+            httpResponse.setContentType("text/html; charset=UTF-8");
+			httpRequest.setAttribute("responseCode", "503");
+			httpRequest.getRequestDispatcher("/ErrorPage!busy.action").forward(httpRequest, httpResponse);
+
+            return;
+        }
+
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if (enableNiceURI == null)
             enableNiceURI = "false";
 
-        long end, start = System.currentTimeMillis();
-        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         validateCmsProperties(httpRequest);
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
         logger.info("requestURI:" + requestURI);

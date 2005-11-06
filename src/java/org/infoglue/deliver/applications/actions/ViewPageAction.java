@@ -39,6 +39,7 @@ import org.infoglue.deliver.portal.PortalService;
 import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -98,7 +99,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	private String referer = null;
 
 	//For statistics only and debug
-	private static List currentRequests = new ArrayList();
 	public static long contentVersionTime = 0;
 	public static long serviceBindingTime = 0;
 	public static long contentAttributeTime = 0;
@@ -112,88 +112,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	public static long rollbackTime = 0;
 	public static long closeTime = 0;
 	
-	private static int maxClientsInt = 0;
-	
-	static
-	{
-	    final String maxClients = CmsPropertyHandler.getProperty("maxClients");
-        if(maxClients != null && !maxClients.equals("") && maxClients.indexOf("@") == -1)
-        {
-            try
-            {
-                maxClientsInt = new Integer(maxClients).intValue();
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-	}
-	
-    public static int getNumberOfCurrentRequests()
-    {
-        synchronized(currentRequests)
-        {
-            return currentRequests.size();
-        }
-    }
-
-    public static HttpServletRequest getLongestRequests()
-    {
-        HttpServletRequest longestRequest = null;
-        
-        long firstStart = System.currentTimeMillis();
-        synchronized(currentRequests)
-        {
-	        Iterator i = currentRequests.iterator();
-	        while(i.hasNext())
-	        {
-	            HttpServletRequest request = (HttpServletRequest)i.next();
-	            Long startTime = (Long)request.getAttribute("startTime");
-	            if(startTime.longValue() < firstStart)
-	                longestRequest = request;
-	        }
-        }
-        
-        return longestRequest;
-    }
-
-    public static int getAverageTimeSpentOnOngoingRequests()
-    {
-        if(getNumberOfCurrentRequests() > 0)
-        {
-	        long elapsedTime = 0;
-	        long now = System.currentTimeMillis();
-	        synchronized(currentRequests)
-	        {
-	            Iterator i = currentRequests.iterator();
-		        while(i.hasNext())
-		        {
-		            HttpServletRequest request = (HttpServletRequest)i.next();
-		            Long startTime = (Long)request.getAttribute("startTime");
-		            elapsedTime = elapsedTime + (now - startTime.longValue());
-		        }
-	        }
-	        
-	        return (int)elapsedTime / getNumberOfCurrentRequests();
-        }
-        return 0;
-    }
-
-    public static long getMaxTimeSpentOnOngoingRequests()
-    {
-        HttpServletRequest request = getLongestRequests();
-        if(request != null)
-        {
-            Long firstStart = (Long)request.getAttribute("startTime");
-            long now = System.currentTimeMillis();
-            
-            return (now - firstStart.longValue());
-        }    
-        
-        return 0;
-    }
 
 	
 	/**
@@ -212,9 +130,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
     	//CacheController.evictWaitingCache();
-        if(maxClientsInt != 0 && getNumberOfCurrentRequests() > maxClientsInt)
+        if(RequestAnalyser.getMaxClients() != 0 && RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients())
         {
-            logger.warn("Maximum number of clients reached. Responding with an error.");
+            logger.warn("Maximum number of clients reached in ViewPage. Responding with an error.");
 			getResponse().setContentType("text/html; charset=UTF-8");
 			getRequest().setAttribute("responseCode", "503");
 			getRequest().getRequestDispatcher("/ErrorPage!busy.action").forward(getRequest(), getResponse());
@@ -225,10 +143,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
         HttpServletRequest request = getRequest();
         
     	long start = System.currentTimeMillis();
-    	synchronized(currentRequests)
+    	synchronized(RequestAnalyser.getCurrentRequests())
     	{
     	    request.setAttribute("startTime", new Long(start));
-    	    currentRequests.add(request);
+    	    RequestAnalyser.getCurrentRequests().add(request);
     	}
     	long elapsedTime 	= 0;
     	
@@ -357,9 +275,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		finally
 		{
 			elapsedTime = System.currentTimeMillis() - start;
-			synchronized(currentRequests)
+			synchronized(RequestAnalyser.getCurrentRequests())
 	    	{
-			    currentRequests.remove(request);
+			    RequestAnalyser.getCurrentRequests().remove(request);
 	    	}
 
 			closeTransaction(dbWrapper.getDatabase());

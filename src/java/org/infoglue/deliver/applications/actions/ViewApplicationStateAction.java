@@ -31,6 +31,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.io.*;
 
@@ -146,8 +147,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Free memory", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Total memory", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Number of sessions", "" + CmsSessionContextListener.getActiveSessions() + "(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)"));
-        states.add(getList("Number of request being handled now", "" + ViewPageAction.getNumberOfCurrentRequests() + "(average request take " + (ViewPageAction.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + ViewPageAction.getMaxTimeSpentOnOngoingRequests() + ")"));
-        states.add(getList("The slowest request handled now is", "" + ((ViewPageAction.getLongestRequests() != null) ? ViewPageAction.getLongestRequests().getAttribute("progress") : "")));
+        states.add(getList("Number of request being handled now", "" + RequestAnalyser.getNumberOfCurrentRequests() + "(average request take " + (RequestAnalyser.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + RequestAnalyser.getMaxTimeSpentOnOngoingRequests() + ")"));
+        states.add(getList("The slowest request handled now is", "" + ((RequestAnalyser.getLongestRequests() != null) ? RequestAnalyser.getLongestRequests().getAttribute("progress") : "")));
         
         Database db = CastorDatabaseService.getDatabase();
 		
