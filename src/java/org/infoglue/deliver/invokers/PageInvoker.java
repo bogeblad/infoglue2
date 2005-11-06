@@ -166,22 +166,36 @@ public abstract class PageInvoker
 		
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))
 		{
-		    byte[] cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
-		    if(cachedCompressedData != null)
-		        this.pageString = compressionHelper.decompress(cachedCompressedData);
-		    //this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
-		    if(this.pageString == null)
+			String compressPageCache = CmsPropertyHandler.getProperty("compressPageCache");
+			if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
+			{
+			    byte[] cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+			    if(cachedCompressedData != null)
+			        this.pageString = compressionHelper.decompress(cachedCompressedData);
+			}
+			else
+			{
+			    this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+			}
+			
+			if(this.pageString == null)
 			{
 				invokePage();
 				this.pageString = getPageString();
 				
 				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
 				{
-					long startCompression = System.currentTimeMillis();
-					byte[] compressedData = compressionHelper.compress(this.pageString);		
-				    logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
-					CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities());
-					//CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities());
+				    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
+					{
+						long startCompression = System.currentTimeMillis();
+						byte[] compressedData = compressionHelper.compress(this.pageString);		
+					    logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
+						CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities());
+					}
+				    else
+				    {
+						CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities());
+				    }
 				}
 				else
 				{
