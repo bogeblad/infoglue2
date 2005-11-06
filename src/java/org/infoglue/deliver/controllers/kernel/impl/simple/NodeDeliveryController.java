@@ -45,6 +45,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.NullObject;
+import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.applications.filters.URIMapperCache;
 import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
@@ -1396,8 +1397,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		while (results.hasMore()) 
         {
         	SiteNode siteNode = (SiteNode)results.next();
-			siteNodeVOList.add(siteNode.getValueObject());
+			
+        	if(isValidSiteNode(siteNode, db))
+        	    siteNodeVOList.add(siteNode.getValueObject());
 		}
+		
 		return siteNodeVOList;	
 	}
 
