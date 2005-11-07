@@ -10,6 +10,8 @@
             <param-name>FilterURIs</param-name>
             <param-value>
                 /UpdateCache.action,
+                /ViewApplicationState.action,
+                /ErrorPage.action,
                 /digitalAssets/*,
                 /scripts/*,
                 /script/*,

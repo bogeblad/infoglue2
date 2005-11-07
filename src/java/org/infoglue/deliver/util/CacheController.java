@@ -650,6 +650,12 @@ public class CacheController extends Thread
     public static void evictWaitingCache() throws Exception
     {
 	    logger.warn("evictWaitingCache start");
+	    
+	    if(RequestAnalyser.getBlockRequests())
+	    {
+		    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+	        return;
+	    }
 
         synchronized(notifications)
         {
@@ -671,15 +677,15 @@ public class CacheController extends Thread
 
 					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
+					    logger.warn("Now it was free...");
+					    RequestAnalyser.setBlockRequests(true);
+
 					    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
 					    {
 					        logger.warn("There was ongoing requests - lets wait 5ms");
 					        Thread.sleep(5);
 					    }
 					    
-					    logger.warn("Now it was free...");
-					    RequestAnalyser.setBlockRequests(true);
-
 					    logger.info("clearing all as we are in publish mode..");
 					    
 				        CacheController.clearCaches(null, null);
