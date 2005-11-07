@@ -127,6 +127,7 @@ public class ViewPageFilter implements Filter
         }
         logger.warn("filter let through");
 
+        
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if (enableNiceURI == null)
             enableNiceURI = "false";
@@ -139,6 +140,12 @@ public class ViewPageFilter implements Filter
         {
 	        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
 	        {
+	        	synchronized(RequestAnalyser.getCurrentRequests())
+	        	{
+	        	    httpRequest.setAttribute("startTime", new Long(start));
+	        	    RequestAnalyser.getCurrentRequests().add(httpRequest);
+	        	}
+
 	            HttpSession httpSession = httpRequest.getSession(true);
 	
 	            List repositoryVOList = null;
@@ -233,6 +240,13 @@ public class ViewPageFilter implements Filter
 	            catch (Exception e) 
 	            {
 	                throw new ServletException(e);
+	            }
+	            finally
+	            {
+	    			synchronized(RequestAnalyser.getCurrentRequests())
+	    	    	{
+	    			    RequestAnalyser.getCurrentRequests().remove(httpRequest);
+	    	    	}
 	            }
 	            
 	        } 
