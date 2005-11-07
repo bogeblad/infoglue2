@@ -666,8 +666,8 @@ public class CacheController extends Thread
 			    String objectName = cacheEvictionBean.getObjectName();
 				String typeId = cacheEvictionBean.getTypeId();
 				
-			    logger.warn("className:" + className);
-				logger.warn("objectId:" + objectId);
+			    logger.info("className:" + className);
+				logger.info("objectId:" + objectId);
 
 				try
 			    {
@@ -675,12 +675,12 @@ public class CacheController extends Thread
 
 					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
-					    logger.warn("Now it was free...");
+					    logger.info("Now it was free...");
 					    RequestAnalyser.setBlockRequests(true);
 
 					    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
 					    {
-					        logger.warn("There was ongoing requests - lets wait 5ms");
+					        logger.info("There was ongoing requests - lets wait 5ms");
 					        Thread.sleep(5);
 					    }
 					    
@@ -758,15 +758,15 @@ public class CacheController extends Thread
 			    }
 			    catch(Exception e)
 			    {
-			        logger.warn("Cache eviction reported an error:" + e.getMessage(), e);
+			        logger.error("Cache eviction reported an error:" + e.getMessage(), e);
 			    }
 
-		        logger.warn("Cache evicted..");
+		        logger.info("Cache evicted..");
 
 				i.remove();
 			}
         }
-        logger.warn("evictWaitingCache stop");
+        logger.info("evictWaitingCache stop");
     }
 
     /**

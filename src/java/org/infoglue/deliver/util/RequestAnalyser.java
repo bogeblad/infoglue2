@@ -38,7 +38,7 @@ public class RequestAnalyser
 {
     public static int numberOfCurrentRequests = 0;
     
-	private static List currentRequests = new ArrayList();
+	//private static List currentRequests = new ArrayList();
 
 	private static int maxClientsInt = 0;
 	private static boolean blockRequests = false;
@@ -141,10 +141,12 @@ public class RequestAnalyser
     }
     */
     
+    /*
     public static List getCurrentRequests()
     {
         return currentRequests;
     }
+    */
     
     public static boolean getBlockRequests()
     {

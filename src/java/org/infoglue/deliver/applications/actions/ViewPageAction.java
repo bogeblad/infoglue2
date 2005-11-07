@@ -152,24 +152,24 @@ public class ViewPageAction extends InfoGlueAbstractAction
  			getRequest().getRequestDispatcher("/ErrorPage!busy.action").forward(getRequest(), getResponse());
 
              return NONE;
-         }
-
-        getLogger().warn("viewpage let through");
-
+        }
         
         HttpServletRequest request = getRequest();
         
     	long start = System.currentTimeMillis();
+    	RequestAnalyser.numberOfCurrentRequests++;
+    	/*
     	synchronized(RequestAnalyser.getCurrentRequests())
     	{
     	    request.setAttribute("startTime", new Long(start));
     	    RequestAnalyser.getCurrentRequests().add(request);
     	}
+    	*/
     	long elapsedTime 	= 0;
     	
-    	getLogger().warn("************************************************");
-    	getLogger().warn("* ViewPageAction was called....                *");
-    	getLogger().warn("************************************************");
+    	getLogger().info("************************************************");
+    	getLogger().info("* ViewPageAction was called....                *");
+    	getLogger().info("************************************************");
     	
         request.setAttribute("progress", "ViewPageAction has been called");
     	
@@ -294,10 +294,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			closeTransaction(dbWrapper.getDatabase());
 
 			elapsedTime = System.currentTimeMillis() - start;
+	    	RequestAnalyser.numberOfCurrentRequests--;
+	    	/*
 			synchronized(RequestAnalyser.getCurrentRequests())
 	    	{
 			    RequestAnalyser.getCurrentRequests().remove(request);
 	    	}
+	    	*/
 		}
 
 		

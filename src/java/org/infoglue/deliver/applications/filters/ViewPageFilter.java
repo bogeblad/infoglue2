@@ -140,9 +140,6 @@ public class ViewPageFilter implements Filter
             return;
         }
 
-        logger.warn("filter let through");
-
-        
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if (enableNiceURI == null)
             enableNiceURI = "false";
@@ -155,11 +152,14 @@ public class ViewPageFilter implements Filter
         {
 	        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
 	        {
+	            /*
 	        	synchronized(RequestAnalyser.getCurrentRequests())
 	        	{
 	        	    httpRequest.setAttribute("startTime", new Long(start));
 	        	    RequestAnalyser.getCurrentRequests().add(httpRequest);
 	        	}
+	        	*/
+	        	RequestAnalyser.numberOfCurrentRequests++;
 
 	            HttpSession httpSession = httpRequest.getSession(true);
 	
@@ -258,10 +258,13 @@ public class ViewPageFilter implements Filter
 	            }
 	            finally
 	            {
+		        	RequestAnalyser.numberOfCurrentRequests--;
+		        	/*
 	    			synchronized(RequestAnalyser.getCurrentRequests())
 	    	    	{
 	    			    RequestAnalyser.getCurrentRequests().remove(httpRequest);
 	    	    	}
+	    	    	*/
 	            }
 	            
 	        } 
