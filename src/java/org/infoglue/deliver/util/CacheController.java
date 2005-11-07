@@ -64,7 +64,7 @@ import javax.servlet.http.HttpSession;
 
 public class CacheController extends Thread
 { 
-    private final static Logger logger = Logger.getLogger(CacheController.class.getName());
+    public final static Logger logger = Logger.getLogger(CacheController.class.getName());
 
     public static List notifications = new ArrayList();
     
@@ -136,7 +136,8 @@ public class CacheController extends Thread
 	
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key)
 	{
-	    //return getCachedObject(cacheName, key);
+	    logger.info("getCachedObjectFromAdvancedCache start...");
+
 	    Object value = null;
 	    
 	    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
@@ -148,12 +149,16 @@ public class CacheController extends Thread
 	    {
 	        cacheAdministrator.cancelUpdate(key.toString());
 		}
-		 
+
+	    logger.info("getCachedObjectFromAdvancedCache stop...");
+
 		return value;
 	}
 
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key, int updateInterval)
 	{
+	    logger.info("getCachedObjectFromAdvancedCache start...");
+
 	    //return getCachedObject(cacheName, key);
 	    Object value = null;
 	    
@@ -166,7 +171,9 @@ public class CacheController extends Thread
 	    {
 	        cacheAdministrator.cancelUpdate(key.toString());
 		}
-		 
+
+	    logger.info("getCachedObjectFromAdvancedCache stop...");
+
 		return value;
 	}
 
@@ -189,6 +196,8 @@ public class CacheController extends Thread
 	    	caches.remove(cacheName);
 		    eventListeners.remove(cacheName + "_cacheEntryEventListener");
 		    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
+
+		    logger.info("clearCache stop...");
 		}
 	}
 		
@@ -214,6 +223,8 @@ public class CacheController extends Thread
 			    	cacheInstance.flushAll();
 			        eventListeners.clear();
 				}
+				logger.info("Cleared cache:" + e.getKey());
+				
 		    	i.remove();
 			}
 		}
@@ -399,6 +410,8 @@ public class CacheController extends Thread
 					    }
 					}
 
+					logger.info("Cleared cache:" + e.getKey());
+
 					i.remove();
 
 				}
@@ -463,6 +476,8 @@ public class CacheController extends Thread
 			clearCache(UserContentTypeDefinitionImpl.class);
 			clearCache(RoleContentTypeDefinitionImpl.class);
 			clearCache(GroupContentTypeDefinitionImpl.class);			
+
+			logger.info("Emptied the Castor Caches");
 		}
 		catch(Exception e)
 		{
@@ -674,7 +689,9 @@ public class CacheController extends Thread
 			    {
 			        logger.warn("Cache eviction reported an error:" + e.getMessage(), e);
 			    }
-			    
+
+		        logger.warn("Cache evicted..");
+
 				i.remove();
 			}
         }

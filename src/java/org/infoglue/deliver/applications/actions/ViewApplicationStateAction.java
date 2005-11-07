@@ -96,10 +96,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doSetLogInfo() throws Exception
     {
-        ViewPageFilter.logger.setLevel(Level.INFO);
-        ViewPageAction.logger.setLevel(Level.INFO);
-        RedirectFilter.logger.setLevel(Level.INFO);
+        //ViewPageFilter.logger.setLevel(Level.INFO);
+        //ViewPageAction.logger.setLevel(Level.INFO);
+        //RedirectFilter.logger.setLevel(Level.INFO);
         CastorDatabaseService.logger.setLevel(Level.INFO);
+        CacheController.logger.setLevel(Level.INFO);
 
         return "cleared";
     }
@@ -109,10 +110,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doSetLogWarning() throws Exception
     {
-        ViewPageFilter.logger.setLevel(Level.WARN);
-        ViewPageAction.logger.setLevel(Level.WARN);
-        RedirectFilter.logger.setLevel(Level.WARN);
+        //ViewPageFilter.logger.setLevel(Level.WARN);
+        //ViewPageAction.logger.setLevel(Level.WARN);
+        //RedirectFilter.logger.setLevel(Level.WARN);
         CastorDatabaseService.logger.setLevel(Level.WARN);
+        CacheController.logger.setLevel(Level.WARN);
 
         return "cleared";
     }
@@ -122,10 +124,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doSetLogError() throws Exception
     {
-        ViewPageFilter.logger.setLevel(Level.ERROR);
-        ViewPageAction.logger.setLevel(Level.ERROR);
-        RedirectFilter.logger.setLevel(Level.ERROR);
+        //ViewPageFilter.logger.setLevel(Level.ERROR);
+        //ViewPageAction.logger.setLevel(Level.ERROR);
+        //RedirectFilter.logger.setLevel(Level.ERROR);
         CastorDatabaseService.logger.setLevel(Level.ERROR);
+        CacheController.logger.setLevel(Level.ERROR);
 
         return "cleared";
     }
