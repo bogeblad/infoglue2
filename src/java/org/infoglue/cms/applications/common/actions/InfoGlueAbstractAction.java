@@ -358,12 +358,14 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		    {
 			    db.commit();
 			}
-		 	db.close();
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
-			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+		    throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+		}
+		finally
+		{
+		    closeDatabase(db);
 		}
 	}
 	
@@ -380,11 +382,14 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			{
 			    db.rollback();
 			}
-			db.close();
 		}
 		catch(Exception e)
 		{
-			getLogger().info("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+			getLogger().warn("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+		}
+		finally
+		{
+		    closeDatabase(db);
 		}
 	}
 
@@ -400,7 +405,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			getLogger().warn("An error occurred when we close database. Reason:" + e.getMessage());
 			throw new SystemException("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
 		}
 	}

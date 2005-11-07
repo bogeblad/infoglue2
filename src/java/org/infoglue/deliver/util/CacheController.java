@@ -751,6 +751,7 @@ public class CacheController extends Thread
 				i.remove();
 			}
         }
+        logger.warn("evictWaitingCache stop");
     }
 
     /**
