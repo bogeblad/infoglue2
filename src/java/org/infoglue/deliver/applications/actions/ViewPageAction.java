@@ -278,13 +278,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
+			closeTransaction(dbWrapper.getDatabase());
+
 			elapsedTime = System.currentTimeMillis() - start;
 			synchronized(RequestAnalyser.getCurrentRequests())
 	    	{
 			    RequestAnalyser.getCurrentRequests().remove(request);
 	    	}
-
-			closeTransaction(dbWrapper.getDatabase());
 		}
 
 		
