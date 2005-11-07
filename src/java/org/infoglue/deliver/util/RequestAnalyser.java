@@ -36,7 +36,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  */
 public class RequestAnalyser
 {
-
+    public static int numberOfCurrentRequests = 0;
+    
 	private static List currentRequests = new ArrayList();
 
 	private static int maxClientsInt = 0;
@@ -58,7 +59,13 @@ public class RequestAnalyser
         }
 
 	}
-	
+
+    public static int getNumberOfCurrentRequests()
+    {
+        return numberOfCurrentRequests;
+    }
+
+	/*
     public static int getNumberOfCurrentRequests()
     {
         synchronized(currentRequests)
@@ -122,7 +129,7 @@ public class RequestAnalyser
         
         return 0;
     }
-    
+    */
     
     public static int getMaxClients()
     {
@@ -141,13 +148,11 @@ public class RequestAnalyser
     
     public static boolean getBlockRequests()
     {
-        System.out.println("BlockingRequest:" + blockRequests);
         return blockRequests;
     }
     
     public static void setBlockRequests(boolean blockRequests)
     {
-        System.out.println("BlockingRequest:" + blockRequests);
         RequestAnalyser.blockRequests = blockRequests;
     }
 }

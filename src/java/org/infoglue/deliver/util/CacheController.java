@@ -648,9 +648,7 @@ public class CacheController extends Thread
     }
     
     public static void evictWaitingCache() throws Exception
-    {
-	    logger.warn("evictWaitingCache start");
-	    
+    {	    
 	    if(RequestAnalyser.getBlockRequests())
 	    {
 		    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");

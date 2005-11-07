@@ -130,6 +130,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
         //CacheController.evictWaitingCache();
+        /*
         if(RequestAnalyser.getBlockRequests() ||
            (RequestAnalyser.getMaxClients() != 0 && 
            RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients()))
@@ -141,6 +142,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
             return NONE;
         }
+        */
+
+        if(RequestAnalyser.getBlockRequests())
+        {
+            logger.info("A publication was taking place. Responding with an error.");
+ 			getResponse().setContentType("text/html; charset=UTF-8");
+ 			getRequest().setAttribute("responseCode", "503");
+ 			getRequest().getRequestDispatcher("/ErrorPage!busy.action").forward(getRequest(), getResponse());
+
+             return NONE;
+         }
+
         getLogger().warn("viewpage let through");
 
         
