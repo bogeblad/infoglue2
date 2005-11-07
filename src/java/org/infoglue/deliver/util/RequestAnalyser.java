@@ -129,7 +129,6 @@ public class RequestAnalyser
         
         return 0;
     }
-    */
     
     public static int getMaxClients()
     {
@@ -140,6 +139,7 @@ public class RequestAnalyser
     {
         RequestAnalyser.maxClientsInt = maxClientsInt;
     }
+    */
     
     public static List getCurrentRequests()
     {

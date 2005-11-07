@@ -110,6 +110,7 @@ public class ViewPageFilter implements Filter
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
+        /*
         if((RequestAnalyser.getBlockRequests() && 
            (httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
            httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1)) || 
@@ -125,6 +126,20 @@ public class ViewPageFilter implements Filter
 
             return;
         }
+        */
+        
+        if(RequestAnalyser.getBlockRequests() && 
+           httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
+           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1)
+        {
+            logger.info("Maximum number of clients reached in ViewPageFilter. Responding with an error.");
+            httpResponse.setContentType("text/html; charset=UTF-8");
+     		httpRequest.setAttribute("responseCode", "503");
+     		httpRequest.getRequestDispatcher("/ErrorPage!busy.action").forward(httpRequest, httpResponse);
+
+            return;
+        }
+
         logger.warn("filter let through");
 
         
