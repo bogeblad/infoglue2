@@ -141,6 +141,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
             return NONE;
         }
+        getLogger().warn("viewpage let through");
+
         
         HttpServletRequest request = getRequest();
         
@@ -152,9 +154,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	}
     	long elapsedTime 	= 0;
     	
-    	getLogger().info("************************************************");
-    	getLogger().info("* ViewPageAction was called....                *");
-    	getLogger().info("************************************************");
+    	getLogger().warn("************************************************");
+    	getLogger().warn("* ViewPageAction was called....                *");
+    	getLogger().warn("************************************************");
     	
         request.setAttribute("progress", "ViewPageAction has been called");
     	

@@ -141,11 +141,13 @@ public class RequestAnalyser
     
     public static boolean getBlockRequests()
     {
+        System.out.println("BlockingRequest:" + blockRequests);
         return blockRequests;
     }
     
     public static void setBlockRequests(boolean blockRequests)
     {
+        System.out.println("BlockingRequest:" + blockRequests);
         RequestAnalyser.blockRequests = blockRequests;
     }
 }

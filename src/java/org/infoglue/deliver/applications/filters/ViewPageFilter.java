@@ -110,10 +110,12 @@ public class ViewPageFilter implements Filter
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        if((RequestAnalyser.getBlockRequests() &&
-           httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
-           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1) || 
-           (RequestAnalyser.getMaxClients() != 0 && 
+        if((RequestAnalyser.getBlockRequests() && 
+           (httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
+           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1)) || 
+           ((httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
+           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1) &&
+           RequestAnalyser.getMaxClients() != 0 && 
            RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients()))
         {
             logger.info("Maximum number of clients reached in ViewPageFilter. Responding with an error.");
@@ -123,6 +125,7 @@ public class ViewPageFilter implements Filter
 
             return;
         }
+        logger.warn("filter let through");
 
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if (enableNiceURI == null)
@@ -134,7 +137,6 @@ public class ViewPageFilter implements Filter
 
         try
         {
-
 	        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
 	        {
 	            HttpSession httpSession = httpRequest.getSession(true);
