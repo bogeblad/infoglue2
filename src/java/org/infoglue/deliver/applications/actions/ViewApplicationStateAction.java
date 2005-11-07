@@ -23,7 +23,9 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import org.apache.log4j.Category;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -43,6 +45,7 @@ import webwork.action.ActionContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +82,19 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	
     }
     
+    private Category getDeliverCategory()
+    {
+        Enumeration enumeration = Logger.getCurrentCategories();
+        while(enumeration.hasMoreElements())
+        {
+            Category category = (Category)enumeration.nextElement();
+            System.out.println("Category:" + category.getName());
+            if(category.getName().equalsIgnoreCase("org.infoglue.deliver"))
+                return category;
+        }
+        
+        return null;
+    }
     /**
      * This action allows clearing of the given cache manually.
      */
@@ -101,7 +117,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         //RedirectFilter.logger.setLevel(Level.INFO);
         CastorDatabaseService.logger.setLevel(Level.INFO);
         CacheController.logger.setLevel(Level.INFO);
-
+        getDeliverCategory().setLevel(Level.INFO);
+        
         return "cleared";
     }
 
@@ -115,6 +132,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         //RedirectFilter.logger.setLevel(Level.WARN);
         CastorDatabaseService.logger.setLevel(Level.WARN);
         CacheController.logger.setLevel(Level.WARN);
+        getDeliverCategory().setLevel(Level.WARN);
 
         return "cleared";
     }
@@ -129,6 +147,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         //RedirectFilter.logger.setLevel(Level.ERROR);
         CastorDatabaseService.logger.setLevel(Level.ERROR);
         CacheController.logger.setLevel(Level.ERROR);
+        getDeliverCategory().setLevel(Level.ERROR);
 
         return "cleared";
     }

@@ -95,10 +95,14 @@ class PortletWindowIGImpl implements PortletWindowIG {
             if (contents.length() == 0) {
                 log.warn("Rendering generated an empty string");
             }
+            log.debug("render(" + renderWindow.getPortletEntity().getId() + ", " + renderWindow.getId()
+                    + ") done");
+
             return contents;
         } catch (Throwable t) {
             throw new PortalException(t);
         }
+        
     }
 
     /*
