@@ -649,6 +649,8 @@ public class CacheController extends Thread
     
     public static void evictWaitingCache() throws Exception
     {
+	    logger.warn("evictWaitingCache start");
+
         synchronized(notifications)
         {
 			Iterator i = notifications.iterator();
@@ -660,73 +662,84 @@ public class CacheController extends Thread
 			    String objectName = cacheEvictionBean.getObjectName();
 				String typeId = cacheEvictionBean.getTypeId();
 				
-			    logger.info("className:" + className);
-				logger.info("objectId:" + objectId);
+			    logger.warn("className:" + className);
+				logger.warn("objectId:" + objectId);
 
 				try
 			    {
-				    //Should contain permissioncontrol later...
-			
-				    boolean isDependsClass = false;
-				    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
-				        isDependsClass = true;
-			
-				    CacheController.clearCaches(className, objectId);
-			
-				    logger.info("Updating className with id:" + className + ":" + objectId);
-					if(className != null)
+			        String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+
+					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
-					    //Class[] types = {Class.forName(className)};
-					    Class type = Class.forName(className);
+					    logger.info("clearing all as we are in publish mode..");
 					    
-					    if(!isDependsClass && className.equalsIgnoreCase(SystemUserImpl.class.getName()) || className.equalsIgnoreCase(RoleImpl.class.getName()) || className.equalsIgnoreCase(GroupImpl.class.getName()))
-					    {
-					        Object[] ids = {objectId};
-					        CacheController.clearCache(type, ids);
-						}
-					    else if(!isDependsClass)
-					    {
-					        Object[] ids = {new Integer(objectId)};
-						    CacheController.clearCache(type, ids);
-					    }
-					    
-						//If it's an contentVersion we should delete all images it might have generated from attributes.
-						/*
-						if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+				        CacheController.clearCaches(null, null);
+						logger.info("Updating all caches as this was a publishing-update");
+						CacheController.clearCastorCaches();
+					}
+				    else
+				    {
+					    boolean isDependsClass = false;
+					    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
+					        isDependsClass = true;
+				
+					    CacheController.clearCaches(className, objectId);
+				
+					    logger.info("Updating className with id:" + className + ":" + objectId);
+						if(className != null)
 						{
-						    logger.info("We should delete all images with contentVersionId " + objectId);
-							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
-						}
-						else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
-						{
-						    logger.info("We clear all small contents as well " + objectId);
-							Class typesExtra = SmallContentImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-			
-							logger.info("We clear all medium contents as well " + objectId);
-							Class typesExtraMedium = MediumContentImpl.class;
-							Object[] idsExtraMedium = {new Integer(objectId)};
-							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
-						}
-						else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
-						{
-						    Class typesExtra = SmallAvailableServiceBindingImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-						}
-						else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
-						{
-						    Class typesExtra = SmallSiteNodeImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-						}
-						else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
-						{
-						    logger.info("We should delete all images with digitalAssetId " + objectId);
-							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
-						}
-					}				    
+						    //Class[] types = {Class.forName(className)};
+						    Class type = Class.forName(className);
+						    
+						    if(!isDependsClass && className.equalsIgnoreCase(SystemUserImpl.class.getName()) || className.equalsIgnoreCase(RoleImpl.class.getName()) || className.equalsIgnoreCase(GroupImpl.class.getName()))
+						    {
+						        Object[] ids = {objectId};
+						        CacheController.clearCache(type, ids);
+							}
+						    else if(!isDependsClass)
+						    {
+						        Object[] ids = {new Integer(objectId)};
+							    CacheController.clearCache(type, ids);
+						    }
+						    
+							//If it's an contentVersion we should delete all images it might have generated from attributes.
+							/*
+							if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+							{
+							    logger.info("We should delete all images with contentVersionId " + objectId);
+								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
+							}
+							else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
+							{
+							    logger.info("We clear all small contents as well " + objectId);
+								Class typesExtra = SmallContentImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+				
+								logger.info("We clear all medium contents as well " + objectId);
+								Class typesExtraMedium = MediumContentImpl.class;
+								Object[] idsExtraMedium = {new Integer(objectId)};
+								CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+							}
+							else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
+							{
+							    Class typesExtra = SmallAvailableServiceBindingImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+							}
+							else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
+							{
+							    Class typesExtra = SmallSiteNodeImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+							}
+							else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
+							{
+							    logger.info("We should delete all images with digitalAssetId " + objectId);
+								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+							}
+						}	
+				    }
 			    }
 			    catch(Exception e)
 			    {

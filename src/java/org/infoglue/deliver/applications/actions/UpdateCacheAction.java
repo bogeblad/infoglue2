@@ -136,14 +136,21 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			{
 			    getLogger().info("className:" + className);
 			    getLogger().info("objectId:" + objectId);
-			    
+
+		        synchronized(CacheController.getNotifications())
+		        {
+				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(this.className, this.typeId, this.objectId, this.objectName);
+				    CacheController.getNotifications().add(cacheEvictionBean);
+				    getLogger().info("Added a cacheEvictionBean....");
+		        }
+
 			    //Hardcoded some stuff to clear.... not nice. Instead have some register which 
 				//different caches can register to.
-				CacheController.clearCaches(null, null);
-				
+				/*
+		        CacheController.clearCaches(null, null);
 				getLogger().info("Updating all caches as this was a publishing-update");
-				
 				CacheController.clearCastorCaches();
+				*/
 				
 				//If it's an contentVersion we should delete all images it might have generated from attributes.
 				/*
