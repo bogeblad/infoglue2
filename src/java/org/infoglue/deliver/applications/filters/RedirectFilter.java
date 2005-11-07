@@ -92,6 +92,7 @@ public class RedirectFilter implements Filter
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         //String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
         String requestURL = httpRequest.getRequestURL().toString();
+
         logger.info("Redirect filter requestURL:" + requestURL);
         
         try

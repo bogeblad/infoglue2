@@ -88,13 +88,26 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         while(enumeration.hasMoreElements())
         {
             Category category = (Category)enumeration.nextElement();
-            System.out.println("Category:" + category.getName());
             if(category.getName().equalsIgnoreCase("org.infoglue.deliver"))
                 return category;
         }
         
         return null;
     }
+
+    private Category getCastorJDOCategory()
+    {
+        Enumeration enumeration = Logger.getCurrentCategories();
+        while(enumeration.hasMoreElements())
+        {
+            Category category = (Category)enumeration.nextElement();
+            if(category.getName().equalsIgnoreCase("org.exolab.castor.jdo"))
+                return category;
+        }
+        
+        return null;
+    }
+
     /**
      * This action allows clearing of the given cache manually.
      */
@@ -118,6 +131,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CastorDatabaseService.logger.setLevel(Level.INFO);
         CacheController.logger.setLevel(Level.INFO);
         getDeliverCategory().setLevel(Level.INFO);
+        getCastorJDOCategory().setLevel(Level.INFO);
         
         return "cleared";
     }
@@ -133,7 +147,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CastorDatabaseService.logger.setLevel(Level.WARN);
         CacheController.logger.setLevel(Level.WARN);
         getDeliverCategory().setLevel(Level.WARN);
-
+        getCastorJDOCategory().setLevel(Level.WARN);
+        
         return "cleared";
     }
 
@@ -148,6 +163,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CastorDatabaseService.logger.setLevel(Level.ERROR);
         CacheController.logger.setLevel(Level.ERROR);
         getDeliverCategory().setLevel(Level.ERROR);
+        getCastorJDOCategory().setLevel(Level.ERROR);
 
         return "cleared";
     }

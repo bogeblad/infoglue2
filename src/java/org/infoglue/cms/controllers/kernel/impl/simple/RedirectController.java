@@ -105,10 +105,20 @@ public class RedirectController extends BaseController
     {
         try
         {
+            String requestURL = request.getRequestURL().toString();
+            int indexOfProtocol = requestURL.indexOf("://");
+            int indexFirstSlash = requestURL.indexOf("/", indexOfProtocol + 3);
+            String base = requestURL.substring(0, indexFirstSlash);
+
+            logger.info("base:" + base);
+
             //String requestURL = request.getRequestURL().toString();
-            String requestURI = getContextRelativeURI(request);
+            String requestURI = base + getContextRelativeURI(request);
             //System.out.println("requestURL:" + requestURL);
             logger.info("requestURI:" + requestURI);
+            
+            
+            logger.info("full requestURI:" + requestURI);
             
             Collection cachedRedirects = (Collection)CacheController.getCachedObject("redirectCache", "allRedirects");
             if(cachedRedirects == null)
