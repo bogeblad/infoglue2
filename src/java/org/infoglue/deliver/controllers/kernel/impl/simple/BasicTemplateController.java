@@ -3077,7 +3077,7 @@ public class BasicTemplateController implements TemplateController
 	 * The mode is important to be able to show working, preview and published data separate.
 	 */
 	
-	private Integer getOperatingMode()
+	public Integer getOperatingMode()
 	{
 		Integer operatingMode = new Integer(0); //Default is working
 		try

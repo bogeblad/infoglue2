@@ -182,7 +182,7 @@ public abstract class PageInvoker
 			{
 				invokePage();
 				this.pageString = getPageString();
-				
+
 				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
 				{
 				    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
@@ -190,11 +190,17 @@ public abstract class PageInvoker
 						long startCompression = System.currentTimeMillis();
 						byte[] compressedData = compressionHelper.compress(this.pageString);		
 					    logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
-						CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities());
+						if(this.getTemplateController().getOperatingMode().intValue() == 3)
+						    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), false);
+						else
+						    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), true);
 					}
 				    else
 				    {
-						CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities());
+				        if(this.getTemplateController().getOperatingMode().intValue() == 3)
+				            CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), false);
+				        else
+				            CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), true);    
 				    }
 				}
 				else

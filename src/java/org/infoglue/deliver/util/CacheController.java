@@ -37,6 +37,7 @@ import org.infoglue.cms.entities.structure.impl.simple.*;
 import org.infoglue.cms.entities.publishing.impl.simple.*;
 import org.infoglue.cms.entities.management.impl.simple.*;
 import org.infoglue.cms.entities.workflow.impl.simple.*;
+import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
@@ -104,7 +105,7 @@ public class CacheController extends Thread
         return (cacheInstance == null) ? null : cacheInstance.get(key);
     }
 
-	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups)
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups)
 	{
 	    //cacheObject(cacheName, key, value);
 	    
@@ -121,16 +122,21 @@ public class CacheController extends Thread
 	        eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
 	        eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
 	    }
-	        
+	    
+	    /*
 	    logger.info("Putting " + cacheName + " with key: " + key + " in relation to:");
 	    for(int i=0; i<groups.length; i++)
 	    {
 	        logger.info("group:" + groups[i]);
 	    }
+	    */
 	    
 		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
-		cacheAdministrator.putInCache(key.toString(), value, groups);
-		
+		if(useGroups)
+		    cacheAdministrator.putInCache(key.toString(), value, groups);
+		else
+		    cacheAdministrator.putInCache(key.toString(), value);
+		    
 		logger.info("Done cacheObjectInAdvancedCache");
 	}	
 	
@@ -423,65 +429,74 @@ public class CacheController extends Thread
 		}
 	}
 	
-	public static void clearCastorCaches()
+	public static void clearCastorCaches() throws Exception
 	{
 		logger.info("Emptying the Castor Caches");
 		
+		Database db = CastorDatabaseService.getDatabase();
+
 		try
-		{
-			clearCache(SmallContentImpl.class);
-			clearCache(MediumContentImpl.class);
-			clearCache(ContentImpl.class);
-			clearCache(ContentRelationImpl.class);
-			clearCache(ContentVersionImpl.class);
-			clearCache(DigitalAssetImpl.class);
-			clearCache(SmallAvailableServiceBindingImpl.class);
-			clearCache(AvailableServiceBindingImpl.class);
-			clearCache(ContentTypeDefinitionImpl.class);
-			clearCache(LanguageImpl.class);
-			clearCache(RepositoryImpl.class);
-			clearCache(RepositoryLanguageImpl.class);
-			clearCache(RoleImpl.class);
-			clearCache(GroupImpl.class);
-			clearCache(ServiceDefinitionImpl.class);
-			clearCache(SiteNodeTypeDefinitionImpl.class);
-			clearCache(SystemUserImpl.class);
-			clearCache(QualifyerImpl.class);
-			clearCache(ServiceBindingImpl.class);
-			clearCache(SmallSiteNodeImpl.class);
-			clearCache(SiteNodeImpl.class);
-			clearCache(SiteNodeVersionImpl.class);
-			clearCache(PublicationImpl.class);
-			//clearCache(PublicationDetailImpl.class); // This class depends on publication
-			clearCache(ActionImpl.class);
-			clearCache(ActionDefinitionImpl.class);
-			clearCache(ActorImpl.class);
-			clearCache(ConsequenceImpl.class);
-			clearCache(ConsequenceDefinitionImpl.class);
-			clearCache(EventImpl.class);
-			clearCache(WorkflowImpl.class);
-			clearCache(WorkflowDefinitionImpl.class);
-			clearCache(CategoryImpl.class);
-			clearCache(ContentCategoryImpl.class);
-			clearCache(RegistryImpl.class);
-			clearCache(RedirectImpl.class);
+		{		    
+			clearCache(db, SmallContentImpl.class);
+			clearCache(db, MediumContentImpl.class);
+			clearCache(db, ContentImpl.class);
+			clearCache(db, ContentRelationImpl.class);
+			clearCache(db, ContentVersionImpl.class);
+			clearCache(db, DigitalAssetImpl.class);
+			clearCache(db, SmallAvailableServiceBindingImpl.class);
+			clearCache(db, AvailableServiceBindingImpl.class);
+			clearCache(db, ContentTypeDefinitionImpl.class);
+			clearCache(db, LanguageImpl.class);
+			clearCache(db, RepositoryImpl.class);
+			clearCache(db, RepositoryLanguageImpl.class);
+			clearCache(db, RoleImpl.class);
+			clearCache(db, GroupImpl.class);
+			clearCache(db, ServiceDefinitionImpl.class);
+			clearCache(db, SiteNodeTypeDefinitionImpl.class);
+			clearCache(db, SystemUserImpl.class);
+			clearCache(db, QualifyerImpl.class);
+			clearCache(db, ServiceBindingImpl.class);
+			clearCache(db, SmallSiteNodeImpl.class);
+			clearCache(db, SiteNodeImpl.class);
+			clearCache(db, SiteNodeVersionImpl.class);
+			clearCache(db, PublicationImpl.class);
+			//clearCache(db, PublicationDetailImpl.class); // This class depends on publication
+			clearCache(db, ActionImpl.class);
+			clearCache(db, ActionDefinitionImpl.class);
+			clearCache(db, ActorImpl.class);
+			clearCache(db, ConsequenceImpl.class);
+			clearCache(db, ConsequenceDefinitionImpl.class);
+			clearCache(db, EventImpl.class);
+			clearCache(db, WorkflowImpl.class);
+			clearCache(db, WorkflowDefinitionImpl.class);
+			clearCache(db, CategoryImpl.class);
+			clearCache(db, ContentCategoryImpl.class);
+			clearCache(db, RegistryImpl.class);
+			clearCache(db, RedirectImpl.class);
 			
-			clearCache(InterceptionPointImpl.class);
-			clearCache(InterceptorImpl.class);
-			clearCache(AccessRightImpl.class);
+			clearCache(db, InterceptionPointImpl.class);
+			clearCache(db, InterceptorImpl.class);
+			clearCache(db, AccessRightImpl.class);
 	
-			clearCache(RolePropertiesImpl.class);
-			clearCache(UserPropertiesImpl.class);
-			clearCache(GroupPropertiesImpl.class);
-			clearCache(UserContentTypeDefinitionImpl.class);
-			clearCache(RoleContentTypeDefinitionImpl.class);
-			clearCache(GroupContentTypeDefinitionImpl.class);			
+			clearCache(db, RolePropertiesImpl.class);
+			clearCache(db, UserPropertiesImpl.class);
+			clearCache(db, GroupPropertiesImpl.class);
+			clearCache(db, UserContentTypeDefinitionImpl.class);
+			clearCache(db, RoleContentTypeDefinitionImpl.class);
+			clearCache(db, GroupContentTypeDefinitionImpl.class);			
+
+		    commitTransaction(db);
 
 			logger.info("Emptied the Castor Caches");
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+		    logger.error("Exception when tried empty the Castor Caches");
+		    rollbackTransaction(db);
+		}
+		finally
+		{
+			closeTransaction(db);
 		}
 	}
 	
@@ -523,7 +538,9 @@ public class CacheController extends Thread
 
 		try
 		{
-			Class[] types = {c};
+		    clearCache(db, c);
+		    /*
+		    Class[] types = {c};
 			Class[] ids = {null};
 			CacheManager manager = db.getCacheManager();
 			manager.expireCache(types);
@@ -538,7 +555,7 @@ public class CacheController extends Thread
 		        expireDateTime = null;
 		        publishDateTime = null;
 		    }
-
+		    */
 		}
 		catch(Exception e)
 		{
@@ -549,14 +566,40 @@ public class CacheController extends Thread
 			db.close();			
 		}
 	}
-	
+
+	private static synchronized void clearCache(Database db, Class c) throws Exception
+	{
+		Class[] types = {c};
+		Class[] ids = {null};
+		CacheManager manager = db.getCacheManager();
+		manager.expireCache(types);
+		//db.expireCache(types, null);
+		
+	    if(c.getName().equalsIgnoreCase(SmallContentImpl.class.getName()) || 
+	       c.getName().equalsIgnoreCase(MediumContentImpl.class.getName()) ||
+	       c.getName().equalsIgnoreCase(ContentImpl.class.getName()) ||
+	       c.getName().equalsIgnoreCase(SmallSiteNodeImpl.class.getName()) || 
+		   c.getName().equalsIgnoreCase(SiteNodeImpl.class.getName()))
+	    {
+	        expireDateTime = null;
+	        publishDateTime = null;
+	    }
+	}
+
 	
 	public void run() 
 	{
 		while(this.continueRunning && expireCacheAutomatically)
 		{
 			logger.warn("Clearing caches");
-			clearCastorCaches();
+			try
+			{
+			    clearCastorCaches();
+			}
+			catch(Exception e)
+			{
+			    logger.error("Error clearing cache in expireCacheAutomatically thread:" + e.getMessage(), e);
+			}
 			logger.info("Castor cache cleared");
 			clearCaches(null, null);
 			logger.info("All other caches cleared");
@@ -757,4 +800,74 @@ public class CacheController extends Thread
     	
     	return pageKey + extra;
     }
+    
+    
+	/**
+	 * Rollbacks a transaction on the named database
+	 */
+     
+	public static void closeTransaction(Database db) throws SystemException
+	{
+	    //if(db != null && !db.isClosed() && db.isActive())
+	        commitTransaction(db);
+	}
+
+	/**
+	 * Ends a transaction on the named database
+	 */
+	
+    private static void commitTransaction(Database db) throws SystemException
+	{
+		try
+		{
+		    if (db.isActive())
+		    {
+			    db.commit();
+			}
+		 	db.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+		}
+	}
+	
+ 
+	/**
+	 * Rollbacks a transaction on the named database
+	 */
+     
+	public static void rollbackTransaction(Database db) throws SystemException
+	{
+		try
+		{
+			if (db.isActive())
+			{
+			    db.rollback();
+			}
+			db.close();
+		}
+		catch(Exception e)
+		{
+			logger.info("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+		}
+	}
+
+	/**
+	 * Close the database
+	 */
+     
+	public static void closeDatabase(Database db) throws SystemException
+	{
+		try
+		{
+			db.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
+		}
+	}
 }

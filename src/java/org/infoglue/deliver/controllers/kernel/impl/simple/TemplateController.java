@@ -967,6 +967,13 @@ public interface TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, boolean useLanguageFallback);
 
+	/**
+	 * This method returns which mode the delivery-engine is running in.
+	 * The mode is important to be able to show working, preview and published data separate.
+	 */
+	
+	public Integer getOperatingMode();
+	
     /**
      * The method returns the ContentTypeVO-objects of the given contentId. 
      */

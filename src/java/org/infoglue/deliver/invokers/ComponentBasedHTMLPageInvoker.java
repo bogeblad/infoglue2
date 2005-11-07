@@ -602,7 +602,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		        if(cacheComponent)
 		        {
 		            logger.info("The component used: " + templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities().length);
-		            CacheController.cacheObjectInAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities());
+		            if(this.getTemplateController().getOperatingMode().intValue() == 3)
+		                CacheController.cacheObjectInAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), false);
+		            else
+		                CacheController.cacheObjectInAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), true);
 		        }	    
 
 			}
