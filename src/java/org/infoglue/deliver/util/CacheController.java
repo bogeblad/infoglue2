@@ -671,11 +671,22 @@ public class CacheController extends Thread
 
 					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
+					    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
+					    {
+					        logger.warn("There was ongoing requests - lets wait 5ms");
+					        Thread.sleep(5);
+					    }
+					    
+					    logger.warn("Now it was free...");
+					    RequestAnalyser.setBlockRequests(true);
+
 					    logger.info("clearing all as we are in publish mode..");
 					    
 				        CacheController.clearCaches(null, null);
 						logger.info("Updating all caches as this was a publishing-update");
 						CacheController.clearCastorCaches();
+						
+					    RequestAnalyser.setBlockRequests(false);
 					}
 				    else
 				    {

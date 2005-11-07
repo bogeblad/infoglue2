@@ -130,7 +130,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
         //CacheController.evictWaitingCache();
-        if(RequestAnalyser.getMaxClients() != 0 && RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients())
+        if(RequestAnalyser.getBlockRequests() ||
+           (RequestAnalyser.getMaxClients() != 0 && 
+           RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients()))
         {
             logger.info("Maximum number of clients reached in ViewPage. Responding with an error.");
 			getResponse().setContentType("text/html; charset=UTF-8");

@@ -110,10 +110,11 @@ public class ViewPageFilter implements Filter
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        if(httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
-           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1 && 
-           RequestAnalyser.getMaxClients() != 0 && 
-           RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients())
+        if((RequestAnalyser.getBlockRequests() &&
+           httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
+           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1) || 
+           (RequestAnalyser.getMaxClients() != 0 && 
+           RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients()))
         {
             logger.info("Maximum number of clients reached in ViewPageFilter. Responding with an error.");
             httpResponse.setContentType("text/html; charset=UTF-8");

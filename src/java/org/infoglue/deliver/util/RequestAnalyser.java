@@ -40,6 +40,7 @@ public class RequestAnalyser
 	private static List currentRequests = new ArrayList();
 
 	private static int maxClientsInt = 0;
+	private static boolean blockRequests = false;
 	
 	static
 	{
@@ -136,5 +137,15 @@ public class RequestAnalyser
     public static List getCurrentRequests()
     {
         return currentRequests;
+    }
+    
+    public static boolean getBlockRequests()
+    {
+        return blockRequests;
+    }
+    
+    public static void setBlockRequests(boolean blockRequests)
+    {
+        RequestAnalyser.blockRequests = blockRequests;
     }
 }
