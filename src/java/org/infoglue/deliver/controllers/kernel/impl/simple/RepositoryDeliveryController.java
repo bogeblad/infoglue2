@@ -113,7 +113,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
                 
                 getLogger().info("Matching only server name - removed protocol if there:" + dnsName);
                 
-            	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) != -1) || dnsName.indexOf(serverName + ":" + portNumber) != -1) 
+            	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0)
                 {
             	    if(repositoryName != null && repositoryName.length() > 0)
             	    {
