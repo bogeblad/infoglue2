@@ -78,12 +78,18 @@ public class RedirectFilter implements Filter
 {
     public final static Logger logger = Logger.getLogger(RedirectFilter.class.getName());
 
+    private static String FILTER_URIS_PARAMETER = "FilterURIs";
+    
     private FilterConfig filterConfig = null;
-
+    private URIMatcher uriMatcher = null;
+ 
+ 
     public void init(FilterConfig filterConfig) throws ServletException 
     {
         this.filterConfig = filterConfig;
-    }
+        String filterURIs = filterConfig.getInitParameter(FILTER_URIS_PARAMETER);
+        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","));
+   }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException 
     {       
@@ -95,28 +101,41 @@ public class RedirectFilter implements Filter
 
         logger.info("Redirect filter requestURL:" + requestURL);
         
+        
         try
         {
-            String redirectUrl = RedirectController.getController().getRedirectUrl(httpRequest);
-            if(redirectUrl != null && redirectUrl.length() > 0)
+            String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
+
+            if (!uriMatcher.matches(requestURI)) 
             {
-                httpResponse.sendRedirect(redirectUrl);
-                return;
-            }	            
+    	        try
+    	        {
+    	            String redirectUrl = RedirectController.getController().getRedirectUrl(httpRequest);
+    	            if(redirectUrl != null && redirectUrl.length() > 0)
+    	            {
+    	                httpResponse.sendRedirect(redirectUrl);
+    	                return;
+    	            }	            
+    	        }
+    	        catch (SystemException se) 
+    	        {
+    	            se.printStackTrace();
+    	            httpRequest.setAttribute("responseCode", "500");
+    	            httpRequest.setAttribute("error", se);
+    	            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+    	        }
+    	        catch (Exception e) 
+    	        {
+    	            e.printStackTrace();
+    	            httpRequest.setAttribute("responseCode", "404");
+    	            httpRequest.setAttribute("error", e);
+    	            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+    	        }
+            }
         }
-        catch (SystemException se) 
+        catch (Exception e)
         {
-            se.printStackTrace();
-            httpRequest.setAttribute("responseCode", "500");
-            httpRequest.setAttribute("error", se);
-            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
-        }
-        catch (Exception e) 
-        {
-            e.printStackTrace();
-            httpRequest.setAttribute("responseCode", "404");
-            httpRequest.setAttribute("error", e);
-            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+            logger.error("RedirectFilter threw error:" + e.getMessage(), e);
         }
         
         filterChain.doFilter(httpRequest, httpResponse);

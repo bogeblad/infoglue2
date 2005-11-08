@@ -125,7 +125,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				{
 					beginTransaction(db);
 					
-					SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+					SystemUser systemUser = SystemUserController.getController().getReadOnlySystemUserWithName(userName, db);
 					if(systemUser != null)
 					{
 						Iterator roleListIterator = systemUser.getRoles().iterator();
@@ -163,7 +163,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			}
 			else
 			{
-			    SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, transactionObject);
+			    SystemUser systemUser = SystemUserController.getController().getReadOnlySystemUserWithName(userName, transactionObject);
 			    
 			    if(systemUser != null)
 			    {

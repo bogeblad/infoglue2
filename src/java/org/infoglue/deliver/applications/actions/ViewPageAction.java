@@ -131,19 +131,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
     {
         //CacheController.evictWaitingCache();
         /*
-        if(RequestAnalyser.getBlockRequests() ||
-           (RequestAnalyser.getMaxClients() != 0 && 
-           RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients()))
-        {
-            logger.info("Maximum number of clients reached in ViewPage. Responding with an error.");
-			getResponse().setContentType("text/html; charset=UTF-8");
-			getRequest().setAttribute("responseCode", "503");
-			getRequest().getRequestDispatcher("/ErrorPage!busy.action").forward(getRequest(), getResponse());
-
-            return NONE;
-        }
-        */
-
         if(RequestAnalyser.getBlockRequests())
         {
             logger.info("A publication was taking place. Responding with an error.");
@@ -153,6 +140,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
              return NONE;
         }
+        */
         
         HttpServletRequest request = getRequest();
         
@@ -303,7 +291,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	*/
 		}
 
-		
 		if(elapsedTime > 10000)
 		{
 		    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
@@ -312,7 +299,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		else
 		{
 		    getLogger().info("The page delivery took " + elapsedTime + "ms");			
-			getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+		    getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 		}
 		
         return NONE;

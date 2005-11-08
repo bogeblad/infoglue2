@@ -67,6 +67,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryControlle
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 /**
  *
@@ -111,23 +112,6 @@ public class ViewPageFilter implements Filter
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
         /*
-        if((RequestAnalyser.getBlockRequests() && 
-           (httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
-           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1)) || 
-           ((httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
-           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1) &&
-           RequestAnalyser.getMaxClients() != 0 && 
-           RequestAnalyser.getNumberOfCurrentRequests() > RequestAnalyser.getMaxClients()))
-        {
-            logger.info("Maximum number of clients reached in ViewPageFilter. Responding with an error.");
-            httpResponse.setContentType("text/html; charset=UTF-8");
-			httpRequest.setAttribute("responseCode", "503");
-			httpRequest.getRequestDispatcher("/ErrorPage!busy.action").forward(httpRequest, httpResponse);
-
-            return;
-        }
-        */
-        
         if(RequestAnalyser.getBlockRequests() && 
            httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
            httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1)
@@ -139,7 +123,8 @@ public class ViewPageFilter implements Filter
 
             return;
         }
-
+        */
+        
         String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
         if (enableNiceURI == null)
             enableNiceURI = "false";
@@ -169,28 +154,19 @@ public class ViewPageFilter implements Filter
 	            Database db = CastorDatabaseService.getDatabase();
 	    		
 	            BaseDeliveryController.beginTransaction(db);
-
+	            
 	            try
 	            {
 	                repositoryVOList = getRepositoryId(httpRequest, db);
 	                languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, db);
-	                BaseDeliveryController.commitTransaction(db);
-	            }
-	            catch(Exception e)
-	            {
-	                BaseDeliveryController.rollbackTransaction(db);
-	                throw new SystemException("An error occurred when looking for page:" + e.getMessage());
-	            }
 	            
-	            Integer siteNodeId = null;
-	            String[] nodeNames = splitString(requestURI, "/");
-	            logger.info("nodeNames:" + nodeNames.length);
-	            //logger.info("RepositoryId.: "+repositoryId);
-	            //logger.info("LanguageId...: "+languageId);
-	            //logger.info("RequestURI...: "+requestURI);
-	
-	            try 
-	            {
+		            Integer siteNodeId = null;
+		            String[] nodeNames = splitString(requestURI, "/");
+		            logger.info("nodeNames:" + nodeNames.length);
+		            //logger.info("RepositoryId.: "+repositoryId);
+		            //logger.info("LanguageId...: "+languageId);
+		            //logger.info("RequestURI...: "+requestURI);
+		
 	                InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
 	                if (infoGluePrincipal == null) 
 	                {
@@ -199,25 +175,24 @@ public class ViewPageFilter implements Filter
 	                        infoGluePrincipal = (InfoGluePrincipal) CacheController.getCachedObject("userCache", "anonymous");
 	                        if (infoGluePrincipal == null) 
 	                        {
-	           				    Map arguments = new HashMap();
+	                            Map arguments = new HashMap();
 	        				    arguments.put("j_username", "anonymous");
 	        				    arguments.put("j_password", "anonymous");
-	        				    
-	        					infoGluePrincipal = (InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+	        					infoGluePrincipal = (InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(db, arguments);
 	        					if(infoGluePrincipal != null)
 	        						CacheController.cacheObject("userCache", "anonymous", infoGluePrincipal);
-	                            
 	                        }
 	                        //this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
 	
 	                    } 
 	                    catch (Exception e) 
 	                    {
+	    	                BaseDeliveryController.rollbackTransaction(db);
 	                        throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
 	                    }
 	                }
 	
-	                Iterator repositorVOListIterator = repositoryVOList.iterator();
+		            Iterator repositorVOListIterator = repositoryVOList.iterator();
 	                while(repositorVOListIterator.hasNext())
 	                {
 	                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
@@ -226,9 +201,11 @@ public class ViewPageFilter implements Filter
 	                    if(siteNodeId != null)
 	                        break;
 	                }
-	                
+	          
+	                BaseDeliveryController.commitTransaction(db);
+
 	                end = System.currentTimeMillis();
-	
+	                
 	                if(siteNodeId == null)
 	                {
 	                    String redirectUrl = RedirectController.getController().getRedirectUrl(httpRequest);
@@ -242,22 +219,26 @@ public class ViewPageFilter implements Filter
 	                    throw new ServletException("Could not map URI " + requestURI + " --> " + siteNodeId);
 	                }
 	                else
-	                    logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
-	                    
+	                    logger.warn("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
+	                
 	                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId);
 	                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
 	            } 
 	            catch (SystemException e) 
 	            {
+	                BaseDeliveryController.rollbackTransaction(db);
 	                logger.error("Failed to resolve siteNodeId", e);
 	                throw new ServletException(e);
 	            } 
 	            catch (Exception e) 
 	            {
+	                BaseDeliveryController.rollbackTransaction(db);
 	                throw new ServletException(e);
 	            }
 	            finally
 	            {
+	                BaseDeliveryController.closeDatabase(db);
+	                
 		        	RequestAnalyser.numberOfCurrentRequests--;
 		        	/*
 	    			synchronized(RequestAnalyser.getCurrentRequests())

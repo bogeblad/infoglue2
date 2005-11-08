@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -70,6 +71,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class CacheEvictionFilter implements Filter 
 {
+    public final static Logger logger = Logger.getLogger(CacheEvictionFilter.class.getName());
+
     private static String FILTER_URIS_PARAMETER = "FilterURIs";
     
     private FilterConfig filterConfig = null;
@@ -99,7 +102,7 @@ public class CacheEvictionFilter implements Filter
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error("CacheEvictionFilter threw error:" + e.getMessage(), e);
         }
         
         filterChain.doFilter(httpRequest, httpResponse);

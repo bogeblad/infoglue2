@@ -181,6 +181,16 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return "cleared";
     }
 
+    /**
+     * This action allows recaching of some parts of the caches manually.
+     */
+    public String doReCache() throws Exception
+    {
+        CacheController.cacheCentralCastorCaches();
+        
+        return "cleared";        
+    }
+    
     private List getList(String key, String value)
     {
         List list = new ArrayList();
