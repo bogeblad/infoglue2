@@ -39,6 +39,13 @@ public final class DeliverContextListener implements ServletContextListener
 {
 	private static CacheController cacheController = new CacheController();
 	
+	private static ServletContext servletContext = null;
+	
+	public static ServletContext getServletContext()
+	{
+	    return servletContext;
+	}
+	
 	/**
 	 * This method is called when the servlet context is 
 	 * initialized(when the Web Application is deployed). 
@@ -50,6 +57,8 @@ public final class DeliverContextListener implements ServletContextListener
 		System.out.println("contextInitialized for deliver...");
 		try
 		{
+		    servletContext = event.getServletContext();
+		    
 			String isHeadless = System.getProperty("java.awt.headless");
 			System.out.println("java.awt.headless=" + isHeadless);
 			if(isHeadless == null || !isHeadless.equalsIgnoreCase("true"))

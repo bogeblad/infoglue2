@@ -121,16 +121,16 @@
   </tr>
   #end
   <tr>
-    <td colspan="4" class="text"><a href="ViewApplicationState!clearCaches.action">Clear All</a></td>
+    <td colspan="4" class="text"><a href="ViewApplicationState!clearCaches.action">Clear All</a> | <a href="ViewApplicationState!reCache.action">Recache sitenodes</a></td>
   </tr>
   <tr>
     <td colspan="4"><hr/></td>
   </tr>
   <tr>
-    <td colspan="4" class="text">
-    <a href="ViewApplicationState!setLogInfo.action">Set loglevel to info</a>
-    <a href="ViewApplicationState!setLogWarning.action">Set loglevel to warning</a>
-    <a href="ViewApplicationState!setLogError.action">Set loglevel to error</a>
+    <td colspan="4" class="text" align="center">
+	    <a href="ViewApplicationState!setLogInfo.action">Set loglevel to info</a>
+	    <a href="ViewApplicationState!setLogWarning.action">Set loglevel to warning</a>
+	    <a href="ViewApplicationState!setLogError.action">Set loglevel to error</a>
     </td>
   </tr>
   <tr>

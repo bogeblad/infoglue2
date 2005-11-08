@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.2 2005/01/18 22:14:43 jed Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.3 2005/11/08 22:51:13 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -40,7 +40,10 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	private final Hashtable attributes = new Hashtable();
 	private final Hashtable parameters = new Hashtable();
 	private HttpSession session;
+	private ServletContext servletContext;
 
+	private String requestURI = null;
+	
 	public FakeHttpServletRequest()
 	{
 		this(new FakeHttpSession());
@@ -124,6 +127,42 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	{
 		this.session = session;
 	}
+	public void setRequestURI(String requestURI)
+	{
+		this.requestURI = requestURI;
+	}
+	public void setRequestRequestURI(String requestURI)
+	{
+		this.requestURI = requestURI;
+	}
+	public void setServletContext(ServletContext servletContext)
+	{
+		this.servletContext = servletContext;
+	}
+	
+	/**
+	 * Hardcoding all such request to GET.
+	 */
+	public String getMethod()                 
+	{ 
+	    return "GET"; 
+	}
+
+	/**
+	 * Hardcoding all such request to GET.
+	 */
+	public String getRequestURI()             
+	{ 
+	    return requestURI; 
+	}
+
+	public RequestDispatcher getRequestDispatcher(String path) 
+	{ 
+	    return servletContext.getRequestDispatcher(path);
+	}
+
+	public String getServerName() { return null; }
+	public int getServerPort()    { return 0; }
 
 	public String getCharacterEncoding()   { return null; }
 	public int getContentLength()          { return 0; }
@@ -131,15 +170,12 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public ServletInputStream getInputStream() throws IOException  { return null; }
 	public String getProtocol()   { return null; }
 	public String getScheme()     { return null; }
-	public String getServerName() { return null; }
-	public int getServerPort()    { return 0; }
 	public BufferedReader getReader() throws IOException { return null; }
 	public String getRemoteAddr() { return null; }
 	public String getRemoteHost() { return null; }
 	public Locale getLocale()        { return null; }
 	public Enumeration getLocales()  { return null; }
 	public boolean isSecure()        { return false; }
-	public RequestDispatcher getRequestDispatcher(String path) { return null; }
 	public String getRealPath(String path)   { return null; }
 
 	public String getAuthType()      { return null; }
@@ -149,7 +185,6 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public Enumeration getHeaders(String name)  { return null; }
 	public Enumeration getHeaderNames()       { return null; }
 	public int getIntHeader(String name)        { return 0; }
-	public String getMethod()                 { return null; }
 	public String getPathInfo()               { return null; }
 	public String getPathTranslated()         { return null; }
 	public boolean isUserInRole(String role)  { return false; }
@@ -158,7 +193,6 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public String getQueryString()            { return null; }
 	public String getRemoteUser()             { return null; }
 	public String getRequestedSessionId()     { return null; }
-	public String getRequestURI()             { return null; }
 	public String getServletPath()            { return null; }
 	public boolean isRequestedSessionIdValid() 	{ return false; }
 	public boolean isRequestedSessionIdFromCookie() { return false; }

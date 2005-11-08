@@ -33,17 +33,30 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.impl.simple.*;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.*;
 import org.infoglue.cms.entities.publishing.impl.simple.*;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.impl.simple.*;
 import org.infoglue.cms.entities.workflow.impl.simple.*;
 import org.infoglue.cms.exception.SystemException;
 
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.invokers.PageInvoker;
+import org.infoglue.deliver.portal.PortalService;
 
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
@@ -52,7 +65,9 @@ import com.opensymphony.oscache.base.events.CacheMapAccessEventListener;
 import com.opensymphony.oscache.extra.CacheEntryEventListenerImpl;
 import com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import com.steadystate.css.parser.selectors.BeginHyphenAttributeConditionImpl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -368,8 +383,15 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-				
-				
+				if(cacheName.equalsIgnoreCase("interceptorsCache") && entity.indexOf("Intercept") > 0)
+				{
+					clear = true;
+				}
+				if(cacheName.equalsIgnoreCase("interceptionPointCache") && entity.indexOf("Intercept") > 0)
+				{
+					clear = true;
+				}
+
 				if(clear)
 				{	
 					logger.info("clearing:" + e.getKey());
@@ -429,14 +451,15 @@ public class CacheController extends Thread
 		}
 	}
 	
-	public static void clearCastorCaches() throws Exception
+	public static synchronized void clearCastorCaches() throws Exception
 	{
 		logger.info("Emptying the Castor Caches");
 		
 		Database db = CastorDatabaseService.getDatabase();
 
 		try
-		{		    
+		{		
+		    
 			clearCache(db, SmallContentImpl.class);
 			clearCache(db, MediumContentImpl.class);
 			clearCache(db, ContentImpl.class);
@@ -485,18 +508,18 @@ public class CacheController extends Thread
 			clearCache(db, RoleContentTypeDefinitionImpl.class);
 			clearCache(db, GroupContentTypeDefinitionImpl.class);			
 
-		    commitTransaction(db);
+		    //commitTransaction(db);
 
 			logger.info("Emptied the Castor Caches");
 		}
 		catch(Exception e)
 		{
 		    logger.error("Exception when tried empty the Castor Caches");
-		    rollbackTransaction(db);
+		    //rollbackTransaction(db);
 		}
 		finally
 		{
-			closeTransaction(db);
+			db.close();
 		}
 	}
 	
@@ -612,6 +635,39 @@ public class CacheController extends Thread
 		}
 	}
 
+	public static synchronized void cacheCentralCastorCaches() throws Exception
+	{
+	    Database db = CastorDatabaseService.getDatabase();
+
+	    DatabaseWrapper dbWrapper = new DatabaseWrapper(db);
+
+		try
+		{
+	    	
+	    	beginTransaction(db);
+		    
+	    	new RequestCentricCachePopulator().recache(dbWrapper, new Integer(25), null, null);
+	    	
+		    
+		    commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred when we tried to rebuild the castor cache:" + e.getMessage(), e);
+		    rollbackTransaction(db);
+		}
+		finally
+		{
+		    closeDatabase(db);
+		}
+	}
+
+
+	
+	
+	
+	
+	
 	public void stopThread()
 	{
 		this.continueRunning = false;
@@ -684,11 +740,14 @@ public class CacheController extends Thread
 					        Thread.sleep(5);
 					    }
 					    
-					    logger.info("clearing all as we are in publish mode..");
-					    
-				        CacheController.clearCaches(null, null);
-						logger.info("Updating all caches as this was a publishing-update");
+					    logger.info("Updating all caches as this was a publishing-update");
 						CacheController.clearCastorCaches();
+						
+						logger.info("Updating all caches as this was a publishing-update");
+						CacheController.cacheCentralCastorCaches();
+						
+						logger.info("clearing all as we are in publish mode..");
+					    CacheController.clearCaches(null, null);
 						
 					    RequestAnalyser.setBlockRequests(false);
 					}
@@ -834,11 +893,29 @@ public class CacheController extends Thread
 	/**
 	 * Rollbacks a transaction on the named database
 	 */
-     
+     /*
 	public static void closeTransaction(Database db) throws SystemException
 	{
 	    //if(db != null && !db.isClosed() && db.isActive())
 	        commitTransaction(db);
+	}
+*/
+    
+	/**
+	 * Begins a transaction on the named database
+	 */
+         
+	public static void beginTransaction(Database db) throws SystemException
+	{
+		try
+		{
+			db.begin();
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage());
+			throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
+		}
 	}
 
 	/**
@@ -853,21 +930,20 @@ public class CacheController extends Thread
 		    {
 			    db.commit();
 			}
-		 	db.close();
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage());
 			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
 		}
 	}
-	
+
  
 	/**
 	 * Rollbacks a transaction on the named database
 	 */
-     
-	public static void rollbackTransaction(Database db) throws SystemException
+    
+	public static void rollbackTransaction(Database db)
 	{
 		try
 		{
@@ -875,11 +951,10 @@ public class CacheController extends Thread
 			{
 			    db.rollback();
 			}
-			db.close();
 		}
 		catch(Exception e)
 		{
-			logger.info("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+			logger.error("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
 		}
 	}
 
@@ -887,7 +962,7 @@ public class CacheController extends Thread
 	 * Close the database
 	 */
      
-	public static void closeDatabase(Database db) throws SystemException
+	public static void closeDatabase(Database db)
 	{
 		try
 		{
@@ -895,8 +970,7 @@ public class CacheController extends Thread
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
-			throw new SystemException("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
+			logger.error("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
 		}
 	}
 }

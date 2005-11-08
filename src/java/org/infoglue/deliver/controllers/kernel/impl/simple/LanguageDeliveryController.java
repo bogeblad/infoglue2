@@ -382,27 +382,5 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		return (language == null) ? null : language.getValueObject();	
 	}
 
-	/**
-	 * This method fetches one object / entity within a transaction.
-	 **/
-	
-    protected Object getObjectWithId(Class arg, Integer id, Database db) throws SystemException, Bug
-    {
-        Object object = null;
-        try
-        {
-            object = db.load(arg, id, Database.ReadOnly);
-        }
-        catch(Exception e)
-        {
-            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
-        }
-    
-        if(object == null)
-        {
-            throw new Bug("The object with id [" + id + "] was not found. This should never happen.");
-        }
-    	return object;
-    }
     
 }

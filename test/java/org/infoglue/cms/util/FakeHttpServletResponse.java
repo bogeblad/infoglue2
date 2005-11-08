@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletResponse.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: FakeHttpServletResponse.java,v 1.2 2005/11/08 22:51:13 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -35,9 +35,14 @@ import javax.servlet.ServletOutputStream;
  */
 public class FakeHttpServletResponse implements HttpServletResponse
 {
-	public String getCharacterEncoding() { return null; }
+    
+	public PrintWriter getWriter() throws IOException 
+	{ 
+	    return new PrintWriter(new ByteArrayOutputStream(2048)); 
+	}
+
+    public String getCharacterEncoding() { return null; }
 	public ServletOutputStream getOutputStream() throws IOException { return null; }
-	public PrintWriter getWriter() throws IOException { return null; }
 	public void setContentLength(int i) {}
 	public void setContentType(String s) {}
 	public void setBufferSize(int i) {}

@@ -1113,7 +1113,7 @@ public class NodeDeliveryController extends BaseDeliveryController
             oql.bind(bindings.get(i));
         }
         
-        QueryResults results = oql.execute();
+        QueryResults results = oql.execute(Database.ReadOnly);
         while (results.hasMore()) 
         {
             SiteNode siteNode = (SiteNode) results.next();
@@ -1316,8 +1316,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.name = $1");
 		oql.bind(repositoryName);
 		
-    	QueryResults results = oql.execute();
-		
+    	QueryResults results = oql.execute(Database.ReadOnly);
+
 		if (results.hasMore()) 
         {
         	siteNode = (SiteNode)results.next();
