@@ -109,7 +109,10 @@ public class SiteNodeTypeDefinitionController extends BaseController
 			if(readOnly)
 			    results = oql.execute(Database.ReadOnly);
 		    else
-		        results = oql.execute();
+		    {
+		        //this.getLogger().warn("Fetching entity in read/write mode" + name);
+			    results = oql.execute();
+		    }
 			
 			if (results.hasMore()) 
 			{

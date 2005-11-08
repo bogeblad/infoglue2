@@ -240,6 +240,8 @@ public class RepositoryController extends BaseController
 			oql.bind(name);
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode" + name);
+
 			if (results.hasMore()) 
 			{
 				repository = (Repository)results.next();
@@ -318,7 +320,8 @@ public class RepositoryController extends BaseController
 		
 			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r ORDER BY r.repositoryId");
         	QueryResults results = oql.execute();
-			
+			this.getLogger().warn("Fetching entity in read/write mode");
+
 			if (results.hasMore()) 
             {
                 Repository repository = (Repository)results.next();
@@ -333,7 +336,7 @@ public class RepositoryController extends BaseController
 		}
 		return repositoryVO;		
 	}
-
+	
 
 
 	/**

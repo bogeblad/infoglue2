@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.21 2005/09/20 21:47:33 mattias Exp $
+ * $Id: RegistryController.java,v 1.22 2005/11/08 23:12:04 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -1188,7 +1188,7 @@ public class RegistryController extends BaseController
 			oql.bind(entityId);
 					
 			QueryResults results = oql.execute();
-			
+
 			while (results.hasMore()) 
 	        {
 	            Registry registry = (Registry)results.next();
@@ -1221,7 +1221,7 @@ public class RegistryController extends BaseController
 			oql.bind(entityCompletingId);
 					
 			QueryResults results = oql.execute();
-			
+
 			while (results.hasMore()) 
 	        {
 	            Registry registry = (Registry)results.next();
@@ -1254,7 +1254,7 @@ public class RegistryController extends BaseController
 			oql.bind(entityId);
 					
 			QueryResults results = oql.execute();
-			
+
 			while (results.hasMore()) 
 	        {
 	            Registry registry = (Registry)results.next();
@@ -1311,7 +1311,8 @@ public class RegistryController extends BaseController
 		oql.bind(contentVersion.getOwningContent().getId());
 		
 		QueryResults results = oql.execute();
-		
+		//this.getLogger().warn("Fetching entity in read/write mode");
+
 		while (results.hasMore()) 
         {
 		    SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
@@ -1337,7 +1338,8 @@ public class RegistryController extends BaseController
 		oql.bind(new Boolean(true));
 		
 		QueryResults results = oql.execute();
-		
+		this.getLogger().warn("Fetching entity in read/write mode");
+
 		if (results.hasMore()) 
         {
 		    siteNodeVersion = (SiteNodeVersion)results.next();

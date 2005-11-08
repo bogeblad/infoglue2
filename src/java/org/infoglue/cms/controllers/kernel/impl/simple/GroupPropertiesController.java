@@ -275,6 +275,8 @@ public class GroupPropertiesController extends BaseController
 		oql.bind(languageId);
 
 		QueryResults results = oql.execute();
+		//this.getLogger().warn("Fetching entity in read/write mode");
+
 		while (results.hasMore()) 
 		{
 			GroupProperties groupProperties = (GroupProperties)results.next();
@@ -392,6 +394,8 @@ public class GroupPropertiesController extends BaseController
 		oql.bind(groupName);
 
 		QueryResults results = oql.execute();
+		//this.getLogger().warn("Fetching entity in read/write mode");
+
 		while (results.hasMore()) 
 		{
 			GroupContentTypeDefinition groupContentTypeDefinition = (GroupContentTypeDefinition)results.next();

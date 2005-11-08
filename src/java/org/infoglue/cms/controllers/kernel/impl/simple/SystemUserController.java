@@ -145,7 +145,8 @@ public class SystemUserController extends BaseController
         	oql.bind(userName);
         	
         	QueryResults results = oql.execute();
-			
+    		//this.getLogger().warn("Fetching entity in read/write mode" + userName);
+
 			if (results.hasMore()) 
             {
             	systemUser = (SystemUser)results.next();
@@ -159,6 +160,7 @@ public class SystemUserController extends BaseController
 
 		return systemUser;		
 	}
+
 
 
 	public SystemUserVO getSystemUserVO(String userName, String password)  throws SystemException, Bug
@@ -189,7 +191,7 @@ public class SystemUserController extends BaseController
 	public SystemUserVO getSystemUserVO(Database db, String userName, String password)  throws SystemException, Exception
 	{
 		SystemUserVO systemUserVO = null;
-		
+
 		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1 AND u.password = $2");
 		oql.bind(userName);
 		oql.bind(password);
@@ -215,7 +217,8 @@ public class SystemUserController extends BaseController
 		oql.bind(password);
     	
 		QueryResults results = oql.execute();
-		
+		//this.getLogger().warn("Fetching entity in read/write mode" + userName);
+
 		if (results.hasMore()) 
 		{
 			systemUser = (SystemUser)results.next();

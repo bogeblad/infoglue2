@@ -251,6 +251,8 @@ public class RolePropertiesController extends BaseController
 		oql.bind(languageId);
 
 		QueryResults results = oql.execute();
+		//this.getLogger().warn("Fetching entity in read/write mode");
+
 		while (results.hasMore()) 
 		{
 			RoleProperties roleProperties = (RoleProperties)results.next();
@@ -368,6 +370,8 @@ public class RolePropertiesController extends BaseController
 		oql.bind(roleName);
 
 		QueryResults results = oql.execute();
+		//this.getLogger().warn("Fetching entity in read/write mode");
+
 		while (results.hasMore()) 
 		{
 			RoleContentTypeDefinition roleContentTypeDefinition = (RoleContentTypeDefinition)results.next();

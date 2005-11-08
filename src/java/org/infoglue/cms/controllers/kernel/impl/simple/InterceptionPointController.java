@@ -28,6 +28,7 @@ import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Interceptor;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.exception.*;
 
@@ -166,6 +167,43 @@ public class InterceptionPointController extends BaseController
 		return interceptionPointVO;		
 	}	
 
+	public InterceptionPointVO getInterceptionPointVOWithName(String interceptorPointName, Database db)  throws SystemException, Bug
+	{
+		String key = "" + interceptorPointName;
+		getLogger().info("key:" + key);
+		InterceptionPointVO interceptionPointVO = (InterceptionPointVO)CacheController.getCachedObject("interceptionPointCache", key);
+		if(interceptionPointVO != null)
+		{
+			getLogger().info("There was an cached interceptionPointVO:" + interceptionPointVO);
+		}
+		else
+		{
+	
+			InterceptionPoint interceptorPoint = null;
+			
+			try
+			{
+				OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl f WHERE f.name = $1");
+				oql.bind(interceptorPointName);
+				
+				QueryResults results = oql.execute(Database.ReadOnly);
+				if(results.hasMore()) 
+				{
+					interceptorPoint = (InterceptionPoint)results.next();
+					interceptionPointVO = interceptorPoint.getValueObject();
+				
+					CacheController.cacheObject("interceptionPointCache", key, interceptionPointVO);				
+				}
+			}
+			catch(Exception e)
+			{
+				throw new SystemException("An error occurred when we tried to fetch an InterceptionPointVO. Reason:" + e.getMessage(), e);    
+			}
+		}
+		
+		return interceptionPointVO;		
+	}	
+
 
 	public InterceptionPoint getInterceptionPointWithName(String interceptorPointName, Database db)  throws SystemException, Bug
 	{
@@ -177,6 +215,7 @@ public class InterceptionPointController extends BaseController
 			oql.bind(interceptorPointName);
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode:" + interceptorPointName);
 			if(results.hasMore()) 
 			{
 				interceptorPoint = (InterceptionPoint)results.next();
@@ -226,6 +265,8 @@ public class InterceptionPointController extends BaseController
 			oql.bind(category);
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode:" + category);
+
 			while(results.hasMore()) 
 			{
 				InterceptionPoint interceptionPoint = (InterceptionPoint)results.next();

@@ -43,6 +43,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -198,7 +199,7 @@ public class AccessRightController extends BaseController
 		
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(interceptionPointId);
 		if(interceptionPointVO.getUsesExtraDataForAccessControl().booleanValue())
-			accessRightVOList = toVOList(getAccessRightListOnly(interceptionPointId, parameters, db));
+			accessRightVOList = toVOList(getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db));
 		else
 			accessRightVOList = toVOList(getAccessRightList(interceptionPointId, db));
 
@@ -238,7 +239,8 @@ public class AccessRightController extends BaseController
 			}
 			
 			QueryResults results = oql.execute();
-			
+			//this.getLogger().warn("Fetching entity in read/write mode" + interceptionPointId);
+
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
@@ -276,6 +278,46 @@ public class AccessRightController extends BaseController
 			}
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode");
+
+			while (results.hasMore()) 
+			{
+				AccessRight accessRight = (AccessRight)results.next();
+				accessRightList.add(accessRight);
+			}
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightList;		
+	}
+
+	
+	public List getAccessRightListOnlyReadOnly(Integer interceptionPointId, String parameters, Database db) throws SystemException, Bug
+	{
+		List accessRightList = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+			
+			if(parameters == null || parameters.length() == 0)
+			{
+				oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND (is_undefined(f.parameters) OR f.parameters = $2)");
+				oql.bind(interceptionPointId);
+				oql.bind(parameters);
+			}
+			else
+			{
+		    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.parameters = $2");
+				oql.bind(interceptionPointId);
+				oql.bind(parameters);
+			}
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
 			
 			while (results.hasMore()) 
 			{
@@ -318,6 +360,8 @@ public class AccessRightController extends BaseController
 			}
 						
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode");
+
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
@@ -347,6 +391,8 @@ public class AccessRightController extends BaseController
 			oql.bind(interceptionPointId);
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode");
+
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
@@ -375,6 +421,8 @@ public class AccessRightController extends BaseController
 			oql.bind(roleName);
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode");
+
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
@@ -406,6 +454,8 @@ public class AccessRightController extends BaseController
 			oql.bind(roleName);
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode");
+
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
@@ -798,9 +848,9 @@ public class AccessRightController extends BaseController
 		getLogger().info("roles:" + roles.size());
 		getLogger().info("groups:" + groups.size());
 		
-		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
-		List accessRightList = this.getAccessRightListOnly(interceptionPoint.getId(), extraParameters, db);
-
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
+		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), extraParameters, db);
+		
 		Iterator accessRightListIterator = accessRightList.iterator();
 		while(accessRightListIterator.hasNext())
 		{
@@ -848,10 +898,10 @@ public class AccessRightController extends BaseController
 			}
 
 		}
-		
+
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
-			    
+			   
 		return isPrincipalAuthorized;
 	}
 	

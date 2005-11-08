@@ -415,8 +415,8 @@ public abstract class BaseController
         Object object = null;
         try
         {
+            //logger.warn("Loading " + arg + " in read/write mode.");
             object = db.load(arg, id);
-        	//CmsSystem.log(object, "BaseController:getObjectWithId", CmsSystem.DBG_HIGH);
         }
         catch(Exception e)
         {
@@ -441,7 +441,6 @@ public abstract class BaseController
         try
         {
             object = db.load(arg, id, Database.ReadOnly);    			
-        	//CmsSystem.log(object, "BaseController:getObjectWithId", CmsSystem.DBG_HIGH);
         }
         catch(Exception e)
         {
@@ -464,6 +463,7 @@ public abstract class BaseController
 		Object object = null;
 		try
 		{
+            //logger.warn("Loading " + arg + " in read/write mode.");
 			object = db.load(arg, id);
 		}
 		catch(Exception e)

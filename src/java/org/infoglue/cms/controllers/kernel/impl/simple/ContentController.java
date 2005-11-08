@@ -1037,7 +1037,9 @@ public class ContentController extends BaseController
 		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl c WHERE is_undefined(c.parentContent) AND c.repository.repositoryId = $1");
 		oql.bind(repositoryId);
 			
-		QueryResults results = oql.execute();			
+		QueryResults results = oql.execute();		
+		//this.getLogger().warn("Fetching entity in read/write mode" + repositoryId);
+
 		if (results.hasMore()) 
 		{
 			content = (Content)results.next();

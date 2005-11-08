@@ -141,36 +141,6 @@ public class QualifyerController extends BaseController
    	}
 
 
-
-   	/**
-   	 * This method deletes all qualifyers for a given serviceBinding. 
-   	 */
-	/*	
-   	public static void deleteQualifyersForServiceBinding(ServiceBinding serviceBinding, Database db) throws ConstraintException, SystemException, Exception
-   	{
-   		
-   		OQLQuery oql = db.getOQLQuery("SELECT q FROM org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl q WHERE q.serviceBinding.serviceBindingId = $1");
-    	oql.bind(serviceBinding.getServiceBindingId());
-    	
-    	QueryResults results = oql.execute();
-		while(results.hasMore()) 
-        {
-            Qualifyer qualifyer = (Qualifyer)results.next();
-            logger.info("qualifyer:" + qualifyer.getQualifyerId());
-        }
-		
-		
-   		Collection qualifyerList = serviceBinding.getBindingQualifyers();
-		
-		Iterator i = qualifyerList.iterator();
-   		while(i.hasNext())
-   		{
-   			Qualifyer qualifyer = (Qualifyer)i.next();
-	   		db.remove(qualifyer);
-   		}
-		
-	}
-	*/
 	  
 	/**
 	 * This method returns a sorted list of qualifyers.

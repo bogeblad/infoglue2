@@ -353,8 +353,11 @@ public class SiteNodeVersionController extends BaseController
 			if(readOnly)
 			    results = oql.execute(Database.ReadOnly);
 			else
-			    results = oql.execute();
-			    
+			{
+				//this.getLogger().warn("Fetching entity in read/write mode");
+				results = oql.execute();
+			}
+			
 			if (results.hasMore()) 
 			{
 				siteNodeVersion = (SiteNodeVersion)results.next();
@@ -539,7 +542,8 @@ public class SiteNodeVersionController extends BaseController
     	oql.bind(true);
     	
     	QueryResults results = oql.execute();
-		
+		//logger.warn("Fetching entity in read/write mode");
+
 		if (results.hasMore()) 
         {
         	siteNodeVersion = (SiteNodeVersion)results.next();

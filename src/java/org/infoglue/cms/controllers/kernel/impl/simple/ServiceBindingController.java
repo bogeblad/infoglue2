@@ -262,6 +262,8 @@ public class ServiceBindingController extends BaseController
 		oql.bind(content.getContentId().toString());
 		
 		QueryResults results = oql.execute();
+		//logger.warn("Fetching entity in read/write mode");
+
 		while(results.hasMore()) 
 		{
 			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();
@@ -306,6 +308,8 @@ public class ServiceBindingController extends BaseController
 		oql.bind(siteNode.getSiteNodeId().toString());
 		
 		QueryResults results = oql.execute();
+		//logger.warn("Fetching entity in read/write mode");
+
 		while(results.hasMore()) 
 		{
 			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();

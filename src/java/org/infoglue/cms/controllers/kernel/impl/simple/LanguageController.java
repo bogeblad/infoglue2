@@ -161,6 +161,8 @@ public class LanguageController extends BaseController
 			oql.bind(name);
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode" + name);
+
 			if (results.hasMore()) 
 			{
 				language = (Language)results.next();
@@ -249,6 +251,8 @@ public class LanguageController extends BaseController
 			oql.bind(code);
 			
 			QueryResults results = oql.execute();
+			//this.getLogger().warn("Fetching entity in read/write mode" + code);
+
 			if (results.hasMore()) 
 			{
 				language = (Language)results.next();

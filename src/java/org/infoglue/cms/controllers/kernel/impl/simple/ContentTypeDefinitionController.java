@@ -265,6 +265,7 @@ public class ContentTypeDefinitionController extends BaseController
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.name = $1");
 			oql.bind(name);
 
+	    	//this.getLogger().warn("Fetching entity in read/write mode" + name);
 			QueryResults results = oql.execute();
 			if (results.hasMore())
 			{
@@ -309,6 +310,7 @@ public class ContentTypeDefinitionController extends BaseController
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.type = $1");
 			oql.bind(type);
 
+			//this.getLogger().warn("Fetching entity in read/write mode" + type);
 			QueryResults results = oql.execute();
 			while (results.hasMore())
 			{

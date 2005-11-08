@@ -847,7 +847,8 @@ public class ContentVersionController extends BaseController
     	oql.bind(true);
     	
     	QueryResults results = oql.execute();
-		
+		//this.getLogger().warn("Fetching entity in read/write mode");
+
 		if (results.hasMore()) 
         {
         	contentVersion = (ContentVersion)results.next();
