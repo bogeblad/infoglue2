@@ -653,7 +653,7 @@
     <field name="usesExtraDataForAccessControl" type="java.lang.Boolean">
       <sql name="usesExtraDataForAccessControl" type="integer" dirty="check" />
     </field>
-    <field name="interceptors" type="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" lazy="false" collection="collection">
+    <field name="interceptors" type="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" lazy="true" collection="collection">
       <sql many-key="interceptionPointId" many-table="cmIntPointInterceptor"/>
     </field>    
   </class>
@@ -675,7 +675,7 @@
     <field name="className" type="java.lang.String">
       <sql name="className" type="varchar" dirty="check" />
     </field>
-    <field name="interceptionPoints" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" lazy="false" collection="collection">
+    <field name="interceptionPoints" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" lazy="true" collection="collection">
       <sql many-key="interceptorId" many-table="cmIntPointInterceptor"/>
     </field>    
   </class>
