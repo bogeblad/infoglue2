@@ -194,17 +194,15 @@ public class ContentCentricCachePopulator
 			if(siteNode == null)
 			    throw new SystemException("There was no page with this id.");
 			
-			Integer rootMetaInfoContentId = null;
 			SiteNodeVO siteNodeVO = this.templateController.getSiteNode(siteNodeId);
+			Integer rootMetaInfoContentId = this.templateController.getMetaInformationContentId(siteNodeVO.getId());
+
 		    List siteNodeList = this.templateController.getChildPages(siteNodeVO.getId());
 			Iterator iterator = siteNodeList.iterator();
 		    while(iterator.hasNext())
 			{
 		        siteNodeVO = (SiteNodeVO)iterator.next();
-		        if(rootMetaInfoContentId == null)
-		            rootMetaInfoContentId = this.templateController.getMetaInformationContentId(siteNodeVO.getId());
-		        else
-		            this.templateController.getMetaInformationContentId(siteNodeVO.getId());
+	            this.templateController.getMetaInformationContentId(siteNodeVO.getId());
 			}
 			
 		    Integer topContentId = null;
