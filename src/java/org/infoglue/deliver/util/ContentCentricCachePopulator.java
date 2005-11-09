@@ -187,6 +187,8 @@ public class ContentCentricCachePopulator
 			deliveryContext.setHttpServletRequest(fakeHttpServletRequest);
 			deliveryContext.setHttpServletResponse(fakeHttpServletResponse);
 
+			this.templateController.setDeliveryContext(deliveryContext);
+			
 			//We don't want a page cache entry to be created
 			deliveryContext.setDisablePageCache(true);
 
@@ -196,15 +198,8 @@ public class ContentCentricCachePopulator
 			
 			Integer rootMetaInfoContentId = this.templateController.getMetaInformationContentId(siteNodeId);
 
-			/*
-		    List siteNodeList = this.templateController.getChildPages(siteNode.getId());
-			Iterator iterator = siteNodeList.iterator();
-		    while(iterator.hasNext())
-			{
-		        siteNodeVO = (SiteNodeVO)iterator.next();
-	            this.templateController.getMetaInformationContentId(siteNodeVO.getId());
-			}
-			*/
+			recurseSiteNodeTree(siteNode.getSiteNodeId(), languageId);
+
 		    Integer topContentId = null;
 		    ContentVO contentVO = this.templateController.getContent(rootMetaInfoContentId);
 	        ContentVO parentContentVO = this.templateController.getContent(contentVO.getParentContentId());
@@ -236,6 +231,22 @@ public class ContentCentricCachePopulator
         }
 	}
 	
+	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId)
+	{
+	    SiteNodeVO siteNodeVO = this.templateController.getSiteNode(siteNodeId);
+	    Collection childSiteNodes = this.templateController.getChildPages(siteNodeId);
+	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
+	    while(childSiteNodesIterator.hasNext())
+        {
+	        SiteNodeVO childSiteNode = (SiteNodeVO)childSiteNodesIterator.next();
+	        recurseContentTree(childSiteNode.getId(), languageId);
+	        
+	        Integer metaInfoContentId = this.templateController.getMetaInformationContentId(childSiteNode.getId()); 
+
+	        this.templateController.getContentAttribute(metaInfoContentId, languageId, "ComponentStructure", true); 
+        }
+	}
+
 	
    	/**
 	 * This method should be much more sophisticated later and include a check to see if there is a 
