@@ -129,6 +129,11 @@ public class RequestCentricCachePopulator
         fakeHttpServletRequest.setParameter("languageId", "" + languageId);
         fakeHttpServletRequest.setParameter("contentId", "" + contentId);
         fakeHttpServletRequest.setRequestURI("ViewPage.action");
+
+        fakeHttpServletRequest.setAttribute("siteNodeId", "" + siteNodeId);
+        fakeHttpServletRequest.setAttribute("languageId", "" + languageId);
+        fakeHttpServletRequest.setAttribute("contentId", "" + contentId);
+
         fakeHttpServletRequest.setServletContext(DeliverContextListener.getServletContext());
         
 		this.browserBean = new BrowserBean();
