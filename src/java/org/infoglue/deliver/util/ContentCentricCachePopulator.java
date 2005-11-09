@@ -121,7 +121,7 @@ public class ContentCentricCachePopulator
 	 * @param contentId
 	 */
 	
-	public void recache(DatabaseWrapper dbWrapper, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	public void recache(DatabaseWrapper dbWrapper, Integer siteNodeId) throws SystemException, Exception
 	{
         logger.info("recache starting..");
 
@@ -148,7 +148,7 @@ public class ContentCentricCachePopulator
 		if(masterLanguageVO == null)
 			throw new SystemException("There was no master language for the siteNode " + siteNodeId);
 	
-		this.languageId = languageId;
+		this.languageId = masterLanguageVO.getLanguageId();
 		if(languageId == null)
 		    this.languageId = masterLanguageVO.getLanguageId();				
 		
