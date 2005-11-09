@@ -249,7 +249,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		else
 		{
-			List groupPropertiesList = getGroupPropertiesList(groupName, languageId, db);
+			List groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, true);
 			if(groupPropertiesList != null)
 			{
 			    groupPropertiesVOList = toVOList(groupPropertiesList);
@@ -266,7 +266,7 @@ public class GroupPropertiesController extends BaseController
 	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
 	 */
 
-	public List getGroupPropertiesList(String groupName, Integer languageId, Database db) throws ConstraintException, SystemException, Exception
+	public List getGroupPropertiesList(String groupName, Integer languageId, Database db, boolean readOnly) throws ConstraintException, SystemException, Exception
 	{
 		List groupPropertiesList = new ArrayList();
 
@@ -274,7 +274,12 @@ public class GroupPropertiesController extends BaseController
 		oql.bind(groupName);
 		oql.bind(languageId);
 
-		QueryResults results = oql.execute();
+		QueryResults results;
+		if(readOnly)
+		    results = oql.execute(Database.ReadOnly);
+		else
+		    results = oql.execute();
+		    
 		this.getLogger().warn("Fetching entity in read/write mode");
 
 		while (results.hasMore()) 
@@ -285,7 +290,7 @@ public class GroupPropertiesController extends BaseController
 
 		return groupPropertiesList;
 	}
-	
+
     public void delete(GroupPropertiesVO groupPropertiesVO) throws ConstraintException, SystemException
     {
     	deleteEntity(GroupPropertiesImpl.class, groupPropertiesVO.getGroupPropertiesId());
@@ -683,6 +688,34 @@ public class GroupPropertiesController extends BaseController
 	 * @return
 	 */
 
+	public List getReadOnlyRelatedContents(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
+	{
+		List relatedContentList = new ArrayList();
+
+		List groupPropertiesVO = this.getGroupPropertiesVOList(groupName, languageId, db);
+	    Iterator iterator = groupPropertiesVO.iterator();
+	    GroupPropertiesVO groupPropertyVO = null;
+	    while(iterator.hasNext())
+	    {
+	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
+	        break;
+	    }
+
+		if(groupPropertyVO != null)
+		{
+			String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
+			relatedContentList = this.getReadOnlyRelatedContentsFromXML(db, xml);
+		}
+		
+		return relatedContentList;
+	}
+
+	/**
+	 * Returns the related Contents
+	 * @param groupPropertiesId
+	 * @return
+	 */
+
 	public List getRelatedContents(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
 	{
 		List relatedContentList = new ArrayList();
@@ -767,6 +800,34 @@ public class GroupPropertiesController extends BaseController
 	}
 
 	/**
+	 * Returns the related SiteNodes
+	 * @param groupPropertiesId
+	 * @return
+	 */
+
+	public List getReadOnlyRelatedSiteNodes(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
+	{
+		List relatedSiteNodeList = new ArrayList();
+
+		List groupProperties = this.getGroupPropertiesVOList(groupName, languageId, db);
+	    Iterator iterator = groupProperties.iterator();
+	    GroupPropertiesVO groupPropertyVO = null;
+	    while(iterator.hasNext())
+	    {
+	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
+	        break;
+	    }
+	    
+		if(groupPropertyVO != null)
+		{
+			String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
+			relatedSiteNodeList = this.getReadOnlyRelatedSiteNodesFromXML(db, xml);
+		}
+
+		return relatedSiteNodeList;
+	}
+
+	/**
 	 * Parses contents from an XML within a transaction
 	 * @param qualifyerXML
 	 * @return
@@ -793,6 +854,45 @@ public class GroupPropertiesController extends BaseController
 				String id = child.getStringValue();
 				
 				Content content = ContentController.getContentController().getContentWithId(new Integer(id), db);
+				contents.add(content);     	
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return contents;
+	}
+
+
+	/**
+	 * Parses contents from an XML within a transaction
+	 * @param qualifyerXML
+	 * @return
+	 */
+
+	private List getReadOnlyRelatedContentsFromXML(Database db, String qualifyerXML)
+	{
+		List contents = new ArrayList(); 
+    	
+		if(qualifyerXML == null || qualifyerXML.length() == 0)
+			return contents;
+		
+		try
+		{
+			org.dom4j.Document document = new DOMBuilder().getDocument(qualifyerXML);
+			
+			String entity = document.getRootElement().attributeValue("entity");
+			
+			List children = document.getRootElement().elements();
+			Iterator i = children.iterator();
+			while(i.hasNext())
+			{
+				Element child = (Element)i.next();
+				String id = child.getStringValue();
+				
+				Content content = ContentController.getContentController().getReadOnlyContentWithId(new Integer(id), db);
 				contents.add(content);     	
 			}		        	
 		}
@@ -842,6 +942,43 @@ public class GroupPropertiesController extends BaseController
 		return siteNodes;
 	}
 
+	/**
+	 * Parses siteNodes from an XML within a transaction
+	 * @param qualifyerXML
+	 * @return
+	 */
+
+	private List getReadOnlyRelatedSiteNodesFromXML(Database db, String qualifyerXML)
+	{
+		List siteNodes = new ArrayList(); 
+    	
+		if(qualifyerXML == null || qualifyerXML.length() == 0)
+			return siteNodes;
+		
+		try
+		{
+			org.dom4j.Document document = new DOMBuilder().getDocument(qualifyerXML);
+			
+			String entity = document.getRootElement().attributeValue("entity");
+			
+			List children = document.getRootElement().elements();
+			Iterator i = children.iterator();
+			while(i.hasNext())
+			{
+				Element child = (Element)i.next();
+				String id = child.getStringValue();
+				
+				SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(id), db, true);
+				siteNodes.add(siteNode);     	
+			}		        	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return siteNodes;
+	}
 	
 	/**
 	 * Returns all current Category relationships for th specified attribute name

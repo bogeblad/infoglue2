@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.14 2005/10/03 08:57:19 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.15 2005/11/09 15:51:45 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -115,7 +115,7 @@ public class ContentCategoryController extends BaseController
 
 		try
 		{
-		    List contentCategories = findByContentVersionAttribute(attribute, versionId, db);
+		    List contentCategories = findByContentVersionAttribute(attribute, versionId, db, true);
 			if(contentCategories != null)
 			    contentCategoryVOList = toVOList(contentCategories);
 			
@@ -140,7 +140,7 @@ public class ContentCategoryController extends BaseController
 	 * @return	A list of ContentCategoryVO that have the provided content version and attribute
 	 * @throws	SystemException If an error happens
 	 */
-	public List findByContentVersionAttribute(String attribute, Integer versionId, Database db) throws SystemException
+	public List findByContentVersionAttribute(String attribute, Integer versionId, Database db, boolean readOnly) throws SystemException
 	{
 	    /*
 	    System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId);
@@ -152,8 +152,13 @@ public class ContentCategoryController extends BaseController
 
 	    List contentCategoryList = new ArrayList();
 	    
-		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(versionId, db);
-		Collection contentCategories = contentVersion.getContentCategories();
+	    ContentVersion contentVersion = null;
+	    if(readOnly)
+	        contentVersion = ContentVersionController.getContentVersionController().getReadOnlyContentVersionWithId(versionId, db);
+		else
+		    contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(versionId, db);
+		    
+	    Collection contentCategories = contentVersion.getContentCategories();
 		if(contentCategories != null)
 		{
 		    Iterator contentCategoriesIterator = contentCategories.iterator();

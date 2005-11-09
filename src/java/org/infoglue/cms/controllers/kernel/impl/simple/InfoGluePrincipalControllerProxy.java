@@ -222,7 +222,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			{
 				InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
 				
-				Collection groupPropertiesList = GroupPropertiesController.getController().getGroupPropertiesList(group.getName(), languageId, db);
+				Collection groupPropertiesList = GroupPropertiesController.getController().getGroupPropertiesList(group.getName(), languageId, db, true);
 
 				Iterator groupPropertiesListIterator = groupPropertiesList.iterator();
 				while(groupPropertiesListIterator.hasNext())
