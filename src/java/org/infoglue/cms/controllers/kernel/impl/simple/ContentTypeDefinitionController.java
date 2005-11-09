@@ -214,39 +214,6 @@ public class ContentTypeDefinitionController extends BaseController
 	}
 
 	/**
-	 * Returns the Content Type Definition with the given name.
-	 *
-	 * @param name
-	 * @return
-	 * @throws SystemException
-	 * @throws Bug
-	 */
-
-	public ContentTypeDefinitionVO getContentTypeDefinitionVOWithName(String name, Database db) throws SystemException, Bug
-	{
-	
-		String key = "" + name;
-		getLogger().info("key:" + key);
-		ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)CacheController.getCachedObject("contentTypeDefinitionCache", key);
-		if(contentTypeDefinitionVO != null)
-		{
-			getLogger().info("There was an cached contentTypeDefinitionVO:" + contentTypeDefinitionVO);
-		}
-		else
-		{
-			ContentTypeDefinition contentTypeDefinition = getContentTypeDefinitionWithName(name, db);
-			if(contentTypeDefinition != null)
-				contentTypeDefinitionVO = contentTypeDefinition.getValueObject();
-	        
-			CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVO);				
-		}
-		
-		return contentTypeDefinitionVO;
-	}
-
-	
-	
-	/**
 	 * Returns the Content Type Definition with the given name fetched within a given transaction.
 	 *
 	 * @param name
@@ -280,6 +247,54 @@ public class ContentTypeDefinitionController extends BaseController
 		return contentTypeDefinition;
 	}
 
+	
+	/**
+	 * Returns the Content Type Definition with the given name fetched within a given transaction.
+	 *
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public ContentTypeDefinitionVO getContentTypeDefinitionVOWithName(String name, Database db) throws SystemException, Bug
+	{
+		String key = "" + name;
+		getLogger().info("key:" + key);
+		ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)CacheController.getCachedObject("contentTypeDefinitionCache", key);
+		if(contentTypeDefinitionVO != null)
+		{
+			getLogger().info("There was an cached contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+		}
+		else
+		{
+
+			try
+			{
+				OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.name = $1");
+				oql.bind(name);
+	
+		    	this.getLogger().warn("Fetching entity in read/write mode" + name);
+				QueryResults results = oql.execute();
+				if (results.hasMore())
+				{
+				    ContentTypeDefinition contentTypeDefinition = (ContentTypeDefinition)results.next();
+				    contentTypeDefinitionVO = contentTypeDefinition.getValueObject();
+
+				    CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVO);
+				}
+			}
+			catch(Exception e)
+			{
+				throw new SystemException("An error occurred when we tried to fetch a named ContentTypeDefinition. Reason:" + e.getMessage(), e);
+			}
+		}
+		
+		return contentTypeDefinitionVO;
+	}
+
+	
 	public List getContentTypeDefinitionVOList(Integer type) throws SystemException, Bug
 	{
 		List contentTypeDefinitionVOList = null;

@@ -3996,7 +3996,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(name, getDatabase()).getValueObject();
+			contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(name, getDatabase());
 		}
 		catch(Exception e)
 		{
