@@ -20,15 +20,19 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.3 2005/11/08 22:51:13 mattias Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.4 2005/11/09 16:36:13 mattias Exp $
  */
 package org.infoglue.cms.util;
 
 import java.io.*;
 import java.security.*;
 import java.util.*;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
+
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.LanguageVO;
 
 /**
  * A quick-and-dirty stub of HttpServletRequest.  We support attributes and parameters and implement the rest
@@ -160,6 +164,25 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	{ 
 	    return servletContext.getRequestDispatcher(path);
 	}
+	
+	public Enumeration getLocales()  
+	{ 
+	    Vector vector = new Vector();
+	    
+	    try
+	    {
+		    LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(this.getParameter("languageId")));
+		    Locale locale = new Locale(languageVO.getLanguageCode());
+		    vector.add(locale);
+	    }
+	    catch(Exception e) 
+	    {
+	        vector.add(Locale.getDefault());
+	    }
+	    
+	    return vector.elements(); 
+	}
+
 
 	public String getServerName() { return null; }
 	public int getServerPort()    { return 0; }
@@ -174,7 +197,6 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public String getRemoteAddr() { return null; }
 	public String getRemoteHost() { return null; }
 	public Locale getLocale()        { return null; }
-	public Enumeration getLocales()  { return null; }
 	public boolean isSecure()        { return false; }
 	public String getRealPath(String path)   { return null; }
 

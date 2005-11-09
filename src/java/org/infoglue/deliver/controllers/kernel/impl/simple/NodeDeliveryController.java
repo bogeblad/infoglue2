@@ -426,17 +426,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		SiteNodeVersion siteNodeVersion = null;
 		
-		getLogger().warn("Loading siteNode " + siteNodeId);
+		getLogger().info("Loading siteNode " + siteNodeId);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-		getLogger().warn("siteNode " + siteNode.getName());
+		getLogger().info("siteNode " + siteNode.getName());
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		getLogger().warn("siteNodeVersions " + siteNodeVersions);
+		getLogger().info("siteNodeVersions " + siteNodeVersions);
 		
 		Iterator versionIterator = siteNodeVersions.iterator();
 		while(versionIterator.hasNext())
 		{
 			SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-			getLogger().warn("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
+			getLogger().info("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
 			if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
 			{
 				if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNodeId.intValue())
