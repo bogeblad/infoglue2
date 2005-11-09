@@ -718,18 +718,12 @@ public class CacheController extends Thread
     public static synchronized void evictWaitingCache() throws Exception
     {	    
 	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
-	    if(RequestAnalyser.getBlockRequests() && operatingMode.equals("3"))
+	    if(RequestAnalyser.getBlockRequests())
 	    {
 		    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
 	        return;
 	    }
 
-	    if(operatingMode.equals("3"))
-	    {
-	        logger.warn("setting block");
-	        RequestAnalyser.setBlockRequests(true);
-	    }
-	    
         synchronized(notifications)
         {
 			Iterator i = notifications.iterator();
@@ -748,9 +742,12 @@ public class CacheController extends Thread
 			    {
 			        if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
-			            logger.warn("Starting publication thread...");
-			            new PublicationThread().start();
-			            logger.warn("Done starting publication thread...");
+			            if(!RequestAnalyser.getBlockRequests())
+			            {
+	 			            logger.warn("Starting publication thread...");
+				            new PublicationThread().start();
+				            logger.warn("Done starting publication thread...");
+			            }
 			        }
 				    else
 				    {
@@ -983,6 +980,9 @@ class PublicationThread extends Thread
 
 	public void run() 
 	{
+        logger.warn("setting block");
+        RequestAnalyser.setBlockRequests(true);
+
 		try
 		{
 			sleep(5000);
