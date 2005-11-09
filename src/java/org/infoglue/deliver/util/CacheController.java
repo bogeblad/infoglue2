@@ -222,7 +222,7 @@ public class CacheController extends Thread
 		}
 	}
 		
-	public static void clearCaches(String entity, String entityId)
+	public static void clearCaches(String entity, String entityId, boolean keepPageCache)
 	{
 		if(entity == null)
 		{	
@@ -240,9 +240,12 @@ public class CacheController extends Thread
 				}
 				else
 				{
-				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
-			    	cacheInstance.flushAll();
-			        eventListeners.clear();
+				    if(keepPageCache == true)
+				    {
+					    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
+				    	cacheInstance.flushAll();
+				        eventListeners.clear();
+				    }
 				}
 				logger.info("Cleared cache:" + e.getKey());
 				
@@ -624,7 +627,7 @@ public class CacheController extends Thread
 			    logger.error("Error clearing cache in expireCacheAutomatically thread:" + e.getMessage(), e);
 			}
 			logger.info("Castor cache cleared");
-			clearCaches(null, null);
+			clearCaches(null, null, false);
 			logger.info("All other caches cleared");
 			
 			try
@@ -755,7 +758,7 @@ public class CacheController extends Thread
 					    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
 					        isDependsClass = true;
 				
-					    CacheController.clearCaches(className, objectId);
+					    CacheController.clearCaches(className, objectId, false);
 				
 					    logger.info("Updating className with id:" + className + ":" + objectId);
 						if(className != null)
@@ -989,12 +992,15 @@ class PublicationThread extends Thread
 		
 		    logger.warn("Updating all caches as this was a publishing-update");
 			CacheController.clearCastorCaches();
+
+			logger.warn("clearing all except page cache as we are in publish mode..");
+		    CacheController.clearCaches(null, null, true);
 			
-			logger.warn("Updating all caches as this was a publishing-update");
+			logger.warn("Recaching all caches as this was a publishing-update");
 			CacheController.cacheCentralCastorCaches();
 			
-			logger.warn("clearing all as we are in publish mode..");
-		    CacheController.clearCaches(null, null);						
+			logger.warn("Finally clearing page cache as this was a publishing-update");
+		    CacheController.clearCache("pageCache");
 		} 
 		catch (Exception e)
 		{
