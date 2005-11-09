@@ -714,14 +714,22 @@ public class CacheController extends Thread
         return notifications;
     }
     
-    public static void evictWaitingCache() throws Exception
+    
+    public static synchronized void evictWaitingCache() throws Exception
     {	    
-	    if(RequestAnalyser.getBlockRequests())
+	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+	    if(RequestAnalyser.getBlockRequests() && operatingMode.equals("3"))
 	    {
 		    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
 	        return;
 	    }
 
+	    if(operatingMode.equals("3"))
+	    {
+	        logger.info("Now it was free...");
+	        RequestAnalyser.setBlockRequests(true);
+	    }
+	    
         synchronized(notifications)
         {
 			Iterator i = notifications.iterator();
@@ -738,32 +746,12 @@ public class CacheController extends Thread
 
 				try
 			    {
-			        String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
-
-					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+			        if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
-					    logger.info("Now it was free...");
-					    RequestAnalyser.setBlockRequests(true);
-
-				        Thread.sleep(5000);
-
-					    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
-					    {
-					        logger.info("There was ongoing requests - lets wait 5ms");
-					        Thread.sleep(5);
-					    }
-					    
-					    logger.info("Updating all caches as this was a publishing-update");
-						CacheController.clearCastorCaches();
-						
-						logger.info("Updating all caches as this was a publishing-update");
-						CacheController.cacheCentralCastorCaches();
-						
-						logger.info("clearing all as we are in publish mode..");
-					    CacheController.clearCaches(null, null);
-						
-					    RequestAnalyser.setBlockRequests(false);
-					}
+			            logger.warn("Starting publication thread...");
+			            new PublicationThread().start();
+			            logger.warn("Done starting publication thread...");
+			        }
 				    else
 				    {
 					    boolean isDependsClass = false;
@@ -833,11 +821,18 @@ public class CacheController extends Thread
 			        logger.error("Cache eviction reported an error:" + e.getMessage(), e);
 			    }
 
-		        logger.info("Cache evicted..");
+		        logger.warn("Cache evicted..");
 
 				i.remove();
 			}
         }
+        
+	    if(operatingMode.equals("3"))
+	    {
+	        logger.warn("released block");
+	        RequestAnalyser.setBlockRequests(false);
+	    }
+
         logger.info("evictWaitingCache stop");
     }
 
@@ -984,6 +979,32 @@ public class CacheController extends Thread
 		catch(Exception e)
 		{
 			logger.error("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
+		}
+	}
+}
+
+class PublicationThread extends Thread
+{
+    public final static Logger logger = Logger.getLogger(PublicationThread.class.getName());
+
+	public void run() 
+	{
+		try
+		{
+			sleep(5000);
+		
+		    logger.warn("Updating all caches as this was a publishing-update");
+			CacheController.clearCastorCaches();
+			
+			logger.warn("Updating all caches as this was a publishing-update");
+			CacheController.cacheCentralCastorCaches();
+			
+			logger.warn("clearing all as we are in publish mode..");
+		    CacheController.clearCaches(null, null);						
+		} 
+		catch (Exception e)
+		{
+		    logger.error("An error occurred in the PublicationThread:" + e.getMessage(), e);
 		}
 	}
 }
