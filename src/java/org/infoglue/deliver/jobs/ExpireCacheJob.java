@@ -38,6 +38,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.workflow.CustomClassExecutor;
 
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -73,8 +74,30 @@ public class ExpireCacheJob implements Job
             
             if(firstExpireDateTime != null && now.after(firstExpireDateTime))
             {
-                CacheController.clearCaches(null, null);
-                CacheController.clearCastorCaches();
+                logger.warn("setting block");
+                RequestAnalyser.setBlockRequests(true);
+
+                try
+                {
+	    		    logger.warn("Updating all caches as this was a publishing-update");
+	    			CacheController.clearCastorCaches();
+	
+	    			logger.warn("clearing all except page cache as we are in publish mode..");
+	    		    CacheController.clearCaches(null, null, true);
+	    			
+	    			logger.warn("Recaching all caches as this was a publishing-update");
+	    			CacheController.cacheCentralCastorCaches();
+	    			
+	    			logger.warn("Finally clearing page cache as this was a publishing-update");
+	    		    CacheController.clearCache("pageCache");
+                }
+                catch(Exception e)
+                {
+                    logger.error("An error occurred when we tried to update cache:" + e.getMessage(), e);
+                }
+    		    
+    		    logger.warn("releasing block");
+                RequestAnalyser.setBlockRequests(false);
             }
 
             Date firstPublishDateTime = CacheController.publishDateTime;
@@ -82,14 +105,36 @@ public class ExpireCacheJob implements Job
             
             if(firstPublishDateTime != null && now.after(firstPublishDateTime))
             {
-                CacheController.clearCaches(null, null);
-                CacheController.clearCastorCaches();
+                logger.warn("setting block");
+                RequestAnalyser.setBlockRequests(true);
+                
+                try
+                {
+	                logger.warn("Updating all caches as this was a publishing-update");
+	    			CacheController.clearCastorCaches();
+	
+	    			logger.warn("clearing all except page cache as we are in publish mode..");
+	    		    CacheController.clearCaches(null, null, true);
+	    			
+	    			logger.warn("Recaching all caches as this was a publishing-update");
+	    			CacheController.cacheCentralCastorCaches();
+	    			
+	    			logger.warn("Finally clearing page cache as this was a publishing-update");
+	    		    CacheController.clearCache("pageCache");
+                }
+                catch(Exception e)
+                {
+                    logger.error("An error occurred when we tried to update cache:" + e.getMessage(), e);
+                }
+
+                logger.warn("releasing block");
+                RequestAnalyser.setBlockRequests(false);
             }
 
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error("An error occurred when we tried to update cache:" + e.getMessage(), e);
         }
     }
     

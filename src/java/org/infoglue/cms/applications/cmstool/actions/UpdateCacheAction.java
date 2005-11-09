@@ -84,7 +84,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
     {
 		try
 		{  
-			CacheController.clearCaches(className, objectId);
+			CacheController.clearCaches(className, objectId, false);
 			
 			getLogger().info("Updating className with id:" + className + ":" + objectId);
 			
