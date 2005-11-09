@@ -181,7 +181,6 @@ public class URLTag extends TemplateControllerTag
 	        {
 	            int indexOfProtocol = getRequest().getRequestURL().indexOf("://");
 	            int indexFirstSlash = getRequest().getRequestURL().indexOf("/", indexOfProtocol + 3);
-	            System.out.println("getRequest().getRequestURL():" + getRequest().getRequestURL());
 	            String base = null;
 	            if(indexFirstSlash > -1)
 	                base = getRequest().getRequestURL().substring(0, indexFirstSlash);

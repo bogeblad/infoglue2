@@ -726,7 +726,7 @@ public class CacheController extends Thread
 
 	    if(operatingMode.equals("3"))
 	    {
-	        logger.info("Now it was free...");
+	        logger.warn("setting block");
 	        RequestAnalyser.setBlockRequests(true);
 	    }
 	    
