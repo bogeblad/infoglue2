@@ -462,7 +462,7 @@ public class ContentVersionController extends BaseController
 	{
 		ContentVersion contentVersion = null;
     	
-    	Content content = ContentController.getContentController().getContentWithId(contentId, db);
+		Content content = ContentController.getContentController().getContentWithId(contentId, db);
     	getLogger().info("contentId:" + contentId);
     	getLogger().info("languageId:" + languageId);
     	getLogger().info("content:" + content.getName());

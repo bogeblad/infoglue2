@@ -629,8 +629,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		else if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 		{
 	    	contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext);
-		    //contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
-	    	
+		    
 	    	getLogger().info("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{

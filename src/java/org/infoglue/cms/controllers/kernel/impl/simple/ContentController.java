@@ -96,6 +96,13 @@ public class ContentController extends BaseController
 		return (Content) getObjectWithId(ContentImpl.class, contentId, db);
     }
 
+    public Content getReadOnlyContentWithId(Integer contentId, Database db) throws SystemException, Bug
+    {
+		return (Content) getObjectWithIdAsReadOnly(ContentImpl.class, contentId, db);
+    }
+
+    
+    
     public List getContentVOList() throws SystemException, Bug
     {
         return getAllVOObjects(ContentImpl.class, "contentId");
