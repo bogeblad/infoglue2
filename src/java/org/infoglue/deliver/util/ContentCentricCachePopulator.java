@@ -214,7 +214,7 @@ public class ContentCentricCachePopulator
 	            topContentId = parentContentVO.getContentId();
 
 	            if(parentContentVO.getParentContentId() != null)
-	                parentContentVO = this.templateController.getContent();
+	                parentContentVO = this.templateController.getContent(parentContentVO.getParentContentId());
 	            else
 	                parentContentVO = null;
 		    }
