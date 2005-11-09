@@ -426,17 +426,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		SiteNodeVersion siteNodeVersion = null;
 		
-		getLogger().info("Loading siteNode " + siteNodeId);
+		getLogger().warn("Loading siteNode " + siteNodeId);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-		getLogger().info("siteNode " + siteNode);
+		getLogger().warn("siteNode " + siteNode.getName());
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		getLogger().info("siteNodeVersions " + siteNodeVersions);
+		getLogger().warn("siteNodeVersions " + siteNodeVersions);
 		
 		Iterator versionIterator = siteNodeVersions.iterator();
 		while(versionIterator.hasNext())
 		{
 			SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-			getLogger().info("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
+			getLogger().warn("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
 			if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
 			{
 				if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNodeId.intValue())
@@ -510,7 +510,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
-			if(latestSiteNodeVersionVO.getDisablePageCache() != null)
+			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getDisablePageCache() != null)
 			{	
 				if(latestSiteNodeVersionVO.getDisablePageCache().intValue() == NO.intValue())
 					isPageCacheDisabled = false;
