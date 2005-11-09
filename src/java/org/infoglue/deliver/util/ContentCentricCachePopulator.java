@@ -31,6 +31,7 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.impl.simple.*;
 import org.infoglue.cms.entities.structure.SiteNode;
@@ -237,7 +238,7 @@ public class ContentCentricCachePopulator
 	    Iterator childContentsIterator = childContents.iterator();
 	    while(childContentsIterator.hasNext())
         {
-	        ContentVO childContent = (ContentVO)childContentsIterator.next();
+	        Content childContent = (Content)childContentsIterator.next();
 	        recurseContentTree(childContent.getId(), languageId);
 	        
 	        this.templateController.getContentAttribute(childContent.getId(), languageId, "Title", true); 
