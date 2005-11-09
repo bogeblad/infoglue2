@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.5 2005/11/09 16:46:54 mattias Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.6 2005/11/09 16:53:45 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -200,7 +200,11 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	    return vector.elements(); 
 	}
 
-	
+	public StringBuffer getRequestURL()				
+	{ 
+	    return new StringBuffer("http://localhost/ViewPage.action"); 
+	}
+
 	public String getServerName() { return null; }
 	public int getServerPort()    { return 0; }
 
@@ -235,7 +239,6 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public boolean isRequestedSessionIdValid() 	{ return false; }
 	public boolean isRequestedSessionIdFromCookie() { return false; }
 	public boolean isRequestedSessionIdFromURL()    { return false; }
-	public boolean isRequestedSessionIdFromUrl()    { return false; }
-	public StringBuffer getRequestURL()				{ return null; }
+	public boolean isRequestedSessionIdFromUrl()    { return false; }	
 	public void setCharacterEncoding(String s) throws UnsupportedEncodingException {}
 }
