@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.4 2005/11/09 16:36:13 mattias Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.5 2005/11/09 16:46:54 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -183,7 +183,24 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	    return vector.elements(); 
 	}
 
+	public Enumeration getHeaders(String name)  
+	{ 
+	    Vector vector = new Vector();
+	    
+	    try
+	    {
+		    if(name.equals("accept-language"))
+		        vector.add("sv");
+	    }
+	    catch(Exception e) 
+	    {
+	        vector.add(Locale.getDefault());
+	    }
+	    
+	    return vector.elements(); 
+	}
 
+	
 	public String getServerName() { return null; }
 	public int getServerPort()    { return 0; }
 
@@ -204,7 +221,6 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public Cookie[] getCookies()     { return null; }
 	public long getDateHeader(String name)   { return 0; }
 	public String getHeader(String name)  { return null; }
-	public Enumeration getHeaders(String name)  { return null; }
 	public Enumeration getHeaderNames()       { return null; }
 	public int getIntHeader(String name)        { return 0; }
 	public String getPathInfo()               { return null; }
