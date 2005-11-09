@@ -251,7 +251,7 @@ public class ContentCentricCachePopulator
 	    while(childSiteNodesIterator.hasNext())
         {
 	        WebPage childWebPage = (WebPage)childSiteNodesIterator.next();
-	        recurseContentTree(childWebPage.getSiteNodeId(), languageId);
+	        recurseSiteNodeTree(childWebPage.getSiteNodeId(), languageId);
 	        
 	        Integer metaInfoContentId = this.templateController.getMetaInformationContentId(childWebPage.getSiteNodeId()); 
 
