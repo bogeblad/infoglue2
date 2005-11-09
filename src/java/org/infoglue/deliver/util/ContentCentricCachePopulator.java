@@ -30,6 +30,7 @@ import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -54,6 +55,7 @@ import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.EditOnSiteBasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
@@ -229,10 +231,12 @@ public class ContentCentricCachePopulator
 	}
 	
 	
-	private void recurseContentTree(Integer contentId, Integer languageId)
+	private void recurseContentTree(Integer contentId, Integer languageId) throws Exception
 	{
+	    Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, this.templateController.getDatabase());
 	    ContentVO contentVO = this.templateController.getContent(contentId);
-	    Collection childContents = this.templateController.getChildContents(contentId, true);
+	    
+	    Collection childContents = content.getChildren();
 		System.out.println("recursing childContents:" + childContents.size() + " on " + contentVO.getName());
 
 	    Iterator childContentsIterator = childContents.iterator();
