@@ -826,12 +826,6 @@ public class CacheController extends Thread
 				i.remove();
 			}
         }
-        
-	    if(operatingMode.equals("3"))
-	    {
-	        logger.warn("released block");
-	        RequestAnalyser.setBlockRequests(false);
-	    }
 
         logger.info("evictWaitingCache stop");
     }
@@ -1006,5 +1000,9 @@ class PublicationThread extends Thread
 		{
 		    logger.error("An error occurred in the PublicationThread:" + e.getMessage(), e);
 		}
+
+		logger.warn("released block");
+        RequestAnalyser.setBlockRequests(false);
+
 	}
 }
