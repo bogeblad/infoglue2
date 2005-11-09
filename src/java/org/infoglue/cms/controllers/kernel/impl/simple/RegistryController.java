@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.22 2005/11/08 23:12:04 mattias Exp $
+ * $Id: RegistryController.java,v 1.23 2005/11/09 13:36:58 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -1311,7 +1311,7 @@ public class RegistryController extends BaseController
 		oql.bind(contentVersion.getOwningContent().getId());
 		
 		QueryResults results = oql.execute();
-		//this.getLogger().warn("Fetching entity in read/write mode");
+		this.getLogger().warn("Fetching entity in read/write mode");
 
 		while (results.hasMore()) 
         {

@@ -260,7 +260,7 @@ public class UserPropertiesController extends BaseController
 		oql.bind(languageId);
 
 		QueryResults results = oql.execute();
-		//getLogger().warn("Fetching entity in read/write mode:" + userName);
+		getLogger().warn("Fetching entity in read/write mode:" + userName);
 
 		while (results.hasMore()) 
 		{
@@ -327,7 +327,7 @@ public class UserPropertiesController extends BaseController
 		oql.bind(userName);
 
 		QueryResults results = oql.execute();
-		//getLogger().warn("Fetching entity in read/write mode:" + userName);
+		getLogger().warn("Fetching entity in read/write mode:" + userName);
 
 		while (results.hasMore()) 
 		{

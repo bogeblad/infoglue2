@@ -681,9 +681,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
 			getLogger().info("siteNodeId:" + siteNodeId);
-			getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
 			if(siteNodeVersionVO != null && siteNodeVersionVO.getIsProtected() != null)
 			{	
+				getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
 				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
 					protectedSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())

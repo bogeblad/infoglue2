@@ -1038,7 +1038,7 @@ public class ContentController extends BaseController
 		oql.bind(repositoryId);
 			
 		QueryResults results = oql.execute();		
-		//this.getLogger().warn("Fetching entity in read/write mode" + repositoryId);
+		this.getLogger().warn("Fetching entity in read/write mode" + repositoryId);
 
 		if (results.hasMore()) 
 		{

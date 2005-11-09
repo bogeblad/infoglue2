@@ -99,7 +99,7 @@ public class SiteNodeController extends BaseController
 	            siteNode = (SiteNode)db.load(org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl.class, siteNodeId, Database.ReadOnly);
     		else
     		{
-                //logger.warn("Loading " + siteNodeId + " in read/write mode.");
+                logger.warn("Loading " + siteNodeId + " in read/write mode.");
 	            siteNode = (SiteNode)db.load(org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl.class, siteNodeId);
     		}
     	}
@@ -585,7 +585,7 @@ public class SiteNodeController extends BaseController
 		oql.bind(repositoryId);
 		
 		QueryResults results = oql.execute();
-		//this.getLogger().warn("Fetching entity in read/write mode" + repositoryId);
+		this.getLogger().warn("Fetching entity in read/write mode" + repositoryId);
 
 		if (results.hasMore()) 
 		{

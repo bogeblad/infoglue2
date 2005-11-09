@@ -646,8 +646,18 @@ public class CacheController extends Thread
 	    	
 	    	beginTransaction(db);
 		    
-	    	new RequestCentricCachePopulator().recache(dbWrapper, new Integer(25), null, null);
-	    	
+	    	String siteNodesToRecacheOnPublishing = CmsPropertyHandler.getProperty("siteNodesToRecacheOnPublishing");
+	    	logger.warn("siteNodesToRecacheOnPublishing:" + siteNodesToRecacheOnPublishing);
+	    	if(siteNodesToRecacheOnPublishing != null && !siteNodesToRecacheOnPublishing.equals("") && !siteNodesToRecacheOnPublishing.equals("siteNodesToRecacheOnPublishing"))
+	    	{
+	    	    String[] siteNodeIdArray = siteNodesToRecacheOnPublishing.split(",");
+	    	    for(int i=0; i<siteNodeIdArray.length; i++)
+	    	    {
+	    	        Integer siteNodeId = new Integer(siteNodeIdArray[i]);
+	    	    	logger.warn("siteNodeId to recache:" + siteNodeId);
+	    	        new RequestCentricCachePopulator().recache(dbWrapper, siteNodeId, null, null);
+	    	    }
+	    	}
 		    
 		    commitTransaction(db);
 		}
@@ -733,6 +743,8 @@ public class CacheController extends Thread
 					{
 					    logger.info("Now it was free...");
 					    RequestAnalyser.setBlockRequests(true);
+
+				        Thread.sleep(5000);
 
 					    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
 					    {

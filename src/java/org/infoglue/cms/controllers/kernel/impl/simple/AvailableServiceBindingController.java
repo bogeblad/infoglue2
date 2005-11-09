@@ -189,7 +189,7 @@ public class AvailableServiceBindingController extends BaseController
 			    results = oql.execute(Database.ReadOnly);
 			else
 			{
-				//this.getLogger().warn("Fetching entity in read/write mode:" + name);
+				this.getLogger().warn("Fetching entity in read/write mode:" + name);
 				results = oql.execute();
 			}
 			

@@ -415,7 +415,7 @@ public abstract class BaseController
         Object object = null;
         try
         {
-            //logger.warn("Loading " + arg + " in read/write mode.");
+            logger.warn("Loading " + arg + " in read/write mode.");
             object = db.load(arg, id);
         }
         catch(Exception e)
@@ -463,7 +463,7 @@ public abstract class BaseController
 		Object object = null;
 		try
 		{
-            //logger.warn("Loading " + arg + " in read/write mode.");
+            logger.warn("Loading " + arg + " in read/write mode.");
 			object = db.load(arg, id);
 		}
 		catch(Exception e)
