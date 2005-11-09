@@ -201,18 +201,18 @@ public class ContentCentricCachePopulator
 			if(siteNode == null)
 			    throw new SystemException("There was no page with this id.");
 			
-			logger.warn("siteNode:" + siteNode.getName());
+			logger.info("siteNode:" + siteNode.getName());
 			
 			Integer rootMetaInfoContentId = this.templateController.getMetaInformationContentId(siteNodeId);
-			logger.warn("rootMetaInfoContentId:" + rootMetaInfoContentId);
+			logger.info("rootMetaInfoContentId:" + rootMetaInfoContentId);
 			
 			recurseSiteNodeTree(siteNode.getSiteNodeId(), languageId);
 
 		    Integer topContentId = null;
 		    ContentVO contentVO = this.templateController.getContent(rootMetaInfoContentId);
-		    logger.warn("contentVO:" + contentVO.getName());
+		    logger.info("contentVO:" + contentVO.getName());
 			ContentVO parentContentVO = this.templateController.getContent(contentVO.getParentContentId());
-			logger.warn("parentContentVO:" + parentContentVO.getName());
+			logger.info("parentContentVO:" + parentContentVO.getName());
 			while(parentContentVO != null)
 		    {
 	            topContentId = parentContentVO.getContentId();
@@ -223,7 +223,7 @@ public class ContentCentricCachePopulator
 	                parentContentVO = null;
 		    }
 		    
-			logger.warn("topContentId:" + topContentId);
+			logger.info("topContentId:" + topContentId);
 			
 			if(topContentId != null)
 		        recurseContentTree(topContentId, languageId);
@@ -238,8 +238,7 @@ public class ContentCentricCachePopulator
 	    ContentVO contentVO = this.templateController.getContent(contentId);
 	    
 	    Collection childContents = content.getChildren();
-		logger.warn("recursing childContents:" + childContents.size() + " on " + contentVO.getName());
-
+		
 	    Iterator childContentsIterator = childContents.iterator();
 	    while(childContentsIterator.hasNext())
         {
@@ -257,8 +256,7 @@ public class ContentCentricCachePopulator
 	    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, this.templateController.getDatabase(), true);
 	    SiteNodeVO siteNodeVO = this.templateController.getSiteNode(siteNodeId);
 	    Collection childSiteNodes = siteNode.getChildSiteNodes();
-	    logger.warn("recursing childSiteNodes:" + childSiteNodes.size() + " on " + siteNodeVO.getName());
-
+	    
 	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
         {
