@@ -50,6 +50,7 @@ import org.infoglue.cms.util.FakeHttpSession;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
@@ -238,10 +239,10 @@ public class ContentCentricCachePopulator
 	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
         {
-	        SiteNodeVO childSiteNode = (SiteNodeVO)childSiteNodesIterator.next();
-	        recurseContentTree(childSiteNode.getId(), languageId);
+	        WebPage childWebPage = (WebPage)childSiteNodesIterator.next();
+	        recurseContentTree(childWebPage.getSiteNodeId(), languageId);
 	        
-	        Integer metaInfoContentId = this.templateController.getMetaInformationContentId(childSiteNode.getId()); 
+	        Integer metaInfoContentId = this.templateController.getMetaInformationContentId(childWebPage.getSiteNodeId()); 
 
 	        this.templateController.getContentAttribute(metaInfoContentId, languageId, "ComponentStructure", true); 
         }
