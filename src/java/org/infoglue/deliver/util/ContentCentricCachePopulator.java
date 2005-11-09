@@ -31,6 +31,7 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -245,25 +246,26 @@ public class ContentCentricCachePopulator
 	        Content childContent = (Content)childContentsIterator.next();
 	        recurseContentTree(childContent.getId(), languageId);
 	        
-	        logger.warn("Before read title of content...");
-	        this.templateController.getContentAttribute(childContent.getId(), languageId, "Title", true); 
-	        logger.warn("Read title of content...");
+	        //logger.warn("Before read title of content...");
+	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "Title", true); 
+	        //logger.warn("Read title of content...");
         }
 	}
 	
-	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId)
+	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId) throws Exception
 	{
+	    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, this.templateController.getDatabase(), true);
 	    SiteNodeVO siteNodeVO = this.templateController.getSiteNode(siteNodeId);
-	    Collection childSiteNodes = this.templateController.getChildPages(siteNodeId);
+	    Collection childSiteNodes = siteNode.getChildSiteNodes();
 	    logger.warn("recursing childSiteNodes:" + childSiteNodes.size() + " on " + siteNodeVO.getName());
 
 	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
         {
-	        WebPage childWebPage = (WebPage)childSiteNodesIterator.next();
-	        recurseSiteNodeTree(childWebPage.getSiteNodeId(), languageId);
+	        SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
+	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId);
 	        
-	        Integer metaInfoContentId = this.templateController.getMetaInformationContentId(childWebPage.getSiteNodeId()); 
+	        Integer metaInfoContentId = this.templateController.getMetaInformationContentId(childSiteNode.getSiteNodeId()); 
 
 	        this.templateController.getContentAttribute(metaInfoContentId, languageId, "ComponentStructure", true); 
         }
