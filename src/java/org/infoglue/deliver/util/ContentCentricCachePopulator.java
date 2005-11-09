@@ -197,21 +197,28 @@ public class ContentCentricCachePopulator
 			if(siteNode == null)
 			    throw new SystemException("There was no page with this id.");
 			
+			System.out.println("siteNode:" + siteNode.getName());
+			
 			Integer rootMetaInfoContentId = this.templateController.getMetaInformationContentId(siteNodeId);
-
+			System.out.println("rootMetaInfoContentId:" + rootMetaInfoContentId);
+			
 			recurseSiteNodeTree(siteNode.getSiteNodeId(), languageId);
 
 		    Integer topContentId = null;
 		    ContentVO contentVO = this.templateController.getContent(rootMetaInfoContentId);
-	        ContentVO parentContentVO = this.templateController.getContent(contentVO.getParentContentId());
-		    while(parentContentVO != null)
+		    System.out.println("contentVO:" + contentVO.getName());
+			ContentVO parentContentVO = this.templateController.getContent(contentVO.getParentContentId());
+		    System.out.println("parentContentVO:" + parentContentVO.getName());
+			while(parentContentVO != null)
 		    {
-		        parentContentVO = this.templateController.getContent(parentContentVO.getParentContentId());
-		        if(parentContentVO != null)
-		            topContentId = parentContentVO.getContentId();
+	            topContentId = parentContentVO.getContentId();
+
+	            parentContentVO = this.templateController.getContent(parentContentVO.getParentContentId());
 		    }
 		    
-		    if(topContentId != null)
+			System.out.println("topContentId:" + topContentId);
+			
+			if(topContentId != null)
 		        recurseContentTree(topContentId, languageId);
 		}
 
@@ -222,6 +229,8 @@ public class ContentCentricCachePopulator
 	{
 	    ContentVO contentVO = this.templateController.getContent(contentId);
 	    Collection childContents = this.templateController.getChildContents(contentId, true);
+		System.out.println("recursing childContents:" + childContents.size() + " on " + contentVO.getName());
+
 	    Iterator childContentsIterator = childContents.iterator();
 	    while(childContentsIterator.hasNext())
         {
@@ -236,6 +245,8 @@ public class ContentCentricCachePopulator
 	{
 	    SiteNodeVO siteNodeVO = this.templateController.getSiteNode(siteNodeId);
 	    Collection childSiteNodes = this.templateController.getChildPages(siteNodeId);
+		System.out.println("recursing childSiteNodes:" + childSiteNodes.size() + " on " + siteNodeVO.getName());
+
 	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
         {
