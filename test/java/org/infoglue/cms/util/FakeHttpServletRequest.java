@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.6 2005/11/09 16:53:45 mattias Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.7 2005/11/09 17:07:02 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -213,7 +213,7 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public String getContentType()         { return null; }
 	public ServletInputStream getInputStream() throws IOException  { return null; }
 	public String getProtocol()   { return null; }
-	public String getScheme()     { return null; }
+	public String getScheme()     { return "http"; }
 	public BufferedReader getReader() throws IOException { return null; }
 	public String getRemoteAddr() { return null; }
 	public String getRemoteHost() { return null; }
