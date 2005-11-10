@@ -40,6 +40,7 @@ import org.infoglue.cms.util.FakeHttpServletResponse;
 
 import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
+import org.infoglue.deliver.applications.filters.PortalServletRequest;
 
 import webwork.action.Action;
 import webwork.action.ActionContext;
@@ -71,13 +72,18 @@ public class RequestCentricCachePopulator
         FakeHttpServletResponse response = new FakeHttpServletResponse();
         System.out.println("request:" + request);
         
+        HttpServletRequest portalServletRequest = new PortalServletRequest((HttpServletRequest) request);
+        
         ActionContext.setName(name);
         ActionContext.setParameters(Collections.unmodifiableMap(parameters));
-        ActionContext.setRequest(request);
+        ActionContext.setRequest(portalServletRequest);
+        //ActionContext.setRequest(request);
         ActionContext.setResponse(response);
         
         ViewPageAction action = (ViewPageAction)ActionFactory.getAction(name);
-        action.setServletRequest(request);
+        action.setServletRequest(portalServletRequest);
+        action.setRecacheCall(true);
+        //action.setServletRequest(request);
         action.setServletResponse(response);
 
         String result = null;

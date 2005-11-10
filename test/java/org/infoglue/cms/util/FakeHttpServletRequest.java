@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.8 2005/11/10 16:45:29 mattias Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.9 2005/11/10 19:36:48 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -205,6 +205,11 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	    return new StringBuffer("http://localhost/ViewPage.action"); 
 	}
 
+	public String getServletPath()            
+	{ 
+	    return "/"; 
+	}
+
 	public String getServerName() { return null; }
 	public int getServerPort()    { return 0; }
 
@@ -235,7 +240,6 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public String getQueryString()            { return null; }
 	public String getRemoteUser()             { return null; }
 	public String getRequestedSessionId()     { return null; }
-	public String getServletPath()            { return null; }
 	public boolean isRequestedSessionIdValid() 	{ return false; }
 	public boolean isRequestedSessionIdFromCookie() { return false; }
 	public boolean isRequestedSessionIdFromURL()    { return false; }

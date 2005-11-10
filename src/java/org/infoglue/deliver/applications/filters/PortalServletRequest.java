@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.infoglue.deliver.portal.PathParser;
 import org.infoglue.deliver.portal.PortalControlURL;
 
-class PortalServletRequest extends HttpServletRequestWrapper 
+public class PortalServletRequest extends HttpServletRequestWrapper 
 {
     private static final Log log = LogFactory.getLog(PortalServletRequest.class);
 

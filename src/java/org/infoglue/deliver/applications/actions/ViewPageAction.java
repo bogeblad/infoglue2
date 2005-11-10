@@ -99,6 +99,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	//A possibility to set the referer address
 	private String referer = null;
 
+	private boolean isRecacheCall = false;
+	
 	//For statistics only and debug
 	public static long contentVersionTime = 0;
 	public static long serviceBindingTime = 0;
@@ -195,7 +197,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        String portalEnabled = CmsPropertyHandler.getProperty("enablePortal") ;
 	        boolean portalActive = ((portalEnabled != null) && portalEnabled.equals("true"));
 			
-	        if (portalActive) 
+	        if (portalActive && !isRecacheCall) 
 	        {
 	            getLogger().info("---> Checking for portlet action");
 	            PortalService service = new PortalService();
@@ -737,4 +739,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
         this.showSimple = showSimple;
     }
     
+    public void setRecacheCall(boolean isRecacheCall)
+    {
+        this.isRecacheCall = isRecacheCall;
+    }
 }
