@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.7 2005/11/09 17:07:02 mattias Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.8 2005/11/10 16:45:29 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -157,7 +157,7 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	 */
 	public String getRequestURI()             
 	{ 
-	    return requestURI; 
+	    return "/ViewPage.action"; //requestURI; 
 	}
 
 	public RequestDispatcher getRequestDispatcher(String path) 

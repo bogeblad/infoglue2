@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -39,7 +40,9 @@ public class RequestAnalyser
     public static int numberOfCurrentRequests = 0;
     
 	//private static List currentRequests = new ArrayList();
-
+    private static HttpServletRequest lastRequest = null;
+    private static HttpServletResponse lastResponse = null;
+    
 	private static int maxClientsInt = 0;
 	private static boolean blockRequests = false;
 	
@@ -156,5 +159,27 @@ public class RequestAnalyser
     public static void setBlockRequests(boolean blockRequests)
     {
         RequestAnalyser.blockRequests = blockRequests;
+    }
+    
+    public static HttpServletRequest getLastRequest()
+    {
+        System.out.println("Getting last request:" + lastRequest);
+        return lastRequest;
+    }
+    
+    public static void setLastRequest(HttpServletRequest lastRequest)
+    {
+        System.out.println("Setting last request:" + lastRequest);
+        RequestAnalyser.lastRequest = lastRequest;
+    }
+    
+    public static HttpServletResponse getLastResponse()
+    {
+        return lastResponse;
+    }
+    
+    public static void setLastResponse(HttpServletResponse lastResponse)
+    {
+        RequestAnalyser.lastResponse = lastResponse;
     }
 }

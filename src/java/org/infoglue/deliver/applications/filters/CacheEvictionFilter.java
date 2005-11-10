@@ -62,6 +62,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryContr
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 
 /**
  * This filter empties the caches waiting to be emptied.
@@ -89,7 +90,7 @@ public class CacheEvictionFilter implements Filter
     {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        
+                
         try
         {
             String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");

@@ -658,8 +658,8 @@ public class CacheController extends Thread
 	    	    {
 	    	        Integer siteNodeId = new Integer(siteNodeIdArray[i]);
 	    	    	logger.info("siteNodeId to recache:" + siteNodeId);
-	    	        new ContentCentricCachePopulator().recache(dbWrapper, siteNodeId);
-		    	    //new RequestCentricCachePopulator().recache(dbWrapper, siteNodeId, null, null);
+	    	        //new ContentCentricCachePopulator().recache(dbWrapper, siteNodeId);
+		    	    new RequestCentricCachePopulator().recache(dbWrapper, siteNodeId);
 	    	    }
 	    	}
 		    

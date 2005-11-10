@@ -61,6 +61,7 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -159,8 +160,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	getLogger().info("* ViewPageAction was called....                *");
     	getLogger().info("************************************************");
     	
-        request.setAttribute("progress", "ViewPageAction has been called");
-    	
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
 		
@@ -170,16 +169,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 	    	validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
-	        request.setAttribute("progress", "validateAndModifyInputParameters done");
-
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.templateController 			= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.templateController, this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 	    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
-
-	        request.setAttribute("progress", "pageKey found:" + pageKey);
 
 	    	getLogger().info("pageKey:" + pageKey);
 	    	String pagePath	= null;
@@ -217,8 +212,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            }
 	        }
 	
-	        request.setAttribute("progress", "handled portal action");
-
 	        getLogger().info("handled portal action");
 			
 			if(!isUserRedirected)
