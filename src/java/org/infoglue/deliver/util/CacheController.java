@@ -650,14 +650,14 @@ public class CacheController extends Thread
 	    	beginTransaction(db);
 		    
 	    	String siteNodesToRecacheOnPublishing = CmsPropertyHandler.getProperty("siteNodesToRecacheOnPublishing");
-	    	logger.warn("siteNodesToRecacheOnPublishing:" + siteNodesToRecacheOnPublishing);
+	    	logger.info("siteNodesToRecacheOnPublishing:" + siteNodesToRecacheOnPublishing);
 	    	if(siteNodesToRecacheOnPublishing != null && !siteNodesToRecacheOnPublishing.equals("") && !siteNodesToRecacheOnPublishing.equals("siteNodesToRecacheOnPublishing"))
 	    	{
 	    	    String[] siteNodeIdArray = siteNodesToRecacheOnPublishing.split(",");
 	    	    for(int i=0; i<siteNodeIdArray.length; i++)
 	    	    {
 	    	        Integer siteNodeId = new Integer(siteNodeIdArray[i]);
-	    	    	logger.warn("siteNodeId to recache:" + siteNodeId);
+	    	    	logger.info("siteNodeId to recache:" + siteNodeId);
 	    	        new ContentCentricCachePopulator().recache(dbWrapper, siteNodeId);
 		    	    //new RequestCentricCachePopulator().recache(dbWrapper, siteNodeId, null, null);
 	    	    }
@@ -983,23 +983,23 @@ class PublicationThread extends Thread
 
 	public void run() 
 	{
-        logger.warn("setting block");
+        logger.info("setting block");
         RequestAnalyser.setBlockRequests(true);
 
 		try
 		{
 			sleep(5000);
 		
-		    logger.warn("Updating all caches as this was a publishing-update");
+		    logger.info("Updating all caches as this was a publishing-update");
 			CacheController.clearCastorCaches();
 
-			logger.warn("clearing all except page cache as we are in publish mode..");
+			logger.info("clearing all except page cache as we are in publish mode..");
 		    CacheController.clearCaches(null, null, true);
 			
-			logger.warn("Recaching all caches as this was a publishing-update");
+			logger.info("Recaching all caches as this was a publishing-update");
 			CacheController.cacheCentralCastorCaches();
 			
-			logger.warn("Finally clearing page cache as this was a publishing-update");
+			logger.info("Finally clearing page cache as this was a publishing-update");
 		    CacheController.clearCache("pageCache");
 		} 
 		catch (Exception e)
@@ -1007,7 +1007,7 @@ class PublicationThread extends Thread
 		    logger.error("An error occurred in the PublicationThread:" + e.getMessage(), e);
 		}
 
-		logger.warn("released block");
+		logger.info("released block");
         RequestAnalyser.setBlockRequests(false);
 
 	}

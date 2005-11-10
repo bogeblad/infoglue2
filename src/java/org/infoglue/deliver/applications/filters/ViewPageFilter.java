@@ -219,7 +219,7 @@ public class ViewPageFilter implements Filter
 	                    throw new ServletException("Could not map URI " + requestURI + " --> " + siteNodeId);
 	                }
 	                else
-	                    logger.warn("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
+	                    logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
 	                
 	                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId);
 	                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);

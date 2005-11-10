@@ -246,10 +246,10 @@ public class ContentCentricCachePopulator
 	        recurseContentTree(childContent.getId(), languageId);
 	        
 	        //logger.warn("Before read title of content...");
-	        this.templateController.getContentAttribute(childContent.getId(), languageId, "Title", true); 
-	        this.templateController.getContentAttribute(childContent.getId(), languageId, "NavigationTitle", true); 
-	        this.templateController.getContentAttribute(childContent.getId(), languageId, "LeadIn", true); 
-	        this.templateController.getContentAttribute(childContent.getId(), languageId, "FullText", true); 
+	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "Title", true); 
+	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "NavigationTitle", true); 
+	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "LeadIn", true); 
+	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "FullText", true); 
 	        //logger.warn("Read title of content...");
         }
 	}
