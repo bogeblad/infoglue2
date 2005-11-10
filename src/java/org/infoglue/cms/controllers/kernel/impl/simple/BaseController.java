@@ -416,14 +416,6 @@ public abstract class BaseController
         try
         {
             logger.warn("Loading " + arg + " in read/write mode.");
-            try
-            {
-                throw new Exception("Trace...");
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
             object = db.load(arg, id);
         }
         catch(Exception e)
@@ -472,16 +464,8 @@ public abstract class BaseController
 		try
 		{
             logger.warn("Loading " + arg + " in read/write mode.");
-            try
-            {
-                throw new Exception("Trace...");
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
 
-			object = db.load(arg, id);
+            object = db.load(arg, id);
 		}
 		catch(Exception e)
 		{
