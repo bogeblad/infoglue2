@@ -114,7 +114,7 @@ public class CacheController extends Thread
 		    caches.put(cacheName, Collections.synchronizedMap(new Hashtable()));
 			
 		Map cacheInstance = (Map)caches.get(cacheName);
-		if(cacheInstance != null)
+		if(cacheInstance != null && key != null && value != null)
 	    {
 		    synchronized(cacheInstance)
 	        {
