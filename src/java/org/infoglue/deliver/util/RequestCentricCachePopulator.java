@@ -66,6 +66,7 @@ public class RequestCentricCachePopulator
         String name = "org.infoglue.deliver.applications.actions.ViewPageAction";
         Map parameters = new HashMap();
         parameters.put("siteNodeId", siteNodeId);
+        parameters.put("isRecacheCall", "true");
 
         FakeHttpServletRequest request = new FakeHttpServletRequest();
         request.setServletContext(DeliverContextListener.getServletContext());

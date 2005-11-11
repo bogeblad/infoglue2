@@ -416,7 +416,32 @@ public class NodeDeliveryController extends BaseDeliveryController
 				
 		return siteNodeVersionVO;
 	}
+
+	/**
+	 * This method returns the latest sitenodeVersion there is for the given siteNode and stores it in a cache special to the deliver page cache.
+	 */
 	
+	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVOForPageCache(Database db, Integer siteNodeId) throws SystemException, Exception
+	{
+		String key = "" + siteNodeId;
+		getLogger().info("key:" + key);
+		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("pageCacheLatestSiteNodeVersions", key);
+		if(siteNodeVersionVO != null)
+		{
+			getLogger().info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
+		}
+		else
+		{
+			SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(siteNodeId, db);
+			if(siteNodeVersion != null)
+				siteNodeVersionVO = siteNodeVersion.getValueObject();
+			
+			CacheController.cacheObject("pageCacheLatestSiteNodeVersions", key, siteNodeVersionVO);
+		}
+				
+		return siteNodeVersionVO;
+	}
+
 
 	/**
 	 * This method returns the latest sitenodeVersion there is for the given siteNode.
@@ -496,7 +521,51 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		return parentSiteNodeVO;
 	}
+
+	/**
+	 * This method returns the SiteNodeVO that is the parent to the one sent in.
+	 */
 	
+	public SiteNodeVO getParentSiteNodeForPageCache(Database db, Integer siteNodeId) throws SystemException
+	{
+		String key = "" + siteNodeId;
+		getLogger().info("key getParentSiteNode:" + key);
+		Object object = CacheController.getCachedObject("pageCacheParentSiteNodeCache", key);
+		SiteNodeVO parentSiteNodeVO = null;
+		getLogger().info("object:" + object);
+		if(object instanceof NullObject)
+		{
+			getLogger().info("There was an cached parentSiteNodeVO but it was null:" + object);
+		}
+		else if(object != null)
+		{
+			getLogger().info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
+			parentSiteNodeVO = (SiteNodeVO)object;
+		}
+		else
+		{
+			getLogger().info("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
+			
+			SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
+            SiteNode parentSiteNode = siteNode.getParentSiteNode();
+            if(parentSiteNode != null)		
+            {
+                parentSiteNodeVO = parentSiteNode.getValueObject();
+            	CacheController.cacheObject("pageCacheParentSiteNodeCache", key, parentSiteNodeVO);
+    			getLogger().info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
+            }
+            else
+            {
+                getLogger().info("Caching parentSiteNodeVO: NullObject");
+                CacheController.cacheObject("pageCacheParentSiteNodeCache", key, new NullObject());
+            }
+            
+			
+		}
+		
+		return parentSiteNodeVO;
+	}
+
 
 	/**
 	 * This method returns true if the if the page in question (ie sitenode) has page-caching disabled.
@@ -543,7 +612,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 		try
 		{
-			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
+			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getPageCacheKey() != null && latestSiteNodeVersionVO.getPageCacheKey().length() > 0 && !latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
 			    pageKey = latestSiteNodeVersionVO.getPageCacheKey();
@@ -705,6 +774,42 @@ public class NodeDeliveryController extends BaseDeliveryController
 		return protectedSiteNodeVersionId;
 	}
 
+
+	/**
+	 * This method returns the id of the siteNodeVersion that is protected if any.
+	 */
+	
+	public Integer getProtectedSiteNodeVersionIdForPageCache(Database db, Integer siteNodeId)
+	{
+		Integer protectedSiteNodeVersionId = null;
+		
+		try
+		{
+			SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+			getLogger().info("siteNodeId:" + siteNodeId);
+			if(siteNodeVersionVO != null && siteNodeVersionVO.getIsProtected() != null)
+			{	
+				getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
+				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
+					protectedSiteNodeVersionId = null;
+				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
+					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
+				{
+					SiteNodeVO parentSiteNode = this.getParentSiteNodeForPageCache(db, siteNodeId);
+					if(parentSiteNode != null)
+						protectedSiteNodeVersionId = getProtectedSiteNodeVersionIdForPageCache(db, parentSiteNode.getSiteNodeId()); 
+				}
+			}
+
+		}
+		catch(Exception e)
+		{
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+		}
+				
+		return protectedSiteNodeVersionId;
+	}
 
 	
 	/**

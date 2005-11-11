@@ -83,7 +83,7 @@ public class ExpireCacheJob implements Job
 	    			CacheController.clearCastorCaches();
 	
 	    			logger.warn("clearing all except page cache as we are in publish mode..");
-	    		    CacheController.clearCaches(null, null, true);
+	    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
 	    			
 	    			logger.warn("Recaching all caches as this was a publishing-update");
 	    			CacheController.cacheCentralCastorCaches();
@@ -114,8 +114,8 @@ public class ExpireCacheJob implements Job
 	    			CacheController.clearCastorCaches();
 	
 	    			logger.warn("clearing all except page cache as we are in publish mode..");
-	    		    CacheController.clearCaches(null, null, true);
-	    			
+	    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
+
 	    			logger.warn("Recaching all caches as this was a publishing-update");
 	    			CacheController.cacheCentralCastorCaches();
 	    			

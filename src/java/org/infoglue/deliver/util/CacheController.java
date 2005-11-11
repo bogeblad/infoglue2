@@ -95,6 +95,7 @@ public class CacheController extends Thread
     public static Date expireDateTime = null;
     public static Date publishDateTime = null;
 
+
 	public CacheController()
 	{
 		super();
@@ -222,7 +223,7 @@ public class CacheController extends Thread
 		}
 	}
 		
-	public static void clearCaches(String entity, String entityId, boolean keepPageCache)
+	public static void clearCaches(String entity, String entityId, String[] cachesToSkip)
 	{
 		if(entity == null)
 		{	
@@ -232,24 +233,37 @@ public class CacheController extends Thread
 			{
 				Map.Entry e = (Map.Entry) i.next();
 				logger.info("e:" + e.getKey());
-				Object object = e.getValue();
-				if(object instanceof Map)
+				boolean skip = false;
+				if(cachesToSkip != null)
 				{
-					Map cacheInstance = (Map)e.getValue();
-					cacheInstance.clear();
+					for(int index=0; index<cachesToSkip.length; index++)
+					{
+					    if(e.getKey().equals(cachesToSkip[index]))
+					    {
+					        skip = true;
+					        break;
+					    }
+					}
 				}
-				else
+				
+				if(!skip)
 				{
-				    if(keepPageCache == true)
-				    {
+					Object object = e.getValue();
+					if(object instanceof Map)
+					{
+						Map cacheInstance = (Map)e.getValue();
+						cacheInstance.clear();
+					}
+					else
+					{
 					    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
 				    	cacheInstance.flushAll();
 				        eventListeners.clear();
-				    }
+					}
+					logger.info("Cleared cache:" + e.getKey());
+					
+			    	i.remove();
 				}
-				logger.info("Cleared cache:" + e.getKey());
-				
-		    	i.remove();
 			}
 		}
 		else
@@ -627,7 +641,7 @@ public class CacheController extends Thread
 			    logger.error("Error clearing cache in expireCacheAutomatically thread:" + e.getMessage(), e);
 			}
 			logger.info("Castor cache cleared");
-			clearCaches(null, null, false);
+			clearCaches(null, null, null);
 			logger.info("All other caches cleared");
 			
 			try
@@ -717,7 +731,6 @@ public class CacheController extends Thread
         return notifications;
     }
     
-    
     public static synchronized void evictWaitingCache() throws Exception
     {	    
 	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
@@ -743,14 +756,16 @@ public class CacheController extends Thread
 
 				try
 			    {
-			        if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+				    if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
-			            if(!RequestAnalyser.getBlockRequests())
-			            {
-	 			            logger.warn("Starting publication thread...");
-				            new PublicationThread().start();
-				            logger.warn("Done starting publication thread...");
-			            }
+				        if(!RequestAnalyser.getBlockRequests())
+				        {
+ 			                logger.warn("Starting publication thread...");
+ 			            	PublicationThread pt = new PublicationThread();
+ 			            	pt.setPriority(Thread.MIN_PRIORITY);
+ 			            	pt.start();
+			            	logger.warn("Done starting publication thread...");
+		            	}
 			        }
 				    else
 				    {
@@ -758,7 +773,7 @@ public class CacheController extends Thread
 					    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
 					        isDependsClass = true;
 				
-					    CacheController.clearCaches(className, objectId, false);
+					    CacheController.clearCaches(className, objectId, null);
 				
 					    logger.info("Updating className with id:" + className + ":" + objectId);
 						if(className != null)
@@ -778,13 +793,7 @@ public class CacheController extends Thread
 						    }
 						    
 							//If it's an contentVersion we should delete all images it might have generated from attributes.
-							/*
-							if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
-							{
-							    logger.info("We should delete all images with contentVersionId " + objectId);
-								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
-							}
-							else */if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
+							if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 							{
 							    logger.info("We clear all small contents as well " + objectId);
 								Class typesExtra = SmallContentImpl.class;
@@ -977,38 +986,3 @@ public class CacheController extends Thread
 	}
 }
 
-class PublicationThread extends Thread
-{
-    public final static Logger logger = Logger.getLogger(PublicationThread.class.getName());
-
-	public void run() 
-	{
-        logger.info("setting block");
-        RequestAnalyser.setBlockRequests(true);
-
-		try
-		{
-			sleep(5000);
-		
-		    logger.info("Updating all caches as this was a publishing-update");
-			CacheController.clearCastorCaches();
-
-			logger.info("clearing all except page cache as we are in publish mode..");
-		    CacheController.clearCaches(null, null, true);
-			
-			logger.info("Recaching all caches as this was a publishing-update");
-			CacheController.cacheCentralCastorCaches();
-			
-			logger.info("Finally clearing page cache as this was a publishing-update");
-		    CacheController.clearCache("pageCache");
-		} 
-		catch (Exception e)
-		{
-		    logger.error("An error occurred in the PublicationThread:" + e.getMessage(), e);
-		}
-
-		logger.info("released block");
-        RequestAnalyser.setBlockRequests(false);
-
-	}
-}
