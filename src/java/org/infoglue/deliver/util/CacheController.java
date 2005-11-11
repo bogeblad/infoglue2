@@ -111,7 +111,7 @@ public class CacheController extends Thread
 	public static void cacheObject(String cacheName, Object key, Object value)
 	{
 		if(!caches.containsKey(cacheName))
-		    caches.put(cacheName, new HashMap());
+		    caches.put(cacheName, Collections.synchronizedMap(new Hashtable()));
 			
 		Map cacheInstance = (Map)caches.get(cacheName);
 		cacheInstance.put(key, value);
@@ -119,8 +119,11 @@ public class CacheController extends Thread
 	
 	public static Object getCachedObject(String cacheName, Object key)
 	{
-        Map cacheInstance = (Map)caches.get(cacheName);
-        return (cacheInstance == null) ? null : cacheInstance.get(key);
+	    Map cacheInstance = (Map)caches.get(cacheName);
+        synchronized(cacheInstance)
+        {
+            return (cacheInstance == null) ? null : cacheInstance.get(key);
+        }
     }
 
 	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups)
@@ -472,15 +475,15 @@ public class CacheController extends Thread
 	
 	public static synchronized void clearCastorCaches() throws Exception
 	{
-		logger.info("Emptying the Castor Caches");
-		
+	    logger.info("Emptying the Castor Caches");
+
+	    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
+	        Thread.sleep(5);
+
 		Database db = CastorDatabaseService.getDatabase();
 
 		try
 		{		
-		    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
-		        Thread.sleep(5);
-		    
 		    System.out.println("Clearing cache as no ViewPageAction was going on...");
 		    db.getCacheManager().expireCache();
 			/*

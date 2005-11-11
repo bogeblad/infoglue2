@@ -34,9 +34,7 @@ import org.infoglue.deliver.portal.PortalService;
 import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
-import org.infoglue.deliver.util.PublicationThread;
 import org.infoglue.deliver.util.RequestAnalyser;
-import org.infoglue.deliver.util.ThreadMX;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -44,7 +42,6 @@ import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
@@ -137,10 +134,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
         System.out.println("");
         while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
         {
-            if(RequestAnalyser.getNumberOfCurrentRequests() > 150)
-            {
-                System.out.println(ThreadMX.stackInfo(System.getProperty("line.separator")));
-            }
             System.out.println("Queing up...:" + RequestAnalyser.getNumberOfCurrentRequests());
             System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
             Thread.sleep(200);
@@ -767,4 +760,5 @@ public class ViewPageAction extends InfoGlueAbstractAction
     {
         this.isRecacheCall = isRecacheCall;
     }
+    
 }
