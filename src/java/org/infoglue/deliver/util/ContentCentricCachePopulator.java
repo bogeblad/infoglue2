@@ -215,7 +215,7 @@ public class ContentCentricCachePopulator
 	        templateController.getContentAttribute(childContent.getId(), languageId, "FullText", true); 
 	        logger.warn("Read title of content...");
         }
-	    Thread.sleep(100);
+	    //Thread.sleep(100);
 	}
 	
 	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
