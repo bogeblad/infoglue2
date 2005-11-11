@@ -131,21 +131,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
         if(isRecacheCall)
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-        /*
-        System.out.println("");
-        while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
-        {
-            System.out.println("Queing up...:" + RequestAnalyser.getNumberOfCurrentRequests());
-            System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
-            Thread.sleep(200);
-        }
-        System.out.println("Continued with one...");
-        */
-        
         HttpServletRequest request = getRequest();
         
     	long start = System.currentTimeMillis();
-    	RequestAnalyser.numberOfCurrentRequests++;
+    	//RequestAnalyser.numberOfCurrentRequests++;
 
     	long elapsedTime 	= 0;
     	
@@ -257,14 +246,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			closeTransaction(dbWrapper.getDatabase());
 
 			elapsedTime = System.currentTimeMillis() - start;
-	    	RequestAnalyser.numberOfCurrentRequests--;
-	    	System.out.println("Removed thread...");
-	    	/*
-			synchronized(RequestAnalyser.getCurrentRequests())
-	    	{
-			    RequestAnalyser.getCurrentRequests().remove(request);
-	    	}
-	    	*/
+	    	//RequestAnalyser.numberOfCurrentRequests--;
 		}
 
 		if(elapsedTime > 10000)

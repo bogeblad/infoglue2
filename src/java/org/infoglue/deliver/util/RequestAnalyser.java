@@ -37,7 +37,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  */
 public class RequestAnalyser
 {
-    public static int numberOfCurrentRequests = 0;
+    //public static int numberOfCurrentRequests = 0;
     
 	//private static List currentRequests = new ArrayList();
     private static HttpServletRequest lastRequest = null;
@@ -63,10 +63,12 @@ public class RequestAnalyser
 
 	}
 
+	/*
     public static int getNumberOfCurrentRequests()
     {
         return numberOfCurrentRequests;
     }
+    */
 
 	/*
     public static int getNumberOfCurrentRequests()
