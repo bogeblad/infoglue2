@@ -36,6 +36,7 @@ import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.PublicationThread;
 import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.ThreadMX;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -136,6 +137,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
         System.out.println("");
         while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
         {
+            if(RequestAnalyser.getNumberOfCurrentRequests() > 150)
+            {
+                System.out.println(ThreadMX.stackInfo(System.getProperty("line.separator")));
+            }
             System.out.println("Queing up...:" + RequestAnalyser.getNumberOfCurrentRequests());
             System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
             Thread.sleep(200);
@@ -258,6 +263,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			elapsedTime = System.currentTimeMillis() - start;
 	    	RequestAnalyser.numberOfCurrentRequests--;
+	    	System.out.println("Removed thread...");
 	    	/*
 			synchronized(RequestAnalyser.getCurrentRequests())
 	    	{
