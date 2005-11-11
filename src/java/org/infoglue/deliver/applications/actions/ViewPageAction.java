@@ -26,19 +26,15 @@ package org.infoglue.deliver.applications.actions;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.impl.simple.*;
-import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
-import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
-import org.infoglue.deliver.invokers.HTMLPageInvoker;
 import org.infoglue.deliver.invokers.PageInvoker;
 import org.infoglue.deliver.portal.PortalService;
 import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.PublicationThread;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -47,8 +43,10 @@ import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 
 import java.net.URLEncoder;
 import java.security.Principal;
@@ -132,30 +130,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
-        //CacheController.evictWaitingCache();
-        /*
-        if(RequestAnalyser.getBlockRequests())
-        {
-            logger.info("A publication was taking place. Responding with an error.");
- 			getResponse().setContentType("text/html; charset=UTF-8");
- 			getRequest().setAttribute("responseCode", "503");
- 			getRequest().getRequestDispatcher("/ErrorPage!busy.action").forward(getRequest(), getResponse());
-
-             return NONE;
-        }
-        */
-        
+        System.out.println("isRecacheCall:" + isRecacheCall);
+        if(isRecacheCall)
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+            
         HttpServletRequest request = getRequest();
         
     	long start = System.currentTimeMillis();
     	RequestAnalyser.numberOfCurrentRequests++;
-    	/*
-    	synchronized(RequestAnalyser.getCurrentRequests())
-    	{
-    	    request.setAttribute("startTime", new Long(start));
-    	    RequestAnalyser.getCurrentRequests().add(request);
-    	}
-    	*/
+
     	long elapsedTime 	= 0;
     	
     	getLogger().info("************************************************");
@@ -163,7 +146,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	getLogger().info("************************************************");
     	
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
-    	//Database db = CastorDatabaseService.getDatabase();
 		
 		beginTransaction(dbWrapper.getDatabase());
 
@@ -175,6 +157,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.templateController 			= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
+			getLogger().info("before pageKey...");
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.templateController, this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 	    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 
@@ -182,7 +165,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	String pagePath	= null;
 	    	
 	    	boolean isUserRedirected = false;
-			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
+			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
 			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 			if(protectedSiteNodeVersionId != null)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
@@ -230,32 +213,21 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setHttpServletRequest(this.getRequest());
 				deliveryContext.setHttpServletResponse(this.getResponse());
 				
-				SiteNode siteNode = nodeDeliveryController.getSiteNode(dbWrapper.getDatabase(), this.siteNodeId);
-				if(siteNode == null)
-				    throw new SystemException("There was no page with this id.");
-				
-				if(siteNode.getSiteNodeTypeDefinition() == null || siteNode.getSiteNodeTypeDefinition().getInvokerClassName() == null || siteNode.getSiteNodeTypeDefinition().getInvokerClassName().equals(""))
-				{
-				    throw new SystemException("There was no page invoker class assigned to the site node " + siteNode.getName());
+				SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = getSiteNodeTypeDefinition(this.siteNodeId, dbWrapper.getDatabase());
+								
+			    try
+			    {
+			        String invokerClassName = siteNodeTypeDefinitionVO.getInvokerClassName();
+			        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
+			        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), this.templateController, deliveryContext);
+			        pageInvoker.deliverPage();
+
+			        request.setAttribute("progress", "after pageInvoker was called");
+			    }
+			    catch(ClassNotFoundException e)
+			    {
+			        throw new SystemException("An error was thrown when trying to use the page invoker class assigned to this page type:" + e.getMessage(), e);
 				}
-				else
-				{
-				    try
-				    {
-				        request.setAttribute("progress", "before pageInvoker is called on siteNode:" + siteNode.getName());
-
-						String invokerClassName = siteNode.getSiteNodeTypeDefinition().getInvokerClassName();
-				        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
-				        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), this.templateController, deliveryContext);
-				        pageInvoker.deliverPage();
-
-				        request.setAttribute("progress", "after pageInvoker was called");
-				    }
-				    catch(ClassNotFoundException e)
-				    {
-				        throw new SystemException("An error was thrown when trying to use the page invoker class assigned to this page type:" + e.getMessage(), e);
-				    }
-				}	
 			}
 				        
 	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
@@ -422,15 +394,20 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		templateController.setDeliveryControllers(this.nodeDeliveryController, null, this.integrationDeliveryController);	
 		
 		String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
-		String editOnSite = CmsPropertyHandler.getProperty("editOnSite");
-		boolean isEditOnSightDisabled = templateController.getIsEditOnSightDisabled();
-		if(allowEditOnSightAtAll && !isEditOnSightDisabled && operatingMode != null && (operatingMode.equals("0") || operatingMode.equals("1") || operatingMode.equals("2")) && editOnSite != null && editOnSite.equalsIgnoreCase("true"))
+		
+		if(operatingMode != null && (operatingMode.equals("0") || operatingMode.equals("1") || operatingMode.equals("2")))
 		{
-			templateController = new EditOnSiteBasicTemplateController(dbWrapper, infoGluePrincipal);
-			templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
-			templateController.setHttpRequest(request);	
-			templateController.setBrowserBean(browserBean);
-			templateController.setDeliveryControllers(this.nodeDeliveryController, null, this.integrationDeliveryController);	
+		    String editOnSite = CmsPropertyHandler.getProperty("editOnSite");
+			boolean isEditOnSightDisabled = templateController.getIsEditOnSightDisabled();
+			
+			if(allowEditOnSightAtAll && !isEditOnSightDisabled && editOnSite != null && editOnSite.equalsIgnoreCase("true"))
+			{
+				templateController = new EditOnSiteBasicTemplateController(dbWrapper, infoGluePrincipal);
+				templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
+				templateController.setHttpRequest(request);	
+				templateController.setBrowserBean(browserBean);
+				templateController.setDeliveryControllers(this.nodeDeliveryController, null, this.integrationDeliveryController);	
+			}
 		}
 		
 		return templateController;		
@@ -679,6 +656,39 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    return principal;
 	}
 	
+	
+	/**
+	 * Gets the SiteNodeType definition of this given node
+	 * @return
+	 */
+	private SiteNodeTypeDefinitionVO getSiteNodeTypeDefinition(Integer siteNodeId, Database db) throws SystemException
+	{
+	    String key = "" + siteNodeId;
+		getLogger().info("key:" + key);
+		SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = (SiteNodeTypeDefinitionVO)CacheController.getCachedObject("pageCacheSiteNodeTypeDefinition", key);
+		if(siteNodeTypeDefinitionVO != null)
+		{
+			getLogger().info("There was an cached siteNodeTypeDefinitionVO:" + siteNodeTypeDefinitionVO);
+		}
+		else
+		{
+		    
+		    SiteNode siteNode = nodeDeliveryController.getSiteNode(db, this.siteNodeId);
+			if(siteNode == null)
+			    throw new SystemException("There was no page with this id.");
+			
+			if(siteNode.getSiteNodeTypeDefinition() == null || siteNode.getSiteNodeTypeDefinition().getInvokerClassName() == null || siteNode.getSiteNodeTypeDefinition().getInvokerClassName().equals(""))
+			{
+			    throw new SystemException("There was no page invoker class assigned to the site node " + siteNode.getName());
+			}
+			
+			siteNodeTypeDefinitionVO = siteNode.getSiteNodeTypeDefinition().getValueObject();
+			
+			CacheController.cacheObject("pageCacheSiteNodeTypeDefinition", key, siteNodeTypeDefinitionVO);
+		}
+		
+		return siteNodeTypeDefinitionVO;
+	}
 	
 	/**
 	 * Setters and getters for all things sent to the page in the request

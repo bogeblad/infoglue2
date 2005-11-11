@@ -174,7 +174,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     public String doClearCaches() throws Exception
     {
         CacheController.clearCastorCaches();
-        CacheController.clearCaches(null, null, false);
+        CacheController.clearCaches(null, null, null);
         
         //this.getHttpSession().invalidate();
         
