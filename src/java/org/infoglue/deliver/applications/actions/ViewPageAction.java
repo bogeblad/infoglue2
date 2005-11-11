@@ -131,6 +131,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
         if(isRecacheCall)
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
+        /*
         System.out.println("");
         while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
         {
@@ -139,6 +140,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
             Thread.sleep(200);
         }
         System.out.println("Continued with one...");
+        */
         
         HttpServletRequest request = getRequest();
         
