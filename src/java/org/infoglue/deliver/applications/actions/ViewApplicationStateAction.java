@@ -285,7 +285,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		*/
 				
 		//this.getHttpSession().invalidate();
-		
+
+        System.out.println("Success returned...");
+
         return "success";
     }
         
