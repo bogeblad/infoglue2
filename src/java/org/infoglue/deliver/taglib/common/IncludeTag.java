@@ -71,9 +71,7 @@ public class IncludeTag extends TemplateControllerTag
 		    else
 		        template = this.getController().getContentAttribute(contentId, "Template");
 		    
-		    //System.out.println("template:" + template);
 		    String result = this.getController().renderString(template, false);
-		    //System.out.println("result:" + result);
 		    produceResult(result);
         } 
 		catch (Exception e)

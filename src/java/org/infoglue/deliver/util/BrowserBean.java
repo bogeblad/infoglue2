@@ -53,7 +53,7 @@ public final class BrowserBean implements Serializable
 		this.request = req;
 		this.useragent = request.getHeader("User-Agent");
 		this.languages = request.getHeader("Accept-Language");
-		//System.out.println("useragent: " + useragent);
+
 		if(this.languages != null)
 			this.languages = this.languages.toLowerCase();
 

@@ -61,10 +61,8 @@ public class ErrorPageAction extends InfoGlueAbstractAction
         if(e != null)
         {
             setError(e, e.getCause());
-            //System.out.println("error:" + e.getMessage());
         }
                 
-        //System.out.println("responseCode:" + responseCode);
         this.getResponse().setContentType("text/html; charset=UTF-8");
         this.getResponse().setStatus(responseCode);
 
@@ -105,10 +103,8 @@ public class ErrorPageAction extends InfoGlueAbstractAction
         if(e != null)
         {
             setError(e, e.getCause());
-            //System.out.println("error:" + e.getMessage());
         }
                 
-        //System.out.println("responseCode:" + responseCode);
         this.getResponse().setContentType("text/html; charset=UTF-8");
         this.getResponse().setStatus(responseCode);
 

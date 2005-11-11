@@ -108,7 +108,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		String URI = httpServletRequest.getRequestURI();
 		String URL = httpServletRequest.getRequestURL().toString();
 
-		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf("UpdateCache") > -1  || URI.indexOf("InvokeWorkflow") > -1)
+		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf("UpdateCache") > -1)
 		{
     	    fc.doFilter(request, response); 
 			return;

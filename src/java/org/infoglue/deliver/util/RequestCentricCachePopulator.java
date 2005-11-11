@@ -71,7 +71,6 @@ public class RequestCentricCachePopulator
         FakeHttpServletRequest request = new FakeHttpServletRequest();
         request.setServletContext(DeliverContextListener.getServletContext());
         FakeHttpServletResponse response = new FakeHttpServletResponse();
-        System.out.println("request:" + request);
         
         HttpServletRequest portalServletRequest = new PortalServletRequest((HttpServletRequest) request);
         
@@ -97,14 +96,6 @@ public class RequestCentricCachePopulator
             e.printStackTrace();
         } 
         
-        
-        /*
-        HttpServletRequest request = RequestAnalyser.getLastRequest();
-        HttpServletResponse response = RequestAnalyser.getLastResponse();
-        
-        RequestDispatcher dispatcher = DeliverContextListener.getServletContext().getRequestDispatcher("/ViewPage.action?siteNodeId=" + siteNodeId);
-        dispatcher.forward(request, response);
-        */
         /*
         HttpHelper helper = new HttpHelper();
         String recacheUrl = CmsPropertyHandler.getProperty("recacheUrl") + "?siteNodeId=" + siteNodeId + "&refresh=true";
@@ -112,6 +103,7 @@ public class RequestCentricCachePopulator
         String response = helper.getUrlContent(recacheUrl);
         System.out.println("response:" + response);
         */
+        
         logger.info("recache stopped..");
 	}
 	

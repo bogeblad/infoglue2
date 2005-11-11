@@ -176,8 +176,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
         
-        //this.getHttpSession().invalidate();
-        
         return "cleared";
     }
 
@@ -214,7 +212,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
-        System.out.println("ViewApplicationState.action called...");
         long start = System.currentTimeMillis();
         List allowedAdminIPList = ServerNodeController.getController().getAllowedAdminIPList();
         //System.out.println("Remote host:" + this.getRequest().getRemoteAddr());
@@ -227,8 +224,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
             
             return NONE;
         }
-        System.out.println("IP was OK...");
-        
         
         String sessionTimeout = CmsPropertyHandler.getProperty("session.timeout");
 		if(sessionTimeout == null)
@@ -285,8 +280,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		*/
 				
 		//this.getHttpSession().invalidate();
-
-        System.out.println("Success returned...");
 
         return "success";
     }

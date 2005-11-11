@@ -165,13 +165,11 @@ public class RequestAnalyser
     
     public static HttpServletRequest getLastRequest()
     {
-        System.out.println("Getting last request:" + lastRequest);
         return lastRequest;
     }
     
     public static void setLastRequest(HttpServletRequest lastRequest)
     {
-        System.out.println("Setting last request:" + lastRequest);
         RequestAnalyser.lastRequest = lastRequest;
     }
     
