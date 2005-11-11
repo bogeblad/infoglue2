@@ -294,11 +294,11 @@ public class CacheController extends Thread
 				{	
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("latestSiteNodeVersionCache") && entity.indexOf("SiteNode") > 0)
+				if((cacheName.equalsIgnoreCase("latestSiteNodeVersionCache") || cacheName.equalsIgnoreCase("pageCacheLatestSiteNodeVersions") || cacheName.equalsIgnoreCase("pageCacheSiteNodeTypeDefinition")) && entity.indexOf("SiteNode") > 0)
 				{	
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("parentSiteNodeCache") && entity.indexOf("SiteNode") > 0)
+				if((cacheName.equalsIgnoreCase("parentSiteNodeCache") || cacheName.equalsIgnoreCase("pageCacheParentSiteNodeCache")) && entity.indexOf("SiteNode") > 0)
 				{	
 					clear = true;
 				}
