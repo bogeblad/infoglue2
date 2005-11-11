@@ -342,7 +342,8 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public void closeTransaction(Database db) throws SystemException
 	{
 	    //if(db != null && !db.isClosed() && db.isActive())
-	        commitTransaction(db);
+	        //commitTransaction(db);
+	        rollbackTransaction(db);
 	}
 
 	

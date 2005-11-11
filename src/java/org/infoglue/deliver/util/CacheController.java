@@ -69,7 +69,9 @@ import com.steadystate.css.parser.selectors.BeginHyphenAttributeConditionImpl;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -85,7 +87,7 @@ public class CacheController extends Thread
     public static List notifications = new ArrayList();
     
     private static Map eventListeners = new HashMap();
-	private static Map caches = new HashMap();
+	private static Map caches = Collections.synchronizedMap(new Hashtable());
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
 	private boolean continueRunning = true;
@@ -476,7 +478,12 @@ public class CacheController extends Thread
 
 		try
 		{		
+		    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
+		        Thread.sleep(5);
 		    
+		    System.out.println("Clearing cache as no ViewPageAction was going on...");
+		    db.getCacheManager().expireCache();
+			/*
 			clearCache(db, SmallContentImpl.class);
 			clearCache(db, MediumContentImpl.class);
 			clearCache(db, ContentImpl.class);
@@ -524,7 +531,7 @@ public class CacheController extends Thread
 			clearCache(db, UserContentTypeDefinitionImpl.class);
 			clearCache(db, RoleContentTypeDefinitionImpl.class);
 			clearCache(db, GroupContentTypeDefinitionImpl.class);			
-
+			*/
 		    //commitTransaction(db);
 
 			logger.info("Emptied the Castor Caches");
