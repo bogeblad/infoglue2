@@ -214,6 +214,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+        System.out.println("ViewApplicationState.action called...");
         long start = System.currentTimeMillis();
         List allowedAdminIPList = ServerNodeController.getController().getAllowedAdminIPList();
         //System.out.println("Remote host:" + this.getRequest().getRemoteAddr());
@@ -226,6 +227,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
             
             return NONE;
         }
+        System.out.println("IP was OK...");
         
         
         String sessionTimeout = CmsPropertyHandler.getProperty("session.timeout");
@@ -236,8 +238,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Used memory", "" + ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024) + " MB"));
         states.add(getList("Free memory", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Total memory", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB"));
-        states.add(getList("Number of sessions", "" + CmsSessionContextListener.getActiveSessions() + "(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)"));
-        states.add(getList("Number of request being handled now", "" + RequestAnalyser.numberOfCurrentRequests));
+        //states.add(getList("Number of sessions", "" + CmsSessionContextListener.getActiveSessions() + "(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)"));
+        //states.add(getList("Number of request being handled now", "" + RequestAnalyser.numberOfCurrentRequests));
         //states.add(getList("Number of request being handled now", "" + RequestAnalyser.getNumberOfCurrentRequests() + "(average request take " + (RequestAnalyser.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + RequestAnalyser.getMaxTimeSpentOnOngoingRequests() + ")"));
         //states.add(getList("The slowest request handled now is", "" + ((RequestAnalyser.getLongestRequests() != null) ? RequestAnalyser.getLongestRequests().getAttribute("progress") : "")));
         
