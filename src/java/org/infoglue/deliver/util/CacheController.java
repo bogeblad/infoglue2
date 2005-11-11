@@ -120,10 +120,16 @@ public class CacheController extends Thread
 	public static Object getCachedObject(String cacheName, Object key)
 	{
 	    Map cacheInstance = (Map)caches.get(cacheName);
-        synchronized(cacheInstance)
-        {
-            return (cacheInstance == null) ? null : cacheInstance.get(key);
-        }
+	    
+	    if(cacheInstance != null)
+	    {
+	        synchronized(cacheInstance)
+	        {
+	            return cacheInstance.get(key);
+	        }
+	    }
+	    
+        return null;
     }
 
 	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups)
