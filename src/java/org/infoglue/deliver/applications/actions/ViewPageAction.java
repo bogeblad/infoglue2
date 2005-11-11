@@ -137,7 +137,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
         while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
         {
             System.out.println("Queing up...:" + RequestAnalyser.getNumberOfCurrentRequests());
-            Thread.sleep(50);
+            System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
+            Thread.sleep(200);
         }
         System.out.println("Continued with one...");
         
