@@ -134,7 +134,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
         HttpServletRequest request = getRequest();
         
     	long start = System.currentTimeMillis();
-    	//RequestAnalyser.numberOfCurrentRequests++;
+    	RequestAnalyser.numberOfCurrentRequests++;
 
     	long elapsedTime 	= 0;
     	
@@ -246,7 +246,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			closeTransaction(dbWrapper.getDatabase());
 
 			elapsedTime = System.currentTimeMillis() - start;
-	    	//RequestAnalyser.numberOfCurrentRequests--;
+	    	RequestAnalyser.numberOfCurrentRequests--;
 		}
 
 		if(elapsedTime > 10000)

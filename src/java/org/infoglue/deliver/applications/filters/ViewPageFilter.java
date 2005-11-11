@@ -240,12 +240,6 @@ public class ViewPageFilter implements Filter
 	                BaseDeliveryController.closeDatabase(db);
 	                
 		        	//RequestAnalyser.numberOfCurrentRequests--;
-		        	/*
-	    			synchronized(RequestAnalyser.getCurrentRequests())
-	    	    	{
-	    			    RequestAnalyser.getCurrentRequests().remove(httpRequest);
-	    	    	}
-	    	    	*/
 	            }
 	            
 	        } 

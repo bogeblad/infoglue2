@@ -482,10 +482,10 @@ public class CacheController extends Thread
 	public static synchronized void clearCastorCaches() throws Exception
 	{
 	    logger.info("Emptying the Castor Caches");
-	    /*
+	    
 	    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
 	        Thread.sleep(5);
-	    */
+	    
 		Database db = CastorDatabaseService.getDatabase();
 
 		try
