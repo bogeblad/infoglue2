@@ -664,6 +664,7 @@ public class CacheController extends Thread
 	    	beginTransaction(db);
 		    
 	    	String siteNodesToRecacheOnPublishing = CmsPropertyHandler.getProperty("siteNodesToRecacheOnPublishing");
+	    	String recachePublishingMethod = CmsPropertyHandler.getProperty("recachePublishingMethod");
 	    	logger.info("siteNodesToRecacheOnPublishing:" + siteNodesToRecacheOnPublishing);
 	    	if(siteNodesToRecacheOnPublishing != null && !siteNodesToRecacheOnPublishing.equals("") && !siteNodesToRecacheOnPublishing.equals("siteNodesToRecacheOnPublishing"))
 	    	{
@@ -672,8 +673,12 @@ public class CacheController extends Thread
 	    	    {
 	    	        Integer siteNodeId = new Integer(siteNodeIdArray[i]);
 	    	    	logger.info("siteNodeId to recache:" + siteNodeId);
-	    	        //new ContentCentricCachePopulator().recache(dbWrapper, siteNodeId);
-		    	    new RequestCentricCachePopulator().recache(dbWrapper, siteNodeId);
+	    	    	if(recachePublishingMethod != null && recachePublishingMethod.equalsIgnoreCase("contentCentric"))
+	    	    	    new ContentCentricCachePopulator().recache(dbWrapper, siteNodeId);
+	    	    	else if(recachePublishingMethod != null && recachePublishingMethod.equalsIgnoreCase("requestCentric"))
+	    	    	    new RequestCentricCachePopulator().recache(dbWrapper, siteNodeId);
+	    	    	else
+	    	    	    logger.warn("No recaching was made during publishing - set the parameter recachePublishingMethod to 'contentCentric' or 'requestCentric' to recache.");
 	    	    }
 	    	}
 		    
@@ -731,12 +736,12 @@ public class CacheController extends Thread
         return notifications;
     }
     
-    public static synchronized void evictWaitingCache() throws Exception
+    public static void evictWaitingCache() throws Exception
     {	    
 	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
 	    if(RequestAnalyser.getBlockRequests())
 	    {
-		    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+		    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 	        return;
 	    }
 
