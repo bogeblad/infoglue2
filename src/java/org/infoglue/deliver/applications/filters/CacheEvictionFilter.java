@@ -97,7 +97,6 @@ public class CacheEvictionFilter implements Filter
 
             if (!uriMatcher.matches(requestURI)) 
             {
-                //System.out.println("CacheEvictionFilter called: " + httpRequest.getRequestURI());
                 CacheController.evictWaitingCache();
             }
         }

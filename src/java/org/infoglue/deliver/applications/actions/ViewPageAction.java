@@ -130,7 +130,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
-        System.out.println("isRecacheCall:" + isRecacheCall);
         if(isRecacheCall)
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             

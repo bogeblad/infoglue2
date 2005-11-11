@@ -93,28 +93,6 @@ import javax.servlet.http.HttpSession;
 public class ContentCentricCachePopulator
 { 
     public final static Logger logger = Logger.getLogger(ContentCentricCachePopulator.class.getName());
-
-	//These are the standard parameters which uniquely defines which page to show.
-	private Integer siteNodeId = null;
-	private Integer contentId  = null; 
-	private Integer languageId = null;
-	
-	private boolean showSimple = false;
-	
-	//This parameter are set if you want to access a certain repository startpage
-	private String repositoryName = null;
-	
-	//A cached nodeDeliveryController
-	protected NodeDeliveryController nodeDeliveryController					= null;
-	protected IntegrationDeliveryController integrationDeliveryController 	= null;
-	protected TemplateController templateController 						= null;
-		
-	private static final boolean USE_LANGUAGE_FALLBACK        			= true;
-	private static final boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-	
-	//The browserbean
-	private BrowserBean browserBean = null;
-	private Principal principal = null;
 		
 
 	/**
@@ -128,6 +106,29 @@ public class ContentCentricCachePopulator
 	public void recache(DatabaseWrapper dbWrapper, Integer siteNodeId) throws SystemException, Exception
 	{
         logger.info("recache starting..");
+
+		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(dbWrapper.getDatabase(), siteNodeId);
+		if(masterLanguageVO == null)
+			throw new SystemException("There was no master language for the siteNode " + siteNodeId);
+	
+		Integer languageId = masterLanguageVO.getLanguageId();
+		if(languageId == null)
+		    languageId = masterLanguageVO.getLanguageId();				
+				
+		Integer contentId = new Integer(-1);
+		
+		Principal principal = (Principal)CacheController.getCachedObject("userCache", "anonymous");
+		if(principal == null)
+		{
+		    Map arguments = new HashMap();
+		    arguments.put("j_username", "anonymous");
+		    arguments.put("j_password", "anonymous");
+		    
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(dbWrapper.getDatabase(), arguments);
+			
+			if(principal != null)
+				CacheController.cacheObject("userCache", "anonymous", principal);
+		}
 
         FakeHttpSession fakeHttpServletSession = new FakeHttpSession();
         FakeHttpServletResponse fakeHttpServletResponse = new FakeHttpServletResponse();
@@ -143,99 +144,61 @@ public class ContentCentricCachePopulator
 
         fakeHttpServletRequest.setServletContext(DeliverContextListener.getServletContext());
         
-		this.browserBean = new BrowserBean();
+        BrowserBean browserBean = new BrowserBean();
 	    //this.browserBean.setRequest(getRequest());
 
-	    this.siteNodeId = siteNodeId;
-	    
-		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(dbWrapper.getDatabase(), this.siteNodeId);
-		if(masterLanguageVO == null)
-			throw new SystemException("There was no master language for the siteNode " + siteNodeId);
-	
-		this.languageId = masterLanguageVO.getLanguageId();
-		if(languageId == null)
-		    this.languageId = masterLanguageVO.getLanguageId();				
+		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		IntegrationDeliveryController integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
+		TemplateController templateController = getTemplateController(dbWrapper, siteNodeId, languageId, contentId, new FakeHttpServletRequest(), (InfoGluePrincipal)principal, false, browserBean, nodeDeliveryController, integrationDeliveryController);
 		
-	    Map arguments = new HashMap();
-	    arguments.put("j_username", "anonymous");
-	    arguments.put("j_password", "anonymous");
-	    
-		this.principal = ExtranetController.getController().getAuthenticatedPrincipal(dbWrapper.getDatabase(), arguments);
-					
-		if(principal != null)
-			CacheController.cacheObject("userCache", "anonymous", this.principal);
+		DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*(InfoGluePrincipal)this.principal*/);
+		//deliveryContext.setRepositoryName(repositoryName);
+		deliveryContext.setSiteNodeId(siteNodeId);
+		deliveryContext.setContentId(contentId);
+		deliveryContext.setLanguageId(languageId);
+		deliveryContext.setPageKey("" + System.currentTimeMillis());
+		deliveryContext.setSession(new Session(fakeHttpServletSession));
+		deliveryContext.setInfoGlueAbstractAction(null);
+		deliveryContext.setHttpServletRequest(fakeHttpServletRequest);
+		deliveryContext.setHttpServletResponse(fakeHttpServletResponse);
 
-        logger.info("recache parameter setup done..");
-
-    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
-		this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
-		this.templateController 			= getTemplateController(dbWrapper, this.siteNodeId, this.languageId, this.contentId, fakeHttpServletRequest, (InfoGluePrincipal)this.principal, false);
+		templateController.setDeliveryContext(deliveryContext);
 		
-    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), fakeHttpServletSession, this.templateController, this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), fakeHttpServletRequest.getQueryString(), "");
-    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
+		//We don't want a page cache entry to be created
+		deliveryContext.setDisablePageCache(true);
 
-    	String pagePath	= null;
-    	
-    	boolean isUserRedirected = false;
-	
-		if(!isUserRedirected)
-		{	
-			logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
-			DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*(InfoGluePrincipal)this.principal*/);
-			deliveryContext.setRepositoryName(this.repositoryName);
-			deliveryContext.setSiteNodeId(this.siteNodeId);
-			deliveryContext.setContentId(this.contentId);
-			deliveryContext.setLanguageId(this.languageId);
-			deliveryContext.setPageKey(pageKey);
-			deliveryContext.setSession(new Session(fakeHttpServletSession));
-			deliveryContext.setInfoGlueAbstractAction(null);
-			deliveryContext.setHttpServletRequest(fakeHttpServletRequest);
-			deliveryContext.setHttpServletResponse(fakeHttpServletResponse);
+		Integer rootMetaInfoContentId = templateController.getMetaInformationContentId(siteNodeId);
+		logger.info("rootMetaInfoContentId:" + rootMetaInfoContentId);
+		
+		recurseSiteNodeTree(siteNodeId, languageId, templateController);
 
-			this.templateController.setDeliveryContext(deliveryContext);
-			
-			//We don't want a page cache entry to be created
-			deliveryContext.setDisablePageCache(true);
+	    Integer topContentId = null;
+	    ContentVO contentVO = templateController.getContent(rootMetaInfoContentId);
+	    logger.info("contentVO:" + contentVO.getName());
+		ContentVO parentContentVO = templateController.getContent(contentVO.getParentContentId());
+		logger.info("parentContentVO:" + parentContentVO.getName());
+		while(parentContentVO != null)
+	    {
+            topContentId = parentContentVO.getContentId();
 
-			SiteNode siteNode = nodeDeliveryController.getSiteNode(dbWrapper.getDatabase(), this.siteNodeId);
-			if(siteNode == null)
-			    throw new SystemException("There was no page with this id.");
-			
-			logger.info("siteNode:" + siteNode.getName());
-			
-			Integer rootMetaInfoContentId = this.templateController.getMetaInformationContentId(siteNodeId);
-			logger.info("rootMetaInfoContentId:" + rootMetaInfoContentId);
-			
-			recurseSiteNodeTree(siteNode.getSiteNodeId(), languageId);
-
-		    Integer topContentId = null;
-		    ContentVO contentVO = this.templateController.getContent(rootMetaInfoContentId);
-		    logger.info("contentVO:" + contentVO.getName());
-			ContentVO parentContentVO = this.templateController.getContent(contentVO.getParentContentId());
-			logger.info("parentContentVO:" + parentContentVO.getName());
-			while(parentContentVO != null)
-		    {
-	            topContentId = parentContentVO.getContentId();
-
-	            if(parentContentVO.getParentContentId() != null)
-	                parentContentVO = this.templateController.getContent(parentContentVO.getParentContentId());
-	            else
-	                parentContentVO = null;
-		    }
-		    
-			logger.info("topContentId:" + topContentId);
-			
-			if(topContentId != null)
-		        recurseContentTree(topContentId, languageId);
-		}
+            if(parentContentVO.getParentContentId() != null)
+                parentContentVO = templateController.getContent(parentContentVO.getParentContentId());
+            else
+                parentContentVO = null;
+	    }
+	    
+		logger.info("topContentId:" + topContentId);
+		
+		if(topContentId != null)
+	        recurseContentTree(topContentId, languageId, templateController);
 
 	}
 	
 	
-	private void recurseContentTree(Integer contentId, Integer languageId) throws Exception
+	private void recurseContentTree(Integer contentId, Integer languageId, TemplateController templateController) throws Exception
 	{
-	    Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, this.templateController.getDatabase());
-	    ContentVO contentVO = this.templateController.getContent(contentId);
+	    Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, templateController.getDatabase());
+	    ContentVO contentVO = templateController.getContent(contentId);
 	    
 	    Collection childContents = content.getChildren();
 		
@@ -243,32 +206,34 @@ public class ContentCentricCachePopulator
 	    while(childContentsIterator.hasNext())
         {
 	        Content childContent = (Content)childContentsIterator.next();
-	        recurseContentTree(childContent.getId(), languageId);
+	        recurseContentTree(childContent.getId(), languageId, templateController);
 	        
-	        //logger.warn("Before read title of content...");
-	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "Title", true); 
-	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "NavigationTitle", true); 
-	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "LeadIn", true); 
-	        //this.templateController.getContentAttribute(childContent.getId(), languageId, "FullText", true); 
-	        //logger.warn("Read title of content...");
+	        logger.warn("Before read title of content...");
+	        templateController.getContentAttribute(childContent.getId(), languageId, "Title", true); 
+	        templateController.getContentAttribute(childContent.getId(), languageId, "NavigationTitle", true); 
+	        templateController.getContentAttribute(childContent.getId(), languageId, "LeadIn", true); 
+	        templateController.getContentAttribute(childContent.getId(), languageId, "FullText", true); 
+	        logger.warn("Read title of content...");
         }
+	    Thread.sleep(100);
 	}
 	
-	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId) throws Exception
+	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
 	{
-	    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, this.templateController.getDatabase(), true);
-	    SiteNodeVO siteNodeVO = this.templateController.getSiteNode(siteNodeId);
+	    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, templateController.getDatabase(), true);
+	    SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
 	    Collection childSiteNodes = siteNode.getChildSiteNodes();
 	    
 	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
         {
 	        SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
-	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId);
+	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId, templateController);
 	        
-	        Integer metaInfoContentId = this.templateController.getMetaInformationContentId(childSiteNode.getSiteNodeId()); 
-
-	        this.templateController.getContentAttribute(metaInfoContentId, languageId, "ComponentStructure", true); 
+	        Integer metaInfoContentId = templateController.getMetaInformationContentId(childSiteNode.getSiteNodeId()); 
+	        System.out.println("childSiteNode:" + childSiteNode.getName());
+	        System.out.println("metaInfoContentId:" + metaInfoContentId);
+	        templateController.getContentAttribute(metaInfoContentId, languageId, "ComponentStructure", true); 
         }
 	}
 
@@ -280,13 +245,13 @@ public class ContentCentricCachePopulator
 	 * normal site-delivery version.
 	 */
 	
-	public TemplateController getTemplateController(DatabaseWrapper dbWrapper, Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request, InfoGluePrincipal infoGluePrincipal, boolean allowEditOnSightAtAll) throws SystemException, Exception
+	public TemplateController getTemplateController(DatabaseWrapper dbWrapper, Integer siteNodeId, Integer languageId, Integer contentId, HttpServletRequest request, InfoGluePrincipal infoGluePrincipal, boolean allowEditOnSightAtAll, BrowserBean browserBean, NodeDeliveryController nodeDeliveryController, IntegrationDeliveryController integrationDeliveryController) throws SystemException, Exception
 	{
 		TemplateController templateController = new BasicTemplateController(dbWrapper, infoGluePrincipal);
 		templateController.setStandardRequestParameters(siteNodeId, languageId, contentId);	
 		templateController.setHttpRequest(request);	
 		templateController.setBrowserBean(browserBean);
-		templateController.setDeliveryControllers(this.nodeDeliveryController, null, this.integrationDeliveryController);	
+		templateController.setDeliveryControllers(nodeDeliveryController, null, integrationDeliveryController);	
 		
 		return templateController;		
 	}
