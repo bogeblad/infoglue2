@@ -131,6 +131,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
         if(isRecacheCall)
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
+        while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
+        {
+            //System.out.println("Queing up...:" + RequestAnalyser.getNumberOfCurrentRequests());
+            //System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
+            Thread.sleep(10);
+        }
+        
         HttpServletRequest request = getRequest();
         
     	long start = System.currentTimeMillis();
