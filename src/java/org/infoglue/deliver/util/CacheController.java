@@ -114,7 +114,10 @@ public class CacheController extends Thread
 		    caches.put(cacheName, Collections.synchronizedMap(new Hashtable()));
 			
 		Map cacheInstance = (Map)caches.get(cacheName);
-		cacheInstance.put(key, value);
+		synchronized(cacheInstance)
+        {
+		    cacheInstance.put(key, value);
+        }
 	}	
 	
 	public static Object getCachedObject(String cacheName, Object key)
