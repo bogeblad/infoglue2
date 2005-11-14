@@ -420,7 +420,7 @@ public class ExtranetController extends BaseDeliveryController
 		if(infoGluePrincipal == null || assetKey == null)
 			return null;
 
-		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
+		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db, true);
 		getLogger().info("userProperties:" + userPropertiesList.size());
 		Iterator userPropertiesListIterator = userPropertiesList.iterator();
 		while(userPropertiesListIterator.hasNext())
@@ -459,7 +459,7 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
 				
-				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
+				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db, true);
 				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
 				while(rolePropertiesListIterator.hasNext())
 				{
@@ -550,7 +550,7 @@ public class ExtranetController extends BaseDeliveryController
 		if(infoGluePrincipal == null || assetKey == null)
 			return null;
 		
-		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
+		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db, true);
 		Iterator userPropertiesListIterator = userPropertiesList.iterator();
 		while(userPropertiesListIterator.hasNext())
 		{
@@ -581,7 +581,7 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
 				
-				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
+				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db, true);
 				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
 				while(rolePropertiesListIterator.hasNext())
 				{

@@ -276,7 +276,9 @@ public class GroupPropertiesController extends BaseController
 
 		QueryResults results;
 		if(readOnly)
+		{
 		    results = oql.execute(Database.ReadOnly);
+		}
 		else
 		{
 			this.getLogger().warn("Fetching groupPropertiesList in read/write mode");

@@ -222,7 +222,7 @@ public class UserPropertiesController extends BaseController
 
 		try
 		{
-			List userProperties = getUserPropertiesList(userName, languageId, db);
+			List userProperties = getUserPropertiesList(userName, languageId, db, true);
 			userPropertiesVOList = toVOList(userProperties);
 			
 			//If any of the validations or setMethods reported an error, we throw them up now before create.
@@ -251,7 +251,7 @@ public class UserPropertiesController extends BaseController
 	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
 	 */
 
-	public List getUserPropertiesList(String userName, Integer languageId, Database db) throws ConstraintException, SystemException, Exception
+	public List getUserPropertiesList(String userName, Integer languageId, Database db, boolean readOnly) throws ConstraintException, SystemException, Exception
 	{
 		List userPropertiesList = new ArrayList();
 
@@ -259,9 +259,17 @@ public class UserPropertiesController extends BaseController
 		oql.bind(userName);
 		oql.bind(languageId);
 
-		QueryResults results = oql.execute();
-		getLogger().warn("Fetching entity in read/write mode:" + userName);
-
+		QueryResults results = null;
+		if(readOnly)
+		{
+		    results = oql.execute(Database.ReadOnly);
+		}
+		else
+		{
+		    getLogger().warn("Fetching entity in read/write mode:" + userName);
+		    results = oql.execute();
+		}
+		
 		while (results.hasMore()) 
 		{
 			UserProperties userProperties = (UserProperties)results.next();

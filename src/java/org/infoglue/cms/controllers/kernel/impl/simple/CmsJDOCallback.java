@@ -44,6 +44,7 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
@@ -164,13 +165,20 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("roleListCache");
 			}
+			else if(object.getClass().getName().equals(UserPropertiesImpl.class.getName()))
+			{
+			    CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("relatedCategoriesCache");
+			}
 			else if(object.getClass().getName().equals(GroupPropertiesImpl.class.getName()))
 			{
+			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("groupPropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
 			}
 			else if(object.getClass().getName().equals(RolePropertiesImpl.class.getName()))
 			{
+			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("rolePropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
 			}
@@ -277,13 +285,20 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("roleListCache");
 			}
+			else if(object.getClass().getName().equals(UserPropertiesImpl.class.getName()))
+			{
+			    CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("relatedCategoriesCache");
+			}
 			else if(object.getClass().getName().equals(GroupPropertiesImpl.class.getName()))
 			{
+			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("groupPropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
 			}
 			else if(object.getClass().getName().equals(RolePropertiesImpl.class.getName()))
 			{
+			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("rolePropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
 			}
@@ -384,13 +399,20 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("roleListCache");
 			}
+			else if(object.getClass().getName().equals(UserPropertiesImpl.class.getName()))
+			{
+			    CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("relatedCategoriesCache");
+			}
 			else if(object.getClass().getName().equals(GroupPropertiesImpl.class.getName()))
 			{
+			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("groupPropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
 			}
 			else if(object.getClass().getName().equals(RolePropertiesImpl.class.getName()))
 			{
+			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("rolePropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
 			}

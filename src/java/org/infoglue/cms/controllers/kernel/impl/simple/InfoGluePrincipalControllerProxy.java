@@ -51,8 +51,10 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * @author Mattias Bogeblad
@@ -134,12 +136,27 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	
 	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
 	{
+		String key = "" + infoGluePrincipal.getName() + "_" + propertyName + "_" + languageId + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeSpecialCharacters + "_" + findLargestValue;
+		getLogger().info("key:" + key);
+		Object object = (String)CacheController.getCachedObject("principalPropertyValueCache", key);
+
+	    if(object instanceof NullObject)
+		{
+			getLogger().info("There was an cached property but it was null:" + object);
+			return null;
+		}
+		else if(object != null)
+		{
+			getLogger().info("There was an cached principalPropertyValue:" + object);
+			return (String)object;
+		}
+
 		String value = "";
 		
 		if(infoGluePrincipal == null || propertyName == null)
 			return null;
-		
-	    Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db);
+	
+	    Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db, true);
 		Iterator userPropertiesListIterator = userPropertiesList.iterator();
 		while(userPropertiesListIterator.hasNext())
 		{
@@ -172,7 +189,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
 				
-				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db);
+				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db, true);
 
 				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
 				while(rolePropertiesListIterator.hasNext())
@@ -262,7 +279,15 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 					value = getPrincipalPropertyValue(infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue);
 			}
 		}
-        	
+			
+		if(value != null)
+		    CacheController.getCachedObject("principalPropertyValueCache", key);
+		
+		if(value != null)
+	        CacheController.cacheObject("principalPropertyValueCache", key, value);
+	    else
+	        CacheController.cacheObject("principalPropertyValueCache", key, new NullObject());
+		
 		return value;
 	}	
 	

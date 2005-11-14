@@ -213,7 +213,7 @@ public class RolePropertiesController extends BaseController
 
 		try
 		{
-			List roleProperties = getRolePropertiesList(roleName, languageId, db);
+			List roleProperties = getRolePropertiesList(roleName, languageId, db, true);
 			rolePropertiesVOList = toVOList(roleProperties);
 			
 			//If any of the validations or setMethods reported an error, we throw them up now before create.
@@ -242,7 +242,7 @@ public class RolePropertiesController extends BaseController
 	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
 	 */
 
-	public List getRolePropertiesList(String roleName, Integer languageId, Database db) throws ConstraintException, SystemException, Exception
+	public List getRolePropertiesList(String roleName, Integer languageId, Database db, boolean readOnly) throws ConstraintException, SystemException, Exception
 	{
 		List rolePropertiesList = new ArrayList();
 
@@ -250,8 +250,16 @@ public class RolePropertiesController extends BaseController
 		oql.bind(roleName);
 		oql.bind(languageId);
 
-		QueryResults results = oql.execute();
-		this.getLogger().warn("Fetching entity in read/write mode");
+		QueryResults results = null;
+		if(readOnly)
+		{
+		    results = oql.execute(Database.ReadOnly);
+		}
+		else
+		{
+		    getLogger().warn("Fetching entity in read/write mode:" + roleName);
+		    results = oql.execute();
+		}
 
 		while (results.hasMore()) 
 		{
@@ -517,7 +525,7 @@ public class RolePropertiesController extends BaseController
 
 		try
 		{
-		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db);
+		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db, true);
 		    Iterator iterator = roleProperties.iterator();
 		    RoleProperties roleProperty = null;
 		    while(iterator.hasNext())
@@ -621,7 +629,7 @@ public class RolePropertiesController extends BaseController
 
 		try
 		{
-		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db);
+		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db, true);
 		    Iterator iterator = roleProperties.iterator();
 		    RoleProperties roleProperty = null;
 		    while(iterator.hasNext())
@@ -663,7 +671,7 @@ public class RolePropertiesController extends BaseController
 
 		try
 		{
-		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db);
+		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db, true);
 		    Iterator iterator = roleProperties.iterator();
 		    RoleProperties roleProperty = null;
 		    while(iterator.hasNext())
