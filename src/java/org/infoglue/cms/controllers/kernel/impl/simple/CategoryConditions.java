@@ -109,8 +109,8 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 	/**
 	 * 
 	 */
-	protected Integer getUniqueID() {
-		return uniqueID;
+	protected String getUniqueID() {
+		return uniqueID == null ? "" : uniqueID.toString();
 	}
 	
 	/**
