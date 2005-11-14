@@ -34,7 +34,7 @@ public class CastorDatabaseService //extends DatabaseService
 
     private static JDO jdo = null;
     
-    public static JDO getJDO() throws SystemException
+    public synchronized static JDO getJDO() throws SystemException
     {
         if(jdo != null)
             return jdo;
@@ -56,7 +56,7 @@ public class CastorDatabaseService //extends DatabaseService
         return jdo;
     }
     
-    public static Database getDatabase() throws SystemException
+    public synchronized static Database getDatabase() throws SystemException
     {
         try
         {
