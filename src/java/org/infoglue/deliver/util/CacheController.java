@@ -409,7 +409,11 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("relatedCategoriesCache") && (entity.indexOf("Group") > 0 || entity.indexOf("Role") > 0))
+				if(cacheName.equalsIgnoreCase("principalPropertyValueCache") && entity.indexOf("User") > 0)
+				{
+					clear = true;
+				}
+				if(cacheName.equalsIgnoreCase("relatedCategoriesCache") && (entity.indexOf("Group") > 0 || entity.indexOf("Role") > 0 || entity.indexOf("User") > 0))
 				{
 					clear = true;
 				}
@@ -489,16 +493,16 @@ public class CacheController extends Thread
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
-	    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
-	        Thread.sleep(5);
+	    //while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
+	    //    Thread.sleep(5);
 	    
 		Database db = CastorDatabaseService.getDatabase();
 
 		try
 		{		
-		    db.getCacheManager().expireCache();
-			/*
-			clearCache(db, SmallContentImpl.class);
+		    //db.getCacheManager().expireCache();
+
+		    clearCache(db, SmallContentImpl.class);
 			clearCache(db, MediumContentImpl.class);
 			clearCache(db, ContentImpl.class);
 			clearCache(db, ContentRelationImpl.class);
@@ -545,7 +549,7 @@ public class CacheController extends Thread
 			clearCache(db, UserContentTypeDefinitionImpl.class);
 			clearCache(db, RoleContentTypeDefinitionImpl.class);
 			clearCache(db, GroupContentTypeDefinitionImpl.class);			
-			*/
+			
 		    //commitTransaction(db);
 
 			logger.info("Emptied the Castor Caches");
@@ -553,7 +557,7 @@ public class CacheController extends Thread
 		catch(Exception e)
 		{
 		    logger.error("Exception when tried empty the Castor Caches");
-		    //rollbackTransaction(db);
+		    rollbackTransaction(db);
 		}
 		finally
 		{
@@ -760,7 +764,7 @@ public class CacheController extends Thread
     public static void evictWaitingCache() throws Exception
     {	    
 	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
-	    if(RequestAnalyser.getBlockRequests())
+	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3") && RequestAnalyser.getBlockRequests())
 	    {
 		    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 	        return;
