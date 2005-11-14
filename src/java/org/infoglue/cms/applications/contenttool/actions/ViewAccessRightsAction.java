@@ -31,6 +31,7 @@ import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
@@ -62,7 +63,10 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 		
 		if(interceptionPointCategory.equalsIgnoreCase("Content"))
 		{	
-			Integer contentId = new Integer(extraParameters);
+			if(extraParameters == null || extraParameters.equals(""))
+			    throw new SystemException("The content category must have a content id sent in so don't set 'Use extra data for access control' to no for those interception points.");
+			    
+		    Integer contentId = new Integer(extraParameters);
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
 			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
 			{
@@ -73,6 +77,9 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 		}
 		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
 		{	
+			if(extraParameters == null || extraParameters.equals(""))
+			    throw new SystemException("The sitenode category must have a sitenode id sent in so don't set 'Use extra data for access control' to no for those interception points.");
+
 			Integer siteNodeVersionId = new Integer(extraParameters);
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
 			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
