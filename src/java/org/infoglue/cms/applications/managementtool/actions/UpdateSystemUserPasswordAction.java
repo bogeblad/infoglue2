@@ -63,7 +63,7 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
 	    
 	    UserControllerProxy.getController().updateUserPassword(this.userName, this.oldPassword, this.newPassword);
 		
-	    if(this.returnAddress != null)
+	    if(this.returnAddress != null && !this.returnAddress.equalsIgnoreCase(""))
 	    {
 	        ActionContext.getResponse().sendRedirect(returnAddress);
 	        return Action.NONE;
