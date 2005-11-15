@@ -77,8 +77,11 @@ public class CmsPropertyHandler
 	 * This method initializes the parameter hash with values.
 	 */
 
-	private static void initializeProperties()
+	private synchronized static void initializeProperties()
 	{
+	    if(cachedProperties != null)
+	        return;
+	    
 		try
 		{
 			System.out.println("**************************************");
