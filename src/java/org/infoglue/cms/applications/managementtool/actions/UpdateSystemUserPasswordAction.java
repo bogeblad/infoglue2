@@ -28,6 +28,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 
 import webwork.action.Action;
 import webwork.action.ActionContext;
@@ -58,6 +59,9 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
     
 	protected String doExecute() throws Exception 
 	{
+	    if(userName.equals("anonymous"))
+	        throw new SystemException("You must not change password on this user as it's needed by the system.");
+
 	    if(!newPassword.equals(verifiedNewPassword))
 	        throw new ConstraintException("SystemUser.newPassword", "309");
 	    

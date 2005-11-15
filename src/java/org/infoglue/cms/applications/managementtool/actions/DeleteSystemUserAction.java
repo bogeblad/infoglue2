@@ -26,6 +26,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 
 import org.infoglue.cms.entities.management.SystemUserVO;
+import org.infoglue.cms.exception.SystemException;
 
 /**
  * This action deletes an systemUser through the authorizerModule.
@@ -37,7 +38,6 @@ import org.infoglue.cms.entities.management.SystemUserVO;
 public class DeleteSystemUserAction extends InfoGlueAbstractAction
 {
 	private SystemUserVO systemUserVO;
-	private Integer systemUserId;
 	
 	public DeleteSystemUserAction()
 	{
@@ -52,7 +52,10 @@ public class DeleteSystemUserAction extends InfoGlueAbstractAction
 
 	protected String doExecute() throws Exception 
 	{
-		UserControllerProxy.getController().deleteUser(this.systemUserVO.getUserName());			
+	    if(this.systemUserVO.getUserName().equals("anonymous"))
+	        throw new SystemException("You must not remove the anonymous user as it's needed by the system.");
+		
+	    UserControllerProxy.getController().deleteUser(this.systemUserVO.getUserName());			
 		
 		return "success";
 	}
