@@ -129,14 +129,19 @@ public class ViewPageAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
         if(isRecacheCall)
+        {
+	        //logger.warn("ThreadId:" + Thread.currentThread().getName());
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
+        }
+        
+        /*
         while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
         {
             //System.out.println("Queing up...:" + RequestAnalyser.getNumberOfCurrentRequests());
             //System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
             Thread.sleep(10);
         }
+        */
         
         HttpServletRequest request = getRequest();
         
@@ -250,7 +255,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
-			closeTransaction(dbWrapper.getDatabase());
+		    closeTransaction(dbWrapper.getDatabase());
+		  
+	        //if(isRecacheCall)
+	        //{
+		    //    logger.warn("ThreadId:" + Thread.currentThread().getName());
+	        //}
 
 			elapsedTime = System.currentTimeMillis() - start;
 	    	RequestAnalyser.numberOfCurrentRequests--;

@@ -104,52 +104,56 @@ public class CommonLogger extends org.infoglue.deliver.util.webloggers.Logger
      * This method writes a request to the logfile
      */
     
-    protected void writeRequest(String date, String row)
+    protected synchronized void writeRequest(String date, String row)
     {   
-    	logBuffer.add(row);
-    	
-    	if(logBuffer.size() > 20)
-    	{
-    		String logPath = CmsPropertyHandler.getProperty("statisticsLogPath");
-			String statisticsLogOneFilePerDay = CmsPropertyHandler.getProperty("statisticsLogOneFilePerDay");
-			File file = new File(logPath + File.separator + "statistics.log");
-			if(statisticsLogOneFilePerDay != null && statisticsLogOneFilePerDay.equalsIgnoreCase("true"))
-				file = new File(logPath + File.separator + "stat" + date + ".log");
-
-			boolean isFileCreated = file.exists();
+        synchronized(logBuffer)
+		{		
+	        logBuffer.add(row);
+	    	
+	    	if(logBuffer.size() > 100)
+	    	{
+	    		String logPath = CmsPropertyHandler.getProperty("statisticsLogPath");
+				String statisticsLogOneFilePerDay = CmsPropertyHandler.getProperty("statisticsLogOneFilePerDay");
+				File file = new File(logPath + File.separator + "statistics.log");
+				if(statisticsLogOneFilePerDay != null && statisticsLogOneFilePerDay.equalsIgnoreCase("true"))
+					file = new File(logPath + File.separator + "stat" + date + ".log");
+	
+				boolean isFileCreated = file.exists();
+					
+				PrintWriter pout = null; 		    
+		    	try
+		    	{
+					pout = new PrintWriter(new FileOutputStream(file, true));
+					if(!isFileCreated)
+					{
+					}
+		    	
+					Iterator i = logBuffer.iterator();
+					while(i.hasNext())
+					{	
+						pout.println(i.next().toString());    
+					}
 				
-			PrintWriter pout = null; 		    
-	    	try
-	    	{
-				pout = new PrintWriter(new FileOutputStream(file, true));
-				if(!isFileCreated)
-				{
-				}
-	    	
-				Iterator i = logBuffer.iterator();
-				while(i.hasNext())
-				{	
-					pout.println(i.next().toString());    
-				}
-			    pout.close();
+					pout.close();
+		    	}
+		    	catch(Exception e)
+		    	{
+		    		logger.error(e.getMessage(), e);
+		    	}
+		    	finally
+		    	{
+		    		try
+		    		{
+		    			pout.close();
+		    		}
+		    		catch(Exception e)
+		    		{
+		    		}
+		    	}
+		    	
+		    	logBuffer = new ArrayList();
 	    	}
-	    	catch(Exception e)
-	    	{
-	    		logger.error(e.getMessage(), e);
-	    	}
-	    	finally
-	    	{
-	    		try
-	    		{
-	    			pout.close();
-	    		}
-	    		catch(Exception e)
-	    		{
-	    		}
-	    	}
-	    	
-	    	logBuffer = new ArrayList();
-    	}
+		}
     }
     
     

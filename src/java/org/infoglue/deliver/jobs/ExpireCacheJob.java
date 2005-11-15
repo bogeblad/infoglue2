@@ -35,6 +35,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.workflow.CustomClassExecutor;
 
 import org.infoglue.deliver.util.CacheController;
@@ -77,19 +78,31 @@ public class ExpireCacheJob implements Job
                 logger.warn("setting block");
                 RequestAnalyser.setBlockRequests(true);
 
-                try
+				try
                 {
-	    		    logger.warn("Updating all caches as this was a publishing-update");
-	    			CacheController.clearCastorCaches();
-	
-	    			logger.warn("clearing all except page cache as we are in publish mode..");
-	    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
-	    			
-	    			logger.warn("Recaching all caches as this was a publishing-update");
-	    			CacheController.cacheCentralCastorCaches();
-	    			
-	    			logger.warn("Finally clearing page cache as this was a publishing-update");
-	    		    CacheController.clearCache("pageCache");
+	        	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+	        	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
+	        	    {
+	        	        logger.warn("Updating all caches as this was a publishing-update");
+		    			CacheController.clearCastorCaches();
+		
+		    			logger.warn("clearing all except page cache as we are in publish mode..");
+		    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
+		    			
+		    			logger.warn("Recaching all caches as this was a publishing-update");
+		    			CacheController.cacheCentralCastorCaches();
+		    			
+		    			logger.warn("Finally clearing page cache as this was a publishing-update");
+		    		    CacheController.clearCache("pageCache");
+	        	    }
+	        	    else
+	        	    {
+		    		    logger.warn("Updating all caches as this was a publishing-update");
+		    			CacheController.clearCastorCaches();
+		
+		    			logger.warn("clearing all except page cache as we are in publish mode..");
+		    		    CacheController.clearCaches(null, null, null);
+	        	    }
                 }
                 catch(Exception e)
                 {
@@ -110,17 +123,29 @@ public class ExpireCacheJob implements Job
                 
                 try
                 {
-	                logger.warn("Updating all caches as this was a publishing-update");
-	    			CacheController.clearCastorCaches();
-	
-	    			logger.warn("clearing all except page cache as we are in publish mode..");
-	    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
-
-	    			logger.warn("Recaching all caches as this was a publishing-update");
-	    			CacheController.cacheCentralCastorCaches();
-	    			
-	    			logger.warn("Finally clearing page cache as this was a publishing-update");
-	    		    CacheController.clearCache("pageCache");
+	        	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+	        	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
+	        	    {
+	        	        logger.warn("Updating all caches as this was a publishing-update");
+		    			CacheController.clearCastorCaches();
+		
+		    			logger.warn("clearing all except page cache as we are in publish mode..");
+		    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
+		    			
+		    			logger.warn("Recaching all caches as this was a publishing-update");
+		    			CacheController.cacheCentralCastorCaches();
+		    			
+		    			logger.warn("Finally clearing page cache as this was a publishing-update");
+		    		    CacheController.clearCache("pageCache");
+	        	    }
+	        	    else
+	        	    {
+		    		    logger.warn("Updating all caches as this was a publishing-update");
+		    			CacheController.clearCastorCaches();
+		
+		    			logger.warn("clearing all except page cache as we are in publish mode..");
+		    		    CacheController.clearCaches(null, null, null);
+	        	    }
                 }
                 catch(Exception e)
                 {

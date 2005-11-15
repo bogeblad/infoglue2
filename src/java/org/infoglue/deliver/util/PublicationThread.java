@@ -35,10 +35,10 @@ public class PublicationThread extends Thread
 
     public final static Logger logger = Logger.getLogger(PublicationThread.class.getName());
 
-	public void run() 
+	public synchronized void run() 
 	{
         logger.info("setting block");
-        RequestAnalyser.setBlockRequests(true);
+	    RequestAnalyser.setBlockRequests(true);
 
 		try
 		{
@@ -62,7 +62,7 @@ public class PublicationThread extends Thread
 		}
 
 		logger.info("released block");
-        RequestAnalyser.setBlockRequests(false);
+		RequestAnalyser.setBlockRequests(false);
 
 	}
 }

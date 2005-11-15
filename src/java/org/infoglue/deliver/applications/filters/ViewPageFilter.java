@@ -144,7 +144,7 @@ public class ViewPageFilter implements Filter
 	        	    RequestAnalyser.getCurrentRequests().add(httpRequest);
 	        	}
 	        	*/
-	        	//RequestAnalyser.numberOfCurrentRequests++;
+	        	RequestAnalyser.numberOfCurrentRequests++;
 
 	            HttpSession httpSession = httpRequest.getSession(true);
 	
@@ -239,7 +239,7 @@ public class ViewPageFilter implements Filter
 	            {
 	                BaseDeliveryController.closeDatabase(db);
 	                
-		        	//RequestAnalyser.numberOfCurrentRequests--;
+		        	RequestAnalyser.numberOfCurrentRequests--;
 	            }
 	            
 	        } 

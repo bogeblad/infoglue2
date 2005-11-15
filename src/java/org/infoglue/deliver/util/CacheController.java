@@ -493,8 +493,8 @@ public class CacheController extends Thread
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
-	    //while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
-	    //    Thread.sleep(5);
+	    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
+	        Thread.sleep(10);
 	    
 		Database db = CastorDatabaseService.getDatabase();
 
@@ -764,12 +764,13 @@ public class CacheController extends Thread
     public static void evictWaitingCache() throws Exception
     {	    
 	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+	    
 	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3") && RequestAnalyser.getBlockRequests())
 	    {
 		    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 	        return;
 	    }
-
+	    
         synchronized(notifications)
         {
 			Iterator i = notifications.iterator();
@@ -795,7 +796,7 @@ public class CacheController extends Thread
  			            	pt.setPriority(Thread.MIN_PRIORITY);
  			            	pt.start();
 			            	logger.warn("Done starting publication thread...");
-		            	}
+			            }
 			        }
 				    else
 				    {
