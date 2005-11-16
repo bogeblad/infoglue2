@@ -1151,7 +1151,12 @@ public interface TemplateController
 
     public abstract String decoratePage(String page);
 
-    
+	/**
+	 * This method adds the neccessairy html to a output for it to be editable.
+	 */	
+
+	public String getEditOnSightTag(Integer contentId, Integer languageId, String attributeName, String html, boolean showInPublishedMode);
+
     public boolean getThreatFoldersAsContents();
     
     public void setThreatFoldersAsContents(boolean threatFoldersAsContents);

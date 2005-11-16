@@ -1163,11 +1163,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			ContentVO content = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, metaBindingName, deliveryContext);
 			if(content != null)
-				navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext);
+				navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		}
 		else
 		{
-			navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext);
+			navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		}
 		
 		return navTitle;
@@ -1243,10 +1243,10 @@ public class NodeDeliveryController extends BaseDeliveryController
                         pathCandidate = siteNode.getName();
                     else
                     {
-	                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNode.getSiteNodeId(), true, deliveryContext);
+	                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal);
 	                    
 	                    if((pathCandidate == null || pathCandidate.equals("")) && !attributeName.equals(NAV_TITLE_ATTRIBUTE_NAME))
-	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext);
+	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal);
                     }
                     
                     getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");

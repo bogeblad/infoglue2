@@ -99,7 +99,7 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
 				}
 			}
 			
-			String inputHandlerClassName = ContentDeliveryController.getContentDeliveryController().getContentAttribute(dbWrapper.getDatabase(), formContentId, languageId, "InputHandlerClassName", siteNodeId, true, DeliveryContext.getDeliveryContext());
+			String inputHandlerClassName = ContentDeliveryController.getContentDeliveryController().getContentAttribute(dbWrapper.getDatabase(), formContentId, languageId, "InputHandlerClassName", siteNodeId, true, DeliveryContext.getDeliveryContext(), (InfoGluePrincipal)principal);
 
     		getLogger().info("Trying to invoke " + inputHandlerClassName);
 	    	Object object =	Class.forName(inputHandlerClassName).newInstance();
