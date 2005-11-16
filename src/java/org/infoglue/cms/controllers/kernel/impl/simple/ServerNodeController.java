@@ -54,8 +54,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 public class ServerNodeController
 {
+    private String useUpdateSecurity = CmsPropertyHandler.getProperty("useUpdateSecurity");
+    
 	/**
 	 * Factory method
 	 */
@@ -81,7 +86,56 @@ public class ServerNodeController
 	    else
 	        return new ArrayList();
 	}
+	
+	/**
+	 * This method return if the caller has access to the semi admin services.
+	 * @param request
+	 * @return
+	 */
 
+	public boolean getIsIPAllowed(HttpServletRequest request)
+	{
+	    boolean isIPAllowed = false;
+
+	    //System.out.println("useUpdateSecurity:" + useUpdateSecurity);
+	    if(useUpdateSecurity != null && useUpdateSecurity.equals("true"))
+	    {
+		    String remoteIP = request.getRemoteAddr();
+		    //System.out.println("remoteIP:" + remoteIP);
+		    if(remoteIP.equals("127.0.0.1"))
+		    {
+		        isIPAllowed = true;
+		    }
+		    else
+		    {
+		        List allowedAdminIPList = ServerNodeController.getController().getAllowedAdminIPList();
+		        Iterator i = allowedAdminIPList.iterator();
+		        while(i.hasNext())
+		        {
+		            String allowedIP = (String)i.next();
+		            if(!allowedIP.trim().equals(""))
+		            {
+			            //System.out.println("allowedIP:" + allowedIP);
+			            int index = allowedIP.indexOf(".*");
+			            if(index > -1)
+			                allowedIP = allowedIP.substring(0, index);
+						//System.out.println("allowedIP:" + allowedIP);
+				            
+			            if(remoteIP.startsWith(allowedIP))
+			            {
+			                isIPAllowed = true;
+			                break;
+			            }
+		            }
+		        }
+		    }
+	    }
+	    else
+	        isIPAllowed = true;
+	    
+	    return isIPAllowed;
+	}
+	
 	public String getAllowedAdminIP()
 	{
 	    Map args = new HashMap();

@@ -89,6 +89,15 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doTest() throws Exception
     {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
         this.getResponse().getWriter().println("test ok - cache action available");
         
         //this.getHttpSession().invalidate();
@@ -108,10 +117,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
         {
 	        long start = System.currentTimeMillis();
-	        List allowedAdminIPList = ServerNodeController.getController().getAllowedAdminIPList();
-	        //System.out.println("Remote host:" + this.getRequest().getRemoteAddr());
-	        //System.out.println("Lookup took: " + (System.currentTimeMillis() - start) + "ms");
-	        if(!allowedAdminIPList.contains(this.getRequest().getRemoteAddr()))
+	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -119,6 +125,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	            
 	            return NONE;
 	        }
+	        
         }
         
 		try
