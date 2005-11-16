@@ -339,11 +339,11 @@ public class CacheController extends Thread
 				{	
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("contentAttributeCache") && entity.indexOf("ContentVersion") > -1)
+				if(cacheName.equalsIgnoreCase("contentAttributeCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0))
 				{	
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("contentVersionCache") && entity.indexOf("Content") > -1)
+				if(cacheName.equalsIgnoreCase("contentVersionCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0))
 				{	
 					clear = true;
 				}
