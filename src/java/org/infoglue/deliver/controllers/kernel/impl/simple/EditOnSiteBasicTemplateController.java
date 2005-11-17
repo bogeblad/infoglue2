@@ -154,7 +154,9 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	 
 	public String getContentAttribute(String contentBindningName, String attributeName) 
 	{
-		String attributeValue = "";
+		return decorateTag(this.getContentId(), this.getLanguageId(), attributeName, super.getContentAttribute(contentBindningName, attributeName));
+		/*	
+	    String attributeValue = "";
 		
 		try
 		{
@@ -171,6 +173,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		}
 				
 		return attributeValue;
+		*/
 	}
 
 

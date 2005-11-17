@@ -869,12 +869,31 @@ public class BasicTemplateController implements TemplateController
 	{
 	    return getPrincipalGroupRelatedPages(this.infoGluePrincipal, groupName, propertyName);
 	}
+
+	/**
+	 * Getting related pages for a Principals group - used for personalisation. 
+	 */
 	
+	public List getPrincipalGroupRelatedPages(String groupName, String propertyName, boolean escapeHTML)
+	{
+	    return getPrincipalGroupRelatedPages(this.infoGluePrincipal, groupName, propertyName, escapeHTML);
+	}
+
+
 	/**
 	 * Getting related pages for a Principals group - used for personalisation. 
 	 */
 	
 	public List getPrincipalGroupRelatedPages(InfoGluePrincipal infoGluePrincipal, String groupName, String propertyName)
+	{
+	    return getPrincipalGroupRelatedPages(this.infoGluePrincipal, groupName, propertyName, false);
+	}
+	
+	/**
+	 * Getting related pages for a Principals group - used for personalisation. 
+	 */
+	
+	public List getPrincipalGroupRelatedPages(InfoGluePrincipal infoGluePrincipal, String groupName, String propertyName, boolean escapeHTML)
 	{
 		List pages = new ArrayList();
 		
@@ -894,7 +913,7 @@ public class BasicTemplateController implements TemplateController
 						webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 						webPage.setLanguageId(this.languageId);
 						webPage.setContentId(null);
-						webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+						webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
 						webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 						webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 						pages.add(webPage);
@@ -999,12 +1018,30 @@ public class BasicTemplateController implements TemplateController
 	{
 	    return getPrincipalRoleRelatedPages(this.infoGluePrincipal, roleName, propertyName);
 	}
+
+	/**
+	 * Getting related pages for a Principals role - used for personalisation. 
+	 */
 	
+	public List getPrincipalRoleRelatedPages(String roleName, String propertyName, boolean escapeHTML)
+	{
+	    return getPrincipalRoleRelatedPages(this.infoGluePrincipal, roleName, propertyName, escapeHTML);
+	}
+
 	/**
 	 * Getting related pages for a Principals role - used for personalisation. 
 	 */
 	
 	public List getPrincipalRoleRelatedPages(InfoGluePrincipal infoGluePrincipal, String roleName, String propertyName)
+	{
+	    return getPrincipalRoleRelatedPages(this.infoGluePrincipal, roleName, propertyName, false);
+	}
+
+	/**
+	 * Getting related pages for a Principals role - used for personalisation. 
+	 */
+	
+	public List getPrincipalRoleRelatedPages(InfoGluePrincipal infoGluePrincipal, String roleName, String propertyName, boolean escapeHTML)
 	{
 		List pages = new ArrayList();
 		
@@ -1024,7 +1061,7 @@ public class BasicTemplateController implements TemplateController
 						webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 						webPage.setLanguageId(this.languageId);
 						webPage.setContentId(null);
-						webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+						webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
 						webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 						webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 						pages.add(webPage);
@@ -1190,7 +1227,8 @@ public class BasicTemplateController implements TemplateController
 	{				
 	    return getContentAttribute(contentId, languageId, attributeName);
 	}
-	
+
+
 	/**
 	 * This method deliveres a String with the content-attribute asked for if it exists in the content
 	 * defined in the url-parameter contentId.
@@ -1202,7 +1240,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 		}
 		catch(Exception e)
 		{
@@ -1227,7 +1265,7 @@ public class BasicTemplateController implements TemplateController
 			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 			if(contentVO != null)
 			{
-				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 			}
 		}
 		catch(Exception e)
@@ -1253,7 +1291,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+			attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 		}
 		catch(Exception e)
 		{
@@ -1263,6 +1301,32 @@ public class BasicTemplateController implements TemplateController
 		return attributeValue;
 	}
 
+	
+	/**
+	 * This method deliveres a String with the content-attribute asked for in the language asked for.
+	 * As the siteNode can have multiple bindings as well as a content as a parameter this
+	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
+	 */
+	 
+	public String getContentAttributeValue(Integer contentId, Integer languageId, String attributeName) 
+	{
+		String attributeValue = "";
+		
+		this.deliveryContext.addUsedContent("content_" + contentId);
+		
+		try
+		{
+		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return attributeValue;
+	}
+
+	
 	/**
 	 * This method deliveres a String with the content-attribute asked for in the language asked for.
 	 * As the siteNode can have multiple bindings as well as a content as a parameter this
@@ -1277,7 +1341,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 		}
 		catch(Exception e)
 		{
@@ -1294,7 +1358,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		try
 		{
-		    return ContentDeliveryController.getContentDeliveryController().getAttributeValue(getDatabase(), version, attributeName);
+		    return ContentDeliveryController.getContentDeliveryController().getAttributeValue(getDatabase(), version, attributeName, false);
 		}
 		catch(Exception e)
 		{
@@ -1345,7 +1409,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			if(this.contentId != null)
 			{
-				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), this.contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
 				
 				templateLogicContext.put("inlineContentId", this.contentId);
@@ -1392,7 +1456,7 @@ public class BasicTemplateController implements TemplateController
 			{
 				logger.info("contentVO:" + contentVO.getContentId());
 		
-				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
 							
 				templateLogicContext.put("inlineContentId", contentVO.getId());
@@ -1433,7 +1497,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			if(contentId != null)
 			{
-				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
 				
 				templateLogicContext.put("inlineContentId", contentId);
@@ -2092,12 +2156,12 @@ public class BasicTemplateController implements TemplateController
 
 		return relatedContentVOList;
 	}
-	
+
 	/**
 	 * This method gets the related pages from an XML.
 	 */
 	
-	private List getRelatedPagesFromXML(String qualifyerXML)
+	private List getRelatedPagesFromXML(String qualifyerXML, boolean escapeHTML)
 	{
 		List relatedPages = new ArrayList();
 		
@@ -2126,7 +2190,7 @@ public class BasicTemplateController implements TemplateController
 							webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 							webPage.setLanguageId(this.languageId);
 							webPage.setContentId(null);
-							webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+							webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
 							webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 							webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 							relatedPages.add(webPage);
@@ -2154,13 +2218,24 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getRelatedPages(String attributeName)
 	{
-		List relatedPages = new ArrayList();
+	    return getRelatedPages(attributeName, false);
+	}
+
+	/**
+	 * This method gets a List of related siteNodes defined in an attribute as an xml-definition.
+	 * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be
+	 * used to access other systems than our own.
+	 */
+	
+	public List getRelatedPages(String attributeName, boolean escapeHTML)
+	{
+	    List relatedPages = new ArrayList();
 		
 		try
 		{
 			String qualifyerXML = this.getContentAttribute(attributeName, true);
 			
-			relatedPages = getRelatedPagesFromXML(qualifyerXML);
+			relatedPages = getRelatedPagesFromXML(qualifyerXML, escapeHTML);
 		}
 		catch(Exception e)
 		{
@@ -2169,7 +2244,7 @@ public class BasicTemplateController implements TemplateController
 		
 		return relatedPages;
 	}
-	
+
 	/**
 	 * This method gets a List of related contents defined in an attribute as an xml-definition.
 	 * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be
@@ -2178,13 +2253,24 @@ public class BasicTemplateController implements TemplateController
 
 	public List getRelatedPages(String bindingName, String attributeName)
 	{
+		return getRelatedPages(bindingName, attributeName, false);
+	}
+
+	/**
+	 * This method gets a List of related contents defined in an attribute as an xml-definition.
+	 * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be
+	 * used to access other systems than our own.
+	 */
+
+	public List getRelatedPages(String bindingName, String attributeName, boolean escapeHTML)
+	{
 		List relatedPages = new ArrayList();
 		
 		try
 		{
 			String qualifyerXML = this.getContentAttribute(bindingName, attributeName, true);
 
-			relatedPages = getRelatedPagesFromXML(qualifyerXML);
+			relatedPages = getRelatedPagesFromXML(qualifyerXML, escapeHTML);
 		}
 		catch(Exception e)
 		{
@@ -2209,7 +2295,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			String qualifyerXML = this.getContentAttribute(contentId, attributeName, true);
 			
-			relatedPages = getRelatedPagesFromXML(qualifyerXML);
+			relatedPages = getRelatedPagesFromXML(qualifyerXML, false);
 		}
 		catch(Exception e)
 		{
@@ -2233,7 +2319,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			String qualifyerXML = this.getPrincipalPropertyValue(infogluePrincipal, attributeName, false);
 			
-			relatedPages = getRelatedPagesFromXML(qualifyerXML);
+			relatedPages = getRelatedPagesFromXML(qualifyerXML, false);
 		}
 		catch(Exception e)
 		{
@@ -2534,7 +2620,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(getDatabase(), this.siteNodeId, contentId, this.languageId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);		
 			
-			String attribute = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVersionVO, attributeName);
+			String attribute = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVersionVO, attributeName, false);
 			
 			String uniqueId = contentVersionVO.getId() + "_" + attributeName + canvasWidth + canvasHeight + textStartPosX + textStartPosY + textWidth + textHeight + fontName + fontStyle + fontSize + foregroundColor.getRed() + foregroundColor.getGreen() + foregroundColor.getBlue() + backgroundColor.getRed() + backgroundColor.getGreen() + backgroundColor.getBlue();
 			
@@ -3286,7 +3372,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, null, META_INFO_BINDING_NAME, TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, null, META_INFO_BINDING_NAME, TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, false);
 		}
 		catch(Exception e)
 		{
@@ -3305,13 +3391,25 @@ public class BasicTemplateController implements TemplateController
 	 
 	public String getPageNavTitle(String structureBindningName) 
 	{
+	    return getPageNavTitle(structureBindningName, false);
+	}
+	
+	/**
+	 * This method deliveres a String with the Navigation title the page asked for has.
+	 * As the siteNode can have multiple bindings the method requires a bindingName 
+	 * which refers to the AvailableServiceBinding.name-attribute. The navigation-title is fetched
+	 * from the meta-info-content bound to the site node.
+	 */
+	 
+	public String getPageNavTitle(String structureBindningName, boolean escapeHTML) 
+	{
 		String navTitle = "";
 		
 		try
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName);
 			logger.info(siteNodeVO.getName());
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML);
 		}
 		catch(Exception e)
 		{
@@ -3320,7 +3418,7 @@ public class BasicTemplateController implements TemplateController
 				
 		return navTitle;
 	}
-	
+
 	/**
 	 * This method deliveres a String with the Navigation title the page asked for has.
 	 * The navigation-title is fetched from the meta-info-content bound to the site node.
@@ -3328,11 +3426,21 @@ public class BasicTemplateController implements TemplateController
 	 
 	public String getPageNavTitle(Integer siteNodeId) 
 	{
+	    return getPageNavTitle(siteNodeId, false);
+	}
+	
+	/**
+	 * This method deliveres a String with the Navigation title the page asked for has.
+	 * The navigation-title is fetched from the meta-info-content bound to the site node.
+	 */
+	 
+	public String getPageNavTitle(Integer siteNodeId, boolean escapeHTML) 
+	{
 		String navTitle = "";
 		
 		try
 		{
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeId, this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML);
 		}
 		catch(Exception e)
 		{
@@ -3341,7 +3449,7 @@ public class BasicTemplateController implements TemplateController
 				
 		return navTitle;
 	}
-	
+
 	/**
 	 * This method deliveres a String with the Navigation title the page asked for has.
 	 * As the siteNode can have multiple bindings the method requires a bindingName and a collection index. 
@@ -3350,13 +3458,24 @@ public class BasicTemplateController implements TemplateController
 	 
 	public String getPageNavTitle(String structureBindningName, int index) 
 	{
+	    return getPageNavTitle(structureBindningName, index, false);
+	}
+	
+	/**
+	 * This method deliveres a String with the Navigation title the page asked for has.
+	 * As the siteNode can have multiple bindings the method requires a bindingName and a collection index. 
+	 * The navigation-title is fetched from the meta-info-content bound to the site node.
+	 */
+	 
+	public String getPageNavTitle(String structureBindningName, int index, boolean escapeHTML) 
+	{
 		String navTitle = "";
 		
 		try
 		{
 			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getBoundSiteNode(getDatabase(), this.siteNodeId, structureBindningName, index);
 			logger.info(siteNodeVO.getName());
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML);
 		}
 		catch(Exception e)
 		{
@@ -3517,13 +3636,23 @@ public class BasicTemplateController implements TemplateController
 		return availableLanguages;
 	}
 	
-	
+
 	/**
 	 * The method returns a list of WebPage-objects that is the children of the current 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 
 	 */
 	
 	public List getChildPages()
+	{
+	    return getChildPages(false);
+	}
+	
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the current 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(boolean escapeHTML)
 	{
 		List childPages = new ArrayList();
 		try
@@ -3539,7 +3668,7 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
 					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
@@ -3566,6 +3695,16 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(String structureBindingName)
 	{
+	    return getChildPages(structureBindingName, false);
+	}
+	
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(String structureBindingName, boolean escapeHTML)
+	{
 		List childPages = new ArrayList();
 		try
 		{
@@ -3580,7 +3719,7 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
 					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
@@ -3606,6 +3745,16 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(Integer siteNodeId)
 	{
+	    return getChildPages(siteNodeId, false);
+	}
+	
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, boolean escapeHTML)
+	{
 		List childPages = new ArrayList();
 		try
 		{
@@ -3620,7 +3769,7 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
 					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
@@ -3646,6 +3795,16 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(Integer siteNodeId, String sortAttribute, String sortOrder)
 	{
+	    return getChildPages(siteNodeId, sortAttribute, sortOrder, false);
+	}
+	
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, String sortAttribute, String sortOrder, boolean escapeHTML)
+	{
 		List childPages = new ArrayList();
 		try
 		{
@@ -3661,7 +3820,7 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
 					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
@@ -3680,7 +3839,7 @@ public class BasicTemplateController implements TemplateController
 		return childPages;
 	}
 	
-	
+
 	/**
 	 * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
 	 * The method is great for navigation-purposes on any site. 
@@ -3709,7 +3868,7 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, false));
 					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					boundPages.add(webPage); 
@@ -3757,7 +3916,7 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, false));
 					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
 					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					boundPages.add(webPage); 
@@ -3806,7 +3965,7 @@ public class BasicTemplateController implements TemplateController
 				try
 				{	
 					Integer metaInfoContentId = this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, DO_NOT_USE_INHERITANCE, this.deliveryContext);
-					String navigationTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, DO_NOT_USE_LANGUAGE_FALLBACK, this.deliveryContext);
+					String navigationTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, DO_NOT_USE_LANGUAGE_FALLBACK, this.deliveryContext, false);
 					if(metaInfoContentId != null && navigationTitle != null && !navigationTitle.equals(""))
 					{
 						WebPage webPage = new WebPage();						
@@ -4127,7 +4286,7 @@ public class BasicTemplateController implements TemplateController
 				ContentVO contentVO = this.nodeDeliveryController.getBoundContent(getDatabase(), this.getPrincipal(), this.siteNodeId, this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
 				if(contentVO != null)
 				{
-					String includedTemplate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, "Template", this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+					String includedTemplate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getContentId(), this.languageId, "Template", this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 					logger.info("Found included template:" + includedTemplate);
 					
 					Map context = new HashMap();

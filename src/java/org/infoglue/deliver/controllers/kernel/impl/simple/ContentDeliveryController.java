@@ -38,6 +38,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 
 import org.infoglue.cms.exception.SystemException;
@@ -65,6 +66,7 @@ import java.net.URLEncoder;
 public class ContentDeliveryController extends BaseDeliveryController
 {
 	private URLComposer urlComposer = null; 
+	private VisualFormatter formatter = new VisualFormatter();
 	
 	/**
 	 * Private constructor to enforce factory-use
@@ -244,9 +246,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
 	 */
 
-	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal) throws SystemException, Exception
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML) throws SystemException, Exception
 	{
-	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback;
+	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
 	    String versionKey = attributeKey + "_contentVersionId";
 		getLogger().info("attributeKey:" + attributeKey);
 		String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
@@ -261,7 +263,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if (contentVersionVO != null) 
 			{
 			    getLogger().info("found one:" + contentVersionVO);
-				attribute = getAttributeValue(db, contentVersionVO, attributeName);	
+				attribute = getAttributeValue(db, contentVersionVO, attributeName, escapeHTML);	
 				contentVersionId = contentVersionVO.getId();
 			}
 			else
@@ -283,9 +285,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
 	 */
 
-	public String getContentAttribute(Database db, ContentVersionVO contentVersionVO, String attributeName) throws SystemException, Exception
+	public String getContentAttribute(Database db, ContentVersionVO contentVersionVO, String attributeName, boolean escapeHTML) throws SystemException, Exception
 	{
-		String attribute = getAttributeValue(db, contentVersionVO, attributeName);		
+		String attribute = getAttributeValue(db, contentVersionVO, attributeName, escapeHTML);		
 		
 		return attribute;
 	}
@@ -919,8 +921,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method fetches a value from the xml that is the contentVersions Value. If the 
 	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
 	 */
-	 
-	public String getAttributeValue(Database db, ContentVersionVO contentVersionVO, String key)
+	public String getAttributeValue(Database db, ContentVersionVO contentVersionVO, String key, boolean escapeHTML)
 	{
 		String value = "";
 		if(contentVersionVO != null)
@@ -934,7 +935,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	
 	        	if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
 		        	value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
-	
+
+	        	if(escapeHTML)
+	        	    value = formatter.escapeHTML(value);
+	        	
 	        	/*
 		        InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
 				
@@ -1349,8 +1353,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 						}
 						else
 						{
-							String contentAttribute       = this.getContentAttribute(db, content.getId(), languageId, sortAttributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal);
-							String sortedContentAttribute = this.getContentAttribute(db, sortedContent.getId(), languageId, sortAttributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal);
+							String contentAttribute       = this.getContentAttribute(db, content.getId(), languageId, sortAttributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal, false);
+							String sortedContentAttribute = this.getContentAttribute(db, sortedContent.getId(), languageId, sortAttributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal, false);
 							if(contentAttribute != null && sortedContentAttribute != null && sortOrder.equalsIgnoreCase("asc") && contentAttribute.compareTo(sortedContentAttribute) < 0)
 					    	{
 					    		break;

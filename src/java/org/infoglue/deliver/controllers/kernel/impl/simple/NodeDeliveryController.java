@@ -1124,7 +1124,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			pagePath = getPagePath(db, infoGluePrincipal, parentSiteNode.getId(), languageId, null, bindingName, attributeName, useLanguageFallBack, deliveryContext) + "/"; 
 		}
 		
-		pagePath += this.getPageNavigationTitle(db, infoGluePrincipal, siteNodeId, languageId, contentId, bindingName, attributeName, useLanguageFallBack, deliveryContext);
+		pagePath += this.getPageNavigationTitle(db, infoGluePrincipal, siteNodeId, languageId, contentId, bindingName, attributeName, useLanguageFallBack, deliveryContext, false);
 		pagePath = pagePath.replaceAll(" ", "_");
 		
 		return pagePath;
@@ -1155,7 +1155,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The title is based on the content sent in firstly, secondly the siteNode. 
 	 * The actual text is fetched from either the content or the metacontent bound to the sitenode. 
 	 */
-	public String getPageNavigationTitle(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String metaBindingName, String attributeName, boolean useLanguageFallback, DeliveryContext deliveryContext) throws SystemException, Exception
+	public String getPageNavigationTitle(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, String metaBindingName, String attributeName, boolean useLanguageFallback, DeliveryContext deliveryContext, boolean escapeHTML) throws SystemException, Exception
 	{
 		String navTitle = "";
 		
@@ -1163,11 +1163,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			ContentVO content = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, metaBindingName, deliveryContext);
 			if(content != null)
-				navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal);
+				navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal, escapeHTML);
 		}
 		else
 		{
-			navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal);
+			navTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infoGluePrincipal, escapeHTML);
 		}
 		
 		return navTitle;
@@ -1243,10 +1243,10 @@ public class NodeDeliveryController extends BaseDeliveryController
                         pathCandidate = siteNode.getName();
                     else
                     {
-	                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal);
+	                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
 	                    
 	                    if((pathCandidate == null || pathCandidate.equals("")) && !attributeName.equals(NAV_TITLE_ATTRIBUTE_NAME))
-	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal);
+	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
                     }
                     
                     getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
@@ -1290,9 +1290,9 @@ public class NodeDeliveryController extends BaseDeliveryController
         }
         else
         {
-	        pathPart = this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, attributeName, true, deliveryContext);
+	        pathPart = this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, attributeName, true, deliveryContext, false);
 	        if((pathPart == null || pathPart.equals("")) && !attributeName.equals(NAV_TITLE_ATTRIBUTE_NAME))
-	            pathPart = this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true, deliveryContext);
+	            pathPart = this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true, deliveryContext, false);
         }
         
         path += URLEncoder.encode(pathPart, niceURIEncoding);
