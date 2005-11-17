@@ -66,7 +66,6 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		return decoratedAttributeValue;
 	} 
 	
-    
 	/**
 	 * This method adds the neccessairy html to a template to make it right-clickable.
 	 */	
@@ -203,7 +202,11 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
  
 	public String getContentAttribute(Integer contentId, String attributeName, boolean clean)
 	{
-		return super.getContentAttribute(contentId, attributeName);
+	    String attributeValue = "";
+
+		attributeValue = super.getContentAttribute(contentId, attributeName);
+				
+		return attributeValue;
 	}
 		
 	/**
@@ -278,8 +281,21 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	 */
 	 
 	public String getParsedContentAttribute(String attributeName, boolean clean) 
-	{				
-		return super.getParsedContentAttribute(attributeName);
+	{			
+		//return super.getParsedContentAttribute(attributeName);	
+		String attributeValue = "";
+	    
+	    if(clean)
+	    {
+	        attributeValue = super.getParsedContentAttribute(attributeName);
+	    }
+	    else
+	    {
+	        attributeValue = super.getParsedContentAttribute(attributeName);
+	        attributeValue = decorateTag(contentId, this.getLanguageId(), attributeName, attributeValue);
+	    }
+	    
+	    return attributeValue;
 	}
 	
 	/**
@@ -288,8 +304,22 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	 */
 	 
 	public String getParsedContentAttribute(String contentBindningName, String attributeName, boolean clean) 
-	{				
-		return super.getParsedContentAttribute(contentBindningName, attributeName);
+	{		
+		//return super.getParsedContentAttribute(contentBindningName, attributeName);		
+	    
+	    String attributeValue = "";
+	    
+	    if(clean)
+	    {
+	        attributeValue = super.getParsedContentAttribute(contentBindningName, attributeName);
+	    }
+	    else
+	    {
+	        attributeValue = super.getParsedContentAttribute(contentBindningName, attributeName);
+	        attributeValue = decorateTag(contentId, this.getLanguageId(), attributeName, attributeValue);
+	    }
+	    
+	    return attributeValue;
 	}
 
 	/**
@@ -298,8 +328,23 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	 */
 	 
 	public String getParsedContentAttribute(Integer contentId, String attributeName, boolean clean) 
-	{				
-		return super.getParsedContentAttribute(contentId, attributeName);
+	{		
+		//return super.getParsedContentAttribute(contentId, attributeName);
+		
+	    String attributeValue = "";
+	    
+	    if(clean)
+	    {
+	        attributeValue = super.getParsedContentAttribute(contentId, attributeName);
+	    }
+	    else
+	    {
+	        attributeValue = super.getParsedContentAttribute(contentId, attributeName);
+	        attributeValue = decorateTag(contentId, this.getLanguageId(), attributeName, attributeValue);
+	    }
+	    
+	    return attributeValue;
+		
 	}
 	
 	/**

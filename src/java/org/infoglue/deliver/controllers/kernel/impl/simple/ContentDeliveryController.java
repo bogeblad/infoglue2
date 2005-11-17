@@ -1201,10 +1201,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
 			ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext);
-			if(contentVersion == null && useLanguageFallBack)
+			if(contentVersion == null && useLanguageFallBack && content.getRepository() != null)
 			{
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getId(), db);
-				if(!masterLanguage.getId().equals(languageId))
+				if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
 					contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext);
 			}
 			
