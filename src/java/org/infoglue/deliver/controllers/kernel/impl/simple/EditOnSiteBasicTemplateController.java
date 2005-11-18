@@ -211,7 +211,24 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 				
 		return attributeValue;
 	}
-		
+
+	/**
+	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+	 * value if OnSiteEdit is on.
+	 */
+ 
+	public String getContentAttributeValue(Integer contentId, String attributeName, boolean clean, boolean escapeHTML)
+	{
+	    String attributeValue = "";
+
+	    if(clean)
+	        attributeValue = super.getContentAttributeValue(contentId, this.getLanguageId(), attributeName, escapeHTML);
+		else
+			return decorateTag(this.getContentId(), this.getLanguageId(), attributeName, super.getContentAttributeValue(contentId, this.getLanguageId(), attributeName, escapeHTML));
+
+		return attributeValue;
+	}
+
 	/**
 	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
 	 * value if OnSiteEdit is on.

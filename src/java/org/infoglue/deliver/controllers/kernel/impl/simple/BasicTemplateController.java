@@ -1308,7 +1308,7 @@ public class BasicTemplateController implements TemplateController
 	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
 	 */
 	 
-	public String getContentAttributeValue(Integer contentId, Integer languageId, String attributeName) 
+	public String getContentAttributeValue(Integer contentId, Integer languageId, String attributeName, boolean escapeHTML) 
 	{
 		String attributeValue = "";
 		
@@ -1316,7 +1316,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
+		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, escapeHTML);
 		}
 		catch(Exception e)
 		{
