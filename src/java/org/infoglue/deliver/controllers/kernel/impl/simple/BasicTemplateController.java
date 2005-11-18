@@ -1312,7 +1312,18 @@ public class BasicTemplateController implements TemplateController
 	{
 	    return getContentAttributeValue(contentId, this.getLanguageId(), attributeName, escapeHTML);
 	}
-	
+
+	/**
+	 * This method deliveres a String with the content-attribute asked for in the language asked for.
+	 * As the siteNode can have multiple bindings as well as a content as a parameter this
+	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
+	 */
+	 
+	public String getContentAttributeValue(Integer contentId, String attributeName, boolean clean, boolean escapeHTML) 
+	{
+	    return getContentAttributeValue(contentId, this.getLanguageId(), attributeName, escapeHTML);
+	}
+
 	/**
 	 * This method deliveres a String with the content-attribute asked for in the language asked for.
 	 * As the siteNode can have multiple bindings as well as a content as a parameter this
