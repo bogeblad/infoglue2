@@ -46,22 +46,6 @@
 	{
 		openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 	}
-
-	//*******************************************
-	// This method changes state on a content
-	//*******************************************
-	 
-	function changeContentState(contentVersionId)
-	{
-		stateId = document.editForm.stateId.value;
-		languageId = document.editForm.languageId.value;
-		contentId = document.editForm.contentId.value;
-		
-		if (confirm('$ui.getString("tool.contenttool.stateChangeQuestion")'))
-		{
-			window.location.href="ChangeContentState.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId;
-		}
-	}
 	
 	var navigationTitleHash = new Array();
 	
@@ -194,43 +178,6 @@
 		</td>
 		<td width="40%"><img src="images/trans.gif" width="10" height="1"></td>
 		<td>&nbsp;
-		#*
-			$ui.getString("tool.contenttool.stateLabel")<br/>
-			<select class="mediumdrop" name="stateId" onChange="javascript:changeContentState($!contentVersionId);">
-				#if($stateId == 0)
-					<option value="0" selected>$ui.getString("tool.contenttool.state.working")</option>
-				#else
-					<option value="0">$ui.getString("tool.contenttool.state.working")</option>
-				#end	 	
-				<!--
-				#if($stateId == 1)
-					<option value="1" selected>$ui.getString("tool.contenttool.state.final")</option>
-				#else
-					<option value="1">$ui.getString("tool.contenttool.state.final")</option>
-				#end
-				-->				
-				#if($stateId == 2)
-					<option value="2" selected>$ui.getString("tool.contenttool.state.publish")</option>
-				#else
-					#if($stateId != 3 && $stateId != 4 && $stateId != 5)
-					<option value="2">$ui.getString("tool.contenttool.state.publish")</option>
-					#end
-				#end
-
-				#if($stateId == 3)
-					<option value="3" selected>$ui.getString("tool.contenttool.state.published")</option>
-				#end
-
-				#if($stateId == 4)
-					<option value="4" selected>$ui.getString("tool.contenttool.state.markedForUnpublish")</option>
-				#end
-
-				#if($stateId == 5)
-					<option value="5" selected>$ui.getString("tool.contenttool.state.unpublished")</option>
-				#end
-				
-			</select>
-			*#
 		</td>
 	</tr>	
 	<tr>

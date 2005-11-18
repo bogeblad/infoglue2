@@ -127,6 +127,10 @@
 		{
 			window.location.href="ChangeContentState.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId;
 		}
+		else
+		{
+			document.editForm.stateId.selectedIndex = originalStateIndex - 1;
+		}
 	}
 			
 	//*******************************************
@@ -259,38 +263,72 @@
 		</td>
 		<td width="40%"><img src="images/trans.gif" width="10" height="1"></td>
 		<td>
+			#set($dropIndex = 1)
 			$ui.getString("tool.contenttool.stateLabel")<br/>
 			<select class="mediumdrop" name="stateId" onChange="javascript:changeContentState($!contentVersionId);">
 				#if($stateId == 0)
 					<option value="0" selected>$ui.getString("tool.contenttool.state.working")</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#else
 					<option value="0">$ui.getString("tool.contenttool.state.working")</option>
+					#set($dropIndex = $dropIndex + 1)
 				#end	 	
 				<!--
 				#if($stateId == 1)
 					<option value="1" selected>$ui.getString("tool.contenttool.state.final")</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#else
 					<option value="1">$ui.getString("tool.contenttool.state.final")</option>
+					##set($dropIndex = $dropIndex + 1)
 				#end
 				-->				
 				#if($stateId == 2)
 					<option value="2" selected>$ui.getString("tool.contenttool.state.publish")</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#else
 					#if($stateId != 3 && $stateId != 4 && $stateId != 5)
-					<option value="2">$ui.getString("tool.contenttool.state.publish")</option>
+						<option value="2">$ui.getString("tool.contenttool.state.publish")</option>
+						#set($dropIndex = $dropIndex + 1)
 					#end
 				#end
 
 				#if($stateId == 3)
 					<option value="3" selected>$ui.getString("tool.contenttool.state.published")</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#end
 
 				#if($stateId == 4)
 					<option value="4" selected>$ui.getString("tool.contenttool.state.markedForUnpublish")</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#end
 
 				#if($stateId == 5)
 					<option value="5" selected>$ui.getString("tool.contenttool.state.unpublished")</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#end
 				
 			</select>
