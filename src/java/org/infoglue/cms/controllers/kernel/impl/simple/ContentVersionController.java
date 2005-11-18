@@ -107,22 +107,22 @@ public class ContentVersionController extends BaseController
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public List getContentVersionVOWithParentRecursive(Integer contentId, Integer stateId) throws ConstraintException, SystemException
+    public List getContentVersionVOWithParentRecursive(Integer contentId, Integer stateId, boolean mustBeFirst) throws ConstraintException, SystemException
 	{
-		return getContentVersionVOWithParentRecursive(contentId, stateId, new ArrayList());
+		return getContentVersionVOWithParentRecursive(contentId, stateId, new ArrayList(), mustBeFirst);
 	}
 	
-	private List getContentVersionVOWithParentRecursive(Integer contentId, Integer stateId, List resultList) throws ConstraintException, SystemException
+	private List getContentVersionVOWithParentRecursive(Integer contentId, Integer stateId, List resultList, boolean mustBeFirst) throws ConstraintException, SystemException
 	{
 		// Get the versions of this content.
-		resultList.addAll(getLatestContentVersionVOWithParent(contentId, stateId));
+		resultList.addAll(getLatestContentVersionVOWithParent(contentId, stateId, mustBeFirst));
 		// Get the children of this content and do the recursion
 		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId);
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{
 			ContentVO contentVO = (ContentVO) cit.next();
-			getContentVersionVOWithParentRecursive(contentVO.getId(), stateId, resultList);
+			getContentVersionVOWithParentRecursive(contentVO.getId(), stateId, resultList, mustBeFirst);
 		}
 	
 		return resultList;
@@ -133,7 +133,7 @@ public class ContentVersionController extends BaseController
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public List getContentVersionVOWithParentRecursiveAndRelated(Integer contentId, Integer stateId) throws ConstraintException, SystemException
+    public List getContentVersionVOWithParentRecursiveAndRelated(Integer contentId, Integer stateId, boolean mustBeFirst) throws ConstraintException, SystemException
 	{
         List contentVersionVOList = new ArrayList();
         
@@ -143,7 +143,7 @@ public class ContentVersionController extends BaseController
 
         try
         {
-            List contentVersionList = getContentVersionWithParentRecursiveAndRelated(contentId, stateId, new ArrayList(), new ArrayList(), db);
+            List contentVersionList = getContentVersionWithParentRecursiveAndRelated(contentId, stateId, new ArrayList(), new ArrayList(), db, mustBeFirst);
             contentVersionVOList = toVOList(contentVersionList);
             
             commitTransaction(db);
@@ -158,12 +158,12 @@ public class ContentVersionController extends BaseController
         return contentVersionVOList;
 	}
 	
-	private List getContentVersionWithParentRecursiveAndRelated(Integer contentId, Integer stateId, List resultList, List checkedContents, Database db) throws ConstraintException, SystemException, Exception
+	private List getContentVersionWithParentRecursiveAndRelated(Integer contentId, Integer stateId, List resultList, List checkedContents, Database db, boolean mustBeFirst) throws ConstraintException, SystemException, Exception
 	{
         checkedContents.add(contentId);
         
 		// Get the versions of this content.
-		List contentVersions = getLatestContentVersionWithParent(contentId, stateId, db);
+		List contentVersions = getLatestContentVersionWithParent(contentId, stateId, db, mustBeFirst);
 		resultList.addAll(contentVersions);
 	    
 		Iterator contentVersionsIterator = contentVersions.iterator();
@@ -179,7 +179,7 @@ public class ContentVersionController extends BaseController
 	            getLogger().info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
 	            {
-	                List relatedContentVersions = getLatestContentVersionWithParent(new Integer(registryVO.getEntityId()), stateId, db);
+	                List relatedContentVersions = getLatestContentVersionWithParent(new Integer(registryVO.getEntityId()), stateId, db, mustBeFirst);
 	    		    resultList.addAll(relatedContentVersions);
 	    		    checkedContents.add(new Integer(registryVO.getEntityId()));
 	            }
@@ -193,7 +193,7 @@ public class ContentVersionController extends BaseController
 		while (cit.hasNext())
 		{
 			ContentVO contentVO = (ContentVO) cit.next();
-			getContentVersionWithParentRecursiveAndRelated(contentVO.getId(), stateId, resultList, checkedContents, db);
+			getContentVersionWithParentRecursiveAndRelated(contentVO.getId(), stateId, resultList, checkedContents, db, mustBeFirst);
 		}
         
 		return resultList;
@@ -268,7 +268,7 @@ public class ContentVersionController extends BaseController
 	 * @throws Bug
 	 */
 
-	public List getLatestContentVersionVOWithParent(Integer contentId, Integer stateId) throws SystemException, Bug
+	public List getLatestContentVersionVOWithParent(Integer contentId, Integer stateId, boolean mustBeFirst) throws SystemException, Bug
 	{
 		List resultList = new ArrayList();
 		
@@ -278,7 +278,7 @@ public class ContentVersionController extends BaseController
 
 		try
 		{
-		    resultList = getLatestContentVersionWithParent(contentId, stateId, db);
+		    resultList = getLatestContentVersionWithParent(contentId, stateId, db, mustBeFirst);
 		    resultList = toVOList(resultList);
 		    
 			commitTransaction(db);
@@ -303,7 +303,7 @@ public class ContentVersionController extends BaseController
 	 * @throws Bug
 	 */
 
-	public List getLatestContentVersionWithParent(Integer contentId, Integer stateId, Database db) throws SystemException, Bug, Exception
+	public List getLatestContentVersionWithParent(Integer contentId, Integer stateId, Database db, boolean mustBeFirst) throws SystemException, Bug, Exception
 	{
 		ArrayList resultList = new ArrayList();
 		ArrayList langCheck = new ArrayList();
@@ -321,13 +321,16 @@ public class ContentVersionController extends BaseController
 			getLogger().info("contentVersion:" + contentVersion.getValueObject().getContentName());
 			if(contentVersion.getIsActive().booleanValue())
 			{
-				if ( (contentVersion.getStateId().compareTo(stateId)==0) && (!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
+			    if ( (contentVersion.getStateId().compareTo(stateId)==0) && (!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
 				{
-				    getLogger().info("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
+				    System.out.println("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
+					getLogger().info("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
 					resultList.add(contentVersion);
 					langCheck.add(contentVersion.getLanguage().getLanguageId());
 				}
-
+				
+			    if(mustBeFirst)
+					langCheck.add(contentVersion.getLanguage().getLanguageId());
 			}
 		}
     	
@@ -1123,7 +1126,7 @@ public class ContentVersionController extends BaseController
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public void getContentAndAffectedItemsRecursive(Integer contentId, Integer stateId, List siteNodeVersionVOList, List contenteVersionVOList) throws ConstraintException, SystemException
+    public void getContentAndAffectedItemsRecursive(Integer contentId, Integer stateId, List siteNodeVersionVOList, List contenteVersionVOList, boolean mustBeFirst) throws ConstraintException, SystemException
 	{
         Database db = CastorDatabaseService.getDatabase();
 
@@ -1133,7 +1136,7 @@ public class ContentVersionController extends BaseController
         {
             Content content = ContentController.getContentController().getContentWithId(contentId, db);
 
-            getContentAndAffectedItemsRecursive(content, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList);
+            getContentAndAffectedItemsRecursive(content, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, mustBeFirst);
             
             commitTransaction(db);
         }
@@ -1145,11 +1148,11 @@ public class ContentVersionController extends BaseController
         }
 	}
 	
-	private void getContentAndAffectedItemsRecursive(Content content, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, List siteNodeVersionVOList, List contentVersionVOList) throws ConstraintException, SystemException, Exception
+	private void getContentAndAffectedItemsRecursive(Content content, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, List siteNodeVersionVOList, List contentVersionVOList, boolean mustBeFirst) throws ConstraintException, SystemException, Exception
 	{
 	    checkedSiteNodes.add(content.getId());
         
-	    List contentVersions = getLatestContentVersionWithParent(content.getId(), stateId, db);
+	    List contentVersions = getLatestContentVersionWithParent(content.getId(), stateId, db, mustBeFirst);
 	    
 		Iterator contentVersionsIterator = contentVersions.iterator();
 	    while(contentVersionsIterator.hasNext())
@@ -1220,7 +1223,7 @@ public class ContentVersionController extends BaseController
 		while (cit.hasNext())
 		{
 			Content citContent = (Content) cit.next();
-			getContentAndAffectedItemsRecursive(citContent, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList);
+			getContentAndAffectedItemsRecursive(citContent, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst);
 		}
 		
 	}

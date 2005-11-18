@@ -70,7 +70,7 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			
 			ceb.throwIfNotEmpty();
 
-			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList);
+			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, true);
 
 			//contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursiveAndRelated(contentId, ContentVersionVO.WORKING_STATE);		
 		}
