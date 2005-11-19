@@ -19,6 +19,7 @@
                 /css/*,
                 /images/*,
                 /img/*,
+                /jsp/*
             </param-value>
         </init-param>
     </filter>
@@ -55,6 +56,7 @@
                 /script/*,
                 /css/*,
                 /images/*,
+                /jsp/*,
                 *.gif,
                 *.jpg,
                 *.png,
@@ -82,7 +84,8 @@
                 /scripts/*,
                 /script/*,
                 /css/*,
-                /images/*
+                /images/*,
+                /jsp/*
             </param-value>
         </init-param>
     </filter>
