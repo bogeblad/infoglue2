@@ -41,7 +41,7 @@ import org.infoglue.cms.exception.SystemException;
 public class testRecursive {
 
 	public static void main(String[] args) throws ConstraintException, SystemException {
-		List l = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursive(new Integer(84),new Integer(0));
+		List l = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursive(new Integer(84),new Integer(0), true);
 		
 		Iterator it = l.iterator();
 		ContentVO contentVO = null;
