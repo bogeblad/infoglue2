@@ -179,7 +179,6 @@ public class HttpUtilities
 	    }
 
 		logger.info("Getting content from url: " + urlAddress + argString);
-		logger.warn("Getting content from url: " + urlAddress + argString);
 		
 	    URL url = new URL(urlAddress + argString);
 	    URLConnection connection = url.openConnection();

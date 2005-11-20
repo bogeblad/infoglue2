@@ -656,7 +656,7 @@ public class CacheController extends Thread
 	{
 		while(this.continueRunning && expireCacheAutomatically)
 		{
-			logger.warn("Clearing caches");
+			logger.info("Clearing caches");
 			try
 			{
 			    clearCastorCaches();
@@ -791,11 +791,11 @@ public class CacheController extends Thread
 					{
 				        if(!RequestAnalyser.getBlockRequests())
 				        {
- 			                logger.warn("Starting publication thread...");
+ 			                logger.info("Starting publication thread...");
  			            	PublicationThread pt = new PublicationThread();
  			            	pt.setPriority(Thread.MIN_PRIORITY);
  			            	pt.start();
-			            	logger.warn("Done starting publication thread...");
+			            	logger.info("Done starting publication thread...");
 			            }
 			        }
 				    else
@@ -861,7 +861,7 @@ public class CacheController extends Thread
 			        logger.error("Cache eviction reported an error:" + e.getMessage(), e);
 			    }
 
-		        logger.warn("Cache evicted..");
+		        logger.info("Cache evicted..");
 
 				i.remove();
 			}

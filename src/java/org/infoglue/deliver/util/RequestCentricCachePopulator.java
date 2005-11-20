@@ -61,7 +61,7 @@ public class RequestCentricCachePopulator
 	
 	public void recache(DatabaseWrapper dbWrapper, Integer siteNodeId) throws SystemException, Exception
 	{
-        logger.warn("recache starting..");
+        logger.info("recache starting..");
         /*
         String name = "org.infoglue.deliver.applications.actions.ViewPageAction";
         Map parameters = new HashMap();
@@ -102,7 +102,7 @@ public class RequestCentricCachePopulator
         String response = helper.getUrlContent(recacheUrl);
         //System.out.println("response:" + response);
         
-        logger.warn("recache stopped..");
+        logger.info("recache stopped..");
 	}
 	
 }

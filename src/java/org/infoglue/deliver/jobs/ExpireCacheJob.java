@@ -75,7 +75,7 @@ public class ExpireCacheJob implements Job
             
             if(firstExpireDateTime != null && now.after(firstExpireDateTime))
             {
-                logger.warn("setting block");
+                logger.info("setting block");
                 RequestAnalyser.setBlockRequests(true);
 
 				try
@@ -83,24 +83,24 @@ public class ExpireCacheJob implements Job
 	        	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
 	        	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
 	        	    {
-	        	        logger.warn("Updating all caches as this was a publishing-update");
+	        	        logger.info("Updating all caches as this was a publishing-update");
 		    			CacheController.clearCastorCaches();
 		
-		    			logger.warn("clearing all except page cache as we are in publish mode..");
+		    			logger.info("clearing all except page cache as we are in publish mode..");
 		    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
 		    			
-		    			logger.warn("Recaching all caches as this was a publishing-update");
+		    			logger.info("Recaching all caches as this was a publishing-update");
 		    			CacheController.cacheCentralCastorCaches();
 		    			
-		    			logger.warn("Finally clearing page cache as this was a publishing-update");
+		    			logger.info("Finally clearing page cache as this was a publishing-update");
 		    		    CacheController.clearCache("pageCache");
 	        	    }
 	        	    else
 	        	    {
-		    		    logger.warn("Updating all caches as this was a publishing-update");
+		    		    logger.info("Updating all caches as this was a publishing-update");
 		    			CacheController.clearCastorCaches();
 		
-		    			logger.warn("clearing all except page cache as we are in publish mode..");
+		    			logger.info("clearing all except page cache as we are in publish mode..");
 		    		    CacheController.clearCaches(null, null, null);
 	        	    }
                 }
@@ -109,7 +109,7 @@ public class ExpireCacheJob implements Job
                     logger.error("An error occurred when we tried to update cache:" + e.getMessage(), e);
                 }
     		    
-    		    logger.warn("releasing block");
+    		    logger.info("releasing block");
                 RequestAnalyser.setBlockRequests(false);
             }
 
@@ -118,7 +118,7 @@ public class ExpireCacheJob implements Job
             
             if(firstPublishDateTime != null && now.after(firstPublishDateTime))
             {
-                logger.warn("setting block");
+                logger.info("setting block");
                 RequestAnalyser.setBlockRequests(true);
                 
                 try
@@ -126,24 +126,24 @@ public class ExpireCacheJob implements Job
 	        	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
 	        	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
 	        	    {
-	        	        logger.warn("Updating all caches as this was a publishing-update");
+	        	        logger.info("Updating all caches as this was a publishing-update");
 		    			CacheController.clearCastorCaches();
 		
-		    			logger.warn("clearing all except page cache as we are in publish mode..");
+		    			logger.info("clearing all except page cache as we are in publish mode..");
 		    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
 		    			
-		    			logger.warn("Recaching all caches as this was a publishing-update");
+		    			logger.info("Recaching all caches as this was a publishing-update");
 		    			CacheController.cacheCentralCastorCaches();
 		    			
-		    			logger.warn("Finally clearing page cache as this was a publishing-update");
+		    			logger.info("Finally clearing page cache as this was a publishing-update");
 		    		    CacheController.clearCache("pageCache");
 	        	    }
 	        	    else
 	        	    {
-		    		    logger.warn("Updating all caches as this was a publishing-update");
+		    		    logger.info("Updating all caches as this was a publishing-update");
 		    			CacheController.clearCastorCaches();
 		
-		    			logger.warn("clearing all except page cache as we are in publish mode..");
+		    			logger.info("clearing all except page cache as we are in publish mode..");
 		    		    CacheController.clearCaches(null, null, null);
 	        	    }
                 }
@@ -152,7 +152,7 @@ public class ExpireCacheJob implements Job
                     logger.error("An error occurred when we tried to update cache:" + e.getMessage(), e);
                 }
 
-                logger.warn("releasing block");
+                logger.info("releasing block");
                 RequestAnalyser.setBlockRequests(false);
             }
 
