@@ -232,15 +232,6 @@ public class ContentTypeDefinitionController extends BaseController
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.name = $1");
 			oql.bind(name);
 
-			try
-			{
-			    throw new Exception("Getting content type..");
-			}
-			catch(Exception e)
-			{
-			    e.printStackTrace();
-			}
-			
 	    	this.getLogger().info("Fetching entity in read/write mode" + name);
 			QueryResults results = oql.execute();
 			if (results.hasMore())
