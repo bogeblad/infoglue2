@@ -241,7 +241,7 @@ public class ContentTypeDefinitionController extends BaseController
 			    e.printStackTrace();
 			}
 			
-	    	this.getLogger().warn("Fetching entity in read/write mode" + name);
+	    	this.getLogger().info("Fetching entity in read/write mode" + name);
 			QueryResults results = oql.execute();
 			if (results.hasMore())
 			{

@@ -239,7 +239,7 @@ public class AccessRightController extends BaseController
 			}
 			
 			QueryResults results = oql.execute();
-			this.getLogger().warn("Fetching entity in read/write mode" + interceptionPointId);
+			this.getLogger().info("Fetching entity in read/write mode" + interceptionPointId);
 
 			while (results.hasMore()) 
 			{
@@ -278,7 +278,7 @@ public class AccessRightController extends BaseController
 			}
 			
 			QueryResults results = oql.execute();
-			this.getLogger().warn("Fetching entity in read/write mode");
+			this.getLogger().info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
@@ -360,7 +360,7 @@ public class AccessRightController extends BaseController
 			}
 						
 			QueryResults results = oql.execute();
-			this.getLogger().warn("Fetching entity in read/write mode");
+			this.getLogger().info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
@@ -391,7 +391,7 @@ public class AccessRightController extends BaseController
 			oql.bind(interceptionPointId);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().warn("Fetching entity in read/write mode");
+			this.getLogger().info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
@@ -421,7 +421,7 @@ public class AccessRightController extends BaseController
 			oql.bind(roleName);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().warn("Fetching entity in read/write mode");
+			this.getLogger().info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
@@ -454,7 +454,7 @@ public class AccessRightController extends BaseController
 			oql.bind(roleName);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().warn("Fetching entity in read/write mode");
+			this.getLogger().info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{

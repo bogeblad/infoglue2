@@ -266,7 +266,7 @@ public class UserPropertiesController extends BaseController
 		}
 		else
 		{
-		    getLogger().warn("Fetching entity in read/write mode:" + userName);
+		    getLogger().info("Fetching entity in read/write mode:" + userName);
 		    results = oql.execute();
 		}
 		
@@ -335,7 +335,7 @@ public class UserPropertiesController extends BaseController
 		oql.bind(userName);
 
 		QueryResults results = oql.execute();
-		getLogger().warn("Fetching entity in read/write mode:" + userName);
+		getLogger().info("Fetching entity in read/write mode:" + userName);
 
 		while (results.hasMore()) 
 		{

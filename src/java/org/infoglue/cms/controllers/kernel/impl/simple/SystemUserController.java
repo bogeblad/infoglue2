@@ -145,7 +145,7 @@ public class SystemUserController extends BaseController
         	oql.bind(userName);
         	
         	QueryResults results = oql.execute();
-    		this.getLogger().warn("Fetching entity in read/write mode" + userName);
+    		this.getLogger().info("Fetching entity in read/write mode" + userName);
 
 			if (results.hasMore()) 
             {
@@ -217,7 +217,7 @@ public class SystemUserController extends BaseController
 		oql.bind(password);
     	
 		QueryResults results = oql.execute();
-		this.getLogger().warn("Fetching entity in read/write mode" + userName);
+		this.getLogger().info("Fetching entity in read/write mode" + userName);
 
 		if (results.hasMore()) 
 		{

@@ -281,7 +281,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		else
 		{
-			this.getLogger().warn("Fetching groupPropertiesList in read/write mode");
+			this.getLogger().info("Fetching groupPropertiesList in read/write mode");
 		    results = oql.execute();
 		}   
 
@@ -402,7 +402,7 @@ public class GroupPropertiesController extends BaseController
 		oql.bind(groupName);
 
 		QueryResults results = oql.execute();
-		this.getLogger().warn("Fetching groupContentTypeDefinitionList in read/write mode");
+		this.getLogger().info("Fetching groupContentTypeDefinitionList in read/write mode");
 
 		while (results.hasMore()) 
 		{

@@ -257,7 +257,7 @@ public class RolePropertiesController extends BaseController
 		}
 		else
 		{
-		    getLogger().warn("Fetching entity in read/write mode:" + roleName);
+		    getLogger().info("Fetching entity in read/write mode:" + roleName);
 		    results = oql.execute();
 		}
 
@@ -378,7 +378,7 @@ public class RolePropertiesController extends BaseController
 		oql.bind(roleName);
 
 		QueryResults results = oql.execute();
-		this.getLogger().warn("Fetching entity in read/write mode");
+		this.getLogger().info("Fetching entity in read/write mode");
 
 		while (results.hasMore()) 
 		{

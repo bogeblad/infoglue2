@@ -83,7 +83,7 @@ public class ValidationController extends BaseController
 			oql.bind(checkValue);
 
 			QueryResults results = oql.execute();
-			logger.warn("Fetching entity in read/write mode");
+			logger.info("Fetching entity in read/write mode");
 
 			if (excludeId == null && excludeObject == null)
 				valueExist = results.hasMore();

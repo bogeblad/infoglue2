@@ -215,7 +215,7 @@ public class InterceptionPointController extends BaseController
 			oql.bind(interceptorPointName);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().warn("Fetching entity in read/write mode:" + interceptorPointName);
+			this.getLogger().info("Fetching entity in read/write mode:" + interceptorPointName);
 			if(results.hasMore()) 
 			{
 				interceptorPoint = (InterceptionPoint)results.next();
@@ -265,7 +265,7 @@ public class InterceptionPointController extends BaseController
 			oql.bind(category);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().warn("Fetching entity in read/write mode:" + category);
+			this.getLogger().info("Fetching entity in read/write mode:" + category);
 
 			while(results.hasMore()) 
 			{
