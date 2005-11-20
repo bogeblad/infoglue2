@@ -250,8 +250,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getRequest().setAttribute("responseCode", "500");
 			getRequest().setAttribute("error", e);
 			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
-
-			//throw new SystemException(e.getMessage());
 		}
 		finally
 		{
