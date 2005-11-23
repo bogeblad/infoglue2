@@ -92,6 +92,8 @@ public class InfoGluePrincipal implements Principal
 	
 	public String toString()
 	{
+        return name;
+        /*
 		StringBuffer sb = new StringBuffer("InfoGluePrincipal: " + name + ":" + email + ":" + isAdministrator + '\n');
 		for(Iterator i=roles.iterator(); i.hasNext();)
 		{ 
@@ -101,6 +103,7 @@ public class InfoGluePrincipal implements Principal
 		sb.append("]");
 		
 		return sb.toString();
+        */
 	}
 
 	public boolean equals(Object obj)
