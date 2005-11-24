@@ -21,6 +21,8 @@ Component palette classes
 	padding-top:2px;
 	padding-bottom:2px;
 	color:white;
+	overflow:hidden;
+	line-height:10px;
 	background-color:navy;
 	font-family:verdana, sans-serif;
 	font-size:10px;
@@ -34,6 +36,7 @@ Component palette classes
 	apadding:1px 1px 1px 1px;
 	color:white;
 	text-align: left;
+	line-height:10px;
 	}
 #rightPaletteHandle {
 	awidth: 50px; 
@@ -41,6 +44,7 @@ Component palette classes
 	apadding:1px 1px 1px 1px;
 	color:white;
 	text-align: right;
+	line-height:10px;	
 	}
 #paletteHeader {
 	padding-top:2px;
@@ -71,8 +75,10 @@ Component palette classes
 	width:100%; 
 	left:0px; 
 	top:0px;
+	aborder: 1px solid blue;
 	}
 .tabPanel {
+	aborder: 1px solid red;
 	position:absolute; 
 	width:100%; 
 	height: 24px;
@@ -372,6 +378,7 @@ Properties classes
 	vertical-align: top;
 	border:0px solid red;
 	awidth:1px;
+	line-height: 10px;
 }
 .igtd:hover {
 	abackground-color: blue;
