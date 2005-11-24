@@ -2644,7 +2644,7 @@ public class BasicTemplateController implements TemplateController
 			
 			String attribute = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVersionVO, attributeName, false);
 			
-			String uniqueId = contentVersionVO.getId() + "_" + attributeName + canvasWidth + canvasHeight + textStartPosX + textStartPosY + textWidth + textHeight + fontName + fontStyle + fontSize + foregroundColor.getRed() + foregroundColor.getGreen() + foregroundColor.getBlue() + backgroundColor.getRed() + backgroundColor.getGreen() + backgroundColor.getBlue();
+			String uniqueId = contentVersionVO.getId() + "_" + attributeName + canvasWidth + canvasHeight + textStartPosX + textStartPosY + textWidth + textHeight + fontName.replaceAll(" ", "") + fontStyle + fontSize + foregroundColor.getRed() + foregroundColor.getGreen() + foregroundColor.getBlue() + backgroundColor.getRed() + backgroundColor.getGreen() + backgroundColor.getBlue();
 			
 			String fileName = uniqueId + ".png";
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
@@ -2771,7 +2771,7 @@ public class BasicTemplateController implements TemplateController
 		 
 		try
 		{
-			String uniqueId = text.hashCode() + "_" + canvasWidth + canvasHeight + textStartPosX + textStartPosY + textWidth + textHeight + fontName + fontStyle + fontSize + foregroundColor.getRed() + foregroundColor.getGreen() + foregroundColor.getBlue() + backgroundColor.getRed() + backgroundColor.getGreen() + backgroundColor.getBlue();
+			String uniqueId = text.hashCode() + "_" + canvasWidth + canvasHeight + textStartPosX + textStartPosY + textWidth + textHeight + fontName.replaceAll(" ", "") + fontStyle + fontSize + foregroundColor.getRed() + foregroundColor.getGreen() + foregroundColor.getBlue() + backgroundColor.getRed() + backgroundColor.getGreen() + backgroundColor.getBlue();
 			
 			String fileName = uniqueId + ".png";
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
