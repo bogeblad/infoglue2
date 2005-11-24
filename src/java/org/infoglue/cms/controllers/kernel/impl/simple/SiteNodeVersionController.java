@@ -28,10 +28,12 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -454,8 +456,16 @@ public class SiteNodeVersionController extends BaseController
 			while(serviceBindingIterator.hasNext())
 			{
 				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-				serviceBindingIterator.remove();
-				db.remove(serviceBinding);
+				
+				if(serviceBinding.getAvailableServiceBinding().getName().equalsIgnoreCase("Meta information"))
+				{
+				    deleteMetaInfoForSiteNodeVersion(db, serviceBinding);
+				}
+				else
+				{			
+				    serviceBindingIterator.remove();
+				    db.remove(serviceBinding);
+				}
 			}
 	    	
 			logger.info("Deleting siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
@@ -464,7 +474,25 @@ public class SiteNodeVersionController extends BaseController
         }		    	
     }
 
-
+	/**
+	 * Deletes the meta info for the sitenode version.
+	 * 
+	 * @param siteNodeVersionId
+	 * @return
+	 * @throws ConstraintException
+	 * @throws SystemException
+	 */
+	private static void deleteMetaInfoForSiteNodeVersion(Database db, ServiceBinding serviceBinding) throws ConstraintException, SystemException, Bug, Exception
+	{
+		List boundContents = ContentController.getBoundContents(db, serviceBinding.getId()); 			
+		if(boundContents.size() > 0)
+		{
+			ContentVO contentVO = (ContentVO)boundContents.get(0);
+			ContentController.getContentController().delete(contentVO, db, true, true);
+		}						
+	}
+	
+	
    	/**
 	 * This method returns a list with AvailableServiceBidningVO-objects which are available for the
 	 * siteNodeTypeDefinition sent in
