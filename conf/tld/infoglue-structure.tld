@@ -3,7 +3,7 @@
 <taglib>
     <tlibversion>1.0</tlibversion>
     <jspversion>1.1</jspversion>
-    <shortname>infoglue-content</shortname>
+    <shortname>infoglue-structure</shortname>
     <info>Tags for Structure operations</info>
     
     <tag>
