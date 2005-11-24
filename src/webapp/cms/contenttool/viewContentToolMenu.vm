@@ -214,8 +214,6 @@
 				#else
 					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree.action?repositoryId=${repositoryId}" width="220" height="550" align="bottom"></IFRAME>
 				#end
-				
-											
 			</td>
 		</tr>	
 		
@@ -232,6 +230,7 @@
 
 #treeSelector("Content")
 
+#*
 <div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:2px; visibility:visble; z-index:0">
 <small>
 	<font color="#666666" face="Verdana">Versions: 
@@ -243,6 +242,8 @@
 	</font>
 </small>
 </div>
+*#
+
 <div style="RIGHT:2px; position:absolute; BOTTOM:0px; visibility:visible; z-index:0">
 	<a href="javascript:this.parent.increaseSize();" title="$ui.getString("tool.common.increaseMenuSize.text")"><img src="images/expandRight.gif" width="20" height="20" border="0" alt="$ui.getString("tool.common.increaseMenuSize.text")"></a>
 </div>
