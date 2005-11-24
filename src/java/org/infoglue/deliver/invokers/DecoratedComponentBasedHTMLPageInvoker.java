@@ -362,7 +362,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(component.getParentComponent() == null && bodyIndex > -1)
 			{
 				//String onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";
-				String onContextMenu = " class=\"siteBody\" onload=\"javascript:setToolbarInitialPosition();\"";
+				//String onContextMenu = " class=\"siteBody\" onload=\"javascript:setToolbarInitialPosition();\"";
+				String onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";
 				if(templateController.getDeliveryContext().getShowSimple())
 					onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";
 				
@@ -448,7 +449,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								//logger.info("Inherited..." + contentId);
 								String childComponentsString = decorateComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId/*, metainfoContentId*/);
 								if(!this.getTemplateController().getDeliveryContext().getShowSimple())
-								    subComponentString += "<span id=\""+ id + index + "Comp\" class=\"inheritedslot\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\">" + childComponentsString + "</span>";
+								    subComponentString += "<span id=\""+ id + index + "Comp\" class=\"inheritedslot\">" + childComponentsString + "</span>";
 								else
 								    subComponentString += childComponentsString;
 								    
@@ -481,7 +482,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								        }
 								    }
 
-								    subComponentString += "<span id=\""+ id + index + "_" + subComponent.getId() + "Comp\" onMouseOver=\"listRowOn(this);\" onMouseOut=\"listRowOff(this);\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "&AAAA=1") + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + subComponent.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "');</script></span>";
+								    subComponentString += "<span id=\""+ id + index + "_" + subComponent.getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "&AAAA=1") + "', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + subComponent.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "');</script></span>";
 								}
 								else
 								{
@@ -995,17 +996,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentRendererUrl 	= CmsPropertyHandler.getProperty("componentRendererUrl");
 		String componentRendererAction 	= CmsPropertyHandler.getProperty("componentRendererAction");
 		
+		
 		sb.append("<div id=\"buffer\" style=\"top: 0px; left: 0px; z-index:200;\"><img src=\"images/componentDraggedIcon.gif\"></div>");
 		
 		Map componentGroups = getComponentGroups(getComponentContents(), templateController);
-
+		
 		sb.append("<div id=\"paletteDiv\">");
 		 
 		sb.append("<div id=\"paletteHandle\">");
 		//sb.append("	<table class=\"igtable\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Component palette</td><td align=\"right\"><a href=\"javascript:hideDiv('paletteDiv');\" class=\"white\">close</a></td></tr></table>");
 		sb.append("	<div id=\"leftPaletteHandle\">Component palette</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('paletteDiv');\" class=\"white\">close</a></div>");
 		sb.append("</div>");
-				
+
 		//sb.append("<div id=\"componentPalette\" style=\"background:#999999; height:20px; width:100%; left:0px; top:0px;\">");
 		sb.append("<div id=\"paletteBody\">");
 		sb.append("<table class=\"tabPanel\" cellpadding=\"0\" cellspacing=\"0\">");
@@ -1018,7 +1020,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		while(groupIterator.hasNext())
 		{
 			groupName = (String)groupIterator.next();
-
+			
 			if(index == 0)
 			{	
 				sb.append("  <td id=\"" + groupName + "Tab\" valign=\"top\" class=\"thistab\" onclick=\"javascript:changeTab('" + groupName + "');\" height=\"20\"><nobr>" + groupName + "</nobr></td>");
