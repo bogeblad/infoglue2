@@ -27,7 +27,14 @@
 		<java fork="true" jar="${tlddoc.jar}" failonerror="true">
 			<arg line="-d ${output.dir}"/>
 			<arg line="-xslt ${resources.dir}"/>
+			<arg value="${tld.dir}infoglue-cms-content.tld"/>
+			<arg value="${tld.dir}infoglue-cms-management.tld"/>
+			<arg value="${tld.dir}infoglue-common.tld"/>
+			<arg value="${tld.dir}infoglue-content.tld"/>
 			<arg value="${tld.dir}infoglue-management.tld"/>
+			<arg value="${tld.dir}infoglue-page.tld"/>
+			<arg value="${tld.dir}infoglue-structure.tld"/>
+			<arg value="${tld.dir}infoglue-workflow.tld"/>
 		</java>
 	</target>
 </project>
