@@ -26,6 +26,7 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
@@ -183,7 +184,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(isValidContent)
 		{
 			contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext);
-			
 			if(contentVersion == null && useLanguageFallback)
 			{
 				getLogger().info("Did not find it in requested languge... lets check the masterlanguage....");
@@ -247,7 +247,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 */
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML) throws SystemException, Exception
-	{
+	{	    
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
 	    String versionKey = attributeKey + "_contentVersionId";
 		getLogger().info("attributeKey:" + attributeKey);
@@ -260,7 +260,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		else
 		{
         	ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
-			if (contentVersionVO != null) 
+    	
+        	if (contentVersionVO != null) 
 			{
 			    getLogger().info("found one:" + contentVersionVO);
 				attribute = getAttributeValue(db, contentVersionVO, attributeName, escapeHTML);	
@@ -1205,16 +1206,31 @@ public class ContentDeliveryController extends BaseDeliveryController
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
 			ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext);
-			if(contentVersion == null && useLanguageFallBack && content.getRepository() != null)
+			
+			Integer repositoryId = null;
+			Repository repository = content.getRepository();
+			if(repository == null)
 			{
-				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getId(), db);
+			    if(content instanceof MediumContentImpl)
+			        repositoryId = ((MediumContentImpl)content).getRepositoryId();
+			    else if(content instanceof SmallContentImpl)
+			        repositoryId = ((SmallContentImpl)content).getRepositoryId();
+			}
+			else
+			{
+			    repositoryId = repository.getId();
+			}
+			
+			if(contentVersion == null && useLanguageFallBack && repositoryId != null)
+			{
+				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(repositoryId, db);
 				if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
 					contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext);
 			}
-			
+
 			if(contentVersion != null)
 				isValidContent = true;
-				
+			
 			/*
 			Collection versions = content.getContentVersions();
 			Iterator versionsIterator = versions.iterator();
