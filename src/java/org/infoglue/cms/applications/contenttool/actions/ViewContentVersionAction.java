@@ -979,6 +979,11 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		return Collections.EMPTY_LIST;
 	}
 	
+	public ContentVersionVO getMasterContentVersionVO(Integer contentId, Integer repositoryId) throws SystemException, Exception
+	{
+	    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(repositoryId);
+	    return ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
+	}
 	
 	public Integer getCurrentEditorId()
 	{
@@ -1088,5 +1093,10 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     public void setContentVersionVO(ContentVersionVO contentVersionVO)
     {
         this.contentVersionVO = contentVersionVO;
+    }
+    
+    public ContentTypeDefinitionVO getContentTypeDefinitionVO()
+    {
+        return contentTypeDefinitionVO;
     }
 }

@@ -67,7 +67,7 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 
 	public INodeSupplier getNodeSupplier() throws SystemException
 	{
-		ContentNodeSupplier sup =  new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal().getName());
+		ContentNodeSupplier sup =  new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal());
 		sup.setShowLeafs(showLeafs.compareTo("yes")==0);
 		sup.setAllowedContentTypeNames(allowedContentTypeNames);
 		return sup;

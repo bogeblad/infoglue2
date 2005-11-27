@@ -37,6 +37,7 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
@@ -58,13 +59,16 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 	private ArrayList cacheLeafs;
 	private boolean showLeafs = true;
 	private String[] allowedContentTypeNames = null;
+	private InfoGluePrincipal infogluePrincipal = null;
 	
-	public ContentNodeSupplier(Integer repositoryId, String userName) throws SystemException
+	public ContentNodeSupplier(Integer repositoryId, InfoGluePrincipal infogluePrincipal) throws SystemException
 	{
 		ContentVO vo =null;
 		try
 		{
-			vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, userName);
+		    this.infogluePrincipal = infogluePrincipal;
+		    
+			vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, infogluePrincipal.getName());
 			BaseNode rootNode =  new ContentNodeImpl();
 			rootNode.setChildren(true);
 			rootNode.setId(vo.getId());
@@ -165,24 +169,26 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		{
 			ContentVO vo = (ContentVO) i.next();
 			
-			BaseNode node =  new ContentNodeImpl();
-			node.setId(vo.getId());
-			node.setTitle(vo.getName());
-			
-			if (vo.getIsBranch().booleanValue())
+			if(!vo.getName().equals("Meta info folder") || this.infogluePrincipal.getIsAdministrator())
 			{
-				node.setContainer(true);
-				node.setChildren((vo.getChildCount().intValue() > 0));
+				BaseNode node =  new ContentNodeImpl();
+				node.setId(vo.getId());
+				node.setTitle(vo.getName());
 				
-				ret.add(node);
-			}
-			else if(showLeafs)
-			{
-				node.setContainer(false);
-				
-			    cacheLeafs.add(node);				
-			}
-			
+				if (vo.getIsBranch().booleanValue())
+				{
+					node.setContainer(true);
+					node.setChildren((vo.getChildCount().intValue() > 0));
+					
+					ret.add(node);
+				}
+				else if(showLeafs)
+				{
+					node.setContainer(false);
+					
+				    cacheLeafs.add(node);				
+				}
+			}			
 		}
 		
 		return ret;

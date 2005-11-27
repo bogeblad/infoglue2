@@ -60,7 +60,12 @@
 #if($stateId == 1 || $stateId == 2 || $stateId == 3)
 	#set($readonly = "disabled") 
 #else
-	#set($readonly = "")
+	#set($masterContentVersionVO = $this.getMasterContentVersionVO($contentId, $repositoryId))
+	#if($masterContentVersionVO.stateId == 1 || $masterContentVersionVO.stateId == 2 || $masterContentVersionVO.stateId == 3)
+		#set($readonly = "disabled") 
+	#else
+		#set($readonly = "")
+	#end	
 #end
 
 <body class="contenttooledit" onload="javascript:refreshContentToolBar('tool.contenttool.contentVersionHeader', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '$!unrefreshedContentId', '$!changeTypeId', '$!newContentId');" onkeypress="hotKeys(event);">
@@ -160,7 +165,11 @@
 		#end
 		
 		#if($readonly == "disabled")
-			alert("The view is in read only mode as the content version is not in working state. If you want to edit the version you must first change state to working.");
+			#if($contentTypeDefinitionVO.name == "Meta info")
+				alert("$ui.getString("tool.contenttool.readOnlyFollowingSiteNodeVersionLabel")");
+			#else
+				alert("$ui.getString("tool.contenttool.readOnlyLabel")");
+			#end
 		#end
 	}	
 	
@@ -265,7 +274,11 @@
 		<td>
 			#set($dropIndex = 1)
 			$ui.getString("tool.contenttool.stateLabel")<br/>
+			#if($contentTypeDefinitionVO.name == "Meta info")
+			<select class="mediumdrop" disabled name="stateId" onChange="javascript:changeContentState($!contentVersionId);">
+			#else
 			<select class="mediumdrop" name="stateId" onChange="javascript:changeContentState($!contentVersionId);">
+			#end
 				#if($stateId == 0)
 					<option value="0" selected>$ui.getString("tool.contenttool.state.working")</option>
 					<script type="text/javascript">

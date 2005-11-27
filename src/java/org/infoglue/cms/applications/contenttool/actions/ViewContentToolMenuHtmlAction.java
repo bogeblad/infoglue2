@@ -98,7 +98,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
         } 
 		else 
 		{
-			ContentNodeSupplier contentNodeSupplier = new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal().getName());
+			ContentNodeSupplier contentNodeSupplier = new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal());
 			contentNodeSupplier.setShowLeafs(showLeafs.compareTo("yes")==0);
 			contentNodeSupplier.setAllowedContentTypeNames(allowedContentTypeNames);
 			sup = contentNodeSupplier;

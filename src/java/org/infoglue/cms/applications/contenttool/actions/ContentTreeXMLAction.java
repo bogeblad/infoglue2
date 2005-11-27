@@ -82,7 +82,7 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
 
 	public INodeSupplier getNodeSupplier() throws SystemException
 	{
-		return new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal().getName());
+		return new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal());
 	}
 	
 	public List getContentTypeDefinitions() throws Exception
