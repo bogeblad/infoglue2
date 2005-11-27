@@ -106,6 +106,7 @@ import org.infoglue.deliver.util.graphics.ColorHelper;
 import org.infoglue.deliver.util.graphics.FOPHelper;
 import org.infoglue.deliver.util.graphics.FontHelper;
 import org.infoglue.deliver.util.graphics.ImageRenderer;
+import org.infoglue.deliver.util.rss.RssHelper;
 import org.infoglue.deliver.util.webservices.InfoGlueWebServices;
 import org.infoglue.deliver.util.webservices.WebServiceHelper;
 
@@ -445,6 +446,15 @@ public class BasicTemplateController implements TemplateController
 	public DesEncryptionHelper getDesEncryptionHelper()
 	{
 		return new DesEncryptionHelper();
+	}
+
+	/**
+	 * This method gets the rss utility.
+	 */
+	
+	public RssHelper getRssHelper()
+	{
+		return new RssHelper();
 	}
 
 	/**
@@ -1445,7 +1455,7 @@ public class BasicTemplateController implements TemplateController
 				
 				StringWriter cacheString = new StringWriter();
 				PrintWriter cachedStream = new PrintWriter(cacheString);
-				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue);
+				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue, true);
 				attributeValue = cacheString.toString();
 				//logger.info("result:" + result);
 			}
@@ -1492,7 +1502,7 @@ public class BasicTemplateController implements TemplateController
 								
 				StringWriter cacheString = new StringWriter();
 				PrintWriter cachedStream = new PrintWriter(cacheString);
-				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue);
+				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue, true);
 				attributeValue = cacheString.toString();
 			}
 		}
@@ -1533,7 +1543,7 @@ public class BasicTemplateController implements TemplateController
 				
 				StringWriter cacheString = new StringWriter();
 				PrintWriter cachedStream = new PrintWriter(cacheString);
-				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue);
+				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue, true);
 				attributeValue = cacheString.toString();
 			}
 		}

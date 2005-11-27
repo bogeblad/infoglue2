@@ -56,6 +56,16 @@ public class VelocityTemplateProcessor
 	
 	public void renderTemplate(Map params, PrintWriter pw, String templateAsString) throws Exception 
 	{
+	    renderTemplate(params, pw, templateAsString, false);
+	}
+	
+	/**
+	 * This method takes arguments and renders a template given as a string to the specified outputstream.
+	 * Improve later - cache for example the engine.
+	 */
+	
+	public void renderTemplate(Map params, PrintWriter pw, String templateAsString, boolean forceVelocity) throws Exception 
+	{
 		try
 		{
 		    Timer timer = new Timer();
@@ -67,18 +77,30 @@ public class VelocityTemplateProcessor
 		    }
 		    else
 		    {
-				Velocity.init();
-		
-		        VelocityContext context = new VelocityContext();
-		        Iterator i = params.keySet().iterator();
-		        while(i.hasNext())
-		        {
-		        	String key = (String)i.next();
-		            context.put(key, params.get(key));
-		        }
+		        boolean useFreeMarker = false;
+		        String useFreeMarkerString = CmsPropertyHandler.getProperty("useFreeMarker");
+		        if(useFreeMarkerString != null && useFreeMarkerString.equalsIgnoreCase("true"))
+		            useFreeMarker = true;
 		        
-		        Reader reader = new StringReader(templateAsString);
-		        boolean finished = Velocity.evaluate(context, pw, "Generator Error", reader);        
+		        if(useFreeMarker && !forceVelocity)
+		        {
+		            FreemarkerTemplateProcessor.getProcessor().renderTemplate(params, pw, templateAsString);
+		        }
+		        else
+		        {
+					Velocity.init();
+			
+			        VelocityContext context = new VelocityContext();
+			        Iterator i = params.keySet().iterator();
+			        while(i.hasNext())
+			        {
+			        	String key = (String)i.next();
+			            context.put(key, params.get(key));
+			        }
+			        
+			        Reader reader = new StringReader(templateAsString);
+			        boolean finished = Velocity.evaluate(context, pw, "Generator Error", reader);        
+		        }
 		    }
 
 		    timer.printElapsedTime("End renderTemplate");

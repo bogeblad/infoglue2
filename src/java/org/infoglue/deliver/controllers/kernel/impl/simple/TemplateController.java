@@ -52,6 +52,7 @@ import org.infoglue.deliver.util.ObjectConverter;
 import org.infoglue.deliver.util.charts.ChartHelper;
 import org.infoglue.deliver.util.graphics.ColorHelper;
 import org.infoglue.deliver.util.graphics.FontHelper;
+import org.infoglue.deliver.util.rss.RssHelper;
 import org.infoglue.deliver.util.webservices.WebServiceHelper;
 
 
@@ -157,6 +158,11 @@ public interface TemplateController
 	 * This method gets the DesEncryptionHelper.
 	 */
 	public DesEncryptionHelper getDesEncryptionHelper();
+
+	/**
+	 * This method gets the rss utility.
+	 */
+	public RssHelper getRssHelper();
 
     /**
      * This method gets the object converter utility.
