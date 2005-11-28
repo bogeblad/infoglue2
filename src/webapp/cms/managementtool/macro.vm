@@ -49,17 +49,19 @@
 <head>
 	<title>$ui.getString($titleKey)</title>
 
+	#*
 	<script type="text/javascript">
 	   _editor_url = "applications/HTMLArea/";
 	   _editor_lang = "en";
 	</script>
-
+	*#
+	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/calendar1.js"></script>
 	<script type="text/javascript" src="script/editor.js"></script>
-	<script type="text/javascript" src="applications/HTMLArea/InfoGlueHTMLArea.js"></script>
-	<script type="text/javascript" src="applications/HTMLArea/htmlarea.js"></script>
+	##<script type="text/javascript" src="applications/HTMLArea/InfoGlueHTMLArea.js"></script>
+	##<script type="text/javascript" src="applications/HTMLArea/htmlarea.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
