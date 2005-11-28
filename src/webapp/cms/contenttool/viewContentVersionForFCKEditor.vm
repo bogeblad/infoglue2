@@ -79,6 +79,8 @@
 	var attributesStatus = new Array();
 	var plainEditors = new Array();
 	var htmlEditors = new Array();
+	var attributeNames = new Array();
+	var attributeTypes = new Array();
 	
 	//*******************************************
 	// This function changes language version
@@ -221,6 +223,8 @@
 	var repositoryId 		= "$repositoryId";
 	var contentId 			= "$contentId";
 	var languageId 			= "$languageId";
+	var name 				= "$name";
+	var contentTypeDefinitionName = "$contentTypeDefinitionName";
 	
 	var count = 0;
 	var minute = 60000;
@@ -465,6 +469,8 @@
 
 		<script type="text/javascript">
 		<!--
+			attributeNames["$velocityCount"] = "${attribute.name}";
+			attributeTypes["$velocityCount"] = "${attribute.inputType}";
 			attributesStatus["${attribute.name}ActivateExtendedEditorOnLoad"] = $activateExtendedEditorOnLoad;
 		-->
 		</script>
@@ -512,6 +518,7 @@
 								#if($enableComponentPropertiesEditor == "true")
 									<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a> 
 								#end
+								<span id="editor_plugin_space_${attribute.name}"></span>
 							</td>
 					    </tr>
 					</table>
@@ -907,6 +914,7 @@
 		<tr>
 			<td colspan="3">
 				$ui.getString("tool.contenttool.associatedAttachments")<br/>
+				<span id="assetsTable" name="assetsTable">
 				<table border="0" width="100%" cellspacing="0">
 				<tr>
 					#set($counter = 0)
@@ -938,6 +946,7 @@
 					#end	
 				</tr>
 				</table>
+				</span>
 			</td>
 		</tr>
 				
@@ -1008,6 +1017,25 @@
 			validateAndSubmitContentForm();		
 		}
 	
+		function validateAndSubmitContentFormBackground()
+		{
+			/*
+			 * Save current target and action
+			 */
+			var target = document.editForm.target;
+			var action = document.editForm.action;
+			
+			document.editForm.target = "updateframe";
+			document.editForm.action = "UpdateContentVersion!background.action";
+			validateAndSubmitContentForm();		
+			inaktiveTime = 0;
+		
+			/*
+			 * Restore target and action
+			 */
+			document.editForm.target = target;
+			document.editForm.action = action;
+		}
 		
 		function buildVersionValue()
 		{
@@ -1120,6 +1148,10 @@
 	<input type="hidden" name="languageId" value="$languageId">
 </form>
 
+</div>
+
+<div style="display:none;">
+<iframe width=0 height=0 border=0 frameborder=0 name="updateframe"></iframe>
 </div>
 
 <script type="text/javascript">
