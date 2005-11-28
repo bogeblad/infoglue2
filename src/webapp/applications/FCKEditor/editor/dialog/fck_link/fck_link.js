@@ -14,7 +14,6 @@
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
  */
-
 var oEditor		= window.parent.InnerDialogLoaded() ;
 var FCK			= oEditor.FCK ;
 var FCKLang		= oEditor.FCKLang ;
@@ -119,7 +118,10 @@ oParser.CreateEMailUri = function( address, subject, body )
 // oLink: The actual selected link in the editor.
 var oLink = FCK.Selection.MoveToAncestorNode( 'A' ) ;
 if ( oLink )
+{
 	FCK.Selection.SelectNode( oLink ) ;
+	window.top.focus();	
+}
 
 window.onload = function()
 {
