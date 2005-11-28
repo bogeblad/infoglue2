@@ -404,13 +404,16 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
 			Integer languageId = masterLanguageVO.getLanguageId();
 			
-			List boundContents = ContentController.getBoundContents(serviceBindingId); 			
-			if(boundContents.size() > 0)
+			if(serviceBindingId != null)
 			{
-				ContentVO contentVO = (ContentVO)boundContents.get(0);
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
-				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-					isMetaInfoInWorkingState = true;
+				List boundContents = ContentController.getBoundContents(serviceBindingId); 			
+				if(boundContents.size() > 0)
+				{
+					ContentVO contentVO = (ContentVO)boundContents.get(0);
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
+					if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+						isMetaInfoInWorkingState = true;
+				}
 			}
 			
 			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
@@ -434,15 +437,18 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
 			Integer languageId = masterLanguageVO.getLanguageId();
 			
-			List boundContents = ContentController.getBoundContents(serviceBindingId); 			
-			if(boundContents.size() > 0)
+			if(serviceBindingId != null)
 			{
-				ContentVO contentVO = (ContentVO)boundContents.get(0);
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
-				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-					isMetaInfoInWorkingState = true;
-			}
-			
+				List boundContents = ContentController.getBoundContents(serviceBindingId); 			
+				if(boundContents.size() > 0)
+				{
+					ContentVO contentVO = (ContentVO)boundContents.get(0);
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
+					if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+						isMetaInfoInWorkingState = true;
+				}
+			}	
+
 			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
 			    return new ImageButton(CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&showSimple=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");

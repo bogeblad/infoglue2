@@ -456,10 +456,11 @@ public class SiteNodeVersionController extends BaseController
 			while(serviceBindingIterator.hasNext())
 			{
 				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-				
 				if(serviceBinding.getAvailableServiceBinding().getName().equalsIgnoreCase("Meta information"))
 				{
 				    deleteMetaInfoForSiteNodeVersion(db, serviceBinding);
+				    serviceBindingIterator.remove();
+				    db.remove(serviceBinding);
 				}
 				else
 				{			
