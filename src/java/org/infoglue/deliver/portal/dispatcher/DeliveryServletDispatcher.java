@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import webwork.action.Action;
 import webwork.action.ActionContext;
@@ -38,7 +39,7 @@ import webwork.util.ServletValueStack;
  *
  * @author Rickard Öberg (rickard@middleware-company.com)
  * @author Matt Baldree (matt@smallleap.com)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class DeliveryServletDispatcher extends ServletDispatcher
 {
@@ -60,7 +61,7 @@ public class DeliveryServletDispatcher extends ServletDispatcher
    public void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException
    {
        //wrap request if needed
-       if(aRequest.getContextPath().indexOf("infoglueCMS") > -1)
+       if(CmsPropertyHandler.getApplicationName().equalsIgnoreCase("cms"))
        {
            super.service(aRequest, aResponse);
            return;
