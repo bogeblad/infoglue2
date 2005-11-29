@@ -99,7 +99,7 @@ public class SiteNodeController extends BaseController
 	            siteNode = (SiteNode)db.load(org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl.class, siteNodeId, Database.ReadOnly);
     		else
     		{
-                logger.warn("Loading " + siteNodeId + " in read/write mode.");
+                logger.info("Loading " + siteNodeId + " in read/write mode.");
 	            siteNode = (SiteNode)db.load(org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl.class, siteNodeId);
     		}
     	}
