@@ -28,9 +28,15 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
 
 /**
@@ -44,14 +50,19 @@ public class RemoteContentServiceImpl
 {
     private final static Logger logger = Logger.getLogger(RemoteContentServiceImpl.class.getName());
 
-    private static ContentController contentController = ContentController.getContentController();
-    private static ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
+	/**
+	 * The principal executing the workflow.
+	 */
+	private InfoGluePrincipal principal;
+
+    private static ContentControllerProxy contentControllerProxy = ContentControllerProxy.getController();
+    private static ContentVersionControllerProxy contentVersionControllerProxy = ContentVersionControllerProxy.getController();
     
     /**
      * Inserts a new Content including versions etc.
      */
     
-    public int createContent(ContentVO contentVO, int parentContentId, int contentTypeDefinitionId, int repositoryId) 
+    public int createContent(final String principalName, ContentVO contentVO, int parentContentId, int contentTypeDefinitionId, int repositoryId) 
     {
         int newContentId = 0;
         
@@ -59,14 +70,19 @@ public class RemoteContentServiceImpl
         logger.info("Creating content through webservice....");
         logger.info("***************************************");
         
+        logger.warn("parentContentId:" + parentContentId);
+        logger.warn("contentTypeDefinitionId:" + contentTypeDefinitionId);
+        logger.warn("repositoryId:" + repositoryId);
+        
         try
         {
-	        ContentVO newContentVO = contentController.create(new Integer(parentContentId), new Integer(contentTypeDefinitionId), new Integer(repositoryId), contentVO);
+            initializePrincipal(principalName);
+	        ContentVO newContentVO = contentControllerProxy.acCreate(this.principal, new Integer(parentContentId), new Integer(contentTypeDefinitionId), new Integer(repositoryId), contentVO);
 	        newContentId = newContentVO.getId().intValue();
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
         return newContentId;
@@ -76,7 +92,7 @@ public class RemoteContentServiceImpl
      * Inserts a new ContentVersion.
      */
     
-    public int createContentVersion(ContentVersionVO contentVersionVO, int contentId, int languageId) 
+    public int createContentVersion(final String principalName, ContentVersionVO contentVersionVO, int contentId, int languageId) 
     {
         int newContentVersionId = 0;
         
@@ -86,17 +102,45 @@ public class RemoteContentServiceImpl
         
         try
         {
-	        ContentVersionVO newContentVersionVO = contentVersionController.create(new Integer(contentId), new Integer(languageId), contentVersionVO, null);
+            initializePrincipal(principalName);
+	        ContentVersionVO newContentVersionVO = contentVersionControllerProxy.acCreate(this.principal, new Integer(contentId), new Integer(languageId), contentVersionVO);
 	        newContentVersionId = newContentVersionVO.getId().intValue();
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
         }
         
         return newContentVersionId;
     }
     
  
+	/**
+	 * Checks if the principal exists and if the principal is allowed to create the workflow.
+	 * 
+	 * @param userName the name of the user.
+	 * @param workflowName the name of the workflow to create.
+	 * @throws SystemException if the principal doesn't exists or doesn't have permission to create the workflow.
+	 */
+	private void initializePrincipal(final String userName) throws SystemException 
+	{
+		try 
+		{
+			principal = UserControllerProxy.getController().getUser(userName);
+		}
+		catch(SystemException e)
+		{
+			throw e;
+		}
+		catch(Exception e)
+		{
+			throw new SystemException(e);
+		}
+		if(principal == null) 
+		{
+			throw new SystemException("No such principal [" + userName + "].");
+		}
+	}
+
 
 }
