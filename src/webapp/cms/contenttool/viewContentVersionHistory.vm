@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginContentTool("tool.contenttool.contentDetailsHeader" "Submit for publish" "" "0" "0" "0")
+
+<script language="JavaScript">
+<!--
+		function checkMarkedVersions()
+		{
+			var listForm = document.listForm;
+			var lengthselSiteNodeVersions = null;
+			var lengthselContentVersions = null;
+			var lengthsit = null;
+			var ret = 0;
+			if (listForm.selSiteNodeVersions != null)
+				lengthselSiteNodeVersions = listForm.selSiteNodeVersions.length;
+			if (listForm.selContentVersions != null)				
+				lengthselContentVersions = listForm.selContentVersions.length;
+			if (listForm.sit != null)
+				lengthsit = listForm.sit.length;
+
+			if (lengthselSiteNodeVersions == null && listForm.selSiteNodeVersions != null)
+		  	{
+		  		if (listForm.selSiteNodeVersions.checked)
+			    	ret++;
+		  	}
+			else
+			{
+			  	for (i=0; i<lengthselSiteNodeVersions; i++)
+			   		if (listForm.selSiteNodeVersions[i].checked)
+			    		ret++;
+			}
+
+			if (lengthselContentVersions == null && listForm.selContentVersions != null)
+		  	{
+		  		if (listForm.selContentVersions.checked)
+			    	ret++;
+		  	}
+			else
+			{
+			  	for (i=0; i<lengthselContentVersions; i++)
+			   		if (listForm.selContentVersions[i].checked)
+			    		ret++;
+			}
+			    		
+			if (lengthsit == null && listForm.sit != null)
+		  	{
+		  		if (listForm.sit.checked)
+			    	ret++;
+		  	}
+		  	else
+		  	{
+			  	for (i=0; i<lengthsit; i++)
+			   		if (listForm.sit[i].checked)
+			    		ret++;
+			}
+		    		
+			return ret;
+		}
+		
+		function checkAll()
+		{
+			checkAllBoxes(document.listForm.selSiteNodeVersions);
+			checkAllBoxes(document.listForm.selContentVersions);					
+		}
+
+		function uncheckAll()
+		{
+			uncheckAllBoxes(document.listForm.selSiteNodeVersions);
+			uncheckAllBoxes(document.listForm.selContentVersions);		
+		}
+
+
+		
+		function submitToPublish(attemptDirectPublishing)
+		{
+			var listForm = document.listForm;
+			var commentElm = document.getElementById("xversionComment");
+			var overrideVersionModifyerElm = document.getElementById("xoverrideVersionModifyer");
+			if (checkMarkedVersions() == 0)
+			{
+				alert('Select one or more versions to publish');
+			  	return;
+			}
+			else
+			{
+				listForm.action = "ChangeMultiContentStatePublish.action"
+				listForm.versionComment.value = commentElm.value;
+				if(overrideVersionModifyerElm.checked == true)
+					listForm.overrideVersionModifyer.value = overrideVersionModifyerElm.value;
+				else
+					listForm.overrideVersionModifyer.value = "false";
+				
+				listForm.attemptDirectPublishing.value = attemptDirectPublishing;
+				listForm.submit();
+			}
+		}
+-->
+</script>
+
+<div class="fullymarginalized">
+
+<table width="95%" border="0">
+<tr>
+	<td>
+		<table width="300" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td colspan="3" class="biglabel">$ui.getString("tool.contenttool.contentVersionHistory.label")</td>
+			</tr>		
+			<tr>
+				<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+			</tr>
+		</table>
+	</td>
+<tr>
+	<td colspan="2">
+		<br/><br/>
+		The marked contentversions will be submitted for publishing.<br><br>
+	</td>
+</tr>
+<tr>
+	<td colspan="2">
+
+#set($lvBorder = 0) 
+#set($lvConstraint = -1) 
+#lvHead(["Name"] "Publish items" "" "" "")
+
+#hiddenField("contentId" $contentId)
+#hiddenField("versionComment" $!versionComment)
+#hiddenField("overrideVersionModifyer" $!overrideVersionModifyer)
+#hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
+#hiddenField("repositoryId" $!repositoryId)
+
+#set($lvChkBoxName = "selContentVersions")
+#set($cnt = 0)
+#foreach($cv in $contentVersionVOList)
+
+	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() - $cv.getLanguageName() ($cv.getId())"] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $cv.getId())
+
+#end
+
+#set($lvChkBoxName = "selSiteNodeVersions")
+#foreach($snv in $siteNodeVersionVOList)
+
+	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())"] )
+	#set($cnt = $cnt + 1)
+	
+	#lvAddRow($row $cnt $snv.getId())
+
+#end
+
+#lvEnd()
+</td>
+</tr>
+</table>
+	
+</div>
+
+#endContentTool()
+
