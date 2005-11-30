@@ -430,4 +430,88 @@
         </attribute>
     </tag>
 	
+	
+	<tag>
+	    <name>remoteContentService</name>
+	    <tagclass>org.infoglue.deliver.taglib.content.RemoteContentServiceTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+	    <info></info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>targetEndpointAddress</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>operationName</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>principal</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>
+	
+	<tag>
+	    <name>contentParameter</name>
+	    <tagclass>org.infoglue.deliver.taglib.content.ContentParameterTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+	    <info></info>
+        <attribute>
+    	    <name>name</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>parentContentId</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>contentTypeDefinitionId</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>repositoryId</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>
+
+	<tag>
+	    <name>contentVersionParameter</name>
+	    <tagclass>org.infoglue.deliver.taglib.content.ContentVersionParameterTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+	    <info></info>
+        <attribute>
+    	    <name>languageId</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>
+	
+	<tag>
+	    <name>contentVersionAttributeParameter</name>
+	    <tagclass>org.infoglue.deliver.taglib.content.ContentVersionAttributeParameterTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>name</name>
+	    	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>value</name>
+	    	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+	
 </taglib>

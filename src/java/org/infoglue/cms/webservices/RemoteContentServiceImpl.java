@@ -24,9 +24,15 @@
 package org.infoglue.cms.webservices;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -37,6 +43,8 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
 /**
@@ -115,6 +123,113 @@ public class RemoteContentServiceImpl
     }
     
  
+    /**
+     * Inserts a new Content including versions etc.
+     */
+    
+    public Boolean createContents(final String principalName, final Object[] inputsArray/*List contents*/) 
+    {
+        List newContentIdList = new ArrayList();
+        
+        logger.info("****************************************");
+        logger.info("Creating contents through webservice....");
+        logger.info("****************************************");
+        
+        logger.warn("principalName:" + principalName);
+        logger.warn("inputsArray:" + inputsArray);
+        //logger.warn("contents:" + contents);
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            List contents = (List) serializer.deserialize(inputsArray);
+	        logger.warn("contents:" + contents);
+
+            initializePrincipal(principalName);
+	        Iterator contentIterator = contents.iterator();
+	        while(contentIterator.hasNext())
+	        {
+	            //String value = (String)contentIterator.next();
+	            //System.out.println("value:" + value);
+	            
+	            Map content = (Map)contentIterator.next();
+	            
+	            String name 					= (String)content.get("name");
+	            Integer contentTypeDefinitionId = (Integer)content.get("contentTypeDefinitionId");
+	            Integer repositoryId 			= (Integer)content.get("repositoryId");
+	            Integer parentContentId 		= (Integer)content.get("parentContentId");
+	            
+	            System.out.println("name:" + name);
+	            System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
+	            System.out.println("repositoryId:" + repositoryId);
+	            System.out.println("parentContentId:" + parentContentId);
+	            
+	           	ContentVO contentVO = new ContentVO();
+	            System.out.println("contentVO:" + contentVO);
+	            contentVO.setName(name);
+	            contentVO.setContentTypeDefinitionId(contentTypeDefinitionId);
+	            contentVO.setRepositoryId(repositoryId);
+	            contentVO.setParentContentId(parentContentId);
+	            
+	            if(contentVO.getCreatorName() == null)
+	                contentVO.setCreatorName(this.principal.getName());
+	            
+	            ContentVO newContentVO = contentControllerProxy.acCreate(this.principal, contentVO.getParentContentId(), contentVO.getContentTypeDefinitionId(), contentVO.getRepositoryId(), contentVO);
+	            
+	            List contentVersions = (List)content.get("contentVersions");
+	            Iterator contentVersionIterator = contentVersions.iterator();
+	            while(contentVersionIterator.hasNext())
+	            {
+	                Map contentVersion = (Map)contentVersionIterator.next();
+	                
+	                Integer languageId = (Integer)contentVersion.get("languageId");
+	                
+	                ContentVersionVO contentVersionVO = new ContentVersionVO();
+	                contentVersionVO.setLanguageId(languageId);
+	                
+	                if(contentVersionVO.getVersionModifier() == null)
+	                    contentVersionVO.setVersionModifier(this.principal.getName());
+	                
+	                Map attributes = (Map)contentVersion.get("contentVersionAttributes");
+	                
+	                DOMBuilder domBuilder = new DOMBuilder();
+	                Document document = domBuilder.createDocument();
+	                
+	                Element rootElement = domBuilder.addElement(document, "root");
+	                domBuilder.addAttribute(rootElement, "xmlns", "x-schema:Schema.xml");
+	                Element attributesRoot = domBuilder.addElement(rootElement, "attributes");
+	                
+	                Iterator attributesIterator = attributes.keySet().iterator();
+	                while(attributesIterator.hasNext())
+	                {
+	                    String attributeName  = (String)attributesIterator.next();
+	                    String attributeValue = (String)attributes.get(attributeName);
+		                
+	                    Element attribute = domBuilder.addElement(attributesRoot, attributeName);
+		                domBuilder.addCDATAElement(attribute, attributeValue);
+	                }	                
+
+	                contentVersionVO.setVersionValue(document.asXML());
+	                
+	    	        ContentVersionVO newContentVersionVO = contentVersionControllerProxy.acCreate(this.principal, newContentVO.getId(), languageId, contentVersionVO);
+	    	        Integer newContentVersionId = newContentVersionVO.getId();
+	            }
+	            
+	            newContentIdList.add(newContentVO.getId());
+	            
+	        }
+	        logger.warn("Done with contents..");
+
+        }
+        catch(Throwable e)
+        {
+            logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
+        }
+        
+        return new Boolean(true);
+    }
+
+    
 	/**
 	 * Checks if the principal exists and if the principal is allowed to create the workflow.
 	 * 

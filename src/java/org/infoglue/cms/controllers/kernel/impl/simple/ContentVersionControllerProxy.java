@@ -127,7 +127,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		Map hashMap = new HashMap();
 		hashMap.put("contentId", contentId);
     	
-		intercept(hashMap, "ContentVersion.Create", infogluePrincipal);
+		intercept(hashMap, "Content.CreateVersion", infogluePrincipal);
 
 		return ContentVersionController.getContentVersionController().create(contentId, languageId, contentVersionVO, null);
 	}   
