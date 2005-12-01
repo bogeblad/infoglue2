@@ -41,8 +41,10 @@ import org.exolab.castor.jdo.QueryResults;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is a helper class for the use case handle InterceptionPoint
@@ -52,7 +54,43 @@ import java.util.List;
 
 public class InterceptionPointController extends BaseController
 {
-	
+	public final static Map systemInterceptionPoints = new HashMap();
+    
+	static
+	{
+	    systemInterceptionPoints.put("Category.Read", new InterceptionPointVO("Category", "Category.Read", "This intercepts any read towards a category", true));
+	    systemInterceptionPoints.put("Content.Read", new InterceptionPointVO("Content", "Content.Read", "Intercepts the read of a content", true));
+	    systemInterceptionPoints.put("Content.Write", new InterceptionPointVO("Content", "Content.Write", "Intercepts the write of a content", true));
+	    systemInterceptionPoints.put("Content.Create", new InterceptionPointVO("Content", "Content.Create", "Intercepts the creation of a new content or folder", true));
+	    systemInterceptionPoints.put("Content.Delete", new InterceptionPointVO("Content", "Content.Delete", "Intercepts the deletion of a content", true));
+	    systemInterceptionPoints.put("Content.Move", new InterceptionPointVO("Content", "Content.Move", "Intercepts the movement of a content", true));
+	    systemInterceptionPoints.put("Content.SubmitToPublish", new InterceptionPointVO("Content", "Content.SubmitToPublish", "Intercepts the submittance to publish of all content versions", true));
+	    systemInterceptionPoints.put("Content.ChangeAccessRights", new InterceptionPointVO("Content", "Content.ChangeAccessRights", "Intercepts the attempt to change access rights", true));
+	    systemInterceptionPoints.put("Content.CreateVersion", new InterceptionPointVO("Content", "Content.CreateVersion", "Intercepts the creation of a new contentversion", true));
+	    systemInterceptionPoints.put("ContentTool.Read", new InterceptionPointVO("ContentTool", "ContentTool.Read", "Gives a user access to the content tool", false));
+	    systemInterceptionPoints.put("ContentTypeDefinition.Read", new InterceptionPointVO("ContentTypeDefinition", "ContentTypeDefinition.Read", "This point checks access to read/use a content type definition", true));
+	    systemInterceptionPoints.put("ContentVersion.Delete", new InterceptionPointVO("ContentVersion", "ContentVersion.Delete", "Intercepts the deletion of a contentversion", true));
+	    systemInterceptionPoints.put("ContentVersion.Write", new InterceptionPointVO("ContentVersion", "ContentVersion.Write", "Intercepts the editing of a contentversion", true));
+	    systemInterceptionPoints.put("ContentVersion.Read", new InterceptionPointVO("ContentVersion", "ContentVersion.Read", "Intercepts the read of a contentversion", true));
+	    systemInterceptionPoints.put("ContentVersion.Publish", new InterceptionPointVO("ContentVersion", "ContentVersion.Publish", "Intercepts the direct publishing of a content version", true));
+	    systemInterceptionPoints.put("ManagementTool.Read", new InterceptionPointVO("ManagementTool", "ManagementTool.Read", "Gives a user access to the management tool", false));
+	    systemInterceptionPoints.put("MyDesktopTool.Read", new InterceptionPointVO("MyDesktopTool", "MyDesktopTool.Read", "Gives the user access to the mydesktop tool", false));
+	    systemInterceptionPoints.put("PublishingTool.Read", new InterceptionPointVO("PublishingTool", "PublishingTool.Read", "Gives the user access to the publishing tool", false));
+	    systemInterceptionPoints.put("Repository.Read", new InterceptionPointVO("Repository", "Repository.Read", "Gives a user access to look at a repository", true));
+	    systemInterceptionPoints.put("Repository.ReadForBinding", new InterceptionPointVO("Repository", "Repository.ReadForBinding", "This point intercepts when a user tries to read the repository in a binding dialog", true));
+	    systemInterceptionPoints.put("SiteNodeVersion.Read", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.Read", "Intercepts the read of a SiteNodeVersion", true));
+	    systemInterceptionPoints.put("SiteNodeVersion.Write", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.Write", "Intercepts the write of a SiteNodeVersion", true));
+	    systemInterceptionPoints.put("SiteNodeVersion.CreateSiteNode", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.CreateSiteNode", "Intercepts the creation of a new sitenode", true));
+	    systemInterceptionPoints.put("SiteNodeVersion.DeleteSiteNode", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.DeleteSiteNode", "Intercepts the deletion of a sitenode", true));
+	    systemInterceptionPoints.put("SiteNodeVersion.MoveSiteNode", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.MoveSiteNode", "Intercepts the movement of a sitenode", true));
+	    systemInterceptionPoints.put("SiteNodeVersion.SubmitToPublish", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.SubmitToPublish", "Intercepts the submittance to publish of all content versions", true));
+	    systemInterceptionPoints.put("SiteNodeVersion.ChangeAccessRights", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.ChangeAccessRights", "Intercepts the attempt to change access rights", true));
+	    systemInterceptionPoints.put("SiteNodeVersion.Publish", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.Publish", "Intercepts the direct publishing of a siteNode version", true));
+	    systemInterceptionPoints.put("StructureTool.Read", new InterceptionPointVO("StructureTool", "StructureTool.Read", "Gives a user access to the structure tool", false));
+	    systemInterceptionPoints.put("StructureTool.SaveTemplate", new InterceptionPointVO("StructureTool", "StructureTool.SaveTemplate", "This interception point limits who get the save-button in the toolbar", false));
+	    systemInterceptionPoints.put("StructureTool.Palette", new InterceptionPointVO("StructureTool", "StructureTool.Palette", "This interception point limits who sees the toolbar", false));
+	}
+    
 	/**
 	 * Factory method
 	 */

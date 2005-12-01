@@ -33,7 +33,9 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -225,7 +227,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
 		try
 		{
-			return AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), interceptionPointName, extraParameter);
+		    return AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), interceptionPointName, extraParameter);
 		}
 		catch (SystemException e)
 		{
@@ -234,7 +236,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 	}
 
-	
 	/**
 	 * Get the username for the currently logged in user
 	 */

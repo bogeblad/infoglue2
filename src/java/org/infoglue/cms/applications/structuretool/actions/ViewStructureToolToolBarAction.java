@@ -359,7 +359,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	        workingUrl = CmsPropertyHandler.getProperty("previewDeliveryUrl");
 	    }
 	    
-		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
+		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8") + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
 		
 		
 		return imageButton;
@@ -418,7 +418,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			
 			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
-			    return new ImageButton(CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
+			    return new ImageButton(CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1" + "&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
 			    //return new ImageButton("ViewSiteNodePageComponents.action?siteNodeId=" + this.siteNodeId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
 			else
 				return new ImageButton(true, "javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
@@ -451,7 +451,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 
 			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
-			    return new ImageButton(CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&showSimple=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
+			    return new ImageButton(CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&showSimple=true" + "&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
 			    //return new ImageButton("ViewSiteNodePageComponents.action?siteNodeId=" + this.siteNodeId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
 			else
 				return new ImageButton(true, "javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
@@ -471,15 +471,6 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	{
 		return new ImageButton(this.getCMSBaseUrl() + "/ViewListSiteNodeVersion.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.publishSiteNode"), "tool.structuretool.publishSiteNode.header");	
 	}
-
-/*
-	private ImageButton getViewPageExtranetAccessButton() throws Exception
-	{
-		String returnAddress = "ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId;
-		//return new ImageButton("ViewSiteNodeAccessRights.action?siteNodeId=" + this.siteNodeId + "&name=SiteNode&value=" + this.siteNodeId + "&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeAccessRights"), "Site Node Access Rights");
-		return new ImageButton("ViewAccessRights.action?siteNodeId=" + this.siteNodeId + "&name=SiteNode&value=" + this.siteNodeId + "&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeAccessRights"), "Site Node Access Rights");
-	}
-*/
 
 	private ImageButton getAccessRightsButton() throws Exception
 	{

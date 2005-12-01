@@ -36,6 +36,17 @@ public class InterceptionPointVO  implements BaseEntityVO
     private java.lang.String description;
     private java.lang.Boolean usesExtraDataForAccessControl;
 
+    public InterceptionPointVO()
+    {
+    }
+
+    public InterceptionPointVO(String category, String name, String description, boolean usesExtraDataForAccessControl)
+    {
+        this.category = category;
+        this.name = name;
+        this.description = description;
+        this.usesExtraDataForAccessControl = new Boolean(usesExtraDataForAccessControl);
+    }
     
     public java.lang.Integer getInterceptionPointId()
     {

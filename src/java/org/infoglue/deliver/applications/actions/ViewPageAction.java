@@ -312,7 +312,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			getLogger().info("A pageKey:" + pageKey);
 			String pagePath	= null;
-	    		
+	    	
 			boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
 			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
@@ -758,6 +758,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
     public void setRecacheCall(boolean isRecacheCall)
     {
         this.isRecacheCall = isRecacheCall;
+    }
+    
+    public void setCmsUserName(String userName)
+    {
+        this.getHttpSession().setAttribute("cmsUserName", userName);
     }
     
 }

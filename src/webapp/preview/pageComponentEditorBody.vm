@@ -1,6 +1,7 @@
 <div id="emptySlotMenu" class="skin0">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponent</div>
 <hr>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">$viewSource</div>
 </div>
 
@@ -11,6 +12,7 @@
 <hr>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
 <hr>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();"><nobr>View Source</nobr></div>
 </div>
 
@@ -19,5 +21,6 @@
 <hr>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
 <hr>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">View Source</div>
 </div>

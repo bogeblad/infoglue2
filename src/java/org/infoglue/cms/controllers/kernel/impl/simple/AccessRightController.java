@@ -849,6 +849,20 @@ public class AccessRightController extends BaseController
 		getLogger().info("groups:" + groups.size());
 		
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
+		if(interceptionPointVO == null && InterceptionPointController.systemInterceptionPoints.containsKey(interceptionPointName))
+		{
+		    try
+		    {
+		        InterceptionPointController.getController().create((InterceptionPointVO)InterceptionPointController.systemInterceptionPoints.get(interceptionPointName), db);
+		    }
+		    catch(Exception e)
+		    {
+		        getLogger().error("An error occurred when we tried to create an interception point that was missing and needed by the system:" + e.getMessage(), e);
+		        throw new SystemException("An error occurred when we tried to create an interception point that was missing and needed by the system:" + e.getMessage(), e);
+		    }
+		    return false;
+		}
+		
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), extraParameters, db);
 		
 		Iterator accessRightListIterator = accessRightList.iterator();

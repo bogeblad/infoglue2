@@ -24,9 +24,11 @@
 package org.infoglue.deliver.invokers;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PageTemplateController;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.exception.*;
@@ -238,9 +240,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorBody.vm"));
 			
 			String addComponentHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.addComponentHTML");
+			String pageComponentsHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.pageComponentsHTML");
 			String viewSourceHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.viewSourceHTML");
 
 		    extraBody = extraBody.replaceAll("\\$addComponent", addComponentHTML);
+		    extraBody = extraBody.replaceAll("\\$pageComponents", pageComponentsHTML);
 		    extraBody = extraBody.replaceAll("\\$viewSource", viewSourceHTML);
 		    
 		    //List tasks = getTasks();
@@ -809,6 +813,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String addComponentHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.addComponentHTML");
 		String deleteComponentHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.deleteComponentHTML");
 		String propertiesHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.propertiesHTML");
+		String pageComponentsHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.pageComponentsHTML");
 		String viewSourceHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.viewSourceHTML");
 
 		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">" + editHTML + "</div>");
@@ -817,6 +822,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("<div class=\"igmenudivider\"><img src=\"images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
 		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponent();\">" + propertiesHTML + "</div>");
 		sb.append("<div class=\"igmenudivider\"><img src=\"images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
+		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:toggleDiv('pageComponents');\">" + pageComponentsHTML + "</div>");
 		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">" + viewSourceHTML + "</div>");
 		sb.append("</div>");
 				
@@ -980,7 +986,15 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	private String getComponentPaletteDiv(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
 	{		
-	    if(templateController.getRequestParameter("skipToolbar") != null && templateController.getRequestParameter("skipToolbar").equalsIgnoreCase("true"))
+	    InfoGluePrincipal principal = templateController.getPrincipal();
+
+	    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
+	    if(cmsUserName != null)
+		    principal = templateController.getPrincipal(cmsUserName);
+	    	    
+	    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", "");
+	    
+	    if(!hasAccess || templateController.getRequestParameter("skipToolbar") != null && templateController.getRequestParameter("skipToolbar").equalsIgnoreCase("true"))
 	        return "";
 	    
 		ContentVO contentVO = templateController.getBoundContent(BasicTemplateController.META_INFO_BINDING_NAME);
@@ -1033,7 +1047,15 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 			index++;
 		}
-		sb.append("  <td class=\"igpalettetd\" width=\"90%\" style=\"text-align: right; border-right: solid thin gray; border-bottom: solid thin white\" align=\"right\">&nbsp;<a href=\"javascript:refreshComponents(document.location.href);\" class=\"white\"><img src=\"images/refresh.gif\" alt=\"Refresh palette\" border=\"0\"></a>&nbsp;<a href=\"javascript:moveDivDown('paletteDiv');\" class=\"white\"><img src=\"images/arrowDown.gif\" alt=\"Move down\" border=\"0\"></a>&nbsp;<a href=\"javascript:moveDivUp('paletteDiv');\" class=\"white\"><img src=\"images/arrowUp.gif\" alt=\"Move up\" border=\"0\"></a>&nbsp;<a href=\"javascript:toggleDiv('pageComponents');\" class=\"white\"><img src=\"images/pageStructure.gif\" alt=\"Toggle page structure\" border=\"0\"></a>&nbsp;<a href=\"javascript:saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + contentVO.getId() + "');\" class=\"white\"><img src=\"images/saveComponentStructure.gif\" alt=\"Save the page as a template page\" border=\"0\"></a>&nbsp;<a href=\"javascript:window.open(document.location.href, 'PageComponents', '');\"><img src=\"images/fullscreen.gif\" alt=\"Pop up in a large window\" border=\"0\"></a>&nbsp;</td>");
+		
+	    boolean hasSaveTemplateAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.SaveTemplate", "");
+	    
+		sb.append("  <td class=\"igpalettetd\" width=\"90%\" style=\"text-align: right; border-right: solid thin gray; border-bottom: solid thin white\" align=\"right\">&nbsp;<a href=\"javascript:refreshComponents(document.location.href);\" class=\"white\"><img src=\"images/refresh.gif\" alt=\"Refresh palette\" border=\"0\"></a>&nbsp;<a href=\"javascript:moveDivDown('paletteDiv');\" class=\"white\"><img src=\"images/arrowDown.gif\" alt=\"Move down\" border=\"0\"></a>&nbsp;<a href=\"javascript:moveDivUp('paletteDiv');\" class=\"white\"><img src=\"images/arrowUp.gif\" alt=\"Move up\" border=\"0\"></a>&nbsp;<a href=\"javascript:toggleDiv('pageComponents');\" class=\"white\"><img src=\"images/pageStructure.gif\" alt=\"Toggle page structure\" border=\"0\"></a>&nbsp;");
+		if(hasSaveTemplateAccess)
+		    sb.append("<a href=\"javascript:saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + contentVO.getId() + "');\" class=\"white\"><img src=\"images/saveComponentStructure.gif\" alt=\"Save the page as a template page\" border=\"0\"></a>&nbsp;");
+		
+		sb.append("<a href=\"javascript:window.open(document.location.href, 'PageComponents', '');\"><img src=\"images/fullscreen.gif\" alt=\"Pop up in a large window\" border=\"0\"></a>&nbsp;</td>");
+		
 		sb.append(" </tr>");
 		sb.append("</table>");
 		sb.append("</div>");

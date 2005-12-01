@@ -63,9 +63,5 @@
 
 <body style="width:100%; height=100%; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; border: 1px solid green;" class="structuretool" onload="javascript:resize();" onresize="javascript:resize();">
 
-<!--
-<iframe frameborder="1" name="pageComponentIFrame" id="pageComponentIFrame" src="${componentRendererUrl}ViewPage!renderDecoratedPage.action?siteNodeId=$siteNodeId&languageId=$masterLanguageVO.id&contentId=-1" width="500" height="700" align="baseline" style="width:100%; height=100%; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;"></iframe>
--->
-
 </body>
 </html>

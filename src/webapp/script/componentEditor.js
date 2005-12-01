@@ -191,18 +191,12 @@ function setToolbarInitialPosition()
 	//alert("setToolbarInitialPosition ran");
 	defaultToolbarTopPosition = getCookieValue(toolbarTopPositionCookieName);
 	toolbarLockPosition = getCookieValue(toolbarLockPositionCookieName);
-	
 	pageComponentsVisibility = getCookieValue(pageStructureDivVisibleCookieName);	
-	
-	//pageComponentsTopPosition = getCookieValue(pageComponentsTopPositionCookieName);
-	//pageComponentsLeftPosition = getCookieValue(pageComponentsLeftPositionCookieName);
-	
 	pageStructureDivWidth = getCookieValue(pageStructureDivWidthCookieName);
 	pageStructureDivHeight = getCookieValue(pageStructureDivHeightCookieName);
 	pageStructureDivHeightBody = getCookieValue(pageStructureDivHeightBodyCookieName);
 
-	propertiesDiv = document.getElementById('pageComponents');
-	
+	propertiesDiv = document.getElementById("pageComponents");
 		
 	//alert("window.innerHeight:" + document.height + ":" + window.innerHeight);
 	pageComponentsTopPosition = (getScrollY() + ((document.body.clientHeight - propertiesDiv.offsetHeight) / 2));
@@ -210,15 +204,20 @@ function setToolbarInitialPosition()
 	
 	floatDiv("pageComponents", 200, 50).flt();
 	
-	//alert("defaultToolbarTopPosition" + defaultToolbarTopPosition)
-	//alert("toolbarLockPosition" + toolbarLockPosition)
-	if(toolbarLockPosition == "up")
-		floatDiv("paletteDiv", 0, 0).flt();
-	else if(toolbarLockPosition == "down")
-		floatDiv("paletteDiv", 0, -80).flt();
-	else
-		this.document.getElementById('paletteDiv').style.top=defaultToolbarTopPosition;
-		
+	//alert("document:" + document.getElementById("paletteDiv").id);
+	var paletteDivElement = document.getElementById("paletteDiv");
+	if(paletteDivElement)
+	{	
+		//alert("defaultToolbarTopPosition" + defaultToolbarTopPosition)
+		//alert("toolbarLockPosition" + toolbarLockPosition)
+		if(toolbarLockPosition == "up")
+			floatDiv("paletteDiv", 0, 0).flt();
+		else if(toolbarLockPosition == "down")
+			floatDiv("paletteDiv", 0, -80).flt();
+		else
+			this.document.getElementById('paletteDiv').style.top=defaultToolbarTopPosition;
+	}
+			
 	//alert("getScrollY()" + getScrollY() + ":" + propertiesDiv.offsetHeight + ":" + (document.body.clientHeight));
 	//alert("pageComponentsTopPosition" + pageComponentsTopPosition)
 	//alert("pageComponentsLeftPosition" + pageComponentsLeftPosition)

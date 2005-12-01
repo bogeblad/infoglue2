@@ -40,6 +40,7 @@ import org.infoglue.cms.entities.management.*;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
@@ -160,7 +161,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
     			if(isMetaInfoInWorkingState)
     			{
-    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1";
+    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8");
     			    url = this.getResponse().encodeURL(url);
     				this.getResponse().sendRedirect(url);
     			    return NONE;
