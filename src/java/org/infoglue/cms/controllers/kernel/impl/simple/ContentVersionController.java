@@ -323,8 +323,7 @@ public class ContentVersionController extends BaseController
 			{
 			    if ( (contentVersion.getStateId().compareTo(stateId)==0) && (!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
 				{
-				    System.out.println("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
-					getLogger().info("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
+				    getLogger().info("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
 					resultList.add(contentVersion);
 					langCheck.add(contentVersion.getLanguage().getLanguageId());
 				}
@@ -1200,7 +1199,7 @@ public class ContentVersionController extends BaseController
 		                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
 			                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
 			                {
-			                    contentVersionVOList.add(relatedContentVersion.getValueObject());
+			        	        contentVersionVOList.add(relatedContentVersion.getValueObject());
 			                    getLogger().info("Added:" + relatedContentVersion.getId());
 				            }
 		
