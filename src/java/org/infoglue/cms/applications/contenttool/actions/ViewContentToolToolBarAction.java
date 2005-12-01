@@ -294,6 +294,8 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
 
+			buttons.add(new ImageButton("ViewContentVersionHistory.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.viewHistory"), "History", new Integer(22), new Integer(80)));
+
 			buttons.add(getSyncTreeButton());
 			
 			buttons.add(new ImageButton("ViewContentProperties.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
@@ -325,6 +327,8 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
 
+			buttons.add(new ImageButton("ViewContentVersionHistory.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.viewHistory"), "History", new Integer(22), new Integer(80)));
+			
 			buttons.add(getSyncTreeButton());
 			
 		}
@@ -351,8 +355,6 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		        if(!isReadOnly())
 					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'FileUpload', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
 			
-				buttons.add(new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'ContentPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header"));	
-				
 				if(this.siteNodeId != null)
 				{
 					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
@@ -378,7 +380,11 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 				        workingUrl = CmsPropertyHandler.getProperty("previewDeliveryUrl");
 				    }
 				    
-					buttons.add(new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SitePreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header"));			
+				    ImageButton previewSiteButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SitePreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header");
+					ImageButton previewContentButton = new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'ContentPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header");	
+					previewSiteButton.getSubButtons().add(previewContentButton);
+
+					buttons.add(previewSiteButton);			
 				}
 				
 				if(hasPublishedVersion())

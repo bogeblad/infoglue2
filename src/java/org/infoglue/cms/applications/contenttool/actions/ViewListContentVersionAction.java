@@ -37,7 +37,9 @@ import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -71,6 +73,16 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			ceb.throwIfNotEmpty();
 
 			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, true);
+
+			Set contentVersionVOListSet = new HashSet();
+			contentVersionVOListSet.addAll(contentVersionVOList);
+			contentVersionVOList.clear();
+			contentVersionVOList.addAll(contentVersionVOListSet);
+
+			Set siteNodeVersionVOListSet = new HashSet();
+			siteNodeVersionVOListSet.addAll(siteNodeVersionVOList);
+			siteNodeVersionVOList.clear();
+			siteNodeVersionVOList.addAll(siteNodeVersionVOListSet);
 
 			//contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursiveAndRelated(contentId, ContentVersionVO.WORKING_STATE);		
 		}
