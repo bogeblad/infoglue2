@@ -249,5 +249,24 @@ public class ContentVersionVO implements BaseEntityVO
 			.append(" versionComment=").append(versionComment);
 		return sb.toString();
 	}
+	
+	public boolean equals(Object o)
+	{
+	    boolean equals = false;
+	    
+	    if(o instanceof ContentVersionVO)
+	    {
+	        ContentVersionVO cv = (ContentVersionVO)o;
+	        if(cv != null && cv.getContentVersionId().equals(this.contentVersionId))
+	            equals = true;
+	    }
+	    
+	    return equals;
+	}
+	
+	public int hashCode()
+	{
+	    return this.contentVersionId.intValue();
+	}
 }
         

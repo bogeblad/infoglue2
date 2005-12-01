@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.entities.structure;
 
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
@@ -244,6 +245,26 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	    
 	    return sb.toString();
 	}
+	
+	public boolean equals(Object o)
+	{
+	    boolean equals = false;
+	    
+	    if(o instanceof SiteNodeVersionVO)
+	    {
+	        SiteNodeVersionVO sv = (SiteNodeVersionVO)o;
+	        if(sv != null && sv.getSiteNodeVersionId().equals(this.siteNodeVersionId))
+	            equals = true;
+	    }
+	    
+	    return equals;
+	}
+	
+	public int hashCode()
+	{
+	    return this.siteNodeVersionId.intValue();
+	}
+
 
 }
         
