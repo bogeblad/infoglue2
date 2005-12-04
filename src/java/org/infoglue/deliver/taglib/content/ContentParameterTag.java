@@ -97,7 +97,7 @@ public class ContentParameterTag extends AbstractTag
 		{
 			throw new JspTagException("ContentParameterTag must have a RemoteContentServiceTag ancestor.");
 		}
-		System.out.println("Adding content to parent:" + parent);
+
 		((RemoteContentServiceTag) parent).addContentMap(contentMap);
 	}
 	

@@ -51,12 +51,6 @@ public class RssHelper
 {
     private final static Logger logger = Logger.getLogger(RssHelper.class.getName());
 
-    //Feed type
-    private static final String DEFAULT_FEED_TYPE = "default.feed.type";
-
-    //Constant 
-    private static final String FEED_TYPE = "type";
-    
     //The default error message
     private static final String COULD_NOT_GENERATE_FEED_ERROR = "Could not generate feed";
 
