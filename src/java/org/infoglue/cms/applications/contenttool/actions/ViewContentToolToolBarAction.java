@@ -351,56 +351,69 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		
 		try
 		{
-		    buttons.add(getCoverButton());
-			buttons.add(getDeleteButton());
-		    
+		    boolean latest = true;
 		    if(this.contentVersionId != null)
-			{
-		        if(!isReadOnly())
-					buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'FileUpload', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
-			
-				if(this.siteNodeId != null)
-				{
-					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
-
-					String dnsName = repositoryVO.getDnsName();
-
-				    String workingUrl = null;
-				    
-				    String keyword = "working=";
-				    int startIndex = (dnsName == null) ? -1 : dnsName.indexOf(keyword);
-				    if(startIndex != -1)
-				    {
-				        int endIndex = dnsName.indexOf(",", startIndex);
-					    if(endIndex > -1)
-				            dnsName = dnsName.substring(startIndex, endIndex);
-				        else
-				            dnsName = dnsName.substring(startIndex);
-
-					    workingUrl = dnsName.split("=")[1] + CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage.action";
-				    }
-				    else
-				    {
-				        workingUrl = CmsPropertyHandler.getProperty("previewDeliveryUrl");
-				    }
-				    
-				    ImageButton previewSiteButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SitePreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header");
-					ImageButton previewContentButton = new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'ContentPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header");	
-					previewSiteButton.getSubButtons().add(previewContentButton);
-
-					buttons.add(previewSiteButton);			
-				}
-				
-				if(hasPublishedVersion())
-					buttons.add(getUnpublishButton());
-				
-				if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
-					buttons.add(getContentVersionAccessRightsButton());
-
-				if(!isReadOnly())
-					buttons.add(getPublishButton());
+		    {
+		        ContentVersionVO currentContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+		        ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(currentContentVersionVO.getContentId(), currentContentVersionVO.getLanguageId());
+		        if(currentContentVersionVO.getId().intValue() != latestContentVersionVO.getId().intValue())
+		            latest = false;
 			}
-			buttons.add(getSyncTreeButton());
+		    
+		    buttons.add(getCoverButton());
+		    
+		    if(latest)
+		    {
+				buttons.add(getDeleteButton());
+			    
+			    if(this.contentVersionId != null)
+				{
+			        if(!isReadOnly())
+						buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'FileUpload', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
+				
+					if(this.siteNodeId != null)
+					{
+						RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
+	
+						String dnsName = repositoryVO.getDnsName();
+	
+					    String workingUrl = null;
+					    
+					    String keyword = "working=";
+					    int startIndex = (dnsName == null) ? -1 : dnsName.indexOf(keyword);
+					    if(startIndex != -1)
+					    {
+					        int endIndex = dnsName.indexOf(",", startIndex);
+						    if(endIndex > -1)
+					            dnsName = dnsName.substring(startIndex, endIndex);
+					        else
+					            dnsName = dnsName.substring(startIndex);
+	
+						    workingUrl = dnsName.split("=")[1] + CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage.action";
+					    }
+					    else
+					    {
+					        workingUrl = CmsPropertyHandler.getProperty("previewDeliveryUrl");
+					    }
+					    
+					    ImageButton previewSiteButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SitePreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header");
+						ImageButton previewContentButton = new ImageButton(true, "javascript:openPopup('ViewContentVersion!preview.action?contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId + "', 'ContentPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewContent"), "tool.contenttool.previewContent.header");	
+						previewSiteButton.getSubButtons().add(previewContentButton);
+	
+						buttons.add(previewSiteButton);			
+					}
+					
+					if(hasPublishedVersion())
+						buttons.add(getUnpublishButton());
+					
+					if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
+						buttons.add(getContentVersionAccessRightsButton());
+	
+					if(!isReadOnly())
+						buttons.add(getPublishButton());
+				}
+				buttons.add(getSyncTreeButton());
+		    }		    
 		}
 		catch(Exception e)
 		{
