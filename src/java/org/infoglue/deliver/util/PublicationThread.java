@@ -23,6 +23,7 @@
 package org.infoglue.deliver.util;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * @author mattias
@@ -42,7 +43,12 @@ public class PublicationThread extends Thread
 
 		try
 		{
-			sleep(5000);
+		    int publicationDelay = 5000;
+		    String publicationThreadDelay = CmsPropertyHandler.getProperty("publicationThreadDelay");
+		    if(publicationThreadDelay != null && publicationThreadDelay.equalsIgnoreCase("") && publicationThreadDelay.indexOf("publicationThreadDelay") == -1)
+		        publicationDelay = Integer.parseInt(publicationThreadDelay);
+		    
+			sleep(publicationDelay);
 		
 		    logger.info("\n\n\nUpdating all caches as this was a publishing-update\n\n\n");
 			CacheController.clearCastorCaches();
