@@ -127,7 +127,7 @@
 			var allowedContentTypeNamesArray = componentPropertyDefinition.getAllowedContentTypeNames().split(",");
 			var selObject = document.componentPropertyDefinitionForm.componentPropertyDefinition_allowedContentTypeNames;
 
-			var length = selObject.options.length - 1;
+			var length = selObject.options.length;
 			for(i=0; i<length; i++)
 			{
 				isAllowed = false;
@@ -178,7 +178,7 @@
 				componentPropertyDefinition.setMultiple(document.getElementById("componentPropertyDefinition_multiple").value);
 				
 				var selObject = document.getElementById("componentPropertyDefinition_allowedContentTypeNames");
-				var length = selObject.options.length - 1;
+				var length = selObject.options.length;
 				var allowedContentTypeNames = "";
 				for(i=0; i<length; i++)
 				{

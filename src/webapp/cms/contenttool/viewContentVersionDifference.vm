@@ -4,7 +4,7 @@
 
 <html>
 <head>
-	<title>Preview content</title>
+	<title>Content differences</title>
 	<link rel="stylesheet" type="text/css" href="css/frovi_com.css" />
 	<script type="text/javascript" src="script/jsdiff.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
@@ -30,7 +30,9 @@
 				<!--
 				#set($value1 = $this.getUnescapedAttributeValue($contentVersionVO1, $attribute.name))
 				#set($value2 = $this.getUnescapedAttributeValue($contentVersionVO2, $attribute.name))
-				document.write("" + diffString("$value1", "$value2") + "");
+				var value1 = '$value1';
+				var value2 = '$value2';
+				document.write("" + diffString(value1, value2) + "");
 				-->
 				</script>
 			</td>

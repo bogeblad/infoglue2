@@ -6,8 +6,10 @@
 	background-color:#F4F4F4;
 	border:1px solid #333333;
 	z-index:1;
+	/*
 	align: center;
 	valign: middle;
+	*/
 	left:250px;
 	top:250px;
 	height:50px;
@@ -83,14 +85,14 @@
 	font-size:10px;
 	}
 			
-A.white {
+a.white {
     text-decoration:none;
-    COLOR: white;
+    color: white;
 	font-size:10px;
     }
-A.white:hover {
+a.white:hover {
 	text-decoration:underline;
 	}
-A.white:active {
-	font: bold;
+a.white:active {
+	font-weight: bold;
 	}

@@ -1,6 +1,6 @@
-<!-- ************* -->
-<!-- body elements -->
-<!-- ************* -->
+/***************
+ body elements
+***************/
 
 body { 
 	color            : #123456;
@@ -16,48 +16,58 @@ body.cmstool {
 }
 
 body.managementtool {
+  	color            : #FFFFFF;
 	background-color : #C2D0E2;
 }
 
 body.managementtooledit {
+  	color            : #FFFFFF;
 	background-color : #E3ECF8;
 }
 
 body.contenttool {
+  	color            : #FFFFFF;
 	background-color : #C7D1B3;
 }
 
 body.contenttooledit {
+  	color            : #FFFFFF;
 	background-color : #EEF7DC;
 }
 
 body.structuretool {
+  	color            : #FFFFFF;
 	background-color : #F0E1B4;
 }
 
 body.structuretooledit {
+  	color            : #FFFFFF;
 	background-color : #FEF8D0;
 }
 
 body.publishingtool {
+  	color            : #FFFFFF;
 	background-color : #D2CBBC;
 }
 
 body.publishingtooledit {
+  	color            : #FFFFFF;
 	background-color : #ECE6D9;
 }
 body.mydesktoptool {
+  	color            : #FFFFFF;
 	background-color : #DFDA5E;
 }
 
 body.mydesktoptooledit {
+  	color            : #FFFFFF;
 	background-color : #F8F8A1;
 }
 
 
-<!-- ************* -->
-<!-- table elements -->
-<!-- ************* -->
+/**************
+ table elements
+***************/
 
 table.managementtoolleveraged {
 	background-color : #C2D0E2;
@@ -188,11 +198,13 @@ table.bordered {
 td {
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 8pt;
-	font-color		 : #333333;
+	color		 : #333333;
 }
+
 td.white {
 	background-color : #FFFFFF;
 }
+
 td.dark {
 	background-color : #999999;
 }
@@ -200,7 +212,7 @@ td.dark {
 td.whitelabel {
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 10pt;
-	font-color		 : #FFFFFF;
+	color		 	 : #FFFFFF;
 }
 td.cmstool {
 	color            : #FFFFFF;
@@ -244,7 +256,7 @@ td.titleField {
 	font-weight		 : bold;
 	height			 : 18px;
 	padding-left	 : 10px;
-	aborder: 1px solid red;
+	/*border: 1px solid red;*/
 }
 td.propertiesheader {	
 	font-family 	 : Verdana; 
@@ -261,14 +273,14 @@ td.listheader {
 	font-family 	 : Verdana; 
 	font-size		 : 8pt;
 	font-weight		 : normal;
-	font-height 	 : 15px;
+	line-height 	 : 15px;
 	height			 : 20px;
 }
 td.managementtool {
 	background-color : #F5F8FB;
 }
 td.menu {
-	valign 			 : top;	
+	/*valign 			 : top;*/	
 	font-size		 : 8pt;
 }
 .warningText {
@@ -278,9 +290,9 @@ td.menu {
 	color            : #FF0000;
 }
 
-<!-- ************* -->
-<!-- form elements -->
-<!-- ************* -->
+/************** 
+ form elements
+***************/
 
 select {
 	font-family      : verdana, arial, sans-serif;
@@ -388,9 +400,10 @@ textarea.greedytextarea {
 	height           : 600px;
 }
 
-<!-- ************* -->
-<!-- other elements -->
-<!-- ************* -->
+/**************
+ other elements
+***************/
+
 select.contenttool {
 	background-color : #C7D1B3;
 }
@@ -407,19 +420,12 @@ div.minormarginalized {
 	margin-right	 : 5px;
 }
 
-adiv.fullymarginalized {
-	margin-left		 : 15px;
-	margin-right     : 15px;
-	margin-top		 : 15px;
-	width 			 : 100%;	
-}
-
 div.fullymarginalized {
 	height			 : 100%;
 	padding-left	 : 15px;
 	padding-right    : 15px;
 	padding-top		 : 15px;
-	awidth 			 : 100%;	
+	/*awidth 			 : 100%;	*/
 }
 
 div.listmarginalized {
@@ -433,14 +439,14 @@ div.attributedetails {
 	margin-left		 : 10px;
 	margin-right     : 10px;
 	margin-top		 : 10px;
-	background-color: white; 
-	width:400px; 
-	height:300px; 
-	LEFT:150px; 
-	position:absolute; 
-	TOP:150px; 
-	visibility:hidden; 
-	z-index:0
+	background-color : white; 
+	width			 : 400px; 
+	height			 : 300px; 
+	left			 : 150px; 
+	position		 : absolute; 
+	top				 : 150px; 
+	visibility	     : hidden; 
+	z-index 		 : 0;
 }
  
 img.bordered {
@@ -455,51 +461,54 @@ img.scaledbordered {
 }
 
 
-<!-- ************* -->
-<!-- Links -->
-<!-- ************* -->
+/**************
+ Links
+***************/
+
 a.smalllabel {
 	font-size        : 8pt;
 	font-weight	     : normal;
 }
 a.whitelabel {
-	COLOR: #FFFFFF;
-	font-color		 : #FFFFFF;
+	color			 : #FFFFFF;
 }
 
-A 
-{
-  text-decoration:none;
-  COLOR: 0022AA;
+a {
+  	text-decoration	 : none;
+  	color			 : #0022AA;
 }
-A:hover
-{
-    text-decoration:underline;
+a:hover {
+    text-decoration	 : underline;
 }
-A:active
-{
-	font: bold;
+a:active {
+	font			 : bold;
+    text-decoration	 : none;
 }
 
-<!-- MENU // SS -->
-.menucanvas { background-color:#EEEEEE;
-	border-left: 1px solid #666666; border-right: 1px solid #666666; border-top: 1px solid #666666; border-bottom: 1px solid #666666;
+/* MENU SS */
+
+.menucanvas { 
+	background-color	: #EEEEEE;
+	border-left			: 1px solid #666666; 
+	border-right		: 1px solid #666666; 
+	border-top			: 1px solid #666666; 
+	border-bottom		: 1px solid #666666;
 }
 .menuitem {
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	color:#000000;
-	cursor:hand;
+	font-family		 : verdana, sans-serif;
+	font-size		 : 10px;
+	color			 : #000000;
+	cursor			 : pointer;
 }
 .menusplit{
-	font-family:verdana, sans-serif;
-	font-size:1px;
-	border-bottom: 1px solid #666666; 
+	font-family		 : verdana, sans-serif;
+	font-size		 : 1px;
+	border-bottom	 : 1px solid #666666; 
 }
 .menuitemhov {
-	background-color:#316AC5;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	color:#FFFFFF;
-	cursor:hand;
+	background-color	: #316AC5;
+	font-family			: verdana, sans-serif;
+	font-size			: 10px;
+	color				: #FFFFFF;
+	cursor				: pointer;
 }
