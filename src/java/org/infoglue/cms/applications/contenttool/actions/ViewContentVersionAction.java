@@ -984,7 +984,12 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(repositoryId);
 	    return ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
 	}
-	
+
+	public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Exception
+	{
+	    return ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+	}
+
 	public Integer getCurrentEditorId()
 	{
 		return currentEditorId;
@@ -1099,4 +1104,5 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     {
         return contentTypeDefinitionVO;
     }
+    
 }

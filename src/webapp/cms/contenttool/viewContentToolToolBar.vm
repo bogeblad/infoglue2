@@ -22,6 +22,68 @@
 			this.location.href = 'ViewContentToolToolBar.action?url=' + url + '&title=' + title;
 		}
 		
+		//-----------------------------------------------
+		// This function invokes compare on the two selected items in the list 
+		//-----------------------------------------------
+		
+		function compareVersions(entityName)
+		{
+			var listForm = parent.frames["main"].document.listForm;
+			var selectedObjects = getSelectedContentVersions(listForm, entityName);
+			var selectedTexts = getSelectedTexts(listForm);
+			//alert("selectedObjects:" + selectedObjects.length);
+			if (selectedObjects.length != 2)
+			{
+				alert('Select exactly two versions to compare.');
+			  	return;
+			}
+			else
+			{
+				//alert("selectedObjects[0]:" + selectedObjects[0]);
+				//alert("selectedObjects[1]:" + selectedObjects[1]);
+				window.open("ViewContentVersionDifference.action?contentVersionId1=" + selectedObjects[1] + "&contentVersionId2=" + selectedObjects[0]);
+			}
+
+		}
+		
+		//-----------------------------------------------
+		// This function iterates through the list of select-boxes 
+		// and add the selected ones id's to the id-List 
+		//-----------------------------------------------
+
+		function getSelectedContentVersions(listForm, entityName)
+		{
+			var str = '';
+		
+			var length = listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		if (listForm.sel.checked)
+			    {
+			    	if(str == '')
+				    	str += escape(listForm.sel.value);
+			    	else
+				    	str += ',' + escape(listForm.sel.value);
+		  		}
+		  	}
+		  	else
+		  	{	
+			  	for (i=0; i<length; i++)
+			  	{
+			   		if (listForm.sel[i].checked)
+			   		{
+			    		if(str == '')
+				    		str += escape(listForm.sel[i].value);
+						else
+				    		str += ',' + escape(listForm.sel[i].value);
+			 		}
+			 	}
+			}
+					 	
+		 	return str.split(",");
+		}
+		
+		
 		
 		//-----------------------------------------------
 		// This function reloads the toolbar above the current 

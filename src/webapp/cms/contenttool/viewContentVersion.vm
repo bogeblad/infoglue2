@@ -196,7 +196,21 @@
 #if($stateId == 1 || $stateId == 2 || $stateId == 3)
 	#set($readonly = "disabled") 
 #else
-	#set($readonly = "")
+	#if($contentTypeDefinitionVO.name == "Meta info")
+		#set($masterContentVersionVO = $this.getMasterContentVersionVO($contentId, $repositoryId))
+		#if($masterContentVersionVO.stateId == 1 || $masterContentVersionVO.stateId == 2 || $masterContentVersionVO.stateId == 3)
+			#set($readonly = "disabled") 
+		#else
+			#set($readonly = "")
+		#end
+	#else
+		#set($latestContentVersionVO = $this.getLatestContentVersionVO($contentId, $languageId))
+		#if($latestContentVersionVO.id != $contentVersionId)
+			#set($readonly = "disabled") 
+		#else
+			#set($readonly = "")
+		#end	
+	#end
 #end
 
 <body class="contenttooledit" onload="javascript:refreshContentToolBar('tool.contenttool.contentVersionHeader', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '$!unrefreshedContentId', '$!changeTypeId', '$!newContentId'); generateWYSIWYGS();" onkeypress="hotKeys(event);">

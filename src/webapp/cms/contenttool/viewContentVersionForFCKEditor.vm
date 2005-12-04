@@ -68,7 +68,12 @@
 			#set($readonly = "")
 		#end
 	#else
-		#set($readonly = "")
+		#set($latestContentVersionVO = $this.getLatestContentVersionVO($contentId, $languageId))
+		#if($latestContentVersionVO.id != $contentVersionId)
+			#set($readonly = "disabled") 
+		#else
+			#set($readonly = "")
+		#end	
 	#end
 #end
 

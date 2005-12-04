@@ -192,6 +192,10 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		{
 			return this.getContentVersionButtons();
 		}
+		else if(this.toolbarKey.equalsIgnoreCase("ContentVersionHistory"))
+		{
+			return this.getContentVersionHistoryButtons();
+		}
 					
 		return null;				
 	}
@@ -405,6 +409,33 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 
 		return buttons;				
 	}
+
+	
+
+	private List getContentVersionHistoryButtons()
+	{
+		List buttons = new ArrayList();
+		
+		try
+		{
+		    buttons.add(getCompareButton());
+			//buttons.add(getDeleteButton());
+		}
+		catch(Exception e)
+		{
+			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
+		}
+
+		return buttons;				
+	}
+
+	private ImageButton getCompareButton()
+	{
+	    return new ImageButton(true, "javascript:compareVersions('contentVersion');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.compareVersions"), "tool.contenttool.compareVersions.header");
+		
+	    //return new ImageButton(true, "javascript:openPopup('ViewContentVersionDifference.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'MoveContent', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveContent"), "tool.contenttool.moveContent.header");	
+	}
+
 	
 	private ImageButton getCoverButton()
 	{

@@ -2,14 +2,14 @@
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginContentTool("tool.contenttool.contentVersionHistory.label" "ContentVersions" "" "0" "0" "0")
+#beginContentTool("tool.contenttool.contentVersionHistory.label" "ContentVersionHistory" "" "0" "0" "0")
 
 <script language="JavaScript">
 <!--
 	function openVersion(contentVersionId, languageId)
 	{
 		window.location.href="ViewContentVersion.action?contentId=$contentId&contentVersionId=" + contentVersionId + "&languageId=" + languageId;
-	}
+	}	
 -->
 </script>
 
@@ -21,7 +21,7 @@
 
 #set($lvBorder = 0) 
 #set($lvConstraint = -1) 
-#lvHead(["Name", "Language", "State", "Date", "Comment"] "Publish items" "" "" "")
+#lvHead(["Name", "Language", "State", "Date", "Comment"] "Compare versions" "" "" "")
 
 #hiddenField("contentId" $contentId)
 #hiddenField("versionComment" $!versionComment)
@@ -29,12 +29,12 @@
 #hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
 #hiddenField("repositoryId" $!repositoryId)
 
-#set($lvChkBoxName = "selContentVersions")
+##set($lvChkBoxName = "selContentVersions")
 #set($cnt = 0)
 #foreach($cv in $contentVersionVOList)
 	
 	#set($nameLink = "<a href='javascript:openVersion($cv.id, $cv.languageId);'>$cv.getContentName()</a>")
-	#set($row = ["<img src='images/tree/contentRoot.gif'> $nameLink", "$cv.getLanguageName() ($cv.getId())", "$cv.stateId", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd HH:mm:ss')", "$cv.versionComment"] )
+	#set($row = ["<input type='hidden' name='rowtitle' value='$cv.getLanguageName() ($cv.getId())'/> <img src='images/tree/contentRoot.gif'> $nameLink", "$cv.getLanguageName() ($cv.getId())", "$cv.stateId", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd HH:mm:ss')", "$cv.versionComment"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())
