@@ -69,7 +69,7 @@ function submitForm(id)
  
 function getWindowWidth()
 {
-	width = 640;
+	var width = 640;
 	if (window.innerWidth || window.innerHeight){ 
 		width = window.innerWidth; 
 	} 

@@ -9,12 +9,12 @@
 
 		function reloadMenu(id)
 		{
-			menuFrame = parent.header;
-			theDoc = menuFrame.document;
-			theFrame = parent.menu;
+			var menuFrame = parent.header;
+			var theDoc = menuFrame.document;
+			var theFrame = parent.menu;
    			
    			theDoc.selectbox.repositoryId.value = id;
-		    	document.location.href = "ViewPublications.action?repositoryId=" + id;
+		    document.location.href = "ViewPublications.action?repositoryId=" + id;
 		}
 
 	</script>

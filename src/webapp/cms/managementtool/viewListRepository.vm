@@ -4,7 +4,7 @@
 <SCRIPT LANGUAGE="JavaScript">
 function reloadMenu()
 		{
-			menuFrame = parent.header;
+			var menuFrame = parent.header;
 			menuFrame.location.reload();
 		}
 </SCRIPT>
