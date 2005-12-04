@@ -982,7 +982,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	/**
 	 * This method creates the tabpanel for the component-palette.
 	 */
-	private static String componentPaletteDiv = null;
+	//private static String componentPaletteDiv = null;
 	
 	private String getComponentPaletteDiv(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
 	{		
@@ -999,10 +999,17 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    
 		ContentVO contentVO = templateController.getBoundContent(BasicTemplateController.META_INFO_BINDING_NAME);
 
-		if(componentPaletteDiv != null && (templateController.getRequestParameter("refresh") == null || !templateController.getRequestParameter("refresh").equalsIgnoreCase("true")))
+		//Cache
+		String key = "" + templateController.getPrincipal().getName();
+		String componentPaletteDiv = (String)CacheController.getCachedObject("componentPaletteDivCache", key);
+		if(componentPaletteDiv != null)
 		{
-			return componentPaletteDiv.replaceAll("CreatePageTemplate\\!input.action\\?contentId=.*?'", "CreatePageTemplate!input.action?contentId=" + contentVO.getContentId() + "'");
+			if(componentPaletteDiv != null && (templateController.getRequestParameter("refresh") == null || !templateController.getRequestParameter("refresh").equalsIgnoreCase("true")))
+			{
+				return componentPaletteDiv.replaceAll("CreatePageTemplate\\!input.action\\?contentId=.*?'", "CreatePageTemplate!input.action?contentId=" + contentVO.getContentId() + "'");
+			}
 		}
+		//End Cache
 		
 		StringBuffer sb = new StringBuffer();
 			
@@ -1147,8 +1154,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		//Caching the result
 		componentPaletteDiv = sb.toString();
+		CacheController.cacheObject("componentPaletteDivCache", key, componentPaletteDiv);				
 		
-		return sb.toString();
+		return componentPaletteDiv;
 	}
 
 	/**

@@ -373,6 +373,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("componentPaletteDivCache") && (entity.indexOf("AccessRight") > 0))
+				{	
+					clear = true;
+				}
 				if(cacheName.equalsIgnoreCase("userCache") && (entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 				{
 					clear = true;
