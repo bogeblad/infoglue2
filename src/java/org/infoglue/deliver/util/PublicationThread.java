@@ -45,9 +45,10 @@ public class PublicationThread extends Thread
 		{
 		    int publicationDelay = 5000;
 		    String publicationThreadDelay = CmsPropertyHandler.getProperty("publicationThreadDelay");
-		    if(publicationThreadDelay != null && publicationThreadDelay.equalsIgnoreCase("") && publicationThreadDelay.indexOf("publicationThreadDelay") == -1)
+		    if(publicationThreadDelay != null && !publicationThreadDelay.equalsIgnoreCase("") && publicationThreadDelay.indexOf("publicationThreadDelay") == -1)
 		        publicationDelay = Integer.parseInt(publicationThreadDelay);
 		    
+		    logger.info("\n\n\nSleeping " + publicationDelay + "ms.\n\n\n");
 			sleep(publicationDelay);
 		
 		    logger.info("\n\n\nUpdating all caches as this was a publishing-update\n\n\n");
