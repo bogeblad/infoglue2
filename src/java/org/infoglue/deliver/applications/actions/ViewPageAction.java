@@ -472,8 +472,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				if(this.principal == null)
 				{
 				    Map arguments = new HashMap();
-				    arguments.put("j_username", "anonymous");
-				    arguments.put("j_password", "anonymous");
+				    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+				    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 				    
 					this.principal = ExtranetController.getController().getAuthenticatedPrincipal(db, arguments);
 					
@@ -522,8 +522,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						if(principal == null)
 						{
 						    Map arguments = new HashMap();
-						    arguments.put("j_username", "anonymous");
-						    arguments.put("j_password", "anonymous");
+						    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+						    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 						    
 							principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 							if(principal != null)
@@ -557,8 +557,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				//Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(siteNodeId);
 				
 				Map arguments = new HashMap();
-				arguments.put("j_username", "anonymous");
-			    arguments.put("j_password", "anonymous");
+				arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 			    
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 				{	
@@ -568,7 +568,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					if(this.referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
 						referer = "/"; 
 
-					if(principal.getName().equals("anonymous"))
+					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 					{
 						getLogger().info("SiteNode is protected and user was anonymous - sending him to login page.");
 						String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");

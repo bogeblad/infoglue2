@@ -4834,8 +4834,8 @@ public class BasicTemplateController implements TemplateController
 	        if(infoGluePrincipal == null)
 	        {
 			    Map arguments = new HashMap();
-			    arguments.put("j_username", "anonymous");
-			    arguments.put("j_password", "anonymous");
+			    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
 	            infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 	        }
@@ -4867,8 +4867,8 @@ public class BasicTemplateController implements TemplateController
 	        if(infoGluePrincipal == null)
 	        {
 	            Map arguments = new HashMap();
-	            arguments.put("j_username", "anonymous");
-			    arguments.put("j_password", "anonymous");
+	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 			    
 			    infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 	        }
@@ -4898,8 +4898,8 @@ public class BasicTemplateController implements TemplateController
 	        if(infoGluePrincipal == null)
 	        {
 	            Map arguments = new HashMap();
-	            arguments.put("j_username", "anonymous");
-			    arguments.put("j_password", "anonymous");
+	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
 		        infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 	        }
@@ -4980,8 +4980,8 @@ public class BasicTemplateController implements TemplateController
 	        if(infoGluePrincipal == null)
 	        {
 	            Map arguments = new HashMap();
-	            arguments.put("j_username", "anonymous");
-			    arguments.put("j_password", "anonymous");
+	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
 	            infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 	        }
@@ -5013,8 +5013,8 @@ public class BasicTemplateController implements TemplateController
 	        if(infoGluePrincipal == null)
 	        {
 	            Map arguments = new HashMap();
-	            arguments.put("j_username", "anonymous");
-			    arguments.put("j_password", "anonymous");
+	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
 			    infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 	        }
@@ -5045,8 +5045,8 @@ public class BasicTemplateController implements TemplateController
 	        if(infoGluePrincipal == null)
 	        {
 	            Map arguments = new HashMap();
-	            arguments.put("j_username", "anonymous");
-			    arguments.put("j_password", "anonymous");
+	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
 			    infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 	        }
@@ -5075,8 +5075,8 @@ public class BasicTemplateController implements TemplateController
 	        if(infoGluePrincipal == null)
 	        {
 	            Map arguments = new HashMap();
-	            arguments.put("j_username", "anonymous");
-			    arguments.put("j_password", "anonymous");
+	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
 			    infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 	        }

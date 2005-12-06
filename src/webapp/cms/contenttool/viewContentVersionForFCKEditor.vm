@@ -182,6 +182,10 @@
 				alert("$ui.getString("tool.contenttool.readOnlyLabel")");
 			#end
 		#end
+		
+		#if($concurrentModification)
+			alert("$ui.getString("tool.contenttool.concurrentModificationLabel")");
+		#end
 	}	
 	
 	function addCategory(attributeName, selectName)
@@ -1136,8 +1140,14 @@
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<input type="hidden" name="contentId" value="$!contentId">
 		#if($contentVersionId > -1)
-		<input type="hidden" name="contentVersionId" value="$!contentVersionId">
+			<input type="hidden" name="contentVersionId" value="$!contentVersionId">
+			#if("$oldModifiedDateTime" == "-1")
+				<input type="hidden" name="oldModifiedDateTime" value="$!contentVersionVO.modifiedDateTime.time">
+			#else
+				<input type="hidden" name="oldModifiedDateTime" value="$!oldModifiedDateTime">
+			#end
 		#end
+		
 		<td colspan="3">
 		    #if($readonly == "")
 			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>

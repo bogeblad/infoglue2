@@ -87,6 +87,12 @@ public final class CmsContextListener implements ServletContextListener
 			{
 				assetPath = contextRootPath + "digitalAssets";
 				CmsPropertyHandler.setProperty("digitalAssetPath", assetPath);
+
+				String digitalAssetPath0 = CmsPropertyHandler.getProperty("digitalAssetPath.0");
+				if(digitalAssetPath0 == null || digitalAssetPath0.equals(""))
+				{
+					CmsPropertyHandler.setProperty("digitalAssetPath.0", assetPath);
+				}
 			}
 
 			String expireCacheAutomaticallyString = CmsPropertyHandler.getProperty("expireCacheAutomatically");

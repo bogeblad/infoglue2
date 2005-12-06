@@ -44,6 +44,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.Language;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.workflow.CustomWorkflowAction;
@@ -89,8 +90,8 @@ public class CreateNews implements CustomWorkflowAction
 	        try
             {
 	            Map arguments = new HashMap();
-	            arguments.put("j_username", "anonymous");
-	            arguments.put("j_password", "anonymous");
+	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+	            arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
 	            infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
             } 

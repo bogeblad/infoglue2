@@ -29,6 +29,7 @@ import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import java.util.List;
@@ -88,7 +89,7 @@ public class UpdateSystemUserAction extends ViewSystemUserAction //WebworkAbstra
 
 	public String doChangePassword() throws Exception
 	{
-	    if(this.systemUserVO.getUserName().equals("anonymous"))
+	    if(this.systemUserVO.getUserName().equals(CmsPropertyHandler.getAnonymousUser()))
 	        throw new SystemException("You must not change password on this user as it's needed by the system.");
 
 		UserControllerProxy.getController().updateUserPassword(this.systemUserVO.getUserName());

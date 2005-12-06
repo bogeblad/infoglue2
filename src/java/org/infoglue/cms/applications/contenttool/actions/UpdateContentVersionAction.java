@@ -23,10 +23,14 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.util.Date;
+
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.PublicationThread;
 
 /**
   * This is the action-class for UpdateContentVersionVersion
@@ -36,12 +40,16 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class UpdateContentVersionAction extends ViewContentVersionAction 
 {
+    public final static Logger logger = Logger.getLogger(UpdateContentVersionAction.class.getName());
+
 	private ContentVersionVO contentVersionVO;
 	private Integer contentId;
 	private Integer languageId;
 	private Integer contentVersionId;
 	private Integer currentEditorId;
 	private String attributeName;
+	private long oldModifiedDateTime = -1;
+	private boolean concurrentModification = false;
 	
 	private ConstraintExceptionBuffer ceb;
 	
@@ -60,17 +68,36 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 	{
 		super.initialize(this.contentVersionId, this.contentId, this.languageId);
 		ceb.throwIfNotEmpty();
-
-		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 		
-		try
-		{
-		    this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+		ContentVersionVO currentContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
+
+		logger.info("oldModifiedDateTime:" + oldModifiedDateTime);
+		logger.info("modifiedDateTime2:" + currentContentVersionVO.getModifiedDateTime().getTime());
+		if(this.oldModifiedDateTime == currentContentVersionVO.getModifiedDateTime().getTime())
+		{	
+			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+			
+			try
+			{
+			    this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+			    this.oldModifiedDateTime = this.contentVersionVO.getModifiedDateTime().getTime();
+			}
+			catch(ConstraintException ce)
+			{
+			    super.contentVersionVO = this.contentVersionVO;
+			    throw ce;
+			}
 		}
-		catch(ConstraintException ce)
+		else
 		{
-		    super.contentVersionVO = this.contentVersionVO;
-		    throw ce;
+			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+			super.contentVersionVO = this.contentVersionVO;
+		    /*
+		    ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+			ceb.add(new ConstraintException("ContentVersion.concurrentModification", "3306"));
+			ceb.throwIfNotEmpty();
+			*/
+			concurrentModification = true;
 		}
 		
 		return "success";
@@ -181,6 +208,21 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 	public void setAttributeName(String attributeName)
 	{
 		this.attributeName = attributeName;
+	}
+
+	public long getOldModifiedDateTime() 
+	{
+		return oldModifiedDateTime;
+	}
+
+	public void setOldModifiedDateTime(long oldModifiedDateTime) 
+	{
+		this.oldModifiedDateTime = oldModifiedDateTime;
+	}
+
+	public boolean getConcurrentModification() 
+	{
+		return concurrentModification;
 	}
 
 }

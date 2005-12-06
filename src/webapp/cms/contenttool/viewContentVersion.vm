@@ -413,6 +413,11 @@
 		#if($readonly == "disabled")
 			alert("The view is in read only mode as the content version is not in working state. If you want to edit the version you must first change state to working.");
 		#end
+		
+		#if($concurrentModification)
+			alert("$ui.getString("tool.contenttool.concurrentModificationLabel")");
+		#end
+		
 	}	
 	
 
@@ -1257,7 +1262,13 @@
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<input type="hidden" name="contentId" value="$!contentId">
 		#if($contentVersionId > -1)
-		<input type="hidden" name="contentVersionId" value="$!contentVersionId">
+			<input type="hidden" name="contentVersionId" value="$!contentVersionId">
+			#if("$oldModifiedDateTime" == "-1")
+				<input type="hidden" name="oldModifiedDateTime" value="$!contentVersionVO.modifiedDateTime.time">
+			#else
+				<input type="hidden" name="oldModifiedDateTime" value="$!oldModifiedDateTime">
+			#end
+		
 		#end
 		<td colspan="3">
 		    #if($readonly == "")

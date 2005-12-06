@@ -87,9 +87,18 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
     	if(digitalAsset != null)
 		{
 			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			//String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			
-			DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+
+			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
 			
 			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
@@ -114,11 +123,21 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
     	if(digitalAsset != null)
 		{
 			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
 
-			DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-			DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+
+			//String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
 			
 			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
@@ -230,30 +249,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	}
 	
 	
-	/**
-	 * This method removes all images in the digitalAsset directory which belongs to a certain content version.
-	 */
-	/*
-	public void deleteContentVersionAssets(Integer contentVersionId) throws SystemException, Exception
-	{
-		try
-		{
-			File assetDirectory = new File(CmsPropertyHandler.getProperty("digitalAssetPath"));
-			File[] files = assetDirectory.listFiles(new FilenameFilterImpl(contentVersionId.toString())); 	
-			for(int i=0; i<files.length; i++)
-			{
-				File file = files[i];
-				getLogger().info("Deleting file " + file.getPath());
-				file.delete();
-			}
-			
-		}
-		catch(Exception e)
-		{
-			getLogger().error("Could not delete the assets for the contentVersion " + contentVersionId + ":" + e.getMessage(), e);
-		}
-	}
-	*/
 
 	/**
 	 * This method removes all images in the digitalAsset directory which belongs to a certain content version.
@@ -287,14 +282,30 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	{ 
 		try
 		{
-			File assetDirectory = new File(CmsPropertyHandler.getProperty("digitalAssetPath"));
-			File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
-			for(int i=0; i<files.length; i++)
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
 			{
-				File file = files[i];
-				getLogger().info("Deleting file " + file.getPath());
-				file.delete();
+				File assetDirectory = new File(filePath);
+				File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
+				for(int j=0; j<files.length; j++)
+				{
+					File file = files[j];
+					getLogger().info("Deleting file " + file.getPath());
+					file.delete();
+				}
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
+
+			//File assetDirectory = new File(CmsPropertyHandler.getProperty("digitalAssetPath"));
+			//File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
+			//for(int i=0; i<files.length; i++)
+			//{
+			//	File file = files[i];
+			//	getLogger().info("Deleting file " + file.getPath());
+			//	file.delete();
+			//}
 	
 		}
 		catch(Exception e)

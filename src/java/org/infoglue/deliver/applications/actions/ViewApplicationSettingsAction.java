@@ -36,6 +36,7 @@ import java.util.Map;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
@@ -216,8 +217,8 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 				try
 				{
 				    Map arguments = new HashMap();
-				    arguments.put("j_username", "anonymous");
-				    arguments.put("j_password", "anonymous");
+				    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+				    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 				    
 				    principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 				}

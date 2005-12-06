@@ -100,8 +100,11 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private Map WYSIWYGProperties = null;
 	
 	private String closeOnLoad;
-	
 
+	private boolean concurrentModification = false;
+	private long oldModifiedDateTime = -1;
+
+	
 	public String getQualifyerPath(String entity, String entityId)
 	{	
 		try
@@ -1104,5 +1107,25 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     {
         return contentTypeDefinitionVO;
     }
+
+	public boolean getConcurrentModification() 
+	{
+		return concurrentModification;
+	}
+
+	public void setConcurrentModification(boolean concurrentModification) 
+	{
+		this.concurrentModification = concurrentModification;
+	}
+
+	public long getOldModifiedDateTime() 
+	{
+		return oldModifiedDateTime;
+	}
+
+	public void setOldModifiedDateTime(long oldModifiedDateTime) 
+	{
+		this.oldModifiedDateTime = oldModifiedDateTime;
+	}
     
 }

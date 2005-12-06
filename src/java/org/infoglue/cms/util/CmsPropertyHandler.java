@@ -234,5 +234,24 @@ public class CmsPropertyHandler
 	    return ps.getString("principal_" + userName + "_defaultToolId");
 	}
 		
+	public static String getAnonymousPassword()
+	{
+		String password = "anonymous";
+		String specifiedPassword = getProperty("security.anonymous.password");
+		if(specifiedPassword != null && !specifiedPassword.equalsIgnoreCase("") && specifiedPassword.indexOf("security.anonymous.password") == -1)
+			password = specifiedPassword;
+		
+		return password;
+	}
+
+	public static String getAnonymousUser()
+	{
+		String userName = "anonymous";
+		String specifiedUserName = getProperty("security.anonymous.username");
+		if(specifiedUserName != null && !specifiedUserName.equalsIgnoreCase("") && specifiedUserName.indexOf("security.anonymous.username") == -1)
+			userName = specifiedUserName;
+		
+		return userName;
+	}
 
 }

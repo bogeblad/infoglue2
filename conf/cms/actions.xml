@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.13 2005/12/04 13:39:49 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.14 2005/12/06 22:06:12 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -800,7 +800,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.UpdateContentVersionAction" alias="UpdateContentVersion">
 		<view name="input">/cms/contenttool/viewContentVersionForFCKEditor.vm</view>
-		<view name="success">ExtendedRedirect.action?url=ViewContentVersion.action#contentId#languageId#currentEditorId</view>
+		<view name="success">ExtendedRedirect.action?url=ViewContentVersion.action#contentId#languageId#currentEditorId#concurrentModification#oldModifiedDateTime</view>
 		<!--<view name="success">ViewContentVersion.action</view>-->
 		<view name="background">ViewContentVersion!background.action</view>
 		<view name="standalone">ViewContentVersion!standalone.action</view>
