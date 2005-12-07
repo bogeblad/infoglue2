@@ -161,6 +161,7 @@
 				arguments = getSelectedChkObjects(listForm.sel, "event");
 				//alert("arguments:" + arguments);
 				previewWindow=window.open("PreviewEdition.action?" + arguments, "Preview", "toolbar=no, width=800, height=650, directories=no,  status=no, scrollbars=yes, resize=no, menubar=no");
+				previewWindow.focus();
 				
 				previewWindow.document.write("<html><head><title>Preview edition</title></head>");
 				previewWindow.document.write("<frameset FRAMESPACING='0' FRAMEBORDER='NO' BORDER='0' rows='50,600'>");
