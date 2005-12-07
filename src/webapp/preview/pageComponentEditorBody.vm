@@ -27,7 +27,7 @@ $accessRightsHTML
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">Delete component</div>
 <hr>
 -->
-$addComponentHTML
+$deleteComponentHTML
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
 <hr>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
@@ -36,6 +36,7 @@ $addComponentHTML
 </div>
 <script type="text/javascript">
 <!--
-$accessRightsJavascript
+$addComponentJavascript
+$deleteComponentJavascript
 -->
 </script>

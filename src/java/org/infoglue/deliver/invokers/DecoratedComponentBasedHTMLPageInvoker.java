@@ -252,6 +252,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorBody.vm"));
 			
 		    String addComponentHTML = "<div id=\"addComponentMenuItem\" class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">" + getLocalizedString(templateController.getLocale(), "deliver.editOnSight.addComponentHTML") + "</div>";
+		    String deleteComponentHTML = "<div id=\"deleteComponentMenuItem\" class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponent();\">" + getLocalizedString(templateController.getLocale(), "deliver.editOnSight.deleteComponentHTML") + "</div>";
 			String accessRightsHTML = "<div id=\"accessRightsMenuItem\" class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"setAccessRights(slotName);\">" + getLocalizedString(templateController.getLocale(), "deliver.editOnSight.accessRightsHTML") + "</div>";
 			String pageComponentsHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.pageComponentsHTML");
 			String viewSourceHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.viewSourceHTML");
@@ -261,6 +262,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			    extraBody = extraBody.replaceAll("\\$addComponentHTML", addComponentHTML + "<hr>");
 			    //else
 			    //extraBody = extraBody.replaceAll("\\$addComponentHTML", "");
+			    extraBody = extraBody.replaceAll("\\$deleteComponentHTML", deleteComponentHTML + "<hr>");
 		    
 			    //if(hasAccessToAccessRights)
 		        extraBody = extraBody.replaceAll("\\$accessRightsHTML", accessRightsHTML);
@@ -270,7 +272,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    extraBody = extraBody.replaceAll("\\$pageComponents", pageComponentsHTML);
 		    extraBody = extraBody.replaceAll("\\$viewSource", viewSourceHTML);
 		    
-		    extraBody = extraBody.replaceAll("\\$accessRightsJavascript", "var hasAccessToAddComponent" + component.getSlotName() + " = " + hasAccessToAddComponent + ";");
+		    extraBody = extraBody.replaceAll("\\$addComponentJavascript", "var hasAccessToAddComponent" + component.getSlotName() + " = " + hasAccessToAddComponent + ";");
+		    extraBody = extraBody.replaceAll("\\$deleteComponentJavascript", "var hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";");
 		    
 		    //List tasks = getTasks();
 			//component.setTasks(tasks);
@@ -864,7 +867,14 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">" + viewSourceHTML + "</div>");
 		sb.append("<div class=\"igmenuitems\">getComponentTasksDiv_" + component.getSlotName() + "</div>");
 		sb.append("</div>");
-				
+		
+		sb.append("<script type=\"text/javascript\">");
+		//sb.append("<!--");
+		sb.append("hasAccessToAddComponent" + component.getSlotName() + " = " + hasAccessToAddComponent + ";");
+		sb.append("hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";");
+		//sb.append("-->");
+		sb.append("</script>");
+		
 		return sb.toString();
 	}
 
@@ -934,7 +944,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
 		
-		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"clickableLabel\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "');</script>");
+		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"javascript:showDiv('component" + component.getId() + "Properties');\" class=\"clickableLabel\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', '" + component.getSlotName() + "');</script>");
 		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
 		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
 		
