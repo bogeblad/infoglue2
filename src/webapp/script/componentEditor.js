@@ -772,7 +772,8 @@ function saveComponentStructure(url)
 {
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
 	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
-	window.open(url, "Save", details);
+	newWin=window.open(url, "Save", details);
+	newWin.focus();
 }
 	
 //--------------------------------------------
@@ -789,7 +790,8 @@ function edit()
 	{
 		//alert("editUrl in edit:" + editUrl.substring(0, 50) + '\n' + editUrl.substring(50));
 		details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
-		window.open(editUrl, "Edit", details);
+		newWin=window.open(editUrl, "Edit", details);
+		newWin.focus();
 	}
 }
 
@@ -797,14 +799,16 @@ function executeTask(url)
 {
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
 	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
-	window.open(url, "Edit", details);
+	newWin=window.open(url, "Edit", details);
+	newWin.focus();
 }
 
 function insertComponent() 
 {
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
 	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
-	window.open(insertUrl, "Edit", details);
+	newWin=window.open(insertUrl, "Edit", details);
+	newWin.focus();	
 }
 
 function deleteComponent() 

@@ -159,7 +159,8 @@ function openEditWindow()
 {
 	//alert("editUrl:" + editUrl);
 	details = "'width=500,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes'";
-	window.open(editUrl, "Edit", details);
+	newWin=window.open(editUrl, "Edit", details);
+	newWin.focus();
 }
 
 function viewSource() 
