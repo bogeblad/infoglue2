@@ -480,9 +480,30 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl)
 }
 
 
-function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUrl) 
+function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUrl, slotId) 
 {
 	activeMenuId = "componentInTreeMenu";
+
+	slotName = slotId;
+	alert("slotId:" + slotId);
+	alert("compId:" + compId);
+	try
+	{
+		var access = eval("hasAccessToDeleteComponent" + slotName); 
+	    alert("access:" + access);
+	    if(access) 
+	    {
+	    	document.getElementById("deleteComponentMenuItem").style.display = "block";
+		}
+		else
+		{
+	    	document.getElementById("deleteComponentMenuItem").style.display = "none";
+	    }
+	}
+	catch(e)
+	{
+		alert("Error:" + e);
+	}
 
 	componentId = compId;
 	insertUrl = anInsertUrl;
@@ -1254,13 +1275,13 @@ function viewSource()
 		}
 	}
 	
-	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl)
+	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl, slotId)
 	{
 		//alert("initializeComponentInTreeEventHandler" + id + " " + deleteUrl);
-		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl);
+		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl, slotId);
 	}
 		
-	function componentInTreeEventHandler(eleId, objName, objId, insertUrl, deleteUrl)
+	function componentInTreeEventHandler(eleId, objName, objId, insertUrl, deleteUrl, slotId)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.objId = objId;
@@ -1297,7 +1318,7 @@ function viewSource()
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
 			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    showComponentInTreeMenu(evt, ele.id, this.objId, insertUrl, deleteUrl);
+		    showComponentInTreeMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, slotId);
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
