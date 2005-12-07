@@ -395,6 +395,7 @@ function getActiveMenuDiv()
 var busy = false;
 var componentId;
 var slotId;
+var slotName  = "";
 var editUrl   = "";
 var insertUrl = "";
 var deleteUrl = "";
@@ -529,12 +530,33 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	return false;
 }
 
-function showEmptySlotMenu(event, compId, anInsertUrl) 
+function showEmptySlotMenu(slotId, event, compId, anInsertUrl) 
 {
 	hidepreviousmenues();
 	
 	activeMenuId = "emptySlotMenu";
 	
+	slotName = slotId;
+	alert("slotId:" + slotId);
+	alert("compId:" + compId);
+	try
+	{
+		var access = eval("hasAccessToAddComponent" + slotName); 
+	    alert("access:" + access);
+	    if(access) 
+	    {
+	    	document.getElementById("addComponentMenuItem").style.display = "block";
+		}
+		else
+		{
+	    	document.getElementById("addComponentMenuItem").style.display = "none";
+	    }
+	}
+	catch(e)
+	{
+		alert("Error:" + e);
+	}
+	    
 	slotId = compId;
 	insertUrl = anInsertUrl;
 	//alert("CompId:" + compId);
@@ -809,6 +831,12 @@ function insertComponent()
 	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 	newWin=window.open(insertUrl, "Edit", details);
 	newWin.focus();	
+}
+
+function setAccessRights(slotId) 
+{
+	//alert("slotId in setAccessRights:" + slotId);
+	document.location.href = "/infoglueCMS2/ViewAccessRights.action?interceptionPointCategory=ComponentEditor&extraParameters=" + slotId + "&colorScheme=StructureTool&returnAddress=" + document.location.href;
 }
 
 function deleteComponent() 
@@ -1124,13 +1152,13 @@ function viewSource()
 	}
 		
 		
-	function initializeSlotEventHandler(id, insertUrl, deleteUrl)
+	function initializeSlotEventHandler(id, insertUrl, deleteUrl, slotId)
 	{
 		//alert("initializeSlotEventHandler:" + id);
-		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl);
+		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, slotId);
 	}
 
-	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl)
+	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl, slotId)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.insertUrl = insertUrl;
@@ -1168,7 +1196,7 @@ function viewSource()
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
 			//alert('emptySlotEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    showEmptySlotMenu(evt, ele.id, insertUrl);
+		    showEmptySlotMenu(slotId, evt, ele.id, insertUrl);
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}

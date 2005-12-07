@@ -89,6 +89,9 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("StructureTool.Read", new InterceptionPointVO("StructureTool", "StructureTool.Read", "Gives a user access to the structure tool", false));
 	    systemInterceptionPoints.put("StructureTool.SaveTemplate", new InterceptionPointVO("StructureTool", "StructureTool.SaveTemplate", "This interception point limits who get the save-button in the toolbar", false));
 	    systemInterceptionPoints.put("StructureTool.Palette", new InterceptionPointVO("StructureTool", "StructureTool.Palette", "This interception point limits who sees the toolbar", false));
+	    systemInterceptionPoints.put("ComponentEditor.ChangeSlotAccess", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ChangeSlotAccess", "This interception point limits who can set access rights to a slot", false));
+	    systemInterceptionPoints.put("ComponentEditor.AddComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.AddComponent", "This interception point limits who can add a component to a specific slot", true));
+	    systemInterceptionPoints.put("ComponentEditor.DeleteComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.DeleteComponent", "This interception point limits who can delete a component in a specific slot", true));
 	}
     
 	/**
