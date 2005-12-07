@@ -169,6 +169,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
        Map context = getDefaultContext();
 
 		context.put("componentEditorUrl", componentEditorUrl);
+		context.put("currentUrl", this.getTemplateController().getVisualFormatter().encodeURI(this.getTemplateController().getCurrentPageUrl()));
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
 		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate);
@@ -242,11 +243,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			    principal = templateController.getPrincipal(cmsUserName);
 
 			boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
-			System.out.println("hasAccessToAccessRights to ChangeSlotAccess:" + hasAccessToAccessRights);
+			//System.out.println("hasAccessToAccessRights to ChangeSlotAccess:" + hasAccessToAccessRights);
 			boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + component.getSlotName());
-			System.out.println("hasAccessToAddComponent to ChangeSlotAccess:" + hasAccessToAddComponent + ":" + component.getSlotName());
+			//System.out.println("hasAccessToAddComponent to ChangeSlotAccess:" + hasAccessToAddComponent + ":" + component.getSlotName());
 			boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + component.getSlotName());
-			System.out.println("hasAccessToDeleteComponent to ChangeSlotAccess:" + hasAccessToDeleteComponent);
+			//System.out.println("hasAccessToDeleteComponent to ChangeSlotAccess:" + hasAccessToDeleteComponent);
 
 		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorHeader.vm"));
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorBody.vm"));
@@ -257,18 +258,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			String pageComponentsHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.pageComponentsHTML");
 			String viewSourceHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.viewSourceHTML");
 
-			
-		    //if(hasAccessToAddComponent)
-			    extraBody = extraBody.replaceAll("\\$addComponentHTML", addComponentHTML + "<hr>");
-			    //else
-			    //extraBody = extraBody.replaceAll("\\$addComponentHTML", "");
-			    extraBody = extraBody.replaceAll("\\$deleteComponentHTML", deleteComponentHTML + "<hr>");
+			extraBody = extraBody.replaceAll("\\$addComponentHTML", addComponentHTML);
+			extraBody = extraBody.replaceAll("\\$deleteComponentHTML", deleteComponentHTML);
+		    extraBody = extraBody.replaceAll("\\$accessRightsHTML", accessRightsHTML);
 		    
-			    //if(hasAccessToAccessRights)
-		        extraBody = extraBody.replaceAll("\\$accessRightsHTML", accessRightsHTML);
-		        //else
-		        //extraBody = extraBody.replaceAll("\\$accessRightsHTML", "");
-		        
 		    extraBody = extraBody.replaceAll("\\$pageComponents", pageComponentsHTML);
 		    extraBody = extraBody.replaceAll("\\$viewSource", viewSourceHTML);
 		    
@@ -816,7 +809,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 		
-		sb.append("<div id=\"component" + component.getId() + "Menu\" class=\"skin0\" style=\"border: 1px solid red;\">");
+		sb.append("<div id=\"component" + component.getId() + "Menu\" class=\"skin0\">");
 		
 		Collection componentTasks = getComponentTasks(component.getId(), document);
 		timer.printElapsedTime("getComponentTasksDiv: 4");
@@ -850,11 +843,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    principal = templateController.getPrincipal(cmsUserName);
 
 		boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
-		System.out.println("hasAccessToAccessRights to ChangeSlotAccess:" + hasAccessToAccessRights);
+		//System.out.println("hasAccessToAccessRights to ChangeSlotAccess:" + hasAccessToAccessRights);
 		boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + component.getSlotName());
-		System.out.println("hasAccessToAddComponent to ChangeSlotAccess:" + hasAccessToAddComponent + ":" + component.getSlotName());
+		//System.out.println("hasAccessToAddComponent to ChangeSlotAccess:" + hasAccessToAddComponent + ":" + component.getSlotName());
 		boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + component.getSlotName());
-		System.out.println("hasAccessToDeleteComponent to ChangeSlotAccess:" + hasAccessToDeleteComponent);
+		//System.out.println("hasAccessToDeleteComponent to ChangeSlotAccess:" + hasAccessToDeleteComponent);
 
 		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">" + editHTML + "</div>");
 	    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">" + addComponentHTML + "</div>");

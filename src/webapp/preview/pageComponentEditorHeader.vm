@@ -1,5 +1,6 @@
 <script type="text/javascript">
 	var componentEditorUrl = "${componentEditorUrl}";
+	var currentUrl = "${currentUrl}";
 </script>
 <script type="text/javascript" src="script/dom-drag.js"></script>
 <script type="text/javascript" src="script/componentEditor.js"></script>

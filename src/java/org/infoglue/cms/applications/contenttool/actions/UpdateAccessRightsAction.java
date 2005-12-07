@@ -34,6 +34,8 @@ import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
+import webwork.action.Action;
+
  
 /**
   * This is the action-class for Update Access Rights
@@ -86,9 +88,15 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 		AccessRightController.getController().update(this.parameters, this.getRequest());
 	
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
-		//getResponse().sendRedirect(url);
 		
-		return "success";
+		System.out.println("url:" + url);
+		if(this.returnAddress.indexOf("http://") > -1)
+		{
+			getResponse().sendRedirect(url);
+			return Action.NONE;
+		}
+		else
+			return "success";
 	}
 	
 	public String doAddGroups() throws Exception

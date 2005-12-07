@@ -485,19 +485,21 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	activeMenuId = "componentInTreeMenu";
 
 	slotName = slotId;
-	alert("slotId:" + slotId);
-	alert("compId:" + compId);
+	//alert("slotId:" + slotId);
+	//alert("compId:" + compId);
 	try
 	{
 		var access = eval("hasAccessToDeleteComponent" + slotName); 
-	    alert("access:" + access);
+	    //alert("access:" + access);
 	    if(access) 
 	    {
 	    	document.getElementById("deleteComponentMenuItem").style.display = "block";
+	    	document.getElementById("componentInTreeMenuTopSeparator").style.display = "block";
 		}
 		else
 		{
 	    	document.getElementById("deleteComponentMenuItem").style.display = "none";
+	    	document.getElementById("componentInTreeMenuTopSeparator").style.display = "none";
 	    }
 	}
 	catch(e)
@@ -558,24 +560,26 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl)
 	activeMenuId = "emptySlotMenu";
 	
 	slotName = slotId;
-	alert("slotId:" + slotId);
-	alert("compId:" + compId);
+	//alert("slotId:" + slotId);
+	//alert("compId:" + compId);
 	try
 	{
 		var access = eval("hasAccessToAddComponent" + slotName); 
-	    alert("access:" + access);
+	    //alert("access:" + access);
 	    if(access) 
 	    {
 	    	document.getElementById("addComponentMenuItem").style.display = "block";
+	    	document.getElementById("emptySlotMenuTopSeparator").style.display = "block";
 		}
 		else
 		{
 	    	document.getElementById("addComponentMenuItem").style.display = "none";
+	    	document.getElementById("emptySlotMenuTopSeparator").style.display = "none";
 	    }
 	}
 	catch(e)
 	{
-		alert("Error:" + e);
+		//alert("Error:" + e);
 	}
 	    
 	slotId = compId;
@@ -857,7 +861,8 @@ function insertComponent()
 function setAccessRights(slotId) 
 {
 	//alert("slotId in setAccessRights:" + slotId);
-	document.location.href = "/infoglueCMS2/ViewAccessRights.action?interceptionPointCategory=ComponentEditor&extraParameters=" + slotId + "&colorScheme=StructureTool&returnAddress=" + document.location.href;
+	//alert("currentUrl:" + document.location.href);
+	document.location.href = componentEditorUrl + "ViewAccessRights.action?interceptionPointCategory=ComponentEditor&extraParameters=" + slotId + "&colorScheme=StructureTool&returnAddress=" + document.location.href;
 }
 
 function deleteComponent() 
