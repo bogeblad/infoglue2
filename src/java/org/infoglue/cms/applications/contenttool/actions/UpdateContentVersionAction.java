@@ -68,12 +68,20 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 	{
 		super.initialize(this.contentVersionId, this.contentId, this.languageId);
 		ceb.throwIfNotEmpty();
-		
-		ContentVersionVO currentContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
 
-		logger.info("oldModifiedDateTime:" + oldModifiedDateTime);
-		logger.info("modifiedDateTime2:" + currentContentVersionVO.getModifiedDateTime().getTime());
-		if(this.oldModifiedDateTime == currentContentVersionVO.getModifiedDateTime().getTime())
+		ContentVersionVO currentContentVersionVO = null;
+		if(this.contentVersionVO.getId() != null)
+		{
+			currentContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
+		}
+		
+		if(currentContentVersionVO != null)
+		{
+			logger.info("oldModifiedDateTime:" + oldModifiedDateTime);
+			logger.info("modifiedDateTime2:" + currentContentVersionVO.getModifiedDateTime().getTime());
+		}
+		
+		if(currentContentVersionVO == null || this.oldModifiedDateTime == currentContentVersionVO.getModifiedDateTime().getTime())
 		{	
 			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 			
