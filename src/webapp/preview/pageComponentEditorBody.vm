@@ -1,28 +1,25 @@
 <div id="emptySlotMenu" class="skin0">
-<!--
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponent</div>
-<hr>
--->
-$addComponentHTML
+<div id="addComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponentHTML</div>
 <hr id="emptySlotMenuTopSeparator">
-$accessRightsHTML
+<div id="accessRightsMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="setAccessRights(slotName);">$accessRightsHTML</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">$viewSource</div>
 </div>
 
 <div id="componentMenu" class="skin0">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="edit();">Edit</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();"><nobr>Add component</nobr></div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();"><nobr>Delete component</nobr></div>
-<hr>
+<div id="addComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponentHTML</div>
+<div id="deleteComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">$deleteComponentHTML</div>
+<hr id="componentMenuTopSeparator">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
-<hr>
+<hr id="componentMenuMiddleSeparator">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();"><nobr>View Source</nobr></div>
+<div class="igmenuitems">AAAA</div>
 </div>
 
 <div id="componentInTreeMenu" class="skin0">
-$deleteComponentHTML
+<div id="deleteComponentInTreeMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">$deleteComponentHTML</div>
 <hr id="componentInTreeMenuTopSeparator">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
 <hr id="emptySlotMenuMiddleSeparator">
@@ -33,5 +30,6 @@ $deleteComponentHTML
 <!--
 $addComponentJavascript
 $deleteComponentJavascript
+$changeAccessJavascript
 -->
 </script>

@@ -426,6 +426,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl)
 	insertUrl = anInsertUrl;
 	deleteUrl = anDeleteUrl;
 	//alert("componentId" + componentId);
+	//alert("activeMenuId" + activeMenuId);
 	//alert("editUrl" + editUrl);
     
     document.body.onclick = hidemenuie5;
@@ -493,12 +494,12 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	    //alert("access:" + access);
 	    if(access) 
 	    {
-	    	document.getElementById("deleteComponentMenuItem").style.display = "block";
+	    	document.getElementById("deleteComponentInTreeMenuItem").style.display = "block";
 	    	document.getElementById("componentInTreeMenuTopSeparator").style.display = "block";
 		}
 		else
 		{
-	    	document.getElementById("deleteComponentMenuItem").style.display = "none";
+	    	document.getElementById("deleteComponentInTreeMenuItem").style.display = "none";
 	    	document.getElementById("componentInTreeMenuTopSeparator").style.display = "none";
 	    }
 	}
@@ -576,12 +577,23 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl)
 	    	document.getElementById("addComponentMenuItem").style.display = "none";
 	    	document.getElementById("emptySlotMenuTopSeparator").style.display = "none";
 	    }
+
+		var accessToAccessRights = eval("hasAccessToAccessRights" + slotName); 
+	    //alert("accessToAccessRights:" + accessToAccessRights);
+	    if(accessToAccessRights) 
+	    {
+	    	document.getElementById("accessRightsMenuItem").style.display = "block";
+		}
+		else
+		{
+	    	document.getElementById("accessRightsMenuItem").style.display = "none";
+	    }
 	}
 	catch(e)
 	{
-		//alert("Error:" + e);
+		alert("Error:" + e);
 	}
-	    
+	 
 	slotId = compId;
 	insertUrl = anInsertUrl;
 	//alert("CompId:" + compId);
@@ -1180,7 +1192,7 @@ function viewSource()
 		
 	function initializeSlotEventHandler(id, insertUrl, deleteUrl, slotId)
 	{
-		//alert("initializeSlotEventHandler:" + id);
+		//alert("initializeSlotEventHandler:" + id + ":" + slotId);
 		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, slotId);
 	}
 
