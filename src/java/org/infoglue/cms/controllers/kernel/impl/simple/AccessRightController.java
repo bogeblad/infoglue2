@@ -847,8 +847,12 @@ public class AccessRightController extends BaseController
 		Collection groups = infoGluePrincipal.getGroups();
 		getLogger().info("roles:" + roles.size());
 		getLogger().info("groups:" + groups.size());
-		
+
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
+		if(interceptionPointVO == null)
+			return true;
+				
+		/*
 		if(interceptionPointVO == null && InterceptionPointController.systemInterceptionPoints.containsKey(interceptionPointName))
 		{
 		    try
@@ -862,7 +866,7 @@ public class AccessRightController extends BaseController
 		    }
 		    return false;
 		}
-		
+		*/
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), extraParameters, db);
 		
 		Iterator accessRightListIterator = accessRightList.iterator();

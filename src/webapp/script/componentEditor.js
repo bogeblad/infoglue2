@@ -874,7 +874,7 @@ function setAccessRights(slotId)
 {
 	//alert("slotId in setAccessRights:" + slotId);
 	//alert("currentUrl:" + document.location.href);
-	document.location.href = componentEditorUrl + "ViewAccessRights.action?interceptionPointCategory=ComponentEditor&extraParameters=" + slotId + "&colorScheme=StructureTool&returnAddress=" + document.location.href;
+	document.location.href = componentEditorUrl + "ViewAccessRights.action?interceptionPointCategory=ComponentEditor&extraParameters=" + slotId + "&colorScheme=StructureTool&returnAddress=" + currentUrl;
 }
 
 function deleteComponent() 
@@ -1294,7 +1294,7 @@ function viewSource()
 	
 	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl, slotId)
 	{
-		//alert("initializeComponentInTreeEventHandler" + id + " " + deleteUrl);
+		//alert("initializeComponentInTreeEventHandler" + id + " " + deleteUrl + " " + slotId);
 		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl, slotId);
 	}
 		

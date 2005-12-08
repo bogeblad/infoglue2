@@ -89,7 +89,7 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 	
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
 		
-		System.out.println("url:" + url);
+		//System.out.println("url:" + url);
 		if(this.returnAddress.indexOf("http://") > -1)
 		{
 			getResponse().sendRedirect(url);

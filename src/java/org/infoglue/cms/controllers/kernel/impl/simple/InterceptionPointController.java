@@ -25,6 +25,8 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightGroup;
+import org.infoglue.cms.entities.management.AccessRightRole;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Interceptor;
@@ -92,6 +94,7 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ComponentEditor.ChangeSlotAccess", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ChangeSlotAccess", "This interception point limits who can set access rights to a slot", false));
 	    systemInterceptionPoints.put("ComponentEditor.AddComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.AddComponent", "This interception point limits who can add a component to a specific slot", true));
 	    systemInterceptionPoints.put("ComponentEditor.DeleteComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.DeleteComponent", "This interception point limits who can delete a component in a specific slot", true));
+	    systemInterceptionPoints.put("ComponentPropertyEditor.EditProperty", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditProperty", "This interception point limits who can edit a specific component property", true));
 	}
     
 	/**
@@ -445,6 +448,23 @@ public class InterceptionPointController extends BaseController
 			while(accessRightsIterator.hasNext())
 			{
 				AccessRight accessRight = (AccessRight)accessRightsIterator.next();
+				
+				Iterator groupIterator = accessRight.getGroups().iterator();
+				while(groupIterator.hasNext())
+				{
+					AccessRightGroup group = (AccessRightGroup)groupIterator.next();
+					groupIterator.remove();
+					db.remove(group);
+				}
+				
+				Iterator roleIterator = accessRight.getRoles().iterator();
+				while(roleIterator.hasNext())
+				{
+					AccessRightRole role = (AccessRightRole)roleIterator.next();
+					roleIterator.remove();
+					db.remove(role);
+				}
+				
 				db.remove(accessRight);
 				accessRightsIterator.remove();
 			}
