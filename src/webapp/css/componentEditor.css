@@ -7,7 +7,6 @@ Component palette classes
 	background-color:#F4F4F4;
 	font-family:verdana, sans-serif;
 	font-size:10px;
-	aborder:1px solid #333;
 	z-index:1000001;
 	height:80px; 
 	width:100%; 
@@ -33,15 +32,11 @@ Component palette classes
 #leftPaletteHandle {
 	width: 150px; 
 	float: left;
-	apadding:1px 1px 1px 1px;
 	color:white;
 	text-align: left;
 	line-height:10px;
 	}
 #rightPaletteHandle {
-	awidth: 50px; 
-	afloat: right;
-	apadding:1px 1px 1px 1px;
 	color:white;
 	text-align: right;
 	line-height:10px;	
@@ -49,7 +44,7 @@ Component palette classes
 #paletteHeader {
 	padding-top:2px;
 	padding-bottom:2px;
-	width:244;
+	width:244px;
 	font-family:verdana, sans-serif;
 	font-size:10px;
 	height: 30px;
@@ -59,7 +54,6 @@ Component palette classes
 	top:65px; 
 	left:0px; 
 	border-bottom: 1px solid gray; 
-	aborder-left: 1px solid white; 
 	background:#CCCCCC; 
 	width:100%; 
 	height:15px;
@@ -75,10 +69,8 @@ Component palette classes
 	width:100%; 
 	left:0px; 
 	top:0px;
-	aborder: 1px solid blue;
 	}
 .tabPanel {
-	aborder: 1px solid red;
 	position:absolute; 
 	width:100%; 
 	height: 24px;
@@ -97,10 +89,10 @@ Component palette classes
 	border-left: solid thin white;
 	border-bottom: solid 0px white;
 	cursor:pointer;
-	visibility:inherited;
+	visibility:inherit;
 	z-index:1;
 	overflow: auto;
-	space: nowrap;
+	white-space: nowrap;
 	padding:0px 4px 0px 4px;
 	}
 .tab
@@ -116,8 +108,8 @@ Component palette classes
 	border-left: solid 1px black;
 	border-bottom: solid 1px white;
 	cursor:pointer;
-	visibility:inherited;
-	z-index:20
+	visibility:inherit;
+	z-index:20;
 	overflow: auto;
 	space: nowrap;
 	padding:0px 4px 0px 4px;
@@ -140,11 +132,17 @@ Component palette classes
 	padding-top:2px;
 	padding-bottom:2px;
 }
+/*
+This can be replaced by componentEditor.js:highighi5 and lowlighti5
+when explorer get better support for hover.
+.igmenuitems:hover {
+	background-color: #B6BDD2;
+	border:1px solid black;
+	}
+*/
+
 .menudivider {
-	aborder: 1px solid #666666;
 	height: 1px;
-	//color: #666666;
-	awidth: 100px;
 	text-align: right;
 	margin: 0 0 0 auto;
 	padding-top: 5px;
@@ -154,48 +152,42 @@ Component palette classes
 .draggableItem {
 	font-family:verdana, sans-serif;
 	font-size:10px;
-	space: nowrap;
+	white-space: nowrap;
 	}
 .components {
 	text-align: center;
 	background: #CCCCCC;
 	border-left: solid 1px white;
-	aborder-right: solid 1px white;
 	border-bottom: solid 1px black;
 	left:0px;
-	atop:20px;
 	width:100%;
 	height:30px;
 	cursor:pointer;
-	space: nowrap;
-	visibility:inherited;
+	white-space: nowrap;
+	visibility:inherit;
 }
 .component {
 	text-align:center;
 	background:#CCCCCC;
 	cursor:pointer;
-	space: nowrap;
+	white-space: nowrap;
 	padding:0px 4px 0px 4px;
-	visibility:inherited;
+	visibility:inherit;
 }
 .componentsBackground {
  	border-bottom: 1px solid gray; 
- 	aborder-left: 1px solid white; 
- 	aborder-right: 0px solid red; 
  	background:#CCCCCC; 
  	width:100%; 
  	height:24px; 
  	position:absolute; 
  	top:50px; 
  	left:10px; 
- 	visibility: inherited;
+ 	visibility: inherit;
 }
 .componentsStatus {
 	font-family:verdana,arial,helvetica;
 	font-size:8pt;
 	font-weight: normal;
-	aborder-right: 1px solid black;
-	aborder-left: thin solid white;
 	border-bottom: solid 1px black;
 	border-top: solid thin gray;
 	position:absolute; 
@@ -289,7 +281,6 @@ Edit on sight classes
 	z-index:1000004;
 	text-align:left;
 	width:350px;
-	//background-color:menu;
 	background-color:#F9F8F7;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	line-height:20px;
@@ -298,7 +289,6 @@ Edit on sight classes
 }
 .skin1 {
 	cursor:default;
-	font:menutext;
 	position:absolute;
 	z-index:1000004;
 	text-align:left;
@@ -358,7 +348,6 @@ Properties classes
 	height: 10px;
 }
 .igtable {
-	abackground-color: red;
 	text-align: left;
 	height: 10px;
 	border:0px solid #FFFFFF;
@@ -372,34 +361,28 @@ Properties classes
 	color			: #000000;
 }
 .igtd {
-	abackground-color: blue;
 	text-align: left;
 	height: 10px;
 	vertical-align: top;
 	border:0px solid red;
-	awidth:1px;
 	line-height: 10px;
 }
 .igtd:hover {
-	abackground-color: blue;
 	text-align: left;
 	height: 10px;
 	vertical-align: top;
 	border:0px solid red;
-	awidth:1px;
 }
 .componentEditorLink {
 	font-family	     : verdana, arial, sans-serif;
 	font-size        : 8pt;
-	font-color		 : #333333;
-	color			 : navy;
+	color		 	 : #333333;
 }
 .igpropertylabel {
-	abackground-color : white;
 	text-align 	 	 : left;
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 8pt;
-	font-color		 : #333333;
+	color		 	 : #333333;
 	font-weight		 : bold;
 	border	 		 : 0px solid #FFFFFF;
 	width			 : 40%;
@@ -408,7 +391,7 @@ Properties classes
 	text-align	 	 : left;
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 8pt;
-	font-color		 : #333333;
+	color		 	 : #333333;
 	background		 : #FFFFFF;
 	border-style	 : solid;
 	border-width	 : 1px;	
@@ -431,13 +414,13 @@ td.label {
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 8pt;
 	font-weight		 : bold;
-	font-color		 : #333333;
+	color		 	 : #333333;
 }
 
 td.value {
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 8pt;
-	font-color		 : #333333;
+	color		 	 : #333333;
 }
 
 /*
@@ -447,12 +430,12 @@ Slot classes
 .emptyslot {
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 10pt;
-	font-color		 : #333333;
+	color		 	 : #333333;
 }
 .filledslot {
 	font-family      : verdana, arial, sans-serif;
 	font-size        : 10pt;
-	font-color		 : #333333;
+	color		 	 : #333333;
 }
 .inheritedslot {
 }
@@ -491,7 +474,7 @@ input.propertytextfield {
 {
  	font-family      : verdana, arial, sans-serif;
 	font-size        : 8pt;
-	font-color		 : #333333;
+	color		 	 : #333333;
     position:relative;
 	visibility:visible;
 	z-index:10;
@@ -499,7 +482,6 @@ input.propertytextfield {
 	text-align: center;
 	vertical-align: middle;
 	height:10px;
-	//filter:glow;
 	border-style	 : solid;
 	border-width	 : 1px;	
 	border-color     : #000000;
@@ -507,13 +489,9 @@ input.propertytextfield {
 .inherited
 {
     position: relative;
-	atop: -15px;
-	abottom: -15px;
-	aleft: 0px;
 	visibility:visible;
 	z-index:1;
 	width:100%;
-	filter:gray;
 }
 	
 tr.lightyellow {
@@ -537,16 +515,16 @@ tr.white {
 	color:white;
 	}
 
-A.white {
+a.white {
     text-decoration:none;
-    COLOR: white;
+    color: white;
 	font-size:10px;
     }
-A.white:hover {
+a.white:hover {
 	text-decoration:underline;
 	}
-A.white:active {
-	font: bold;
+a.white:active {
+	font-weight: bold;
 	}
 
 .boldsmalllabel {
@@ -570,7 +548,6 @@ A.white:active {
 	height:12px;
 	}
 select.mediumdrop {
-	awidth : 142px;
 	font-family:verdana, sans-serif;
 	font-size:10px;
 	font-weight:normal;
@@ -585,11 +562,10 @@ select.mediumdrop {
 	text-decoration:underline;
 	color:blue;
 	height:12px;
-	space: nowrap;
+	white-space: nowrap;
 	}
 .acomponentsBackground {
 	border: 0px solid red; 
-	aborder-right: solid 1px none;
 	border-left: solid thin white;
 	position:absolute; 
 	z-index:2; 
@@ -598,5 +574,5 @@ select.mediumdrop {
 	left:0px; 
 	height:30px; 
 	clip:rect(0px 10px 10px 0px); 
-	visibility:inherited;
+	visibility:inherit;
 }	
