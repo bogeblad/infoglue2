@@ -2469,6 +2469,23 @@ public class BasicTemplateController implements TemplateController
 			String template = getParsedContentAttribute(contentBindningName, attributeName, true);
 			String uniqueId = siteNodeId + "_" + attributeName + "_" + contentBindningName + template.hashCode();
 			String fileName = uniqueId + ".pdf";
+
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				File pdfFile = new File(filePath + java.io.File.separator + fileName);
+				if(!pdfFile.exists())
+				{
+					logger.info("Creating a foprenderer");
+					FOPHelper fop = new FOPHelper();
+					fop.generatePDF(template, pdfFile);
+				}
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			
+			/*
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			File pdfFile = new File(filePath + java.io.File.separator + fileName);
 			if(!pdfFile.exists())
@@ -2477,7 +2494,7 @@ public class BasicTemplateController implements TemplateController
 				FOPHelper fop = new FOPHelper();
 				fop.generatePDF(template, pdfFile);
 			}
-
+			*/
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
@@ -2513,6 +2530,23 @@ public class BasicTemplateController implements TemplateController
 			String template = getParsedContentAttribute(contentId, attributeName, true);
 			String uniqueId = contentId + "_" + attributeName + template.hashCode();
 			String fileName = uniqueId + ".pdf";
+			
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				File pdfFile = new File(filePath + java.io.File.separator + fileName);
+				if(!pdfFile.exists())
+				{
+					logger.info("Creating a foprenderer");
+					FOPHelper fop = new FOPHelper();
+					fop.generatePDF(template, pdfFile);
+				}
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			
+			/*
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			File pdfFile = new File(filePath + java.io.File.separator + fileName);
 			if(!pdfFile.exists())
@@ -2521,7 +2555,8 @@ public class BasicTemplateController implements TemplateController
 				FOPHelper fop = new FOPHelper();
 				fop.generatePDF(template, pdfFile);
 			}
-
+			*/
+			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
@@ -2657,6 +2692,38 @@ public class BasicTemplateController implements TemplateController
 			String uniqueId = contentVersionVO.getId() + "_" + attributeName + canvasWidth + canvasHeight + textStartPosX + textStartPosY + textWidth + textHeight + fontName.replaceAll(" ", "") + fontStyle + fontSize + foregroundColor.getRed() + foregroundColor.getGreen() + foregroundColor.getBlue() + backgroundColor.getRed() + backgroundColor.getGreen() + backgroundColor.getBlue();
 			
 			String fileName = uniqueId + ".png";
+			
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				File imageFile = new File(filePath + java.io.File.separator + fileName);
+				if(!imageFile.exists())
+				{
+					logger.info("Creating a imagerenderer");
+					ImageRenderer imageRenderer = new ImageRenderer();
+					imageRenderer.setCanvasWidth(canvasWidth);
+	    			imageRenderer.setCanvasHeight(canvasHeight);
+			    	imageRenderer.setTextStartPosX(textStartPosX);
+			    	imageRenderer.setTextStartPosY(textStartPosY);
+			    	imageRenderer.setTextWidth(textWidth);
+			    	imageRenderer.setTextHeight(textHeight);
+					imageRenderer.setFontName(fontName);
+					imageRenderer.setFontStyle(fontStyle);
+					imageRenderer.setFontSize(fontSize);
+					imageRenderer.setForeGroundColor(foregroundColor);
+					imageRenderer.setBackgroundColor(backgroundColor);
+					imageRenderer.setBackgroundImageUrl(backgroundImageUrl);
+					
+					logger.info("Created imageRenderer and printing to " + filePath + java.io.File.separator + fileName);					
+					imageRenderer.generateGifImageFromText(filePath + java.io.File.separator + fileName, attribute, LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.languageId).getCharset());
+					logger.info("Rendered in getContentAttributeAsImageUrl");
+				}
+
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			/*
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			File imageFile = new File(filePath + java.io.File.separator + fileName);
 			if(!imageFile.exists())
@@ -2680,6 +2747,7 @@ public class BasicTemplateController implements TemplateController
 				imageRenderer.generateGifImageFromText(filePath + java.io.File.separator + fileName, attribute, LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.languageId).getCharset());
 				logger.info("Rendered in getContentAttributeAsImageUrl");
 			}
+			*/
 			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
@@ -2784,6 +2852,38 @@ public class BasicTemplateController implements TemplateController
 			String uniqueId = text.hashCode() + "_" + canvasWidth + canvasHeight + textStartPosX + textStartPosY + textWidth + textHeight + fontName.replaceAll(" ", "") + fontStyle + fontSize + foregroundColor.getRed() + foregroundColor.getGreen() + foregroundColor.getBlue() + backgroundColor.getRed() + backgroundColor.getGreen() + backgroundColor.getBlue();
 			
 			String fileName = uniqueId + ".png";
+			
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				File imageFile = new File(filePath + java.io.File.separator + fileName);
+				if(!imageFile.exists())
+				{
+					logger.info("Creating a imagerenderer");
+					ImageRenderer imageRenderer = new ImageRenderer();
+					imageRenderer.setCanvasWidth(canvasWidth);
+	    			imageRenderer.setCanvasHeight(canvasHeight);
+			    	imageRenderer.setTextStartPosX(textStartPosX);
+			    	imageRenderer.setTextStartPosY(textStartPosY);
+			    	imageRenderer.setTextWidth(textWidth);
+			    	imageRenderer.setTextHeight(textHeight);
+					imageRenderer.setFontName(fontName);
+					imageRenderer.setFontStyle(fontStyle);
+					imageRenderer.setFontSize(fontSize);
+					imageRenderer.setForeGroundColor(foregroundColor);
+					imageRenderer.setBackgroundColor(backgroundColor);
+					imageRenderer.setBackgroundImageUrl(backgroundImageUrl);
+					
+					logger.info("Created imageRenderer and printing to " + filePath + java.io.File.separator + fileName);					
+					imageRenderer.generateGifImageFromText(filePath + java.io.File.separator + fileName, text, LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.languageId).getCharset());
+					logger.info("Rendered in getContentAttributeAsImageUrl");
+				}
+
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			/*
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			File imageFile = new File(filePath + java.io.File.separator + fileName);
 			if(!imageFile.exists())
@@ -2807,6 +2907,7 @@ public class BasicTemplateController implements TemplateController
 				imageRenderer.generateGifImageFromText(filePath + java.io.File.separator + fileName, text, LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.languageId).getCharset());
 				logger.info("Rendered in getContentAttributeAsImageUrl");
 			}
+			*/
 			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");

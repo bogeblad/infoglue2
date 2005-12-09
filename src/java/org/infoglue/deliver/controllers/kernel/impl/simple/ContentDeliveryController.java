@@ -492,11 +492,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 			
 			int i = 0;
+			File masterFile = null;
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			while(filePath != null)
 			{
-				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-				i++;
+			    if(masterFile == null)
+			        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+				else
+				    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+			    
+			    i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 			//String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
@@ -526,11 +531,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 			String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
 
 			int i = 0;
+			File masterFile = null;
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			while(filePath != null)
 			{
-				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
-				i++;
+			    if(masterFile == null)
+			        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+				else
+				    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+			    
+			    i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 
@@ -579,11 +589,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 
 				int i = 0;
+				File masterFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-					i++;
+				    if(masterFile == null)
+				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+				    else
+				        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+					
+				    i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				}
 
@@ -644,11 +659,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 
 				int i = 0;
+				File masterFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);	
-					i++;
+				    if(masterFile == null)
+				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);	
+					else
+					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+				    i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				}
 
@@ -682,10 +701,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					
 					int i = 0;
+					File masterFile = null;
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 					while(filePath != null)
 					{
-						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					    if(masterFile == null)
+					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+						else
+						    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+
 						i++;
 						filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 					}
@@ -746,11 +770,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
 
 				int i = 0;
+				File masterFile = null;
+				File masterThumbFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
+				    if(masterFile == null)
+				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					else
+					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+				    
+				    if(masterThumbFile == null)
+				        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+				    else
+				        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+				    
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				}
@@ -811,11 +845,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
 
 				int i = 0;
+				File masterFile = null;
+				File masterThumbFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
+				    if(masterFile == null)
+						masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					else
+						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+				    
+				    if(masterThumbFile == null)
+				        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+					else
+					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+					
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				}
@@ -897,12 +941,18 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String fileName = digitalAsset.getAssetFileName();
 				
 				int i = 0;
+				File masterFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
 					File unzipDirectory = new File(filePath + File.separator + fileName.substring(0, fileName.lastIndexOf(".")));
 					unzipDirectory.mkdirs();
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(digitalAsset, fileName, filePath, unzipDirectory);
+					
+					if(masterFile == null)
+					    masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(digitalAsset, fileName, filePath, unzipDirectory);
+					else
+					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(masterFile, fileName, filePath, unzipDirectory);
+					    
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				}
@@ -939,12 +989,23 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String fileName = digitalAsset.getAssetFileName();
 
 				int i = 0;
+				File masterFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
 					File unzipDirectory = new File(filePath + File.separator + fileName.substring(0, fileName.lastIndexOf(".")));
 					unzipDirectory.mkdirs();
-					entries = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndGetZipEntries(digitalAsset, fileName, filePath, unzipDirectory);
+					
+					if(masterFile == null)
+					{
+					    entries = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndGetZipEntries(digitalAsset, fileName, filePath, unzipDirectory);
+						masterFile = new File(filePath + File.separator + fileName);
+					}					
+					else
+					{
+					    entries = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndGetZipEntries(masterFile, fileName, filePath, unzipDirectory);
+					}
+					
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				}

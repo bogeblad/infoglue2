@@ -27,9 +27,7 @@
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">View Source</div>
 </div>
 <script type="text/javascript">
-<!--
 $addComponentJavascript
 $deleteComponentJavascript
 $changeAccessJavascript
--->
 </script>

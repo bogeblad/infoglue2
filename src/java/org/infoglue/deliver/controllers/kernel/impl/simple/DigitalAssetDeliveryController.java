@@ -130,7 +130,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			while(filePath != null)
 			{
 				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
+				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
@@ -170,7 +170,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
    	 * digitalAsset-object and dumps it.
    	 */
    	
-	public void dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
+	public File dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
 		long timer = System.currentTimeMillis();
 		
@@ -178,7 +178,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		if(outputFile.exists())
 		{
 			getLogger().info("The file allready exists so we don't need to dump it again..");
-			return;
+			return outputFile;
 		}
 		
 		FileOutputStream fis = new FileOutputStream(outputFile);
@@ -197,6 +197,45 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		fis.close();
 		bos.close();
         getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+        
+        return outputFile;
+	}
+
+ 	/**
+   	 * This method checks if the given file exists on disk. If it does it's ignored because
+   	 * that means that the file is allready cached on the server. If not we take out the stream from the 
+   	 * digitalAsset-object and dumps it.
+   	 */
+   	
+	public File dumpDigitalAsset(File masterFile, String fileName, String filePath) throws Exception
+	{
+		long timer = System.currentTimeMillis();
+		
+		File outputFile = new File(filePath + File.separator + fileName);
+		if(outputFile.exists())
+		{
+			getLogger().info("The file allready exists so we don't need to dump it again..");
+			return outputFile;
+		}
+		
+		FileOutputStream fis = new FileOutputStream(outputFile);
+		BufferedOutputStream bos = new BufferedOutputStream(fis);
+		
+		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(masterFile));
+		
+		int character;
+        while ((character = bis.read()) != -1)
+        {
+			bos.write(character);
+        }
+		bos.flush();
+		
+        bis.close();
+		fis.close();
+		bos.close();
+        getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+        
+        return outputFile;
 	}
 
 	/**
@@ -205,7 +244,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	 * digitalAsset-object and dumps a thumbnail to it.
 	 */
    	
-	public void dumpDigitalAssetThumbnail(DigitalAsset digitalAsset, String fileName, String thumbnailFile, String filePath, int width, int height) throws Exception
+	public File dumpDigitalAssetThumbnail(String fileName, String thumbnailFile, String filePath, int width, int height) throws Exception
 	{
 		long timer = System.currentTimeMillis();
 		getLogger().info("fileName:" + fileName);
@@ -215,16 +254,17 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		if(outputFile.exists())
 		{
 			getLogger().info("The file allready exists so we don't need to dump it again..");
-			return;
+			return outputFile;
 		}
 		
 		ThumbnailGenerator tg = new ThumbnailGenerator();
 		tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFile, width, height, 100);
 		
 		getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		
+		return outputFile;
 	}
 	
-
 	
 	/**
    	 * This method dumps the digitalAsset to file and unzips it. If it does it's ignored because
@@ -232,22 +272,41 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
    	 * digitalAsset-object and dumps it.
    	 */
    	
-	public void dumpAndUnzipDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath, File unzipDirectory) throws Exception
+	public File dumpAndUnzipDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath, File unzipDirectory) throws Exception
 	{
-		dumpDigitalAsset(digitalAsset, fileName, filePath);
+		File zipFile = dumpDigitalAsset(digitalAsset, fileName, filePath);
 		File outputFile = new File(filePath + File.separator + fileName);
 		unzipFile(outputFile, unzipDirectory);
-		
+		return zipFile;
 	}
-	
+
+	/**
+   	 * This method dumps the digitalAsset to file and unzips it. If it does it's ignored because
+   	 * that means that the file is allready cached on the server. If not we take out the stream from the 
+   	 * digitalAsset-object and dumps it.
+   	 */
+   	
+	public File dumpAndUnzipDigitalAsset(File masterFile, String fileName, String filePath, File unzipDirectory) throws Exception
+	{
+		File zipFile = dumpDigitalAsset(masterFile, fileName, filePath);
+		File outputFile = new File(filePath + File.separator + fileName);
+		unzipFile(outputFile, unzipDirectory);
+		return zipFile;
+	}
+
 	public Vector dumpAndGetZipEntries(DigitalAsset digitalAsset, String fileName, String filePath, File unzipDirectory) throws Exception
 	{
 		dumpDigitalAsset(digitalAsset, fileName, filePath);
 		File outputFile = new File(filePath + File.separator + fileName);
 		return getZipFileEntries(outputFile, unzipDirectory);
-		
 	}
 	
+	public Vector dumpAndGetZipEntries(File masterFile, String fileName, String filePath, File unzipDirectory) throws Exception
+	{
+		dumpDigitalAsset(masterFile, fileName, filePath);
+		File outputFile = new File(filePath + File.separator + fileName);
+		return getZipFileEntries(outputFile, unzipDirectory);
+	}
 	
 
 	/**

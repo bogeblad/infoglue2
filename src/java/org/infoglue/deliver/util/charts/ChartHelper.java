@@ -25,6 +25,7 @@ package org.infoglue.deliver.util.charts;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.*;
+import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
@@ -83,10 +84,23 @@ public class ChartHelper
 			String uniqueId = chartName + width + height + dataAsXML.length();
 			String fileName = uniqueId + ".png";
 			
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			File file = null;
+			while(filePath != null)
+			{
+			    file = new File(filePath + java.io.File.separator + fileName);
+			    ChartUtilities.saveChartAsPNG(file, demo.getChart(), width, height);    
+			    i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+
+			/*
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
 			File file = new File(filePath + java.io.File.separator + fileName);
 			ChartUtilities.saveChartAsPNG(file, demo.getChart(), width, height);
-		
+			*/
+			
 			assetUrl = this.templateController.getDigitalAssetBaseUrl() + "/" + file.getName();
 		}
 		catch(Exception e)

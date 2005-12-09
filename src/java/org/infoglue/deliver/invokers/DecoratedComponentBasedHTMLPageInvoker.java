@@ -558,7 +558,27 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 				else
 				    subComponentString += "</div>";
-				    
+				  
+				/**
+				 * 
+				 */
+
+				boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
+				boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + id);
+				
+			    StringBuffer sb = new StringBuffer();
+			    sb.append("<script type=\"text/javascript\">");
+				//sb.append("<!--");
+				sb.append("hasAccessToAddComponent" + id + " = " + hasAccessToAddComponent + ";");
+				sb.append("hasAccessToAccessRights" + id + " = " + hasAccessToAccessRights + ";");
+			    //sb.append("-->");
+				sb.append("</script>");
+
+				subComponentString += sb.toString();
+			    /**
+			     * 
+			     */
+			    
 				decoratedComponent += subComponentString;
 							
 				offset = slotStopIndex + 10;
@@ -1114,11 +1134,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("<div id=\"paletteDiv\">");
 		 
 		sb.append("<div id=\"paletteHandle\">");
-		//sb.append("	<table class=\"igtable\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Component palette</td><td align=\"right\"><a href=\"javascript:hideDiv('paletteDiv');\" class=\"white\">close</a></td></tr></table>");
 		sb.append("	<div id=\"leftPaletteHandle\">Component palette</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('paletteDiv');\" class=\"white\">close</a></div>");
 		sb.append("</div>");
 
-		//sb.append("<div id=\"componentPalette\" style=\"background:#999999; height:20px; width:100%; left:0px; top:0px;\">");
 		sb.append("<div id=\"paletteBody\">");
 		sb.append("<table class=\"tabPanel\" cellpadding=\"0\" cellspacing=\"0\">");
 		sb.append(" <tr class=\"igtr\">");
@@ -1162,7 +1180,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 		String openGroupName = "";
 
-		
 		groupIterator = componentGroups.keySet().iterator();
 		index = 0;
 		while(groupIterator.hasNext())
@@ -1231,11 +1248,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		sb.append("		var theHandle = document.getElementById(\"paletteHandle\");");
 		sb.append("		var theRoot   = document.getElementById(\"paletteDiv\");");
-		//sb.append("		Drag.init(theHandle, theRoot);");
 		sb.append("		Drag.init(theHandle, theRoot, 0, 0, 0, 1000);");
-
-		//sb.append("     theRoot.style.left = 450;");
-		//sb.append("     theRoot.style.top = 150;");
 		
 		sb.append("	</script>");
 

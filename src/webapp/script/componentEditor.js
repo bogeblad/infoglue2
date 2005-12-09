@@ -198,11 +198,14 @@ function setToolbarInitialPosition()
 
 	propertiesDiv = document.getElementById("pageComponents");
 		
-	//alert("window.innerHeight:" + document.height + ":" + window.innerHeight);
-	pageComponentsTopPosition = (getScrollY() + ((document.body.clientHeight - propertiesDiv.offsetHeight) / 2));
-	pageComponentsLeftPosition = (getScrollX() + ((document.body.clientWidth - propertiesDiv.offsetWidth) / 2));
+	if(propertiesDiv)
+	{
+		//alert("window.innerHeight:" + document.height + ":" + window.innerHeight);
+		pageComponentsTopPosition = (getScrollY() + ((document.body.clientHeight - propertiesDiv.offsetHeight) / 2));
+		pageComponentsLeftPosition = (getScrollX() + ((document.body.clientWidth - propertiesDiv.offsetWidth) / 2));
 	
-	floatDiv("pageComponents", 200, 50).flt();
+		floatDiv("pageComponents", 200, 50).flt();
+	}	
 	
 	//alert("document:" + document.getElementById("paletteDiv").id);
 	var paletteDivElement = document.getElementById("paletteDiv");
@@ -223,12 +226,19 @@ function setToolbarInitialPosition()
 	//alert("pageComponentsLeftPosition" + pageComponentsLeftPosition)
 	//document.getElementById('pageComponents').style.top=pageComponentsTopPosition + "px";
 	//document.getElementById('pageComponents').style.left=pageComponentsLeftPosition + "px";
-	document.getElementById('pageComponents').style.width=pageStructureDivWidth;
-	document.getElementById('pageComponents').style.height=pageStructureDivHeight;
-	document.getElementById('pageComponentsBody').style.height=pageStructureDivHeightBody;
+	var pageComponentsDiv = document.getElementById('pageComponents');
+	if(pageComponentsDiv)
+	{
+		pageComponentsDiv.style.width=pageStructureDivWidth;
+		pageComponentsDiv.style.height=pageStructureDivHeight;
+	}
+	
+	var pageComponentsBodyDiv = document.getElementById('pageComponentsBody');
+	if(pageComponentsBodyDiv)
+		document.getElementById('pageComponentsBody').style.height=pageStructureDivHeightBody;
 	
 	//alert("pageComponentsVisibility:" + pageComponentsVisibility);
-	if(pageComponentsVisibility != "")
+	if(pageComponentsVisibility != "" && propertiesDiv)
 	{
 		if(pageComponentsVisibility == "visible")
 			propertiesDiv.style.display = 'block';
