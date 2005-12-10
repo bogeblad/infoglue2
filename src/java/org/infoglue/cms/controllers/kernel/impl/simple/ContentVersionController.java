@@ -658,7 +658,7 @@ public class ContentVersionController extends BaseController
     public void delete(ContentVersionVO contentVersionVO, Database db) throws ConstraintException, SystemException, Exception
     {
 		ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
-		delete(contentVersion, db);
+		delete(contentVersion, db, false);
     }        
 
 	/**
@@ -667,7 +667,16 @@ public class ContentVersionController extends BaseController
 	
  	public void delete(ContentVersion contentVersion, Database db) throws ConstraintException, SystemException, Exception
 	{
-		if (contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
+ 	    delete(contentVersion, db, false);
+	}
+	
+	/**
+	 * This method deletes an contentversion and notifies the owning content.
+	 */
+	
+ 	public void delete(ContentVersion contentVersion, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
+	{
+		if (!forceDelete && contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
 			throw new ConstraintException("ContentVersion.stateId", "3300");
 
 		contentCategoryController.deleteByContentVersion(contentVersion, db);
@@ -679,7 +688,6 @@ public class ContentVersionController extends BaseController
 
 		db.remove(contentVersion);
 	}
-	
 
 
 
@@ -690,6 +698,17 @@ public class ContentVersionController extends BaseController
 	 */
 	
 	public void deleteVersionsForContent(Content content, Database db) throws ConstraintException, SystemException, Bug, Exception
+    {
+	    deleteVersionsForContent(content, db, false);
+    }
+	
+	/**
+	 * This method deletes all contentVersions for the content sent in.
+	 * The contentVersion is related to digital assets but we don't remove the asset itself in case 
+	 * other versions or contents reference the same asset.
+	 */
+	
+	public void deleteVersionsForContent(Content content, Database db, boolean forceDelete) throws ConstraintException, SystemException, Bug, Exception
     {
         Collection contentVersions = Collections.synchronizedCollection(content.getContentVersions());
        	Iterator contentVersionIterator = contentVersions.iterator();
@@ -709,7 +728,7 @@ public class ContentVersionController extends BaseController
 			
         	getLogger().info("Deleting contentVersion:" + contentVersion.getContentVersionId());
         	contentVersionIterator.remove();
-        	delete(contentVersion, db);
+        	delete(contentVersion, db, forceDelete);
         }
         content.setContentVersions(new ArrayList());
     }

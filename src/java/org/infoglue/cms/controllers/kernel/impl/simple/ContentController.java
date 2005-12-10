@@ -259,7 +259,7 @@ public class ContentController extends BaseController
         beginTransaction(db);
 		try
         {		
-	    	delete(contentVO, db, false, false);
+	    	delete(contentVO, db, false, false, false);
 	    	
 	    	commitTransaction(db);
         }
@@ -285,16 +285,16 @@ public class ContentController extends BaseController
 	    
 	public void delete(ContentVO contentVO, Database db) throws ConstraintException, SystemException, Exception
 	{
-	    delete(contentVO, db, false, false);
+	    delete(contentVO, db, false, false, false);
 	}
 	
 	/**
 	 * This method deletes a content and also erases all the children and all versions.
 	 */
 	    
-	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings) throws ConstraintException, SystemException, Exception
+	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete) throws ConstraintException, SystemException, Exception
 	{
-		Content content = getContentWithId(contentVO.getContentId(), db);
+	    Content content = getContentWithId(contentVO.getContentId(), db);
 	    Content parent = content.getParentContent();
 	    if(parent != null)
 		{
@@ -304,13 +304,13 @@ public class ContentController extends BaseController
 			    Content candidate = (Content)childContentIterator.next();
 			    if(candidate.getId().equals(contentVO.getContentId()))
 			    {
-			        deleteRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings);
+			        deleteRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings, forceDelete);
 			    }
 			}
 		}
 		else
 		{
-		    deleteRecursive(content, null, db, skipRelationCheck, skipServiceBindings);
+		    deleteRecursive(content, null, db, skipRelationCheck, skipServiceBindings, forceDelete);
 		}
 	}        
 
@@ -318,7 +318,7 @@ public class ContentController extends BaseController
 	 * Recursively deletes all contents and their versions. Also updates related entities about the change.
 	 */
 	
-    private static void deleteRecursive(Content content, Iterator parentIterator, Database db, boolean skipRelationCheck, boolean skipServiceBindings) throws ConstraintException, SystemException, Exception
+    private static void deleteRecursive(Content content, Iterator parentIterator, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete) throws ConstraintException, SystemException, Exception
     {
         if(!skipRelationCheck)
         {
@@ -332,13 +332,13 @@ public class ContentController extends BaseController
 		while(childrenIterator.hasNext())
 		{
 			Content childContent = (Content)childrenIterator.next();
-			deleteRecursive(childContent, childrenIterator, db, skipRelationCheck, skipServiceBindings);   			
+			deleteRecursive(childContent, childrenIterator, db, skipRelationCheck, skipServiceBindings, forceDelete);   			
    		}
 		content.setChildren(new ArrayList());
-   		
-   		if(getIsDeletable(content))
+		
+   		if(forceDelete || getIsDeletable(content))
 	    {		 
-			ContentVersionController.getContentVersionController().deleteVersionsForContent(content, db);    	
+			ContentVersionController.getContentVersionController().deleteVersionsForContent(content, db, forceDelete);    	
 			
 			if(!skipServiceBindings)
 			    ServiceBindingController.deleteServiceBindingsReferencingContent(content, db);

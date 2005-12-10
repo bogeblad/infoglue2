@@ -448,6 +448,7 @@ public class SiteNodeVersionController extends BaseController
        	Collection siteNodeVersions = Collections.synchronizedCollection(siteNode.getSiteNodeVersions());
        	Iterator siteNodeVersionIterator = siteNodeVersions.iterator();
 			
+       	boolean metaInfoContentDeleted = false;
 		while (siteNodeVersionIterator.hasNext()) 
         {
         	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)siteNodeVersionIterator.next();
@@ -458,7 +459,11 @@ public class SiteNodeVersionController extends BaseController
 				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
 				if(serviceBinding.getAvailableServiceBinding().getName().equalsIgnoreCase("Meta information"))
 				{
-				    deleteMetaInfoForSiteNodeVersion(db, serviceBinding);
+				    if(!metaInfoContentDeleted)
+				    {
+				        deleteMetaInfoForSiteNodeVersion(db, serviceBinding);
+				        metaInfoContentDeleted = true;
+				    }
 				    serviceBindingIterator.remove();
 				    db.remove(serviceBinding);
 				}
@@ -489,7 +494,7 @@ public class SiteNodeVersionController extends BaseController
 		if(boundContents.size() > 0)
 		{
 			ContentVO contentVO = (ContentVO)boundContents.get(0);
-			ContentController.getContentController().delete(contentVO, db, true, true);
+			ContentController.getContentController().delete(contentVO, db, true, true, true);
 		}						
 	}
 	
