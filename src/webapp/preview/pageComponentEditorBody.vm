@@ -15,7 +15,6 @@
 <hr id="componentMenuMiddleSeparator">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();"><nobr>View Source</nobr></div>
-<div class="igmenuitems">AAAA</div>
 </div>
 
 <div id="componentInTreeMenu" class="skin0">
