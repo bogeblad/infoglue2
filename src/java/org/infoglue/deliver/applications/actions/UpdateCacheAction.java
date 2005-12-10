@@ -89,13 +89,18 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doTest() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+		
+        if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
         {
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
+	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+	        {
+	            this.getResponse().setContentType("text/plain");
+	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+	            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+	            
+	            return NONE;
+	        }
         }
         
         this.getResponse().getWriter().println("test ok - cache action available");
