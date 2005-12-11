@@ -240,8 +240,8 @@ public class EventController extends BaseController
         	oql.bind(EventVO.UNPUBLISH_LATEST);
         	oql.bind(repositoryId);
         	
-        	logger.info("Fetching entity in read/write mode" + repositoryId);
-        	QueryResults results = oql.execute(Database.ReadOnly);
+        	//logger.info("Fetching entity in read/write mode" + repositoryId);
+        	QueryResults results = oql.execute();
 			
 			while (results.hasMore()) 
             {
