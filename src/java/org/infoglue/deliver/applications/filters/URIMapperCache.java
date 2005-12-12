@@ -82,7 +82,7 @@ public class URIMapperCache
         StringBuffer sb = new StringBuffer(128);
         sb.append(String.valueOf(repositoryId)).append(":/");
         for (int i=0;i < path.length && i < upToIndex ;i++) {
-            sb.append(path[i]).append("/");
+            sb.append(path[i].toLowerCase()).append("/");
         }
         return sb.toString();
     }

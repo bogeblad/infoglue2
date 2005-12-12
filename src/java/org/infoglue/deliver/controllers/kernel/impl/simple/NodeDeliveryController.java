@@ -1250,7 +1250,7 @@ public class NodeDeliveryController extends BaseDeliveryController
                     }
                     
                     getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
-                    if (pathCandidate != null && pathCandidate.trim().equals(path)) 
+                    if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
                     {
                         return siteNode.getSiteNodeId();
                     }
