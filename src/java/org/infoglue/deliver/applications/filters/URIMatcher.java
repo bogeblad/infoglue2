@@ -53,7 +53,7 @@ public class URIMatcher
 
     // ---- Public methods ----
 
-    public static URIMatcher compilePatterns(String[] strings) throws PatternSyntaxException
+    public static URIMatcher compilePatterns(String[] strings, boolean caseSensitive) throws PatternSyntaxException
     {
         URIMatcher uriMatcher = new URIMatcher();
         List patterns = new ArrayList();
@@ -68,7 +68,13 @@ public class URIMatcher
                     if (str.length() > 0) 
                     {
                         String patternStr = patternize(str);
-                        Pattern pattern = Pattern.compile(patternStr);
+
+                        Pattern pattern = null;
+                        if(caseSensitive)
+                            pattern = Pattern.compile(patternStr);
+                        else
+                            pattern = Pattern.compile(patternStr, Pattern.CASE_INSENSITIVE);
+                        
                         patterns.add(pattern);
                     }
                 }

@@ -83,12 +83,18 @@ public class ViewPageFilter implements Filter
     private URIMatcher uriMatcher = null;
     private URIMapperCache uriCache = null;
     public static String attributeName = null;
+    public static boolean caseSensitive = false;
 
     public void init(FilterConfig filterConfig) throws ServletException 
     {
         this.filterConfig = filterConfig;
         String filterURIs = filterConfig.getInitParameter(FilterConstants.FILTER_URIS_PARAMETER);
-        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","));
+
+        String caseSensitiveString = CmsPropertyHandler.getProperty("caseSensitive");
+        logger.info("caseSensitiveString:" + caseSensitiveString);
+        caseSensitive = Boolean.getBoolean(caseSensitiveString);
+        
+        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), caseSensitive);
 
         attributeName = CmsPropertyHandler.getProperty("niceURIAttributeName");
         logger.info("attributeName from properties:" + attributeName);

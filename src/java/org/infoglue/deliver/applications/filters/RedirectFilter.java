@@ -88,7 +88,7 @@ public class RedirectFilter implements Filter
     {
         this.filterConfig = filterConfig;
         String filterURIs = filterConfig.getInitParameter(FILTER_URIS_PARAMETER);
-        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","));
+        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), false);
    }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException 
