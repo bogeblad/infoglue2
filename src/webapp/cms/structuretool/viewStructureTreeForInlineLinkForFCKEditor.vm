@@ -73,6 +73,7 @@
 		
 		function onCancel() 
 		{
+		    parent.onCancel(null);
 			return false;
 		}
 	-->
