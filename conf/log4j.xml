@@ -40,6 +40,10 @@
 		<priority value="ERROR"/>
 	</category>
 
+	<category name="de.nava.informa">
+		<priority value="ERROR"/>
+	</category>
+
 <!--
 	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter">
 		<priority value="DEBUG"/>
@@ -59,7 +63,7 @@
 	<category name="org.apache.commons.fileupload">
 		<priority value="WARN"/>
 	</category>
-	
+
 	<category name="org.infoglue.cms">
 		<priority value="WARN"/>
 	</category>
