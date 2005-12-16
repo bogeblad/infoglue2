@@ -983,7 +983,14 @@
 			{
 				isValid = true;
 				
+				#*				
 				#foreach($attribute in $contentTypeAttributes)
+
+					/*
+					 * TODO:
+					 * This loop is redundant.
+					 */
+				
 	   				currentEditorId = currentEditorIdHash["${attribute.name}CurrentEditorId"];
 	   				
 	   				if(currentEditorId)
@@ -1014,6 +1021,7 @@
 						//	isValid = false;
 					#end
 				#end
+				*#
 				
 				if(isValid)
 				{
@@ -1021,6 +1029,53 @@
 					document.editForm.submit();
 				}
 			}
+		}
+
+		function syncToPlainEditor(elementId)
+		{
+   				currentEditorId = currentEditorIdHash[elementId + "CurrentEditorId"];
+   				
+   				if(currentEditorId)
+   					document.getElementById("currentEditorId").value = currentEditorId;
+   				
+				if(currentEditorId == 1)
+				{
+					var oEditor = FCKeditorAPI.GetInstance(elementId);
+					document.getElementById(elementId).value = untransformAttribute(oEditor.GetXHTML(false));
+				}
+				else if(currentEditorId == 2)
+				{
+					var codeEditor = document.getElementById(elementId + "InfoGlueCodeEditor");
+					document.getElementById(elementId).value = codeEditor.getText();	
+				}
+				else if(currentEditorId == 0 && elementId == "ComponentProperties")
+				{
+					document.getElementById(elementId + "Hidden").value = document.getElementById(elementId).value	
+				}
+		}
+		function syncToExtendedEditor(elementId)
+		{
+   				currentEditorId = currentEditorIdHash[elementId + "CurrentEditorId"];
+   				
+   				if(currentEditorId)
+   					document.getElementById("currentEditorId").value = currentEditorId;
+   				
+				if(currentEditorId == 1)
+				{
+					var oEditor = FCKeditorAPI.GetInstance(elementId);
+					oEditor.SetHTML(transformAttribute(document.getElementById(elementId).value));
+				}
+				else if(currentEditorId == 2)
+				{
+					var codeEditor = document.getElementById(elementId + "InfoGlueCodeEditor");
+					codeEditor.setText(document.getElementById(elementId).value);	
+				}
+				/*
+				else if(currentEditorId == 0 && elementId == "ComponentProperties")
+				{
+					document.getElementById(elementId).value = document.getElementById(elementId + "Hidden").value
+				}
+				*/
 		}
 	
 		function validateAndSubmitContentFormThenExit()
@@ -1072,8 +1127,27 @@
 			document.editForm.versionValue.value = versionValue;
 		}
 				
+		/*
+		 * This function sets the raw value of the elementId
+		 * regardless of what editor is active for the element.
+		 *
+		 */
+		function setValue(elementId, content)
+		{
+			var plainTextArea = document.getElementById(elementId);
+			plainTextArea.value = content;
+			syncToExtendedEditor(elementId);
+		}
+	
+		/*
+		 * This function returns the raw value of the elementId
+		 * regardless of what editor is active for the element.
+		 *
+		 */
 		function getValue(elementId)
 		{
+			syncToPlainEditor(elementId);
+		
 			var value = "";
 			//alert(elementId);
 			
