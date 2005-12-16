@@ -497,10 +497,9 @@ public class CacheController extends Thread
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
-	    int numberOfRequests = RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests();
-	    while(numberOfRequests > 0)
+	    while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    {
-	        logger.info("Number of requests:" + numberOfRequests + " was more than 0 - lets wait a bit.");
+	        logger.info("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        Thread.sleep(10);
 	    }
 	    
