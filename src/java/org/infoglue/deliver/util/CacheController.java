@@ -505,7 +505,7 @@ public class CacheController extends Thread
 	    }
 	    
 		Database db = CastorDatabaseService.getDatabase();
-		CastorDatabaseService.setBlock(true);
+		//CastorDatabaseService.setBlock(true);
 		
 		try
 		{		
@@ -571,7 +571,7 @@ public class CacheController extends Thread
 		finally
 		{
 			db.close();
-			CastorDatabaseService.setBlock(false);
+			//CastorDatabaseService.setBlock(false);
 		}
 	}
 	
