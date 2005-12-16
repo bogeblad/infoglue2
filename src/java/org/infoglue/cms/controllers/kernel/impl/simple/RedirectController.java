@@ -132,7 +132,19 @@ public class RedirectController extends BaseController
             {
                 RedirectVO redirect = (RedirectVO)redirectsIterator.next(); 
                 logger.info("url:" + redirect.getUrl());
-                if(requestURI.startsWith(redirect.getUrl()))
+                boolean matches = false;
+                if(redirect.getUrl().startsWith(".*"))
+                {
+                   if(requestURI.indexOf(redirect.getUrl().substring(2)) > -1)
+                       matches = true;
+                }
+                else if(requestURI.startsWith(redirect.getUrl()))
+                {
+                    matches = true;
+                }
+                
+                //if(requestURI.startsWith(redirect.getUrl()))
+                if(matches)
                 {
                     logger.info("redirectUrl:" + redirect.getRedirectUrl());
                     String remainingURI = requestURI.replaceAll(redirect.getUrl(), "");
