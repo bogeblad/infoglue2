@@ -497,11 +497,16 @@ public class CacheController extends Thread
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
-	    while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
+	    int numberOfRequests = RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests();
+	    while(numberOfRequests > 0)
+	    {
+	        logger.info("Number of requests:" + numberOfRequests + " was more than 0 - lets wait a bit.");
 	        Thread.sleep(10);
+	    }
 	    
 		Database db = CastorDatabaseService.getDatabase();
-
+		CastorDatabaseService.setBlock(true);
+		
 		try
 		{		
 		    //db.getCacheManager().expireCache();
@@ -566,6 +571,7 @@ public class CacheController extends Thread
 		finally
 		{
 			db.close();
+			CastorDatabaseService.setBlock(false);
 		}
 	}
 	
@@ -771,7 +777,7 @@ public class CacheController extends Thread
 	    
 	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3") && RequestAnalyser.getBlockRequests())
 	    {
-		    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
+		    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
 	        return;
 	    }
 	    

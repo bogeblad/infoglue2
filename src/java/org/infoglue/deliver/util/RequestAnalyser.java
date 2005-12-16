@@ -37,7 +37,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  */
 public class RequestAnalyser
 {
-    public static int numberOfCurrentRequests = 0;
+    private static RequestAnalyser instance = new RequestAnalyser();
+    //public Integer numberOfCurrentRequests = new Integer(0);
     
 	//private static List currentRequests = new ArrayList();
     private static HttpServletRequest lastRequest = null;
@@ -64,11 +65,37 @@ public class RequestAnalyser
 	}
 
 	
-    public static int getNumberOfCurrentRequests()
+	public static RequestAnalyser getRequestAnalyser()
+	{
+	    return instance;
+	}
+	
+    public int getNumberOfCurrentRequests()
     {
-        return numberOfCurrentRequests;
+        return Counter.getNumberOfCurrentRequests();
     }
     
+    public void incNumberOfCurrentRequests()
+    {
+        Counter.incNumberOfCurrentRequests();
+        /*
+        synchronized(numberOfCurrentRequests)
+        {
+            numberOfCurrentRequests = new Integer(numberOfCurrentRequests.intValue() + 1);
+        }
+        */ 
+    }
+
+    public synchronized void decNumberOfCurrentRequests()
+    {
+        Counter.decNumberOfCurrentRequests();
+        /*
+        synchronized(numberOfCurrentRequests)
+        {
+            numberOfCurrentRequests = new Integer(numberOfCurrentRequests.intValue() - 1);
+        } 
+        */
+    }
 
 	/*
     public static int getNumberOfCurrentRequests()
