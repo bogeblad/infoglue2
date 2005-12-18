@@ -98,6 +98,10 @@ public class RSSFeedTag extends TemplateControllerTag
 	    {
 	        logger.error("An error occurred when generating RSS-feed:" + e.getMessage(), e);
 	    }
+	    finally
+	    {
+	        entries = new ArrayList();
+	    }
 	    
         return EVAL_PAGE;
     }
