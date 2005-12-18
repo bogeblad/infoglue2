@@ -86,14 +86,14 @@ public class ContentAttributeTag extends ComponentLogicTag
         return EVAL_PAGE;
     }
 
-	public void setPropertyName(String propertyName)
+	public void setPropertyName(String propertyName) throws JspException
     {
-        this.propertyName = propertyName;
+        this.propertyName = evaluateString("contentAttribute", "propertyName", propertyName);
     }
     
-    public void setAttributeName(String attributeName)
+    public void setAttributeName(String attributeName) throws JspException
     {
-        this.attributeName = attributeName;
+        this.attributeName = evaluateString("contentAttribute", "attributeName", attributeName);
     }
     
     public void setDisableEditOnSight(boolean disableEditOnSight)
