@@ -1,7 +1,7 @@
 <div id="emptySlotMenu" class="skin0">
 <div id="addComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponentHTML</div>
 <hr id="emptySlotMenuTopSeparator">
-<div id="accessRightsMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="setAccessRights(slotName);">$accessRightsHTML</div>
+<div id="accessRightsMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="setAccessRights(slotName, slotContentId);">$accessRightsHTML</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">$viewSource</div>
 </div>

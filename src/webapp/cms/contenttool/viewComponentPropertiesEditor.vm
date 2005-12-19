@@ -248,7 +248,7 @@
 
 				var actionTD = document.createElement("TD");
 				addImageLink(actionTD, "javascript:showProperties(" + i + ");", "images/properties.gif");
-				addImageLink(actionTD, "javascript:showAccessRights('" + componentPropertyDefinition.name + "');", "images/accessRights.gif");
+				addImageLink(actionTD, "javascript:showAccessRights('${contentId}_" + componentPropertyDefinition.name + "');", "images/accessRights.gif");
 				myTR.appendChild(actionTD);
 
 				mytablebody.appendChild(myTR);

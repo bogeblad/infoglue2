@@ -406,6 +406,7 @@ var busy = false;
 var componentId;
 var slotId;
 var slotName  = "";
+var slotContentId = "";
 var editUrl   = "";
 var insertUrl = "";
 var deleteUrl = "";
@@ -491,11 +492,12 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl)
 }
 
 
-function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUrl, slotId) 
+function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUrl, slotId, slotContentIdVar) 
 {
 	activeMenuId = "componentInTreeMenu";
 
 	slotName = slotId;
+	slotContentId = slotContentIdVar;
 	//alert("slotId:" + slotId);
 	//alert("compId:" + compId);
 	try
@@ -564,13 +566,14 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	return false;
 }
 
-function showEmptySlotMenu(slotId, event, compId, anInsertUrl) 
+function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar) 
 {
 	hidepreviousmenues();
 	
 	activeMenuId = "emptySlotMenu";
 	
 	slotName = slotId;
+	slotContentId = slotContentIdVar;
 	//alert("slotId:" + slotId);
 	//alert("compId:" + compId);
 	try
@@ -880,11 +883,11 @@ function insertComponent()
 	newWin.focus();	
 }
 
-function setAccessRights(slotId) 
+function setAccessRights(slotId, slotContentId) 
 {
 	//alert("slotId in setAccessRights:" + slotId);
 	//alert("currentUrl:" + document.location.href);
-	document.location.href = componentEditorUrl + "ViewAccessRights.action?interceptionPointCategory=ComponentEditor&extraParameters=" + slotId + "&colorScheme=StructureTool&returnAddress=" + currentUrl;
+	document.location.href = componentEditorUrl + "ViewAccessRights.action?interceptionPointCategory=ComponentEditor&extraParameters=" + slotContentId + "_" + slotId + "&colorScheme=StructureTool&returnAddress=" + currentUrl;
 }
 
 function deleteComponent() 
@@ -1200,13 +1203,13 @@ function viewSource()
 	}
 		
 		
-	function initializeSlotEventHandler(id, insertUrl, deleteUrl, slotId)
+	function initializeSlotEventHandler(id, insertUrl, deleteUrl, slotId, slotContentIdVar)
 	{
 		//alert("initializeSlotEventHandler:" + id + ":" + slotId);
-		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, slotId);
+		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, slotId, slotContentIdVar);
 	}
 
-	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl, slotId)
+	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl, slotId, slotContentIdVar)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.insertUrl = insertUrl;
@@ -1244,7 +1247,7 @@ function viewSource()
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
 			//alert('emptySlotEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    showEmptySlotMenu(slotId, evt, ele.id, insertUrl);
+		    showEmptySlotMenu(slotId, evt, ele.id, insertUrl, slotContentIdVar);
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
@@ -1302,13 +1305,13 @@ function viewSource()
 		}
 	}
 	
-	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl, slotId)
+	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl, slotId, slotContentIdVar)
 	{
 		//alert("initializeComponentInTreeEventHandler" + id + " " + deleteUrl + " " + slotId);
-		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl, slotId);
+		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl, slotId, slotContentIdVar);
 	}
 		
-	function componentInTreeEventHandler(eleId, objName, objId, insertUrl, deleteUrl, slotId)
+	function componentInTreeEventHandler(eleId, objName, objId, insertUrl, deleteUrl, slotId, slotContentIdVar)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.objId = objId;
@@ -1345,7 +1348,7 @@ function viewSource()
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
 			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    showComponentInTreeMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, slotId);
+		    showComponentInTreeMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, slotId, slotContentIdVar);
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}

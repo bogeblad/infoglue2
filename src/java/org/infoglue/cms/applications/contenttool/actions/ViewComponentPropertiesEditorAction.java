@@ -37,6 +37,7 @@ import java.util.List;
 public class ViewComponentPropertiesEditorAction extends InfoGlueAbstractAction
 {
     private Integer contentVersionId;
+    private Integer contentId;
     private String attributeName;
     private String propertiesXML;
     private List componentPropertyDefinitions;
@@ -44,6 +45,7 @@ public class ViewComponentPropertiesEditorAction extends InfoGlueAbstractAction
     
     private void initialize() throws Exception
     {
+        this.contentId = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId).getContentId();
         String componentPropertiesXML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionId, attributeName, false);
         this.componentPropertyDefinitions = ComponentPropertyDefinitionController.getController().parseComponentPropertyDefinitions(componentPropertiesXML);        
         this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.CONTENT);
@@ -99,5 +101,15 @@ public class ViewComponentPropertiesEditorAction extends InfoGlueAbstractAction
     public List getContentTypeDefinitions()
     {
         return contentTypeDefinitions;
+    }
+    
+    public Integer getContentId()
+    {
+        return contentId;
+    }
+    
+    public void setContentId(Integer contentId)
+    {
+        this.contentId = contentId;
     }
 }
