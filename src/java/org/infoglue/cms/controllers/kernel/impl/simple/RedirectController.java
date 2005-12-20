@@ -113,7 +113,7 @@ public class RedirectController extends BaseController
             logger.info("base:" + base);
 
             //String requestURL = request.getRequestURL().toString();
-            String requestURI = base + getContextRelativeURI(request);
+            String requestURI = base + getContextURI(request);
             //System.out.println("requestURL:" + requestURL);
             logger.info("requestURI:" + requestURI);
             
@@ -173,6 +173,12 @@ public class RedirectController extends BaseController
         return requestURI;
     }
 
+    private String getContextURI(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        if (requestURI.length() == 0)
+            return "/";
+        return requestURI;
+    }
 
 
 	/**
