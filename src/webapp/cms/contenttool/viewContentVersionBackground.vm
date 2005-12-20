@@ -57,6 +57,13 @@
 			{
 				var at = document.getElementById("assetsTable");
 				parent.setAssetsTable(at.innerHTML);
+
+				#if("$oldModifiedDateTime" == "-1")
+					parent.setOldModifiedDateTime("$!contentVersionVO.modifiedDateTime.time");
+				#else
+					parent.setOldModifiedDateTime("$!oldModifiedDateTime");
+				#end
+				
 			}
 		}
 		
