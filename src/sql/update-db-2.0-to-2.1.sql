@@ -85,4 +85,18 @@ CREATE TABLE cmRedirect (
   PRIMARY KEY(id)
 ) TYPE = MYISAM;
 
+ALTER TABLE cmSiteNode TYPE = InnoDB;
+ALTER TABLE cmSiteNodeVersion TYPE = InnoDB;
+ALTER TABLE cmServiceBinding TYPE = InnoDB;
+ALTER TABLE cmQualifyer TYPE = InnoDB;
+ALTER TABLE cmContent TYPE = InnoDB;
+ALTER TABLE cmContentVersion TYPE = InnoDB;
+ALTER TABLE cmContentVersionDigitalAsset TYPE = InnoDB;
+ALTER TABLE cmDigitalAsset TYPE = InnoDB;
+ALTER TABLE cmPublication TYPE = InnoDB;
+ALTER TABLE cmPublicationDetail TYPE = InnoDB;
+ALTER TABLE cmEvent TYPE = InnoDB;
+ALTER TABLE cmRegistry TYPE = InnoDB;
+
+Alter table cmSiteNodeVersion add metaInfoContentId INTEGER NULL DEFAULT '-1';
   
