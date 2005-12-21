@@ -413,7 +413,7 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
-				if(cacheName.equalsIgnoreCase("principalPropertyValueCache") && entity.indexOf("User") > 0)
+				if(cacheName.equalsIgnoreCase("principalPropertyValueCache") && (entity.indexOf("Group") > 0 || entity.indexOf("Role") > 0 || entity.indexOf("User") > 0))
 				{
 					clear = true;
 				}
@@ -436,7 +436,7 @@ public class CacheController extends Thread
 
 				if(clear)
 				{	
-					logger.info("clearing:" + e.getKey());
+				    logger.info("clearing:" + e.getKey());
 					Object object = e.getValue();
 					if(object instanceof Map)
 					{
