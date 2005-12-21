@@ -529,7 +529,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
-		String test = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
+		//String test = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
+		//System.out.println("test:" + test);
 		//FileHelper.writeToFile(new File("c:\\temp\\enc102.txt"), test, false);
 		
 		String characterEncoding= this.getRequest().getCharacterEncoding();
@@ -539,19 +540,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		String propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
 		while(propertyName != null && !propertyName.equals(""))
 		{
-			//String propertyName	= "alignment"; this.getRequest().getParameter("propertyName");
-			String propertyValue= this.getRequest().getParameter(propertyName);
-			
-			/*
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			if(!characterEncoding.equalsIgnoreCase("utf-8"))
-			{
-				getLogger().info("Encoding resulting html to " + characterEncoding);
-			
-				propertyValue = new String(propertyValue.getBytes("UTF-8"), characterEncoding);
-			}	
-			*/
-			
+			String propertyValue = this.getRequest().getParameter(propertyName);
+		
 			getLogger().info("siteNodeId:" + siteNodeId);
 			getLogger().info("languageId:" + languageId);
 			getLogger().info("entity:" + entity);
