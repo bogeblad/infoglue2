@@ -616,7 +616,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 		
 		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden;\">");
-		//sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><table class=\"igtable\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" width=\"100%\"><tr><td align=\"left\" class=\"smallwhitelabel\">Properties</td><td align=\"right\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\">close</a></td></tr></table></div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandle\">Properties</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\">close</a></div></div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
 		
@@ -666,7 +665,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		</tr>");
 		
 		//logger.info("componentPropertiesString:" + componentPropertiesString);
-		Collection componentProperties = getComponentProperties(componentId, document /*componentPropertiesString*/);
+		Collection componentProperties = getComponentProperties(componentId, document);
 		timer.printElapsedTime("getComponentPropertiesDiv: 4");
 
 		int propertyIndex = 0;
@@ -784,11 +783,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 			{
 				sb.append("		<tr class=\"igtr\">");
-				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"></td>");
+				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
 				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\"></td>");
 				
 				if(hasAccessToProperty)
-					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"text\" class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\"></td>");
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><input type=\"text\" class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\"></td>");
 				else
 					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getValue() + "</td>");
 	
@@ -825,7 +824,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		</form>");
 		sb.append("	</div>");
 		sb.append("	</div>");
-		
+
 		sb.append("	<script type=\"text/javascript\">");
 		sb.append("		var theHandle = document.getElementById(\"component" + componentId + "PropertiesHandle\");");
 		sb.append("		var theRoot   = document.getElementById(\"component" + componentId + "Properties\");");
@@ -840,9 +839,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("     theRoot.style.top = 150;");
 		
 		sb.append("     floatDiv(\"component" + componentId + "Properties\", 200, 50).flt();");
-		
 		sb.append("	</script>");
-		
+
 		return sb.toString();
 	}
 
