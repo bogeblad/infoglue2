@@ -315,7 +315,7 @@ Properties classes
 
 .componentProperties {
 	position:absolute;
-	width:350px;
+	width:450px;
 	background-color:#F4F4F4;
 	border:1px solid #333333;
 	z-index:1000003;
@@ -326,7 +326,7 @@ Properties classes
 .componentPropertiesHandle {
 	margin:2px;
 	padding:2px;
-	width:340px;
+	width:440px;
 	color:white;
 	background-color:navy;
 	font-family:verdana, sans-serif;
@@ -336,7 +336,7 @@ Properties classes
 #componentPropertiesBody {
 	margin:2px;
 	padding:2px;
-	width:340px;
+	width:440px;
 	font-family:verdana, sans-serif;
 	font-size:10px;
 	}
