@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fck_othercommands.js
  * 	Definition of other commands that are not available internaly in the
  * 	browser (see FCKNamedCommand).
@@ -113,6 +115,8 @@ FCKFormatBlockCommand.prototype.Execute = function( formatName )
 {
 	if ( formatName == null || formatName == '' )
 		FCK.ExecuteNamedCommand( 'FormatBlock', '<P>' ) ;
+	else if ( formatName == 'div' && FCKBrowserInfo.IsGecko )
+		FCK.ExecuteNamedCommand( 'FormatBlock', 'div' ) ;
 	else
 		FCK.ExecuteNamedCommand( 'FormatBlock', '<' + formatName + '>' ) ;
 }
@@ -149,6 +153,13 @@ FCKSaveCommand.prototype.Execute = function()
 	// Get the linked field form.
 	var oForm = FCK.LinkedField.form ;
 
+	if ( typeof( oForm.onsubmit ) == 'function' )
+	{
+		var bRet = oForm.onsubmit() ;
+		if ( bRet != null && bRet === false )
+			return ;
+	}
+
 	// Submit the form.
 	oForm.submit() ;
 }
@@ -167,7 +178,10 @@ var FCKNewPageCommand = function()
 FCKNewPageCommand.prototype.Execute = function()
 {
 	FCKUndo.SaveUndoStep() ;
-	FCK.SetHTML( FCKBrowserInfo.IsGecko ? '&nbsp;' : '' ) ;
+	FCK.SetHTML( '' ) ;
+	FCKUndo.Typing = true ;
+//	FCK.SetHTML( FCKBrowserInfo.IsGecko ? '&nbsp;' : '' ) ;
+//	FCK.SetHTML( FCKBrowserInfo.IsGecko ? GECKO_BOGUS : '' ) ;
 }
 
 FCKNewPageCommand.prototype.GetState = function()
@@ -183,7 +197,14 @@ var FCKSourceCommand = function()
 
 FCKSourceCommand.prototype.Execute = function()
 {
-     FCK.SwitchEditMode() ;
+	if ( FCKBrowserInfo.IsGecko )
+	{
+		var iWidth	= FCKConfig.ScreenWidth * 0.65 ;
+		var iHeight	= FCKConfig.ScreenHeight * 0.65 ;
+		FCKDialog.OpenDialog( 'FCKDialog_Source', FCKLang.Source, 'dialog/fck_source.html', iWidth, iHeight, null, null, true ) ;
+	}
+	else
+	    FCK.SwitchEditMode() ;
 }
 
 FCKSourceCommand.prototype.GetState = function()
@@ -208,7 +229,7 @@ FCKUndoCommand.prototype.Execute = function()
 FCKUndoCommand.prototype.GetState = function()
 {
 	if ( FCKBrowserInfo.IsIE )
-		return ( FCKUndo.CurrentIndex > 0 ? FCK_TRISTATE_OFF : FCK_TRISTATE_DISABLED ) ;
+		return ( FCKUndo.CheckUndoState() ? FCK_TRISTATE_OFF : FCK_TRISTATE_DISABLED ) ;
 	else
 		return FCK.GetNamedCommandState( 'Undo' ) ;
 }
@@ -230,7 +251,33 @@ FCKRedoCommand.prototype.Execute = function()
 FCKRedoCommand.prototype.GetState = function()
 {
 	if ( FCKBrowserInfo.IsIE )
-		return ( FCKUndo.CurrentIndex < ( FCKUndo.SavedData.length - 1 ) ? FCK_TRISTATE_OFF : FCK_TRISTATE_DISABLED ) ;
+		return ( FCKUndo.CheckRedoState() ? FCK_TRISTATE_OFF : FCK_TRISTATE_DISABLED ) ;
 	else
 		return FCK.GetNamedCommandState( 'Redo' ) ;
+}
+
+// ### Page Break
+var FCKPageBreakCommand = function()
+{
+	this.Name = 'PageBreak' ;
+}
+
+FCKPageBreakCommand.prototype.Execute = function()
+{
+//	var e = FCK.EditorDocument.createElement( 'CENTER' ) ;
+//	e.style.pageBreakAfter = 'always' ;
+
+	// Tidy was removing the empty CENTER tags, so the following solution has 
+	// been found. It also validates correctly as XHTML 1.0 Strict.
+	var e = FCK.EditorDocument.createElement( 'DIV' ) ;
+	e.style.pageBreakAfter = 'always' ;
+	e.innerHTML = '<span style="DISPLAY:none">&nbsp;</span>' ;
+	
+	var oFakeImage = FCKDocumentProcessors_CreateFakeImage( 'FCK__PageBreak', e ) ;
+	oFakeImage	= FCK.InsertElement( oFakeImage ) ;
+}
+
+FCKPageBreakCommand.prototype.GetState = function()
+{
+	return 0 ; // FCK_TRISTATE_OFF
 }

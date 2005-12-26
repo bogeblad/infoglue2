@@ -1,4 +1,5 @@
-<?php /*
+<?php 
+/*
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
@@ -7,6 +8,8 @@
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: fckeditor.php
  * 	This is the integration file for PHP.
@@ -28,8 +31,9 @@ class FCKeditor
 	var $Value ;
 	var $Config ;
 
-	function FCKeditor( $instanceName )
-	{
+	// PHP 5 Constructor (by Marcus Bointon <coolbru@users.sourceforge.net>)
+	function __construct( $instanceName )
+ 	{
 		$this->InstanceName	= $instanceName ;
 		$this->BasePath		= '/FCKeditor/' ;
 		$this->Width		= '100%' ;
@@ -38,6 +42,12 @@ class FCKeditor
 		$this->Value		= '' ;
 
 		$this->Config		= array() ;
+	}
+	
+	// PHP 4 Contructor
+	function FCKeditor( $instanceName )
+	{
+		$this->__construct( $instanceName ) ;
 	}
 
 	function Create()
@@ -53,16 +63,21 @@ class FCKeditor
 		
 		if ( $this->IsCompatible() )
 		{
-			$Link = "{$this->BasePath}editor/fckeditor.html?InstanceName={$this->InstanceName}" ;
+			if ( isset( $_GET['fcksource'] ) && $_GET['fcksource'] == "true" )
+				$File = 'fckeditor.original.html' ;
+			else
+				$File = 'fckeditor.html' ;
+
+			$Link = "{$this->BasePath}editor/{$File}?InstanceName={$this->InstanceName}" ;
 			
 			if ( $this->ToolbarSet != '' )
 				$Link .= "&amp;Toolbar={$this->ToolbarSet}" ;
 
 			// Render the linked hidden field.
-			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}\" name=\"{$this->InstanceName}\" value=\"{$HtmlValue}\" />" ;
+			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}\" name=\"{$this->InstanceName}\" value=\"{$HtmlValue}\" style=\"display:none\" />" ;
 
 			// Render the configurations hidden field.
-			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}___Config\" value=\"" . $this->GetConfigFieldString() . "\" />" ;
+			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}___Config\" value=\"" . $this->GetConfigFieldString() . "\" style=\"display:none\" />" ;
 
 			// Render the editor IFRAME.
 			$Html .= "<iframe id=\"{$this->InstanceName}___Frame\" src=\"{$Link}\" width=\"{$this->Width}\" height=\"{$this->Height}\" frameborder=\"no\" scrolling=\"no\"></iframe>" ;
@@ -79,7 +94,7 @@ class FCKeditor
 			else
 				$HeightCSS = $this->Height ;
 
-			$Html .= "<textarea name=\"{$this->InstanceName}\" rows=\"4\" cols=\"40\" style=\"width: {$WidthCSS}; height: {$HeightCSS}\" wrap=\"virtual\">{$HtmlValue}</textarea>" ;
+			$Html .= "<textarea name=\"{$this->InstanceName}\" rows=\"4\" cols=\"40\" style=\"width: {$WidthCSS}; height: {$HeightCSS}\">{$HtmlValue}</textarea>" ;
 		}
 
 		$Html .= '</div>' ;

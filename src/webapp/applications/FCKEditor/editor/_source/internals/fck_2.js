@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fck_2.js
  * 	This is the second part of the "FCK" object creation. This is the main
  * 	object that represents an editor instance.
@@ -20,11 +22,11 @@
 // wich named commands must be handled separately.
 FCK.RedirectNamedCommands = new Object() ;
 
-FCK.ExecuteNamedCommand = function( commandName, commandParameter )
+FCK.ExecuteNamedCommand = function( commandName, commandParameter, noRedirect )
 {
 	FCKUndo.SaveUndoStep() ;
 
-	if ( FCK.RedirectNamedCommands[ commandName ] != null )
+	if ( !noRedirect && FCK.RedirectNamedCommands[ commandName ] != null )
 		FCK.ExecuteRedirectedNamedCommand( commandName, commandParameter ) ;
 	else
 	{
@@ -32,6 +34,8 @@ FCK.ExecuteNamedCommand = function( commandName, commandParameter )
 		FCK.EditorDocument.execCommand( commandName, false, commandParameter ) ; 
 		FCK.Events.FireEvent( 'OnSelectionChange' ) ;
 	}
+	
+	FCKUndo.SaveUndoStep() ;
 }
 
 FCK.GetNamedCommandState = function( commandName )
@@ -66,40 +70,81 @@ FCK.GetNamedCommandValue = function( commandName )
 	return sValue ? sValue : '' ;
 }
 
-FCK.CleanAndPaste = function( html )
+FCK.PasteFromWord = function()
 {
-	// Remove all SPAN tags
-	html = html.replace(/<\/?SPAN[^>]*>/gi, "" );
-	// Remove Class attributes
-	html = html.replace(/<(\w[^>]*) class=([^ |>]*)([^>]*)/gi, "<$1$3") ;
-	// Remove Style attributes
-	html = html.replace(/<(\w[^>]*) style="([^"]*)"([^>]*)/gi, "<$1$3") ;
-	// Remove Lang attributes
-	html = html.replace(/<(\w[^>]*) lang=([^ |>]*)([^>]*)/gi, "<$1$3") ;
-	// Remove XML elements and declarations
-	html = html.replace(/<\\?\?xml[^>]*>/gi, "") ;
-	// Remove Tags with XML namespace declarations: <o:p></o:p>
-	html = html.replace(/<\/?\w+:[^>]*>/gi, "") ;
-	// Replace the &nbsp;
-	html = html.replace(/&nbsp;/, " " );
-	// Transform <P> to <DIV>
-	var re = new RegExp("(<P)([^>]*>.*?)(<\/P>)","gi") ;	// Different because of a IE 5.0 error
-	html = html.replace( re, "<div$2</div>" ) ;
-	
-	FCK.InsertHtml( html ) ;
+	FCKDialog.OpenDialog( 'FCKDialog_Paste', FCKLang.PasteFromWord, 'dialog/fck_paste.html', 400, 330, 'Word' ) ;
 }
+
+// TODO: Wait Stable and remove this block.
+//FCK.CleanAndPaste = function( html )
+//{
+	// Remove all SPAN tags
+//	html = html.replace(/<\/?SPAN[^>]*>/gi, "" );
+
+//	html = html.replace(/<o:p>&nbsp;<\/o:p>/g, "") ;
+//	html = html.replace(/<o:p><\/o:p>/g, "") ;
+	
+	// Remove mso-xxx styles.
+//	html = html.replace( /mso-.[^:]:.[^;"]/g, "" ) ;
+	
+	// Remove Class attributes
+//	html = html.replace(/<(\w[^>]*) class=([^ |>]*)([^>]*)/gi, "<$1$3") ;
+	
+	// Remove Style attributes
+//	html = html.replace(/<(\w[^>]*) style="([^"]*)"([^>]*)/gi, "<$1$3") ;
+	
+	// Remove Lang attributes
+//	html = html.replace(/<(\w[^>]*) lang=([^ |>]*)([^>]*)/gi, "<$1$3") ;
+	
+	// Remove XML elements and declarations
+//	html = html.replace(/<\\?\?xml[^>]*>/gi, "") ;
+	
+	// Remove Tags with XML namespace declarations: <o:p></o:p>
+//	html = html.replace(/<\/?\w+:[^>]*>/gi, "") ;
+	
+	// Replace the &nbsp;
+//	html = html.replace(/&nbsp;/, " " );
+	// Replace the &nbsp; from the beggining.
+//	html = html.replace(/^&nbsp;[\s\r\n]*/, ""); 
+	
+	// Transform <P> to <DIV>
+//	var re = new RegExp("(<P)([^>]*>.*?)(<\/P>)","gi") ;	// Different because of a IE 5.0 error
+//	html = html.replace( re, "<div$2</div>" ) ;
+	
+//	FCK.InsertHtml( html ) ;
+//}
 
 FCK.Preview = function()
 {
-	var oWindow = window.open( '', null, 'toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes' ) ;
+	var iWidth	= FCKConfig.ScreenWidth * 0.8 ;
+	var iHeight	= FCKConfig.ScreenHeight * 0.7 ;
+	var iLeft	= ( FCKConfig.ScreenWidth - iWidth ) / 2 ;
+	var oWindow = window.open( '', null, 'toolbar=yes,location=no,status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=' + iWidth + ',height=' + iHeight + ',left=' + iLeft ) ;
 	
-	var sHTML = '<html><head><link href="' + FCKConfig.EditorAreaCSS + '" rel="stylesheet" type="text/css" /></head><body>' + FCK.GetHTML() + '</body></html>' ;
+	var sHTML ;
+	
+	if ( FCKConfig.FullPage )
+	{
+		if ( FCK.TempBaseTag.length > 0 )
+			sHTML = FCK.GetXHTML().replace( FCKRegexLib.HeadOpener, '$&' + FCK.TempBaseTag ) ;
+		else
+			sHTML = FCK.GetXHTML() ;
+	}
+	else
+	{
+		sHTML = 
+			FCKConfig.DocType +
+			'<html dir="' + FCKConfig.ContentLangDirection + '">' +
+			'<head><title>' + FCKLang.Preview + '</title>' +
+			'<link href="' + FCKConfig.EditorAreaCSS + '" rel="stylesheet" type="text/css" />' +
+			FCK.TempBaseTag +
+			'</head><body>' + 
+			FCK.GetXHTML() + 
+			'</body></html>' ;
+	}
 	
 	oWindow.document.write( sHTML );
 	oWindow.document.close();
-		
-	// TODO: The CSS of the editor area must be configurable.
-	// oWindow.document.createStyleSheet( config.EditorAreaCSS );
 }
 
 FCK.SwitchEditMode = function()
@@ -116,10 +161,13 @@ FCK.SwitchEditMode = function()
 	{
 		if ( FCKBrowserInfo.IsIE )
 			FCKUndo.SaveUndoStep() ;
-		document.getElementById('eSourceField').value = ( FCKConfig.EnableXHTML && FCKConfig.EnableSourceXHTML ? FCK.GetXHTML( FCKConfig.FormatSource ) : FCK.GetHTML( FCKConfig.FormatSource ) ) ;
+
+		// EnableXHTML and EnableSourceXHTML has been deprecated
+//		document.getElementById('eSourceField').value = ( FCKConfig.EnableXHTML && FCKConfig.EnableSourceXHTML ? FCK.GetXHTML( FCKConfig.FormatSource ) : FCK.GetHTML( FCKConfig.FormatSource ) ) ;
+		document.getElementById('eSourceField').value = FCK.GetXHTML( FCKConfig.FormatSource ) ;
 	}
 	else
-		FCK.SetHTML( FCK.GetHTML(), true ) ;
+		FCK.SetHTML( document.getElementById('eSourceField').value, true ) ;
 
 	// Updates the actual mode status.
 	FCK.EditMode = bWYSIWYG ? FCK_EDITMODE_SOURCE : FCK_EDITMODE_WYSIWYG ;
@@ -153,4 +201,5 @@ FCK.InsertElementAndGetIt = function( e )
 			return aEls[i] ;
 		}
 	}
+	return null ;
 }

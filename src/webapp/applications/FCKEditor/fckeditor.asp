@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckeditor.asp
  * 	This is the integration file for ASP.
  * 
@@ -60,7 +62,11 @@ Class FCKeditor
 	End Property
 
 	Public Property Let Value( newValue )
-		sValue = newValue
+		If ( IsNull( newValue ) OR IsEmpty( newValue ) ) Then
+			sValue = ""
+		Else
+			sValue = newValue
+		End If
 	End Property
 
 	Public Property Let Config( configKey, configValue )
@@ -73,18 +79,25 @@ Class FCKeditor
 
 		If IsCompatible() Then
 
+			Dim sFile
+			If Request.QueryString( "fcksource" ) = "true" Then
+				sFile = "fckeditor.original.html"
+			Else
+				sFile = "fckeditor.html"
+			End If
+
 			Dim sLink
-			sLink = sBasePath & "editor/fckeditor.html?InstanceName=" + instanceName
+			sLink = sBasePath & "editor/" & sFile & "?InstanceName=" + instanceName
 
 			If (sToolbarSet & "") <> "" Then
 				sLink = sLink + "&amp;Toolbar=" & sToolbarSet
 			End If
 
 			' Render the linked hidden field.
-			Response.Write "<input type=""hidden"" id=""" & instanceName & """ name=""" & instanceName & """ value=""" & Server.HTMLEncode( sValue ) & """ />"
+			Response.Write "<input type=""hidden"" id=""" & instanceName & """ name=""" & instanceName & """ value=""" & Server.HTMLEncode( sValue ) & """ style=""display:none"" />"
 
 			' Render the configurations hidden field.
-			Response.Write "<input type=""hidden"" id=""" & instanceName & "___Config"" value=""" & GetConfigFieldString() & """ />"
+			Response.Write "<input type=""hidden"" id=""" & instanceName & "___Config"" value=""" & GetConfigFieldString() & """ style=""display:none"" />"
 
 			' Render the editor IFRAME.
 			Response.Write "<iframe id=""" & instanceName & "___Frame"" src=""" & sLink & """ width=""" & sWidth & """ height=""" & sHeight & """ frameborder=""no"" scrolling=""no""></iframe>"
@@ -105,7 +118,7 @@ Class FCKeditor
 				sHeightCSS = sHeight & "px"
 			End If
 
-			Response.Write "<textarea name=""" & instanceName & """ rows=""4"" cols=""40"" style=""width: " & sWidthCSS & "; height: " & sHeightCSS & """ wrap=""virtual"">" & Server.HTMLEncode( sValue ) & "</textarea>"
+			Response.Write "<textarea name=""" & instanceName & """ rows=""4"" cols=""40"" style=""width: " & sWidthCSS & "; height: " & sHeightCSS & """>" & Server.HTMLEncode( sValue ) & "</textarea>"
 
 		End If
 

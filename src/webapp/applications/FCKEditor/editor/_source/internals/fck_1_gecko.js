@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fck_1_gecko.js
  * 	This is the first part of the "FCK" object creation. This is the main
  * 	object that represents an editor instance.
@@ -21,6 +23,25 @@ FCK.Description = "FCKeditor for Gecko Browsers" ;
 
 FCK.InitializeBehaviors = function()
 {
+	/*
+	window.document.onblur = function(e)
+	{
+		return FCK.Events.FireEvent( "OnBlur" ) ;
+	}
+
+	window.document.onfocus = function()
+	{
+		return FCK.Events.FireEvent( "OnFocus" ) ;
+	}
+	*/
+
+	// Enable table borders visibility.
+	if ( FCKConfig.ShowBorders ) 
+	{
+		var oStyle = FCKTools.AppendStyleSheet( this.EditorDocument, FCKConfig.FullBasePath + 'css/fck_showtableborders_gecko.css' ) ;
+		oStyle.setAttribute( '_fcktemp', 'true' ) ;
+	}
+
 	// Disable Right-Click
 	var oOnContextMenu = function( e )
 	{
@@ -29,32 +50,62 @@ FCK.InitializeBehaviors = function()
 	}
 	this.EditorDocument.addEventListener( 'contextmenu', oOnContextMenu, true ) ;
 
-	/*
-	TODO: 
-	This is not working... on Gecko there is no "OnPaste" event that
-	can prevent the user to paste.
-	I've tried with the OnKeyDown event for the "CTRL-V" key "down", but the
-	paste still occours (preventDefault does nothing in this case).
-	
+	// Handle pasting operations.
 	var oOnKeyDown = function( e )
 	{
+
+		// START iCM Modifications
+		/*
+		// Need to amend carriage return key handling so inserts block element tags rather than BR all the time
+		if ( e.which == 13 && !e.shiftKey && !e.ctrlKey && !e.altKey && !FCKConfig.UseBROnCarriageReturn && !FCK.Events.FireEvent( "OnEnter" ) )
+		{
+			e.preventDefault() ;
+			e.stopPropagation() ;
+		}
+		// Amend backspace handling so correctly removes empty block elements i.e. those block elements containing nothing or
+		// just the bogus BR node
+		if ( e.which == 8 && !e.shiftKey && !e.ctrlKey && !e.altKey && !FCKConfig.UseBROnCarriageReturn && !FCK.Events.FireEvent( "OnBackSpace" ) )
+		{
+			e.preventDefault() ;
+			e.stopPropagation() ;
+		}
+		*/
+		// END iCM Modifications
+
+		var bPrevent ;
+
 		if ( e.ctrlKey && !e.shiftKey && !e.altKey )
 		{
-			// Char 86/118 = V/v
-			if ( e.which == 86 || e.which == 118 )
+			switch ( e.which ) 
 			{
-				if ( FCK.Status == FCK_STATUS_COMPLETE )
-				{
-					if ( !FCK.Events.FireEvent( "OnPaste" ) )
-						e.preventDefault() ;
-				}
-				else
-					e.preventDefault() ;
+				case 66 :	// B
+				case 98 :	// b
+					FCK.ExecuteNamedCommand( 'bold' ) ; bPrevent = true ;
+					break;
+				case 105 :	// i
+				case 73 :	// I
+					FCK.ExecuteNamedCommand( 'italic' ) ; bPrevent = true ;
+					break;
+				case 117 :	// u
+				case 85 :	// U
+					FCK.ExecuteNamedCommand( 'underline' ) ; bPrevent = true ;
+					break;
+				case 86 :	// V
+				case 118 :	// v
+					bPrevent = ( FCK.Status != FCK_STATUS_COMPLETE || !FCK.Events.FireEvent( "OnPaste" ) ) ;
+					break ;
 			}
 		}
+		else if ( e.shiftKey && !e.ctrlKey && !e.altKey && e.keyCode == 45 )	// SHIFT + <INS>
+			bPrevent = ( FCK.Status != FCK_STATUS_COMPLETE || !FCK.Events.FireEvent( "OnPaste" ) ) ;
+		
+		if ( bPrevent ) 
+		{
+			e.preventDefault() ;
+			e.stopPropagation() ;
+		}
 	}
-	this.EditorDocument.addEventListener( 'keydown', oOnKeyDown, true ) ;
-	*/
+	this.EditorDocument.addEventListener( 'keypress', oOnKeyDown, true ) ;
 
 	this.ExecOnSelectionChange = function()
 	{
@@ -88,6 +139,9 @@ FCK.InitializeBehaviors = function()
 		{
 			this.document.body.innerHTML = this._FCK_HTML ;
 			this._FCK_HTML = null ;
+			
+			if ( !FCK_StartupValue )
+				FCK.ResetIsDirty() ;
 		}
 	}
 	this.EditorWindow.addEventListener( 'load', this._OnLoad, true ) ;
@@ -98,22 +152,35 @@ FCK.InitializeBehaviors = function()
 //	}
 //	this.EditorWindow.addEventListener( 'unload', oEditorWindow_OnUnload, true ) ;
 
-//	var oEditorDocument_OnFocus = function()
+//	var oEditorWindow_OnFocus = function()
 //	{
 //		FCK.MakeEditable() ;
 //	}
-//	this.EditorDocument.addEventListener( 'focus', oEditorDocument_OnFocus, true ) ;
+//	this.EditorWindow.addEventListener( 'focus', oEditorWindow_OnFocus, true ) ;
 }
 
 FCK.MakeEditable = function()
 {
-	if ( this.EditorWindow.document.designMode == 'on' )
-		return ;
+	try 
+	{
+		FCK.EditorDocument.designMode = 'on' ;
 
-	this.EditorWindow.document.designMode = 'on' ;
+		// Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
+		FCK.EditorDocument.execCommand( 'useCSS', false, !FCKConfig.GeckoUseSPAN ) ;
 
-	// Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
-	this.EditorWindow.document.execCommand( 'useCSS', false, !FCKConfig.GeckoUseSPAN ) ;
+		// Analysing Firefox 1.5 source code, it seams that there is support for a 
+		// "insertBrOnReturn" command. Applying it gives no error, but it doesn't 
+		// gives the same behavior that you have with IE. It works only if you are
+		// already inside a paragraph and it doesn't render correctly in the first enter.
+		// FCK.EditorDocument.execCommand( 'insertBrOnReturn', false, false ) ;
+		
+		// Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects (by Alfonso Martinez)
+		FCK.EditorDocument.execCommand( 'enableObjectResizing', false, !FCKConfig.DisableImageHandles ) ;
+		
+		// Disable the standard table editing features of Firefox.
+		FCK.EditorDocument.execCommand( 'enableInlineTableEditing', false, !FCKConfig.DisableTableHandles ) ;
+	}
+	catch (e) {}
 }
 
 FCK.Focus = function()
@@ -126,10 +193,51 @@ FCK.Focus = function()
 	catch(e) {}
 }
 
+// @Packager.Compactor.Remove.Start
+if ( FCKBrowserInfo.IsSafari )
+{
 FCK.SetHTML = function( html, forceWYSIWYG )
 {
+	if( window.console ) window.console.log( 'FCK.SetHTML()' ) ;	// @Packager.Compactor.RemoveLine
+
+	sHtml =
+		FCKConfig.DocType +
+		'<html dir="' + FCKConfig.ContentLangDirection + '">' +
+		'<head><title></title>' +
+		'<link href="' + FCKConfig.EditorAreaCSS + '" rel="stylesheet" type="text/css" />' +
+		'<link href="' + FCKConfig.FullBasePath + 'css/fck_internal.css' + '" rel="stylesheet" type="text/css" _fcktemp="true" />' ;
+
+//	sHtml += FCK.TempBaseTag ;
+	sHtml += '</head><body>' + html  + '</body></html>' ;
+	
+	this.EditorDocument.open() ;
+	this.EditorDocument.write( sHtml ) ;
+	this.EditorDocument.close() ;
+
+//	this.InitializeBehaviors() ;
+	
+//	FCK.MakeEditable() ;
+	FCK.EditorDocument.designMode = 'on' ;
+	FCK.OnAfterSetHTML() ;
+}
+}
+else
+{
+// @Packager.Compactor.Remove.End
+FCK.SetHTML = function( html, forceWYSIWYG )
+{
+	// Firefox can't handle correctly the editing of the STRONG and EM tags. 
+	// We must replace them with B and I.
+	html = html.replace( FCKRegexLib.StrongOpener, '<b$1' ) ;
+	html = html.replace( FCKRegexLib.StrongCloser, '<\/b>' ) ;
+	html = html.replace( FCKRegexLib.EmOpener, '<i$1' ) ;
+	html = html.replace( FCKRegexLib.EmCloser, '<\/i>' ) ;
+
 	if ( forceWYSIWYG || FCK.EditMode == FCK_EDITMODE_WYSIWYG )
 	{
+		html = FCKConfig.ProtectedSource.Protect( html ) ;
+		html = FCK.ProtectUrls( html ) ;
+
 		// Gecko has a lot of bugs mainly when handling editing features.
 		// To avoid an Aplication Exception (that closes the browser!) we
 		// must first write the <HTML> contents with an empty body, and
@@ -140,7 +248,7 @@ FCK.SetHTML = function( html, forceWYSIWYG )
 		{
 			// Add the <BASE> tag to the input HTML.
 			if ( FCK.TempBaseTag.length > 0 && !FCKRegexLib.HasBaseTag.test( html ) )
-				html = html.replace( FCKRegexLib.HeadCloser, FCK.TempBaseTag + '</head>' ) ;
+				html = html.replace( FCKRegexLib.HeadOpener, '$&' + FCK.TempBaseTag ) ;
 
 			html = html.replace( FCKRegexLib.HeadCloser, '<link href="' + FCKConfig.BasePath + 'css/fck_internal.css' + '" rel="stylesheet" type="text/css" _fcktemp="true" /></head>' ) ;
 
@@ -152,6 +260,7 @@ FCK.SetHTML = function( html, forceWYSIWYG )
 
 			var sHtml = sOpener + '&nbsp;' + sCloser ;
 
+/*
 			if ( !this._Initialized )
 			{
 				FCK.EditorDocument.designMode = "on" ;
@@ -161,7 +270,9 @@ FCK.SetHTML = function( html, forceWYSIWYG )
 
 				this._Initialized = true ;
 			}
-			
+*/
+			FCK.MakeEditable() ;
+
 			this.EditorDocument.open() ;
 			this.EditorDocument.write( sHtml ) ;
 			this.EditorDocument.close() ;
@@ -187,39 +298,40 @@ FCK.SetHTML = function( html, forceWYSIWYG )
 
 			sHtml += '</head><body>&nbsp;</body></html>' ;
 			*/
-			
+
 			if ( !this._Initialized )
 			{
 				this.EditorDocument.dir = FCKConfig.ContentLangDirection ;
-				
+
 				var sHtml =
 					'<title></title>' +
 					'<link href="' + FCKConfig.EditorAreaCSS + '" rel="stylesheet" type="text/css" />' +
-					'<link href="' + FCKConfig.BasePath + 'css/fck_internal.css' + '" rel="stylesheet" type="text/css" _fcktemp="true" />' ;
-					
-				sHtml += FCK.TempBaseTag ;
+					'<link href="' + FCKConfig.BasePath + 'css/fck_internal.css' + '" rel="stylesheet" type="text/css" _fcktemp="true" />' +
+					FCK.TempBaseTag ;
 
 				this.EditorDocument.getElementsByTagName("HEAD")[0].innerHTML = sHtml ;
-				
+
 				this.InitializeBehaviors() ;
 
 				this._Initialized = true ;
-			}			
+			}
 
 			// On Gecko we must disable editing before setting the BODY innerHTML.
-			FCK.EditorDocument.designMode = 'off' ;
+//			FCK.EditorDocument.designMode = 'off' ;
 
-			FCK.EditorDocument.body.innerHTML = html ;
+			if ( html.length == 0 )
+				FCK.EditorDocument.body.innerHTML = GECKO_BOGUS ;
+			else if ( FCKRegexLib.EmptyParagraph.test( html ) )
+				FCK.EditorDocument.body.innerHTML = html.replace( FCKRegexLib.TagBody, '>' + GECKO_BOGUS + '<' ) ;
+			else
+				FCK.EditorDocument.body.innerHTML = html ;
 			
-			// On Gecko we must set the desingMode on again after setting the BODY innerHTML.
-			FCK.EditorDocument.designMode = 'on' ;
-
-			// Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
-			FCK.EditorDocument.execCommand( 'useCSS', false, !FCKConfig.GeckoUseSPAN ) ;
+			FCK.MakeEditable() ;
 		}
 
-		this.Events.FireEvent( 'OnAfterSetHTML' ) ;
+		FCK.OnAfterSetHTML() ;
 	}
 	else
 		document.getElementById('eSourceField').value = html ;
 }
+}	// @Packager.Compactor.RemoveLine

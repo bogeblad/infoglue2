@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: sample01.html
  * 	Sample page.
  * 
@@ -38,6 +40,7 @@ var sBasePath = document.location.pathname.substring(0,document.location.pathnam
 
 var oFCKeditor = new FCKeditor( 'FCKeditor1' ) ;
 oFCKeditor.BasePath	= sBasePath ;
+oFCKeditor.Height	= 300 ;
 oFCKeditor.Value	= 'This is some <strong>sample text<\/strong>. You are using <a href="http://www.fckeditor.net/">FCKeditor<\/a>.' ;
 oFCKeditor.Create() ;
 //-->

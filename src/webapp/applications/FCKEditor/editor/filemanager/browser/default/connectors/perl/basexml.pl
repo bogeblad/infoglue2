@@ -8,6 +8,8 @@
 #  For further information visit:
 #  		http://www.fckeditor.net/
 #  
+#  "Support Open Source software. What about a donation today?"
+#  
 #  File Name: basexml.pl
 #  	This is the File Manager Connector for Perl.
 #  
@@ -17,7 +19,6 @@
 
 sub CreateXmlHeader
 {
-
 	local($command,$resourceType,$currentFolder) = @_;
 
 	# Create the XML document header.
@@ -33,6 +34,26 @@ sub CreateXmlHeader
 sub CreateXmlFooter
 {
 	print '</Connector>';
+}
+
+sub SendError
+{
+	local( $number, $text ) = @_;
+
+	print << "_HTML_HEAD_";
+Content-Type:text/xml; charset=utf-8
+Pragma: no-cache
+Cache-Control: no-cache
+Expires: Thu, 01 Dec 1994 16:00:00 GMT
+
+_HTML_HEAD_
+
+	# Create the XML document header
+	print '<?xml version="1.0" encoding="utf-8" ?>' ;
+	
+	print '<Connector><Error number="' . $number . '" text="' . &specialchar_cnv( $text ) . '" /></Connector>' ;
+	
+	exit ;
 }
 
 1;

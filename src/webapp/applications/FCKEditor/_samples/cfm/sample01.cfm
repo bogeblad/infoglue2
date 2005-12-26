@@ -9,28 +9,16 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: sample01.cfm
  * 	Sample page for ColdFusion.
  * 
  * File Authors:
  * 		Hendrik Kramer (hk@lwd.de)
+ * 		Mark Woods (mark@thickpaddy.com)
+ * 		Wim Lemmens (didgiman@gmail.com)
 --->
-
-<!--- ::
-	  * You must set the url path to the base directory for your media files (images, flash, files)
-	  * The best position for this variable is in your Application.cfm file
-	  * 
-	  * Possible variable scopes are:
-	  * <cfset APPLICATION.userFilesPath = "/UserFiles/">
-	  * OR:
-	  * <cfset SERVER.userFilesPath = "/UserFiles/">
-	  *
-	  * Note #1: Do _not_ set the physical directory on your server, only a path relative to your current webroot
-	  * Note #2: Directories will be automatically created
-	  :: --->
-<cflock scope="Application" type="exclusive" timeout="5">
-	<cfset APPLICATION.userFilesPath = "/UserFiles/">
-</cflock>
 
 <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -52,16 +40,11 @@ ColdFusion is a registered trademark and product of <a href="http://www.macromed
 <form method="POST" action="#cgi.script_name#">
 </cfoutput>
 
-<cfif listFirst( server.coldFusion.productVersion ) LT 6>
-	<cfoutput><br><em style="color: red;">This sample work only with a ColdFusion MX server and higher, because it uses some advantages of this version.</em></cfoutput>
-	<cfabort>
-</cfif>
-
 <cfmodule 
 	template="../../fckeditor.cfm"
-	basePath="/fckeditor/"
+	basePath="#Left(cgi.script_name, FindNoCase('_samples', cgi.script_name)-1)#"
 	instanceName="myEditor"
-	value='This is some sample text. You are using <a href="http://fckeditor.net/" target="_blank">FCKEditor</a>.'
+	value='This is some sample text. You are using <a href="http://fckeditor.net/" target="_blank">FCKeditor</a>.'
 	width="100%"
 	height="200"
 >

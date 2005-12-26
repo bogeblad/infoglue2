@@ -10,6 +10,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: sample04.asp
  * 	Sample page.
  * 

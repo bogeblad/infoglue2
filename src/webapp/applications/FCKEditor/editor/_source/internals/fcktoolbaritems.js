@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fcktoolbaritems.js
  * 	Toolbar items definitions.
  * 
@@ -69,9 +71,11 @@ FCKToolbarItems.GetItem = function( itemName )
 		case 'Anchor'			: oItem = new FCKToolbarButton( 'Anchor'	, FCKLang.Anchor ) ; break ;
 
 		case 'Image'			: oItem = new FCKToolbarButton( 'Image'			, FCKLang.InsertImageLbl, FCKLang.InsertImage ) ; break ;
+		case 'Flash'			: oItem = new FCKToolbarButton( 'Flash'			, FCKLang.InsertFlashLbl, FCKLang.InsertFlash ) ; break ;
 		case 'Table'			: oItem = new FCKToolbarButton( 'Table'			, FCKLang.InsertTableLbl, FCKLang.InsertTable ) ; break ;
 		case 'SpecialChar'		: oItem = new FCKToolbarButton( 'SpecialChar'	, FCKLang.InsertSpecialCharLbl, FCKLang.InsertSpecialChar ) ; break ;
 		case 'Smiley'			: oItem = new FCKToolbarButton( 'Smiley'		, FCKLang.InsertSmileyLbl, FCKLang.InsertSmiley ) ; break ;
+		case 'PageBreak'		: oItem = new FCKToolbarButton( 'PageBreak'		, FCKLang.PageBreakLbl, FCKLang.PageBreak ) ; break ;
 		case 'UniversalKey'		: oItem = new FCKToolbarButton( 'UniversalKey'	, FCKLang.UniversalKeyboard ) ; break ;
 
 		case 'Rule'				: oItem = new FCKToolbarButton( 'InsertHorizontalRule', FCKLang.InsertLineLbl, FCKLang.InsertLine, null, false, true ) ; break ;
@@ -104,7 +108,7 @@ FCKToolbarItems.GetItem = function( itemName )
 
 		default:
 			alert( FCKLang.UnknownToolbarItem.replace( /%1/g, itemName ) ) ;
-			return ;
+			return null ;
 	}
 
 	FCKToolbarItems.LoadedItems[ itemName ] = oItem ;

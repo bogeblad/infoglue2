@@ -8,6 +8,8 @@
 #  For further information visit:
 #  		http://www.fckeditor.net/
 #  
+#  "Support Open Source software. What about a donation today?"
+#  
 #  File Name: util.pl
 #  	This is the File Manager Connector for Perl.
 #  
@@ -37,6 +39,18 @@ sub ConvertToXmlAttribute
 	return $value;
 #	return utf8_encode(htmlspecialchars($value));
 
+}
+
+sub specialchar_cnv
+{
+	local($ch) = @_;
+
+	$ch =~ s/&/&amp;/g;		# &
+	$ch =~ s/\"/&quot;/g;	#"
+	$ch =~ s/\'/&#39;/g;	# '
+	$ch =~ s/</&lt;/g;		# <
+	$ch =~ s/>/&gt;/g;		# >
+	return($ch);
 }
 
 1;

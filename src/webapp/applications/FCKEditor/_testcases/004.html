@@ -9,6 +9,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: 004.html
  * 	Test page.
  * 
@@ -35,10 +37,7 @@ function Show()
 		var oEditor = FCKeditorAPI.GetInstance( 'FCKeditor1' ) ;
 		
 		if (  oEditor.EditMode == FCK_EDITMODE_WYSIWYG )
-		{
-			oEditor.SwitchEditMode() ;
-			oEditor.SwitchEditMode() ;
-		}
+			oEditor.MakeEditable() ;
 	}
 }
 
@@ -54,13 +53,15 @@ function Hide()
 		<h1 id="Prova">FCKeditor - Test 004</h1>
 		<P>
 			<STRONG>Expected results</STRONG> : The editor must still work when hidding it 
-			programmatically (throw javascript).<BR>
+			programmatically (through javascript).<BR>
 			<STRONG>Configurations</STRONG>: Default<BR>
 			<STRONG>Steps to&nbsp;Reproduce</STRONG>:
 		</P>
 		<OL>
 			<LI>
-			Wait the editor to load.
+			Wait the page to load.
+			<LI>
+			Hit the "Show Editor" button.
 			<LI>
 			Insert some text and format it.
 			<LI>
@@ -77,10 +78,10 @@ function Hide()
 			<hr>
 		<P></P>
 		<form action="sampleposteddata.asp" method="post" target="_blank">
-			<div id="eNoEditor" style="DISPLAY: none">
+			<div id="eNoEditor">
 				<input type="button" value="Show Editor" onclick="Show();">
 			</div>
-			<div id="eEditor">
+			<div id="eEditor" style="DISPLAY: none">
 				<input type="button" value="Hide Editor" onclick="Hide();">
 				<br><br>
 				<script type="text/javascript">

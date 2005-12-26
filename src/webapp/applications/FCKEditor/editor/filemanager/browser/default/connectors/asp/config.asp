@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: config.asp
  * 	Configuration file for the File Manager Connector for ASP.
  * 
@@ -16,11 +18,13 @@
 -->
 <%
 
-Dim ConfigUserFilesPath
+' SECURITY: You must explicitelly enable this "connector" (set it to "True"). 
+Dim ConfigIsEnabled
+ConfigIsEnabled = False
 
 ' Path to user files relative to the document root.
-' SECURITY TIP: Uncomment the following line to set a fixed path.
-' ConfigUserFilesPath = "/UserFiles/"
+Dim ConfigUserFilesPath
+ConfigUserFilesPath = "/UserFiles/"
 
 Dim ConfigAllowedExtensions, ConfigDeniedExtensions
 Set ConfigAllowedExtensions	= CreateObject( "Scripting.Dictionary" )

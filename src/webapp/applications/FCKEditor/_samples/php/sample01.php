@@ -1,4 +1,5 @@
-<?php /*
+<?php 
+/*
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
@@ -7,6 +8,8 @@
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: sample01.php
  * 	Sample page.

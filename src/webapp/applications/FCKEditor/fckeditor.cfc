@@ -1,4 +1,4 @@
-<cfcomponent output="false" displayname="FCKEditor" hint="Create an instance of the FCKEditor.">
+<cfcomponent output="false" displayname="FCKeditor" hint="Create an instance of the FCKeditor.">
 <!---
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2005 Frederico Caldeira Knabben
@@ -8,6 +8,8 @@
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: fckeditor.cfc
  * 	ColdFusion MX integration. 
@@ -41,7 +43,7 @@
 	access="public" 
 	output="true" 
 	returntype="void" 
-	hint="Initialize the FCKEditor instance."
+	hint="Initialize the FCKeditor instance."
 >
 
 	<cfparam name="this.instanceName" type="string" />
@@ -127,7 +129,7 @@
 
 	<cfoutput>
 	<div>
-	<textarea name="#this.instanceName#" rows="4" cols="40" style="WIDTH: #width#; HEIGHT: #height#" wrap="virtual">#HTMLEditFormat(this.value)#</textarea>
+	<textarea name="#this.instanceName#" rows="4" cols="40" style="WIDTH: #width#; HEIGHT: #height#">#HTMLEditFormat(this.value)#</textarea>
 	</div>
 	</cfoutput>
 
@@ -158,8 +160,8 @@
 
 	<cfoutput>
 	<div>
-	<input type="hidden" id="#this.instanceName#" name="#this.instanceName#" value="#HTMLEditFormat(this.value)#" />
-	<input type="hidden" id="#this.instanceName#___Config" value="#GetConfigFieldString()#" />
+	<input type="hidden" id="#this.instanceName#" name="#this.instanceName#" value="#HTMLEditFormat(this.value)#" style="display:none" />
+	<input type="hidden" id="#this.instanceName#___Config" value="#GetConfigFieldString()#" style="display:none" />
 	<iframe id="#this.instanceName#___Frame" src="#sURL#" width="#this.width#" height="#this.height#" frameborder="no" scrolling="no"></iframe>
 	</div>
 	</cfoutput>

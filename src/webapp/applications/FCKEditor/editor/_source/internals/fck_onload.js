@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fck_onload.js
  * 	This is the script that is called when the editor page is loaded inside
  * 	its IFRAME. It's the editor startup.
@@ -21,6 +23,11 @@ function Window_OnContextMenu( e )
 {
 	if ( e )
 		e.preventDefault() ;	// The Gecko way.
+	else
+	{
+		if ( event.srcElement == document.getElementById('eSourceField') )
+			return true ;
+	}
 
 	return false ;				// The IE way.
 }
@@ -51,16 +58,16 @@ if ( FCKBrowserInfo.IsIE )
 	// On IE, some circular references must be cleared to avoid memory leak.
 	function Window_OnBeforeUnload()
 	{
-		FCKToolbarSet.Collapse() ;
+//		if ( typeof( FCKToolbarSet ) != 'undefined' )
+//			FCKToolbarSet.Collapse() ;
 
-		var e ;
+		var d, e ;
 
-		for ( var j = 0 ; j < aCleanupDocs.length ; j++ )
+		var j = 0 ;
+		while ( ( d = aCleanupDocs[j++] ) )
 		{
-			var d = aCleanupDocs[j] ;
 			var i = 0 ;
-
-			while ( e = d.getElementsByTagName("DIV").item(i++) )
+			while ( ( e = d.getElementsByTagName("DIV").item(i++) ) )
 			{
 				if ( e.FCKToolbarButton )
 					e.FCKToolbarButton = null ;
@@ -73,17 +80,19 @@ if ( FCKBrowserInfo.IsIE )
 			}
 
 			i = 0 ;
-			while ( e = d.getElementsByTagName("TR").item(i++) )
+			while ( ( e = d.getElementsByTagName("TR").item(i++) ) )
 			{
 				if ( e.FCKContextMenuItem )
 					e.FCKContextMenuItem = null ;
 			}
 
 			aCleanupDocs[j] = null ;
-			d = null ;
 		}
+		
+		if ( typeof( FCKTempBin ) != 'undefined' )
+			FCKTempBin.Reset() ;
 	}
-	window.attachEvent( "onbeforeunload", Window_OnBeforeUnload ) ;
+	window.attachEvent( "onunload", Window_OnBeforeUnload ) ;
 }
 
 // The editor startup follows these steps:
@@ -144,6 +153,9 @@ function LoadCustomConfigFile()
 function LoadPageConfig()
 {
 	FCKConfig.LoadPageConfig() ;
+	
+	if ( FCKConfig.AllowQueryStringDebug && (/fckdebug=true/i).test( window.top.location.search ) )
+		FCKConfig.Debug = true ;
 
 	// Load the styles for the configured skin.
 	LoadStyles() ;
@@ -151,6 +163,8 @@ function LoadPageConfig()
 
 function LoadStyles()
 {
+	if( window.console ) window.console.log( 'LoadStyles()' ) ;	// @Packager.Compactor.RemoveLine
+
 	FCKScriptLoader.OnEmpty = LoadScripts ;
 
 	// Load the active skin CSS.
@@ -160,27 +174,26 @@ function LoadStyles()
 
 function LoadScripts()
 {
+	if( window.console ) window.console.log( 'LoadScripts()' ) ;	// @Packager.Compactor.RemoveLine
+
 	FCKScriptLoader.OnEmpty = null ;
 
 	// @Packager.Compactor.Remove.Start
 	var sSuffix = FCKBrowserInfo.IsIE ? 'ie' : 'gecko' ;
 
-	with ( FCKScriptLoader )
-	{
-		AddScript( '_source/internals/fckdebug.js' ) ;
-		AddScript( '_source/internals/fcktools.js' ) ;
-		AddScript( '_source/internals/fcktools_' + sSuffix + '.js' ) ;
-		AddScript( '_source/internals/fckregexlib.js' ) ;
-		AddScript( '_source/internals/fcklanguagemanager.js' ) ;
-		AddScript( '_source/classes/fckevents.js' ) ;
-		AddScript( '_source/internals/fckxhtmlentities.js' ) ;
-		AddScript( '_source/internals/fckxhtml.js' ) ;
-		AddScript( '_source/internals/fckxhtml_' + sSuffix + '.js' ) ;
-		AddScript( '_source/internals/fckcodeformatter.js' ) ;
-		AddScript( '_source/internals/fckundo_' + sSuffix + '.js' ) ;
-		AddScript( '_source/internals/fck_1.js' ) ;
-		AddScript( '_source/internals/fck_1_' + sSuffix + '.js' ) ;
-	}
+	FCKScriptLoader.AddScript( '_source/internals/fckdebug.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fcktools.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fcktools_' + sSuffix + '.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fckregexlib.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fcklanguagemanager.js' ) ;
+	FCKScriptLoader.AddScript( '_source/classes/fckevents.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fckxhtmlentities.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fckxhtml.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fckxhtml_' + sSuffix + '.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fckcodeformatter.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fckundo_' + sSuffix + '.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fck_1.js' ) ;
+	FCKScriptLoader.AddScript( '_source/internals/fck_1_' + sSuffix + '.js' ) ;
 	// @Packager.Compactor.Remove.End
 
 	/* @Packager.Compactor.RemoveLine
@@ -193,13 +206,19 @@ function LoadScripts()
 
 function LoadLanguageFile()
 {
+	if( window.console ) window.console.log( 'LoadLanguageFile()' ) ;	// @Packager.Compactor.RemoveLine
+
 	FCKScriptLoader.OnEmpty = LoadEditor ;
+
+	if( window.console ) window.console.log( 'Active Language: ' + FCKLanguageManager.ActiveLanguage.Code ) ;	// @Packager.Compactor.RemoveLine
 
 	FCKScriptLoader.AddScript( 'lang/' + FCKLanguageManager.ActiveLanguage.Code + '.js' ) ;
 }
 
 function LoadEditor()
 {
+	if( window.console ) window.console.log( 'LoadEditor()' ) ;	// @Packager.Compactor.RemoveLine
+
 	// Removes the OnEmpty listener.
 	FCKScriptLoader.OnEmpty = null ;
 

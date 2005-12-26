@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fcktablecommand.js
  * 	FCKPastePlainTextCommand Class: represents the 
  * 	"Paste as Plain Text" command.
@@ -23,6 +25,8 @@ var FCKTableCommand = function( command )
 
 FCKTableCommand.prototype.Execute = function()
 {
+	FCKUndo.SaveUndoStep() ;
+	
 	switch ( this.Name )
 	{
 		case 'TableInsertRow' :
@@ -48,6 +52,9 @@ FCKTableCommand.prototype.Execute = function()
 			break ;
 		case 'TableSplitCell' :
 			FCKTableHandler.SplitCell() ;
+			break ;
+		case 'TableDelete' :
+			FCKTableHandler.DeleteTable() ;
 			break ;
 		default :
 			alert( FCKLang.UnknownCommand.replace( /%1/g, this.Name ) ) ;

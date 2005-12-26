@@ -9,6 +9,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fck_listprop.html
  * 	Bulleted List dialog window.
  * 
@@ -54,13 +56,24 @@ window.onload = function()
 	}
 
 	oActiveSel.style.display = '' ;
-
+	
 	if ( oActiveEl )
 	{
-		if ( oActiveEl.getAttribute('type') )
-			oActiveSel.value = oActiveEl.getAttribute('type').toLowerCase() ;
-		if ( oActiveEl.getAttribute('class'))
-			oActiveSelStyle.value = oActiveEl.getAttribute('class').toLowerCase() ;
+		if ( oEditor.FCKBrowserInfo.IsIE )
+		{
+			if ( oActiveEl.getAttribute('type') )
+				oActiveSel.value = oActiveEl.getAttribute('type').toLowerCase() ;
+			if ( oActiveEl.getAttribute('className'))
+				oActiveSelStyle.value = oActiveEl.getAttribute('className').toLowerCase() ;
+		}
+		else
+		{
+			if ( oActiveEl.getAttribute('type') )
+				oActiveSel.value = oActiveEl.getAttribute('type').toLowerCase() ;
+			if ( oActiveEl.getAttribute('class'))
+				oActiveSelStyle.value = oActiveEl.getAttribute('class').toLowerCase() ;
+		}
+
 	}
 
 	window.parent.SetOkButton( true ) ;
@@ -73,13 +86,13 @@ function Ok()
 		SetAttribute( oActiveEl, 'type'	, oActiveSel.value ) ;
 		SetAttribute( oActiveEl, 'class', oActiveSelStyle.value ) ;
 	}
-	
+
 	return true ;
 }
 
 		</script>
 	</head>
-	<body style="OVERFLOW: hidden;" scroll="no">
+	<body style="OVERFLOW: hidden" scroll="no">
 		<table width="100%" height="100%">
 			<tr>
 				<td>
@@ -90,7 +103,7 @@ function Ok()
 								<select id="selBulleted" style="DISPLAY: none">
 									<option value="" selected></option>
 									<option value="circle" fckLang="DlgLstTypeCircle">Circle</option>
-									<option value="disk" fckLang="DlgLstTypeDisk">Disk</option>
+									<option value="disc" fckLang="DlgLstTypeDisc">Disc</option>
 									<option value="square" fckLang="DlgLstTypeSquare">Square</option>
 								</select>
 								<select id="selNumbered" style="DISPLAY: none">
@@ -114,7 +127,7 @@ function Ok()
 									//alert("FCKConfig.ListClassesNames:" + FCKConfig.ListClassesNames);
 									if(FCKConfig.ListClasses && FCKConfig.ListClassesNames)
 									{
-										document.write("<option value=\"\" fckLang=\"DlgLnkStyleLinkIcon\" selected=\"selected\">None</option>");
+										document.write("<option value=\"\" fckLang=\"DlgLnkStyleLinkIcon\">None</option>");
 									
 										var listClasses=FCKConfig.ListClasses.split(',');
 										var listClassesNames=FCKConfig.ListClassesNames.split(',');
@@ -127,7 +140,7 @@ function Ok()
 									}
 									else
 									{
-										document.write("<option value=\"normallist\" selected>Normal</option>");
+										document.write("<option value=\"normallist\">Normal</option>");
 										document.write("<option value=\"linklist\">Punktlista med l&auml;nkar</option>");
 										document.write("<option value=\"textlist\">Punktlista utan l&auml;nkar</option>");
 									}

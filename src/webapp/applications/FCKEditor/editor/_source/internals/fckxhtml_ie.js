@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckxhtml_ie.js
  * 	Defines the FCKXHtml object, responsible for the XHTML operations.
  * 	IE specific.
@@ -37,27 +39,28 @@ FCKXHtml._AppendAttributes = function( xmlNode, htmlNode, node, nodeName )
 		if ( oAttribute.specified )
 		{
 			var sAttName = oAttribute.nodeName.toLowerCase() ;
+			var sAttValue ;
 
-			// The "_fckxhtmljob" attribute is used to mark the already processed elements.
-			if ( sAttName == '_fckxhtmljob' )
+			// Ignore any attribute starting with "_fck".
+			if ( sAttName.startsWith( '_fck' ) )
 				continue ;
 			// The following must be done because of a bug on IE regarding the style
 			// attribute. It returns "null" for the nodeValue.
 			else if ( sAttName == 'style' )
-				var sAttValue = htmlNode.style.cssText ;
+				sAttValue = htmlNode.style.cssText ;
 			// There are two cases when the oAttribute.nodeValue must be used:
 			//		- for the "class" attribute
 			//		- for events attributes (on IE only).
 			else if ( sAttName == 'class' || sAttName.indexOf('on') == 0 )
-				var sAttValue = oAttribute.nodeValue ;
+				sAttValue = oAttribute.nodeValue ;
 			else if ( nodeName == 'body' && sAttName == 'contenteditable' )
 				continue ;
 			// XHTML doens't support attribute minimization like "CHECKED". It must be trasformed to cheched="checked".
 			else if ( oAttribute.nodeValue === true )
 				sAttValue = sAttName ;
 			// We must use getAttribute to get it exactly as it is defined.
-			else
-				var sAttValue = htmlNode.getAttribute( sAttName, 2 ) ;	
+			else if ( ! (sAttValue = htmlNode.getAttribute( sAttName, 2 ) ) )
+				sAttValue = oAttribute.nodeValue ;
 
 			if ( FCKConfig.ForceSimpleAmpersand && sAttValue.replace )
 				sAttValue = sAttValue.replace( /&/g, '___FCKAmp___' ) ;
@@ -120,9 +123,13 @@ FCKXHtml.TagProcessors['option'] = function( node, htmlNode )
 	return node ;
 }
 
-// There is a BUG in IE regarding the ABBR tag.
+// There is a BUG in IE regarding the ABBR tag (it has no support for it).
 FCKXHtml.TagProcessors['abbr'] = function( node, htmlNode )
 {
+	// TODO: The XHTML processor duplicates the ABBR contents because of this 
+	// code. We should find some way to move to the node after the /ABBR in the
+	// _AppendChildNodes loop.
+
 	var oNextNode = htmlNode.nextSibling ;
 
 	while ( true )
@@ -171,8 +178,33 @@ FCKXHtml.TagProcessors['label'] = function( node, htmlNode )
 
 FCKXHtml.TagProcessors['form'] = function( node, htmlNode )
 {
-	if ( htmlNode.acceptCharset.length > 0 && htmlNode.acceptCharset != 'UNKNOWN' )
+	if ( htmlNode.acceptCharset && htmlNode.acceptCharset.length > 0 && htmlNode.acceptCharset != 'UNKNOWN' )
 		FCKXHtml._AppendAttribute( node, 'accept-charset', htmlNode.acceptCharset ) ;
+
+	if ( htmlNode.name ) 
+		FCKXHtml._AppendAttribute( node, 'name', htmlNode.name ) ; 
+
+	FCKXHtml._AppendChildNodes( node, htmlNode ) ;
+
+	return node ;
+}
+
+// IE doens't hold the name attribute as an attribute for the <TEXTAREA> and <SELECT> tags.
+FCKXHtml.TagProcessors['textarea'] = FCKXHtml.TagProcessors['select'] = function( node, htmlNode )
+{ 
+	if ( htmlNode.name ) 
+		FCKXHtml._AppendAttribute( node, 'name', htmlNode.name ) ; 
+
+	FCKXHtml._AppendChildNodes( node, htmlNode ) ; 
+ 
+	return node ; 
+} 
+
+// On very rare cases, IE is loosing the "align" attribute for DIV. (right align and apply bulleted list)
+FCKXHtml.TagProcessors['div'] = function( node, htmlNode )
+{
+	if ( htmlNode.align.length > 0 )
+		FCKXHtml._AppendAttribute( node, 'align', htmlNode.align ) ;
 
 	FCKXHtml._AppendChildNodes( node, htmlNode ) ;
 

@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckdialog.js
  * 	Dialog windows operations.
  * 
@@ -18,7 +20,7 @@
 var FCKDialog = new Object() ;
 
 // This method opens a dialog window using the standard dialog template.
-FCKDialog.OpenDialog = function( dialogName, dialogTitle, dialogPage, width, height, customValue, parentWindow )
+FCKDialog.OpenDialog = function( dialogName, dialogTitle, dialogPage, width, height, customValue, parentWindow, resizable )
 {
 	// Setup the dialog info.
 	var oDialogInfo = new Object() ;
@@ -28,5 +30,5 @@ FCKDialog.OpenDialog = function( dialogName, dialogTitle, dialogPage, width, hei
 	oDialogInfo.CustomValue = customValue ;		// Optional
 	
 	var sUrl = FCKConfig.BasePath + 'fckdialog.html' ;
-	this.Show( oDialogInfo, dialogName, sUrl, width, height, parentWindow ) ;
+	this.Show( oDialogInfo, dialogName, sUrl, width, height, parentWindow, resizable ) ;
 }

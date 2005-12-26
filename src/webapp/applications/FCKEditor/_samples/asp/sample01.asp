@@ -10,6 +10,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: sample01.asp
  * 	Sample page.
  * 
@@ -43,7 +45,7 @@ sBasePath = Left( sBasePath, InStrRev( sBasePath, "/_samples" ) )
 Dim oFCKeditor
 Set oFCKeditor = New FCKeditor
 oFCKeditor.BasePath	= sBasePath
-oFCKeditor.Value	= "àèi&ograve;&ugrave;This is some <strong>sample text</strong>. You are using <a href=""http://www.fckeditor.net/"">FCKeditor</a>."
+oFCKeditor.Value	= "This is some <strong>sample text</strong>. You are using <a href=""http://www.fckeditor.net/"">FCKeditor</a>."
 oFCKeditor.Create "FCKeditor1"
 %>
 			<br>

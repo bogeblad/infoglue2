@@ -8,6 +8,8 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckpastewordcommand.js
  * 	FCKPasteWordCommand Class: represents the "Paste from Word" command.
  * 
@@ -27,5 +29,8 @@ FCKPasteWordCommand.prototype.Execute = function()
 
 FCKPasteWordCommand.prototype.GetState = function()
 {
-	return FCK.GetNamedCommandState( 'Paste' ) ;
+	if ( FCKConfig.ForcePasteAsPlainText )
+		return FCK_TRISTATE_DISABLED ;
+	else
+		return FCK.GetNamedCommandState( 'Paste' ) ;
 }
