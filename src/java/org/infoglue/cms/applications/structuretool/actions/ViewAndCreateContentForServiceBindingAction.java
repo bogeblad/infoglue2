@@ -23,15 +23,18 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
 
@@ -169,195 +172,87 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 	
     public String doExecute() throws Exception
     {		
-		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
-		this.languageId = masterLanguageVO.getLanguageId();
-		
-		/*	
-		List repositoryLanguages = RepositoryLanguageController.getController().getRepositoryLanguageVOListWithRepositoryId(this.repositoryId);
-		Iterator i = repositoryLanguages.iterator();
-		if(i.hasNext())
-		{
-			RepositoryLanguageVO repositoryLanguageVO = (RepositoryLanguageVO)i.next();
-			this.languageId = repositoryLanguageVO.getLanguageId();
-		}
-		*/
-		ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info");
-		this.metaInfoContentTypeDefinitionId = contentTypeDefinitionVO.getId();
-		
-		/*
-		List contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
-		Iterator contentTypeDefinitionVOListIterator = contentTypeDefinitionVOList.iterator();
-		while(contentTypeDefinitionVOListIterator.hasNext())
-		{
-			ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)contentTypeDefinitionVOListIterator.next();
-			if(contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))
-				this.metaInfoContentTypeDefinitionId = contentTypeDefinitionVO.getId();
-		}
-		*/
-		boolean hadMetaInfo = false;
-		if(this.serviceBindingVO.getId() == null)
-    	{
-			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
-			
-			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionId);
-			Iterator serviceBindingIterator = serviceBindings.iterator();
-			while(serviceBindingIterator.hasNext())
-			{
-				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
-				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getAvailableServiceBindingId().intValue())
-				{
-					List boundContents = ContentController.getBoundContents(serviceBindingVO.getServiceBindingId()); 			
-					if(boundContents.size() > 0)
-					{
-						this.contentVO = (ContentVO)boundContents.get(0);		
-						hadMetaInfo = true;
-						break;
-					}						
-				}
-			}
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
-    		if(!hadMetaInfo)
-    		{
-		    	List serviceDefinitions = AvailableServiceBindingController.getController().getServiceDefinitionVOList(this.availableServiceBindingId);
-		    	if(serviceDefinitions == null || serviceDefinitions.size() == 0)
-		    	{
-			    }
-		    	else if(serviceDefinitions.size() == 1)
-		    	{
-			        this.singleServiceDefinitionVO = (ServiceDefinitionVO)serviceDefinitions.get(0);	    
-		    	}
+        beginTransaction(db);
+
+        try
+        {
+            Language masterLanguage = LanguageController.getController().getMasterLanguage(db, this.repositoryId);
+    		this.languageId = masterLanguage.getLanguageId();
+
+    		ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName("Meta info", db);
+    		this.metaInfoContentTypeDefinitionId = contentTypeDefinition.getId();
+    		
+    		SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(this.siteNodeId, db);
+            
+    		Content metaInfoContent = null;
+    		if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().intValue() > -1)
+    		    metaInfoContent = ContentController.getContentController().getContentWithId(siteNode.getMetaInfoContentId(), db);
+            
+            if(metaInfoContent == null)
+            {
+	    		boolean hadMetaInfo = false;
+	    		if(this.serviceBindingVO.getId() == null)
+	        	{
+	    			AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, false);
+	    			
+	    			Collection serviceBindings = SiteNodeVersionController.getServiceBindningList(this.siteNodeVersionId, db);
+	    			Iterator serviceBindingIterator = serviceBindings.iterator();
+	    			while(serviceBindingIterator.hasNext())
+	    			{
+	    				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+	    				if(serviceBinding.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBinding.getAvailableServiceBindingId().intValue())
+	    				{
+	    					List boundContents = ContentController.getBoundContents(db, serviceBinding.getServiceBindingId()); 			
+	    					if(boundContents.size() > 0)
+	    					{
+	    						this.contentVO = (ContentVO)boundContents.get(0);		
+	    						hadMetaInfo = true;
+	    						if(siteNode.getMetaInfoContentId() == null || siteNode.getMetaInfoContentId().intValue() == -1)
+	    						    siteNode.setMetaInfoContentId(this.contentVO.getId());
+	    						
+	    						break;
+	    					}						
+	    				}
+	    			}
 	
-	    		SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(this.siteNodeId);
-	    		
-				getLogger().info("The service definition was null so we must create a new content and binding..");
-				
-				ContentVO parentFolderContentVO = null;
-				
-				ContentVO rootContentVO = ContentControllerProxy.getController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName());
-				if(rootContentVO != null)
-				{
-					List children = ContentController.getContentController().getContentChildrenVOList(rootContentVO.getId());
-					Iterator childrenIterator = children.iterator();
-					while(childrenIterator.hasNext())
-					{
-						ContentVO child = (ContentVO)childrenIterator.next();
-						if(child.getName().equalsIgnoreCase("Meta info folder"))
-						{
-							getLogger().info("Found the metainfo folder..");
-							parentFolderContentVO = child;
-							break;
-						}
-					}
-					
-					if(parentFolderContentVO == null)
-					{
-						parentFolderContentVO = new ContentVO();
-						parentFolderContentVO.setCreatorName(this.getInfoGluePrincipal().getName());
-						parentFolderContentVO.setIsBranch(new Boolean(true));
-						parentFolderContentVO.setName("Meta info folder");
-						parentFolderContentVO.setRepositoryId(this.repositoryId);
-	
-						parentFolderContentVO = ContentControllerProxy.getController().create(rootContentVO.getId(), null, this.repositoryId, parentFolderContentVO);
-					}
-				
-					this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
-					this.contentVO.setIsBranch(new Boolean(false));
-					this.contentVO.setName(siteNodeVO.getName() + " Metainfo");
-					this.contentVO.setRepositoryId(this.repositoryId);
-		
-					this.contentVO = ContentControllerProxy.getController().create(parentFolderContentVO.getId(), this.metaInfoContentTypeDefinitionId, this.repositoryId, this.contentVO);
-				
-					ServiceBindingVO serviceBindingVO = new ServiceBindingVO();
-					serviceBindingVO.setName(siteNodeVO.getName() + " Metainfo");
-					serviceBindingVO.setPath("/None specified/");
-				
-					String qualifyerXML = "<?xml version='1.0' encoding='ISO-8859-1'?><qualifyer><contentId>" + contentVO.getId() + "</contentId></qualifyer>";
-				
-					ServiceBindingController.create(this.serviceBindingVO, qualifyerXML, this.availableServiceBindingId, this.siteNodeVersionId, singleServiceDefinitionVO.getId());	
-	    		
-					return "success";
-	
-				}
+	        		if(!hadMetaInfo)
+	        		    this.contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, this.repositoryId, this.getInfoGluePrincipal(), null).getValueObject();
+	        	}
 	    		else
 	    		{
-	    			//throw new SystemException("");
+	    			List boundContents = ContentController.getBoundContents(this.serviceBindingVO.getId()); 			
+	    			
+	    			if(boundContents.size() > 0)
+	    			{
+	    				this.contentVO = (ContentVO)boundContents.get(0);		 	
+	    				if(siteNode.getMetaInfoContentId() == null || siteNode.getMetaInfoContentId().intValue() == -1)
+						    siteNode.setMetaInfoContentId(this.contentVO.getId());
+	    			}
+	    			else
+	    			{
+	    			    //Something is broken.... lets try to patch it up by assigning what it should be.
+	    			    this.contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, this.repositoryId, this.getInfoGluePrincipal(), null).getValueObject();
+	    			}
 	    		}
-    		}
-    	}
-		else
-		{
-			List boundContents = ContentController.getBoundContents(this.serviceBindingVO.getId()); 			
-			
-			if(boundContents.size() > 0)
-				this.contentVO = (ContentVO)boundContents.get(0);		 	
-			else
-			{
-			    //Something is broken.... lets try to patch it up by assigning what it should be.
-		    	List serviceDefinitions = AvailableServiceBindingController.getController().getServiceDefinitionVOList(this.availableServiceBindingId);
-		    	if(serviceDefinitions == null || serviceDefinitions.size() == 0)
-		    	{
-			    }
-		    	else if(serviceDefinitions.size() == 1)
-		    	{
-			        this.singleServiceDefinitionVO = (ServiceDefinitionVO)serviceDefinitions.get(0);	    
-		    	}
-		    	
-			    SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(this.siteNodeId);
-
-	    		getLogger().info("Something was broken so we must try and patch it up..");
-
-			    ContentVO parentFolderContentVO = null;
-
-			    ContentVO rootContentVO = ContentControllerProxy.getController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName());
-				if(rootContentVO != null)
-				{
-					List children = ContentController.getContentController().getContentChildrenVOList(rootContentVO.getId());
-					Iterator childrenIterator = children.iterator();
-					while(childrenIterator.hasNext())
-					{
-						ContentVO child = (ContentVO)childrenIterator.next();
-						if(child.getName().equalsIgnoreCase("Meta info folder"))
-						{
-							getLogger().info("Found the metainfo folder..");
-							parentFolderContentVO = child;
-							break;
-						}
-					}
-					
-					if(parentFolderContentVO == null)
-					{
-						parentFolderContentVO = new ContentVO();
-						parentFolderContentVO.setCreatorName(this.getInfoGluePrincipal().getName());
-						parentFolderContentVO.setIsBranch(new Boolean(true));
-						parentFolderContentVO.setName("Meta info folder");
-						parentFolderContentVO.setRepositoryId(this.repositoryId);
-	
-						parentFolderContentVO = ContentControllerProxy.getController().create(rootContentVO.getId(), null, this.repositoryId, parentFolderContentVO);
-					}
-				
-					this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
-					this.contentVO.setIsBranch(new Boolean(false));
-					this.contentVO.setName(siteNodeVO.getName() + " Metainfo");
-					this.contentVO.setRepositoryId(this.repositoryId);
-		
-					this.contentVO = ContentControllerProxy.getController().create(parentFolderContentVO.getId(), this.metaInfoContentTypeDefinitionId, this.repositoryId, this.contentVO);
-				
-					ServiceBindingVO serviceBindingVO = new ServiceBindingVO();
-					serviceBindingVO.setName(siteNodeVO.getName() + " Metainfo");
-					serviceBindingVO.setPath("/None specified/");
-				
-					String qualifyerXML = "<?xml version='1.0' encoding='ISO-8859-1'?><qualifyer><contentId>" + contentVO.getId() + "</contentId></qualifyer>";
-				
-					ServiceBindingController.create(this.serviceBindingVO, qualifyerXML, this.availableServiceBindingId, this.siteNodeVersionId, singleServiceDefinitionVO.getId());	
-	    		
-					return "success";
-	
-				}
-
-			}
-		}
-		
-    	return "success";
+            }
+            else
+            {
+                this.contentVO = metaInfoContent.getValueObject();
+            }
+            
+    		commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return "success";
     }
        
 	public List getRepositories()

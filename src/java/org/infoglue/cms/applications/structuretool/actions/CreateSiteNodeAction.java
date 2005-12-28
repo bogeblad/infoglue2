@@ -23,22 +23,33 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -57,6 +68,7 @@ import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -242,119 +254,30 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
     	getLogger().info("expireDateTime:" + this.siteNodeVO.getExpireDateTime());
     	getLogger().info("isBranch:" + this.siteNodeVO.getIsBranch());
     	
-		newSiteNodeVO = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.repositoryId, this.siteNodeVO);
-    	//newSiteNodeVO = SiteNodeController.getController().create(this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.getInfoGluePrincipal(), this.repositoryId, this.siteNodeVO);
-		
-		//Test
-		SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(newSiteNodeVO.getId());
-		LanguageVO masterLanguageVO 		= LanguageController.getController().getMasterLanguage(this.repositoryId);
-	   
-		Integer metaInfoContentTypeDefinitionId 		= null;
-		Integer availableServiceBindingId 				= null;
-		ServiceDefinitionVO singleServiceDefinitionVO 	= null;
-		
-		ContentVO contentVO = new ContentVO();
-		
-		List contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
-		Iterator contentTypeDefinitionVOListIterator = contentTypeDefinitionVOList.iterator();
-		while(contentTypeDefinitionVOListIterator.hasNext())
-		{
-			ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)contentTypeDefinitionVOListIterator.next();
-			if(contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))
-				metaInfoContentTypeDefinitionId = contentTypeDefinitionVO.getId();
-		}
-		
-		AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
-		availableServiceBindingId = availableServiceBindingVO.getId();
-		List serviceDefinitions = AvailableServiceBindingController.getController().getServiceDefinitionVOList(availableServiceBindingId);
-		if(serviceDefinitions == null || serviceDefinitions.size() == 0)
-		{
-		    ServiceDefinitionVO serviceDefinitionVO = ServiceDefinitionController.getController().getServiceDefinitionVOWithName("Core content service");
-		    String[] values = {serviceDefinitionVO.getId().toString()};
-		    AvailableServiceBindingController.getController().update(availableServiceBindingVO, values);
-		    singleServiceDefinitionVO = serviceDefinitionVO;
-		}
-		else if(serviceDefinitions.size() == 1)
-		{
-			singleServiceDefinitionVO = (ServiceDefinitionVO)serviceDefinitions.get(0);	    
-		}
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
-		SiteNodeVO siteNodeVO = newSiteNodeVO;
-		
-		ContentVO parentFolderContentVO = null;
-		
-		ContentVO rootContentVO = ContentControllerProxy.getController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName());
-		if(rootContentVO != null)
-		{
-			List children = ContentController.getContentController().getContentChildrenVOList(rootContentVO.getId());
-			Iterator childrenIterator = children.iterator();
-			while(childrenIterator.hasNext())
-			{
-				ContentVO child = (ContentVO)childrenIterator.next();
-				if(child.getName().equalsIgnoreCase("Meta info folder"))
-				{
-					getLogger().info("Found the metainfo folder..");
-					parentFolderContentVO = child;
-					break;
-				}
-			}
-			
-			if(parentFolderContentVO == null)
-			{
-				parentFolderContentVO = new ContentVO();
-				parentFolderContentVO.setCreatorName(this.getInfoGluePrincipal().getName());
-				parentFolderContentVO.setIsBranch(new Boolean(true));
-				parentFolderContentVO.setName("Meta info folder");
-				parentFolderContentVO.setRepositoryId(this.repositoryId);
+        beginTransaction(db);
 
-				parentFolderContentVO = ContentControllerProxy.getController().create(rootContentVO.getId(), null, this.repositoryId, parentFolderContentVO);
-			}
-
-			contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
-			contentVO.setIsBranch(new Boolean(false));
-			contentVO.setName(siteNodeVO.getName() + " Metainfo");
-			contentVO.setRepositoryId(this.repositoryId);
-
-			contentVO = ContentControllerProxy.getController().create(parentFolderContentVO.getId(), metaInfoContentTypeDefinitionId, this.repositoryId, contentVO);
-			
-			String componentStructure = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><components></components>";
-			if(this.pageTemplateContentId != null)
-			{
-			    Integer languageId = LanguageController.getController().getMasterLanguage(this.repositoryId).getId();
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.pageTemplateContentId, languageId);
-				
-			    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO.getId(), "ComponentStructure", false);
-			}
-			
-			//Create initial content version also... in masterlanguage
-			String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[" + this.siteNodeVO.getName() + "]]></Title><NavigationTitle><![CDATA[" + this.siteNodeVO.getName() + "]]></NavigationTitle><Description><![CDATA[" + this.siteNodeVO.getName() + "]]></Description><MetaInfo><![CDATA[" + this.siteNodeVO.getName() + "]]></MetaInfo><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
-		
-			ContentVersionVO contentVersionVO = new ContentVersionVO();
-			contentVersionVO.setVersionComment("Autogenerated version");
-			contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-			contentVersionVO.setVersionValue(versionValue);
-			ContentVersionController.getContentVersionController().create(contentVO.getId(), masterLanguageVO.getId(), contentVersionVO, null);
-			
-			ServiceBindingVO serviceBindingVO = new ServiceBindingVO();
-			serviceBindingVO.setName(siteNodeVO.getName() + " Metainfo");
-			serviceBindingVO.setPath("/None specified/");
-		
-			String qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?><qualifyer><contentId>" + contentVO.getId() + "</contentId></qualifyer>";
-		
-			ServiceBindingController.create(serviceBindingVO, qualifyerXML, availableServiceBindingId, siteNodeVersionVO.getId(), singleServiceDefinitionVO.getId());	
-		
-			return "success";
-
-		}
-		else
-		{
-			//throw new SystemException("");
-		}
-
-	    //End Test
-	    
+        try
+        {
+            SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.repositoryId, this.siteNodeVO, db);
+            newSiteNodeVO = newSiteNode.getValueObject();
+            
+            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, this.repositoryId, this.getInfoGluePrincipal(), this.pageTemplateContentId);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
         return "success";
     }
+
 
     public String doInput() throws Exception
     {

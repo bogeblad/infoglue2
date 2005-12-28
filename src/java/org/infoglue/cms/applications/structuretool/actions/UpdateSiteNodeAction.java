@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCCFactory;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -69,7 +70,10 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		//try
 		//{
 			super.initialize(getSiteNodeId());
+			SiteNodeVO oldSiteNodeVO = SiteNodeController.getSiteNodeVOWithId(getSiteNodeId());
+
 			this.siteNodeVO.setCreatorName(this.getInfoGluePrincipal().getName());
+			this.siteNodeVO.setMetaInfoContentId(oldSiteNodeVO.getMetaInfoContentId());
 			ceb = this.siteNodeVO.validate();
 	    	
 			ceb.throwIfNotEmpty();
