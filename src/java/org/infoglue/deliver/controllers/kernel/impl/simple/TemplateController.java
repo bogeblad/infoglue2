@@ -1166,4 +1166,29 @@ public interface TemplateController
     public boolean getThreatFoldersAsContents();
     
     public void setThreatFoldersAsContents(boolean threatFoldersAsContents);
+    
+    /**
+     * Renders a text from values configured in a content, iterates over the
+     * contenttype defenition names and look for font properties.
+     * @param contentId a content id containing attributes to match preferences 
+     * of the textrenderer. ie fontsize, fontname.
+     * @param text the text to render
+     * @param renderAttributes render attributes in a map to override the
+     *            content settings
+     * @return the asseturl or empty string if something is wrong
+     * @author Per Jonsson per.jonsson@it-huset.se
+     */
+    public String getRenderedTextUrl( Integer contentId, String text, Map renderAttributes );
+
+    /**
+     * Renders a text from configuration stored in the propertyfile or in the
+     * map.
+     * @param text the text to render
+     * @param renderAttributes render attributes in a map to override the
+     *            default or propertyfile settings
+     * @return the asseturl or empty string if something is wrong
+     * @author Per Jonsson - per.jonsson@it-huset.se
+     */
+    public String getRenderedTextUrl( String text, Map renderAttributes );
+
 }

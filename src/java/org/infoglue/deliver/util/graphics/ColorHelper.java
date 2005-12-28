@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util.graphics;
 
 import java.awt.Color;
+import java.util.StringTokenizer;
 
 import org.infoglue.deliver.util.MathHelper;
 
@@ -57,5 +58,49 @@ public class ColorHelper
 		return new Color(new MathHelper().hexToDecimal(hexadecimalValue));
 	}
 
+	/**
+	 * Creates a Color object from a comma separated string like "12:34:6:154"
+	 * values 0-255 and in order R,G,B,A
+	 * @param colonSeparatedRGBA a string
+	 * @return a Color object
+	 */
+	public static Color getColor( String colonSeparatedRGBA )
+	{
+	    return ColorHelper.getColor( colonSeparatedRGBA, ":" );
+	}
+	
+	/**
+	 * Creates a Color object from a separated string like "12-34-6-154" values
+	 * 0-255 and in order R,G,B,A
+	 * @param separatedRGBA a string
+	 * @param delimiter a delimiter
+	 * @return a Color object
+	 * @author Per Jonsson - per.jonsson@it-huset.se
+	 */
+	
+	public static Color getColor( String separatedRGBA, String delimiter )
+	{
+	    //System.out.println("separatedRGBA: " + separatedRGBA + ", " + delimiter );
+	    StringTokenizer st = new StringTokenizer( separatedRGBA, delimiter, false );
+	    int r = 0, g = 0, b = 0, a = 0;
+	    if ( st.hasMoreTokens() )
+	    {
+	        r = Integer.parseInt( st.nextToken().trim() );
+	    }
+	    if ( st.hasMoreTokens() )
+	    {
+	        g = Integer.parseInt( st.nextToken().trim() );
+	    }
+	    if ( st.hasMoreTokens() )
+	    {
+	        b = Integer.parseInt( st.nextToken().trim() );
+	    }
+	    if ( st.hasMoreTokens() )
+	    {
+	        a = Integer.parseInt( st.nextToken().trim() );
+	    }
+	    //System.out.println( r + ", " + g + ", " + b + ", " + a );
+	    return new Color( r, g, b, a );
+	}
 
 }

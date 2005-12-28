@@ -35,6 +35,7 @@ import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Support;
 
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
@@ -1525,5 +1526,120 @@ public class ComponentLogic
     public ComponentDeliveryContext getComponentDeliveryContext()
     {
         return componentDeliveryContext;
+    }
+    
+
+    /**
+     * Returns a map value from a content attribute bound by a propertie. This
+     * method is good for global labels and translations, instead of having
+     * property files on disk you have them in the cms.
+     * @param propertyName a bound content
+     * @param attributeName a attribute in the content
+     * @param keyName keyname in the propertyu, the text should be formed as a
+     *            standard java property file (key=val)
+     * @return The value of the keyname in the content attribute or empty string
+     *         if none found.
+     * @author Per Jonsson - per.jonsson@it-huset.se
+     */
+    public String getContentAttributeMapValue( String propertyName, String attributeName, String keyName )
+    {
+        String mapValue = "";
+        try
+        {
+            mapValue = (String)Support.convertTextToProperties(
+                    getContentAttribute( propertyName, attributeName, true, true ) ).get( keyName );
+        }
+        catch ( Exception e )
+        {
+            logger.error( "An error occurred trying to get getRenderedTextUrl As ImageUrl:" + e.getMessage(), e );
+        }
+        return mapValue;
+    }
+
+    /**
+     * Renders a text to a PNG file, the preferences of the text rendering is
+     * taken from the deliver.properties. ie. fontrender.fontName=Arial
+     * @param text The text to render
+     * @return an asseturl to the rendered text or an empty string if something
+     *         went wrong
+     * @author Per Jonsson - per.jonsson@it-huset.se
+     */
+    public String getRenderedTextUrl( String text )
+    {
+        return templateController.getRenderedTextUrl( text, null );
+    }
+
+    /**
+     * Renders a text to a PNG file, the preferences of the text rendering is
+     * taken from the bound component content of the property. The content is
+     * iterated and extract all matching properties. ie. fontName, fontsize etc.
+     * @param fontConfigPropertyName name of the bound component with font render
+     *            properties.
+     * @param text the text to render.
+     * @return an asseturl to the rendered text or an empty string if something
+     *         went wrong
+     * @author Per Jonsson - per.jonsson@it-huset.se
+     */
+    public String getRenderedTextUrl( String fontConfigPropertyName, String text )
+    {
+        return getRenderedTextUrl( fontConfigPropertyName, text, (Map)null );
+    }
+
+    /**
+     * Renders a text to a PNG file, the preferences of the text rendering is
+     * taken from the bound component content of the property. The content is
+     * iterated and extract all matching properties. ie. fontName, fontsize etc.
+     * @param propertyName name of the bound component with font render
+     *            properties.
+     * @param text the text to render
+     * @param renderAttributes render attributes in a commaseparated string ie.
+     *            "fontname=Arial,fontsize=12" to override the bound content
+     *            preferences
+     * @return an asseturl to the rendered text or an empty string if something
+     *         went wrong
+     * @author Per Jonsson - per.jonsson@it-huset.se
+     */
+    public String getRenderedTextUrl( String fontConfigPropertyName, String text, String renderAttributes )
+    {
+        return getRenderedTextUrl( fontConfigPropertyName, text, Support.convertTextToMap( renderAttributes, "=", "," ) );
+    }
+
+    /**
+     * Renders a text to a PNG file, the preferences of the text rendering is
+     * taken from the bound component content of the property. The content is
+     * iterated and extract all matching properties. ie. fontName, fontsize etc.
+     * @param propertyName name of the bound component with font render
+     *            properties.
+     * @param text the text to render
+     * @param renderAttributes render attributes in a commaseparated string ie.
+     *            "fontname=Arial,fontsize=12" to override the bound content
+     *            preferences
+     * @return an asseturl to the rendered text or an empty string if something
+     *         went wrong
+     * @author Per Jonsson - per.jonsson@it-huset.se
+     */
+    public String getRenderedTextUrl( String fontConfigPropertyName, String text, Map renderAttributes )
+    {
+        String assetUrl = "";
+        try
+        {
+            Map property = getInheritedComponentProperty( this.infoGlueComponent, fontConfigPropertyName, true );
+            if ( property != null )
+            {
+                List bindings = (List)property.get( "bindings" );
+                if ( bindings.size() > 0 )
+                {
+                    Integer contentId = new Integer( (String)bindings.get( 0 ) );
+                    assetUrl = templateController.getRenderedTextUrl( contentId, text, renderAttributes );
+                }
+            }
+
+        }
+        catch ( Exception e )
+        {
+            logger.error( "An error occurred trying to get getRenderedTextUrl As ImageUrl:" + e.getMessage(), e );
+        }
+
+        return assetUrl;
     }
 }

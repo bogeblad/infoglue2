@@ -23,9 +23,12 @@
 
 package org.infoglue.deliver.taglib.content;
 
+import java.util.Map;
+
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
+import org.infoglue.deliver.util.Support;
 
 /**
  * This is an attempt to make an TagLib for attempts to get a ContentAttribute from a content referenced by a component
@@ -36,6 +39,10 @@ import org.infoglue.deliver.taglib.component.ComponentLogicTag;
  * <infoglue:component.ContentAttribute propertyName="Article" attributeName="Title"/>
  *
  * @author Mattias Bogeblad
+ * 
+ * 2005-12-22 Added mapKeyName which extracts a value from a properties.file formated text content. / per.jonsson@it-huset.se
+ *
+ * 
  */
 
 public class ContentAttributeTag extends ComponentLogicTag
@@ -45,6 +52,7 @@ public class ContentAttributeTag extends ComponentLogicTag
 	private Integer contentId;
 	private String propertyName;
     private String attributeName;
+    private String mapKeyName;
     private boolean disableEditOnSight 	= false;
     private boolean useInheritance		= true;
     private boolean parse				= false;
@@ -58,28 +66,54 @@ public class ContentAttributeTag extends ComponentLogicTag
     public int doEndTag() throws JspException
     {
         boolean previousSetting = getController().getDeliveryContext().getUseFullUrl();
+        Object result = null;
         if(previousSetting != fullBaseUrl)
+        {
             getController().getDeliveryContext().setUseFullUrl(fullBaseUrl);
+        }
+        // Have to force a disable editon sight, not good with renderstuff
+        // when converting a attributeto a map.
+        // per.jonsson@it-huset.se
+        if ( mapKeyName != null )
+        {
+            disableEditOnSight = true;
+        }
             
         if(contentId != null)
         {
             if(!parse)
-	            produceResult(getController().getContentAttribute(contentId, attributeName, disableEditOnSight));
+            {
+                result = getController().getContentAttribute(contentId, attributeName, disableEditOnSight);
+            }
 	        else
-	            produceResult(getController().getParsedContentAttribute(contentId, attributeName, disableEditOnSight));
+	        {
+	            result = getController().getParsedContentAttribute(contentId, attributeName, disableEditOnSight);
+            }
         }
         else if(propertyName != null)
         {
 	        if(!parse)
-	            produceResult(getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+            {
+                result = getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance);
+            }
 	        else
-	            produceResult(getComponentLogic().getParsedContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance));
+            {
+	            result = getComponentLogic().getParsedContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance);
+            }
         }
         else
         {
             throw new JspException("You must specify either contentId or attributeName");
         }
-
+        if ( mapKeyName != null && result != null )
+        {
+            Map map = Support.convertTextToProperties( result.toString() );
+            if ( map != null && !map.isEmpty() )
+            {
+                result = map.get( mapKeyName );
+            }
+        }
+        produceResult( result );
         //Resetting the full url to the previous state
         getController().getDeliveryContext().setUseFullUrl(previousSetting);
 
@@ -119,5 +153,10 @@ public class ContentAttributeTag extends ComponentLogicTag
     public void setFullBaseUrl(boolean fullBaseUrl)
     {
         this.fullBaseUrl = fullBaseUrl;
+    }
+
+    public void setMapKeyName( String mapKeyName )
+    {
+        this.mapKeyName = mapKeyName;
     }
 }

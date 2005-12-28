@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.servlet.http.Cookie;
@@ -99,13 +100,16 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.MathHelper;
 import org.infoglue.deliver.util.ObjectConverter;
+import org.infoglue.deliver.util.Support;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 import org.infoglue.deliver.util.charts.ChartHelper;
 import org.infoglue.deliver.util.forms.FormHelper;
+import org.infoglue.deliver.util.graphics.AdvancedImageRenderer;
 import org.infoglue.deliver.util.graphics.ColorHelper;
 import org.infoglue.deliver.util.graphics.FOPHelper;
 import org.infoglue.deliver.util.graphics.FontHelper;
 import org.infoglue.deliver.util.graphics.ImageRenderer;
+import org.infoglue.deliver.util.graphics.AdvancedImageRenderer;
 import org.infoglue.deliver.util.rss.RssHelper;
 import org.infoglue.deliver.util.webservices.InfoGlueWebServices;
 import org.infoglue.deliver.util.webservices.WebServiceHelper;
@@ -2673,7 +2677,142 @@ public class BasicTemplateController implements TemplateController
 		return getContentAttributeAsImageUrl(contentId, attributeName, canvasWidth, canvasHeight, textStartPosX, textStartPosY, textWidth, textHeight, fontName, fontStyle, fontSize, foregroundColor, backgroundColor, null);
 	}
 
-	
+
+    /**
+     * Renders a text from values configured in a content, iterates over the
+     * contenttype defenition names and look for font properties.
+     * @param contentId a content id containing attributes to tell the image
+     *            renderer how to look.
+     * @param text the text to render
+     * @param renderAttributes render attributes in a map to override the
+     *            content settings
+     * @return the asseturl or empty string if something is wrong
+     * @author Per Jonsson per.jonsson@it-huset.se
+     */
+    public String getRenderedTextUrl( Integer contentId, String text, Map renderAttributes )
+    {
+        String assetUrl = "";
+        try
+        {
+            ContentDeliveryController cdc = ContentDeliveryController.getContentDeliveryController();
+            ContentTypeDefinitionController ctdc = ContentTypeDefinitionController.getController();
+
+            ContentVersionVO contentVersionVO = cdc.getContentVersionVO( getDatabase(), this.siteNodeId, contentId,
+                    this.languageId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal );
+
+            ContentTypeDefinitionVO contentTypeDefinitionVO = ctdc.getContentTypeDefinitionVOWithId( contentVersionVO
+                    .getContentTypeDefinitionId() );
+            Iterator attrIterator = ctdc.getContentTypeAttributes( contentTypeDefinitionVO.getSchemaValue() )
+                    .iterator();
+
+            String aText = text.replaceAll( "[^\\w]", "" );
+            aText = aText.substring( 0, ( aText.length() < 8 ? aText.length() : 8 ) ).toLowerCase();
+            StringBuffer uniqueId = new StringBuffer( aText + "_" );
+            uniqueId.append( "_" + contentVersionVO.getId() );
+            uniqueId.append( "_" + Math.abs( text.hashCode() ));
+            uniqueId.append( "_" + Math.abs( contentVersionVO.getVersionValue().hashCode() ) );
+            uniqueId.append( "_" + Math.abs( contentTypeDefinitionVO.getSchemaValue().hashCode() ) );
+            uniqueId.append( "_" + ( renderAttributes != null ? Math.abs( renderAttributes.hashCode() ) : 4711 ) );
+
+            String fileName = uniqueId + ".png";
+
+            AdvancedImageRenderer imageRenderer = new AdvancedImageRenderer();
+            // set up the renderer
+            while ( attrIterator.hasNext() )
+            {
+                String attributeName = attrIterator.next().toString();
+                if ( imageRenderer.hasAttribute( attributeName.toLowerCase() ) )
+                {
+                    String attribute = cdc.getContentAttribute( getDatabase(), contentVersionVO, attributeName, false );
+                    logger.debug( "attribute: " + attributeName + ", " + attribute );
+                    imageRenderer.setAttribute( attributeName, attribute );
+                }
+            }
+            // render the image
+            imageRenderer.renderImage( text, renderAttributes );
+            // write the result
+            assetUrl = writeRenderedImage( imageRenderer, fileName );
+        }
+        catch ( Exception e )
+        {
+            logger.error( "An error occurred trying to getRenderedTextUrl some text:" + e.getMessage(), e );
+        }
+
+        return assetUrl;
+    }
+
+    /**
+     * Renders a text from configuration stored in the propertyfile or in the
+     * map.
+     * @param text the text to render
+     * @param renderAttributes render attributes in a map to override the
+     *            default or propertyfile settings
+     * @return the asseturl or empty string if something is wrong
+     * @author Per Jonsson - per.jonsson@it-huset.se
+     */
+    public String getRenderedTextUrl( String text, Map renderAttributes )
+    {
+        String assetUrl = "";
+        try
+        {
+            String aText = text.replaceAll( "[^\\w]", "" );
+            aText = aText.substring( 0, ( aText.length() < 8 ? aText.length() : 12 ) ).toLowerCase();
+            StringBuffer uniqueId = new StringBuffer( aText + "_" );
+            uniqueId.append( "_" + text.hashCode() );
+            uniqueId.append( "_" + ( renderAttributes != null ? renderAttributes.hashCode() : 4711 ) );
+
+            String fileName = uniqueId + ".png";
+
+            AdvancedImageRenderer imageRenderer = new AdvancedImageRenderer();
+            // render the image
+            imageRenderer.renderImage( text, renderAttributes );
+            // write the result
+            assetUrl = writeRenderedImage( imageRenderer, fileName );
+        }
+        catch ( Exception e )
+        {
+            logger.error( "An error occurred trying to getRenderedTextUrl some text:" + e.getMessage(), e );
+        }
+
+        return assetUrl;
+    }
+
+    /**
+     * Writes a rendered imagefile,
+     * @param imageRenderer a valid configured
+     * @param fileName the filename of the image
+     * @return an asseturl of the image
+     * @throws SystemException if something goes wrong
+     * @author Per Jonsson - per.jonsson@it-huset.se
+     */
+    private String writeRenderedImage( AdvancedImageRenderer imageRenderer, String fileName ) throws SystemException
+    {
+        // write the result
+        int i = 0;
+        String filePath = CmsPropertyHandler.getProperty( "digitalAssetPath." + i );
+        while ( filePath != null )
+        {
+            File imageFile = new File( filePath, fileName );
+            if ( !imageFile.exists() )
+            {
+                imageRenderer.writeImage( imageFile );
+            }
+            i++;
+            filePath = CmsPropertyHandler.getProperty( "digitalAssetPath." + i );
+        }
+
+        SiteNode siteNode = this.nodeDeliveryController.getSiteNode( getDatabase(), this.siteNodeId );
+        String dnsName = CmsPropertyHandler.getProperty( "webServerAddress" );
+        if ( siteNode != null && siteNode.getRepository().getDnsName() != null
+                && !siteNode.getRepository().getDnsName().equals( "" ) )
+        {
+            dnsName = siteNode.getRepository().getDnsName();
+        }
+
+        return urlComposer.composeDigitalAssetUrl( dnsName, fileName, deliveryContext );
+    }
+    
+    
 	public String getContentAttributeAsImageUrl(Integer contentId,String attributeName,int canvasWidth, 
 													int canvasHeight,int textStartPosX,int textStartPosY, 
 													int textWidth,int textHeight,String fontName, 
