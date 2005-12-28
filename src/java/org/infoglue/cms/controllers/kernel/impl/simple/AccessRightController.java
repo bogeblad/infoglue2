@@ -835,7 +835,10 @@ public class AccessRightController extends BaseController
 	 */
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters) throws SystemException
 	{		
-		if(infoGluePrincipal != null && infoGluePrincipal.getIsAdministrator())
+	    if(infoGluePrincipal == null)
+	      return false;
+	    
+	    if(infoGluePrincipal != null && infoGluePrincipal.getIsAdministrator())
 			return true;
 		
 		boolean isPrincipalAuthorized = false;

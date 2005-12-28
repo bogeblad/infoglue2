@@ -4832,7 +4832,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			if(currentSiteNodeId.intValue() == siteNodeId.intValue())
+			if(currentSiteNodeId != null && siteNodeId != null && currentSiteNodeId.intValue() == siteNodeId.intValue())
 			{
 				isParentToCurrent = true; 
 			}
