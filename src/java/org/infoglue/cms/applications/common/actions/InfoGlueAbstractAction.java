@@ -352,7 +352,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	 * Ends a transaction on the named database
 	 */
 	
-    private void commitTransaction(Database db) throws SystemException
+    public void commitTransaction(Database db) throws SystemException
 	{
 		try
 		{
