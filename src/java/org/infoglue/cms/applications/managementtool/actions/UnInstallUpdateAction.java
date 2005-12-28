@@ -45,14 +45,33 @@ public class UnInstallUpdateAction extends InfoGlueAbstractAction
 
 	protected String doExecute() throws Exception {
 		getResponse().setBufferSize(10);
-		PrintWriter out = getResponse().getWriter();		
+		PrintWriter out = getResponse().getWriter();
+		out.write("<!-- INFOGLUE AUTO-UPDATE SYSTEM -->\n");
+		for(int i = 0;i<1200;i++)
+		{
+			out.write("                                                                                ");
+		}
+		out.write("\n");
+		
+		out.write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"css/cms.css\" /></head><body class=\"managementtooledit\"><font color=\"#888888\">");
+		out.flush();
+		
 		getLogger().info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
 		String url = CmsPropertyHandler.getProperty("up2dateUrl");	
 	
 		uc = new UpdateController(url, path);
 		uc.unInstallPackage(getUpdatePackageId(), out);
+
+		out.write("<script language='javascript'>\n");
+		out.write("alert('Infoglue Up2Date\\n\\nUninstall complete. ');\n");
+		// writer.write("parent.location.href = 'ViewListUp2Date.action?title=InfoGlue Up2Date';\n");
 		
+		out.write("</script>");
+		
+		out.write("</font></body></html>");
+		out.flush();
+
         return null;
 	}
 	

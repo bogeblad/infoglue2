@@ -149,7 +149,7 @@ public class UpdateController extends BaseController
 	
 	// Initial handling of compatibility in the server response.
 	// Make this better later
-	private String protocolVersion = "12";
+	private String protocolVersion = "20";
 	// Protocol version 12 adds title to the package description
 	 
 	private String path = "";
@@ -371,7 +371,7 @@ public class UpdateController extends BaseController
 			}
 	}
 	
-	public void runUpdatePackage(String updatePackageId, OutputStream out) throws IOException
+	public void runUpdatePackage(String updatePackageId, OutputStreamWriter writer) throws IOException
 	{
 		// Find the update with id updatePackageId
 		Vector updates = getAvailableUpdates();
@@ -381,7 +381,7 @@ public class UpdateController extends BaseController
 			  if(updatePackageId.compareTo(u.getPackageId())==0)
 			  {
 			  	getLogger().info("Found package to install: " + u.getPackageId());
-			  	runUpdatePackage(u, out);
+			  	runUpdatePackage(u, writer);
 			  	break;
 			  }
 		}
@@ -405,20 +405,19 @@ public class UpdateController extends BaseController
 		
 	}
 
-	public void runUpdatePackage(UpdatePackage upd, final OutputStream os) throws IOException
+	public void runUpdatePackage(UpdatePackage upd, final OutputStreamWriter out) throws IOException
 	{
 		
 		/* TODO:
 		 * Capture output from ant session and return it, så that we can produce
 		 * a summary of the installation to the user.
 		 */
-	    OutputStreamWriter out = new OutputStreamWriter(os);
 	    try {
 	    
 			// Get the zip-file!
+			String url = upd.getDecodedBinaryUrl();
 			out.write("Downloading the package");
 			out.flush();
-			String url = upd.getDecodedBinaryUrl();
 			String zipFile = path + "autoUpdate/" + upd.getPackageId() + ".zip";
 			getFile(url, zipFile, upd.getBinarySize().intValue(), out);
 			
@@ -474,7 +473,7 @@ public class UpdateController extends BaseController
 		 * 
 		 * Should maybe use outputstream instead of printwriter
 		 */
-		out.println("About to run uninstallation...");
+		out.println("About to run uninstallation...<br>");
 
 		final String antfile = upd.getPackageId();
 		String destFile = path + antfile + ".xml";
@@ -490,24 +489,26 @@ public class UpdateController extends BaseController
 		a.setAntfile(destFile);
 		a.setDir(new File(path));
 		a.setTarget("unInstall");
-		out.println("Running Ant...");
+		out.println("Running Ant...<br>");
 		a.execute();
 
 
 		// Add this update!
-		out.println("Finalizing...");
+		out.println("Finalizing...<br>");
 		refreshAvailableUpdates();
 
 		removeInstalledUpdate(upd);
 		
 		// We are done
-		out.println("DONE!");
+		out.println("DONE!<br>");
 	}
 	
 	
 	
 	private void getFile(String src, String dest, int size, OutputStreamWriter out) throws IOException
 	{
+		File destFile = new File(dest);
+		destFile.getParentFile().mkdirs();
 		URL u = new java.net.URL(src);
 		URLConnection urlConn = u.openConnection();
 		urlConn.setAllowUserInteraction(false); 

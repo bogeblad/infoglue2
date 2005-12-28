@@ -67,9 +67,9 @@ public class InstallUpdateAction extends InfoGlueAbstractAction {
 		}
 		writer.write("\n");
 		
-		writer.write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"css/cms.css\" /></head><body class=\"managementtooledit\">");
+		writer.write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"css/cms.css\" /></head><body class=\"managementtooledit\"><font color=\"#888888\">");
 		writer.flush();
-		uc.runUpdatePackage(getUpdatePackageId(), os);
+		uc.runUpdatePackage(getUpdatePackageId(), writer);
 		// writer.write("</pre>");
 		
 		writer.write("<script language='javascript'>\n");
@@ -78,7 +78,7 @@ public class InstallUpdateAction extends InfoGlueAbstractAction {
 		
 		writer.write("</script>");
 		
-		writer.write("</body></html>");
+		writer.write("</font></body></html>");
 		writer.flush();
 		
 		os.flush();
