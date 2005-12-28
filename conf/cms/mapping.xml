@@ -396,6 +396,9 @@
     <field name="creator" type="java.lang.String">
       <sql name="creator" type="varchar" dirty="check" />
     </field>
+    <field name="metaInfoContentId" type="java.lang.Integer">
+      <sql name="metaInfoContentId" type="integer" dirty="check" />
+    </field>
     <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">
       <sql name="repositoryId"/>
     </field>
@@ -427,6 +430,10 @@
     <field name="parentSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       <sql name="parentSiteNodeId"/>
     </field>
+    <field name="metaInfoContentId" type="java.lang.Integer">
+      <sql name="metaInfoContentId" type="integer" dirty="check" />
+    </field>
+    
     <!--
     <field name="childSiteNodes" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl" lazy="true" collection="collection">
       <sql many-key="parentSiteNodeId"/>
