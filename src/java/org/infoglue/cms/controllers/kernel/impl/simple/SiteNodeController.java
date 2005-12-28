@@ -23,6 +23,10 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
@@ -708,6 +712,102 @@ public class SiteNodeController extends BaseController
 		
 		return siteNodes;    	
     }
+	
+	/**
+	 * This method creates a meta info content for the new sitenode.
+	 * 
+	 * @param db
+	 * @param path
+	 * @param newSiteNode
+	 * @throws SystemException
+	 * @throws Bug
+	 * @throws Exception
+	 * @throws ConstraintException
+	 */
+	
+    public Content createSiteNodeMetaInfoContent(Database db, SiteNode newSiteNode, Integer repositoryId, InfoGluePrincipal principal, Integer pageTemplateContentId) throws SystemException, Bug, Exception, ConstraintException
+    {
+        Content content = null;
+        
+        String basePath = "Meta info folder";
+        String path = "";
+        
+        SiteNode parentSiteNode = newSiteNode.getParentSiteNode();
+        while(parentSiteNode != null)
+        {
+            path = "/" + parentSiteNode.getName() + path;
+            parentSiteNode = parentSiteNode.getParentSiteNode();
+        }
+        path = basePath + path;
+        
+        SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, newSiteNode.getId(), false);
+        Language masterLanguage 		= LanguageController.getController().getMasterLanguage(db, repositoryId);
+  	   
+        ServiceDefinitionVO singleServiceDefinitionVO 	= null;
+        
+        Integer metaInfoContentTypeDefinitionId = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info", db).getId();
+        Integer availableServiceBindingId = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, false).getId();
+
+        List serviceDefinitions = AvailableServiceBindingController.getController().getServiceDefinitionVOList(db, availableServiceBindingId);
+        if(serviceDefinitions == null || serviceDefinitions.size() == 0)
+        {
+            ServiceDefinition serviceDefinition = ServiceDefinitionController.getController().getServiceDefinitionWithName("Core content service", db, false);
+            String[] values = {serviceDefinition.getId().toString()};
+            AvailableServiceBindingController.getController().update(availableServiceBindingId, values, db);
+            singleServiceDefinitionVO = serviceDefinition.getValueObject();
+        }
+        else if(serviceDefinitions.size() == 1)
+        {
+        	singleServiceDefinitionVO = (ServiceDefinitionVO)serviceDefinitions.get(0);	    
+        }
+        
+        ContentVO parentFolderContentVO = null;
+        
+        Content rootContent = ContentControllerProxy.getController().getRootContent(db, repositoryId, principal.getName(), true);
+        if(rootContent != null)
+        {
+            ContentVO parentFolderContent = ContentController.getContentController().getContentVOWithPath(repositoryId, path, true, principal, db);
+            
+        	ContentVO contentVO = new ContentVO();
+        	contentVO.setCreatorName(principal.getName());
+        	contentVO.setIsBranch(new Boolean(false));
+        	contentVO.setName(newSiteNode.getName() + " Metainfo");
+        	contentVO.setRepositoryId(repositoryId);
+
+        	content = ContentControllerProxy.getController().create(db, parentFolderContent.getId(), metaInfoContentTypeDefinitionId, repositoryId, contentVO);
+        	
+        	newSiteNode.setMetaInfoContentId(contentVO.getId());
+        	
+        	String componentStructure = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><components></components>";
+        	if(pageTemplateContentId != null)
+        	{
+        	    Integer languageId = LanguageController.getController().getMasterLanguage(db, repositoryId).getId();
+        		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(pageTemplateContentId, languageId, db);
+        		
+        	    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentStructure", false);
+        	}
+        	
+        	//Create initial content version also... in masterlanguage
+        	String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[" + newSiteNode.getName() + "]]></Title><NavigationTitle><![CDATA[" + newSiteNode.getName() + "]]></NavigationTitle><NiceURIName><![CDATA[" + new VisualFormatter().replaceNonAscii(newSiteNode.getName(), '_') + "]]></NiceURIName><Description><![CDATA[" + newSiteNode.getName() + "]]></Description><MetaInfo><![CDATA[" + newSiteNode.getName() + "]]></MetaInfo><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
+        
+        	ContentVersionVO contentVersionVO = new ContentVersionVO();
+        	contentVersionVO.setVersionComment("Autogenerated version");
+        	contentVersionVO.setVersionModifier(principal.getName());
+        	contentVersionVO.setVersionValue(versionValue);
+        	ContentVersionController.getContentVersionController().create(contentVO.getId(), masterLanguage.getId(), contentVersionVO, null, db);
+        	
+        	ServiceBindingVO serviceBindingVO = new ServiceBindingVO();
+        	serviceBindingVO.setName(newSiteNode.getName() + " Metainfo");
+        	serviceBindingVO.setPath("/None specified/");
+        
+        	String qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?><qualifyer><contentId>" + contentVO.getId() + "</contentId></qualifyer>";
+        
+        	ServiceBindingController.getController().create(db, serviceBindingVO, qualifyerXML, availableServiceBindingId, siteNodeVersion.getId(), singleServiceDefinitionVO.getId());	
+        }
+
+        return content;
+    }
+
 
 }
  

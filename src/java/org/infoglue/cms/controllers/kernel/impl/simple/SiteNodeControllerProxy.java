@@ -33,6 +33,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.InterceptorVO;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 import org.infoglue.cms.exception.Bug;
@@ -86,7 +87,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 
 	}
 	*/
-	
+	/*
 	private void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal, Database db) throws ConstraintException, SystemException, Bug, Exception
 	{
 		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(InterceptionPointName, db);
@@ -109,6 +110,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		}
 
 	}
+	*/
 	
 	/**
 	 * This method creates a siteNode after first checking that the user has rights to create it.
@@ -124,6 +126,19 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		return SiteNodeController.getController().create(parentSiteNodeId, siteNodeTypeDefinitionId, infogluePrincipal, repositoryId, siteNodeVO);
 	}   
 
+	/**
+	 * This method creates a siteNode after first checking that the user has rights to create it.
+	 */
+
+	public SiteNode acCreate(InfoGluePrincipal infogluePrincipal, Integer parentSiteNodeId, Integer siteNodeTypeDefinitionId, Integer repositoryId, SiteNodeVO siteNodeVO, Database db) throws ConstraintException, SystemException, Bug, Exception
+	{
+		Map hashMap = new HashMap();
+		hashMap.put("siteNodeId", parentSiteNodeId);
+    	
+		intercept(hashMap, "SiteNodeVersion.CreateSiteNode", infogluePrincipal, db);
+
+		return SiteNodeController.getController().create(db, parentSiteNodeId, siteNodeTypeDefinitionId, infogluePrincipal, repositoryId, siteNodeVO);
+	}   
     
 	/**
 	 * This method updates a content after first checking that the user has rights to edit it.

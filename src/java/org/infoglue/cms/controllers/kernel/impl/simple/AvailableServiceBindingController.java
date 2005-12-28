@@ -290,6 +290,12 @@ public class AvailableServiceBindingController extends BaseController
     	return (AvailableServiceBindingVO) updateEntity(AvailableServiceBindingImpl.class, (BaseEntityVO)availableServiceBindingVO, "setServiceDefinitions", ServiceDefinitionImpl.class, values );
     }        	
 
+    public AvailableServiceBinding update(Integer availableServiceBindingId, String[] values, Database db) throws ConstraintException, SystemException
+    {
+        AvailableServiceBinding availableServiceBinding = getAvailableServiceBindingWithId(availableServiceBindingId, db);
+    	return (AvailableServiceBinding) updateEntity(AvailableServiceBindingImpl.class, (BaseEntityVO)availableServiceBinding.getVO(), "setServiceDefinitions", ServiceDefinitionImpl.class, values );
+    }        	
+
 	/**
 	 * This method returns a list of ServiceDefinitionVO-objects which are available for the
 	 * availableServiceBinding sent in.

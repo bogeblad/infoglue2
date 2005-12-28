@@ -85,20 +85,19 @@ public class SiteNodeStateController extends BaseController
 
 		try
 		{	
-			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getSiteNodeVersionWithIdAsReadOnly(oldSiteNodeVersionId, db);
+            SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getSiteNodeVersionWithIdAsReadOnly(oldSiteNodeVersionId, db);
 			logger.info("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getStateId());
-			
+            
 			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, siteNodeId, db, resultingEvents);
-        							
+        	
         	commitTransaction(db);
         }
         catch(Exception e)
         {
             getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
-            e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
-        }    	    	
+        }
     	
         return newSiteNodeVersion;
     }        
@@ -197,12 +196,11 @@ public class SiteNodeStateController extends BaseController
 				newSiteNodeVersion = oldSiteNodeVersion;
 	    	}
 	    	
-			changeStateOnMetaInfo(db, oldSiteNodeVersion, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, resultingEvents);
+	    	changeStateOnMetaInfo(db, oldSiteNodeVersion, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, resultingEvents);
         }
         catch(Exception e)
         {
             getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
-            e.printStackTrace();
             throw new SystemException(e.getMessage());
         }    	  
           	

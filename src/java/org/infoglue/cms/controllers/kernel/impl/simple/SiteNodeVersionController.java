@@ -515,8 +515,7 @@ public class SiteNodeVersionController extends BaseController
 
         try
         {
-			SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithIdAsReadOnly(siteNodeVersionId, db);
-            Collection serviceBindningList = siteNodeVersion.getServiceBindings();
+            Collection serviceBindningList = getServiceBindningList(siteNodeVersionId, db);
         	serviceBindningVOList = toVOList(serviceBindningList);
         	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
@@ -539,6 +538,17 @@ public class SiteNodeVersionController extends BaseController
         return serviceBindningVOList;
 	}
 	
+   	/**
+	 * This method returns a list with AvailableServiceBidningVO-objects which are available for the
+	 * siteNodeTypeDefinition sent in
+	 */
+	
+	public static Collection getServiceBindningList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException
+	{
+        SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithIdAsReadOnly(siteNodeVersionId, db);
+        return siteNodeVersion.getServiceBindings();
+	}
+
 	
 	public static SiteNodeVersion getLatestPublishedSiteNodeVersion(Integer siteNodeId) throws SystemException, Bug, Exception
     {

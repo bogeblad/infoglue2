@@ -121,6 +121,45 @@ public abstract class BaseController
 
 	}
 
+    
+    /**
+     * This method is called by the controllers to let interceptors listen to events.
+     * 
+     * @param hashMap
+     * @param InterceptionPointName
+     * @param infogluePrincipal
+     * @throws ConstraintException
+     * @throws SystemException
+     * @throws Bug
+     * @throws Exception
+     */
+
+    protected void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal, Database db) throws ConstraintException, SystemException, Bug, Exception
+	{
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName, db);
+    	
+		if(interceptionPointVO == null)
+			throw new SystemException("The InterceptionPoint " + InterceptionPointName + " was not found. The system will not work unless you restore it.");
+
+		List interceptors = InterceptionPointController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId(), db);
+		Iterator interceptorsIterator = interceptors.iterator();
+		while(interceptorsIterator.hasNext())
+		{
+			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
+			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
+			try
+			{
+				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap);
+			}
+			catch(ClassNotFoundException e)
+			{
+				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+			}
+		}
+
+	}
+
 	
 	private static Integer getEntityId(Object entity) throws Bug
 	{
@@ -384,7 +423,37 @@ public abstract class BaseController
 
         return entity.getVO();
     }        
-	
+
+	/* 
+	 * Update entity and a collection with other entities
+	 * Experimental, use with caution
+	 */
+    public static IBaseEntity updateEntity(Class entClass, BaseEntityVO vo, String collectionMethod, Class manyClass, String[] manyIds, Database db) throws ConstraintException, SystemException, Exception
+    {
+        IBaseEntity entity = null;
+
+        List manyList = new ArrayList();
+        if(manyIds != null)
+		{
+	        for (int i=0; i < manyIds.length; i++)
+            {
+            	IBaseEntity manyEntity = (IBaseEntity) getObjectWithId(manyClass, new Integer(manyIds[i]), db);
+            	logger.info("!!Using experimental code: BaseController::update. getting " + manyEntity.toString());
+            	manyList.add(manyEntity);
+            }
+		}
+		
+        entity = (IBaseEntity) getObjectWithId(entClass, vo.getId(), db);
+        entity.setVO(vo);
+        
+        // Now reflect to set the collection
+        Object[] arg = {manyList};
+        Class[] parm = {Collection.class};
+        entity.getClass().getDeclaredMethod(collectionMethod, parm).invoke(entity, arg);
+						
+        return entity;
+    }        
+
 
 	/*
 	protected static Object getObjectWithId(Class arg, Integer id) throws SystemException, Bug
@@ -1002,8 +1071,7 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-			e.printStackTrace();
-        	throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
+			throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
         }
     }
        
@@ -1022,8 +1090,7 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-			e.printStackTrace();
-            throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
         }
     }
  
@@ -1037,18 +1104,35 @@ public abstract class BaseController
         try
         {
             //logger.info("rollbackTransaction a transaction in cms...");
-
-        	if (db.isActive())
+            
+            if (db != null && db.isActive())
         	{
-	            db.rollback();
+                db.rollback();
 				db.close();
         	}
         }
         catch(Exception e)
         {
-			//e.printStackTrace();
-            logger.info("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
-            //throw new SystemException("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage(), e);    
+            logger.warn("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+        }
+    }
+
+    /**
+     * Rollbacks a transaction on the named database
+     */
+     
+    protected static void closeDatabase(Database db) throws SystemException
+    {
+        try
+        {
+            if (db != null)
+        	{
+				db.close();
+        	}
+        }
+        catch(Exception e)
+        {
+            logger.warn("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
         }
     }
 
