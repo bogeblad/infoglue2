@@ -85,6 +85,8 @@ CREATE TABLE cmRedirect (
   PRIMARY KEY(id)
 ) TYPE = MYISAM;
 
+ALTER TABLE cmRedirect DROP INDEX redirectUrl, ADD INDEX redirectUrl(redirectUrl(255));
+
 ALTER TABLE cmSiteNode TYPE = InnoDB;
 ALTER TABLE cmSiteNodeVersion TYPE = InnoDB;
 ALTER TABLE cmServiceBinding TYPE = InnoDB;
@@ -97,6 +99,60 @@ ALTER TABLE cmPublication TYPE = InnoDB;
 ALTER TABLE cmPublicationDetail TYPE = InnoDB;
 ALTER TABLE cmEvent TYPE = InnoDB;
 ALTER TABLE cmRegistry TYPE = InnoDB;
+ALTER TABLE cmAccessRight TYPE = InnoDB;
+ALTER TABLE cmAccessRightGroup TYPE = InnoDB;
+ALTER TABLE cmAccessRightRole TYPE = InnoDB;
+ALTER TABLE cmAvailableServiceBinding TYPE = InnoDB;
+ALTER TABLE cmAvailableServiceBindingSiteNodeTypeDefinition TYPE = InnoDB;
+ALTER TABLE cmContentRelation TYPE = InnoDB;
+ALTER TABLE cmContentTypeDefinition TYPE = InnoDB;
+ALTER TABLE cmUserPropertiesDigitalAsset TYPE = InnoDB;
+ALTER TABLE cmRolePropertiesDigitalAsset TYPE = InnoDB;
+ALTER TABLE cmLanguage TYPE = InnoDB;
+ALTER TABLE cmRepository TYPE = InnoDB;
+ALTER TABLE cmRepositoryContentTypeDefinition TYPE = InnoDB;
+ALTER TABLE cmRepositoryLanguage TYPE = InnoDB;
+ALTER TABLE cmRole TYPE = InnoDB;
+ALTER TABLE cmServiceDefinition TYPE = InnoDB;
+ALTER TABLE cmServiceDefinitionAvailableServiceBinding TYPE = InnoDB;
+ALTER TABLE cmSiteNodeTypeDefinition TYPE = InnoDB;
+ALTER TABLE cmSystemUser TYPE = InnoDB;
+ALTER TABLE cmSystemUserRole TYPE = InnoDB;
+ALTER TABLE cmTransactionHistory TYPE = InnoDB;
+ALTER TABLE cmRoleContentTypeDefinition TYPE = InnoDB;
+ALTER TABLE cmRoleProperties TYPE = InnoDB;
+ALTER TABLE cmUserContentTypeDefinition TYPE = InnoDB;
+ALTER TABLE cmUserProperties TYPE = InnoDB;
+ALTER TABLE cmInterceptionPoint TYPE = InnoDB;
+ALTER TABLE cmInterceptionPointInterceptor TYPE = InnoDB;
+ALTER TABLE cmInterceptor TYPE = InnoDB;
+ALTER TABLE cmCategory TYPE = InnoDB;
+ALTER TABLE cmContentCategory TYPE = InnoDB;
+ALTER TABLE cmGroupPropertiesDigitalAsset TYPE = InnoDB;
+ALTER TABLE cmPropertiesCategory TYPE = InnoDB;
+ALTER TABLE cmGroup TYPE = InnoDB;
+ALTER TABLE cmGroupContentTypeDefinition TYPE = InnoDB;
+ALTER TABLE cmGroupProperties TYPE = InnoDB;
+ALTER TABLE cmSystemUserGroup TYPE = InnoDB;
+ALTER TABLE cmWorkflowDefinition TYPE = InnoDB;
+ALTER TABLE cmRedirect TYPE = InnoDB;
+ALTER TABLE cmInfoGlueProperties TYPE = InnoDB;
 
-Alter table cmSiteNodeVersion add metaInfoContentId INTEGER NULL DEFAULT '-1';
+
+
+-- This adds meta info to cmSiteNode for efficiency and security.. meta info binding will go away.
+Alter table cmSiteNode add metaInfoContentId INTEGER NULL DEFAULT '-1';
   
+update 
+cmAvailableServiceBinding asb,
+cmServiceBinding sb,
+cmQualifyer q,
+cmSiteNodeVersion snv,
+cmSiteNode sn
+set sn.metaInfoContentId = q.value
+where
+asb.availableServiceBindingId = sb.availableServiceBindingId AND
+asb.name = "Meta information" AND
+snv.siteNodeVersionId = sb.siteNodeVersionId AND
+sb.serviceBindingId = q.serviceBindingId AND
+snv.siteNodeId = sn.siteNodeId;  
