@@ -53,6 +53,10 @@ public interface SiteNode extends IBaseEntity
     
     public void setExpireDateTime(java.util.Date expireDateTime);
     
+    public Integer getMetaInfoContentId();
+    
+    public void setMetaInfoContentId(Integer metaInfoContentId);
+
     public org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl getParentSiteNode();
     
     public void setParentSiteNode(org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl parentSiteNode);

@@ -129,7 +129,17 @@ public class SmallSiteNodeImpl extends SiteNodeImpl
     {
         this.valueObject.setExpireDateTime(expireDateTime);
     }
-      
+     
+    public Integer getMetaInfoContentId()
+    {
+        return this.valueObject.getMetaInfoContentId();
+    }
+    
+    public void setMetaInfoContentId(Integer metaInfoContentId)
+    {
+        this.valueObject.setMetaInfoContentId(metaInfoContentId);
+    }
+
     /*
     public org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl getParentSiteNode()
     {

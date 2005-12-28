@@ -45,7 +45,8 @@ public class SiteNodeVO implements BaseEntityVO
   	private Integer childCount;
   	
   	private String creatorName;
-	
+	private Integer metaInfoContentId 	= null;
+
 	public SiteNodeVO()
   	{
   		//Initilizing the expireDateTime... 
@@ -143,6 +144,16 @@ public class SiteNodeVO implements BaseEntityVO
 		this.isBranch = isBranch;
 	}
 	
+    public Integer getMetaInfoContentId()
+    {
+        return metaInfoContentId;
+    }
+    
+    public void setMetaInfoContentId(Integer metaInfoContentId)
+    {
+        this.metaInfoContentId = metaInfoContentId;
+    }
+
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#getId()
 	 */
