@@ -29,9 +29,9 @@
 <div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:0px; height:100%; visibility:visble; z-index:0">
 <table class="managementtool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
 <tr>
-	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 	<td valign="top" width="100%" height="100%"></td>
-	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 </table>
 </div>
@@ -40,10 +40,10 @@
 <div style="LEFT:2px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visble; z-index:0">
 <table class="managementtool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
 <tr>
-	<td height="1" colspan="3" bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td> 
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td> 
 	<td valign="top" width="100%">
 		
 		<table cellpadding="0" cellspacing="0" border="0">
@@ -113,18 +113,18 @@
 		</table>
 	
 	</td>	
-	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+	<td bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 
 <tr>
-	<td height="1" colspan="3" bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 </table>
 </div>
 
 <!--
 <div style="RIGHT:2px; position:absolute; BOTTOM:-2px; visibility:visble; z-index:0">
-	<image src="images/dragCorner.gif" width="12" height="12"></td>
+	<img src="images/dragCorner.gif" width="12" height="12"></td>
 </div>
 -->
 

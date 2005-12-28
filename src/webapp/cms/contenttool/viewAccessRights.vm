@@ -102,7 +102,7 @@
 	</tr>
 	<tr>	
 		<td colspan="$interceptionPointIndex">
-			<a href="javascript:document.editForm.submit();"><image src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
+			<a href="javascript:document.editForm.submit();"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
 			<!--<a href="javascript:saveAndExit(document.editForm, 'UpdateAccessRights!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>-->
 			<a href="$returnAddress"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>
@@ -195,7 +195,7 @@
 	</tr>
 	<tr>	
 		<td colspan="$interceptionPointIndex">
-			<a href="javascript:document.addUserForm.submit();"><image src="$ui.getString("images.contenttool.buttons.addButton")" width="50" height="25" border="0"></a>
+			<a href="javascript:document.addUserForm.submit();"><img src="$ui.getString("images.contenttool.buttons.addButton")" width="50" height="25" border="0"></a>
 		</td>
 	</tr>			
 *#
@@ -262,7 +262,7 @@
 		</tr>
 		<tr>
 		  	<td colspan="2">
-		  	<a href="javascript:document.groups${accessRightId}Form.submit();"><image src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
+		  	<a href="javascript:document.groups${accessRightId}Form.submit();"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
 		  	<img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" onclick="hideDiv('groups$accessRightId');">
 		  	</td>
 		</tr>

@@ -210,10 +210,10 @@
 <div style="LEFT:1px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:1px; visibility:visble; z-index:1">
 <table class="contenttool" cellpadding="0" cellspacing="0" border="0">
 <tr>
-	<td colspan="3" bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td bgcolor="#FFFFFF"><image src="images/trans.gif" width="1" height="28"></td>
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="28"></td>
 	<td valign="middle" width="100%" height="100%">
 		#*
 		#foreach($button in $buttons)
@@ -263,10 +263,10 @@
 		#end
  		
 	</td>
-	<td bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+	<td bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td colspan="3" bgcolor="#999999"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="3" bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 </table>
 </div>
@@ -275,10 +275,10 @@
 <div style="LEFT:1px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:1px; visibility:visble; z-index:0">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
-	<td colspan="3" bgcolor="FFFFFF"><image src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td class="actionheader"><image src="images/trans.gif" width="15" height="1">$ui.getString($title)</td>
+	<td class="actionheader"><img src="images/trans.gif" width="15" height="1">$ui.getString($title)</td>
 </tr>
 <tr class="lightgreen">
 	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>

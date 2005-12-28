@@ -273,7 +273,7 @@ function editContent(contentId)
 		#set($isOdd = true)
 		#foreach ($availableServiceBindingVO in $sortedAvailableContentServiceBindings)
 			
-			#if($availableServiceBindingVO.name != "Meta information")
+			##if($availableServiceBindingVO.name != "Meta information")
 			
 				#if($isOdd)
 					#set($class = "class='lightapricot'")
@@ -336,7 +336,7 @@ function editContent(contentId)
 						#end	
 					</td>
 				</tr>	
-			#end
+			##end
 		#end	
 			</table>
 		</td>
