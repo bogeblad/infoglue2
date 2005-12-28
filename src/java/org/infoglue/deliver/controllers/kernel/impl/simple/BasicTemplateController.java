@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- */
+ */ 
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
@@ -2678,7 +2678,7 @@ public class BasicTemplateController implements TemplateController
 	}
 
 
-    /**
+	/**
      * Renders a text from values configured in a content, iterates over the
      * contenttype defenition names and look for font properties.
      * @param contentId a content id containing attributes to tell the image
@@ -2697,21 +2697,20 @@ public class BasicTemplateController implements TemplateController
             ContentDeliveryController cdc = ContentDeliveryController.getContentDeliveryController();
             ContentTypeDefinitionController ctdc = ContentTypeDefinitionController.getController();
 
-            ContentVersionVO contentVersionVO = cdc.getContentVersionVO( getDatabase(), this.siteNodeId, contentId,
-                    this.languageId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal );
+            ContentVersionVO contentVersionVO = cdc.getContentVersionVO(getDatabase(), this.siteNodeId, contentId,this.languageId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal );
 
-            ContentTypeDefinitionVO contentTypeDefinitionVO = ctdc.getContentTypeDefinitionVOWithId( contentVersionVO
-                    .getContentTypeDefinitionId() );
-            Iterator attrIterator = ctdc.getContentTypeAttributes( contentTypeDefinitionVO.getSchemaValue() )
-                    .iterator();
+            Integer contentTypeDefinitionId = cdc.getContentVO(contentId, getDatabase() ).getContentTypeDefinitionId();
+          
+            ContentTypeDefinitionVO contentTypeDefinitionVO = ctdc.getContentTypeDefinitionVOWithId( contentTypeDefinitionId );
+            Iterator attrIterator = ctdc.getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue() ).iterator();
 
             String aText = text.replaceAll( "[^\\w]", "" );
             aText = aText.substring( 0, ( aText.length() < 8 ? aText.length() : 8 ) ).toLowerCase();
-            StringBuffer uniqueId = new StringBuffer( aText + "_" );
+            StringBuffer uniqueId = new StringBuffer( aText );
             uniqueId.append( "_" + contentVersionVO.getId() );
             uniqueId.append( "_" + Math.abs( text.hashCode() ));
-            uniqueId.append( "_" + Math.abs( contentVersionVO.getVersionValue().hashCode() ) );
-            uniqueId.append( "_" + Math.abs( contentTypeDefinitionVO.getSchemaValue().hashCode() ) );
+            uniqueId.append( "_" + Math.abs(contentVersionVO.getVersionValue().hashCode() ) );
+            uniqueId.append( "_" + Math.abs(contentTypeDefinitionVO.getSchemaValue().hashCode() ) );
             uniqueId.append( "_" + ( renderAttributes != null ? Math.abs( renderAttributes.hashCode() ) : 4711 ) );
 
             String fileName = uniqueId + ".png";
@@ -2721,9 +2720,9 @@ public class BasicTemplateController implements TemplateController
             while ( attrIterator.hasNext() )
             {
                 String attributeName = attrIterator.next().toString();
-                if ( imageRenderer.hasAttribute( attributeName.toLowerCase() ) )
+                if ( imageRenderer.hasAttribute(attributeName.toLowerCase() ) )
                 {
-                    String attribute = cdc.getContentAttribute( getDatabase(), contentVersionVO, attributeName, false );
+                    String attribute = cdc.getContentAttribute(getDatabase(), contentVersionVO, attributeName, false );
                     logger.debug( "attribute: " + attributeName + ", " + attribute );
                     imageRenderer.setAttribute( attributeName, attribute );
                 }
@@ -2757,9 +2756,9 @@ public class BasicTemplateController implements TemplateController
         {
             String aText = text.replaceAll( "[^\\w]", "" );
             aText = aText.substring( 0, ( aText.length() < 8 ? aText.length() : 12 ) ).toLowerCase();
-            StringBuffer uniqueId = new StringBuffer( aText + "_" );
-            uniqueId.append( "_" + text.hashCode() );
-            uniqueId.append( "_" + ( renderAttributes != null ? renderAttributes.hashCode() : 4711 ) );
+            StringBuffer uniqueId = new StringBuffer( aText );
+            uniqueId.append( "_" + Math.abs( text.hashCode() ) );
+            uniqueId.append( "_" + ( renderAttributes != null ? Math.abs( renderAttributes.hashCode() ) : 4711 ) );
 
             String fileName = uniqueId + ".png";
 
@@ -2776,6 +2775,7 @@ public class BasicTemplateController implements TemplateController
 
         return assetUrl;
     }
+
 
     /**
      * Writes a rendered imagefile,
