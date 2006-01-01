@@ -2686,12 +2686,17 @@ public class BasicTemplateController implements TemplateController
      * @param text the text to render
      * @param renderAttributes render attributes in a map to override the
      *            content settings
-     * @return the asseturl or empty string if something is wrong
+     * @return the asseturl or empty string if something is wrong or text is null or empty
      * @author Per Jonsson per.jonsson@it-huset.se
      */
     public String getRenderedTextUrl( Integer contentId, String text, Map renderAttributes )
     {
         String assetUrl = "";
+        if ( text == null || text.length() == 0 )
+        {
+            logger.warn("Could not render text with a null or 0 lenght value on sitenode: " + this.getSiteNodeId() + ", contentId = " + contentId );
+            return assetUrl;
+        }
         try
         {
             ContentDeliveryController cdc = ContentDeliveryController.getContentDeliveryController();
@@ -2746,16 +2751,21 @@ public class BasicTemplateController implements TemplateController
      * @param text the text to render
      * @param renderAttributes render attributes in a map to override the
      *            default or propertyfile settings
-     * @return the asseturl or empty string if something is wrong
+     * @return the asseturl or empty string if something is wrong or text is null or empty
      * @author Per Jonsson - per.jonsson@it-huset.se
      */
     public String getRenderedTextUrl( String text, Map renderAttributes )
     {
         String assetUrl = "";
+        if ( text == null || text.length() == 0 )
+        {
+            logger.warn("Could not render text with a null or 0 lenght value on sitenode: " + this.getSiteNodeId() );
+            return assetUrl;
+        }
         try
         {
             String aText = text.replaceAll( "[^\\w]", "" );
-            aText = aText.substring( 0, ( aText.length() < 8 ? aText.length() : 12 ) ).toLowerCase();
+            aText = aText.substring( 0, ( aText.length() < 12 ? aText.length() : 11 ) ).toLowerCase();
             StringBuffer uniqueId = new StringBuffer( aText );
             uniqueId.append( "_" + Math.abs( text.hashCode() ) );
             uniqueId.append( "_" + ( renderAttributes != null ? Math.abs( renderAttributes.hashCode() ) : 4711 ) );

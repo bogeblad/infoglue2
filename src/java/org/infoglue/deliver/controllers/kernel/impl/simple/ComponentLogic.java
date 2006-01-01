@@ -1551,7 +1551,11 @@ public class ComponentLogic
         }
         catch ( Exception e )
         {
-            logger.error( "An error occurred trying to get getRenderedTextUrl As ImageUrl:" + e.getMessage(), e );
+            logger.error( "An error occurred trying to get getContentAttributeMapValue ( " + propertyName +", " + attributeName + ", " + keyName + " ) ; "+ e.getMessage(), e );
+        }
+        if ( mapValue == null )
+        {
+            mapValue = "";
         }
         return mapValue;
     }
