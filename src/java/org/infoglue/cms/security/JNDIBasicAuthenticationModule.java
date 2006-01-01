@@ -222,8 +222,15 @@ public class JNDIBasicAuthenticationModule implements AuthenticationModule
         DirContext ctx = null;
         String connectionURL = this.extraProperties.getProperty("connectionURL");
         String ldapUserName = this.extraProperties.getProperty("userNamePattern");
+        
+        String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
+        if(userName.equals(anonymousUserName))
+        {
+            ldapUserName = this.extraProperties.getProperty("anonymousUserNamePattern");
+        }
+
         ldapUserName = ldapUserName.replaceFirst("infoglue.user", userName);
-        // Create a Hashtable object.
+
         Hashtable env = new Hashtable();
         
         env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
@@ -235,7 +242,7 @@ public class JNDIBasicAuthenticationModule implements AuthenticationModule
         try
         {
             ctx = new InitialDirContext(env);
-            logger.info("User: " + ldapUserName + " successfully bound.");           
+            logger.info("User: " + ldapUserName + " successfully bound.");
             ctx.close();
             result = true;
         }

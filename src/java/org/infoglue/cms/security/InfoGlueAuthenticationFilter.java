@@ -305,7 +305,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 	
 	public static void initializeProperties() throws SystemException
 	{
-		try
+	    try
 		{
 		    authenticatorClass 	= CmsPropertyHandler.getProperty("authenticatorClass");
 		    authorizerClass 	= CmsPropertyHandler.getProperty("authorizerClass");
@@ -317,7 +317,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    casServiceUrl 		= CmsPropertyHandler.getProperty("casServiceUrl");
 		    casValidateUrl 		= CmsPropertyHandler.getProperty("casValidateUrl");
 		    
-		    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraPropertiesFile");
+		    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraParametersFile");
 		    
 		    if(extraPropertiesFile != null)
 			{
