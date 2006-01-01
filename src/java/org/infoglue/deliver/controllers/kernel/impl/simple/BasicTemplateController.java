@@ -2703,12 +2703,12 @@ public class BasicTemplateController implements TemplateController
             ContentTypeDefinitionController ctdc = ContentTypeDefinitionController.getController();
 
             ContentVersionVO contentVersionVO = cdc.getContentVersionVO(getDatabase(), this.siteNodeId, contentId,this.languageId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal );
-
+            
             Integer contentTypeDefinitionId = cdc.getContentVO(contentId, getDatabase() ).getContentTypeDefinitionId();
           
             ContentTypeDefinitionVO contentTypeDefinitionVO = ctdc.getContentTypeDefinitionVOWithId( contentTypeDefinitionId );
             Iterator attrIterator = ctdc.getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue() ).iterator();
-
+            
             String aText = text.replaceAll( "[^\\w]", "" );
             aText = aText.substring( 0, ( aText.length() < 8 ? aText.length() : 8 ) ).toLowerCase();
             StringBuffer uniqueId = new StringBuffer( aText );
@@ -2724,12 +2724,12 @@ public class BasicTemplateController implements TemplateController
             // set up the renderer
             while ( attrIterator.hasNext() )
             {
-                String attributeName = attrIterator.next().toString();
-                if ( imageRenderer.hasAttribute(attributeName.toLowerCase() ) )
+                ContentTypeAttribute contentTypeAttribute = (ContentTypeAttribute)(attrIterator.next());
+                String attributeName = contentTypeAttribute.getName();
+                if ( imageRenderer.hasAttribute( attributeName ) )
                 {
                     String attribute = cdc.getContentAttribute(getDatabase(), contentVersionVO, attributeName, false );
-                    logger.debug( "attribute: " + attributeName + ", " + attribute );
-                    imageRenderer.setAttribute( attributeName, attribute );
+                    imageRenderer.setAttribute( attributeName.toLowerCase(), attribute );
                 }
             }
             // render the image
