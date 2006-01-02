@@ -20,7 +20,8 @@
 	<property name="war.file.prefix" value="${build}/${ant.project.name}"/>
 	<property name="cms.war.file" value="${war.file.prefix}-cms.war"/>
 	<property name="deliver.war.file" value="${war.file.prefix}-deliver.war"/>
-
+	<property name="javadocs.destdir" value="docs/api"/>
+	
 	<property name="opentree.jar.file" value="opentree.jar"/>
 	<property name="codeeditor.jar.file" value="code-editor.jar"/>
 
