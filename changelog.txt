@@ -1,4 +1,115 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.1 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+InfoGlue 2.1 Final is released. 
+Although a lot of critical bugfixes has been made this is much more than a patch-upgrade. This new release has now already been running a few weeks  
+in several major production sites and has now proven that the 2.0 version has gotten rid of all the initial bugs and is production ready 
+even for high end sites. There are several medium-big changes in this release and the overall stability of the platform has been improved even further.
+Look at the huge changelog for more information.
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.0 Final 
+---------------------------------------
+
+New features
+- Added initial ROME support (RSS) 
+- Added Freemarker support (can be turned on instead of velocity which still is default)
+- Added access rights on components/slots/toolbar/component properties. If activated you can now state what roles/groups can add/delete components in what part of the page
+- Added so if two users tries to modify the same content version the last save results in a warning about concurrent modifications and the save is not made.
+- Added a very simple history and compare feature on content versions
+- Added possibility to state IP:s that are allowed to admin/update the caches
+- Added feature which lets you redirect addresses.
+- Added pageCacheKey as property on pages to override if needed, can be used to optimize cache-handling
+- New translation added for French
+- Added new recache after publication feature that lets you point to a number of sitenodes that will be recached before the old pagecache is thrown away.
+- Added a whole range of new workflow functions.
+- New WebService API:s for content creation and workflow handling.
+- Added taglibs to add contents to the cms remotely.
+- Added contribution of a JNDI authenticator
+- Added about 40 tags in 5-6 different taglibs which let's you do all needed operations templateLogic did before.
+- Added jakarta-mailer taglib and also added support for encryption in the platform.
+- Added support for storing extranet user info as cookies - allowing them to autologon.
+- Made it possible to select if the page cache should be compressed.
+- Upgraded to version 2.2 of FCKEditor (the default WYSIWYG)
+
+Improvements
+- Made publishing process much more stable and the live cache updating much more threadsafe.
+- You can now reach page structure with rightclick and not only from the palette
+- Localized more messages
+- Translated the MyDesktop tool fully
+- Fixed localization of edit on sight
+- Restricted tree to not show meta info folder if one is not root
+- Does not allow change of state on a meta info version either. Must follow site node version.
+- Meta info folder gets subfolders generated so it does not get so long.
+- Fixed so one can state if the modifyer user should change between state changes
+- Better error page handling with correct error codes etc.
+- Assets can be written to more than one location to enable better clustering.
+- Fixed so anonymous-account can be specified in deliver/cms.properties 
+- Fixed so access rights are now showing both extradata-icp and nonextradata icp.
+- Fixed so preview-buttons go right if nice-uri are used and that repository lookup works better
+- Added access rights for workflows.
+- Fixed recursive deletion of sitenode and accompanying meta info - also added more null checks
+- Better transaction handling in a few places and started another optimizing round in the toolside
+- Completed work on access control on component editor and property editor.
+- Improved the validation service in management
+- Improved the ViewApplicationState action for diagnostics
+- Added Java 5 ThreadMX-debugger JSP for debug of threadlocks.
+- Fixed the possibility to escape html-entities in content attributes upon retrieval
+- Content protection much more coverage
+- Added possibility to turn on/off logging during run 
+- Added so pageKey can regard cookies and session values as well
+- Added possibility to allways get back a full url to all resources and pages
+- Fixed so one can turn off nice uri in some url-generation by setting a tag
+- Changed so niceURI attribute name can also be fetched from deliver.properties
+- Fixed issue with nice uri page lookup - added repository name as key as well as trimmed titel
+- Added a new text2image method which supports crop and centered text etc.
+- Added so one can fetch properties from different sitesnodes - not only from the one you are on.
+- Added memory check JSP
+- Added support to turn off inheritance in a slot 
+- Fixed so delay in publication could be set - this to allow database-replication to be certain to have finished.
+
+Changes:
+- Initial taglib doc generator added
+- AccessConstraints and Constraints exceptions are now only info in logs
+- Fixed error message for invalid configuration
+- Fixed so anonymous cannot be removed or changed
+- removed non-parameter method (some workflows can perform all their steps from init)
+- Added a quick reference from siteNode-entity to it's meta info content - for future performance use.
+- Refactored WorkflowHelper into WorkflowTag.
+
+Bug fixes
+- Fixed bugs and did some improvements on the u2date system
+- Added failsafe initiation - allways falling back to english
+- Fixed so access rights exceptions are shown upon content access
+- Fixed nullpointer exception when dns name is missing 
+- Fixed bug when saving first version in standalone mode
+- Fixed bug in mysettings password dialog 
+- Fixed issues with content type definitions and validation rules not being updated
+- Fixed transaction bug in basecontroller and affected classes - also removed static in authmodule.
+- Fixed transaction handling in IG authorization controllers
+- Made publication controller able to handle broken content/sitenode versions and added a nullcheck in the site nodeversion and contentversion controllers
+- Fixed transaction issue in asset copying
+- Fixed so any broken versions are removed so the publishing tool will not be crashed.
+- Fixed bug if siteNodeVersion is floating without a siteNode
+- Added failsafe check if a content or sitenode does not exist
+- Better handling of commit/rollback/close...
+- Fixed issue with cache key and windows filenames - uses _ instead of : 
+- Fixed null pointer when no page version
+- Fixed bug in childPages which returned non valid ones as well
+- Fixed nullpointer exception in cookie handling
+- Fixed bug with /-path 
+- Fixed issues with css-classes messing up some clients structure view
+- Fixed bug with multipart and cms contextname other than infoglueCMS
+- Fixed errornous slot indicies.
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.0 Final
 -------------------------------------------------------------------------------------
 
