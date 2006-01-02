@@ -181,8 +181,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		String memberOfAttributeFilter	= this.extraProperties.getProperty("memberOfAttributeFilter", "memberOf");
 		String roleFilter				= this.extraProperties.getProperty("roleFilter", "InfoGlue");
 
-		
-		this.extraProperties.list(System.out);
+		//this.extraProperties.list(System.out);
 		logger.info("connectionURL:" + connectionURL);
 		logger.info("connectionName:" + connectionName);
 		logger.info("connectionPassword:" + connectionPassword);
@@ -331,6 +330,13 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			ctx = new InitialDirContext(env); 
 
 			String baseDN = userBase;
+			
+			String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
+	        if(userName.equals(anonymousUserName))
+	        {
+	            baseDN = this.extraProperties.getProperty("anonymousUserBase");
+	        }
+
 			String searchFilter = "(CN=" + userName +")";
 			if(userSearch != null && userSearch.length() > 0)
 				searchFilter = userSearch.replaceAll("\\{1\\}", userName);
@@ -471,6 +477,13 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			ctx = new InitialDirContext(env); 
 
 			String baseDN = userBase;
+			
+			String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
+	        if(userName.equals(anonymousUserName))
+	        {
+	            baseDN = this.extraProperties.getProperty("anonymousUserBase");
+	        }
+
 			String searchFilter = "(CN=" + userName +")";
 			if(userSearch != null && userSearch.length() > 0)
 				searchFilter = userSearch.replaceAll("\\{1\\}", userName);
