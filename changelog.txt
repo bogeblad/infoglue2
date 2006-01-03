@@ -74,6 +74,9 @@ Improvements
 - Added memory check JSP
 - Added support to turn off inheritance in a slot 
 - Fixed so delay in publication could be set - this to allow database-replication to be certain to have finished.
+- Changed so only show the first 40 chars of the names of workflows and use mouse over title instead
+- Added support to turn off inheritance in a slot
+- Fixed so preview-buttons goes correct when using nice-uris with different domain names.
 
 Changes:
 - Initial taglib doc generator added
