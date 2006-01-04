@@ -113,9 +113,18 @@
 </div>
 
 
-#*
 <div class="fullymarginalized">
-<form method="POST" name="addUserForm" action="UpdateAccessRights!addUserRights.action">
+<script type="text/javascript">
+<!--
+	function deleteUser(userName)
+	{
+		document.addUserForm.action = "UpdateAccessRights!deleteUser.action";
+		document.addUserForm.userName = userName;
+		document.addUserForm.submit();
+	}
+-->
+</script>
+<form method="POST" name="addUserForm" action="UpdateAccessRights!addUser.action">
 <input type="hidden" name="interceptionPointCategory" value="$interceptionPointCategory">
 <input type="hidden" name="parameters" value="$extraParameters">
 <input type="hidden" name="returnAddress" value="$returnAddress">
@@ -133,6 +142,7 @@
 			<td><img src="images/trans.gif" width="20" height="1"></td>
 			#set($colspan = $colspan + 3)
 		#end
+		<td><img src="images/trans.gif" width="20" height="1"></td>		
 	</tr>
 	
 	<tr>
@@ -141,29 +151,29 @@
 	<tr>
 		<td bgcolor="#C7D1B3" colspan="$colspan" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
-	#foreach($principal in $principals)
+	#foreach($accessRightsUserRow in $accessRightsUserRows)
 	<tr>
 		<td>
-			$principal.userName
+			$accessRightsUserRow.userName
 		</td>
 		<td></td>
 		#set($interceptionPointIndex = 0)
 		#foreach($interceptionPointVO in $interceptionPointVOList)
 			<td align="center" nowrap>
 				#set($checked = "")
-				#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
+				#if($accessRightsUserRow.accessRights.get($interceptionPointVO.id) == true)
 					#set($checked = "checked")
-					#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 				#end 
 				
-				<input type="hidden" name="${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
-				<input type="hidden" name="${interceptionPointVO.id}_${roleIndex}_roleName" value="$role.name">
-				<input type="checkbox" name="${interceptionPointVO.id}_${role.name}_hasAccess" value="true" $checked>
+				<input type="hidden" name="${interceptionPointVO.id}_${userIndex}_userName" value="$accessRightsUserRow.userName">
+				<!--<input type="checkbox" name="${interceptionPointVO.id}_${accessRightsUserRow.userName}_hasAccess" value="true" $checked>-->
+				<input type="checkbox" name="${interceptionPointVO.id}_${accessRightsUserRow.userName}_hasAccess" value="true" disabled="true" $checked>
 				
 			</td>
 			<td></td>
 			#set($interceptionPointIndex = $interceptionPointIndex + 1)
 		#end
+		<td><a href="javascript:deleteUser('$accessRightsUserRow.userName');"><img src="images/delete.gif" width="12" height="12" border="0"></a></td>
 	</tr>
 	#end	
 
@@ -181,6 +191,7 @@
 					#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 				#end 
 				
+				<input type="hidden" name="${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
 				<input type="hidden" name="interceptionPointId" value="$interceptionPointVO.id">
 				<input type="checkbox" name="${interceptionPointVO.id}_hasAccess" value="true" $checked>
 				
@@ -198,7 +209,6 @@
 			<a href="javascript:document.addUserForm.submit();"><img src="$ui.getString("images.contenttool.buttons.addButton")" width="50" height="25" border="0"></a>
 		</td>
 	</tr>			
-*#
 	
 </table>
 </form>

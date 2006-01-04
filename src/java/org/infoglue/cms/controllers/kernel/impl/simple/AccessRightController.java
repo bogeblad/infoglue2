@@ -23,12 +23,15 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import org.infoglue.cms.applications.contenttool.actions.databeans.AccessRightsUserRow;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.AccessRightGroup;
 import org.infoglue.cms.entities.management.AccessRightGroupVO;
 import org.infoglue.cms.entities.management.AccessRightRole;
 import org.infoglue.cms.entities.management.AccessRightRoleVO;
+import org.infoglue.cms.entities.management.AccessRightUser;
+import org.infoglue.cms.entities.management.AccessRightUserVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.InterceptionPoint;
@@ -36,6 +39,7 @@ import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.security.InfoGlueGroup;
@@ -49,10 +53,14 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
+import com.sun.rsasign.d;
+
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -626,6 +634,136 @@ public class AccessRightController extends BaseController
 	}
 	
 	/**
+	 * Adds a user to have access
+	 * 
+	 * @param accessRightId
+	 * @param parameters
+	 * @param userName
+	 * @throws ConstraintException
+	 * @throws SystemException
+	 */
+	
+	public void addUser(String interceptionPointCategory, String parameters, String userName, HttpServletRequest request) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		getLogger().info("parameters:" + parameters);
+		
+		try 
+		{
+			beginTransaction(db);
+			
+		    InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController(db).getUser(userName);
+		    if(infoGluePrincipal == null)
+		        throw new ConstraintException("AccessRightUser", "3701");
+		        
+		    List accessRightsUsers = getAccessRightsUsers(interceptionPointCategory, parameters, userName, db);
+		    Iterator accessRightsUsersIterator = accessRightsUsers.iterator();
+		    while(accessRightsUsersIterator.hasNext())
+		    {
+		        AccessRightUser accessRightUser = (AccessRightUser)accessRightsUsersIterator.next();
+
+		        System.out.println("accessRightUser:" + accessRightUser.getAccessRightUserId());
+		        db.remove(accessRightUser.getAccessRight());
+
+		        accessRightsUsersIterator.remove();
+		        db.remove(accessRightUser);
+		    }
+		    
+		    
+			int interceptionPointIndex = 0;
+			String interceptionPointIdString = request.getParameter(interceptionPointIndex + "_InterceptionPointId");
+			while(interceptionPointIdString != null)
+			{
+			    String hasAccess = request.getParameter(interceptionPointIdString + "_hasAccess");
+				
+			    AccessRight accessRight = null;
+			     
+				if(hasAccess != null)
+				{
+				    List accessRights = getAccessRightListForEntity(new Integer(interceptionPointIdString), parameters, db);
+				    if(accessRights == null || accessRights.size() == 0)
+				    {
+						AccessRightVO accessRightVO = new AccessRightVO();
+						accessRightVO.setParameters(parameters);
+
+				        InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithId(new Integer(interceptionPointIdString), db);
+						accessRight = create(accessRightVO, interceptionPoint, db);
+				    }
+				    else
+				    {
+				        accessRight = (AccessRight)accessRights.get(0);
+				    }
+				    
+					if(userName != null && accessRight != null)
+					{
+					    AccessRightUserVO accessRightUserVO = new AccessRightUserVO();
+					    accessRightUserVO.setUserName(userName);
+					    AccessRightUser accessRightUser = createAccessRightUser(db, accessRightUserVO, accessRight);
+					    accessRight.getUsers().add(accessRightUser);
+					}
+				}
+				
+				interceptionPointIndex++;
+				interceptionPointIdString = request.getParameter(interceptionPointIndex + "_InterceptionPointId");
+			}
+			
+		    commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+		    e.printStackTrace();
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Adds a user to have access
+	 * 
+	 * @param accessRightId
+	 * @param parameters
+	 * @param userName
+	 * @throws ConstraintException
+	 * @throws SystemException
+	 */
+	
+	public void deleteUser(String interceptionPointCategory, String parameters, String userName, HttpServletRequest request) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		getLogger().info("parameters:" + parameters);
+		
+		try 
+		{
+			beginTransaction(db);
+			
+		    List accessRightsUsers = getAccessRightsUsers(interceptionPointCategory, parameters, db);
+		    Iterator accessRightsUsersIterator = accessRightsUsers.iterator();
+		    while(accessRightsUsersIterator.hasNext())
+		    {
+		        AccessRightUser accessRightUser = (AccessRightUser)accessRightsUsersIterator.next();
+
+		        System.out.println("accessRightUser:" + accessRightUser.getAccessRightUserId());
+		        db.remove(accessRightUser.getAccessRight());
+
+		        accessRightsUsersIterator.remove();
+		        db.remove(accessRightUser);
+		    }
+			
+		    commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+		    e.printStackTrace();
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}
+
+	/**
 	 * This method creates a AccessRightRole-object in the database.
 	 * @param db
 	 * @param accessRightRoleVO
@@ -647,7 +785,7 @@ public class AccessRightController extends BaseController
 	/**
 	 * This method creates a AccessRightGroup-object in the database.
 	 * @param db
-	 * @param accessRightRoleVO
+	 * @param accessRightGroupVO
 	 * @return
 	 * @throws SystemException
 	 */
@@ -663,6 +801,24 @@ public class AccessRightController extends BaseController
         return accessRightGroup;
 	}
 
+	/**
+	 * This method creates a AccessRightUser-object in the database.
+	 * @param db
+	 * @param accessRightUserVO
+	 * @return
+	 * @throws SystemException
+	 */
+	
+	public AccessRightUser createAccessRightUser(Database db, AccessRightUserVO accessRightUserVO, AccessRight accessRight) throws SystemException, Exception
+	{
+	    AccessRightUser accessRightUser = new AccessRightUserImpl();
+	    accessRightUser.setValueObject(accessRightUserVO);
+	    accessRightUser.setAccessRight(accessRight);
+	    
+	    db.create(accessRightUser);
+	    
+        return accessRightUser;
+	}
 	
 	/*
 	 	public void update(String parameters, HttpServletRequest request) throws ConstraintException, SystemException
@@ -788,7 +944,15 @@ public class AccessRightController extends BaseController
 			    groupsIterator.remove();
 			    db.remove(accessRightGroup);
 			}
-			
+
+			Iterator usersIterator = accessRight.getUsers().iterator();
+			while(usersIterator.hasNext())
+			{
+			    AccessRightUser accessRightUser = (AccessRightUser)usersIterator.next();
+			    usersIterator.remove();
+			    db.remove(accessRightUser);
+			}
+
 			db.remove(accessRight);
 		}
 		
@@ -1051,6 +1215,154 @@ public class AccessRightController extends BaseController
 	    
 		return isPrincipalAuthorized;
 	}
+	
+	//TEST
+	
+	
+	public Collection getAccessRightsUserRows(String interceptionPointCategory, String parameters) throws SystemException, Bug
+	{
+		Collection principalVOList = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+			
+			principalVOList = getAccessRightsUserRows(interceptionPointCategory, parameters, db);
+
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return principalVOList;	
+	}
+
+	public Collection getAccessRightsUserRows(String interceptionPointCategory, String parameters, Database db) throws SystemException, Bug
+	{
+	    Map accessRightsUserRows = new HashMap();
+		
+		try
+		{
+		    List accessRightUsers = getAccessRightsUsers(interceptionPointCategory, parameters, db);
+
+		    Iterator accessRightUsersIterator = accessRightUsers.iterator();
+			while (accessRightUsersIterator.hasNext()) 
+			{
+				AccessRightUser accessRightUser = (AccessRightUser)accessRightUsersIterator.next();
+				System.out.println("accessRightUser:" + accessRightUser);
+				
+				AccessRightsUserRow accessRightsUserRow = (AccessRightsUserRow)accessRightsUserRows.get(accessRightUser.getUserName());
+				if(accessRightsUserRow == null)
+				{
+				    InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController(db).getUser(accessRightUser.getUserName());
+				    if(infoGluePrincipal != null)
+				    {
+				        AccessRightsUserRow newAccessRightsUserRow = new AccessRightsUserRow();
+				        newAccessRightsUserRow.setUserName(infoGluePrincipal.getName());
+				        newAccessRightsUserRow.getAccessRights().put(accessRightUser.getAccessRight().getInterceptionPoint().getId(), new Boolean(true));
+				        accessRightsUserRows.put(infoGluePrincipal.getName(), newAccessRightsUserRow);
+				    }
+				}
+				else
+				{
+				    accessRightsUserRow.getAccessRights().put(accessRightUser.getAccessRight().getInterceptionPoint().getId(), new Boolean(true));				    
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightsUserRows.values();		
+	}
+
+	public List getAccessRightsUsers(String interceptionPointCategory, String parameters, Database db) throws SystemException, Bug
+	{
+	    List accessRightsUsers = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+			
+			if(parameters == null || parameters.length() == 0)
+			{
+				oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND (is_undefined(aru.accessRight.parameters) OR aru.accessRight.parameters = $3)");
+				oql.bind(interceptionPointCategory);
+				oql.bind(parameters);
+			}
+			else
+			{
+		    	oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND aru.accessRight.parameters = $2");
+				oql.bind(interceptionPointCategory);
+				oql.bind(parameters);
+			}
+			
+			QueryResults results = oql.execute();
+
+			while (results.hasMore()) 
+			{
+				AccessRightUser accessRightUser = (AccessRightUser)results.next();
+				accessRightsUsers.add(accessRightUser);
+			}
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightsUsers;		
+	}
+	
+	public List getAccessRightsUsers(String interceptionPointCategory, String parameters, String userName, Database db) throws SystemException, Bug
+	{
+	    List accessRightsUsers = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+			
+			if(parameters == null || parameters.length() == 0)
+			{
+				oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND (is_undefined(aru.accessRight.parameters) OR aru.accessRight.parameters = $3) AND aru.userName = $4");
+				oql.bind(interceptionPointCategory);
+				oql.bind(parameters);
+				oql.bind(userName);
+			}
+			else
+			{
+		    	oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND aru.accessRight.parameters = $2 AND aru.userName = $3");
+				oql.bind(interceptionPointCategory);
+				oql.bind(parameters);
+				oql.bind(userName);
+			}
+			
+			QueryResults results = oql.execute();
+
+			while (results.hasMore()) 
+			{
+				AccessRightUser accessRightUser = (AccessRightUser)results.next();
+				accessRightsUsers.add(accessRightUser);
+			}
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightsUsers;		
+	}
+	
+	//TEST
+	
+	
+	
 	
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller

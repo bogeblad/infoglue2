@@ -56,6 +56,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	private List interceptionPointVOList = new ArrayList();
 	private List roleList = null;
 	private List groupList = null;
+	private Collection accessRightsUserRows = null;
     
     public String doExecute() throws Exception
     {
@@ -100,7 +101,8 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 				
 		//this.extranetRoleVOList = ExtranetRoleController.getController().getExtranetRoleVOList();
 		//this.extranetAccessVOList = ExtranetAccessController.getController().getExtranetAccessVOList(this.name, this.value);
-        
+        this.accessRightsUserRows = AccessRightController.getController().getAccessRightsUserRows(interceptionPointCategory, extraParameters);
+		
     	return "success";
     }
     
@@ -206,4 +208,8 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 		return this.interceptionPointVOList;
 	}
 
+    public Collection getAccessRightsUserRows()
+    {
+        return accessRightsUserRows;
+    }
 }

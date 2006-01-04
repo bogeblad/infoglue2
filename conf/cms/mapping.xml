@@ -238,6 +238,9 @@
     <field name="groups" type="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" lazy="false" collection="collection">
       <sql many-key="accessRightId"/>
     </field>
+    <field name="users" type="org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl" lazy="false" collection="collection">
+      <sql many-key="accessRightId"/>
+    </field>
   </class>
   
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" identity="accessRightRoleId" key-generator="IDENTITY">
@@ -270,25 +273,20 @@
     </field>
   </class>
 
-<!--  
-  <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" identity="accessRightId" key-generator="IDENTITY">
-    <description>AccessRight</description>
+  <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl" identity="accessRightUserId" key-generator="IDENTITY">
+    <description>AccessRightUser</description>
     <cache-type type="unlimited" capacity="10000"/>
-    <map-to table="cmAccessRight"/>
-    <field name="accessRightId" type="java.lang.Integer">
-      <sql name="accessRightId" type="integer" dirty="check" />
+    <map-to table="cmAccessRightUser"/>
+    <field name="accessRightUserId" type="java.lang.Integer">
+      <sql name="accessRightUserId" type="integer" dirty="check" />
     </field>
-    <field name="parameters" type="java.lang.String">
-      <sql name="parameters" type="varchar" dirty="check" />
+    <field name="userName" type="java.lang.String">
+      <sql name="userName" type="varchar" dirty="check" />
     </field>
-    <field name="roleName" type="java.lang.String">
-      <sql name="roleName" type="varchar" dirty="check" />
-    </field>
-    <field name="interceptionPoint" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl">
-      <sql name="interceptionPointId"/>
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+      <sql name="accessRightId"/>
     </field>
   </class>
--->
 
 <!--  Mapping for SiteNodeVersion  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl" identity="siteNodeVersionId" key-generator="IDENTITY">

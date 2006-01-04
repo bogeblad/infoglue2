@@ -37,6 +37,7 @@ public class AccessRightImpl implements AccessRight
 	private InterceptionPoint interceptionPoint = null;
 	private Collection roles = new ArrayList();
 	private Collection groups = new ArrayList();
+	private Collection users = new ArrayList();
 	
     public java.lang.Integer getAccessRightId()
     {
@@ -138,5 +139,15 @@ public class AccessRightImpl implements AccessRight
     public void setRoles(Collection roles)
     {
         this.roles = roles;
+    }
+    
+    public Collection getUsers()
+    {
+        return users;
+    }
+    
+    public void setUsers(Collection users)
+    {
+        this.users = users;
     }
 }        

@@ -137,6 +137,82 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 		return "success";
 	}
 
+	public String doAddUser() throws Exception
+    {   
+		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+		
+		if(interceptionPointCategory.equalsIgnoreCase("Content"))
+		{	
+			Integer contentId = new Integer(parameters);
+			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+			{
+				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
+					ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+			}
+		}
+		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
+		{	
+			Integer siteNodeVersionId = new Integer(parameters);
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+			{
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
+					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+			}
+		}
+		
+		ceb.throwIfNotEmpty();
+		
+		String userName = this.getRequest().getParameter("userName");
+		AccessRightController.getController().addUser(interceptionPointCategory, this.parameters, userName, this.getRequest());
+		
+		this.url = getResponse().encodeRedirectURL(this.returnAddress);
+		//getResponse().sendRedirect(url);
+		
+		return "success";
+	}
+
+	public String doDeleteUser() throws Exception
+    {   
+		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+		
+		if(interceptionPointCategory.equalsIgnoreCase("Content"))
+		{	
+			Integer contentId = new Integer(parameters);
+			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+			{
+				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
+					ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+			}
+		}
+		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
+		{	
+			Integer siteNodeVersionId = new Integer(parameters);
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+			{
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
+					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+			}
+		}
+		
+		ceb.throwIfNotEmpty();
+		
+		String userName = this.getRequest().getParameter("userName");
+		AccessRightController.getController().deleteUser(interceptionPointCategory, this.parameters, userName, this.getRequest());
+		
+		this.url = getResponse().encodeRedirectURL(this.returnAddress);
+		//getResponse().sendRedirect(url);
+		
+		return "success";
+	}
+
 	public String doSaveAndExit() throws Exception
     {
 		doExecute();

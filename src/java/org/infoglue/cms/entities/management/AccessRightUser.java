@@ -27,39 +27,23 @@ import java.util.Collection;
 
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 
-public interface AccessRight extends IBaseEntity
+public interface AccessRightUser extends IBaseEntity
 {
-	public Integer getId();
-        
-	public AccessRightVO getValueObject();
+    public Integer getId();
+	    
+	public AccessRight getAccessRight();
     
-	public void setValueObject(AccessRightVO valueObject);
-
-	public java.lang.Integer getAccessRightId();
-    
-	public void setAccessRightId(java.lang.Integer accessRightId);
-    
-	public java.lang.String getName();
-
-	public java.lang.String getParameters();
-    
-	public void setName(java.lang.String name);
-
-	public void setParameters(java.lang.String parameters);
-        	
-	public InterceptionPoint getInterceptionPoint();
+	public void setAccessRight(AccessRight accessRight);
 	
-	public void setInterceptionPoint(InterceptionPoint interceptionPoint);
+	public AccessRightUserVO getValueObject();
 	
-	public void setRoles(Collection roles);
-
-	public Collection getRoles();
-
-	public void setGroups(Collection groups);
-
-	public Collection getUsers();
-
-	public void setUsers(Collection users);
-
-	public Collection getGroups();
+	public void setValueObject(AccessRightUserVO valueObject);
+	
+	public java.lang.Integer getAccessRightUserId();
+	
+	public void setAccessRightUserId(java.lang.Integer accessRightUserId);
+	
+	public java.lang.String getUserName();
+	
+	public void setUserName(java.lang.String UserName);
 }
