@@ -53,6 +53,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 
+import com.opensymphony.util.Logger;
 import com.sun.rsasign.d;
 
 import java.util.Collection;
@@ -653,10 +654,17 @@ public class AccessRightController extends BaseController
 		{
 			beginTransaction(db);
 			
-		    InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController(db).getUser(userName);
-		    if(infoGluePrincipal == null)
-		        throw new ConstraintException("AccessRightUser", "3701");
-		        
+			try
+			{
+			    InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController(db).getUser(userName);
+			    if(infoGluePrincipal == null)
+			        throw new SystemException("The user named " + userName + " does not exist in the system.");
+			}
+			catch(Exception e)
+			{
+		        throw new SystemException("The user named " + userName + " does not exist in the system.");
+			}
+			
 		    List accessRightsUsers = getAccessRightsUsers(interceptionPointCategory, parameters, userName, db);
 		    Iterator accessRightsUsersIterator = accessRightsUsers.iterator();
 		    while(accessRightsUsersIterator.hasNext())
@@ -712,7 +720,6 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-		    e.printStackTrace();
 			getLogger().info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
@@ -739,14 +746,15 @@ public class AccessRightController extends BaseController
 		{
 			beginTransaction(db);
 			
-		    List accessRightsUsers = getAccessRightsUsers(interceptionPointCategory, parameters, db);
+		    List accessRightsUsers = getAccessRightsUsers(interceptionPointCategory, parameters, userName, db);
 		    Iterator accessRightsUsersIterator = accessRightsUsers.iterator();
 		    while(accessRightsUsersIterator.hasNext())
 		    {
 		        AccessRightUser accessRightUser = (AccessRightUser)accessRightsUsersIterator.next();
 
 		        System.out.println("accessRightUser:" + accessRightUser.getAccessRightUserId());
-		        db.remove(accessRightUser.getAccessRight());
+		        //if(accessRightUser.getAccessRight().)
+		        //db.remove(accessRightUser.getAccessRight());
 
 		        accessRightsUsersIterator.remove();
 		        db.remove(accessRightUser);
@@ -1019,69 +1027,67 @@ public class AccessRightController extends BaseController
 		if(interceptionPointVO == null)
 			return true;
 				
-		/*
-		if(interceptionPointVO == null && InterceptionPointController.systemInterceptionPoints.containsKey(interceptionPointName))
-		{
-		    try
-		    {
-		        InterceptionPointController.getController().create((InterceptionPointVO)InterceptionPointController.systemInterceptionPoints.get(interceptionPointName), db);
-		    }
-		    catch(Exception e)
-		    {
-		        getLogger().error("An error occurred when we tried to create an interception point that was missing and needed by the system:" + e.getMessage(), e);
-		        throw new SystemException("An error occurred when we tried to create an interception point that was missing and needed by the system:" + e.getMessage(), e);
-		    }
-		    return false;
-		}
-		*/
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), extraParameters, db);
 		
 		Iterator accessRightListIterator = accessRightList.iterator();
-		while(accessRightListIterator.hasNext())
+		while(accessRightListIterator.hasNext() && !isPrincipalAuthorized)
 		{
 		    AccessRight accessRight = (AccessRight)accessRightListIterator.next();
 		    Collection approvedRoles = accessRight.getRoles();
 		    Collection approvedGroups = accessRight.getGroups();
-		    
-		    
-		    Iterator rolesIterator = roles.iterator();
-			outer:while(rolesIterator.hasNext())
-			{
-				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-				getLogger().info("role:" + role.getName());
-				
-				Iterator approvedRolesIterator = approvedRoles.iterator();
-				while(approvedRolesIterator.hasNext())
-				{
-				    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
-				    if(accessRightRole.getRoleName().equals(role.getName()))
-				    {
-				        principalHasRole = true;
-				        break outer;
-				    }
-				}
-			}
- 
-			Iterator approvedGroupsIterator = approvedGroups.iterator();
-			outer:while(approvedGroupsIterator.hasNext())
-			{
-			    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
-			    getLogger().info("accessRightGroup:" + accessRightGroup.getGroupName());
+		    Collection approvedUsers = accessRight.getUsers();
 
-			    limitOnGroups = true;
-
-			    Iterator groupsIterator = groups.iterator();
-				while(groupsIterator.hasNext())
-				{
-				    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
-				    if(accessRightGroup.getGroupName().equals(group.getName()))
-				    {
-				        principalHasGroup = true;
-				        break outer;
-				    }
-				}
+			Iterator approvedUsersIterator = approvedUsers.iterator();
+			while(approvedUsersIterator.hasNext())
+			{
+			    AccessRightUser accessRightUser = (AccessRightUser)approvedUsersIterator.next();
+			    if(accessRightUser.getUserName().equals(infoGluePrincipal.getName()))
+			    {
+			        isPrincipalAuthorized = true;
+			    }
 			}
 
+			if(!isPrincipalAuthorized)
+			{
+			    
+			    Iterator rolesIterator = roles.iterator();
+				outer:while(rolesIterator.hasNext())
+				{
+					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+					getLogger().info("role:" + role.getName());
+					
+					Iterator approvedRolesIterator = approvedRoles.iterator();
+					while(approvedRolesIterator.hasNext())
+					{
+					    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
+					    if(accessRightRole.getRoleName().equals(role.getName()))
+					    {
+					        principalHasRole = true;
+					        break outer;
+					    }
+					}
+				}
+	 
+				Iterator approvedGroupsIterator = approvedGroups.iterator();
+				outer:while(approvedGroupsIterator.hasNext())
+				{
+				    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
+				    getLogger().info("accessRightGroup:" + accessRightGroup.getGroupName());
+	
+				    limitOnGroups = true;
+	
+				    Iterator groupsIterator = groups.iterator();
+					while(groupsIterator.hasNext())
+					{
+					    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+					    if(accessRightGroup.getGroupName().equals(group.getName()))
+					    {
+					        principalHasGroup = true;
+					        break outer;
+					    }
+					}
+				}
+			}
 		}
 
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
@@ -1161,51 +1167,63 @@ public class AccessRightController extends BaseController
 		List accessRightList = this.getAccessRightList(interceptionPoint.getId(), db);
 
 		Iterator accessRightListIterator = accessRightList.iterator();
-		while(accessRightListIterator.hasNext())
+		while(accessRightListIterator.hasNext() && !isPrincipalAuthorized)
 		{
 		    AccessRight accessRight = (AccessRight)accessRightListIterator.next();
 		    Collection approvedRoles = accessRight.getRoles();
 		    Collection approvedGroups = accessRight.getGroups();
-		    
-		    
-		    Iterator rolesIterator = roles.iterator();
-			outer:while(rolesIterator.hasNext())
-			{
-				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-				getLogger().info("role:" + role.getName());
-				
-				Iterator approvedRolesIterator = approvedRoles.iterator();
-				while(approvedRolesIterator.hasNext())
-				{
-				    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
-				    if(accessRightRole.getRoleName().equals(role.getName()))
-				    {
-				        principalHasRole = true;
-				        break outer;
-				    }
-				}
-			}
- 
-		    Iterator approvedGroupsIterator = approvedGroups.iterator();
-			outer:while(approvedGroupsIterator.hasNext())
-			{
-			    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
-			    getLogger().info("accessRightGroup:" + accessRightGroup.getGroupName());
+		    Collection approvedUsers = accessRight.getUsers();
 
-			    limitOnGroups = true;
-
-			    Iterator groupsIterator = groups.iterator();
-				while(groupsIterator.hasNext())
-				{
-				    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
-				    if(accessRightGroup.getGroupName().equals(group.getName()))
-				    {
-				        principalHasGroup = true;
-				        break outer;
-				    }
-				}
+			Iterator approvedUsersIterator = approvedUsers.iterator();
+			while(approvedUsersIterator.hasNext())
+			{
+			    AccessRightUser accessRightUser = (AccessRightUser)approvedUsersIterator.next();
+			    if(accessRightUser.getUserName().equals(infoGluePrincipal.getName()))
+			    {
+			        isPrincipalAuthorized = true;
+			    }
 			}
 
+			if(!isPrincipalAuthorized)
+			{
+			    Iterator rolesIterator = roles.iterator();
+				outer:while(rolesIterator.hasNext())
+				{
+					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+					getLogger().info("role:" + role.getName());
+					
+					Iterator approvedRolesIterator = approvedRoles.iterator();
+					while(approvedRolesIterator.hasNext())
+					{
+					    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
+					    if(accessRightRole.getRoleName().equals(role.getName()))
+					    {
+					        principalHasRole = true;
+					        break outer;
+					    }
+					}
+				}
+	 
+			    Iterator approvedGroupsIterator = approvedGroups.iterator();
+				outer:while(approvedGroupsIterator.hasNext())
+				{
+				    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
+				    getLogger().info("accessRightGroup:" + accessRightGroup.getGroupName());
+	
+				    limitOnGroups = true;
+	
+				    Iterator groupsIterator = groups.iterator();
+					while(groupsIterator.hasNext())
+					{
+					    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+					    if(accessRightGroup.getGroupName().equals(group.getName()))
+					    {
+					        principalHasGroup = true;
+					        break outer;
+					    }
+					}
+				}
+			}
 		}
 		
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
@@ -1254,25 +1272,31 @@ public class AccessRightController extends BaseController
 		    Iterator accessRightUsersIterator = accessRightUsers.iterator();
 			while (accessRightUsersIterator.hasNext()) 
 			{
-				AccessRightUser accessRightUser = (AccessRightUser)accessRightUsersIterator.next();
-				System.out.println("accessRightUser:" + accessRightUser);
-				
-				AccessRightsUserRow accessRightsUserRow = (AccessRightsUserRow)accessRightsUserRows.get(accessRightUser.getUserName());
-				if(accessRightsUserRow == null)
-				{
-				    InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController(db).getUser(accessRightUser.getUserName());
-				    if(infoGluePrincipal != null)
-				    {
-				        AccessRightsUserRow newAccessRightsUserRow = new AccessRightsUserRow();
-				        newAccessRightsUserRow.setUserName(infoGluePrincipal.getName());
-				        newAccessRightsUserRow.getAccessRights().put(accessRightUser.getAccessRight().getInterceptionPoint().getId(), new Boolean(true));
-				        accessRightsUserRows.put(infoGluePrincipal.getName(), newAccessRightsUserRow);
-				    }
-				}
-				else
-				{
-				    accessRightsUserRow.getAccessRights().put(accessRightUser.getAccessRight().getInterceptionPoint().getId(), new Boolean(true));				    
-				}
+			    try
+			    {
+					AccessRightUser accessRightUser = (AccessRightUser)accessRightUsersIterator.next();
+					
+					AccessRightsUserRow accessRightsUserRow = (AccessRightsUserRow)accessRightsUserRows.get(accessRightUser.getUserName());
+					if(accessRightsUserRow == null)
+					{
+					    InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController(db).getUser(accessRightUser.getUserName());
+					    if(infoGluePrincipal != null)
+					    {
+					        AccessRightsUserRow newAccessRightsUserRow = new AccessRightsUserRow();
+					        newAccessRightsUserRow.setUserName(infoGluePrincipal.getName());
+					        newAccessRightsUserRow.getAccessRights().put(accessRightUser.getAccessRight().getInterceptionPoint().getId(), new Boolean(true));
+					        accessRightsUserRows.put(infoGluePrincipal.getName(), newAccessRightsUserRow);
+					    }
+					}
+					else
+					{
+					    accessRightsUserRow.getAccessRights().put(accessRightUser.getAccessRight().getInterceptionPoint().getId(), new Boolean(true));				    
+					}
+			    }
+			    catch(Exception e)
+			    {
+			        getLogger().info("An user did not exist although given access rights:" + e.getMessage());
+			    }
 			}
 		}
 		catch(Exception e)

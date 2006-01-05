@@ -32,6 +32,8 @@ import org.infoglue.cms.entities.management.AccessRightGroup;
 import org.infoglue.cms.entities.management.AccessRightGroupVO;
 import org.infoglue.cms.entities.management.AccessRightRole;
 import org.infoglue.cms.entities.management.AccessRightRoleVO;
+import org.infoglue.cms.entities.management.AccessRightUser;
+import org.infoglue.cms.entities.management.AccessRightUserVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.InterceptionPoint;
@@ -363,6 +365,16 @@ public class SiteNodeStateController extends BaseController
 				    newAccessRightRoleVO.setRoleName(accessRightRole.getRoleName());
 				    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, newAccessRightRoleVO, newAccessRight);
 				    newAccessRight.getRoles().add(newAccessRightRole);
+				}
+
+				Iterator usersIterator = accessRight.getUsers().iterator();
+				while(usersIterator.hasNext())
+				{
+				    AccessRightUser accessRightUser = (AccessRightUser)usersIterator.next();
+				    AccessRightUserVO newAccessRightUserVO = new AccessRightUserVO();
+				    newAccessRightUserVO.setUserName(accessRightUser.getUserName());
+				    AccessRightUser newAccessRightUser = AccessRightController.getController().createAccessRightUser(db, newAccessRightUserVO, newAccessRight);
+				    newAccessRight.getUsers().add(newAccessRightUser);
 				}
 
 			}

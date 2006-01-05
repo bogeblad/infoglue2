@@ -1342,7 +1342,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		Integer protectedContentId = getProtectedContentId(db, content);
 		getLogger().info("IsProtected:" + protectedContentId);
 		
-		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 		{
 		    return false;
 		}

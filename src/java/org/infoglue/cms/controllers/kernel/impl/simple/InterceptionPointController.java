@@ -27,6 +27,7 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.AccessRightGroup;
 import org.infoglue.cms.entities.management.AccessRightRole;
+import org.infoglue.cms.entities.management.AccessRightUser;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Interceptor;
@@ -464,7 +465,15 @@ public class InterceptionPointController extends BaseController
 					roleIterator.remove();
 					db.remove(role);
 				}
-				
+
+				Iterator userIterator = accessRight.getUsers().iterator();
+				while(userIterator.hasNext())
+				{
+					AccessRightUser user = (AccessRightUser)userIterator.next();
+					userIterator.remove();
+					db.remove(user);
+				}
+
 				db.remove(accessRight);
 				accessRightsIterator.remove();
 			}

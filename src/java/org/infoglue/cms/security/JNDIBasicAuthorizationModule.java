@@ -160,7 +160,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	 * @exception NamingException if a directory server error occurs
 	 */
 	
-	protected Map getUserAttributes(String userName) throws NamingException 
+	protected Map getUserAttributes(String userName) throws NamingException, Exception
 	{
 		Map userAttributes = new HashMap();
 		
@@ -269,8 +269,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			logger.info("Could not find attributes for user: " +userName +e);
-			e.printStackTrace();
+			logger.info("Could not find attributes for user: " + userName + e);
+			throw e;
 		}
 
 		return userAttributes;
@@ -288,7 +288,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	 * @exception NamingException if a directory server error occurs
 	 */
 	
-	protected List getRoles(String userName) throws NamingException 
+	protected List getRoles(String userName) throws NamingException, Exception 
 	{
 		logger.info("**************************************************");
 		logger.info("*In JNDI version								 *");
@@ -416,8 +416,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			logger.info("Could not find Group for empID: " +userName +e);
-			e.printStackTrace();
+			logger.info("Could not find Group for empID: " + userName + e);
+			throw e;
 		}
 
 		return roles;
@@ -435,7 +435,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	 * @exception NamingException if a directory server error occurs
 	 */
 	
-	protected List getGroups(String userName) throws NamingException 
+	protected List getGroups(String userName) throws NamingException, Exception 
 	{
 		logger.info("**************************************************");
 		logger.info("*In JNDI version								 *");
@@ -561,7 +561,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		catch (Exception e) 
 		{
 			logger.info("Could not find Group for empID: " +userName +e);
-			e.printStackTrace();
+			throw e;
 		}
 
 		return groups;
