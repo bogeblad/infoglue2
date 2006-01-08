@@ -78,9 +78,9 @@ public class RemoteContentServiceImpl
         logger.info("Creating content through webservice....");
         logger.info("***************************************");
         
-        logger.warn("parentContentId:" + parentContentId);
-        logger.warn("contentTypeDefinitionId:" + contentTypeDefinitionId);
-        logger.warn("repositoryId:" + repositoryId);
+        logger.info("parentContentId:" + parentContentId);
+        logger.info("contentTypeDefinitionId:" + contentTypeDefinitionId);
+        logger.info("repositoryId:" + repositoryId);
         
         try
         {
@@ -135,15 +135,15 @@ public class RemoteContentServiceImpl
         logger.info("Creating contents through webservice....");
         logger.info("****************************************");
         
-        logger.warn("principalName:" + principalName);
-        logger.warn("inputsArray:" + inputsArray);
+        logger.info("principalName:" + principalName);
+        logger.info("inputsArray:" + inputsArray);
         //logger.warn("contents:" + contents);
         
         try
         {
 			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
             List contents = (List) serializer.deserialize(inputsArray);
-	        logger.warn("contents:" + contents);
+	        logger.info("contents:" + contents);
 
             initializePrincipal(principalName);
 	        Iterator contentIterator = contents.iterator();
@@ -159,13 +159,12 @@ public class RemoteContentServiceImpl
 	            Integer repositoryId 			= (Integer)content.get("repositoryId");
 	            Integer parentContentId 		= (Integer)content.get("parentContentId");
 	            
-	            System.out.println("name:" + name);
-	            System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
-	            System.out.println("repositoryId:" + repositoryId);
-	            System.out.println("parentContentId:" + parentContentId);
+	            logger.info("name:" + name);
+	            logger.info("contentTypeDefinitionId:" + contentTypeDefinitionId);
+	            logger.info("repositoryId:" + repositoryId);
+	            logger.info("parentContentId:" + parentContentId);
 	            
 	           	ContentVO contentVO = new ContentVO();
-	            System.out.println("contentVO:" + contentVO);
 	            contentVO.setName(name);
 	            contentVO.setContentTypeDefinitionId(contentTypeDefinitionId);
 	            contentVO.setRepositoryId(repositoryId);
@@ -218,7 +217,7 @@ public class RemoteContentServiceImpl
 	            newContentIdList.add(newContentVO.getId());
 	            
 	        }
-	        logger.warn("Done with contents..");
+	        logger.info("Done with contents..");
 
         }
         catch(Throwable e)
