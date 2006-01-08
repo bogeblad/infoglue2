@@ -82,7 +82,7 @@ public class VelocityTemplateProcessor
 		        if(useFreeMarkerString != null && useFreeMarkerString.equalsIgnoreCase("true"))
 		            useFreeMarker = true;
 		        
-		        if(useFreeMarker && !forceVelocity)
+		        if((useFreeMarker || templateAsString.indexOf("<#-- IG:FreeMarker -->") > -1) && !forceVelocity)
 		        {
 		            FreemarkerTemplateProcessor.getProcessor().renderTemplate(params, pw, templateAsString);
 		        }
