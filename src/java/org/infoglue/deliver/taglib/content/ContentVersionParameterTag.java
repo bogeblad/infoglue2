@@ -110,7 +110,7 @@ public class ContentVersionParameterTag extends AbstractTag
 	        contentVersionAttributes = new HashMap();
 	        this.contentVersion.put("contentVersionAttributes", contentVersionAttributes);
 	    }
-	    System.out.println("Adding attribute:" + name + "=" + value);
+
 	    contentVersionAttributes.put(name, value);
 	}
 
