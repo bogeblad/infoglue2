@@ -34,7 +34,8 @@ public class ContentTypeDefinitionTag extends TemplateControllerTag {
 	private static final long serialVersionUID = 3257002150969421873L;
 	
 	private Integer contentId;
-
+	private String contentTypeDefinitionName;
+	
 	public ContentTypeDefinitionTag() 
 	{
 		super();
@@ -48,11 +49,22 @@ public class ContentTypeDefinitionTag extends TemplateControllerTag {
 
 	private ContentTypeDefinitionVO getContentTypeDefinition() throws JspException
 	{
-		return getController().getContentTypeDefinitionVO(contentId);
+	    if(contentId != null)
+	        return getController().getContentTypeDefinitionVO(contentId);
+	    else if(contentTypeDefinitionName != null)
+	        return getController().getContentTypeDefinitionVO(contentTypeDefinitionName);
+	    else
+            throw new JspException("You must specify either contentId or contentTypeDefinitionName");
 	}
 
     public void setContentId(String contentId) throws JspException
     {
         this.contentId = evaluateInteger("contentTypeDefinition", "contentId", contentId);
     }
+
+    public void setContentTypeDefinitionName(String contentTypeDefinitionName) throws JspException
+    {
+        this.contentTypeDefinitionName = evaluateString("contentTypeDefinition", "contentTypeDefinitionName", contentTypeDefinitionName);
+    }
+
 }

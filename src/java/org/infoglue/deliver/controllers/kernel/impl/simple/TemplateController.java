@@ -983,8 +983,14 @@ public interface TemplateController
     /**
      * The method returns the ContentTypeVO-objects of the given contentId. 
      */
-    public abstract ContentTypeDefinitionVO getContentTypeDefinitionVO(
-            Integer contentId);
+    
+	public abstract ContentTypeDefinitionVO getContentTypeDefinitionVO(Integer contentId);
+
+	/**
+	 * The method returns the ContentTypeVO-object with the given name. 
+	 */
+	
+	public abstract ContentTypeDefinitionVO getContentTypeDefinitionVO(String name);
 
     /**
      * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
