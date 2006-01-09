@@ -514,7 +514,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	
 	private ImageButton getAccessRightsButton() throws Exception
 	{
-		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8");
+		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&stay=true", "UTF-8"), "UTF-8");
 		//return new ImageButton("ViewAccessRights.action?name=Content&value=" + this.contentId + "&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "Content Access Rights");
 		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=Content&extraParameters=" + this.contentId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "tool.contenttool.contentAccessRights.header");
 	}
