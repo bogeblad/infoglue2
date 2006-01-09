@@ -517,7 +517,7 @@ public class AccessRightController extends BaseController
 			String interceptionPointIdString = request.getParameter(interceptionPointIndex + "_InterceptionPointId");
 			while(interceptionPointIdString != null)
 			{
-				delete(new Integer(interceptionPointIdString), parameters, db);
+				delete(new Integer(interceptionPointIdString), parameters, false, db);
 
 				AccessRightVO accessRightVO = new AccessRightVO();
 				accessRightVO.setParameters(parameters);
@@ -923,7 +923,7 @@ public class AccessRightController extends BaseController
 	 * @throws SystemException
 	 */
 
-	public void delete(Integer interceptionPointId, String parameters, Database db) throws SystemException, Exception
+	public void delete(Integer interceptionPointId, String parameters, boolean deleteUsers, Database db) throws SystemException, Exception
 	{
 		List accessRightList = getAccessRightListOnly(interceptionPointId, parameters, db);
 		Iterator i = accessRightList.iterator();
@@ -947,15 +947,23 @@ public class AccessRightController extends BaseController
 			    db.remove(accessRightGroup);
 			}
 
-			Iterator usersIterator = accessRight.getUsers().iterator();
-			while(usersIterator.hasNext())
+			if(deleteUsers)
 			{
-			    AccessRightUser accessRightUser = (AccessRightUser)usersIterator.next();
-			    usersIterator.remove();
-			    db.remove(accessRightUser);
+				Iterator usersIterator = accessRight.getUsers().iterator();
+				while(usersIterator.hasNext())
+				{
+				    AccessRightUser accessRightUser = (AccessRightUser)usersIterator.next();
+				    usersIterator.remove();
+				    db.remove(accessRightUser);
+				}
+	
+				db.remove(accessRight);
 			}
-
-			db.remove(accessRight);
+			else
+			{
+			    if(accessRight.getUsers() == null || accessRight.getUsers().size() == 0)
+			        db.remove(accessRight);
+			}
 		}
 		
 	}        
