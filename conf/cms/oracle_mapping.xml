@@ -237,6 +237,9 @@
     <field name="groups" type="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" lazy="false" collection="collection">
       <sql many-key="accessRightId"/>
     </field>
+    <field name="users" type="org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl" lazy="false" collection="collection">
+      <sql many-key="accessRightId"/>
+    </field>
   </class>
 
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" identity="accessRightRoleId" key-generator="SEQUENCE">
@@ -263,6 +266,21 @@
     </field>
     <field name="groupName" type="java.lang.String">
       <sql name="groupName" type="varchar" dirty="check" />
+    </field>
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+      <sql name="accessRightId"/>
+    </field>
+  </class>
+
+  <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl" identity="accessRightUserId" key-generator="SEQUENCE">
+    <description>AccessRightUser</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmAccessRightUser"/>
+    <field name="accessRightUserId" type="java.lang.Integer">
+      <sql name="accessRightUserId" type="integer" dirty="check" />
+    </field>
+    <field name="userName" type="java.lang.String">
+      <sql name="userName" type="varchar" dirty="check" />
     </field>
     <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
       <sql name="accessRightId"/>
