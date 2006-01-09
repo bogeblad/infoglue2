@@ -665,7 +665,6 @@ public class AccessRightController extends BaseController
 		    {
 		        AccessRightUser accessRightUser = (AccessRightUser)accessRightsUsersIterator.next();
 
-		        System.out.println("accessRightUser:" + accessRightUser.getAccessRightUserId());
 		        db.remove(accessRightUser.getAccessRight());
 
 		        accessRightsUsersIterator.remove();
@@ -746,7 +745,6 @@ public class AccessRightController extends BaseController
 		    {
 		        AccessRightUser accessRightUser = (AccessRightUser)accessRightsUsersIterator.next();
 
-		        System.out.println("accessRightUser:" + accessRightUser.getAccessRightUserId());
 		        //if(accessRightUser.getAccessRight().)
 		        //db.remove(accessRightUser.getAccessRight());
 
