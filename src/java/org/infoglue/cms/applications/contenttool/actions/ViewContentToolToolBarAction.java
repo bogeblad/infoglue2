@@ -292,7 +292,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			
 			buttons.add(getDeleteButton());
 			buttons.add(getPublishButton());
-			if(hasAnyPublishedVersion())
+			//if(hasAnyPublishedVersion())
 			    buttons.add(getUnpublishButton());
 			buttons.add(getExecuteTaskButton());
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
