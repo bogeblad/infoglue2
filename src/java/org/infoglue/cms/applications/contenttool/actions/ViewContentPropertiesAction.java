@@ -51,10 +51,11 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 	private ContentVO contentVO 				= new ContentVO();
 	private PropertySet propertySet				= null; 
 	private List contentTypeDefinitionVOList 	= null;
+	private List languageVOList					= null;
 	
 	private String allowedContentTypeNames 		= null;
 	private String defaultContentTypeName 		= null;	
-
+	private String initialLanguageId			= null;
 	
     public ViewContentPropertiesAction()
     {
@@ -64,15 +65,18 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
     {
         this.contentVO = ContentController.getContentController().getContentVOWithId(contentId);
         this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.CONTENT);
-            
+        this.languageVOList = LanguageController.getController().getLanguageVOList(this.contentVO.getRepositoryId());
+        
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
 	    this.allowedContentTypeNames 	= ps.getString("content_" + this.getContentId() + "_allowedContentTypeNames");
 	    this.defaultContentTypeName		= ps.getString("content_" + this.getContentId() + "_defaultContentTypeName");
+	    this.initialLanguageId			= ps.getString("content_" + this.getContentId() + "_initialLanguageId");
 	    getLogger().info("allowedContentTypeNames:" + allowedContentTypeNames);
 	    getLogger().info("defaultContentTypeName:" + defaultContentTypeName);
+	    getLogger().info("initialLanguageId:" + initialLanguageId);
     } 
 
     /**
@@ -111,6 +115,8 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 	        ps.setString("content_" + this.getContentId() + "_allowedContentTypeNames", allowedContentTypeNames);
 	    if(defaultContentTypeName != null)
 	        ps.setString("content_" + this.getContentId() + "_defaultContentTypeName", defaultContentTypeName);
+	    if(initialLanguageId != null)
+	        ps.setString("content_" + this.getContentId() + "_initialLanguageId", initialLanguageId);
 	    
     	return "save";
     }
@@ -157,5 +163,20 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
     public void setDefaultContentTypeName(String defaultContentTypeName)
     {
         this.defaultContentTypeName = defaultContentTypeName;
+    }
+    
+    public List getLanguageVOList()
+    {
+        return languageVOList;
+    }
+    
+    public String getInitialLanguageId()
+    {
+        return initialLanguageId;
+    }
+    
+    public void setInitialLanguageId(String initialLanguageId)
+    {
+        this.initialLanguageId = initialLanguageId;
     }
 }

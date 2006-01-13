@@ -19,15 +19,30 @@
 	<tr>
 		<td>
 			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
-			<!--<a href="javascript:saveAndExit(document.editForm, 'ViewRepositoryProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>-->
-			<!--<a href="ViewRepository.action?repositoryId=$repositoryId"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>-->
+			<!--<a href="javascript:saveAndExit(document.editForm, 'ViewServerNodeProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>-->
+			<!--<a href="ViewServerNode.action?serverNodeId=$serverNodeId"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>-->
 		</td>
 	</tr>
 
-<input type="hidden" name="repositoryId" value="$!repositoryId">
+<input type="hidden" name="serverNodeId" value="$!serverNodeId">
 </form>
 </table>
 </div>
+
+#set($lvConstraint = 1) 
+#lvHead(["Name","Description", "Dns Name"] "tool.managementtool.deleteServerNodes.header" "DeleteServerNode.action" "ViewListServerNode.action?title=ServerNodes" "tool.managementtool.deleteServerNodes.text")
+
+#set($cnt = 0)
+#foreach ($serverNodeVO in $serverNodes)
+	#set( $serverNodeId = $serverNodeVO.getServerNodeId() ) 
+	
+	#set( $rowUrl = "ViewServerNode.action?serverNodeId=$serverNodeVO.getServerNodeId()&title=ServerNode%20details")
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$serverNodeVO.getName()'/> <a href=$rowUrl>$serverNodeVO.getName()</a>","$serverNodeVO.getDescription()","$serverNodeVO.getDnsName()"])
+	#set($cnt = $cnt + 1)
+
+	#lvAddRow($row $cnt $serverNodeId)
+#end
+#lvEnd()
 
 </body>
 </html>

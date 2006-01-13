@@ -24,6 +24,15 @@
 				<input type="checkbox" name="allowedContentTypeName" value="$contentTypeDefinitionVO.getName()" #if($allowedContentTypeNames.indexOf("$contentTypeDefinitionVO.getName(),") > -1)checked="1"#end>$contentTypeDefinitionVO.getName()</input><br/>
 			#end
 		</p>
+		<p>
+			$ui.getString("entity.Content.property.initialLanguage.label")<br/>
+			<select name="initialLanguageId">
+				<option value="-1" #if($initialLanguageId == "-1")selected="1"#end>$ui.getString("tool.common.inherit")</option>
+				#foreach ($languageVO in $languageVOList)
+					<option value="$languageVO.id" #if($initialLanguageId == "$languageVO.getId()")selected="1"#end>$languageVO.getName()</option>
+				#end
+			</select>
+		</p>
 	</td>
 </tr>
 <tr>

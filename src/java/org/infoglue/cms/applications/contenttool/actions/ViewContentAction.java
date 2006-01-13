@@ -105,7 +105,8 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	            if(this.repositoryId == null)
 	                this.repositoryId = contentVO.getRepositoryId();
 	            
-		        this.languageId = getMasterLanguageVO().getId();
+		        //this.languageId = getMasterLanguageVO().getId();
+		        this.languageId = getInitialLanguageVO().getId();
 	            return "viewVersion";
 	        }
 	        else
@@ -354,7 +355,27 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	{
 	    return LanguageController.getController().getMasterLanguage(repositoryId);
 	}
-	
+
+	public LanguageVO getInitialLanguageVO() throws Exception
+	{
+		Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    String initialLanguageId = ps.getString("content_" + this.getContentId() + "_initialLanguageId");
+	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(this.getContentId()); 
+	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
+	    {
+	        initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
+		    parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId()); 
+	    }
+	    
+	    if(initialLanguageId != null && !initialLanguageId.equals("") && !initialLanguageId.equals("-1"))
+	        return LanguageController.getController().getLanguageVOWithId(new Integer(initialLanguageId));
+	    else
+	        return LanguageController.getController().getMasterLanguage(repositoryId);
+	}
+
     public Integer getLanguageId()
     {
         return languageId;

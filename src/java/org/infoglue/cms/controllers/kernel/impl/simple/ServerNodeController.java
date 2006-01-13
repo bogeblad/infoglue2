@@ -24,12 +24,11 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.entities.management.Repository;
-import org.infoglue.cms.entities.management.RepositoryLanguage;
-import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.management.RedirectVO;
+import org.infoglue.cms.entities.management.ServerNodeVO;
+import org.infoglue.cms.entities.management.ServerNode;
+import org.infoglue.cms.entities.management.impl.simple.RedirectImpl;
+import org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 
@@ -47,7 +46,6 @@ import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -57,8 +55,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ServerNodeController
-{
+public class ServerNodeController extends BaseController
+{ 
     private String useUpdateSecurity = CmsPropertyHandler.getProperty("useUpdateSecurity");
     
 	/**
@@ -73,6 +71,141 @@ public class ServerNodeController
 	public void initialize()
 	{
 	}
+	
+	/**
+	 * This method creates a serverNode
+	 * 
+	 * @param vo
+	 * @return
+	 * @throws ConstraintException
+	 * @throws SystemException
+	 */
+    public ServerNodeVO create(ServerNodeVO vo) throws ConstraintException, SystemException
+    {
+        ServerNode ent = new ServerNodeImpl();
+        ent.setValueObject(vo);
+        ent = (ServerNode) createEntity(ent);
+        return ent.getValueObject();
+    }     
+    
+    public ServerNodeVO update(ServerNodeVO vo) throws ConstraintException, SystemException
+    {
+    	return (ServerNodeVO) updateEntity(ServerNodeImpl.class, (BaseEntityVO) vo);
+    }        
+        
+	// Singe object
+    public ServerNode getServerNodeWithId(Integer id, Database db) throws SystemException, Bug
+    {
+		return (ServerNode) getObjectWithId(ServerNodeImpl.class, id, db);
+    }
+
+    public ServerNodeVO getServerNodeVOWithId(Integer serverNodeId) throws ConstraintException, SystemException, Bug
+    {
+		return  (ServerNodeVO) getVOWithId(ServerNodeImpl.class, serverNodeId);        
+    }
+	
+    
+	/**
+	 * Returns the ServerNodeVO with the given name.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public ServerNodeVO getServerNodeVOWithName(String name) throws SystemException, Bug
+	{
+		ServerNodeVO serverNodeVO = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			ServerNode serverNode = getServerNodeWithName(name, db);
+			if(serverNode != null)
+				serverNodeVO = serverNode.getValueObject();
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return serverNodeVO;	
+	}
+	
+	/**
+	 * Returns the ServerNode with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public ServerNode getServerNodeWithName(String name, Database db) throws SystemException, Bug
+	{
+		ServerNode serverNode = null;
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl f WHERE f.name = $1");
+			oql.bind(name);
+			
+			QueryResults results = oql.execute();
+			this.getLogger().info("Fetching entity in read/write mode" + name);
+
+			if (results.hasMore()) 
+			{
+				serverNode = (ServerNode)results.next();
+			}
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a named serverNode. Reason:" + e.getMessage(), e);    
+		}
+		
+		return serverNode;		
+	}
+
+	/**
+	 * This method can be used by actions and use-case-controllers that only need to have simple access to the
+	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
+	 */	
+    
+    public List getServerNodeVOList() throws ConstraintException, SystemException, Bug
+    {   
+		/*
+        String key = "serverNodeVOList";
+		getLogger().info("key:" + key);
+		List cachedServerNodeVOList = (List)CacheController.getCachedObject("serverNodeCache", key);
+		if(cachedServerNodeVOList != null)
+		{
+			getLogger().info("There was an cached authorization:" + cachedServerNodeVOList.size());
+			return cachedServerNodeVOList;
+		}
+		*/
+        
+		List serverNodeVOList = getAllVOObjects(ServerNodeImpl.class, "serverNodeId");
+
+		//CacheController.cacheObject("serverNodeCache", key, serverNodeVOList);
+			
+		return serverNodeVOList;
+    }
+	
+
+    public void delete(ServerNodeVO serverNodeVO) throws ConstraintException, SystemException
+    {
+    	deleteEntity(ServerNodeImpl.class, serverNodeVO.getId());
+    }
+	
 	
 	public List getAllowedAdminIPList()
 	{
@@ -154,6 +287,16 @@ public class ServerNodeController
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
 	    ps.setString("allowedAdminIP", allowedAdminIP);
+	}
+
+	/**
+	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
+	 * is handling.
+	 */
+
+	public BaseEntityVO getNewVO()
+	{
+		return new ServerNodeVO();
 	}
 
 }

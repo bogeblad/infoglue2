@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ShortcutController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowVO;
@@ -58,9 +59,11 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	protected static final String INVALID_ACTION = "invalidAction";
 
 	private static final WorkflowController controller = WorkflowController.getController();
+	private static final ShortcutController shortcutController = ShortcutController.getController();
 
 	private List availableWorkflowVOList;
 	private List workflowVOList;
+	private List availableShortcutVOList;
 
 	private WorkflowVO workflow = new WorkflowVO();
 	private int actionId;
@@ -74,6 +77,11 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	{
 		return availableWorkflowVOList;
 	}
+
+    public List getAvailableShortcutVOList()
+    {
+        return availableShortcutVOList;
+    }
 
 	public List getWorkflowActionVOList()
 	{
@@ -232,6 +240,8 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		{
 			workflowVOList = controller.getMyCurrentWorkflowVOList(getInfoGluePrincipal());
 		}
+		
+		availableShortcutVOList = shortcutController.getAvailableShortcutVOList(getInfoGluePrincipal());
 	}
 
 	/**

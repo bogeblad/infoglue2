@@ -557,12 +557,39 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	<tr>
 		<td>
 			<select name="$fieldName" class="yesNoDropBox">
-				#if($value)
+				#if($value == true || $value == "true")
 					<option value="true" selected>$ui.getString("tool.common.yes")</option>
 					<option value="false">$ui.getString("tool.common.no")</option>
 				#else
 					<option value="true">$ui.getString("tool.common.yes")</option>
 					<option value="false" selected>$ui.getString("tool.common.no")</option>
+				#end
+			</select>
+		</td>
+	</tr>
+</table>
+#end
+
+#macro(yesNoDropDownWithInherit $fieldNameKey $fieldName $value)
+<table>
+	<tr>
+		<td>$ui.getString("entity.${fieldNameKey}.label")</td>
+	</tr>
+	<tr>
+		<td>
+			<select name="$fieldName" class="yesNoDropBox">
+				#if($value == "" || $value == "inherit")
+					<option value="inherit" selected="1">$ui.getString("tool.common.inherit")</option>
+					<option value="true">$ui.getString("tool.common.yes")</option>
+					<option value="false">$ui.getString("tool.common.no")</option>
+				#elseif($value == true || $value == "true")
+					<option value="inherit">$ui.getString("tool.common.inherit")</option>
+					<option value="true" selected="1">$ui.getString("tool.common.yes")</option>
+					<option value="false">$ui.getString("tool.common.no")</option>
+				#else
+					<option value="inherit">$ui.getString("tool.common.inherit")</option>
+					<option value="true">$ui.getString("tool.common.yes")</option>
+					<option value="false" selected="1">$ui.getString("tool.common.no")</option>
 				#end
 			</select>
 		</td>
@@ -809,6 +836,9 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 <p class="title">$ui.getString($titleKey)</p>
 #end
 
+#macro(subTitle $titleKey)
+<p class="subtitle">$ui.getString($titleKey)</p>
+#end
 
 #macro(localizedFieldName $key)
   $ui.getString("entity.${key}.label")

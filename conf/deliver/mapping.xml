@@ -1242,6 +1242,26 @@
 	      <sql name="redirectUrl" type="varchar" dirty="ignore" />
 	    </field>
   	</class>
+  	
+  	<!--  Mapping for ServerNode  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl" identity="serverNodeId" key-generator="IDENTITY">
+    	<description>ServerNode</description>
+    	<cache-type type="unlimited" capacity="1000"/>
+	    <map-to table="cmServerNode"/>
+	    <field name="serverNodeId" type="java.lang.Integer">
+	      	<sql name="serverNodeId" type="integer" dirty="check" />
+	    </field>
+	    <field name="name" type="java.lang.String">
+	      	<sql name="name" type="varchar" dirty="check" />
+	    </field>
+	    <field name="description" type="java.lang.String">
+	      	<sql name="description" type="varchar" dirty="check" />
+	    </field>
+	    <field name="dnsName" type="java.lang.String">
+		    <sql name="dnsName" type="varchar" dirty="check" />
+	    </field>
+  	</class>
+  	
     
 </mapping>
 

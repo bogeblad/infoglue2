@@ -512,3 +512,11 @@ a:active {
 	color				: #FFFFFF;
 	cursor				: pointer;
 }
+
+/* New classes for dividers in forms */
+.subtitle {
+	font-weight			: bold;
+	font-size			: 14px;
+	height				: 20px;
+	border-bottom		: 1px solid #666666;
+}

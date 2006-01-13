@@ -24,6 +24,7 @@
 --
 -- This script contains the database updates required to go from 2.1 to 2.5.
 
+-- Adds needed table for user access
 DROP TABLE IF EXISTS cmAccessRightUser;
 
 CREATE TABLE cmAccessRightUser (
@@ -31,4 +32,16 @@ CREATE TABLE cmAccessRightUser (
   accessRightId int(11) NOT NULL default '0',
   userName varchar(150) NOT NULL default '',
   PRIMARY KEY  (accessRightUserId)
+) TYPE=InnoDB;
+
+
+-- Adds needed table for server nodes
+DROP TABLE IF EXISTS cmServerNode;
+
+CREATE TABLE cmServerNode (
+  serverNodeId integer(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL,
+  description text NOT NULL,
+  dnsName text NOT NULL,
+  PRIMARY KEY  (serverNodeId)
 ) TYPE=InnoDB;

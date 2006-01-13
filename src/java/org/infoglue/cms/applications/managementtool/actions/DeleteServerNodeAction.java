@@ -24,57 +24,48 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
-import java.util.List;
-
+import org.infoglue.cms.entities.management.ServerNodeVO;
+import org.infoglue.cms.exception.*;
 
 /**
- * 	Action class for usecase ViewListServerNodeUCC 
- *
- *  @author Mattias Bogeblad
+ * This action removes a serverNode from the system.
+ * 
+ * @author Mattias Bogeblad
  */
 
-public class ViewListServerNodeAction extends InfoGlueAbstractAction 
+public class DeleteServerNodeAction extends InfoGlueAbstractAction
 {
-	private List serverNodes;
-	private List allowedAdminIPList;
-	private String allowedAdminIP;
+	private ServerNodeVO serverNodeVO;
+	private Integer serverNodeId;
 	
-	protected String doExecute() throws Exception 
+	public DeleteServerNodeAction()
 	{
-		this.serverNodes = ServerNodeController.getController().getServerNodeVOList();
-		this.allowedAdminIPList = ServerNodeController.getController().getAllowedAdminIPList();
-    	this.allowedAdminIP = ServerNodeController.getController().getAllowedAdminIP();
-    	return "success";
-	}
-	
-
-	public List getServerNodes()
-	{
-		return this.serverNodes;		
+		this(new ServerNodeVO());
 	}
 
-	public String doSave() throws Exception 
+	public DeleteServerNodeAction(ServerNodeVO serverNodeVO) 
 	{
-		ServerNodeController.getController().setAllowedAdminIP(allowedAdminIP);
-    	return "success";
-	}
-
-
-	public List getAllowedAdminIPList()
-	{
-		return this.allowedAdminIPList;		
+		this.serverNodeVO = serverNodeVO;
 	}
 	
-    public String getAllowedAdminIP()
+	protected String doExecute() throws ConstraintException, Exception 
+	{
+	    this.serverNodeVO.setServerNodeId(this.getServerNodeId());
+		ServerNodeController.getController().delete(this.serverNodeVO);
+		return "success";
+	}
+	
+	public void setServerNodeId(Integer serverNodeId) throws SystemException
+	{
+		this.serverNodeVO.setServerNodeId(serverNodeId);	
+	}
+
+    public java.lang.Integer getServerNodeId()
     {
-        return allowedAdminIP;
+        return this.serverNodeVO.getServerNodeId();
     }
-    
-    public void setAllowedAdminIP(String allowedAdminIP)
-    {
-        this.allowedAdminIP = allowedAdminIP;
-    }
+        
+	
 }

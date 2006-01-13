@@ -78,6 +78,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 	private Integer categoryId = null;
 	private Integer workflowDefinitionId = null;
 	private Integer redirectId = null;
+	private Integer serverNodeId = null;
 	
 	private String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
 	
@@ -212,8 +213,25 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		this.contentTypeDefinitionId = contentTypeDefinitionId;
 	}
 
-	public Integer getCategoryId()			{ return categoryId; }
-	public void setCategoryId(Integer i)	{ categoryId = i; }
+    public Integer getServerNodeId()
+    {
+        return serverNodeId;
+    }
+    
+    public void setServerNodeId(Integer serverNodeId)
+    {
+        this.serverNodeId = serverNodeId;
+    }
+
+	public Integer getCategoryId()
+	{ 
+	    return this.categoryId; 
+	}
+	
+	public void setCategoryId(Integer categoryId)	
+	{ 
+	    this.categoryId = categoryId; 
+	}
 
 	public String getTitle()
 	{
@@ -362,6 +380,10 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 				return getRedirectsButtons();
 			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewRedirect.header"))
 				return getRedirectDetailsButtons();
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.serverNodeList.header"))
+				return getServerNodesButtons();
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewServerNode.header"))
+				return getServerNodeDetailsButtons();
 			
 		}
 		catch(Exception e) {e.printStackTrace();}			
@@ -690,6 +712,25 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 			final WorkflowDefinitionVO workflowDefinition = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(this.workflowDefinitionId);
 			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Workflow&extraParameters=" + workflowDefinition.getName() +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header"));
 	    }
+		return buttons;				
+	}
+
+	private List getServerNodesButtons() throws Exception
+	{
+		List buttons = new ArrayList();
+		buttons.add(new ImageButton("CreateServerNode!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newServerNode"), "tool.managementtool.createServerNode.header"));	
+		buttons.add(new ImageButton(true, "javascript:submitListForm('serverNode');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteServerNode"), "tool.managementtool.deleteServerNodes.header"));
+		buttons.add(new ImageButton("ViewServerNodeProperties.action?serverNodeId=-1", getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
+		
+		return buttons;
+	}
+	
+	private List getServerNodeDetailsButtons() throws Exception
+	{
+		List buttons = new ArrayList();
+		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteServerNode.header&yesDestination=" + URLEncoder.encode("DeleteServerNode.action?serverNodeId=" + this.serverNodeId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListServerNode.action?title=ServerNodes", "UTF-8") + "&message=tool.managementtool.deleteServerNode.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteServerNode"), "tool.managementtool.deleteServerNode.header"));
+		buttons.add(new ImageButton("ViewServerNodeProperties.action?serverNodeId=" + this.serverNodeId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
+		
 		return buttons;				
 	}
 
