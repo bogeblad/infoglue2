@@ -31,6 +31,7 @@ public class NotificationMessage
 	public final static int PUBLISHING        = 10;
 	public final static int DENIED_PUBLISHING = 20;
 	public final static int UNPUBLISHING      = 30;
+	public final static int SYSTEM      	  = 100;
 	
 	public final static String TRANS_CREATE_TEXT 	= "create";
 	public final static String TRANS_UPDATE_TEXT 	= "update";
@@ -38,6 +39,7 @@ public class NotificationMessage
 	public final static String PUBLISHING_TEXT   	= "publishing";
 	public final static String DENIED_PUBLISHING_TEXT = "publishing denied";
 	public final static String UNPUBLISHING_TEXT   	= "unpublishing";
+	public final static String SYSTEM_TEXT   	= "general configuration change";
 
 
 	private String name;
