@@ -29,6 +29,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.persist.spi.CallbackInterceptor;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 
 import org.infoglue.cms.entities.management.AccessRightGroup;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
@@ -40,6 +41,7 @@ import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
+import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
@@ -104,9 +106,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 	    	logger.info("Actually stored it:" + object + ":" + modified);
     	    
 			String userName = "SYSTEM";
-	    	NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
+			NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
 			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-	    
+			if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && !object.getClass().getName().equals(RegistryImpl.class.getName()))
+			    RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
+			    
 			if(object.getClass().getName().equals(RepositoryImpl.class.getName()))
 			{
 				CacheController.clearCache("repositoryCache");
@@ -232,7 +236,9 @@ public class CmsJDOCallback implements CallbackInterceptor
     	    String userName = "SYSTEM";
     	    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_CREATE, getObjectIdentity(object), object.toString());
     	    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-    	    
+			if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && !object.getClass().getName().equals(RegistryImpl.class.getName()))
+			    RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
+
 			if(object.getClass().getName().equals(RepositoryImpl.class.getName()))
 			{
 				CacheController.clearCache("repositoryCache");
@@ -328,7 +334,9 @@ public class CmsJDOCallback implements CallbackInterceptor
        	    String userName = "SYSTEM";
 		    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_DELETE, getObjectIdentity(object), object.toString());
 		    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-       	    
+			if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && !object.getClass().getName().equals(RegistryImpl.class.getName()))
+			    RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
+
 			if(object.getClass().getName().equals(RepositoryImpl.class.getName()))
 			{
 				CacheController.clearCache("repositoryCache");
