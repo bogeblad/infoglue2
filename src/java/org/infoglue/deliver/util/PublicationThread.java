@@ -60,8 +60,13 @@ public class PublicationThread extends Thread
 			logger.info("\n\n\nRecaching all caches as this was a publishing-update\n\n\n");
 			CacheController.cacheCentralCastorCaches();
 
-			logger.info("\n\n\nFinally clearing page cache as this was a publishing-update\n\n\n");
+			logger.info("\n\n\nFinally clearing page cache and other caches as this was a publishing-update\n\n\n");
 		    CacheController.clearCache("pageCache");
+		    CacheController.clearCache("NavigationCache");
+		    CacheController.clearCache("pagePathCache");
+		    CacheController.clearCache("pageCacheParentSiteNodeCache");
+		    CacheController.clearCache("pageCacheLatestSiteNodeVersions");
+		    CacheController.clearCache("pageCacheSiteNodeTypeDefinition");
 		} 
 		catch (Exception e)
 		{
