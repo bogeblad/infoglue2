@@ -604,7 +604,7 @@ public class SiteNodeController extends BaseController
 	 * This method moves a siteNode after first making a couple of controls that the move is valid.
 	 */
 	
-    public static void moveSiteNode(SiteNodeVO siteNodeVO, Integer newParentSiteNodeId) throws ConstraintException, SystemException
+    public void moveSiteNode(SiteNodeVO siteNodeVO, Integer newParentSiteNodeId) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -655,7 +655,9 @@ public class SiteNodeController extends BaseController
 			
             logger.info("Setting the new Parent siteNode:" + siteNode.getSiteNodeId() + " " + newParentSiteNode.getSiteNodeId());
             siteNode.setParentSiteNode((SiteNodeImpl)newParentSiteNode);
-            siteNode.setRepository(newParentSiteNode.getRepository());
+            
+            changeRepositoryRecursive(siteNode, newParentSiteNode.getRepository());
+            //siteNode.setRepository(newParentSiteNode.getRepository());
 			newParentSiteNode.getChildSiteNodes().add(siteNode);
 			oldParentSiteNode.getChildSiteNodes().remove(siteNode);
 			
@@ -679,7 +681,26 @@ public class SiteNodeController extends BaseController
 
     }       
     
-    	
+	/**
+	 * Recursively sets the sitenodes repositoryId.
+	 * @param sitenode
+	 * @param newRepository
+	 */
+
+	private void changeRepositoryRecursive(SiteNode siteNode, Repository newRepository)
+	{
+	    if(siteNode.getRepository().getId().intValue() != newRepository.getId().intValue())
+	    {
+	        siteNode.setRepository((RepositoryImpl)newRepository);
+		    Iterator ChildSiteNodesIterator = siteNode.getChildSiteNodes().iterator();
+		    while(ChildSiteNodesIterator.hasNext())
+		    {
+		        SiteNode childSiteNode = (SiteNode)ChildSiteNodesIterator.next();
+		        changeRepositoryRecursive(childSiteNode, newRepository);
+		    }
+	    }
+	}
+	
 	
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller

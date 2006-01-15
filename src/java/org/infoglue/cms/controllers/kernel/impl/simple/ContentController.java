@@ -656,13 +656,35 @@ public class ContentController extends BaseController
         
         oldParentContent.getChildren().remove(content);
         content.setParentContent((ContentImpl)newParentContent);
-        content.setRepository(newParentContent.getRepository());
+        
+        changeRepositoryRecursive(content, newParentContent.getRepository());
+        //content.setRepository(newParentContent.getRepository());
         newParentContent.getChildren().add(content);
         
         //If any of the validations or setMethods reported an error, we throw them up now before create.
         ceb.throwIfNotEmpty();
     }   
 
+	/**
+	 * Recursively sets the contents repositoryId.
+	 * @param content
+	 * @param newRepository
+	 */
+
+	private void changeRepositoryRecursive(Content content, Repository newRepository)
+	{
+	    if(content.getRepository().getId().intValue() != newRepository.getId().intValue())
+	    {
+		    content.setRepository((RepositoryImpl)newRepository);
+		    Iterator childContentsIterator = content.getChildren().iterator();
+		    while(childContentsIterator.hasNext())
+		    {
+		        Content childContent = (Content)childContentsIterator.next();
+		        changeRepositoryRecursive(childContent, newRepository);
+		    }
+	    }
+	}
+	
 	/**
 	 * Returns all Contents having the specified ContentTypeDefintion.
 	 */
