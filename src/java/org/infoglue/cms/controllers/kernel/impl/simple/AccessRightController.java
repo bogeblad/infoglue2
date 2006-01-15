@@ -1253,7 +1253,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			getLogger().warn("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -1317,7 +1317,7 @@ public class AccessRightController extends BaseController
 			
 			if(parameters == null || parameters.length() == 0)
 			{
-				oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND (is_undefined(aru.accessRight.parameters) OR aru.accessRight.parameters = $3)");
+				oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND (is_undefined(aru.accessRight.parameters) OR aru.accessRight.parameters = $2)");
 				oql.bind(interceptionPointCategory);
 				oql.bind(parameters);
 			}
