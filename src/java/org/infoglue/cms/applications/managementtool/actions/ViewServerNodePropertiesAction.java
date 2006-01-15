@@ -25,6 +25,10 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.ServerNodeVO;
+import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
+import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
@@ -118,6 +122,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "recachePublishingMethod");
 	    populate(ps, "recacheUrl");
 	    populate(ps, "useUpdateSecurity");
+	    populate(ps, "allowedAdminIP");
 	    populate(ps, "pageKey");
 	    populate(ps, "cmsBaseUrl");
 	    populate(ps, "componentEditorUrl");
@@ -162,10 +167,15 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "serverName");
 	    populate(ps, "authConstraint");
 	    populate(ps, "extraParametersFile");
+	    populateData(ps, "extraSecurityParameters");
 	    populate(ps, "casValidateUrl");
 	    populate(ps, "casServiceUrl");
 	    populateData(ps, "shortcuts");
 	    
+		NotificationMessage notificationMessage = new NotificationMessage("ViewServerNodePropertiesAction.doSave():", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
+		//ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+		RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
+		
 	    //TODO - hack to get the caches to be updated when properties are affected..
 	    /*
 	    ServerNodeVO serverNodeVO = ServerNodeController.getController().getFirstServerNodeVO();
@@ -207,14 +217,16 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 
 	public String getPropertyValue(String key) 
 	{
-		return propertySet.getString("serverNode_" + this.getServerNodeId() + "_" + key);
+		String value = propertySet.getString("serverNode_" + this.getServerNodeId() + "_" + key);
+
+		return (value != null ? value : "");
 	}
 	
 	public String getDataPropertyValue(String key) throws Exception
 	{
 		byte[] valueBytes = propertySet.getData("serverNode_" + this.getServerNodeId() + "_" + key);
 	    
-		return new String(valueBytes, "utf-8");
+		return (valueBytes != null ? new String(valueBytes, "utf-8") : "");
 	}
 	
     public List getServerNodeVOList()

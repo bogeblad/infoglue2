@@ -54,6 +54,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.portal.PortalController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.CompressionHelper;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * @author Mattias Bogeblad
@@ -161,7 +162,13 @@ public abstract class PageInvoker
 		logger.info("languageVO:" + languageVO);
 		
 		String isPageCacheOn = CmsPropertyHandler.getProperty("isPageCacheOn");
+		//Timer timer = new Timer();
+		//String isPageCacheOn2 = CmsPropertyHandler.getIsPageCacheOn();
+		//timer.printElapsedTime("Getting server node property");
+		
 		logger.info("isPageCacheOn:" + isPageCacheOn);
+		//System.out.println("isPageCacheOn:" + isPageCacheOn);
+		//System.out.println("isPageCacheOn2:" + isPageCacheOn2);
 		String refresh = this.getRequest().getParameter("refresh");
 		
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))

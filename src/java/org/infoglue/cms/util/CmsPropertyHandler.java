@@ -24,14 +24,20 @@
 package org.infoglue.cms.util;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.io.*;
+import java.net.InetAddress;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
+import org.infoglue.cms.entities.management.ServerNodeVO;
+import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -43,6 +49,7 @@ import com.opensymphony.module.propertyset.PropertySetManager;
  * Created on 2002-sep-12 
  * 
  * This class is used to get properties for the system in a transparent way.
+ * The second evolution of this class made it possible for properties to be fetched from the propertyset if there instead. Fallback to file.
  * 
  * @author Stefan Sik, ss@frovi.com
  * @author Mattias Bogeblad 
@@ -52,11 +59,16 @@ public class CmsPropertyHandler
 {
     private final static Logger logger = Logger.getLogger(CmsPropertyHandler.class.getName());
 
-	private static Properties cachedProperties = null;
-	private static Properties cachedUserProperties = null;
+	private static Properties cachedProperties 		= null;
+	private static PropertySet propertySet			= null; 
+
+	private static String serverNodeName			= null;
 	
-	private static String applicationName = null;
-	private static File propertyFile = null;
+	private static String globalSettingsServerNodeId= "-1";
+	private static String localSettingsServerNodeId	= null;
+	
+	private static String applicationName 			= null;
+	private static File propertyFile 				= null;
 	
 	public static void setApplicationName(String theApplicationName)
 	{
@@ -101,6 +113,21 @@ public class CmsPropertyHandler
 				}
 			}
 			
+	        Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    propertySet = PropertySetManager.getInstance("jdbc", args);
+		    
+		    serverNodeName = cachedProperties.getProperty("serverNodeName");
+		    
+		    if(serverNodeName == null || serverNodeName.length() == 0)
+		    {
+			    InetAddress localhost = InetAddress.getLocalHost();
+			    serverNodeName = localhost.getHostName();
+		    }
+		    
+		    System.out.println("serverNodeName:" + serverNodeName);
+		    
+		    initializeLocalServerNodeId();
 		}	
 		catch(Exception e)
 		{
@@ -112,24 +139,33 @@ public class CmsPropertyHandler
 	}
 
 	/**
-	 * This method initializes the parameter hash with values.
+	 * This method gets the local server node id if available.
 	 */
 
-	private static void initializeUserProperties()
+	public static void initializeLocalServerNodeId()
 	{
-		try
-		{
-			// User properties
-			cachedUserProperties = new Properties();
-			cachedUserProperties.load(new FileInputStream(new File(getProperty("UserPropertiesFile"))));
-		}	
-		catch(Exception e)
-		{
-			logger.error("Error loading properties:" + e.getMessage());
-			e.printStackTrace();
-		}
+        try
+	    {
+	        List serverNodeVOList = ServerNodeController.getController().getServerNodeVOList();
+	        Iterator serverNodeVOListIterator = serverNodeVOList.iterator();
+	        while(serverNodeVOListIterator.hasNext())
+	        {
+	            ServerNodeVO serverNodeVO = (ServerNodeVO)serverNodeVOListIterator.next();
+	            if(serverNodeVO.getName().equalsIgnoreCase(serverNodeName))
+	            {
+	                localSettingsServerNodeId = serverNodeVO.getId().toString();
+	                break;
+	            }
+	        }
+	    }
+	    catch(Exception e)
+	    {
+	        logger.warn("An error occurred trying to get localSettingsServerNodeId: " + e.getMessage(), e);
+	    }
+	    
+	    System.out.println("localSettingsServerNodeId:" + localSettingsServerNodeId);
 	}
-
+	
 	/**
 	 * This method returns all properties .
 	 */
@@ -173,65 +209,68 @@ public class CmsPropertyHandler
 		cachedProperties.setProperty(key, value);
 	}	
 
-
 	/**
-	 * User Properties
-	 * This method returns a propertyValue corresponding to the key supplied for the specified user.
+	 * This method gets the serverNodeProperty but also fallbacks to the old propertyfile if not found in the propertyset.
+	 * 
+	 * @param key
+	 * @param inherit
+	 * @return
 	 */
-	/*
-	public static String getUserProperty(String userName, String key)
-	{
-		if(cachedUserProperties == null)
-			initializeUserProperties();
-
-		key = userName + "." + key;		
-		String value = cachedUserProperties.getProperty(key);
-		return value;
-	}	
 	
-	public static void setUserProperty(String userName, String key, String value)
+	public static String getServerNodeProperty(String key, boolean inherit)
 	{
-		if(cachedUserProperties == null)
-			initializeUserProperties();
-		
-		key = userName + "." + key;
-		cachedUserProperties.setProperty(key, value);
-		
-		try {
-			cachedUserProperties.store(new FileOutputStream(new File(getProperty("UserPropertiesFile"))), "Properties File");
-		}
-		catch (FileNotFoundException e){
-			logger.error("properties file not found");
-			e.printStackTrace();
-		}
-		catch (IOException e){
-			e.printStackTrace();
-		}
-		catch (Exception e)
+	    String value = null;
+	    
+        String cacheKey = "" + key + "_" + inherit;
+        String cacheName = "serverNodePropertiesCache";
+		logger.info("cacheKey:" + cacheKey);
+		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		if(value != null)
 		{
-			e.printStackTrace();
+			return value;
 		}
-		
-		logger.info("Saving Key:" + key + " rendered " + value);
-	}	
-	*/
+	    
+	    if(localSettingsServerNodeId != null)
+	    {
+	        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + key);
+	        System.out.println("Local value: " + value);
+	        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+	        {
+	            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+		        System.out.println("Global value: " + value);
+	        }
+	    }
+		else
+		{
+            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+	        System.out.println("Global value immediately: " + value);
+		}
+	    
+	    if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+	    {
+	        value = getProperty(key);
+	        System.out.println("Property value: " + value);
+	    }
+	    
+	    CacheController.cacheObject(cacheName, cacheKey, value);
+	    
+	    return value;
+	}
+
+	public static String getIsPageCacheOn()
+	{
+	    return getServerNodeProperty("isPageCacheOn", true);
+	}
+
 	
 	public static String getPreferredLanguageCode(String userName)
 	{
-        Map args = new HashMap();
-	    args.put("globalKey", "infoglue");
-	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-	    
-	    return ps.getString("principal_" + userName + "_languageCode");
+        return propertySet.getString("principal_" + userName + "_languageCode");
 	}
 
 	public static String getPreferredToolId(String userName)
 	{
-        Map args = new HashMap();
-	    args.put("globalKey", "infoglue");
-	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-	    
-	    return ps.getString("principal_" + userName + "_defaultToolId");
+	    return propertySet.getString("principal_" + userName + "_defaultToolId");
 	}
 		
 	public static String getAnonymousPassword()

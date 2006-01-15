@@ -180,7 +180,7 @@ public class ServerNodeController extends BaseController
 	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
 	 */	
     
-    public List getServerNodeVOList() throws ConstraintException, SystemException, Bug
+    public List getServerNodeVOList() throws SystemException, Bug
     {   
 		/*
         String key = "serverNodeVOList";

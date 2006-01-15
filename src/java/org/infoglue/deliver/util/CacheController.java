@@ -558,6 +558,8 @@ public class CacheController extends Thread
 			clearCache(db, RoleContentTypeDefinitionImpl.class);
 			clearCache(db, GroupContentTypeDefinitionImpl.class);			
 			
+			clearCache(db, ServerNodeImpl.class);			
+			
 		    //commitTransaction(db);
 
 			logger.info("Emptied the Castor Caches");
@@ -793,6 +795,8 @@ public class CacheController extends Thread
 				
 			    logger.info("className:" + className);
 				logger.info("objectId:" + objectId);
+				logger.info("objectName:" + objectName);
+				logger.info("typeId:" + typeId);
 
 				try
 			    {
@@ -810,7 +814,7 @@ public class CacheController extends Thread
 				    else
 				    {
 					    boolean isDependsClass = false;
-					    if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
+					    if(className != null && className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
 					        isDependsClass = true;
 				
 					    CacheController.clearCaches(className, objectId, null);
@@ -863,6 +867,11 @@ public class CacheController extends Thread
 								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 							}
 						}	
+						//else
+						//{
+						//    logger.info("\n\n\nclearing all non-db caches as this was a system settings call..\n\n\n");											
+						//    CacheController.clearCaches(null, null, null);
+						//}
 				    }
 			    }
 			    catch(Exception e)
