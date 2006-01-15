@@ -41,7 +41,9 @@ public class RemoteCacheUpdater implements NotificationListener
 {	
     private final static Logger logger = Logger.getLogger(RemoteCacheUpdater.class.getName());
 
-
+    //A list of system changes that will either be published upon the next publication or on a manual publishing of them.
+    private static List waitingSystemNotificationMessages = new ArrayList();
+    
 	/**
 	 * Default Constructor	
 	 */
@@ -59,6 +61,19 @@ public class RemoteCacheUpdater implements NotificationListener
 	{
 	}
 	
+	public static List getSystemNotificationMessages()
+	{
+	    return waitingSystemNotificationMessages;
+	}
+
+	public static void clearSystemNotificationMessages()
+	{
+	    synchronized(waitingSystemNotificationMessages)
+	    {
+	        waitingSystemNotificationMessages.clear();
+	    }
+	}
+
 	/**
 	 * This method gets called when a new NotificationMessage is available.
 	 * The writer just calls the transactionHistoryController which stores it.
@@ -88,6 +103,60 @@ public class RemoteCacheUpdater implements NotificationListener
 	{
 		Hashtable hashedMessage = notificationMessageToHashtable(notificationMessage);
 		
+	    List urls = new ArrayList();
+		
+		if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING || notificationMessage.getType() == NotificationMessage.SYSTEM)
+		{
+			String appPrefix = "publicDeliverUrl";
+		
+			int i = 0;
+			String deliverUrl = null;
+			while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
+			{ 
+				String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
+				urls.add(address);
+				i++;
+			}	
+			
+			if(notificationMessage.getType() == NotificationMessage.SYSTEM)
+			{
+			    appPrefix = "internalDeliverUrl";
+			
+				i = 0;
+				deliverUrl = null;
+				while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
+				{ 
+					String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
+					urls.add(address);
+					i++;
+				}	
+			}
+		}
+		else
+		{
+			String appPrefix = "internalDeliverUrl";
+
+			int i = 0;
+			String deliverUrl = null;
+			while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
+			{ 
+				String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
+				urls.add(address);
+				i++;
+			}	
+		}
+		
+		Iterator urlsIterator = urls.iterator();
+		while(urlsIterator.hasNext())
+		{
+		    String deliverUrl = (String)urlsIterator.next();
+			String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
+			logger.info("Updating cache at " + address);
+			System.out.println("Updating cache at " + address);
+			String response = postToUrl(address, hashedMessage);			    
+		}
+
+/*
 		String appPrefix = "internalDeliverUrl";
 		if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING)
 		{
@@ -103,7 +172,9 @@ public class RemoteCacheUpdater implements NotificationListener
 			String response = postToUrl(address, hashedMessage);
 			i++;
 		}
+*/
 	}
+
 
 
 	private Hashtable notificationMessageToHashtable(NotificationMessage notificationMessage)
