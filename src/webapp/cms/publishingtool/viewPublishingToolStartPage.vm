@@ -34,8 +34,39 @@
 
 #lvEnd()
 
-</td></tr></table>	
+</td>
+</tr>
+</table>	
 
+#set($systemMessages = $systemNotificationMessages)
+#if($systemMessages.size() > 0)
+	<br/><br/>
+	
+	<table tableborder=0 border=0 bgcolor=666666 width=70% cellpadding="1" cellspacing="0"><tr><td>
+	
+	#set($lvConstraint = 0) 
+	#lvHead(["There are system changes that has not yet been pushed to the live instances."] "" "" "" "")
+	#set($cnt = 0)
+	
+	#foreach ($notificationMessage in $systemNotificationMessages)
+		#set($row = ["$notificationMessage.className - $notificationMessage.getTransactionTypeName($notificationMessage.type)"])
+		#set($cnt = $cnt + 1)
+		#lvAddRow($row $cnt "$cnt")
+	#end
+	
+	#lvEnd()
+	
+	</td>
+	</tr>
+	<tr>
+		<td>
+			<a href="ViewPublishingToolStartPage!pushSystemNotificationMessages.action">
+			<img src="$ui.getString("images.contenttool.buttons.push")" width="50" height="25" border="0">
+			</a>
+		</td>
+	</tr>	
+	</table>	
+#end
 
 </body>
 </html>

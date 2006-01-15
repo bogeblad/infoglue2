@@ -26,6 +26,9 @@ package org.infoglue.cms.applications.publishingtool.actions;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 
 import java.util.List;
 
@@ -46,9 +49,32 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
         return "success";
     }
     
+    public String doPushSystemNotificationMessages() throws Exception
+    {
+        NotificationMessage notificationMessage = null;
+        List messages = RemoteCacheUpdater.getSystemNotificationMessages();
+        synchronized(messages)
+        {
+            if(messages.size() > 0)
+                notificationMessage = (NotificationMessage)messages.get(0);
+        }
+        
+        if(notificationMessage != null)
+        {
+            ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+            RemoteCacheUpdater.clearSystemNotificationMessages();
+        }
+        
+        return doExecute();
+    }
+    
     public List getRepositories()
     {
     	return this.repositories;
     }
-               
+            
+    public List getSystemNotificationMessages()
+    {
+        return RemoteCacheUpdater.getSystemNotificationMessages();
+    }
 }
