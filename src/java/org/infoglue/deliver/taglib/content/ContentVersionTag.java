@@ -45,14 +45,23 @@ public class ContentVersionTag extends TemplateControllerTag
         super();
     }
     
+    public int doStartTag() throws JspException 
+    {
+        languageId = null;
+        useLanguageFallback = true;
+        
+        return EVAL_BODY_INCLUDE;
+    }
+    
     public int doEndTag() throws JspException
     {
 		produceResult(getContentVersion());
-        return EVAL_PAGE;
+        
+		return EVAL_PAGE;
     }
 
 	private ContentVersionVO getContentVersion() throws JspException
-	{
+	{	    
 	    if(this.languageId == null)
 	        this.languageId = getController().getLanguageId();
 	    
