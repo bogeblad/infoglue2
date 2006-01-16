@@ -108,7 +108,11 @@ public class VelocityTemplateProcessor
 		catch(Exception e)
 		{
 		    logger.warn("templateAsString:" + templateAsString);
-		    throw e;
+		    
+		    if(CmsPropertyHandler.getProperty("operatingMode").equalsIgnoreCase("0") && (CmsPropertyHandler.getProperty("disableTemplateDebug") == null || !CmsPropertyHandler.getProperty("disableTemplateDebug").equalsIgnoreCase("true")))
+		        pw.println("Error:" + e.getMessage());
+		    else
+		        throw e;
 		}
 	}
 
