@@ -40,6 +40,7 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -1113,6 +1114,16 @@ public interface TemplateController
      */
     public abstract List getFormAttributes(Integer contentId,
             String attributeName);
+
+    /**
+	 * This method supplies a method to get the locale of the language currently in use.
+	 */
+	public LanguageVO getLanguage(Integer languageId);
+	
+	/**
+	 * This method supplies a method to get the locale of the language currently in use.
+	 */
+	public LanguageVO getLanguage(String languageCode);
 
     /**
      * This method supplies a method to get the locale of the language sent in.

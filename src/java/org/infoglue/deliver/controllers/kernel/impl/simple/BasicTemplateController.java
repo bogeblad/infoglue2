@@ -5346,18 +5346,40 @@ public class BasicTemplateController implements TemplateController
 	 * This method supplies a method to get the locale of the language currently in use.
 	 */
 	
-	public LanguageVO getLanguage(Integer languageId) throws Exception
+	public LanguageVO getLanguage(Integer languageId)
 	{
-		return LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), languageId);
+	    LanguageVO language = null;
+        
+        try
+        {
+            language = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), languageId);
+        }
+        catch(Exception e)
+        {
+            logger.warn("An error occurred when getting language:" + e.getMessage(), e);
+        }
+        
+		return language;
 	}
 
 	/**
 	 * This method supplies a method to get the locale of the language currently in use.
 	 */
 	
-	public LanguageVO getLanguage(String languageCode) throws Exception
+	public LanguageVO getLanguage(String languageCode)
 	{
-		return LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(getDatabase(), languageCode);
+	    LanguageVO language = null;
+        
+        try
+        {
+            language = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(getDatabase(), languageCode);
+        }
+        catch(Exception e)
+        {
+            logger.warn("An error occurred when getting language:" + e.getMessage(), e);
+        }
+        
+		return language;
 	}
 
 	/**
