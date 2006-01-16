@@ -193,9 +193,23 @@ public class BasicURLComposer extends URLComposer
 	            if(sb.toString().endsWith(context))
 	                sb.append("/");
 	            
+	            boolean addedContent = false;
 	            if (contentId != null && contentId.intValue() != -1)
+	            {
 	                sb.append("?contentId=").append(String.valueOf(contentId));
-	     
+	                addedContent = true;
+	            }
+
+	            if (languageId != null && languageId.intValue() != -1)
+	            {
+	                if(addedContent)
+	                    sb.append(getRequestArgumentDelimiter());
+	                else
+	                    sb.append("?");
+	                    
+	                sb.append("languageId=").append(String.valueOf(languageId));
+	            }
+
 	            return (!sb.toString().equals("") ? sb.toString() : "/");
 	        } 
 	        catch (Exception e) 
