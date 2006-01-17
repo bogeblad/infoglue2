@@ -22,7 +22,7 @@
 --
 -- $Id: update-db-1.3-to-2.0.sql,v 1.14 2005/06/29 08:52:46 mattias Exp $
 --
--- This script contains the database updates required to go from 2.0 to 2.1.
+-- This script contains the database updates required to go from 2.1 to 2.5.
 
 DROP SEQUENCE cmAccessRightUser_seq;
 
@@ -36,3 +36,19 @@ CREATE TABLE cmAccessRightUser (
   userName varchar2(150) NOT NULL,
   PRIMARY KEY  (accessRightUserId)
 );
+
+-- Server nodes
+DROP SEQUENCE cmServerNode_seq;
+
+CREATE SEQUENCE cmServerNode_seq START WITH 100000 INCREMENT BY 1;
+
+DROP TABLE cmServerNode;
+
+CREATE TABLE cmServerNode (
+  serverNodeId number NOT NULL,
+  name varchar(255) NOT NULL,
+  description varchar(255) NOT NULL,
+  dnsName varchar(255) NOT NULL,
+  PRIMARY KEY  (serverNodeId)
+);
+
