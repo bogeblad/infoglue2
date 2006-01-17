@@ -27,6 +27,8 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 import org.infoglue.deliver.util.Support;
 
@@ -56,6 +58,7 @@ public class ContentAttributeTag extends ComponentLogicTag
 	private String mapKeyName;
     private boolean disableEditOnSight 	= false;
     private boolean useInheritance		= true;
+    private boolean useAttributeLanguageFallback = false; 
     private boolean parse				= false;
     private boolean fullBaseUrl			= false;
     
@@ -75,26 +78,10 @@ public class ContentAttributeTag extends ComponentLogicTag
 		return EVAL_BODY_INCLUDE;
 	}
 
-    public int doEndTag() throws JspException
-    {
-	    if(this.languageId == null)
-	        this.languageId = getController().getLanguageId();
-
-        boolean previousSetting = getController().getDeliveryContext().getUseFullUrl();
-        Object result = null;
-        if(previousSetting != fullBaseUrl)
-        {
-            getController().getDeliveryContext().setUseFullUrl(fullBaseUrl);
-        }
-        // Have to force a disable editon sight, not good with renderstuff
-        // when converting a attributeto a map.
-        // per.jonsson@it-huset.se
-        if ( mapKeyName != null )
-        {
-            disableEditOnSight = true;
-        }
-        
-        System.out.println("Controller:" + getController().getClass().getName());
+	private String getContentAttributeValue(Integer languageId) throws JspException
+	{
+	    String result = null;
+	    
         if(contentId != null)
         {
             if(!parse)
@@ -121,12 +108,50 @@ public class ContentAttributeTag extends ComponentLogicTag
         {
             throw new JspException("You must specify either contentId or propertyName");
         }
+
+	    return result;
+	}
+	
+    public int doEndTag() throws JspException
+    {
+	    if(this.languageId == null)
+	        this.languageId = getController().getLanguageId();
+
+        boolean previousSetting = getController().getDeliveryContext().getUseFullUrl();
+        String result = null;
+        if(previousSetting != fullBaseUrl)
+        {
+            getController().getDeliveryContext().setUseFullUrl(fullBaseUrl);
+        }
+        // Have to force a disable editon sight, not good with renderstuff
+        // when converting a attributeto a map.
+        // per.jonsson@it-huset.se
+        if ( mapKeyName != null )
+        {
+            disableEditOnSight = true;
+        }
+        
+        result = getContentAttributeValue(this.languageId);
+        
+        if((result == null || result.trim().equals("")) && useAttributeLanguageFallback)
+		{
+			try
+			{
+	            LanguageVO masteLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.getController().getDatabase(), this.getController().getSiteNodeId());
+			    result = getContentAttributeValue(masteLanguageVO.getLanguageId());
+			}
+			catch(Exception e)
+			{
+				throw new JspException("Error getting the master language for this sitenode:" + this.getController().getSiteNodeId());
+			}
+		}
+		
         if ( mapKeyName != null && result != null )
         {
             Map map = Support.convertTextToProperties( result.toString() );
             if ( map != null && !map.isEmpty() )
             {
-                result = map.get( mapKeyName );
+                result = (String)map.get( mapKeyName );
             }
         }
         produceResult( result );
@@ -139,6 +164,7 @@ public class ContentAttributeTag extends ComponentLogicTag
 	    mapKeyName = null;;
 	    disableEditOnSight = false;
 	    useInheritance = true;
+	    useAttributeLanguageFallback = true;
 	    parse = false;
 	    fullBaseUrl	= false;
 	    languageId = null;
@@ -191,4 +217,8 @@ public class ContentAttributeTag extends ComponentLogicTag
         this.mapKeyName = mapKeyName;
     }
     
+    public void setUseAttributeLanguageFallback(boolean useAttributeLanguageFallback)
+    {
+        this.useAttributeLanguageFallback = useAttributeLanguageFallback;
+    }
 }

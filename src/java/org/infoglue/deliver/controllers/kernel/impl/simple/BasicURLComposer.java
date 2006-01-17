@@ -200,7 +200,7 @@ public class BasicURLComposer extends URLComposer
 	                addedContent = true;
 	            }
 
-	            if (languageId != null && languageId.intValue() != -1)
+	            if (languageId != null && languageId.intValue() != -1 && deliveryContext.getLanguageId().intValue() != languageId.intValue())
 	            {
 	                if(addedContent)
 	                    sb.append(getRequestArgumentDelimiter());

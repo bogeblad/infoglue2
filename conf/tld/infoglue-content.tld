@@ -42,6 +42,11 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
+            <name>useAttributeLanguageFallback</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>useInheritance</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
