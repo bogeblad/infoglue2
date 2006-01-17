@@ -236,7 +236,20 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
  
 	public String getContentAttribute(Integer contentId, Integer languageId, String attributeName, boolean clean)
 	{
-		return super.getContentAttribute(contentId, languageId, attributeName);
+		//return super.getContentAttribute(contentId, languageId, attributeName);
+	    String attributeValue = "";
+	    
+	    if(clean)
+	    {
+	        attributeValue = super.getContentAttribute(contentId, languageId, attributeName);
+	    }
+	    else
+	    {
+	        attributeValue = super.getContentAttribute(contentId, languageId, attributeName);
+	        attributeValue = decorateTag(contentId, languageId, attributeName, attributeValue);
+	    }
+	    
+	    return attributeValue;
 	}
 	
 	/**
@@ -366,7 +379,33 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	    return attributeValue;
 		
 	}
-	
+
+	/**
+	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+	 * value if OnSiteEdit is on.
+	 */
+	 
+	public String getParsedContentAttribute(Integer contentId, Integer languageId, String attributeName, boolean clean) 
+	{		
+	    System.out.println("clean:" + clean);
+		//return super.getParsedContentAttribute(contentId, attributeName);
+		
+	    String attributeValue = "";
+	    
+	    if(clean)
+	    {
+	        attributeValue = super.getParsedContentAttribute(contentId, languageId, attributeName);
+	    }
+	    else
+	    {
+	        attributeValue = super.getParsedContentAttribute(contentId, languageId, attributeName);
+	        attributeValue = decorateTag(contentId, languageId, attributeName, attributeValue);
+	    }
+	    
+	    return attributeValue;
+		
+	}
+
 	/**
 	 * This method deliveres a String with the content-attribute asked for after it has been parsed and all special tags have been converted.
 	 * The attribute is fetched from the specified content.

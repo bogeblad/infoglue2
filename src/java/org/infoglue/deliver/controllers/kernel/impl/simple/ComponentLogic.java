@@ -418,7 +418,25 @@ public class ComponentLogic
 
 		return attributeValue;
 	}
-	
+
+	public String getContentAttribute(String propertyName, Integer languageId, String attributeName, boolean disableEditOnSight, boolean useInheritance)
+	{
+		String attributeValue = "";
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				attributeValue = templateController.getContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
+			}
+		}
+
+		return attributeValue;
+	}
+
 	public String getParsedContentAttribute(String propertyName, String attributeName)
 	{
 		return getParsedContentAttribute(propertyName, attributeName, !this.useEditOnSight, this.useInheritance);
@@ -442,6 +460,23 @@ public class ComponentLogic
 		return attributeValue;
 	}
 
+	public String getParsedContentAttribute(String propertyName, Integer languageId, String attributeName, boolean disableEditOnSight, boolean useInheritance)
+	{
+		String attributeValue = "";
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				attributeValue = templateController.getParsedContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
+			}
+		}
+
+		return attributeValue;
+	}
 
 	public List getFormAttributes(String propertyName, String attributeName)
 	{

@@ -51,8 +51,9 @@ public class ContentAttributeTag extends ComponentLogicTag
 	
 	private Integer contentId;
 	private String propertyName;
-    private String attributeName;
-    private String mapKeyName;
+	private String attributeName;
+	private Integer languageId;
+	private String mapKeyName;
     private boolean disableEditOnSight 	= false;
     private boolean useInheritance		= true;
     private boolean parse				= false;
@@ -63,8 +64,22 @@ public class ContentAttributeTag extends ComponentLogicTag
         super();
     }
     
+	/**
+	 * Initializes the parameters to make it accessible for the children tags (if any).
+	 * 
+	 * @return indication of whether to evaluate the body or not.
+	 * @throws JspException if an error occurred while processing this tag.
+	 */
+	public int doStartTag() throws JspException 
+	{
+		return EVAL_BODY_INCLUDE;
+	}
+
     public int doEndTag() throws JspException
     {
+	    if(this.languageId == null)
+	        this.languageId = getController().getLanguageId();
+
         boolean previousSetting = getController().getDeliveryContext().getUseFullUrl();
         Object result = null;
         if(previousSetting != fullBaseUrl)
@@ -78,32 +93,33 @@ public class ContentAttributeTag extends ComponentLogicTag
         {
             disableEditOnSight = true;
         }
-            
+        
+        System.out.println("Controller:" + getController().getClass().getName());
         if(contentId != null)
         {
             if(!parse)
             {
-                result = getController().getContentAttribute(contentId, attributeName, disableEditOnSight);
+                result = getController().getContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
             }
 	        else
 	        {
-	            result = getController().getParsedContentAttribute(contentId, attributeName, disableEditOnSight);
+	            result = getController().getParsedContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
             }
         }
         else if(propertyName != null)
         {
 	        if(!parse)
             {
-                result = getComponentLogic().getContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance);
+                result = getComponentLogic().getContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance);
             }
 	        else
             {
-	            result = getComponentLogic().getParsedContentAttribute(propertyName, attributeName, disableEditOnSight, useInheritance);
+	            result = getComponentLogic().getParsedContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance);
             }
         }
         else
         {
-            throw new JspException("You must specify either contentId or attributeName");
+            throw new JspException("You must specify either contentId or propertyName");
         }
         if ( mapKeyName != null && result != null )
         {
@@ -116,6 +132,16 @@ public class ContentAttributeTag extends ComponentLogicTag
         produceResult( result );
         //Resetting the full url to the previous state
         getController().getDeliveryContext().setUseFullUrl(previousSetting);
+
+	    contentId = null;
+		propertyName = null;
+	    attributeName = null;;
+	    mapKeyName = null;;
+	    disableEditOnSight = false;
+	    useInheritance = true;
+	    parse = false;
+	    fullBaseUrl	= false;
+	    languageId = null;
 
         return EVAL_PAGE;
     }
@@ -150,6 +176,11 @@ public class ContentAttributeTag extends ComponentLogicTag
         this.contentId = evaluateInteger("contentAttribute", "contentId", contentId);
     }
     
+    public void setLanguageId(final String languageId) throws JspException
+    {
+        this.languageId = evaluateInteger("contentAttribute", "languageId", languageId);
+    }
+
     public void setFullBaseUrl(boolean fullBaseUrl)
     {
         this.fullBaseUrl = fullBaseUrl;
@@ -159,4 +190,5 @@ public class ContentAttributeTag extends ComponentLogicTag
     {
         this.mapKeyName = mapKeyName;
     }
+    
 }

@@ -390,6 +390,13 @@ public interface TemplateController
             Integer contentId, String attributeName, boolean clean);
 
     /**
+     * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+     * value if OnSiteEdit is on.
+     */
+    public abstract String getParsedContentAttribute(
+            Integer contentId, Integer languageId, String attributeName, boolean clean);
+
+    /**
      * This method deliveres a list of strings which represents all assetKeys for a content.
      */
     public abstract Collection getAssetKeys(String contentBindningName);

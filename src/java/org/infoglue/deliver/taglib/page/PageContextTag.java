@@ -39,6 +39,17 @@ public class PageContextTag extends TemplateControllerTag
         super();
     }
 
+	/**
+	 * Initializes the parameters to make it accessible for the children tags (if any).
+	 * 
+	 * @return indication of whether to evaluate the body or not.
+	 * @throws JspException if an error occurred while processing this tag.
+	 */
+	public int doStartTag() throws JspException 
+	{
+		return EVAL_BODY_INCLUDE;
+	}
+
 	public int doEndTag() throws JspException
     {
 		setResultAttribute(getController());

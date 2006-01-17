@@ -43,10 +43,7 @@ public class LanguageTag extends TemplateControllerTag
     }
 
 	public int doStartTag() throws JspException 
-    {
-        languageId = null;
-        languageCode = null;
-        
+    {        
         return EVAL_BODY_INCLUDE;
     }
     
@@ -65,6 +62,9 @@ public class LanguageTag extends TemplateControllerTag
 	    else
 	        throw new JspException("Must state either languageId or languageCode");
 	    
+        languageId = null;
+        languageCode = null;
+
 	    return EVAL_PAGE;
     }
 
