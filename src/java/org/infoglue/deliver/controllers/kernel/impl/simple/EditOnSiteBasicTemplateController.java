@@ -394,8 +394,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	 
 	public String getParsedContentAttribute(Integer contentId, Integer languageId, String attributeName, boolean clean) 
 	{		
-	    System.out.println("clean:" + clean);
-		//return super.getParsedContentAttribute(contentId, attributeName);
+	    //return super.getParsedContentAttribute(contentId, attributeName);
 		
 	    String attributeValue = "";
 	    
