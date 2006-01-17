@@ -129,6 +129,8 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	{ 
         List languageVOList = new ArrayList();
 
+        System.out.println("siteNodeId:" + siteNodeId);
+
         SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 			
 		if(siteNode != null)
@@ -136,7 +138,10 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			Repository repository = siteNode.getRepository();
      		if(repository != null)
 			{
-     			Collection repositoryLanguages = repository.getRepositoryLanguages();
+     		    System.out.println("repository:" + repository.getName());
+
+     		    Collection repositoryLanguages = repository.getRepositoryLanguages();
+     		    System.out.println("repositoryLanguages:" + repositoryLanguages.size());
      			Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
      			while(repositoryLanguagesIterator.hasNext())
      			{
