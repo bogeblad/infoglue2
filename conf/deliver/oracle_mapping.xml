@@ -1222,7 +1222,7 @@
   	</class>
   	
  	<!--  Mapping for ServerNode  -->
-  	<class name="org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl" identity="serverNodeId" key-generator="IDENTITY">
+  	<class name="org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl" identity="serverNodeId" key-generator="SEQUENCE">
     	<description>ServerNode</description>
     	<cache-type type="unlimited" capacity="1000"/>
 	    <map-to table="cmServerNode"/>
