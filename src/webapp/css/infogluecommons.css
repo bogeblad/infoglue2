@@ -55,6 +55,30 @@
 	font-size:10px;
 	}
 
+.propertiesDivLeftHandle {
+	width: 150px; 
+	float: left;
+	color:white;
+	text-align: left;
+	line-height:10px;
+	}
+.propertiesDivRightHandle {
+	color:white;
+	text-align: right;
+	line-height:10px;	
+	}
+
+.propertiesDivBody {
+    padding-top:2px;
+	padding-bottom:2px;
+	width:100%;
+	height:300px;
+	background-color: white;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	overflow: auto;
+	}
+
 .smallPropDiv {
 	position:absolute;
 	width:400px;

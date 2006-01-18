@@ -57,8 +57,29 @@
 		document.newValidatorForm.attributeToExpand.value = attributeName;
 		showDiv('newValidatorFormLayer');
 	}
+	
+	/****************************
+	 * Hook method to get informed when a drag starts
+ 	 ****************************/
+
+	function dragStarted(object)
+	{
+		//alert("dragStarted:" + object.id);
+		isDragged = true;
+	} 
+
+	/****************************
+	 * Hook method to get informed when a drag ends
+	 ****************************/
+	function dragEnded(object, left, top)
+	{
+		//alert("dragEnded:" + object.id);
+	}
+	
 -->
 </script>
+<script type="text/javascript" src="script/componentEditor.js"></script>
+<script type="text/javascript" src="script/dom-drag.js"></script>
 
 <div id="newValidatorFormLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 	<form name="newValidatorForm" action="ViewContentTypeDefinition!insertAttributeValidator.action" method="POST">
@@ -206,15 +227,11 @@
 #if($attributeToExpand == $attribute.name)
 	#set($visibility = "visible")
 #end
-<div id="${attribute.name}PropertyLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:150px; visibility:${visibility}; z-index:0">
+<div id="${attribute.name}PropertyLayer" class="propertiesDiv" style="border-style:solid; border-width:1px; background-color: white; position:absolute; left:20px; top:20px; visibility:${visibility}; z-index:0">
+<div id="${attribute.name}PropertyHandle" class="propertiesDivHandle"><div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">Properties for attribute</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hideDiv('${attribute.name}PropertyLayer');" class="white">close</a></div></div>
+<div id="propertiesDivBody" class="propertiesDivBody">
 	<form name="${attribute.name}PropertiesForm" action="ViewContentTypeDefinition!updateAttribute.action" method="POST">
 	<table border="0" cellpadding="2" cellspacing="0">
-	<tr>
-		<td colspan="2" class="propertiesheader">Properties for attribute</td>
-	</tr>
-	<tr>
-		<td colspan="2"><img src="images/trans.gif" height="5" width="1"></td>
-	</tr>
 	<tr>
 		<td><b>Name</b></td>
 		<td><input type="textfield" name="newAttributeName" value="$attribute.name" class="normaltextfield"></td>
@@ -322,6 +339,19 @@
 	<input type="hidden" name="attributeToExpand" value="${attribute.name}">
 	</form>
 </div>
+</div>
+<script type="text/javascript">		
+	var theHandle = document.getElementById("${attribute.name}PropertyHandle");		
+	var theRoot   = document.getElementById("${attribute.name}PropertyLayer");		
+	//alert("theHandle:" + theHandle);
+	//alert("theRoot:" + theRoot);
+	//Drag.init(theHandle, theRoot);   
+	Drag.init(theHandle, theRoot, 50, 50, 0, 1000);    
+	//theRoot.style.left = 160;     
+	//theRoot.style.top = 150;	
+	floatDiv("${attribute.name}PropertyLayer", 50, 50).flt();
+	
+</script>
 #end
 
 #set($categoryKeys = $definedCategoryKeys)
@@ -477,7 +507,7 @@
 					<tr>
 						<td><nobr><a href="ViewContentTypeDefinition!moveAttributeUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAttributeDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/moveDown.gif" border="0"></a></nobr></td>
 						<td><img src="images/${attribute.inputType}Icon.gif"></td>
-						<td width="90%">$attribute.name ($title) of type $attribute.inputType</td>
+						<td width="90%"><a name="${attribute.name}" href="javascript:showDiv('${attribute.name}PropertyLayer');">$attribute.name ($title) of type $attribute.inputType</a></td>
 						<td>
 							<nobr>
 							<a href="javascript:showDiv('${attribute.name}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
@@ -567,7 +597,12 @@
 </table>
 </form>
 </div>
-
+<script type="text/javascript">
+	#if($activatedName.size() > 0)
+		document.location.href = document.location.href + "#$activatedName.get(0)"; 
+		showDiv("${activatedName.get(0)}PropertyLayer");
+	#end
+</script>
 </body>
 </html>
 

@@ -28,6 +28,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.io.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
@@ -35,7 +36,7 @@ import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource; 
+import org.xml.sax.InputSource;
 
 
 /**
@@ -121,7 +122,7 @@ public class ViewFormEditorAction extends InfoGlueAbstractAction //extends ViewC
 	public String doInsertAttribute() throws Exception
 	{
 		this.initialize();
-		String newFormDefinition = ContentTypeDefinitionController.getController().insertContentTypeAttribute(this.formDefinition, this.inputTypeId);
+		String newFormDefinition = ContentTypeDefinitionController.getController().insertContentTypeAttribute(this.formDefinition, this.inputTypeId, new ArrayList());
 		ContentVersionController.getContentVersionController().updateAttributeValue(getContentVersionId(), getContentVersionAttributeName(), newFormDefinition, this.getInfoGluePrincipal());		
 				
 		this.initialize();

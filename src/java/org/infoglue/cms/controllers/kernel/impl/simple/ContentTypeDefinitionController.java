@@ -663,7 +663,7 @@ public class ContentTypeDefinitionController extends BaseController
 	 * This method adds a new content type attribute to the contentTypeDefinition. It sets some default values.
 	 */
 
-	public String insertContentTypeAttribute(String schemaValue, String inputTypeId)
+	public String insertContentTypeAttribute(String schemaValue, String inputTypeId, List activatedName)
 	{
 		String newSchemaValue = schemaValue;
 
@@ -684,7 +684,9 @@ public class ContentTypeDefinitionController extends BaseController
 				Node child = anl.item(i);
 				Element childElement = (Element)child;
 				Element newAttribute = document.createElement("xs:element");
-				newAttribute.setAttribute("name", "newAttributeName" + (int)(Math.random() * 100));
+				String name = "newAttributeName" + (int)(Math.random() * 100);
+				activatedName.add(name);
+				newAttribute.setAttribute("name", name);
 				newAttribute.setAttribute("type", inputTypeId);
 				childElement.appendChild(newAttribute);
 

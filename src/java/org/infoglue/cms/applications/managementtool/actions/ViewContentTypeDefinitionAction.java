@@ -36,6 +36,7 @@ import org.infoglue.cms.entities.management.CategoryAttribute;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.io.*;
@@ -90,6 +91,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	private String imageWidth;
 	private String imageHeight;
 	
+	private List activatedName = new ArrayList();
 
     public ViewContentTypeDefinitionAction()
     {
@@ -145,7 +147,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	public String doInsertAttribute() throws Exception
 	{
 		this.initialize(getContentTypeDefinitionId());
-		String newSchemaValue = ContentTypeDefinitionController.getController().insertContentTypeAttribute(this.contentTypeDefinitionVO.getSchemaValue(), this.inputTypeId);
+		String newSchemaValue = ContentTypeDefinitionController.getController().insertContentTypeAttribute(this.contentTypeDefinitionVO.getSchemaValue(), this.inputTypeId, this.activatedName);
 		this.contentTypeDefinitionVO.setSchemaValue(newSchemaValue);
 		ContentTypeDefinitionController.getController().update(this.contentTypeDefinitionVO);
 
@@ -1323,5 +1325,9 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
     public void setDescription(String description)
     {
         this.description = description;
+    }
+    public List getActivatedName()
+    {
+        return activatedName;
     }
 }
