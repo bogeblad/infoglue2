@@ -19,6 +19,18 @@
 		}
 	}
 
+	function showPropertyDiv(id)
+	{
+		document.getElementById(id).style.visibility = 'visible';
+		document.getElementById(id).style.display = 'block';
+	}
+
+	function hidePropertyDiv(id)
+	{
+		document.getElementById(id).style.visibility = 'hidden';
+		document.getElementById(id).style.display = 'none';
+	}
+
 	function showDiv(id)
 	{
 		document.getElementById(id).style.visibility = 'visible';
@@ -81,7 +93,7 @@
 <script type="text/javascript" src="script/componentEditor.js"></script>
 <script type="text/javascript" src="script/dom-drag.js"></script>
 
-<div id="newValidatorFormLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+<div id="newValidatorFormLayer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 	<form name="newValidatorForm" action="ViewContentTypeDefinition!insertAttributeValidator.action" method="POST">
 	<table border="0" cellpadding="4" cellspacing="0">
 	<tr>
@@ -127,7 +139,7 @@
 #foreach($attribute in $contentTypeAttributes)
 
 	#foreach($validator in $attribute.validators)
-		<div id="${attribute.name}_${validator.name}_layer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+		<div id="${attribute.name}_${validator.name}_layer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 			<form name="${attribute.name}_${validator.name}ArgumentsForm" action="ViewContentTypeDefinition!updateAttributeValidatorArguments.action" method="POST">
 			<table border="0" cellpadding="4" cellspacing="0">
 			<tr>
@@ -179,7 +191,7 @@
 		#foreach($value in $values)
 			#if($parameter.value.type == 1)
 
-			<div id="${attribute.name}${parameter.key}${value.id}PropertyLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+			<div id="${attribute.name}${parameter.key}${value.id}PropertyLayer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 				<form name="${attribute.name}${parameter.key}${value.id}PropertiesForm" action="ViewContentTypeDefinition!updateAttributeParameterValue.action" method="POST">
 				<table border="0" cellpadding="4" cellspacing="0">
 				<tr>
@@ -227,8 +239,12 @@
 #if($attributeToExpand == $attribute.name)
 	#set($visibility = "visible")
 #end
-<div id="${attribute.name}PropertyLayer" class="propertiesDiv" style="border-style:solid; border-width:1px; background-color: white; position:absolute; left:20px; top:20px; visibility:${visibility}; z-index:0">
-<div id="${attribute.name}PropertyHandle" class="propertiesDivHandle"><div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">Properties for attribute</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hideDiv('${attribute.name}PropertyLayer');" class="white">close</a></div></div>
+#set($display = "none")
+#if($attributeToExpand == $attribute.name)
+	#set($display = "block")
+#end
+<div id="${attribute.name}PropertyLayer" class="propertiesDiv" style="border: 1px solid black; background-color: white; position:absolute; left:20px; top:20px; display:${display}; visibility:${visibility}; z-index:0">
+<div id="${attribute.name}PropertyHandle" class="propertiesDivHandle"><div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">Properties for attribute</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hidePropertyDiv('${attribute.name}PropertyLayer');" class="white">close</a></div></div>
 <div id="propertiesDivBody" class="propertiesDivBody">
 	<form name="${attribute.name}PropertiesForm" action="ViewContentTypeDefinition!updateAttribute.action" method="POST">
 	<table border="0" cellpadding="2" cellspacing="0">
@@ -359,7 +375,7 @@
 
 #foreach($category in $categoryKeys)
 #set($categoryKey = $category.value)
-<div id="${categoryKey}PropertyLayer" style="border-style:solid; border-width:1px; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+<div id="${categoryKey}PropertyLayer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 	<form name="${categoryKey}PropertiesForm" action="ViewContentTypeDefinition!updateCategoryKey.action" method="POST">
 	<table border="0" cellpadding="4" cellspacing="0">
 	<tr>
@@ -507,10 +523,10 @@
 					<tr>
 						<td><nobr><a href="ViewContentTypeDefinition!moveAttributeUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAttributeDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/moveDown.gif" border="0"></a></nobr></td>
 						<td><img src="images/${attribute.inputType}Icon.gif"></td>
-						<td width="90%"><a name="${attribute.name}" href="javascript:showDiv('${attribute.name}PropertyLayer');">$attribute.name ($title) of type $attribute.inputType</a></td>
+						<td width="90%"><a name="${attribute.name}" href="javascript:showPropertyDiv('${attribute.name}PropertyLayer');">$attribute.name ($title) of type $attribute.inputType</a></td>
 						<td>
 							<nobr>
-							<a href="javascript:showDiv('${attribute.name}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
+							<a href="javascript:showPropertyDiv('${attribute.name}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
 							<a href="ViewContentTypeDefinition!deleteAttribute.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/delete.gif" border="0"></a>
 							</nobr>
 						</td>
