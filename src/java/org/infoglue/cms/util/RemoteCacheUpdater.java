@@ -152,7 +152,6 @@ public class RemoteCacheUpdater implements NotificationListener
 		    String deliverUrl = (String)urlsIterator.next();
 			String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
 			logger.info("Updating cache at " + address);
-			System.out.println("Updating cache at " + address);
 			String response = postToUrl(address, hashedMessage);			    
 		}
 
