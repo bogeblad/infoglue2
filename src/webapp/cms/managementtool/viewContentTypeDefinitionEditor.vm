@@ -19,6 +19,11 @@
 		}
 	}
 
+	function syncDropboxes()
+	{
+		document.editForm.inputTypeId.selectedIndex = document.editForm.inputTypeId2.selectedIndex;
+	}
+
 	function showPropertyDiv(id)
 	{
 		document.getElementById(id).style.visibility = 'visible';
@@ -235,6 +240,10 @@
 		#end
 	#end
 
+#if($activatedName.size() > 0)
+	#set($attributeToExpand = $activatedName.get(0)) 
+#end
+
 #set($visibility = "hidden")
 #if($attributeToExpand == $attribute.name)
 	#set($visibility = "visible")
@@ -243,6 +252,7 @@
 #if($attributeToExpand == $attribute.name)
 	#set($display = "block")
 #end
+
 <div id="${attribute.name}PropertyLayer" class="propertiesDiv" style="border: 1px solid black; background-color: white; position:absolute; left:20px; top:20px; display:${display}; visibility:${visibility}; z-index:0">
 <div id="${attribute.name}PropertyHandle" class="propertiesDivHandle"><div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">Properties for attribute</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hidePropertyDiv('${attribute.name}PropertyLayer');" class="white">close</a></div></div>
 <div id="propertiesDivBody" class="propertiesDivBody">
@@ -480,7 +490,7 @@
 			</p>
 			<p>
 				Attributes / Form elements - <a href="ViewContentTypeDefinition!useSimple.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title">Simple</a><br>
-				<table width="500" cellpadding="0" cellspacing="0" border="0">
+				<table width="700" cellpadding="0" cellspacing="0" border="0">
 				<tr>
 					<td>
 						<select size="1" name="inputTypeId" class="sitedropbox">
@@ -515,11 +525,12 @@
 					</td>
 				</tr>
 				</table>
-				<table width="500" cellpadding="0" cellspacing="2" border="0" class="bordered">
+				<table width="700" cellpadding="0" cellspacing="2" border="0" class="bordered">
+				#set($count = 0)
 				#foreach($attribute in $contentTypeAttributes)
 					#set($title = $!attribute.getContentTypeAttribute("title").getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode"))
 					#set($title = $!attribute.getContentTypeAttribute("title").getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode"))
-
+					
 					<tr>
 						<td><nobr><a href="ViewContentTypeDefinition!moveAttributeUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAttributeDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&attributeName=$attribute.name"><img src="images/moveDown.gif" border="0"></a></nobr></td>
 						<td><img src="images/${attribute.inputType}Icon.gif"></td>
@@ -531,9 +542,40 @@
 							</nobr>
 						</td>
 					</tr>
+					#set($count = $count + 1)
 				#end
 				</table>
 			</p>
+			#if($count > 15)
+			<p>
+				<table width="700" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td>
+						<select size="1" name="inputTypeId2" onChange="syncDropboxes();" class="sitedropbox">
+						    <option value="" selected>Choose element type</option>
+						    <!--<option value="label">Label</option>-->
+						    <option value="textfield">TextField</option>
+						    <option value="textarea">TextArea</option>
+						    <option value="checkbox">CheckBox</option>
+						    <option value="radiobutton">RadioButton</option>
+						    <option value="select">SelectBox</option>
+						    <option value="hidden">Hidden</option>
+						    <!--<option value="password">Password</option>-->
+						    <!--<option value="image">SubmitImage</option>-->
+						    <!--<option value="submit">SubmitButton</option>-->
+						    <!--<option value="clear">ClearButton</option>-->
+						</select>
+					</td>
+					<td width="30%">
+						<a href="javascript:submitNewAttribute();"><img src="images/insertFormElement.gif" border="0"></a>
+					</td>
+					<td align="right" width="50%">
+						&nbsp;
+					</td>
+				</tr>
+				</table>
+			</p>
+			#end
 		</td>
 	</tr>
 </table>
@@ -541,7 +583,7 @@
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%">
 <tr>
 	<td>
-		<table width="500" cellpadding="0" cellspacing="2" border="0">
+		<table width="700" cellpadding="0" cellspacing="2" border="0">
 			<tr>
 				<td align="left"><b>Defined Categories</b></td>
 				<td align="right">
@@ -549,7 +591,7 @@
 				</td>
 			</tr>
 		</table>
-		<table width="500" cellpadding="0" cellspacing="2" border="0" class="bordered">
+		<table width="700" cellpadding="0" cellspacing="2" border="0" class="bordered">
 			<tr>
 				<td width="45%"><b>Attribute (Key)</b></td>
 				<td width="45%"><b>Base Category</b></td>
@@ -576,7 +618,7 @@
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%">
 <tr>
 	<td>
-		<table width="500" cellpadding="0" cellspacing="2" border="0">
+		<table width="700" cellpadding="0" cellspacing="2" border="0">
 			<tr>
 				<td align="left"><b>Defined Asset Keys</b></td>
 				<td align="right">
@@ -584,7 +626,7 @@
 				</td>
 			</tr>
 		</table>
-		<table width="500" cellpadding="0" cellspacing="2" border="0" class="bordered">
+		<table width="700" cellpadding="0" cellspacing="2" border="0" class="bordered">
 		#foreach($assetKeyDefinition in $definedAssetKeys)
 			<tr>
 				<td><nobr><a href="ViewContentTypeDefinition!moveAssetKeyUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKeyDefinition.assetKey"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAssetKeyDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKeyDefinition.assetKey"><img src="images/moveDown.gif" border="0"></a></nobr></td>

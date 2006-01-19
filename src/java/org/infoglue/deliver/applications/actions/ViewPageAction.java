@@ -35,6 +35,7 @@ import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -48,11 +49,8 @@ import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 
 import java.net.URLEncoder;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -432,37 +430,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		this.browserBean = new BrowserBean();
 		this.browserBean.setRequest(getRequest());
 		
-		if(getSiteNodeId() == null)
-		{
-			if(getRepositoryName() == null)
-			{
-				setRepositoryName(RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getName());
-			}
-			
-			SiteNodeVO rootSiteNodeVO = NodeDeliveryController.getRootSiteNode(db, getRepositoryName());	
-			if(rootSiteNodeVO == null)
-				throw new SystemException("There was no repository called " + getRepositoryName() + " or no pages were available in that repository");
-			
-			setSiteNodeId(rootSiteNodeVO.getSiteNodeId());
-		} 
-		
-		if(getLanguageId() == null)
-		{
-			LanguageVO browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfRepositorySupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId());
-			if(browserLanguageVO != null)
-			{
-				setLanguageId(browserLanguageVO.getLanguageId());
-			}
-			else
-			{
-				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
-				if(masterLanguageVO == null)
-					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
-	
-				setLanguageId(masterLanguageVO.getLanguageId());				
-			}
-		}
-		
 		this.principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 		if(this.principal == null)
 		{
@@ -488,6 +455,47 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
 			}
 		}
+
+		if(getSiteNodeId() == null)
+		{
+			if(getRepositoryName() == null)
+			{
+				setRepositoryName(RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getName());
+			}
+			
+			SiteNodeVO rootSiteNodeVO = NodeDeliveryController.getRootSiteNode(db, getRepositoryName());	
+			if(rootSiteNodeVO == null)
+				throw new SystemException("There was no repository called " + getRepositoryName() + " or no pages were available in that repository");
+			
+			setSiteNodeId(rootSiteNodeVO.getSiteNodeId());
+		} 
+		
+		if(getLanguageId() == null)
+		{
+		    LanguageVO browserLanguageVO = null;
+		    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getProperty("useAlternativeBrowserLanguageCheck");
+		    if(useAlternativeBrowserLanguageCheck == null || !useAlternativeBrowserLanguageCheck.equalsIgnoreCase("true"))
+		        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId(), (InfoGluePrincipal)this.principal);
+		    else
+		        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfRepositorySupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId());
+
+		    if(browserLanguageVO != null)
+			{
+			    logger.info("The system had browserLanguageVO available:" + browserLanguageVO.getName());
+			    setLanguageId(browserLanguageVO.getLanguageId());
+			}
+			else
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
+				if(masterLanguageVO == null)
+					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
+	
+				logger.info("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
+
+				setLanguageId(masterLanguageVO.getLanguageId());				
+			}
+		}
+		
 	}
 
 	/**

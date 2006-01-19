@@ -32,6 +32,8 @@ import java.util.Locale;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
@@ -42,7 +44,9 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.util.CacheController;
 
 
@@ -379,6 +383,54 @@ public class LanguageDeliveryController extends BaseDeliveryController
 					index = currentIndex;
 					getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
 					language = currentLanguage;
+					if (index==0) break; // Continue and try to find a better candidate unless index is 0 (first prio)
+				}
+			}
+		}
+
+		return (language == null) ? null : language.getValueObject();	
+	}
+
+	/**
+	 * This method returns language with the languageCode sent in if it is allowed/supported in the current repository. 
+	 */
+	
+	public LanguageVO getLanguageIfSiteNodeSupportsIt(Database db, String languageCodes, Integer siteNodeId, InfoGluePrincipal principal) throws SystemException, Exception
+	{
+		if (languageCodes == null) return null;
+		int index = Integer.MAX_VALUE;
+		int currentIndex = 0;
+		getLogger().info("Coming in with languageCodes:" + languageCodes);
+		
+        Language language = null;
+
+    	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+		    	
+    	Repository repository = siteNode.getRepository();
+		if(repository != null)
+		{
+			Collection languages = repository.getRepositoryLanguages();
+			Iterator languageIterator = languages.iterator();
+			while(languageIterator.hasNext())
+			{
+				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
+				Language currentLanguage = repositoryLanguage.getLanguage();
+				getLogger().info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
+				currentIndex = languageCodes.toLowerCase().indexOf(currentLanguage.getLanguageCode().toLowerCase());
+				if( currentIndex > -1 && currentIndex < index)
+				{
+					index = currentIndex;
+					getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
+
+					DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
+			    	ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1)).getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
+					if(contentVO != null)
+					{
+				    	ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(db, siteNodeId, contentVO.getId(), currentLanguage.getId(), false, deliveryContext, principal);
+				    	if(contentVersionVO != null)
+							language = currentLanguage;
+					}
+					
 					if (index==0) break; // Continue and try to find a better candidate unless index is 0 (first prio)
 				}
 			}
