@@ -34,9 +34,14 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
+
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This action first checks if there is a bound content linked - if not one is created in a special folder.
@@ -243,6 +248,8 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
                 this.contentVO = metaInfoContent.getValueObject();
             }
             
+            this.languageId = getInitialLanguageVO().getId();
+            
     		commitTransaction(db);
         }
         catch(Exception e)
@@ -255,6 +262,28 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		return "success";
     }
        
+	public LanguageVO getInitialLanguageVO() throws Exception
+	{
+		Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    String initialLanguageId = ps.getString("content_" + this.getContentId() + "_initialLanguageId");
+	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(this.getContentId()); 
+	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
+	    {
+	        initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
+		    parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId()); 
+	    }
+	    
+	    System.out.println("initialLanguageId:" + initialLanguageId);
+	    
+	    if(initialLanguageId != null && !initialLanguageId.equals("") && !initialLanguageId.equals("-1"))
+	        return LanguageController.getController().getLanguageVOWithId(new Integer(initialLanguageId));
+	    else
+	        return LanguageController.getController().getMasterLanguage(repositoryId);
+	}
+
 	public List getRepositories()
 	{
 		return repositories;
