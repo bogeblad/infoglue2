@@ -821,7 +821,7 @@ public class SiteNodeController extends BaseController
         	ContentVersionController.getContentVersionController().create(contentVO.getId(), masterLanguage.getId(), contentVersionVO, null, db);
 
         	//Also created a version in the local master language for this part of the site if any
-        	LanguageVO localMasterLanguageVO = getInitialLanguageVO(contentVO.getId(), repositoryId);
+        	LanguageVO localMasterLanguageVO = getInitialLanguageVO(db, contentVO.getId(), repositoryId);
         	if(localMasterLanguageVO.getId().intValue() == masterLanguage.getId().intValue())
         	{
 	        	String versionValueLocalMaster = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[" + newSiteNode.getName() + "]]></Title><NavigationTitle><![CDATA[" + newSiteNode.getName() + "]]></NavigationTitle><NiceURIName><![CDATA[" + new VisualFormatter().replaceNonAscii(newSiteNode.getName(), '_') + "]]></NiceURIName><Description><![CDATA[" + newSiteNode.getName() + "]]></Description><MetaInfo><![CDATA[" + newSiteNode.getName() + "]]></MetaInfo><ComponentStructure><![CDATA[]]></ComponentStructure></attributes></article>";
@@ -844,18 +844,19 @@ public class SiteNodeController extends BaseController
         return content;
     }
 
-	public LanguageVO getInitialLanguageVO(Integer contentId, Integer repositoryId) throws Exception
+	public LanguageVO getInitialLanguageVO(Database db, Integer contentId, Integer repositoryId) throws Exception
 	{
 		Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
 	    String initialLanguageId = ps.getString("content_" + contentId + "_initialLanguageId");
-	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(contentId); 
-	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
+	    Content content = ContentController.getContentController().getContentWithId(contentId, db);
+	    Content parentContent = content.getParentContent(); 
+	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContent != null)
 	    {
-	        initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
-		    parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId()); 
+	        initialLanguageId = ps.getString("content_" + parentContent.getId() + "_initialLanguageId");
+		    parentContent = parentContent.getParentContent(); 
 	    }
 	    
 	    if(initialLanguageId != null && !initialLanguageId.equals("") && !initialLanguageId.equals("-1"))
