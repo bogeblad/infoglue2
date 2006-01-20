@@ -470,8 +470,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			setSiteNodeId(rootSiteNodeVO.getSiteNodeId());
 		} 
 		
+		String requestLanguageId = this.getRequest().getParameter("languageId");
 		//if(getLanguageId() == null)
-		//{
+		if(requestLanguageId == null || requestLanguageId.equalsIgnoreCase(""))
+		{
 		    LanguageVO browserLanguageVO = null;
 		    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getProperty("useAlternativeBrowserLanguageCheck");
 		    if(useAlternativeBrowserLanguageCheck == null || !useAlternativeBrowserLanguageCheck.equalsIgnoreCase("true"))
@@ -494,7 +496,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 				setLanguageId(masterLanguageVO.getLanguageId());				
 			}
-		//}
+		}
 		
 	}
 
