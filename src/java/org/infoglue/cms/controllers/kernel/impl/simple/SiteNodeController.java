@@ -821,8 +821,8 @@ public class SiteNodeController extends BaseController
         	ContentVersionController.getContentVersionController().create(contentVO.getId(), masterLanguage.getId(), contentVersionVO, null, db);
 
         	//Also created a version in the local master language for this part of the site if any
-        	LanguageVO localMasterLanguageVO = getInitialLanguageVO(db, contentVO.getId(), repositoryId);
-        	if(localMasterLanguageVO.getId().intValue() == masterLanguage.getId().intValue())
+        	LanguageVO localMasterLanguageVO = getInitialLanguageVO(db, parentFolderContent.getId(), repositoryId);
+        	if(localMasterLanguageVO.getId().intValue() != masterLanguage.getId().intValue())
         	{
 	        	String versionValueLocalMaster = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[" + newSiteNode.getName() + "]]></Title><NavigationTitle><![CDATA[" + newSiteNode.getName() + "]]></NavigationTitle><NiceURIName><![CDATA[" + new VisualFormatter().replaceNonAscii(newSiteNode.getName(), '_') + "]]></NiceURIName><Description><![CDATA[" + newSiteNode.getName() + "]]></Description><MetaInfo><![CDATA[" + newSiteNode.getName() + "]]></MetaInfo><ComponentStructure><![CDATA[]]></ComponentStructure></attributes></article>";
 	            ContentVersionVO contentVersionVOLocalMaster = new ContentVersionVO();
