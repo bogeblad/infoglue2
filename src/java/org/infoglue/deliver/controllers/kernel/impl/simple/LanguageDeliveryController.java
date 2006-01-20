@@ -444,5 +444,52 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		return (language == null) ? null : language.getValueObject();	
 	}
 
-    
+ 
+	/**
+	 * This method returns language with the languageCode sent in if it is allowed/supported in the current repository. 
+	 */
+	
+	public LanguageVO getLanguageIfSiteNodeSupportsIt(Database db, Integer languageId, Integer siteNodeId, InfoGluePrincipal principal) throws SystemException, Exception
+	{
+		if (languageId == null) return null;
+
+		getLogger().info("Coming in with languageId:" + languageId);
+		
+        Language language = null;
+
+    	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+		    	
+    	Repository repository = siteNode.getRepository();
+		if(repository != null)
+		{
+			Collection languages = repository.getRepositoryLanguages();
+			Iterator languageIterator = languages.iterator();
+			while(languageIterator.hasNext())
+			{
+				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
+				Language currentLanguage = repositoryLanguage.getLanguage();
+				getLogger().info("CurrentLanguage:" + currentLanguage.getId());
+				if(currentLanguage.getId().intValue() == languageId.intValue())
+				{
+					DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
+			    	ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1)).getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
+					if(contentVO != null)
+					{
+				    	ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(db, siteNodeId, contentVO.getId(), currentLanguage.getId(), false, deliveryContext, principal);
+				    	if(contentVersionVO != null)
+				    	{
+							getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
+							language = currentLanguage;
+							break;
+				    	}
+				    }
+				}
+			}
+		}
+
+		getLogger().info("Returning language: " + language);
+
+		return (language == null) ? null : language.getValueObject();	
+	}
+
 }

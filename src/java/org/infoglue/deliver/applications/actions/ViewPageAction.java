@@ -470,10 +470,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			setSiteNodeId(rootSiteNodeVO.getSiteNodeId());
 		} 
 		
-		String requestLanguageId = this.getRequest().getParameter("languageId");
-		//if(getLanguageId() == null)
+		//String requestLanguageId = this.getRequest().getParameter("languageId");
+		if(getLanguageId() == null)
 		//if(requestLanguageId == null || requestLanguageId.equalsIgnoreCase(""))
-		//{
+		{
 		    LanguageVO browserLanguageVO = null;
 		    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getProperty("useAlternativeBrowserLanguageCheck");
 		    if(useAlternativeBrowserLanguageCheck == null || !useAlternativeBrowserLanguageCheck.equalsIgnoreCase("true"))
@@ -496,7 +496,28 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 				setLanguageId(masterLanguageVO.getLanguageId());				
 			}
-		//}
+		}
+		else
+		{
+		    LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, getLanguageId(), getSiteNodeId(), (InfoGluePrincipal)this.principal);
+		   
+		    if(languageVO != null)
+			{
+			    logger.info("The system had browserLanguageVO available:" + languageVO.getName());
+			    setLanguageId(languageVO.getLanguageId());
+			}
+			else
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
+				if(masterLanguageVO == null)
+					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
+	
+				logger.info("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
+
+				setLanguageId(masterLanguageVO.getLanguageId());				
+			}
+		    
+		}
 		
 	}
 
