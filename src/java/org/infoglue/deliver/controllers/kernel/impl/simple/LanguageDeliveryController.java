@@ -428,13 +428,18 @@ public class LanguageDeliveryController extends BaseDeliveryController
 					{
 				    	ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(db, siteNodeId, contentVO.getId(), currentLanguage.getId(), false, deliveryContext, principal);
 				    	if(contentVersionVO != null)
+				    	{
 							language = currentLanguage;
-					}
+							getLogger().info("Language now: " + language.getName());
+				    	}
+				    }
 					
 					if (index==0) break; // Continue and try to find a better candidate unless index is 0 (first prio)
 				}
 			}
 		}
+
+		getLogger().info("Returning language: " + language);
 
 		return (language == null) ? null : language.getValueObject();	
 	}
