@@ -248,7 +248,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
                 this.contentVO = metaInfoContent.getValueObject();
             }
             
-            this.languageId = getInitialLanguageVO().getId();
+            this.languageId = getInitialLanguageVO(this.contentVO.getId()).getId();
             
     		commitTransaction(db);
         }
@@ -262,14 +262,14 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		return "success";
     }
        
-	public LanguageVO getInitialLanguageVO() throws Exception
+	public LanguageVO getInitialLanguageVO(Integer contentId) throws Exception
 	{
 		Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
-	    String initialLanguageId = ps.getString("content_" + this.getContentId() + "_initialLanguageId");
-	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(this.getContentId()); 
+	    String initialLanguageId = ps.getString("content_" + contentId + "_initialLanguageId");
+	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(contentId); 
 	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
 	    {
 	        initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
