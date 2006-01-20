@@ -23,15 +23,21 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.Language;
@@ -41,6 +47,8 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
@@ -48,6 +56,9 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.util.CacheController;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 
 public class LanguageDeliveryController extends BaseDeliveryController
@@ -416,14 +427,17 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
 				Language currentLanguage = repositoryLanguage.getLanguage();
 				getLogger().info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
+				
+				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1));
+				
 				currentIndex = languageCodes.toLowerCase().indexOf(currentLanguage.getLanguageCode().toLowerCase());
-				if( currentIndex > -1 && currentIndex < index)
+				if(getIsValidLanguage(db, ndc, siteNode, currentLanguage.getId()) && currentIndex > -1 && currentIndex < index)
 				{
 					index = currentIndex;
 					getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
 
 					DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
-			    	ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1)).getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
+			    	ContentVO contentVO = ndc.getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
 					if(contentVO != null)
 					{
 				    	ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(db, siteNodeId, contentVO.getId(), currentLanguage.getId(), false, deliveryContext, principal);
@@ -451,13 +465,19 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	
 	public LanguageVO getLanguageIfSiteNodeSupportsIt(Database db, Integer languageId, Integer siteNodeId, InfoGluePrincipal principal) throws SystemException, Exception
 	{
-		if (languageId == null) return null;
+		if (languageId == null) 
+		    return null;
+		
+		NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, new Integer(-1));
 
 		getLogger().info("Coming in with languageId:" + languageId);
 		
         Language language = null;
 
     	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+
+		if(!getIsValidLanguage(db, ndc, siteNode, languageId))
+		    return null;		
 		    	
     	Repository repository = siteNode.getRepository();
 		if(repository != null)
@@ -472,7 +492,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				if(currentLanguage.getId().intValue() == languageId.intValue())
 				{
 					DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
-			    	ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1)).getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
+			    	ContentVO contentVO = ndc.getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
 					if(contentVO != null)
 					{
 				    	ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(db, siteNodeId, contentVO.getId(), currentLanguage.getId(), false, deliveryContext, principal);
@@ -492,4 +512,42 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		return (language == null) ? null : language.getValueObject();	
 	}
 
+	
+	private boolean getIsValidLanguage(Database db, NodeDeliveryController ndc, SiteNode siteNode, Integer languageId) throws Exception
+	{
+	    boolean isValidLanguage = true;
+	    
+	    SiteNodeVersion siteNodeVersion = ndc.getActiveSiteNodeVersion(siteNode.getId(), db);
+	    Integer disabledLanguagesSiteNodeVersionId = ndc.getDisabledLanguagesSiteNodeVersionId(db, siteNode.getId());
+	    
+	    if(disabledLanguagesSiteNodeVersionId != null)
+	    {
+	        SiteNodeVersion disabledLanguagesSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(disabledLanguagesSiteNodeVersionId, db);
+	        
+	        Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+		    String disabledLanguagesString = ps.getString("siteNode_" + disabledLanguagesSiteNodeVersion.getOwningSiteNode().getSiteNodeId() + "_disabledLanguages");
+		    System.out.println("disabledLanguagesString:" + disabledLanguagesString);
+		    if(disabledLanguagesString != null && !disabledLanguagesString.equalsIgnoreCase(""))
+		    {
+		        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
+		        for(int i=0; i<disabledLanguagesStringArray.length; i++)
+		        {
+		            if(languageId.intValue() == new Integer(disabledLanguagesStringArray[i]).intValue())
+		            {
+		                isValidLanguage = false;
+		                break;
+		            }
+		        }
+		    }
+		}
+		System.out.println("languageId:" + languageId + " was valid:" + isValidLanguage);
+		
+		return isValidLanguage;
+	}
+
+	
+	
 }

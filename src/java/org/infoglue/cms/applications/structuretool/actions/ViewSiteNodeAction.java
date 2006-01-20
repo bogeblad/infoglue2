@@ -40,11 +40,17 @@ import org.infoglue.cms.entities.management.*;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
+
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 /** 
@@ -61,6 +67,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	private List availableServiceBindings 	= null;
 	private List serviceBindings 			= null;
 	private List referenceBeanList 			= new ArrayList();
+	private List availableLanguages			= new ArrayList();
+	private List disabledLanguages 			= new ArrayList();
 
 	private SiteNodeVO siteNodeVO;
 	private SiteNodeVersionVO siteNodeVersionVO;
@@ -105,6 +113,32 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		{
 		    e.printStackTrace();
 		}
+		
+		this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
+		
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+	    String disabledLanguagesString = ps.getString("siteNode_" + siteNodeId + "_disabledLanguages");
+	    System.out.println("disabledLanguagesString:" + disabledLanguagesString);
+	    if(disabledLanguagesString != null && !disabledLanguagesString.equalsIgnoreCase(""))
+	    {
+	        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
+	        for(int i=0; i<disabledLanguagesStringArray.length; i++)
+	        {
+	            try
+	            {
+		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(disabledLanguagesStringArray[i]));
+		            System.out.println("Adding languageVO to disabledLanguages:" + languageVO.getName());
+		    	    this.disabledLanguages.add(languageVO);
+	            }
+	            catch(Exception e)
+	            {
+	                getLogger().warn("An error occurred when we tried to get disabled language:" + e.getMessage(), e);
+	            }
+	        }
+	    }
 	} 
 
 /*    
@@ -305,6 +339,16 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	public void setDisableEditOnSight(Integer disableEditOnSight)
 	{
 		this.siteNodeVersionVO.setDisableEditOnSight(disableEditOnSight);
+	}
+
+	public Integer getDisableLanguages()
+	{
+		return this.siteNodeVersionVO.getDisableLanguages();
+	}
+
+	public void setDisableLanguages(Integer disableLanguages)
+	{
+		this.siteNodeVersionVO.setDisableLanguages(disableLanguages);
 	}
 
 	public Integer getDisablePageCache()
@@ -586,5 +630,15 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     public List getReferenceBeanList()
     {
         return referenceBeanList;
+    }
+    
+    public List getAvailableLanguages()
+    {
+        return availableLanguages;
+    }
+    
+    public List getDisabledLanguages()
+    {
+        return disabledLanguages;
     }
 }

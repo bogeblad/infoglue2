@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCC;
@@ -30,6 +33,9 @@ import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCCFact
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
  
 /**
@@ -49,6 +55,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 	private Integer isProtected;
 	private Integer disablePageCache;
 	private Integer disableEditOnSight;
+	private Integer disableLanguages;
 	private String contentType;
 	private String pageCacheKey;
 
@@ -82,6 +89,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			siteNodeVersionVO.setContentType(this.getContentType());
 			siteNodeVersionVO.setPageCacheKey(this.getPageCacheKey());
 			siteNodeVersionVO.setDisableEditOnSight(this.getDisableEditOnSight());
+			siteNodeVersionVO.setDisableLanguages(this.disableLanguages);
 			siteNodeVersionVO.setDisablePageCache(this.getDisablePageCache());
 			siteNodeVersionVO.setIsProtected(this.getIsProtected());
 			siteNodeVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
@@ -89,16 +97,23 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			UpdateSiteNodeUCC updateSiteNodeUCC = UpdateSiteNodeUCCFactory.newUpdateSiteNodeUCC();
 			updateSiteNodeUCC.updateSiteNode(this.getInfoGluePrincipal(), this.siteNodeVO, this.siteNodeTypeDefinitionId, siteNodeVersionVO);		
 			
-			/*
-			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getLatestSiteNodeVersionVO(getSiteNodeId());
-			latestSiteNodeVersionVO.setContentType(this.getContentType());
-			latestSiteNodeVersionVO.setDisableEditOnSight(this.getDisableEditOnSight());
-			latestSiteNodeVersionVO.setDisablePageCache(this.getDisablePageCache());
-			latestSiteNodeVersionVO.setIsProtected(this.getIsProtected());
-						
-			SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(this.getInfoGluePrincipal(), latestSiteNodeVersionVO);
-			//SiteNodeVersionController.getController().update(latestSiteNodeVersionVO);
-			*/
+	    	Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+	    	String[] values = getRequest().getParameterValues("disabledLanguageId");
+	    	String valueString = "";
+	    	if(values != null)
+	    	{
+		    	for(int i=0; i<values.length; i++)
+		    	{
+		    	    if(i > 0)
+		    	        valueString = valueString + ",";
+		    	    valueString = valueString + values[i];  
+		    	}
+	    	}
+	        ps.setString("siteNode_" + getSiteNodeId() + "_disabledLanguages", valueString);
+
 		//}
 		//catch(Exception e)
 		//{
@@ -193,6 +208,16 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 	public void setDisableEditOnSight(Integer disableEditOnSight)
 	{
 		this.disableEditOnSight = disableEditOnSight;
+	}
+
+	public Integer getDisableLanguages()
+	{
+		return this.disableLanguages;
+	}
+
+	public void setDisableLanguages(Integer disableLanguages)
+	{
+		this.disableLanguages = disableLanguages;
 	}
 
 	public Integer getDisablePageCache()

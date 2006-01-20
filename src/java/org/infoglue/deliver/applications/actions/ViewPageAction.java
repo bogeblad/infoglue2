@@ -431,6 +431,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		this.browserBean.setRequest(getRequest());
 		
 		this.principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
+		
 		if(this.principal == null)
 		{
 			try
@@ -469,6 +470,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			setSiteNodeId(rootSiteNodeVO.getSiteNodeId());
 		} 
+		else
+		{
+		    
+		}
 		
 		//String requestLanguageId = this.getRequest().getParameter("languageId");
 		if(getLanguageId() == null)
@@ -511,7 +516,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
 				if(masterLanguageVO == null)
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
-	
+
+				/*
+				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+				if(getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId()))
+				{
+				    List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(db, this.getSiteNodeId());
+				    Iterator i 
+				}
+				*/
 				logger.info("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
 
 				setLanguageId(masterLanguageVO.getLanguageId());				

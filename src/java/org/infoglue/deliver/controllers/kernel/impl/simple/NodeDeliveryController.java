@@ -813,6 +813,42 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 	
 	/**
+	 * This method returns the id of the siteNodeVersion that has disabled languages if any.
+	 */
+	
+	public Integer getDisabledLanguagesSiteNodeVersionId(Database db, Integer siteNodeId)
+	{
+		Integer protectedSiteNodeVersionId = null;
+		
+		try
+		{
+			SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+			getLogger().info("siteNodeId:" + siteNodeId);
+			if(siteNodeVersionVO != null && siteNodeVersionVO.getDisableLanguages() != null)
+			{	
+				getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getDisableLanguages());
+				if(siteNodeVersionVO.getDisableLanguages().intValue() == NO.intValue())
+					protectedSiteNodeVersionId = null;
+				else if(siteNodeVersionVO.getDisableLanguages().intValue() == YES.intValue())
+					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getDisableLanguages().intValue() == INHERITED.intValue())
+				{
+					SiteNodeVO parentSiteNode = this.getParentSiteNodeForPageCache(db, siteNodeId);
+					if(parentSiteNode != null)
+						protectedSiteNodeVersionId = getProtectedSiteNodeVersionIdForPageCache(db, parentSiteNode.getSiteNodeId()); 
+				}
+			}
+
+		}
+		catch(Exception e)
+		{
+			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled languages:" + e.getMessage(), e);
+		}
+				
+		return protectedSiteNodeVersionId;
+	}
+
+	/**
 	 * This method return a single content bound. 
 	 */
 	

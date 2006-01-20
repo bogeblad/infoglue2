@@ -231,4 +231,14 @@ public class SiteNodeVersionImpl implements SiteNodeVersion
 		this.valueObject.setIsProtected(isProtected);
 	}
 
+	public Integer getDisableLanguages()
+	{
+		return this.valueObject.getDisableLanguages();
+	}
+
+	public void setDisableLanguages(Integer disableLanguages)
+	{
+		this.valueObject.setDisableLanguages(disableLanguages);
+	}
+
 }        

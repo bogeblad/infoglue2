@@ -73,6 +73,10 @@ public interface SiteNodeVersion extends IBaseEntity
 
 	public void setDisableEditOnSight(Integer disableEditOnSight);
 
+	public Integer getDisableLanguages();
+
+	public void setDisableLanguages(Integer disableLanguages);
+
 	public Integer getDisablePageCache();
 
 	public void setDisablePageCache(Integer disablePageCache);

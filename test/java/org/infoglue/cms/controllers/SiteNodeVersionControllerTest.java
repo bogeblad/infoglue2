@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: SiteNodeVersionControllerTest.java,v 1.1 2005/10/12 14:01:37 mattias Exp $
+ * $Id: SiteNodeVersionControllerTest.java,v 1.2 2006/01/20 17:23:46 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -101,6 +101,7 @@ public class SiteNodeVersionControllerTest extends InfoGlueTestCase
 		latestSiteNodeVersionVO.setPageCacheKey("");
 		latestSiteNodeVersionVO.setDisableEditOnSight(new Integer(2));
 		latestSiteNodeVersionVO.setDisablePageCache(new Integer(2));
+		latestSiteNodeVersionVO.setDisableLanguages(new Integer(2));
 		latestSiteNodeVersionVO.setIsProtected(new Integer(2));
 		latestSiteNodeVersionVO.setVersionModifier(principal.getName());
 		latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());

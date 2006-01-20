@@ -25,6 +25,7 @@ package org.infoglue.cms.entities.management;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.util.validators.*;
@@ -112,6 +113,25 @@ public class LanguageVO implements BaseEntityVO
     	if (languageCode != null) ValidatorFactory.createStringValidator("Language.languageCode", true, 2, 6, true, LanguageImpl.class, this.getId(), null).validate(languageCode, ceb); 
 		return ceb;
 	}
-    
+   
+	public boolean equals(Object o)
+	{
+	    boolean equals = false;
+	    
+	    if(o instanceof LanguageVO)
+	    {
+	        LanguageVO languageVO = (LanguageVO)o;
+	        if(languageVO != null && languageVO.getLanguageId().equals(this.languageId))
+	            equals = true;
+	    }
+	    
+	    return equals;
+	}
+	
+	public int hashCode()
+	{
+	    return this.languageId.intValue();
+	}
+
 }
         

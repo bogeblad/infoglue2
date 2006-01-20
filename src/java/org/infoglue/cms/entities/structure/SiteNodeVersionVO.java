@@ -56,7 +56,8 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	private Integer isProtected			= INHERITED;
 	private Integer disablePageCache	= INHERITED;
 	private Integer disableEditOnSight	= INHERITED;
-  	private String contentType 			= "text/html";
+	private Integer disableLanguages    = INHERITED;
+	private String contentType 			= "text/html";
   	private String pageCacheKey			= "default";
   	
     private Integer siteNodeId			= null;
@@ -183,6 +184,16 @@ public class SiteNodeVersionVO implements BaseEntityVO
 		this.disableEditOnSight = disableEditOnSight;
 	}
 
+	public Integer getDisableLanguages()
+	{
+		return (disableLanguages == null) ? INHERITED : disableLanguages;
+	}
+
+	public void setDisableLanguages(Integer disableLanguages)
+	{
+		this.disableLanguages = disableLanguages;
+	}
+
 	public Integer getDisablePageCache()
 	{
 		return (disablePageCache == null) ? INHERITED : disablePageCache;
@@ -238,6 +249,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	    sb.append("isProtected:" + isProtected + '\n');
 	    sb.append("disablePageCache:" + disablePageCache + '\n');
 	    sb.append("disableEditOnSight:" + disableEditOnSight + '\n');
+	    sb.append("disableLanguages:" + disableLanguages + '\n');
 	    sb.append("contentType:" + contentType + '\n');
 	    sb.append("pageCacheKey:" + pageCacheKey + '\n');
 	    sb.append("siteNodeId:" + siteNodeId + '\n');

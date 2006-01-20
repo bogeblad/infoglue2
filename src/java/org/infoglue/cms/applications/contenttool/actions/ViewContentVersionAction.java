@@ -241,6 +241,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     	else
     	    return "successForFCKEditor";
     }
+    
 
 	public String doStandalone() throws Exception
 	{

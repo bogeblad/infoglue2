@@ -52,3 +52,5 @@ CREATE TABLE cmServerNode (
   PRIMARY KEY  (serverNodeId)
 );
 
+-- Adds new disable language column
+alter table cmSiNoVer add disableLanguages number default 2 NOT NULL;

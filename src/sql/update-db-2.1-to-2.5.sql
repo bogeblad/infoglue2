@@ -45,3 +45,7 @@ CREATE TABLE cmServerNode (
   dnsName text NOT NULL,
   PRIMARY KEY  (serverNodeId)
 ) TYPE=InnoDB;
+
+
+-- Adds new disable language column
+alter table cmSiteNodeVersion add disableLanguages tinyint(4) NOT NULL default '2';
