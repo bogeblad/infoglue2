@@ -121,7 +121,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
 	    String disabledLanguagesString = ps.getString("siteNode_" + siteNodeId + "_disabledLanguages");
-	    System.out.println("disabledLanguagesString:" + disabledLanguagesString);
+	    getLogger().info("disabledLanguagesString:" + disabledLanguagesString);
 	    if(disabledLanguagesString != null && !disabledLanguagesString.equalsIgnoreCase(""))
 	    {
 	        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
@@ -130,7 +130,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	            try
 	            {
 		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(disabledLanguagesStringArray[i]));
-		            System.out.println("Adding languageVO to disabledLanguages:" + languageVO.getName());
+		            getLogger().info("Adding languageVO to disabledLanguages:" + languageVO.getName());
 		    	    this.disabledLanguages.add(languageVO);
 	            }
 	            catch(Exception e)

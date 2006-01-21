@@ -35,15 +35,16 @@ import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
-import org.infoglue.deliver.util.Timer;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 
@@ -51,6 +52,8 @@ import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -475,9 +478,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    
 		}
 		
-		//String requestLanguageId = this.getRequest().getParameter("languageId");
 		if(getLanguageId() == null)
-		//if(requestLanguageId == null || requestLanguageId.equalsIgnoreCase(""))
 		{
 		    LanguageVO browserLanguageVO = null;
 		    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getProperty("useAlternativeBrowserLanguageCheck");
@@ -517,21 +518,33 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				if(masterLanguageVO == null)
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
 
-				/*
+				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-				if(getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId()))
+				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId());
+				if(!isMasterLanguageValid)
 				{
+				    logger.info("Master language was not allowed on this sitenode... let's take the next on in order");
 				    List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(db, this.getSiteNodeId());
-				    Iterator i 
+				    Iterator languagesIterator = languages.iterator();
+				    while(languagesIterator.hasNext())
+				    {
+				        LanguageVO currentLanguage = (LanguageVO)languagesIterator.next();
+				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), currentLanguage.getId());
+					    logger.info("currentLanguage validity:" + isCurrentLanguageValid);
+				        if(isCurrentLanguageValid)
+				        {
+				            setLanguageId(currentLanguage.getLanguageId());
+				            break;
+				        }
+				    }
 				}
-				*/
-				logger.info("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
-
-				setLanguageId(masterLanguageVO.getLanguageId());				
+				else
+				{
+				    logger.info("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
+				    setLanguageId(masterLanguageVO.getLanguageId());				
+				}
 			}
-		    
 		}
-		
 	}
 
 	/**

@@ -325,6 +325,9 @@
     <field name="disableEditOnSight" type="java.lang.Integer">
       <sql name="disableEditOnSight" type="integer" dirty="check" />
     </field>
+    <field name="disableLanguages" type="java.lang.Integer">
+      <sql name="disableLanguages" type="integer" dirty="check" />
+    </field>
     <field name="contentType" type="java.lang.String">
       <sql name="contentType" type="varchar" dirty="check" />
     </field>

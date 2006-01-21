@@ -272,7 +272,27 @@ public class CmsPropertyHandler
 	{
 	    return propertySet.getString("principal_" + userName + "_defaultToolId");
 	}
-		
+
+	public static String getPropertySetValue(String key)
+	{
+	    String value = null;
+	    
+        String cacheKey = "" + key;
+        String cacheName = "propertySetCache";
+		logger.info("cacheKey:" + cacheKey);
+		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		if(value != null)
+		{
+			return value;
+		}
+	    
+		value = propertySet.getString(key);
+	    
+	    CacheController.cacheObject(cacheName, cacheKey, value);
+	    
+	    return value;
+	}
+
 	public static String getAnonymousPassword()
 	{
 		String password = "anonymous";
