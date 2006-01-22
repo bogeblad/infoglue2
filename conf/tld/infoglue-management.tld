@@ -48,5 +48,21 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
-	
+	 
+	<tag>
+	    <name>contentTypeDefinitionAttributes</name>
+	    <tagclass>org.infoglue.deliver.taglib.management.ContentTypeDefinitionAttributesTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>schemaValue</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 </taglib>

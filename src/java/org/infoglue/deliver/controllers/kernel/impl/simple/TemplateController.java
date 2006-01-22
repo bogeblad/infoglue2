@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  */
-
+  
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import java.awt.Color;
@@ -576,6 +576,12 @@ public interface TemplateController
      */
     public abstract String getContentAttributeAsPDFUrl(
             String contentBindningName, String attributeName);
+
+	/**
+	 * This method returns a list of elements/attributes based on the contentType sent in. 
+	 */
+	
+	public abstract List getContentAttributes(String schemaValue);
 
     /**
      * This method deliveres a String with the content-attribute asked for generated as a gif-file.

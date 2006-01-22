@@ -400,9 +400,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	
 	public LanguageVO getLanguageIfSiteNodeSupportsIt(Database db, String languageCodes, Integer siteNodeId, InfoGluePrincipal principal) throws SystemException, Exception
 	{
-	    Timer timer = new Timer();
-	    
-		if (languageCodes == null) return null;
+	    if (languageCodes == null) return null;
 		int index = Integer.MAX_VALUE;
 		int currentIndex = 0;
 		getLogger().info("Coming in with languageCodes:" + languageCodes);
@@ -448,7 +446,6 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		}
 
 		getLogger().info("Returning language: " + language);
-		timer.printElapsedTime("getLanguageIfSiteNodeSupportsIt took");
 		
 		return (language == null) ? null : language.getValueObject();	
 	}
