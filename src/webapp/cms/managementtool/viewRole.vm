@@ -56,6 +56,12 @@
 		form.submit();
 	}
 
+	function saveAndExit(form, action)
+	{
+		form.action = action;
+		save(form);
+	}
+
 </SCRIPT>
 
 #if($supportsUpdate == false)
