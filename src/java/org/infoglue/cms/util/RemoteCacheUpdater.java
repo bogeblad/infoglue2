@@ -113,8 +113,7 @@ public class RemoteCacheUpdater implements NotificationListener
 			String deliverUrl = null;
 			while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
 			{ 
-				String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
-				urls.add(address);
+				urls.add(deliverUrl);
 				i++;
 			}	
 			
@@ -126,8 +125,7 @@ public class RemoteCacheUpdater implements NotificationListener
 				deliverUrl = null;
 				while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
 				{ 
-					String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
-					urls.add(address);
+					urls.add(deliverUrl);
 					i++;
 				}	
 			}
@@ -140,8 +138,7 @@ public class RemoteCacheUpdater implements NotificationListener
 			String deliverUrl = null;
 			while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
 			{ 
-				String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
-				urls.add(address);
+				urls.add(deliverUrl);
 				i++;
 			}	
 		}
