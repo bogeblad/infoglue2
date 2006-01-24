@@ -570,7 +570,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(principal == null)
 			{
 			    principal = loginWithCookies();
-			    			    
+			    if(principal == null)
+			        principal = loginWithRequestArguments();
+			    
 			    if(principal == null)
 			    {
 				    try
@@ -719,6 +721,35 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    return principal;
 	}
 	
+	/**
+	 * This method (if enabled in deliver.properties) checks for arguments in the request
+	 * and logs the user in if available.
+	 * 
+	 * @return Principal
+	 * @throws Exception
+	 */
+	private Principal loginWithRequestArguments() throws Exception
+	{
+	    Principal principal = null;
+	    
+        String userName = this.getRequest().getParameter("j_username");
+	    String password = this.getRequest().getParameter("j_password");
+	    
+	    if(userName != null && password != null)
+	    {
+		    Map arguments = new HashMap();
+		    arguments.put("j_username", userName);
+		    arguments.put("j_password", password);
+		    
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+			if(principal != null)
+			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+		    
+	    }
+	    
+	    return principal;
+	}
+
 	
 	/**
 	 * Gets the SiteNodeType definition of this given node
