@@ -82,6 +82,9 @@ public class ContentParameterTag extends AbstractTag
 	public int doEndTag() throws JspException
     {
 		addContentMap();
+		
+		contentMap = new HashMap();
+		
 		return EVAL_PAGE;
     }
 	
@@ -160,4 +163,8 @@ public class ContentParameterTag extends AbstractTag
 	    contentVersions.add(contentVersion);
 	}
 
+	public void clear()
+	{
+	    contentMap.clear();
+	}
 }

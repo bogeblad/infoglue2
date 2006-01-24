@@ -533,5 +533,32 @@
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+	    <name>digitalAssetParameter</name>
+	    <tagclass>org.infoglue.deliver.taglib.content.DigitalAssetParameterTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>assetKey</name>
+	    	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>contentType</name>
+	    	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>bytes</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>file</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
 	
 </taglib>

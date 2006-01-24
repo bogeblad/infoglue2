@@ -22,13 +22,16 @@
 */
 package org.infoglue.deliver.taglib.content;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
@@ -79,6 +82,9 @@ public class ContentVersionParameterTag extends AbstractTag
 	public int doEndTag() throws JspException
     {
 		addContentVersion();
+		
+		contentVersion = new HashMap();
+		
 		return EVAL_PAGE;
     }
 	
@@ -112,6 +118,23 @@ public class ContentVersionParameterTag extends AbstractTag
 	    }
 
 	    contentVersionAttributes.put(name, value);
+	}
+
+	/**
+	 * Adds the content version attribute to the contentVersion Value.
+	 * 
+	 * @throws JspException if the ancestor tag isn't a url tag.
+	 */
+	protected void addDigitalAsset(RemoteAttachment remoteAttachment) throws JspException
+	{
+	    List digitalAssets = (List)this.contentVersion.get("digitalAssets");
+	    if(digitalAssets == null)
+	    {
+	        digitalAssets = new ArrayList();
+	        this.contentVersion.put("digitalAssets", digitalAssets);
+	    }
+
+	    digitalAssets.add(remoteAttachment);
 	}
 
 	/**

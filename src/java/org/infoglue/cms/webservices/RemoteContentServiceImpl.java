@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.webservices;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,13 +40,16 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
@@ -183,6 +189,8 @@ public class RemoteContentServiceImpl
 	                
 	                Integer languageId = (Integer)contentVersion.get("languageId");
 	                
+	    	        System.out.println("languageId:" + languageId);
+
 	                ContentVersionVO contentVersionVO = new ContentVersionVO();
 	                contentVersionVO.setLanguageId(languageId);
 	                
@@ -212,6 +220,28 @@ public class RemoteContentServiceImpl
 	                
 	    	        ContentVersionVO newContentVersionVO = contentVersionControllerProxy.acCreate(this.principal, newContentVO.getId(), languageId, contentVersionVO);
 	    	        Integer newContentVersionId = newContentVersionVO.getId();
+	    	        
+	    	        List digitalAssets = (List)contentVersion.get("digitalAssets");
+	    	        
+	    	        System.out.println("digitalAssets:" + digitalAssets.size());
+	    	        
+	    	        Iterator digitalAssetIterator = digitalAssets.iterator();
+	    	        while(digitalAssetIterator.hasNext())
+	    	        {
+	    	            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
+		    	        System.out.println("digitalAssets in ws:" + remoteAttachment);
+		    	        
+		            	DigitalAssetVO newAsset = new DigitalAssetVO();
+						newAsset.setAssetContentType(remoteAttachment.getContentType());
+						newAsset.setAssetKey(remoteAttachment.getName());
+						newAsset.setAssetFileName("Unknown");
+						newAsset.setAssetFilePath("Unknown");
+						newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
+						//is = new FileInputStream(renamedFile);
+						InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
+	
+		    	        DigitalAssetController.create(newAsset, is, newContentVersionId);
+		    	    }	    	        
 	            }
 	            
 	            newContentIdList.add(newContentVO.getId());

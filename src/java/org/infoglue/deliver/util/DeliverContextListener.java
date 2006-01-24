@@ -101,6 +101,13 @@ public final class DeliverContextListener implements ServletContextListener
 				CmsPropertyHandler.setProperty("digitalAssetPath.0", assetPath);
 			}
 
+			String assetUploadPath = CmsPropertyHandler.getProperty("digitalAssetUploadPath");
+			if(assetUploadPath == null || assetUploadPath.equals(""))
+			{
+			    assetUploadPath = contextRootPath + "uploads";
+				CmsPropertyHandler.setProperty("digitalAssetUploadPath", assetUploadPath);
+			}
+
 			String expireCacheAutomaticallyString = CmsPropertyHandler.getProperty("expireCacheAutomatically");
 			if(expireCacheAutomaticallyString != null)
 				cacheController.setExpireCacheAutomatically(Boolean.getBoolean(expireCacheAutomaticallyString));

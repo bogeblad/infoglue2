@@ -1006,6 +1006,12 @@ public interface TemplateController
 	
 	public abstract ContentTypeDefinitionVO getContentTypeDefinitionVO(String name);
 
+	/**
+	 * This method deliveres a list of strings which represents all assetKeys defined for a contentTypeDefinition.
+	 */
+	 
+	public Collection getContentTypeDefinitionAssetKeys(String schemaValue); 
+
     /**
      * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
      * The method is great for navigation-purposes on any site. Improve later so the list is cached
