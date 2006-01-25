@@ -157,7 +157,7 @@ public class RemoteContentServiceImpl
 	        while(contentIterator.hasNext())
 	        {
 	            //String value = (String)contentIterator.next();
-	            //System.out.println("value:" + value);
+	            //logger.info("value:" + value);
 	            
 	            Map content = (Map)contentIterator.next();
 	            
@@ -190,7 +190,7 @@ public class RemoteContentServiceImpl
 	                
 	                Integer languageId = (Integer)contentVersion.get("languageId");
 	                
-	    	        System.out.println("languageId:" + languageId);
+	    	        logger.info("languageId:" + languageId);
 
 	                ContentVersionVO contentVersionVO = new ContentVersionVO();
 	                contentVersionVO.setLanguageId(languageId);
@@ -224,13 +224,13 @@ public class RemoteContentServiceImpl
 	    	        
 	    	        List digitalAssets = (List)contentVersion.get("digitalAssets");
 	    	        
-	    	        System.out.println("digitalAssets:" + digitalAssets.size());
+	    	        logger.info("digitalAssets:" + digitalAssets.size());
 	    	        
 	    	        Iterator digitalAssetIterator = digitalAssets.iterator();
 	    	        while(digitalAssetIterator.hasNext())
 	    	        {
 	    	            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
-		    	        System.out.println("digitalAssets in ws:" + remoteAttachment);
+		    	        logger.info("digitalAssets in ws:" + remoteAttachment);
 		    	        
 		            	DigitalAssetVO newAsset = new DigitalAssetVO();
 						newAsset.setAssetContentType(remoteAttachment.getContentType());
@@ -289,10 +289,10 @@ public class RemoteContentServiceImpl
             Date publishDateTime 			= (Date)content.get("publishDateTime");
             Date expireDateTime 			= (Date)content.get("expireDateTime");
             
-            System.out.println("contentId:" + contentId);
-            System.out.println("name:" + name);
-            System.out.println("publishDateTime:" + publishDateTime);
-            System.out.println("expireDateTime:" + expireDateTime);
+            logger.info("contentId:" + contentId);
+            logger.info("name:" + name);
+            logger.info("publishDateTime:" + publishDateTime);
+            logger.info("expireDateTime:" + expireDateTime);
             
             ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 
@@ -348,11 +348,11 @@ public class RemoteContentServiceImpl
             Integer stateId			 = (Integer)contentVersion.get("stateId");
             String versionComment 	 = (String)contentVersion.get("versionComment");
             
-            System.out.println("contentVersionId:" + contentVersionId);
-            System.out.println("contentId:" + contentId);
-            System.out.println("languageId:" + languageId);
-            System.out.println("stateId:" + stateId);
-            System.out.println("versionComment:" + versionComment);
+            logger.info("contentVersionId:" + contentVersionId);
+            logger.info("contentId:" + contentId);
+            logger.info("languageId:" + languageId);
+            logger.info("stateId:" + stateId);
+            logger.info("versionComment:" + versionComment);
 
             ContentVersionVO contentVersionVO = null;
             if(contentVersionId != null)
@@ -396,13 +396,13 @@ public class RemoteContentServiceImpl
 	        
             if(digitalAssets != null)
             {
-		        System.out.println("digitalAssets:" + digitalAssets.size());
+		        logger.info("digitalAssets:" + digitalAssets.size());
 		        
 		        Iterator digitalAssetIterator = digitalAssets.iterator();
 		        while(digitalAssetIterator.hasNext())
 		        {
 		            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
-	    	        System.out.println("digitalAssets in ws:" + remoteAttachment);
+	    	        logger.info("digitalAssets in ws:" + remoteAttachment);
 	    	        
 	            	DigitalAssetVO newAsset = new DigitalAssetVO();
 					newAsset.setAssetContentType(remoteAttachment.getContentType());
@@ -430,7 +430,7 @@ public class RemoteContentServiceImpl
     
     
     /**
-     * Updates a content.
+     * Deletes a digital asset.
      */
     
     public Boolean deleteDigitalAsset(final String principalName, final Object[] inputsArray) 
@@ -458,10 +458,10 @@ public class RemoteContentServiceImpl
             Integer languageId 		 = (Integer)digitalAsset.get("languageId");
             String assetKey 		 = (String)digitalAsset.get("assetKey");
             
-            System.out.println("contentVersionId:" + contentVersionId);
-            System.out.println("contentId:" + contentId);
-            System.out.println("languageId:" + languageId);
-            System.out.println("assetKey:" + assetKey);
+            logger.info("contentVersionId:" + contentVersionId);
+            logger.info("contentId:" + contentId);
+            logger.info("languageId:" + languageId);
+            logger.info("assetKey:" + assetKey);
             
             ContentVersionController.getContentVersionController().deleteDigitalAsset(contentId, languageId, assetKey);
                
@@ -476,7 +476,93 @@ public class RemoteContentServiceImpl
         return new Boolean(true);
     }
 
-	
+    /**
+     * Deletes a content.
+     */
+    
+    public Boolean deleteContent(final String principalName, final Object[] inputsArray) 
+    {
+        List newContentIdList = new ArrayList();
+        
+        logger.info("****************************************");
+        logger.info("Updating content through webservice....");
+        logger.info("****************************************");
+        
+        logger.info("principalName:" + principalName);
+        logger.info("inputsArray:" + inputsArray);
+        //logger.warn("contents:" + contents);
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            Map digitalAsset = (Map) serializer.deserialize(inputsArray);
+	        logger.info("digitalAsset:" + digitalAsset);
+
+            initializePrincipal(principalName);
+            
+            Integer contentId = (Integer)digitalAsset.get("contentId");
+            
+            logger.info("contentId:" + contentId);
+            
+            ContentVO contentVO = new ContentVO();
+            contentVO.setContentId(contentId);
+            
+            ContentController.getContentController().delete(contentVO);
+               
+	        logger.info("Done with contents..");
+
+        }
+        catch(Throwable e)
+        {
+            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
+        }
+        
+        return new Boolean(true);
+    }
+
+    /**
+     * Deletes a content.
+     */
+    
+    public Boolean deleteContentVersion(final String principalName, final Object[] inputsArray) 
+    {
+        List newContentIdList = new ArrayList();
+        
+        logger.info("****************************************");
+        logger.info("Updating content through webservice....");
+        logger.info("****************************************");
+        
+        logger.info("principalName:" + principalName);
+        logger.info("inputsArray:" + inputsArray);
+        //logger.warn("contents:" + contents);
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            Map digitalAsset = (Map) serializer.deserialize(inputsArray);
+	        logger.info("digitalAsset:" + digitalAsset);
+
+            initializePrincipal(principalName);
+            
+            Integer contentVersionId = (Integer)digitalAsset.get("contentVersionId");
+            
+            logger.info("contentVersionId:" + contentVersionId);
+            ContentVersionVO contentVersionVO = new ContentVersionVO(); 
+            contentVersionVO.setContentVersionId(contentVersionId);
+            
+            ContentVersionController.getContentVersionController().delete(contentVersionVO);
+               
+	        logger.info("Done with contents..");
+
+        }
+        catch(Throwable e)
+        {
+            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
+        }
+        
+        return new Boolean(true);
+    }
+
     
 	/**
 	 * Checks if the principal exists and if the principal is allowed to create the workflow.

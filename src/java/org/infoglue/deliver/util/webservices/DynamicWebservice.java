@@ -297,8 +297,7 @@ public class DynamicWebservice
 	 */
 	private void addArgument(final String name, final QName type, final Object value)
 	{
-	    System.out.println("type:" + type);
-		parameters.add(new Parameter(name, type));
+	    parameters.add(new Parameter(name, type));
 		arguments.add(value);
 	}
 

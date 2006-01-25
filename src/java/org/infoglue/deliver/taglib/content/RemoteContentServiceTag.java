@@ -68,8 +68,7 @@ public class RemoteContentServiceTag extends TemplateControllerTag
 	 */
 	public int doStartTag() throws JspException 
 	{
-	    System.out.println("START-------------:" + contents.size());
-		return EVAL_BODY_INCLUDE;
+	    return EVAL_BODY_INCLUDE;
 	}
 
 	/**
@@ -93,8 +92,6 @@ public class RemoteContentServiceTag extends TemplateControllerTag
 		   //content.put("name", "Mattias Testar");
 		   //contents.add(content);
 	       
-		   System.out.println("Sending-------------:" + contents.size());
-			
 		   ws.addArgument("contents", contents);
 		   
 		   ws.callService();
@@ -107,8 +104,6 @@ public class RemoteContentServiceTag extends TemplateControllerTag
 	   }
 	   
 	   contents.clear();
-
-	   System.out.println("END-------------");
 
        return EVAL_PAGE;
    }
