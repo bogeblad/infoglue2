@@ -733,6 +733,41 @@ public class ContentVersionController extends BaseController
         content.setContentVersions(new ArrayList());
     }
 
+	/**
+	 * This method deletes a digitalAsset.
+	 */
+	
+    public void deleteDigitalAsset(Integer contentId, Integer languageId, String assetKey) throws ConstraintException, SystemException
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {
+		    ContentVersion contentVersion = this.getLatestActiveContentVersion(contentId, languageId, db);
+		    
+		    Collection digitalAssets = contentVersion.getDigitalAssets();
+			Iterator assetIterator = digitalAssets.iterator();
+			while(assetIterator.hasNext())
+			{
+				DigitalAsset currentDigitalAsset = (DigitalAsset)assetIterator.next();
+				if(currentDigitalAsset.getAssetKey().equals(assetKey))
+				{
+					assetIterator.remove();
+					db.remove(currentDigitalAsset);
+					break;
+				}
+			}
+			
+			commitTransaction(db);
+		}
+        catch(Exception e)
+        {
+        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }        
+	
 	
     /**
      * This method updates the contentversion.

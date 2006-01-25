@@ -3133,7 +3133,25 @@ public class BasicTemplateController implements TemplateController
 		
 		return url;
 	}
+
+	/**
+	 * This method returns the Id the digital assets.
+	 */
 	
+	public Integer getDigitalAssetId(Integer contentId, String assetKey) throws Exception
+	{
+		return ContentDeliveryController.getContentDeliveryController().getDigitalAssetId(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+	}
+
+	/**
+	 * This method returns the Id the digital assets.
+	 */
+	
+	public Integer getDigitalAssetId(Integer contentId, Integer languageId, String assetKey) throws Exception
+	{
+		return ContentDeliveryController.getContentDeliveryController().getDigitalAssetId(getDatabase(), contentId, languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+	}
+
 	/**
 	 * This method returns the base url for the digital assets.
 	 */

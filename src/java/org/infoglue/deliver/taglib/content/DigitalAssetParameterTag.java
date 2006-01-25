@@ -105,10 +105,10 @@ public class DigitalAssetParameterTag extends AbstractTag
 	 */
 	protected void addDigitalAsset() throws JspException
 	{
-		final ContentVersionParameterTag parent = (ContentVersionParameterTag) findAncestorWithClass(this, ContentVersionParameterTag.class);
+		final ContentVersionParameterInterface parent = (ContentVersionParameterInterface) findAncestorWithClass(this, ContentVersionParameterInterface.class);
 		if(parent == null)
 		{
-			throw new JspTagException("DigitalAssetParameterTag must have a ContentVersionParameterTag ancestor.");
+			throw new JspTagException("DigitalAssetParameterTag must have a ContentVersionParameterInterface ancestor.");
 		}
 		
 		if(bytes != null)
@@ -144,7 +144,7 @@ public class DigitalAssetParameterTag extends AbstractTag
 		RemoteAttachment attachment = new RemoteAttachment(this.assetKey, this.contentType, this.bytes);
 		System.out.println("Adding attachement in tag:" + attachment);
 		
-		((ContentVersionParameterTag) parent).addDigitalAsset(attachment);
+		((ContentVersionParameterInterface) parent).addDigitalAsset(attachment);
 	}
 	
 	/**

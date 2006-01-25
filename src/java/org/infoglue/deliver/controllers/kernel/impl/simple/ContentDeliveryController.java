@@ -560,6 +560,29 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 
 	/**
+	 * This method returns the id of the digital asset. 
+	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated.
+	 */
+
+	public Integer getDigitalAssetId(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+	    Integer digitalAssetId = null;
+		
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
+		if (contentVersion != null) 
+        {
+        	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
+			
+			if(digitalAsset != null)
+			{
+			    digitalAssetId = digitalAsset.getId();
+			}
+        }
+            		
+		return digitalAssetId;
+	}
+
+	/**
 	 * This is the basic way of getting an asset-url for a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated.
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.

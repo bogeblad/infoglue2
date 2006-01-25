@@ -40,7 +40,7 @@ import org.infoglue.deliver.taglib.AbstractTag;
  *
  *  Note! This tag must have a &lt;common:urlBuilder&gt; ancestor.
  */
-public class ContentVersionParameterTag extends AbstractTag 
+public class ContentVersionParameterTag extends AbstractTag implements ContentVersionParameterInterface 
 {
 	/**
 	 * The universal version identifier.
@@ -108,7 +108,7 @@ public class ContentVersionParameterTag extends AbstractTag
 	 * 
 	 * @throws JspException if the ancestor tag isn't a url tag.
 	 */
-	protected void addContentVersionAttribute(String name, String value) throws JspException
+	public void addContentVersionAttribute(String name, String value) throws JspException
 	{
 	    Map contentVersionAttributes = (Map)this.contentVersion.get("contentVersionAttributes");
 	    if(contentVersionAttributes == null)
@@ -125,7 +125,7 @@ public class ContentVersionParameterTag extends AbstractTag
 	 * 
 	 * @throws JspException if the ancestor tag isn't a url tag.
 	 */
-	protected void addDigitalAsset(RemoteAttachment remoteAttachment) throws JspException
+	public void addDigitalAsset(RemoteAttachment remoteAttachment) throws JspException
 	{
 	    List digitalAssets = (List)this.contentVersion.get("digitalAssets");
 	    if(digitalAssets == null)

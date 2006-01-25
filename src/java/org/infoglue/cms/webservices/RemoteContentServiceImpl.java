@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -258,6 +259,224 @@ public class RemoteContentServiceImpl
         return new Boolean(true);
     }
 
+    
+    /**
+     * Updates a content.
+     */
+    
+    public Boolean updateContent(final String principalName, final Object[] inputsArray) 
+    {
+        List newContentIdList = new ArrayList();
+        
+        logger.info("****************************************");
+        logger.info("Updating content through webservice....");
+        logger.info("****************************************");
+        
+        logger.info("principalName:" + principalName);
+        logger.info("inputsArray:" + inputsArray);
+        //logger.warn("contents:" + contents);
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            Map content = (Map) serializer.deserialize(inputsArray);
+	        logger.info("content:" + content);
+
+            initializePrincipal(principalName);
+            
+            Integer contentId 				= (Integer)content.get("contentId");
+            String name 					= (String)content.get("name");
+            Date publishDateTime 			= (Date)content.get("publishDateTime");
+            Date expireDateTime 			= (Date)content.get("expireDateTime");
+            
+            System.out.println("contentId:" + contentId);
+            System.out.println("name:" + name);
+            System.out.println("publishDateTime:" + publishDateTime);
+            System.out.println("expireDateTime:" + expireDateTime);
+            
+            ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+
+            if(name != null)
+                contentVO.setName(name);
+
+            if(publishDateTime != null)
+                contentVO.setPublishDateTime(publishDateTime);
+
+            if(expireDateTime != null)
+                contentVO.setExpireDateTime(expireDateTime);
+
+            ContentVO newContentVO = contentControllerProxy.acUpdate(this.principal, contentVO, null);
+	           
+	        logger.info("Done with contents..");
+
+        }
+        catch(Throwable e)
+        {
+            logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
+        }
+        
+        return new Boolean(true);
+    }
+
+    /**
+     * Updates a content.
+     */
+    
+    public Boolean updateContentVersion(final String principalName, final Object[] inputsArray) 
+    {
+        List newContentIdList = new ArrayList();
+        
+        logger.info("****************************************");
+        logger.info("Updating content versions through webservice....");
+        logger.info("****************************************");
+        
+        logger.info("principalName:" + principalName);
+        logger.info("inputsArray:" + inputsArray);
+        //logger.warn("contents:" + contents);
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            Map contentVersion = (Map) serializer.deserialize(inputsArray);
+	        logger.info("contentVersion:" + contentVersion);
+
+            initializePrincipal(principalName);
+            
+            Integer contentVersionId = (Integer)contentVersion.get("contentVersionId");
+            Integer contentId 		 = (Integer)contentVersion.get("contentId");
+            Integer languageId 		 = (Integer)contentVersion.get("languageId");
+            Integer stateId			 = (Integer)contentVersion.get("stateId");
+            String versionComment 	 = (String)contentVersion.get("versionComment");
+            
+            System.out.println("contentVersionId:" + contentVersionId);
+            System.out.println("contentId:" + contentId);
+            System.out.println("languageId:" + languageId);
+            System.out.println("stateId:" + stateId);
+            System.out.println("versionComment:" + versionComment);
+
+            ContentVersionVO contentVersionVO = null;
+            if(contentVersionId != null)
+                contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId);
+            else
+                contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+                
+            if(contentVersionVO == null)
+                return new Boolean(false);
+                
+            contentVersionVO.setVersionComment(versionComment);
+            
+            Map attributes = (Map)contentVersion.get("contentVersionAttributes");
+            
+            if(attributes != null && attributes.size() > 0)
+            {
+	            DOMBuilder domBuilder = new DOMBuilder();
+	            Document document = domBuilder.createDocument();
+	            
+	            Element rootElement = domBuilder.addElement(document, "root");
+	            domBuilder.addAttribute(rootElement, "xmlns", "x-schema:Schema.xml");
+	            Element attributesRoot = domBuilder.addElement(rootElement, "attributes");
+	            
+	            Iterator attributesIterator = attributes.keySet().iterator();
+	            while(attributesIterator.hasNext())
+	            {
+	                String attributeName  = (String)attributesIterator.next();
+	                String attributeValue = (String)attributes.get(attributeName);
+	                
+	                Element attribute = domBuilder.addElement(attributesRoot, attributeName);
+	                domBuilder.addCDATAElement(attribute, attributeValue);
+	            }	                
+
+	            contentVersionVO.setVersionValue(document.asXML());
+            }
+            
+            ContentVersionControllerProxy.getController().acUpdate(principal, contentId, languageId, contentVersionVO);
+            
+            //Assets now
+            List digitalAssets = (List)contentVersion.get("digitalAssets");
+	        
+            if(digitalAssets != null)
+            {
+		        System.out.println("digitalAssets:" + digitalAssets.size());
+		        
+		        Iterator digitalAssetIterator = digitalAssets.iterator();
+		        while(digitalAssetIterator.hasNext())
+		        {
+		            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
+	    	        System.out.println("digitalAssets in ws:" + remoteAttachment);
+	    	        
+	            	DigitalAssetVO newAsset = new DigitalAssetVO();
+					newAsset.setAssetContentType(remoteAttachment.getContentType());
+					newAsset.setAssetKey(remoteAttachment.getName());
+					newAsset.setAssetFileName("Unknown");
+					newAsset.setAssetFilePath("Unknown");
+					newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
+					InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
+	
+	    	        DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId());
+	    	    }
+            }
+            
+	        logger.info("Done with contentVersion..");
+
+        }
+        catch(Throwable e)
+        {
+            logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
+        }
+        
+        return new Boolean(true);
+    }
+
+    
+    
+    /**
+     * Updates a content.
+     */
+    
+    public Boolean deleteDigitalAsset(final String principalName, final Object[] inputsArray) 
+    {
+        List newContentIdList = new ArrayList();
+        
+        logger.info("****************************************");
+        logger.info("Updating content through webservice....");
+        logger.info("****************************************");
+        
+        logger.info("principalName:" + principalName);
+        logger.info("inputsArray:" + inputsArray);
+        //logger.warn("contents:" + contents);
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            Map digitalAsset = (Map) serializer.deserialize(inputsArray);
+	        logger.info("digitalAsset:" + digitalAsset);
+
+            initializePrincipal(principalName);
+            
+            Integer contentVersionId = (Integer)digitalAsset.get("contentVersionId");
+            Integer contentId 		 = (Integer)digitalAsset.get("contentId");
+            Integer languageId 		 = (Integer)digitalAsset.get("languageId");
+            String assetKey 		 = (String)digitalAsset.get("assetKey");
+            
+            System.out.println("contentVersionId:" + contentVersionId);
+            System.out.println("contentId:" + contentId);
+            System.out.println("languageId:" + languageId);
+            System.out.println("assetKey:" + assetKey);
+            
+            ContentVersionController.getContentVersionController().deleteDigitalAsset(contentId, languageId, assetKey);
+               
+	        logger.info("Done with contents..");
+
+        }
+        catch(Throwable e)
+        {
+            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
+        }
+        
+        return new Boolean(true);
+    }
+
+	
     
 	/**
 	 * Checks if the principal exists and if the principal is allowed to create the workflow.

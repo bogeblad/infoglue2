@@ -667,6 +667,18 @@ public interface TemplateController
     public abstract String getDigitalAssetBaseUrl() throws Exception;
 
 	/**
+	 * This method returns the Id the digital assets.
+	 */
+	
+	public Integer getDigitalAssetId(Integer contentId, String assetKey) throws Exception;
+
+	/**
+	 * This method returns the Id the digital assets.
+	 */
+	
+	public Integer getDigitalAssetId(Integer contentId, Integer languageId, String assetKey) throws Exception;
+
+	/**
 	 * This method returns the parent repositoryId if any for the given repository.
 	 */
 	
