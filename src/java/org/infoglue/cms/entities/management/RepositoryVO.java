@@ -99,7 +99,7 @@ public class RepositoryVO implements BaseEntityVO
     	ValidatorFactory.createStringValidator("Repository.name", true, 6, 20, true, RepositoryImpl.class, this.getId(), null).validate(this.name, ceb);
         ValidatorFactory.createStringValidator("Repository.description", true, 1, 100).validate(description, ceb); 
     	if(dnsName != null)
-    	    ValidatorFactory.createStringValidator("Repository.dnsName", false, 0, 200).validate(dnsName, ceb); 
+    	    ValidatorFactory.createStringValidator("Repository.dnsName", false, 0, 2048).validate(dnsName, ceb); 
     	
     	return ceb;
 	}
