@@ -491,7 +491,7 @@ public class PublicationController extends BaseController
 		logger.info("entityClass:" + entityClass);
 		logger.info("entityId:" + entityId);
 		logger.info("typeId:" + typeId);
-
+		
 		// Publish contentversions
         if(entityClass.equals(ContentVersion.class.getName()))
 		{
@@ -499,13 +499,24 @@ public class PublicationController extends BaseController
 			ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(entityId, db);
 			if(oldContentVersion != null && oldContentVersion.getOwningContent() != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
 			{
+			    oldContentVersion.setIsActive(new Boolean(false));
+			    contentVersion = oldContentVersion;
+			    /*
 				contentVersion = ContentVersionController.getContentVersionController().getLatestPublishedContentVersion(oldContentVersion.getOwningContent().getContentId(), oldContentVersion.getLanguage().getLanguageId(), db);
 				if(contentVersion != null)
 				{
 					//We just set the published version to not active.
 					contentVersion.setIsActive(new Boolean(false));
 				}
+				*/
 			}
+			/*
+			else if(oldContentVersion != null && oldContentVersion.getOwningContent() != null && typeId.intValue() == EventVO.UNPUBLISH_ALL.intValue())
+			{
+				//We just set the published version to not active.
+			    oldContentVersion.setIsActive(new Boolean(false));
+			}
+			*/
 			else if(oldContentVersion != null && oldContentVersion.getOwningContent() != null)
 			{
 			    List events = new ArrayList();
@@ -543,13 +554,24 @@ public class PublicationController extends BaseController
 			SiteNodeVersion oldSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(entityId, db);
 			if(oldSiteNodeVersion != null && oldSiteNodeVersion.getOwningSiteNode() != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
 			{
+			    oldSiteNodeVersion.setIsActive(new Boolean(false));
+			    siteNodeVersion = oldSiteNodeVersion;
+			    /*
 				siteNodeVersion = SiteNodeVersionController.getLatestPublishedSiteNodeVersion(oldSiteNodeVersion.getOwningSiteNode().getSiteNodeId(), db);
 				if(siteNodeVersion != null)
 				{
 					//We just set the published version to not active.
 					siteNodeVersion.setIsActive(new Boolean(false));
 				}
+				*/
 			}
+			/*
+			else if(oldSiteNodeVersion != null && oldSiteNodeVersion.getOwningSiteNode() != null && typeId.intValue() == EventVO.UNPUBLISH_ALL.intValue())
+			{
+				//We just set the published version to not active.
+			    siteNodeVersion.setIsActive(new Boolean(false));
+			}
+			*/
 			else if(oldSiteNodeVersion != null && oldSiteNodeVersion.getOwningSiteNode() != null)
 			{
 			    List events = new ArrayList();

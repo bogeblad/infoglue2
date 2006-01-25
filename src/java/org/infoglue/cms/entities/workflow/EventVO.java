@@ -36,6 +36,7 @@ public class EventVO implements BaseEntityVO
 	public static final Integer PUBLISH_DENIED   = new Integer(2);
 	public static final Integer UNPUBLISH_LATEST = new Integer(3);
 	public static final Integer UNPUBLISH_DENIED = new Integer(4);
+	//public static final Integer UNPUBLISH_ALL 	 = new Integer(5);
 	
 	
     private java.lang.Integer eventId;

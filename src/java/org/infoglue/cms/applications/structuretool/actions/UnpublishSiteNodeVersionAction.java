@@ -26,6 +26,8 @@ package org.infoglue.cms.applications.structuretool.actions;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
@@ -60,6 +62,7 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 {
 
 	private List siteNodeVersionVOList = new ArrayList();
+	private List siteNodeVOList = new ArrayList();
 	private Integer siteNodeId;
 	private Integer siteNodeVersionId;
 	private Integer repositoryId;
@@ -93,6 +96,27 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 	    return "input";
 	}
 	
+	public String doInputChooseSiteNodes() throws Exception 
+	{
+		if(this.siteNodeId != null)
+		{
+		    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId);
+		    this.repositoryId = siteNodeVO.getRepositoryId();
+		    
+			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+		
+			Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
+			if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
+				ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1005"));
+			
+			ceb.throwIfNotEmpty();
+
+			siteNodeVOList = SiteNodeController.getController().getSiteNodeVOWithParentRecursive(siteNodeId);
+		}
+
+	    return "inputChooseSiteNodes";
+	}
+
 	/**
 	 * This method gets called when calling this action. 
 	 * If the stateId is 2 which equals that the user tries to prepublish the page. If so we
@@ -149,12 +173,77 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
        	return "success";
     }
 
+	/**
+	 * This method will try to unpublish all liver versions of this sitenode. 
+	 */
+	   
+    public String doUnpublishAll() throws Exception
+    {   
+		String[] siteNodeIds = getRequest().getParameterValues("sel");
+
+		List events = new ArrayList();
+
+        for(int i=0; i < siteNodeIds.length; i++)
+		{
+            String siteNodeIdString = siteNodeIds[i];
+	        List siteNodeVersionVOList = SiteNodeVersionController.getController().getPublishedActiveSiteNodeVersionVOList(new Integer(siteNodeIdString));
+	        
+			Iterator it = siteNodeVersionVOList.iterator();
+			
+			while(it.hasNext())
+			{
+				SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)it.next();
+				
+				EventVO eventVO = new EventVO();
+				eventVO.setDescription(this.versionComment);
+				eventVO.setEntityClass(SiteNodeVersion.class.getName());
+				eventVO.setEntityId(siteNodeVersionVO.getId());
+				eventVO.setName(siteNodeVersionVO.getSiteNodeName());
+				eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+				eventVO = EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal());
+				events.add(eventVO);
+				
+				List contentVersionVOList = SiteNodeVersionController.getController().getMetaInfoContentVersionVOList(siteNodeVersionVO.getId(), this.getInfoGluePrincipal());
+				Iterator contentVersionVOListIterator = contentVersionVOList.iterator();
+				while(contentVersionVOListIterator.hasNext())
+				{
+				    ContentVersionVO currentContentVersionVO = (ContentVersionVO)contentVersionVOListIterator.next();
+					EventVO versionEventVO = new EventVO();
+					versionEventVO.setDescription(this.versionComment);
+					versionEventVO.setEntityClass(ContentVersion.class.getName());
+					versionEventVO.setEntityId(currentContentVersionVO.getId());
+					versionEventVO.setName(currentContentVersionVO.getContentName());
+					versionEventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+					versionEventVO = EventController.create(versionEventVO, this.repositoryId, this.getInfoGluePrincipal());
+					events.add(versionEventVO);			    
+				}
+			}
+		}
+		
+		if(attemptDirectPublishing.equalsIgnoreCase("true"))
+		{
+		    PublicationVO publicationVO = new PublicationVO();
+		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+		    publicationVO.setDescription(getVersionComment());
+		    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
+		    publicationVO.setRepositoryId(repositoryId);
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, false, this.getInfoGluePrincipal());
+		}
+		
+       	return "success";
+    }
+
 
 	public List getSiteNodeVersions()
 	{
 		return this.siteNodeVersionVOList;		
 	}
-	
+
+	public List getSiteNodes()
+	{
+		return this.siteNodeVOList;		
+	}
+
 	public Integer getSiteNodeId() 
 	{
 		return siteNodeId;

@@ -26,6 +26,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.*;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
@@ -996,6 +997,61 @@ public class SiteNodeVersionController extends BaseController
 		//return (SiteNodeVersionVO) updateEntity(SiteNodeVersionImpl.class, (BaseEntityVO)siteNodeVersionVO, db);
 	}    
 	
+	
+	/**
+     * This method gets the meta info for the siteNodeVersion.
+     * @param db
+     * @throws ConstraintException
+     * @throws SystemException
+     * @throws Exception
+     */
+	public List getPublishedActiveSiteNodeVersionVOList(Integer siteNodeId) throws SystemException, Bug, Exception
+	{
+        List siteNodeVersionVOList = new ArrayList();
+        
+        Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+            List siteNodeVersionList = getPublishedActiveSiteNodeVersionVOList(siteNodeId, db);
+            siteNodeVersionVOList = toVOList(siteNodeVersionList);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return siteNodeVersionVOList;
+    }
+
+	
+	public List getPublishedActiveSiteNodeVersionVOList(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
+    {
+        List siteNodeVersionList = new ArrayList();
+        
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1  AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
+    	oql.bind(siteNodeId);
+    	oql.bind(SiteNodeVersionVO.PUBLISHED_STATE);
+    	oql.bind(true);
+    	
+    	QueryResults results = oql.execute();
+		logger.info("Fetching entity in read/write mode");
+
+		while (results.hasMore()) 
+        {
+        	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+        	siteNodeVersionList.add(siteNodeVersion);
+        }
+            
+		return siteNodeVersionList;
+    }
+
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.

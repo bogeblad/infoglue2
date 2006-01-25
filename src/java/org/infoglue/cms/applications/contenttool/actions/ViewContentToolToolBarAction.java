@@ -293,7 +293,14 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			buttons.add(getDeleteButton());
 			buttons.add(getPublishButton());
 			//if(hasAnyPublishedVersion())
-			    buttons.add(getUnpublishButton());
+			//{
+		    ImageButton unpublishButton = getUnpublishButton();
+		    ImageButton unpublishAllButton = getUnpublishAllButton();
+		    unpublishButton.getSubButtons().add(unpublishAllButton);
+		    
+		    buttons.add(unpublishButton);
+			//}
+		
 			buttons.add(getExecuteTaskButton());
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
@@ -326,8 +333,16 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			
 			buttons.add(getPublishButton());
 			if(hasAnyPublishedVersion())
-			    buttons.add(getUnpublishButton());
+			{
+			    ImageButton unpublishButton = getUnpublishButton();
+			    ImageButton unpublishAllButton = getUnpublishAllButton();
+			    unpublishButton.getSubButtons().add(unpublishAllButton);
+			
+			    buttons.add(unpublishButton);
+			}
+			
 			buttons.add(getExecuteTaskButton());
+			
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
 
@@ -404,8 +419,14 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 					}
 					
 					if(hasPublishedVersion())
-						buttons.add(getUnpublishButton());
-					
+					{
+					    ImageButton unpublishButton = getUnpublishButton();
+					    ImageButton unpublishAllButton = getUnpublishAllButton();
+					    unpublishButton.getSubButtons().add(unpublishAllButton);
+
+					    buttons.add(unpublishButton);
+					}
+						
 					if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 						buttons.add(getContentVersionAccessRightsButton());
 	
@@ -465,12 +486,24 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	{
 		try
 		{
-			//return new ImageButton("Confirm.action?header=tool.contenttool.unpublishVersion.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("RequestContentVersionUnpublish.action?entityClass=" + ContentVersion.class.getName() + "&entityId=" + this.lastPublishedContentVersionId + "&typeId=" + EventVO.UNPUBLISH_LATEST + "&repositoryId=" + this.repositoryId + "&name=" + this.name + " - " + this.languageName + "&description=tool.contenttool.unpublishVersion.text&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContentVersion.action?title=ContentVersion&contentVersionId=" + this.contentVersionId + "&contentId=" + this.contentId + "&languageId=" + this.languageId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.unpublishVersion.text", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header");
 			return new ImageButton("UnpublishContentVersion!input.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header");
 		}
 		catch(Exception e){}
 
 		return null;
+	}
+
+	private ImageButton getUnpublishAllButton()
+	{
+	    try
+		{
+			return new ImageButton("UnpublishContentVersion!inputChooseContents.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.unpublishAllVersion"), "tool.contenttool.unpublishAllVersion.header");
+		}
+		catch(Exception e){}
+
+		return null;
+
+		//return new ImageButton(true, "javascript:openPopup('MoveMultipleContent!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleContent', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveMultipleContent"), "tool.contenttool.moveMultipleContent.header");	
 	}
 
 	private ImageButton getDeleteButton()

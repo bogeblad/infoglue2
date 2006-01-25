@@ -56,6 +56,7 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 {
 
 	private List contentVersionVOList = new ArrayList();
+	private List contentVOList		  = new ArrayList();
 	private Integer contentId;
 	private Integer repositoryId;
 
@@ -87,7 +88,28 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 
 	    return "input";
 	}
-	
+
+	public String doInputChooseContents() throws Exception 
+	{
+		if(this.contentId != null)
+		{
+		    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
+		    this.repositoryId = contentVO.getRepositoryId();
+		    
+			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+		
+			Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.SubmitToPublish", protectedContentId.toString()))
+				ceb.add(new AccessConstraintException("Content.contentId", "1005"));
+			
+			ceb.throwIfNotEmpty();
+
+			contentVOList = ContentController.getContentController().getContentVOWithParentRecursive(contentId);
+		}
+
+	    return "inputChooseContents";
+	}
+
 	/**
 	 * This method gets called when calling this action. 
 	 * If the stateId is 2 which equals that the user tries to prepublish the page. If so we
@@ -130,11 +152,61 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
     }
 
 
+	/**
+	 * This method will try to unpublish all liver versions of this content. 
+	 */
+	   
+    public String doUnpublishAll() throws Exception
+    {   
+		String[] contentIds = getRequest().getParameterValues("sel");
+
+		List events = new ArrayList();
+
+        for(int i=0; i < contentIds.length; i++)
+		{
+            String contentIdString = contentIds[i];
+	        List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(new Integer(contentIdString));
+	        
+			Iterator it = contentVersionsVOList.iterator();
+			
+			while(it.hasNext())
+			{
+				ContentVersionVO contentVersionVO = (ContentVersionVO)it.next();
+				
+				EventVO eventVO = new EventVO();
+				eventVO.setDescription(this.versionComment);
+				eventVO.setEntityClass(ContentVersion.class.getName());
+				eventVO.setEntityId(contentVersionVO.getContentVersionId());
+				eventVO.setName(contentVersionVO.getContentName() + "(" + contentVersionVO.getLanguageName() + ")");
+				eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+				eventVO = EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal());
+				events.add(eventVO);
+			}
+		}	
+		
+		if(attemptDirectPublishing.equalsIgnoreCase("true"))
+		{
+		    PublicationVO publicationVO = new PublicationVO();
+		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+		    publicationVO.setDescription(getVersionComment());
+		    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
+		    publicationVO.setRepositoryId(repositoryId);
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.overrideVersionModifyer, this.getInfoGluePrincipal());
+		}
+		
+       	return "success";
+    }
+
 	public List getContentVersions()
 	{
 		return this.contentVersionVOList;		
 	}
 	
+    public List getContents()
+    {
+        return contentVOList;
+    }
+
 	public Integer getContentId() 
 	{
 		return contentId;

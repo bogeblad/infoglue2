@@ -824,7 +824,40 @@ public class ContentVersionController extends BaseController
     }        
 
 
-	
+	public List getPublishedActiveContentVersionVOList(Integer contentId) throws SystemException, Bug, Exception
+    {
+        List contentVersionVOList = new ArrayList();
+        
+        Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+        try
+        {        
+	        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+	    	oql.bind(contentId);
+	    	oql.bind(ContentVersionVO.PUBLISHED_STATE);
+	    	oql.bind(true);
+	    	
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while (results.hasMore()) 
+	        {
+	        	ContentVersion contentVersion = (ContentVersion)results.next();
+	        	contentVersionVOList.add(contentVersion.getValueObject());
+	        }
+			
+            commitTransaction(db);            
+        }
+        catch(Exception e)
+        {
+        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+            
+		return contentVersionVOList;
+    }
+
+    
 	public ContentVersion getLatestPublishedContentVersion(Integer contentId) throws SystemException, Bug, Exception
     {
         ContentVersion contentVersion = null;

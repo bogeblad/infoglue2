@@ -865,6 +865,32 @@ public class SiteNodeController extends BaseController
 	        return LanguageController.getController().getMasterLanguage(repositoryId);
 	}
 
+	/**
+	 * Recursive methods to get all sitenodes under the specific sitenode.
+	 */ 
+	
+    public List getSiteNodeVOWithParentRecursive(Integer siteNodeId) throws ConstraintException, SystemException
+	{
+		return getSiteNodeVOWithParentRecursive(siteNodeId, new ArrayList());
+	}
+	
+	private List getSiteNodeVOWithParentRecursive(Integer siteNodeId, List resultList) throws ConstraintException, SystemException
+	{
+		// Get the versions of this content.
+		resultList.add(getSiteNodeVOWithId(siteNodeId));
+		
+		// Get the children of this content and do the recursion
+		List childSiteNodeList = SiteNodeController.getController().getSiteNodeChildren(siteNodeId);
+		Iterator cit = childSiteNodeList.iterator();
+		while (cit.hasNext())
+		{
+		    SiteNodeVO siteNodeVO = (SiteNodeVO) cit.next();
+			getSiteNodeVOWithParentRecursive(siteNodeVO.getId(), resultList);
+		}
+	
+		return resultList;
+	}
+
 
 }
  

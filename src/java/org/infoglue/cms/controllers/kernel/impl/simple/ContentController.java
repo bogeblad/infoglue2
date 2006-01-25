@@ -1423,6 +1423,33 @@ public class ContentController extends BaseController
 		return null;
 	}
 	
+	
+	/**
+	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
+	 */ 
+	
+    public List getContentVOWithParentRecursive(Integer contentId) throws ConstraintException, SystemException
+	{
+		return getContentVOWithParentRecursive(contentId, new ArrayList());
+	}
+	
+	private List getContentVOWithParentRecursive(Integer contentId, List resultList) throws ConstraintException, SystemException
+	{
+		// Get the versions of this content.
+		resultList.add(getContentVOWithId(contentId));
+		
+		// Get the children of this content and do the recursion
+		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId);
+		Iterator cit = childContentList.iterator();
+		while (cit.hasNext())
+		{
+			ContentVO contentVO = (ContentVO) cit.next();
+			getContentVOWithParentRecursive(contentVO.getId(), resultList);
+		}
+	
+		return resultList;
+	}
+
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.
