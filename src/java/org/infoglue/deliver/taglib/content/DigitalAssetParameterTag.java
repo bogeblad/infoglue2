@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
+import org.apache.commons.fileupload.FileItem;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.webservices.elements.Attachment;
@@ -67,10 +68,14 @@ public class DigitalAssetParameterTag extends AbstractTag
 	private byte[] bytes;
 
 	/**
-	 * The bytes of the parameter.
+	 * The file.
 	 */
 	private File file;
 	
+	/**
+	 * The file item.
+	 */
+	private FileItem fileItem;
 	
 	/**
 	 * Default constructor. 
@@ -120,9 +125,20 @@ public class DigitalAssetParameterTag extends AbstractTag
                 e.printStackTrace();
             }
 		}
+		else if(fileItem != null)
+		{
+		    try
+            {
+                this.bytes = fileItem.get();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+		}
 		else
 		{
-		    throw new JspException("Must state either bytes or a file");
+		    throw new JspException("Must state either bytes, a file or a fileItem");
 		}
 		
 		RemoteAttachment attachment = new RemoteAttachment(this.assetKey, this.contentType, this.bytes);
@@ -165,14 +181,25 @@ public class DigitalAssetParameterTag extends AbstractTag
 	}
 
 	/**
-	 * Sets the bytes attribute to the specified evaluated bytes.
+	 * Sets the file attribute to the specified evaluated file.
 	 * 
-	 * @param name the contents of the attachment.
-	 * @throws JspException if an error occurs while evaluating the bytes.
+	 * @param file the contents of the attachment.
+	 * @throws JspException if an error occurs while evaluating the file.
 	 */
 	public void setFile(final String file) throws JspException
 	{
 		this.file = (File) evaluate("addAttachment", "file", file, Object.class);
+	}
+
+	/**
+	 * Sets the FileItem attribute to the specified evaluated fileItem.
+	 * 
+	 * @param fileItem the contents of the attachment.
+	 * @throws JspException if an error occurs while evaluating the fileItem.
+	 */
+	public void setFileItem(final String fileItem) throws JspException
+	{
+		this.fileItem = (FileItem) evaluate("addAttachment", "fileItem", fileItem, Object.class);
 	}
 
 }

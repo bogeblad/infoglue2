@@ -111,12 +111,12 @@ public class ParseMultipartTag extends TemplateControllerTag
 				        String contentType = item.getContentType();
 				        boolean isInMemory = item.isInMemory();
 				        long sizeInBytes = item.getSize();
-				        
+
 				        if(isValidContentType(contentType))
 				        {
-					        File uploadedFile = new File(CmsPropertyHandler.getProperty("digitalAssetUploadPath") + File.separator + fileName);
-				            item.write(uploadedFile);
-				            files.add(uploadedFile);
+					        //File uploadedFile = new File(CmsPropertyHandler.getProperty("digitalAssetUploadPath") + File.separator + fileName);
+				            //item.write(uploadedFile);
+				            files.add(item);
 				        }
 				        else
 				        {

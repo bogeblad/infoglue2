@@ -559,6 +559,11 @@
 	    	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
+		<attribute>
+		    <name>fileItem</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
 	</tag>
 	
 </taglib>
