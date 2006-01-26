@@ -276,6 +276,92 @@ function editContent(contentId)
 	#end
 	</table>
 	
+	<!-- TESSSSSSSSSSSSSSSSSSSSS -->
+	#*
+	<tr class="darkapricot">
+		<td class="smalllabel" colspan="3">$ui.getString("tool.structuretool.contentVersionReferences.header")</td>
+	</tr>
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#F0E1B4" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	#set($hasContentReferences = false)
+	#set($isOdd = true)
+	#foreach ($referencingBean in $referencingBeanList)
+		#if($referencingBean.entityName.class.name.indexOf("Content") > -1)
+			#set($hasContentReferences = true)
+			#set($lastIndex = $referencingBean.versions.size() - 1)
+			#if($isOdd)
+				#set($class = "class='lightapricot'")
+				#set($isOdd = false)
+			#else
+				#set($class = "class='white'")
+				#set($isOdd = true)
+			#end
+			<tr $class>
+				<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
+				<td width="100%">
+					<a href="ViewContentVersion!standalone.action?contentId=$referencingBean.referencingCompletingObject.contentId&languageId=$referencingBean.versions.get($lastIndex).referencingObject.languageId" target="_blank">$referencingBean.name</a>
+ 					- #if($referencingBean.versions.get($lastIndex).registryVOList.size() > 1) $referencingBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.contenttool.referencingsFound") #end ($referencingBean.versions.size() $ui.getString("tool.contenttool.versions"))
+ 				</td>
+				<td width="16"><a href="ViewContentVersion!standalone.action?contentId=$referencingBean.referencingCompletingObject.contentId&languageId=$referencingBean.versions.get($lastIndex).referencingObject.languageId" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+			</tr>	
+
+		#end
+	#end
+	#if(!$hasContentReferences)
+		<tr $class>
+			<td colspan="3">$ui.getString("tool.structuretool.noContentReferencesFound")</td>		
+		</tr>	
+	#end
+	<tr>
+		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr class="darkapricot">
+		<td class="smalllabel" colspan="3">$ui.getString("tool.structuretool.siteNodeReferences.header")</td>
+	</tr>
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#F0E1B4" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	#set($hasPageReferences = false)
+	#set($isOdd = true)
+	#foreach ($referencingBean in $referencingBeanList)
+		#if($referencingBean.referencingCompletingObject.class.name.indexOf("SiteNode") > -1)
+			#set($hasPageReferences = true)
+			#set($lastIndex = $referencingBean.versions.size() - 1)
+			#if($isOdd)
+				#set($class = "class='lightapricot'")
+				#set($isOdd = false)
+			#else
+				#set($class = "class='white'")
+				#set($isOdd = true)
+			#end
+			<tr $class>
+				<td width="16"><img src="images/tree/structureRoot.gif"></td>
+				<td width="100%">
+					<a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referencingBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank">$referencingBean.name</a>
+					- #if($referencingBean.versions.get($lastIndex).registryVOList.size() > 1) $referencingBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.structuretool.referencingsFound") #end ($referencingBean.versions.size() $ui.getString("tool.structuretool.versions"))
+				</td>
+				<td width="16"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referencingBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+			</tr>	
+		#end
+	#end
+	#if(!$hasPageReferences)
+		<tr $class>
+			<td colspan="3">$ui.getString("tool.contenttool.noPageReferencesFound")</td>		
+		</tr>	
+	#end
+	</table>
+	*#
+	
+	<!-- END TEST -->
+	
+	
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">		
 		<tr>
 		  <td colspan="4" valign="top">

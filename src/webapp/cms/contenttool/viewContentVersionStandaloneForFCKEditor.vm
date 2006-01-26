@@ -372,7 +372,7 @@
 		<td colspan="3">&nbsp;</td>
 	</tr>
 	<tr>
-		<td colspan="3">$ui.getString("tool.contenttool.versionLastUpdatedByLabel") $contentVersionVO.versionModifier</td>
+		<td colspan="3">$ui.getString("tool.contenttool.versionLastUpdatedByLabel") $contentVersionVO.versionModifier ($formatter.formatDate($contentVersionVO.modifiedDateTime, "yyyy-MM-dd HH:ss") - $contentVersionVO.versionComment)</td>
 	</tr>
 	#end
 	
