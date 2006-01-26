@@ -66,8 +66,8 @@ public class ViewContentVersionDifferenceAction extends InfoGlueAbstractAction
 	{
         this.contentVersionVO1 = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId1);    		 	
         this.contentVersionVO2 = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId2);    		 	
-        
-        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO2.getContentTypeDefinitionId());
+
+        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO2.getContentId());
 
         if(this.contentTypeDefinitionVO != null)
         {

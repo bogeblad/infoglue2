@@ -64,7 +64,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	    if(attributeValue != null && !attributeValue.trim().equals(""))
 	    {
 			String editOnSiteUrl = CmsPropertyHandler.getProperty("editOnSiteUrl");
-			String decoratedAttributeValue = "<span oncontextmenu=\"setContentItemParameters(" + contentId + "," + languageId + ",'" + attributeName + "'); setEditUrl('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "');\">" + attributeValue + "</span>";
+			String decoratedAttributeValue = "<span oncontextmenu=\"setContentItemParameters(" + contentId + "," + languageId + ",'" + attributeName + "'); setEditUrl('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "&forceWorkingChange=true');\">" + attributeValue + "</span>";
 			return decoratedAttributeValue;
 	    }
 	    else

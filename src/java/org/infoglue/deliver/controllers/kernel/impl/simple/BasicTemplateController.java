@@ -3931,7 +3931,6 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			availableLanguages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(getDatabase(), this.siteNodeId);
-			System.out.println("AvailableLanguages:" + availableLanguages.size());
 		}
 		catch(Exception e)
 		{

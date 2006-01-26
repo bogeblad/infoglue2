@@ -109,7 +109,10 @@ public class ContentStateController extends BaseController
 
 				ContentVersionVO newContentVersionVO = new ContentVersionVO();
 				newContentVersionVO.setStateId(stateId);
-				newContentVersionVO.setVersionComment("New working version");
+				if(versionComment != null && !versionComment.equals(""))
+					newContentVersionVO.setVersionComment(versionComment);
+				else
+				    newContentVersionVO.setVersionComment("New working version");
 				newContentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 				if(overrideVersionModifyer)
 				    newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());

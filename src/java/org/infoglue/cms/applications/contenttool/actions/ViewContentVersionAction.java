@@ -41,6 +41,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ComponentPropertyDefiniti
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
@@ -83,6 +84,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private Integer currentEditorId;
 	private String attributeName = "";
 	private String textAreaId = "";
+	private boolean forceWorkingChange = false;
 			
     private ContentVO contentVO;
     protected ContentVersionVO contentVersionVO;
@@ -224,6 +226,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
     		//this.contentVersionVO = ContentVersionController.getContentVersionVOWithId(contentVersionId);    		 	
 
+		if(this.forceWorkingChange && !contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+		{
+		    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, this.getInfoGluePrincipal(), this.getContentId(), new ArrayList());
+		    contentVersionId = contentVersion.getContentVersionId();
+		    contentVersionVO = contentVersion.getValueObject();
+		}
+
         if(this.contentTypeDefinitionVO != null)
         {
             this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
@@ -245,8 +254,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	public String doStandalone() throws Exception
 	{
-		this.initialize(getContentVersionId(), getContentId(), this.languageId);
-
+	    this.initialize(getContentVersionId(), getContentId(), this.languageId);
+		    
     	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
     	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
     	    return "standalone";
@@ -1129,4 +1138,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		this.oldModifiedDateTime = oldModifiedDateTime;
 	}
     
+    public void setForceWorkingChange(boolean forceWorkingChange)
+    {
+        this.forceWorkingChange = forceWorkingChange;
+    }
 }
