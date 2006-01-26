@@ -581,6 +581,16 @@
         	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+     	<attribute>
+    	    <name>targetEndpointAddress</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>operationName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>
 	
 	<tag>
@@ -613,6 +623,16 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+     	<attribute>
+    	    <name>targetEndpointAddress</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>operationName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>    	
 	</tag>
 
 	<tag>
@@ -630,6 +650,16 @@
         	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+     	<attribute>
+    	    <name>targetEndpointAddress</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>operationName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>    	
 	</tag>
 
 	<tag>
@@ -667,6 +697,16 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+    	<attribute>
+    	    <name>targetEndpointAddress</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>operationName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>
 
 	<tag>
@@ -699,6 +739,17 @@
         	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+     	<attribute>
+    	    <name>targetEndpointAddress</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>operationName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    	
 	</tag>
 	
 </taglib>
