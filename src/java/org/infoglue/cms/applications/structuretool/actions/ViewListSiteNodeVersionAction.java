@@ -77,7 +77,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		
 			ceb.throwIfNotEmpty();
 
-			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList);
+			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, false);
 		}
 
 	    return "success";

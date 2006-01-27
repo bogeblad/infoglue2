@@ -69,6 +69,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	private List referenceBeanList 			= new ArrayList();
 	private List availableLanguages			= new ArrayList();
 	private List disabledLanguages 			= new ArrayList();
+	private List referencingBeanList 		= new ArrayList();
 
 	private SiteNodeVO siteNodeVO;
 	private SiteNodeVersionVO siteNodeVersionVO;
@@ -103,11 +104,16 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 			this.availableServiceBindings = SiteNodeTypeDefinitionController.getController().getAvailableServiceBindingVOList(siteNodeVO.getSiteNodeTypeDefinitionId());
 			this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId());
 		}
-        
+	} 
+
+	protected void initializeSiteNodeCover(Integer siteNodeId) throws Exception
+	{
 		try
 		{
 		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId);
+		    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString());
 		    getLogger().info("referenceBeanList:" + referenceBeanList.size());
+		    getLogger().info("referencingBeanList:" + referencingBeanList.size());
 		}
 		catch(Exception e)
 		{
@@ -211,7 +217,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	        }
 	        else
 	        {
-    			
+	            this.initializeSiteNodeCover(getSiteNodeId());
+	            
     			return "success";
 	        }
 		}
@@ -640,5 +647,10 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     public List getDisabledLanguages()
     {
         return disabledLanguages;
+    }
+    
+    public List getReferencingBeanList()
+    {
+        return referencingBeanList;
     }
 }

@@ -200,7 +200,7 @@ public class SiteNodeStateController extends BaseController
 				newSiteNodeVersion = oldSiteNodeVersion;
 	    	}
 	    	
-	    	changeStateOnMetaInfo(db, oldSiteNodeVersion, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, resultingEvents);
+	    	changeStateOnMetaInfo(db, newSiteNodeVersion, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, resultingEvents);
         }
         catch(Exception e)
         {
@@ -244,7 +244,7 @@ public class SiteNodeStateController extends BaseController
 
 		if(serviceBindingId != null)
 		{
-			List boundContents = ContentController.getBoundContents(serviceBindingId); 
+			List boundContents = ContentController.getBoundContents(db, serviceBindingId); 
 			getLogger().info("boundContents:" + boundContents.size());
 			if(boundContents.size() > 0)
 			{
@@ -272,9 +272,17 @@ public class SiteNodeStateController extends BaseController
 					{
 					    getLogger().info("State on current:" + contentVersion.getStateId());
 					    getLogger().info("changing state on contentVersion:" + contentVersion.getId());
-						ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, contentVO.getId(), db, events);
+					    contentVersion = ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, contentVO.getId(), db, events);
 					}
+					
+					if(language.getId().equals(masterLanguage.getId()) && contentVersion != null)
+					{
+					    //TODO - lets keep the ref to meta info alive...
+					    //RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+					    RegistryController.getController().updateContentVersion(contentVersion, siteNodeVersion, db);
+					}	
 				}
+				
 			}
 		}
     }

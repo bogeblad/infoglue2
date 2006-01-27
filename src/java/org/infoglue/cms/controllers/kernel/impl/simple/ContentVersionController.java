@@ -1212,7 +1212,7 @@ public class ContentVersionController extends BaseController
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public void getContentAndAffectedItemsRecursive(Integer contentId, Integer stateId, List siteNodeVersionVOList, List contenteVersionVOList, boolean mustBeFirst) throws ConstraintException, SystemException
+    public void getContentAndAffectedItemsRecursive(Integer contentId, Integer stateId, List siteNodeVersionVOList, List contenteVersionVOList, boolean mustBeFirst, boolean includeMetaInfo) throws ConstraintException, SystemException
 	{
         Database db = CastorDatabaseService.getDatabase();
 
@@ -1222,7 +1222,7 @@ public class ContentVersionController extends BaseController
         {
             Content content = ContentController.getContentController().getContentWithId(contentId, db);
 
-            getContentAndAffectedItemsRecursive(content, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, mustBeFirst);
+            getContentAndAffectedItemsRecursive(content, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, mustBeFirst, includeMetaInfo);
             
             commitTransaction(db);
         }
@@ -1234,7 +1234,7 @@ public class ContentVersionController extends BaseController
         }
 	}
 	
-	private void getContentAndAffectedItemsRecursive(Content content, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, List siteNodeVersionVOList, List contentVersionVOList, boolean mustBeFirst) throws ConstraintException, SystemException, Exception
+	private void getContentAndAffectedItemsRecursive(Content content, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, List siteNodeVersionVOList, List contentVersionVOList, boolean mustBeFirst, boolean includeMetaInfo) throws ConstraintException, SystemException, Exception
 	{
 	    checkedSiteNodes.add(content.getId());
         
@@ -1277,20 +1277,23 @@ public class ContentVersionController extends BaseController
 	                try
 	                {
 		                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
-		                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-		                getLogger().info("relatedContentVersions:" + relatedContentVersions.size());
-		                
-		                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
-		                while(relatedContentVersionsIterator.hasNext())
+		                if(includeMetaInfo || (!includeMetaInfo && (relatedContent.getContentTypeDefinition() == null || !relatedContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))))
 		                {
-		                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
-			                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+			                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
+			                getLogger().info("relatedContentVersions:" + relatedContentVersions.size());
+			                
+			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
+			                while(relatedContentVersionsIterator.hasNext())
 			                {
-			        	        contentVersionVOList.add(relatedContentVersion.getValueObject());
-			                    getLogger().info("Added:" + relatedContentVersion.getId());
-				            }
-		
-		                }
+			                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
+				                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+				                {
+				        	        contentVersionVOList.add(relatedContentVersion.getValueObject());
+				                    getLogger().info("Added:" + relatedContentVersion.getId());
+					            }
+			
+			                }
+			            }
 	                }
 	                catch(Exception e)
 	                {
@@ -1309,7 +1312,7 @@ public class ContentVersionController extends BaseController
 		while (cit.hasNext())
 		{
 			Content citContent = (Content) cit.next();
-			getContentAndAffectedItemsRecursive(citContent, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst);
+			getContentAndAffectedItemsRecursive(citContent, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst, includeMetaInfo);
 		}
 		
 	}

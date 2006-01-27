@@ -748,7 +748,7 @@ public class SiteNodeVersionController extends BaseController
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, List siteNodeVersionVOList, List contenteVersionVOList) throws ConstraintException, SystemException
+    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, List siteNodeVersionVOList, List contenteVersionVOList, boolean includeMetaInfo) throws ConstraintException, SystemException
 	{
         Database db = CastorDatabaseService.getDatabase();
 
@@ -758,7 +758,7 @@ public class SiteNodeVersionController extends BaseController
         {
             SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
 
-            getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList);
+            getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo);
             
             commitTransaction(db);
         }
@@ -770,7 +770,7 @@ public class SiteNodeVersionController extends BaseController
         }
 	}
 	
-	private void getSiteNodeAndAffectedItemsRecursive(SiteNode siteNode, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, List siteNodeVersionVOList, List contentVersionVOList) throws ConstraintException, SystemException, Exception
+	private void getSiteNodeAndAffectedItemsRecursive(SiteNode siteNode, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, List siteNodeVersionVOList, List contentVersionVOList, boolean includeMetaInfo) throws ConstraintException, SystemException, Exception
 	{
 	    checkedSiteNodes.add(siteNode.getId());
         
@@ -811,15 +811,18 @@ public class SiteNodeVersionController extends BaseController
 	                try
 	                {
 		                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
-		                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-		                
-		                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
-		                while(relatedContentVersionsIterator.hasNext())
+		                if(includeMetaInfo || (!includeMetaInfo && (relatedContent.getContentTypeDefinition() == null || !relatedContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))))
 		                {
-		                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
-			                if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+			                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
+			                
+			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
+			                while(relatedContentVersionsIterator.hasNext())
 			                {
-			                    contentVersionVOList.add(relatedContentVersion.getValueObject());
+			                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
+				                if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+				                {
+				                    contentVersionVOList.add(relatedContentVersion.getValueObject());
+				                }
 			                }
 		                }
 	                }
@@ -840,7 +843,7 @@ public class SiteNodeVersionController extends BaseController
 		while (cit.hasNext())
 		{
 			SiteNode childSiteNode = (SiteNode) cit.next();
-			getSiteNodeAndAffectedItemsRecursive(childSiteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList);
+			getSiteNodeAndAffectedItemsRecursive(childSiteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo);
 		}
    
 	}

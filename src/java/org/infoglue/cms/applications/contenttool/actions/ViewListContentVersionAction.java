@@ -72,7 +72,7 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			
 			ceb.throwIfNotEmpty();
 
-			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, true);
+			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, true, true);
 
 			Set contentVersionVOListSet = new HashSet();
 			contentVersionVOListSet.addAll(contentVersionVOList);
