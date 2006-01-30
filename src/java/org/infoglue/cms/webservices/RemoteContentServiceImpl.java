@@ -224,25 +224,27 @@ public class RemoteContentServiceImpl
 	    	        
 	    	        List digitalAssets = (List)contentVersion.get("digitalAssets");
 	    	        
-	    	        logger.info("digitalAssets:" + digitalAssets.size());
-	    	        
-	    	        Iterator digitalAssetIterator = digitalAssets.iterator();
-	    	        while(digitalAssetIterator.hasNext())
+	    	        logger.info("digitalAssets:" + digitalAssets);
+	    	        if(digitalAssets != null)
 	    	        {
-	    	            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
-		    	        logger.info("digitalAssets in ws:" + remoteAttachment);
-		    	        
-		            	DigitalAssetVO newAsset = new DigitalAssetVO();
-						newAsset.setAssetContentType(remoteAttachment.getContentType());
-						newAsset.setAssetKey(remoteAttachment.getName());
-						newAsset.setAssetFileName("Unknown");
-						newAsset.setAssetFilePath("Unknown");
-						newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
-						//is = new FileInputStream(renamedFile);
-						InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
-	
-		    	        DigitalAssetController.create(newAsset, is, newContentVersionId);
-		    	    }	    	        
+		    	        Iterator digitalAssetIterator = digitalAssets.iterator();
+		    	        while(digitalAssetIterator.hasNext())
+		    	        {
+		    	            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
+			    	        logger.info("digitalAssets in ws:" + remoteAttachment);
+			    	        
+			            	DigitalAssetVO newAsset = new DigitalAssetVO();
+							newAsset.setAssetContentType(remoteAttachment.getContentType());
+							newAsset.setAssetKey(remoteAttachment.getName());
+							newAsset.setAssetFileName("Unknown");
+							newAsset.setAssetFilePath("Unknown");
+							newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
+							//is = new FileInputStream(renamedFile);
+							InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
+		
+			    	        DigitalAssetController.create(newAsset, is, newContentVersionId);
+			    	    }	 
+	    	        }
 	            }
 	            
 	            newContentIdList.add(newContentVO.getId());

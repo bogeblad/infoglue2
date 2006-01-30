@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -57,6 +58,7 @@ public class ParseMultipartTag extends TemplateControllerTag
 	private Integer maxSize = new Integer(100000); 
 	private String allowedContentTypes;
 	private String[] allowedContentTypeArray;
+	private boolean ignoreEmpty = false;
 	
 	/**
 	 * Default constructor.
@@ -120,7 +122,17 @@ public class ParseMultipartTag extends TemplateControllerTag
 				        }
 				        else
 				        {
-				            throw new JspException("Not a valid content type");
+				            if((item.getName() == null || item.getName().equals("")) && this.ignoreEmpty)
+				            {
+				                logger.warn("Empty file but that was ok..");
+				            }
+				            else
+				            {
+						        pageContext.setAttribute("status", "nok");
+						        pageContext.setAttribute("upload_error", "A field did not have a valid content type");
+						        pageContext.setAttribute(fieldName + "_error", "Not a valid content type");
+					            //throw new JspException("Not a valid content type");
+				            }
 				        }
 				    }
 				    else
@@ -150,7 +162,9 @@ public class ParseMultipartTag extends TemplateControllerTag
 	    {
 	        logger.warn("Error doing an upload" + e.getMessage(), e);
             //pageContext.setAttribute("fieldName_exception", "contentType_MAX");
-	        throw new JspException("File upload failed: " + e.getMessage());
+	        //throw new JspException("File upload failed: " + e.getMessage());
+	        pageContext.setAttribute("status", "nok");
+	        pageContext.setAttribute("upload_error", "" + e.getMessage());
 	    }
 	    
         return EVAL_PAGE;
@@ -176,5 +190,10 @@ public class ParseMultipartTag extends TemplateControllerTag
     {
         this.allowedContentTypes = evaluateString("FileUploadTag", "allowedContentTypes", allowedContentTypes);
         this.allowedContentTypeArray = this.allowedContentTypes.split(",");
+    }
+    
+    public void setIgnoreEmpty(boolean ignoreEmpty)
+    {
+        this.ignoreEmpty = ignoreEmpty;
     }
 }
