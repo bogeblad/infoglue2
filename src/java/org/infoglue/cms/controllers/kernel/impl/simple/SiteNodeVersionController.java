@@ -804,60 +804,61 @@ public class SiteNodeVersionController extends BaseController
 		if(siteNodeVersion != null && siteNodeVersion.getStateId().intValue() == stateId.intValue())
 		{
 		    siteNodeVersionVOList.add(siteNodeVersion.getValueObject());
-		    
-	        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
-	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
-	        
-	        while(relatedEntitiesIterator.hasNext())
-	        {
-	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
-	            {
-	                try
+		}
+		
+        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
+        Iterator relatedEntitiesIterator = relatedEntities.iterator();
+        
+        while(relatedEntitiesIterator.hasNext())
+        {
+            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
+            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
+            {
+                try
+                {
+                    SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
+	                //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
+	                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersion(db, new Integer(registryVO.getEntityId()));
+	        		if(relatedSiteNodeVersion != null && siteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
 	                {
-	                    SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
-		                //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
-		                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersion(db, new Integer(registryVO.getEntityId()));
-		        		if(relatedSiteNodeVersion != null && siteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
-		                {
-		                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
-		                }
+	                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
 	                }
-	                catch(Exception e)
-	                {
-	                    logger.warn("A siteNode referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + ".", e);
-	                }
+                }
+                catch(Exception e)
+                {
+                    logger.warn("A siteNode referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + ".", e);
+                }
 
-	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
-	            }
-	            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
-	            {
-	                try
+    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
+            }
+            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
+            {
+                try
+                {
+	                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
+	                if(includeMetaInfo || (!includeMetaInfo && (relatedContent.getContentTypeDefinition() == null || !relatedContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))))
 	                {
-		                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
-		                if(includeMetaInfo || (!includeMetaInfo && (relatedContent.getContentTypeDefinition() == null || !relatedContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))))
+		                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
+		                
+		                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
+		                while(relatedContentVersionsIterator.hasNext())
 		                {
-			                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-			                
-			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
-			                while(relatedContentVersionsIterator.hasNext())
+		                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
+			                if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
 			                {
-			                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
-				                if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
-				                {
-				                    contentVersionVOList.add(relatedContentVersion.getValueObject());
-				                }
+			                    contentVersionVOList.add(relatedContentVersion.getValueObject());
 			                }
 		                }
 	                }
-	                catch(Exception e)
-	                {
-	                    logger.warn("A content referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + ".", e);
-	                }
-	                
-	    		    checkedContents.add(new Integer(registryVO.getEntityId()));
-	            }
-	        }	    
+                }
+                catch(Exception e)
+                {
+                    logger.warn("A content referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + ".", e);
+                }
+                
+    		    checkedContents.add(new Integer(registryVO.getEntityId()));
+            }
+        //}	    
 
 		}
 		

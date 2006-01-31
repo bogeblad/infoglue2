@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.25 2006/01/27 10:07:12 mattias Exp $
+ * $Id: RegistryController.java,v 1.26 2006/01/31 19:38:52 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -45,6 +45,7 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.Registry;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
@@ -326,14 +327,22 @@ public class RegistryController extends BaseController
 				            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
 				            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
 				        
+				            Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
+				            ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getContentId(), masterLanguage.getId(), db);
+				            getComponents(siteNodeVersion, contentVersion.getVersionValue(), db);
+			                getComponentBindings(siteNodeVersion, contentVersion.getVersionValue(), db);
+			            
+				            /*
 				            Collection contentVersions = content.getContentVersions();
 				            Iterator contentVersionIterator = contentVersions.iterator();
 				            while(contentVersionIterator.hasNext())
-				            {
+					        {
 				                ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
+				                System.out.println("contentVersion:" + contentVersion.getId());
 				                getComponents(siteNodeVersion, contentVersion.getVersionValue(), db);
 				                getComponentBindings(siteNodeVersion, contentVersion.getVersionValue(), db);
 				            }
+				            */
 				        }
 			            else if(name.equalsIgnoreCase("siteNodeId"))
 				        {
@@ -349,7 +358,7 @@ public class RegistryController extends BaseController
 				        }
 			            
 			    	    getLogger().info("Before creating registry entry...");
-
+			    	    
 			            this.create(registryVO, db);
 	                }
 	                catch(Exception e)
