@@ -799,7 +799,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				sb.append("			<!--<td>&nbsp;</td>-->");
 				sb.append("		</tr>");
 				
-				propertyIndex++;
+				if(hasAccessToProperty)
+				    propertyIndex++;
 			}
 		}
 		

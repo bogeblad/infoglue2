@@ -520,6 +520,10 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		
 		String characterEncoding= this.getRequest().getCharacterEncoding();
 		characterEncoding= this.getResponse().getCharacterEncoding();
+	
+		getLogger().info("siteNodeId:" + siteNodeId);
+		getLogger().info("languageId:" + languageId);
+		getLogger().info("entity:" + entity);
 		
 		int propertyIndex = 0;	
 		String propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
@@ -527,9 +531,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		{
 			String propertyValue = this.getRequest().getParameter(propertyName);
 		
-			getLogger().info("siteNodeId:" + siteNodeId);
-			getLogger().info("languageId:" + languageId);
-			getLogger().info("entity:" + entity);
 			getLogger().info("propertyName:" + propertyName);
 			getLogger().info("propertyValue:" + propertyValue);
 			
@@ -549,13 +550,18 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				}
 			}
 			
-			//getLogger().info("anl:" + anl);
+			getLogger().info("anl:" + anl);
 			if(anl.getLength() > 0)
 			{
 				Element component = (Element)anl.item(0);
 				component.setAttribute("path_" + locale.getLanguage(), propertyValue);
+			    getLogger().info("Setting 'path_" + locale.getLanguage() + ":" + propertyValue);
 			}
-
+			else
+			{
+			    getLogger().warn("No property could be updated... must be wrong.");
+			}
+			
 			propertyIndex++;
 			
 			propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
@@ -566,7 +572,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//FileHelper.writeToFile(new File("c:\\temp\\xml1.txt"), modifiedXML.getBytes());
 		//FileHelper.writeToFile(new File("c:\\temp\\xml2.txt"), modifiedXML, false);
 			
-		//getLogger().info("contentVersionVO:" + contentVersionVO.getContentVersionId());
+		getLogger().info("contentVersionVO:" + contentVersionVO.getContentVersionId());
 		ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		
 		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + this.componentId + "&showSimple=" + this.showSimple;
