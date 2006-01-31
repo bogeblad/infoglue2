@@ -664,7 +664,31 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersionVO;
     }
 
-	 
+	/**
+	 * This method returns the version previous to the one sent in.
+	 */
+	
+	public SiteNodeVersion getPreviousActiveSiteNodeVersion(Integer siteNodeId, Integer siteNodeVersionId, Database db) throws SystemException, Bug, Exception
+    {
+    	SiteNodeVersion siteNodeVersion = null;
+
+    	OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.isActive = $2 AND cv.siteNodeVersionId < $3 ORDER BY cv.siteNodeVersionId desc");
+    	oql.bind(siteNodeId);
+    	oql.bind(new Boolean(true));
+    	oql.bind(siteNodeVersionId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+        {
+        	siteNodeVersion = (SiteNodeVersion)results.next();
+        	logger.info("found one:" + siteNodeVersion.getValueObject());
+        }
+    	
+		return siteNodeVersion;
+    }
+
+	
 	/**
 	 * Recursive methods to get all siteNodeVersions of a given state
 	 * under the specified parent siteNode including the given siteNode.

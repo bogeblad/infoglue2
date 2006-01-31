@@ -274,6 +274,8 @@ public class PublicationController extends BaseController
 				EventVO eventVO = (EventVO)eventIterator.next();
 
 				Event event = EventController.getEventWithId(eventVO.getId(), db);
+				InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
+
 				if(event.getTypeId().intValue() == EventVO.PUBLISH.intValue())
 				{
 					event.setTypeId(EventVO.PUBLISH_DENIED);
@@ -306,8 +308,10 @@ public class PublicationController extends BaseController
 						{
 							SiteNode siteNode = siteNodeVersion.getOwningSiteNode();
 							//event.setEntityId(SiteNodeVersionController.getPreviousSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
-							event.setEntityId(SiteNodeVersionController.getController().getPreviousActiveSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId(), db).getId());
+							SiteNodeVersion previousSiteNodeVersion = SiteNodeVersionController.getController().getPreviousActiveSiteNodeVersion(siteNode.getId(), siteNodeVersion.getId(), db);
+							event.setEntityId(previousSiteNodeVersion.getId());
 							SiteNodeVersionController.getController().delete(siteNodeVersion, db);
+							SiteNodeStateController.getController().changeStateOnMetaInfo(db, previousSiteNodeVersion, previousSiteNodeVersion.getStateId(), "Denied publication", true, infoGluePrincipal, new ArrayList());
 							//db.remove(siteNodeVersion);
 						}
 					}
@@ -327,7 +331,6 @@ public class PublicationController extends BaseController
 					}
 				}
 
-				InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
 				mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), referenceUrl);
 			}
 

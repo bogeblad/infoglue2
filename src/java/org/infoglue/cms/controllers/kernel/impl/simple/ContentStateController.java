@@ -151,14 +151,17 @@ public class ContentStateController extends BaseController
 				copyContentCategories(oldContentVersion, newContentVersion, db);
 
 				//Creating the event that will notify the editor...
-				EventVO eventVO = new EventVO();
-				eventVO.setDescription(newContentVersion.getVersionComment());
-				eventVO.setEntityClass(ContentVersion.class.getName());
-				eventVO.setEntityId(new Integer(newContentVersion.getId().intValue()));
-				eventVO.setName(newContentVersion.getOwningContent().getName());
-				eventVO.setTypeId(EventVO.PUBLISH);
-				eventVO = EventController.create(eventVO, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, db);
-				resultingEvents.add(eventVO);
+				if(!newContentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
+				{
+					EventVO eventVO = new EventVO();
+					eventVO.setDescription(newContentVersion.getVersionComment());
+					eventVO.setEntityClass(ContentVersion.class.getName());
+					eventVO.setEntityId(new Integer(newContentVersion.getId().intValue()));
+					eventVO.setName(newContentVersion.getOwningContent().getName());
+					eventVO.setTypeId(EventVO.PUBLISH);
+					eventVO = EventController.create(eventVO, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, db);
+					resultingEvents.add(eventVO);
+				}
 			}
 
 			//If the user in the publish-app publishes a publish-version we change state to published.
