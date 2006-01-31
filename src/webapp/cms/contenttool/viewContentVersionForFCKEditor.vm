@@ -291,7 +291,7 @@
 		<td>
 			#set($dropIndex = 1)
 			$ui.getString("tool.contenttool.stateLabel")<br/>
-			#if($contentTypeDefinitionVO.name == "Meta info")
+			#if($contentTypeDefinitionVO.name == "Meta info" && $infoGluePrincipal.getIsAdministrator() == false)
 			<select class="mediumdrop" disabled name="stateId" onChange="javascript:changeContentState($!contentVersionId);">
 			#else
 			<select class="mediumdrop" name="stateId" onChange="javascript:changeContentState($!contentVersionId);">

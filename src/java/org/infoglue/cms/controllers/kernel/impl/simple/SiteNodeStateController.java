@@ -268,7 +268,8 @@ public class SiteNodeStateController extends BaseController
 					    getLogger().info("State wanted:" + stateId);
 					}
 					
-					if(contentVersion != null && contentVersion.getStateId().intValue() == siteNodeVersion.getStateId().intValue())
+					//if(contentVersion != null && contentVersion.getStateId().intValue() == siteNodeVersion.getStateId().intValue())
+					if(contentVersion != null && contentVersion.getStateId().intValue() != stateId.intValue())
 					{
 					    getLogger().info("State on current:" + contentVersion.getStateId());
 					    getLogger().info("changing state on contentVersion:" + contentVersion.getId());

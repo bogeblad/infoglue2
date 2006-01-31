@@ -96,6 +96,7 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ComponentEditor.AddComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.AddComponent", "This interception point limits who can add a component to a specific slot", true));
 	    systemInterceptionPoints.put("ComponentEditor.DeleteComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.DeleteComponent", "This interception point limits who can delete a component in a specific slot", true));
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditProperty", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditProperty", "This interception point limits who can edit a specific component property", true));
+	    systemInterceptionPoints.put("Publication.Write", new InterceptionPointVO("Publication", "Publication.Write", "This interception point intercepts publications", true));
 	}
     
 	/**
