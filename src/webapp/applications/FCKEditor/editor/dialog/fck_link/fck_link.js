@@ -41,7 +41,7 @@ function OnDialogTabChange( tabCode )
 {
 	ShowE('divInfo'		, ( tabCode == 'Info' ) ) ;
 	ShowE('divTarget'	, ( tabCode == 'Target' ) ) ;
-	ShowE('divUpload'	, ( tabCode == 'Upload' ) ) ;
+//	ShowE('divUpload'	, ( tabCode == 'Upload' ) ) ;
 	ShowE('divAttribs'	, ( tabCode == 'Advanced' ) ) ;
 }
 
@@ -122,7 +122,10 @@ oParser.CreateEMailUri = function( address, subject, body )
 // oLink: The actual selected link in the editor.
 var oLink = FCK.Selection.MoveToAncestorNode( 'A' ) ;
 if ( oLink )
+{
 	FCK.Selection.SelectNode( oLink ) ;
+	window.top.focus();	
+}
 
 window.onload = function()
 {
@@ -305,8 +308,8 @@ function SetLinkType( linkType )
 	if ( !FCKConfig.LinkDlgHideTarget )
 		window.parent.SetTabVisibility( 'Target'	, (linkType == 'url') ) ;
 
-	if ( FCKConfig.LinkUpload )
-		window.parent.SetTabVisibility( 'Upload'	, (linkType == 'url') ) ;
+//	if ( FCKConfig.LinkUpload )
+//		window.parent.SetTabVisibility( 'Upload'	, (linkType == 'url') ) ;
 
 	if ( !FCKConfig.LinkDlgHideAdvanced )
 		window.parent.SetTabVisibility( 'Advanced'	, (linkType != 'anchor' || bHasAnchors) ) ;
