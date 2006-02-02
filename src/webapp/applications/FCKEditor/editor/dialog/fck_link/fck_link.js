@@ -30,8 +30,8 @@ window.parent.AddTab( 'Info', FCKLang.DlgLnkInfoTab ) ;
 if ( !FCKConfig.LinkDlgHideTarget )
 	window.parent.AddTab( 'Target', FCKLang.DlgLnkTargetTab, true ) ;
 
-if ( FCKConfig.LinkUpload )
-	window.parent.AddTab( 'Upload', FCKLang.DlgLnkUpload, true ) ;
+//if ( FCKConfig.LinkUpload )
+//	window.parent.AddTab( 'Upload', FCKLang.DlgLnkUpload, true ) ;
 
 if ( !FCKConfig.LinkDlgHideAdvanced )
 	window.parent.AddTab( 'Advanced', FCKLang.DlgAdvancedTag ) ;
@@ -124,8 +124,7 @@ var oLink = FCK.Selection.MoveToAncestorNode( 'A' ) ;
 if ( oLink )
 {
 	FCK.Selection.SelectNode( oLink ) ;
-	window.top.focus();
-	window.focus();	
+	var focusWindow = true;
 }
 
 window.onload = function()
@@ -590,3 +589,6 @@ function CheckUpload()
 	
 	return true ;
 }
+
+if(focusWindow)
+	setTimeout("window.focus();", 50);	
