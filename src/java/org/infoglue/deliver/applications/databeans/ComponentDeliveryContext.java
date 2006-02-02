@@ -71,31 +71,59 @@ public class ComponentDeliveryContext implements UsageListener
 	
     public void addUsedContent(String usedContent)
     {
-        this.usedContents.add(usedContent);
+        synchronized(usedContents)
+        {
+            this.usedContents.add(usedContent);
+        }
     }
 
     public void addUsedSiteNode(String usedSiteNode)
     {
-        this.usedSiteNodes.add(usedSiteNode);
+        synchronized(usedSiteNodes)
+        {
+            this.usedSiteNodes.add(usedSiteNode);
+        }
     }
 
     public void addUsedContentVersion(String usedContentVersion)
     {
-        this.usedContentVersions.add(usedContentVersion);
+        synchronized(usedContentVersions)
+        {
+            this.usedContentVersions.add(usedContentVersion);
+        }
     }
 
     public void addUsedSiteNodeVersion(String usedSiteNodeVersion)
     {
-        this.usedSiteNodeVersions.add(usedSiteNodeVersion);
+        synchronized(usedSiteNodeVersions)
+        {
+            this.usedSiteNodeVersions.add(usedSiteNodeVersion);
+        }
     }
     
     public String[] getAllUsedEntities()
     {
         List list = new ArrayList();
-        list.addAll(this.usedContents);
-        list.addAll(this.usedContentVersions);
-        list.addAll(this.usedSiteNodes);
-        list.addAll(this.usedSiteNodeVersions);
+        synchronized(usedContents)
+        {
+            list.addAll(this.usedContents);
+        }
+        
+        synchronized(usedContentVersions)
+        {
+            list.addAll(this.usedContentVersions);
+        }
+        
+        synchronized(usedSiteNodes)
+        {
+            list.addAll(this.usedSiteNodes);
+        }
+        
+        synchronized(usedSiteNodeVersions)
+        {
+            list.addAll(this.usedSiteNodeVersions);
+        }
+        
         Object[] array = list.toArray();
         String[] groups = new String[array.length];
         for(int i=0; i<array.length; i++)
