@@ -484,9 +484,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				if(currentLanguage.getId().intValue() == languageId.intValue())
 				{
 				    getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
-					language = currentLanguage;
-					break;
-
+					if(getIsValidLanguage(db, ndc, siteNode, currentLanguage.getId()))
+					{
+					    language = currentLanguage;
+					    break;
+					}
 				    /*
 				    DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
 			    	ContentVO contentVO = ndc.getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
