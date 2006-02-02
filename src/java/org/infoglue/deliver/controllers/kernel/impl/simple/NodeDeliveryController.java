@@ -818,7 +818,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public Integer getDisabledLanguagesSiteNodeVersionId(Database db, Integer siteNodeId)
 	{
-		Integer protectedSiteNodeVersionId = null;
+		Integer disabledLanguagesSiteNodeVersionId = null;
 		
 		try
 		{
@@ -828,14 +828,14 @@ public class NodeDeliveryController extends BaseDeliveryController
 			{	
 				getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getDisableLanguages());
 				if(siteNodeVersionVO.getDisableLanguages().intValue() == NO.intValue())
-					protectedSiteNodeVersionId = null;
+				    disabledLanguagesSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getDisableLanguages().intValue() == YES.intValue())
-					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				    disabledLanguagesSiteNodeVersionId = siteNodeVersionVO.getId();
 				else if(siteNodeVersionVO.getDisableLanguages().intValue() == INHERITED.intValue())
 				{
 					SiteNodeVO parentSiteNode = this.getParentSiteNodeForPageCache(db, siteNodeId);
 					if(parentSiteNode != null)
-						protectedSiteNodeVersionId = getProtectedSiteNodeVersionIdForPageCache(db, parentSiteNode.getSiteNodeId()); 
+					    disabledLanguagesSiteNodeVersionId = getDisabledLanguagesSiteNodeVersionId(db, parentSiteNode.getSiteNodeId()); 
 				}
 			}
 
@@ -845,7 +845,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled languages:" + e.getMessage(), e);
 		}
 				
-		return protectedSiteNodeVersionId;
+		return disabledLanguagesSiteNodeVersionId;
 	}
 
 	/**

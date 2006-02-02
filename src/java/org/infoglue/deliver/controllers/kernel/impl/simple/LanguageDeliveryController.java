@@ -533,9 +533,12 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
 		        for(int i=0; i<disabledLanguagesStringArray.length; i++)
 		        {
-		            if(languageId.intValue() == new Integer(disabledLanguagesStringArray[i]).intValue())
+		            getLogger().info("languageId.intValue():" + languageId.intValue());
+		            getLogger().info("disabledLanguagesStringArray:" + disabledLanguagesStringArray);
+				    if(languageId.intValue() == new Integer(disabledLanguagesStringArray[i]).intValue())
 		            {
 		                isValidLanguage = false;
+			            getLogger().info("isValidLanguage:" + isValidLanguage);
 		                break;
 		            }
 		        }
