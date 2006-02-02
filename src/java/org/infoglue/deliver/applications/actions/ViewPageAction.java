@@ -494,13 +494,47 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			else
 			{
+			    /*
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
 				if(masterLanguageVO == null)
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
 	
+				System.out.println("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
 				logger.info("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
 
-				setLanguageId(masterLanguageVO.getLanguageId());				
+				setLanguageId(masterLanguageVO.getLanguageId());		
+				*/
+			    
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
+				if(masterLanguageVO == null)
+					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
+
+				
+				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId());
+				if(!isMasterLanguageValid)
+				{
+				    logger.info("Master language was not allowed on this sitenode... let's take the next on in order");
+				    List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(db, this.getSiteNodeId());
+				    Iterator languagesIterator = languages.iterator();
+				    while(languagesIterator.hasNext())
+				    {
+				        LanguageVO currentLanguage = (LanguageVO)languagesIterator.next();
+				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), currentLanguage.getId());
+					    logger.info("currentLanguage validity:" + isCurrentLanguageValid);
+				        if(isCurrentLanguageValid)
+				        {
+				            setLanguageId(currentLanguage.getLanguageId());
+				            break;
+				        }
+				    }
+				}
+				else
+				{
+				    logger.info("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
+				    setLanguageId(masterLanguageVO.getLanguageId());				
+				}
+
 			}
 		}
 		else
