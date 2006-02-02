@@ -124,7 +124,8 @@ var oLink = FCK.Selection.MoveToAncestorNode( 'A' ) ;
 if ( oLink )
 {
 	FCK.Selection.SelectNode( oLink ) ;
-	window.top.focus();	
+	window.top.focus();
+	window.focus();	
 }
 
 window.onload = function()
