@@ -101,6 +101,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			r.add(new ManagementNodeImpl(cnt++, "Portlets", "ViewListPortlet.action"));
 			r.add(new ManagementNodeImpl(cnt++, "Redirects", "ViewListRedirect.action"));
 			r.add(new ManagementNodeImpl(cnt++, "Application settings", "ViewListServerNode.action"));
+			r.add(new ManagementNodeImpl(cnt++, "Message center", "ViewMessageCenter.action"));
 		}
 		/*else if(parentNode.intValue() > 100 || parentNode.intValue() < 0)
 		{

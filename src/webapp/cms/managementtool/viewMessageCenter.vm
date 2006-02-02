@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.viewGroup.header" "tool.managementtool.viewGroup.header" "groupName=$formatter.encodeURI($groupName)")
+
+<script src="script/ajaxchat/scripts.js" language="JavaScript" type="text/javascript"></script> 
+
+<div class="fullymarginalized" style="color: black;">
+
+
+	<p>Messages:</p>
+	<div id="outputList" style="width:100%; height: 400px; overflow: auto; border: 1px solid #333333; background-color: white;"></div>
+	<p>
+		Your Message:
+		<form id="chatForm" name="chatForm" onsubmit="return false;" action=""> 
+		  	<input type="textfield" id="message" name="message"/>
+		  	<input id="submit" type="button" value="Send" onclick="sendComment();"/>
+	  	</form>
+	</p>
+
+</div>
+
+</body>
+</html>

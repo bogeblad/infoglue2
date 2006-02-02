@@ -133,8 +133,10 @@ public class ShortcutController extends BaseController
 	public String getDataPropertyValue(PropertySet propertySet, String key) throws Exception
 	{
 		byte[] valueBytes = propertySet.getData(key);
-	    
-		return new String(valueBytes, "utf-8");
+	    if(valueBytes != null)
+	    	return new String(valueBytes, "utf-8");
+	    else
+	    	return null;
 	}
 
 	/**
