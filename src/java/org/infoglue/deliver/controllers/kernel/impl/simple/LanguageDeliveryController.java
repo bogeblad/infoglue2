@@ -519,6 +519,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	    
 	    SiteNodeVersion siteNodeVersion = ndc.getActiveSiteNodeVersion(siteNode.getId(), db);
 	    Integer disabledLanguagesSiteNodeVersionId = ndc.getDisabledLanguagesSiteNodeVersionId(db, siteNode.getId());
+	    getLogger().info("disabledLanguagesSiteNodeVersionId:" + disabledLanguagesSiteNodeVersionId);
 	    
 	    if(disabledLanguagesSiteNodeVersionId != null)
 	    {
