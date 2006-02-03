@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.17 2006/02/02 22:12:44 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.18 2006/02/03 17:40:42 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1366,8 +1366,10 @@
 
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewMessageCenterAction" alias="ViewMessageCenter">
 		<view name="success">/cms/managementtool/viewMessageCenter.vm</view>
+		<view name="successStandaloneChat">/cms/managementtool/viewStandaloneChat.vm</view>
 		<view name="successGetMessages">/cms/managementtool/viewMessages.vm</view>
 		<view name="successMessageSent">/cms/managementtool/viewMessages.vm</view>
+		<view name="successGetSystemMessages">/cms/managementtool/viewSystemMessages.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

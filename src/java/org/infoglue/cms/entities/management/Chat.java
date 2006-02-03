@@ -6,13 +6,17 @@ import java.util.List;
 
 public class Chat
 {
-    static LinkedList messages = new LinkedList();
+    private int messageId = 0;
+    
+    private LinkedList messages = new LinkedList();
 
-    public List addMessage(String userName, String text)
+    public List addMessage(String userName, Integer type, String text)
     {
+        messageId++;
+        
         if (text != null && text.trim().length() > 0)
         {
-            messages.addFirst(new Message(messages.size(), userName, text));
+            messages.addFirst(new Message(messageId, userName, type, text));
             //while (messages.size() > 10)
             //{
             //messages.removeLast();
@@ -29,11 +33,16 @@ public class Chat
 
     public List getMessages(int lastIndex)
     {
-    	//if(lastIndex + 1 == messages.size() - 1)
-    	//	return new ArrayList();
+    	System.out.println("lastIndex:" + lastIndex + ":" + messageId);
+
+    	if(messageId == lastIndex)
+    		return new ArrayList();
     	
-    	System.out.println("lastIndex:" + lastIndex + ":" + messages.size());
-        return messages.subList(0, messages.size() - (lastIndex + 1));
+        return messages.subList(0, messageId - (lastIndex));
     }
 
+    public int getMessageId()
+    {
+        return messageId;
+    }
 }

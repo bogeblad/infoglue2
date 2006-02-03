@@ -1,0 +1,3 @@
+#foreach($message in $messages)
+${message.id}---${message.type}---${message.text}---;
+#end

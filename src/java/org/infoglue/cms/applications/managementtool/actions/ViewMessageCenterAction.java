@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.entities.management.Chat;
+import org.infoglue.cms.entities.management.Message;
 
 import java.util.*;
 
@@ -36,15 +37,27 @@ import java.util.*;
 
 public class ViewMessageCenterAction extends InfoGlueAbstractAction
 {
+	private static Chat systemMessagesChat = new Chat();
 	private static Chat chat = new Chat();
 	private Integer lastId;
 	private String userName;
 	private String message;
+	private boolean isSystemMessage = false;
 	private List messages;
+	
+	private Integer INDEX_MESSAGE_TYPE = new Integer(-1);
+	private Integer SYSTEM_MESSAGE_TYPE = new Integer(0);
+	private Integer CHAT_MESSAGE_TYPE = new Integer(10);
+	
 	
     public String doExecute() throws Exception
     {
         return "success";
+    }
+
+    public String doStandaloneChat() throws Exception
+    {
+        return "successStandaloneChat";
     }
 
     public String doGetMessages() throws Exception
@@ -61,11 +74,32 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
     	return "successGetMessages";
     }
 
+    public String doGetSystemMessages() throws Exception
+    {
+    	System.out.println("Last id:" + lastId);
+
+    	if(lastId == null || lastId.intValue() == -1)
+    	{
+    	    Message message = new Message(systemMessagesChat.getMessageId(), "administrator", INDEX_MESSAGE_TYPE, "Undefined");
+    		messages = new ArrayList();
+    		messages.add(message);
+    	}
+    	else
+    		messages = systemMessagesChat.getMessages(lastId.intValue());
+
+    	System.out.println("Getting system messages:" + messages.size());
+
+    	return "successGetSystemMessages";
+    }
+
     public String doSendMessage() throws Exception
     {
     	System.out.println("Adding message:" + message);
     	
-    	chat.addMessage(this.getUserName(), this.message);
+    	chat.addMessage(this.getUserName(), CHAT_MESSAGE_TYPE, this.message);
+    	System.out.println("this.isSystemMessage:" + this.isSystemMessage);
+    	if(this.isSystemMessage)
+    	    systemMessagesChat.addMessage(this.getUserName(), SYSTEM_MESSAGE_TYPE, "openChat('" + this.message + "');");
     	
         return "successMessageSent";
     }
@@ -85,12 +119,18 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 		return messages;
 	}
 
-	public Integer getLastId() {
+	public Integer getLastId() 
+	{
 		return lastId;
 	}
 
-	public void setLastId(Integer lastId) {
+	public void setLastId(Integer lastId) 
+	{
 		this.lastId = lastId;
 	}
-
+    
+    public void setIsSystemMessage(boolean isSystemMessage)
+    {
+        this.isSystemMessage = isSystemMessage;
+    }
 }

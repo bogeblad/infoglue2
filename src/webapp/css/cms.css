@@ -520,3 +520,89 @@ a:active {
 	height				: 20px;
 	border-bottom		: 1px solid #666666;
 }
+
+#systemMessages {
+	position 			: absolute;
+	display				: block;
+	background-color 	: #333333;
+	abackground-image	: url('../images/grid.gif');
+	abackground-repeat	: repeat;
+	color 				: black;
+	border 				: 1px solid #666666;
+	top 				: 0px;
+	left 				: 0px;
+	bottom				: 0px;
+	right				: 0px;
+	width 				: 100%;
+	height				: 100%;
+	opacity				: .85;
+    filter				: alpha(opacity=85);
+    z-index				: 10;
+}
+
+#systemMessagesDialog {
+	position 			: absolute;
+	display				: block;
+	background-color 	: white;
+	abackground-image	: url('../images/grid.gif');
+	abackground-repeat	: repeat;
+	color 				: black;
+	border 				: 1px solid #666666;
+	top 				: 0px;
+	left 				: 0px;
+	bottom				: 0px;
+	right				: 0px;
+	width 				: 100%;
+	height				: 100%;
+	opacity				: .85;
+    filter				: alpha(opacity=85);
+    z-index				: 10;
+}
+
+#systemMessagesMain {
+	position 			: absolute;
+	display				: inherit;
+	background-color 	: white;
+	color 				: black;
+	border 				: 1px solid black;
+	atop 				: 0px;
+	aleft 				: 0px;
+	width 				: 410px;
+	height				: 420px;
+	margin				: 10%;
+}
+
+.systemMessagesDivHandle {
+	amargin:2px;
+	padding-top:2px;
+	padding-bottom:2px;
+	width:100%;
+	color:white;
+	background-color:navy;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	}
+
+.systemMessagesDivLeftHandle {
+	width: 150px; 
+	float: left;
+	color:white;
+	text-align: left;
+	line-height:10px;
+	}
+.systemMessagesDivRightHandle {
+	color:white;
+	text-align: right;
+	line-height:10px;	
+	}
+
+.systemMessagesDivBody {
+    padding-top:2px;
+	padding-bottom:2px;
+	width:100%;
+	height:300px;
+	background-color: white;
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	overflow: auto;
+	}

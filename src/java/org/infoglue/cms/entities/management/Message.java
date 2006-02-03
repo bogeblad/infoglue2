@@ -4,12 +4,14 @@ public class Message
 {
     private int id;
     private String userName;
+    private Integer type;
     private String text;
 
-    public Message(int id, String userName, String newtext)
+    public Message(int id, String userName, Integer type, String newtext)
     {
     	this.id = id;
     	this.userName = userName;
+    	this.type = type;
     	
         text = newtext;
         if (text.length() > 256)
@@ -35,4 +37,8 @@ public class Message
 		return userName;
 	}
 
+    public Integer getType()
+    {
+        return type;
+    }
 }

@@ -473,3 +473,13 @@ function hexcode(url) {
     }
    return result;
 }
+
+
+/**
+ * This method close layer.
+ */
+ 
+function closeDiv(id)
+{
+	document.getElementById(id).style.display = 'none';
+}

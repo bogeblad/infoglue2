@@ -35,16 +35,7 @@ function handlehHttpReceiveChat()
 		insertNewContent(userName, message); //inserts the new content into the page
 		i = i + 3;
 	}	
-	/*        
-    if (results.length > 2) 
-    {
-	    for(i=0;i < (results.length-1);i=i+3) { //goes through the result one message at a time
-	    	insertNewContent(results[i+1],results[i+2]); //inserts the new content into the page
-	    }
-	    alert("lastId:" + results[results.length-4]);
-	    lastId = results[results.length-4];
-    }
-    */
+
     setTimeout('receiveChatText();',4000); //executes the next data query in 4 seconds
   }
 }
@@ -67,14 +58,20 @@ function insertNewContent(liName,liText) {
 //stores a new comment on the server
 function sendComment() {
 	currentChatText = document.getElementById("message").value;
-	if (currentChatText != '' & (httpSendChat.readyState == 4 || httpSendChat.readyState == 0)) {
-		param = 'message='+ currentChatText;	
+	isSystemMessage = document.getElementById("isSystemMessage").checked;
+	//alert("isSystemMessage:" + isSystemMessage);
+	if (currentChatText != '' & (httpSendChat.readyState == 4 || httpSendChat.readyState == 0)) 
+	{
+		param = 'message='+ currentChatText + '&isSystemMessage=' + isSystemMessage;	
 		httpSendChat.open("POST", SendChaturl, true);
 		httpSendChat.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-  	httpSendChat.onreadystatechange = handlehHttpSendChat;
-  	httpSendChat.send(param);
-  	document.getElementById("message").value = '';
-	} else {
+  		httpSendChat.onreadystatechange = handlehHttpSendChat;
+  		httpSendChat.send(param);
+  		document.getElementById("message").value = '';
+  		document.getElementById("isSystemMessage").checked = false;
+	} 
+	else 
+	{
 		setTimeout('sendComment();',1000);
 	}
 }

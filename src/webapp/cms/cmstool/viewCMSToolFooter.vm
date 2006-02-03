@@ -7,7 +7,7 @@
 	<title>Footer</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">		
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-	<script src="script/ajaxchat/scripts.js" language="JavaScript" type="text/javascript"></script> 
+	<script src="script/ajax/scripts.js" language="JavaScript" type="text/javascript"></script> 
 </head>
 
 <body class="cmstool">

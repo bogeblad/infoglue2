@@ -4,7 +4,10 @@
 
 #beginManagementTool("tool.managementtool.viewGroup.header" "tool.managementtool.viewGroup.header" "groupName=$formatter.encodeURI($groupName)")
 
-<script src="script/ajaxchat/scripts.js" language="JavaScript" type="text/javascript"></script> 
+<script src="script/ajaxchat/scripts.js" language="JavaScript" type="text/javascript"></script>
+<script type="text/javascript">
+	var disableSystemMessages = true;
+</script> 
 
 <div class="fullymarginalized" style="color: black;">
 
@@ -15,11 +18,9 @@
 		Your Message:
 		<form id="chatForm" name="chatForm" onsubmit="return false;" action=""> 
 		  	<input type="textfield" id="message" name="message"/>
+		  	<input type="checkbox" id="isSystemMessage" name="isSystemMessage" value="true"/> System message<br/>
 		  	<input id="submit" type="button" value="Send" onclick="sendComment();"/>
 	  	</form>
 	</p>
 
-</div>
-
-</body>
-</html>
+#endManagementTool()
