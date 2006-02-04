@@ -150,8 +150,8 @@
 
 #macro(endManagementTool)
 </div>
-<div id="systemMessages"/>
-<div id="systemMessagesDialog"/>
+<div id="systemMessages"></div>
+<div id="systemMessagesDialog"></div>
 </body>
 </html>
 #end
@@ -162,8 +162,8 @@
 ##**************************************************
 
 #macro(endContentTool)
-<div id="systemMessages"/>
-<div id="systemMessagesDialog"/>
+<div id="systemMessages"></div>
+<div id="systemMessagesDialog"></div>
 </body>
 </html>
 #end
@@ -174,8 +174,8 @@
 ##**************************************************
 
 #macro(endStructureTool)
-<div id="systemMessages"/>
-<div id="systemMessagesDialog"/>
+<div id="systemMessages"></div>
+<div id="systemMessagesDialog"></div>
 </body>
 </html>
 #end
@@ -186,8 +186,8 @@
 
 #macro(endPublishingTool)
 </div>
-<div id="systemMessages"/>
-<div id="systemMessagesDialog"/>
+<div id="systemMessages"></div>
+<div id="systemMessagesDialog"></div>
 </body>
 </html>
 #end

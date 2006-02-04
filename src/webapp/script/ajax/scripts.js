@@ -88,9 +88,9 @@ function openChat(message)
 	alert("frame:" + frame);	
 	if(frame)
 	{
-		alert("APA:" + parent.frames["toolarea"].frames["main"].document.getElementById("outputList"));
-		alert("APA:" + parent.frames["toolarea"].frames["main"].document.getElementById("systemMessages"));
-		alert("APA:" + parent.frames["toolarea"].frames["main"].document.getElementById("systemMessagesDialog"));
+		//alert("APA:" + parent.frames["toolarea"].frames["main"].document.getElementById("outputList"));
+		//alert("APA:" + parent.frames["toolarea"].frames["main"].document.getElementById("systemMessages"));
+		//alert("APA:" + parent.frames["toolarea"].frames["main"].document.getElementById("systemMessagesDialog"));
 		if(frame.document.getElementById("outputList") || (frame.document.getElementById("systemMessages") && frame.document.getElementById("systemMessages").style.display == 'block'))
 		{
 			//alert("JA");
@@ -100,7 +100,7 @@ function openChat(message)
 			alert(message);
 		
 			var div = frame.document.getElementById("systemMessagesDialog");
-			alert("div:" + div.innerHTML);	
+			//alert("div:" + div.innerHTML);	
 				
 			if(div)
 			{
@@ -112,14 +112,14 @@ function openChat(message)
 				divHTML = divHTML + "</div>";
 				divHTML = divHTML + "<div id=\"systemMessagesDivBody\" class=\"systemMessagesDivBody\">";
 				
-				divHTML = divHTML + "<iframe frameborder='0' id='chatIFrame' src='ViewMessageCenter!standaloneChat.action' width='400' height='400' align='baseline' style='width:100%; height=100%; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;'></iframe>";
+				divHTML = divHTML + "<iframe frameborder='0' id='chatIFrame' src='ViewMessageCenter!standaloneChat.action' width='400' height='350' align='baseline' style='width:100%; height=100%; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;'></iframe>";
 				divHTML = divHTML + "</div>";
 				
-				//div.innerHTML = divHTML;
-				div.innerHTML = "AAAAAAAAAAAAAAAAAAAAAAAAAAA";
-				alert("div:" + div.innerHTML);	
-				//openDiv("systemMessages");
-				//openDiv("systemMessagesDialog");
+				div.innerHTML = divHTML;
+				//div.innerHTML = "AAAAAAAAAAAAAAAAAAAAAAAAAAA";
+				//alert("div:" + div.innerHTML);	
+				openDiv("systemMessages");
+				openDiv("systemMessagesDialog");
 			}
 		}
 	}
