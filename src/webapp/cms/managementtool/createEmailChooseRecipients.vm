@@ -4,6 +4,19 @@
 
 #beginManagementTool("tool.managementtool.viewMessageCenter.header" "tool.managementtool.viewMessageCenter.header" "")
 
+<script type="text/javascript">
+
+function toggleBlock(id)
+{
+	div = document.getElementById(id);
+	if(div.style.display == 'none')
+		div.style.display = 'block';
+	else
+		div.style.display = 'none';
+}
+
+</script>
+
 <div class="fullymarginalized">
 
 <p class="subtitle">$ui.getString("tool.managementtool.createEmailChooseRecipients.title")</p>
@@ -26,18 +39,19 @@
 </div>
 
 <div id="usersTitle"> 
-<h3>$ui.getString("tool.managementtool.users.title")</h3><a href="javascript:document.getElementById("users").style.display='inline';"><img src="images/downArrow.gif" border="0"></a>
-</div>
-<div id="users" style="display:none; height:600px; overflow:auto;"> 
-#foreach ($userVO in $users)
-	<input type="checkbox" name="userName" value="$userVO.name"/> $userVO.name<br/>
-#end
-</div>
+	<div><span style="font-size: 12px; font-weight: bold;">$ui.getString("tool.managementtool.users.title")</span>&nbsp;<a href="javascript:toggleBlock('users');"><img src="images/downArrow.gif" border="0"></a></div>
 
-<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0">
-<a href="ViewMessageCenter.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
-
-</form>
+	<div id="users" style="display:none; height:200px; overflow:auto; border: 1px solid #666666;"> 
+	#foreach ($userVO in $users)
+		<input type="checkbox" name="userName" value="$userVO.name"/> $userVO.name<br/>
+	#end
+	</div>
+	<br/>
+	<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0">
+	<a href="ViewMessageCenter.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+	
+	</form>
+	</div>
 </div>
 
 #endManagementTool()
