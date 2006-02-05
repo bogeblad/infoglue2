@@ -78,9 +78,9 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void send(String from, String to, String subject, String content) throws SystemException 
+	public void send(String from, String to, String bcc, String subject, String content) throws SystemException 
 	{
-	    send(createMessage(from, to, subject, content));
+	    send(createMessage(from, to, bcc, subject, content));
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class MailService
 	 */
 	public void send(String from, String to, String subject, String content, String contentType, String encoding) throws SystemException 
 	{
-		final Message message = createMessage(from, to, subject, content, contentType, encoding);
+		final Message message = createMessage(from, to, null, subject, content, contentType, encoding);
 	 
 		try 
 		{
@@ -105,11 +105,33 @@ public class MailService
 		}
 	}
 	
+	/**
+	 *
+	 * @param from the sender of the email.
+	 * @param to the recipient of the email.
+	 * @param subject the subject of the email.
+	 * @param content the body of the email.
+	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
+	 */
+	public void send(String from, String to, String bcc, String subject, String content, String contentType, String encoding) throws SystemException 
+	{
+		final Message message = createMessage(from, to, bcc, subject, content, contentType, encoding);
+	 
+		try 
+		{
+			Transport.send(message);
+		} 
+		catch(MessagingException e) 
+		{
+			throw new SystemException("Unable to send message.", e);
+		}
+	}
+
 		
 	/**
 	 *
 	 */
-	private Message createMessage(String from, String to, String subject, String content) 
+	private Message createMessage(String from, String to, String bcc, String subject, String content) throws SystemException
 	{
 		try 
 		{
@@ -118,6 +140,8 @@ public class MailService
 	    	message.setContent(content, "text/html");
 			message.setFrom(createInternetAddress(from));
 	    	message.setRecipient(Message.RecipientType.TO, createInternetAddress(to));
+			if(bcc != null)
+			    message.setRecipients(Message.RecipientType.BCC, createInternetAddresses(bcc));
 	        message.setSubject(subject);
 	        message.setText(content);
 	        message.setDataHandler(new DataHandler(new StringDataSource(content, "text/html"))); 
@@ -133,18 +157,20 @@ public class MailService
 	/**
 	 *
 	 */
-	private Message createMessage(String from, String to, String subject, String content, String contentType, String encoding) 
+	private Message createMessage(String from, String to, String bcc, String subject, String content, String contentType, String encoding) throws SystemException 
 	{
 		try 
 		{
 			final Message message = new MimeMessage(this.session);
-	    	String	contentTypeWithEncoding = contentType+";charset="+encoding;
+	    	String contentTypeWithEncoding = contentType+";charset="+encoding;
 
 			//message.setContent(content, contentType);
 			message.setFrom(createInternetAddress(from));
 			message.setRecipient(Message.RecipientType.TO, createInternetAddress(to));
+			if(bcc != null)
+			    message.setRecipients(Message.RecipientType.BCC, createInternetAddresses(bcc));
 			//message.setSubject(subject);
-	
+
 	        ((MimeMessage)message).setSubject(subject, encoding);
 	        //message.setText(content);
 	        message.setDataHandler(new DataHandler(new StringDataSource(content, contentTypeWithEncoding, encoding)));
@@ -173,5 +199,30 @@ public class MailService
 	        throw new Bug("Badly formatted email address [" + address + "].", e);
 	    }
 	}
+	
+	/**
+	 *
+	 */
+	private Address[] createInternetAddresses(String emailAddressString) throws SystemException
+	{
+	    String[] emailAddresses = emailAddressString.split(";");
+	    
+	    Address[] addresses = new Address[emailAddresses.length];
+	    for(int i=0; i<emailAddresses.length; i++)
+	    {
+	        String email = emailAddresses[i];
+	        try 
+			{
+	            addresses[i] = new InternetAddress(email);
+	        } 
+		    catch(AddressException e) 
+		    {
+		        throw new SystemException("Badly formatted email address [" + email + "].", e);
+		    }
+	    }
+	    
+	    return addresses;
+	}
+
 	
 }

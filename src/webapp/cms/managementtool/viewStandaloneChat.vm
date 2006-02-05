@@ -23,7 +23,7 @@
 	<p>
 		<form id="chatForm" name="chatForm" onsubmit="return false;" action=""> 
 			<input type="hidden" id="isSystemMessage" name="isSystemMessage" value="false"/>
-		  	<input type="textfield" id="message" name="message"/>
+		  	<input type="textfield" id="message" name="message" class="normaltextfield"/>
 		  	<input id="submit" type="button" value="Send message" onclick="sendComment();"/>
 	  	</form>
 	</p>

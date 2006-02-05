@@ -23,21 +23,209 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.RedirectVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.mail.MailServiceFactory;
 
 public class CreateEmailAction extends InfoGlueAbstractAction
 {
+	private List users = null;
+	private List roles = null;
+	private List groups = null;
+	
+	private String[] userNames;
+	private String[] roleNames;
+	private String[] groupNames;
+	
+	private String usersAddresses = "";
+	
+	private String recipients;
+	private String from;
+	private String subject;
+	private String message;
+	
+	private String errorMessage = "";
 	
     public String doExecute() throws Exception
     {
+    	if(recipients != null && recipients.length() > 0 && subject != null && subject.length() > 0 && message != null && message.length() > 0)
+    	{
+    		try
+    		{
+    			if(from == null  || from.length() == 0)
+    			{
+	    			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+	    			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
+	    				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
+
+	    			from = systemEmailSender;
+    			}
+    			
+    			message = "<div>" + message.replaceAll("\n", "<br/>") + "</div>";
+    			
+    			MailServiceFactory.getService().send(from, from, recipients, subject, message);
+    		}
+    		catch(Exception e)
+    		{
+    			getLogger().error("The notification was not sent. Reason:" + e.getMessage(), e);
+    		}
+    	}
+    	else
+    	{
+    		errorMessage = "Must enter information in all fields below.";
+    		return "inputCreateEmail";
+    	}
+    	
         return "success";
     }
         
-    public String doInput() throws Exception
+    public String doInputChooseRecipients() throws Exception
     {
-    	return "input";
-    }    
+    	users 	= UserControllerProxy.getController().getAllUsers();
+    	roles 	= RoleControllerProxy.getController().getAllRoles();
+    	groups 	= GroupControllerProxy.getController().getAllGroups();
+    	
+    	return "inputChooseRecipients";
+    }
+
+    public String doInputCreateEmail() throws Exception
+    {
+    	userNames 	= getRequest().getParameterValues("userName");
+    	roleNames 	= getRequest().getParameterValues("roleName");
+    	groupNames 	= getRequest().getParameterValues("groupName");
+
+    	if(userNames != null)
+    	{
+	    	for(int i=0; i<userNames.length; i++)
+	    	{
+	    		String userName = userNames[i];
+	    		InfoGluePrincipal principal = UserControllerProxy.getController().getUser(userName);
+	    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
+	    		{
+		    		if(usersAddresses.length() > 0)
+		    			usersAddresses += ";";
+		    		
+		    		usersAddresses += principal.getEmail();
+	    		}
+	    	}
+    	}
+    	
+    	if(roleNames != null)
+    	{
+	    	for(int i=0; i<roleNames.length; i++)
+	    	{
+	    		String roleName = roleNames[i];
+	    		
+	    		List principals = RoleControllerProxy.getController().getInfoGluePrincipals(roleName);
+	    		Iterator principalsIterator = principals.iterator();
+	    		while(principalsIterator.hasNext())
+	    		{
+		    		InfoGluePrincipal principal = (InfoGluePrincipal)principalsIterator.next();
+		    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
+		    		{
+			    		if(usersAddresses.length() > 0)
+			    			usersAddresses += ";";
+			    		
+			    		usersAddresses += principal.getEmail();
+		    		}
+	    		}
+	    	}
+    	}
+    	
+    	if(groupNames != null)
+    	{	
+	    	for(int i=0; i<groupNames.length; i++)
+	    	{
+	    		String groupName = groupNames[i];
+	    		
+	    		List principals = GroupControllerProxy.getController().getInfoGluePrincipals(groupName);
+	    		Iterator principalsIterator = principals.iterator();
+	    		while(principalsIterator.hasNext())
+	    		{
+		    		InfoGluePrincipal principal = (InfoGluePrincipal)principalsIterator.next();
+		    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
+		    		{
+			    		if(usersAddresses.length() > 0)
+			    			usersAddresses += ";";
+			    		
+			    		usersAddresses += principal.getEmail();
+		    		}
+	    		}
+	    	}
+    	}
+    	
+    	return "inputCreateEmail";
+    }
+
+	public List getGroups() 
+	{
+		return groups;
+	}
+
+	public List getRoles() 
+	{
+		return roles;
+	}
+
+	public List getUsers() 
+	{
+		return users;
+	}
+
+	public String getUsersAddresses()
+	{
+		return usersAddresses;
+	}
+
+	public String getMessage() 
+	{
+		return message;
+	}
+
+	public void setMessage(String message) 
+	{
+		this.message = message;
+	}
+
+	public String getRecipients() 
+	{
+		return recipients;
+	}
+
+	public void setRecipients(String recipients) 
+	{
+		this.recipients = recipients;
+	}
+
+	public String getSubject() 
+	{
+		return subject;
+	}
+
+	public void setSubject(String subject) 
+	{
+		this.subject = subject;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}    
 }

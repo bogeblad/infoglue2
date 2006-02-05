@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.18 2006/02/03 17:40:42 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.19 2006/02/05 20:39:23 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1370,6 +1370,12 @@
 		<view name="successGetMessages">/cms/managementtool/viewMessages.vm</view>
 		<view name="successMessageSent">/cms/managementtool/viewMessages.vm</view>
 		<view name="successGetSystemMessages">/cms/managementtool/viewSystemMessages.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.managementtool.actions.CreateEmailAction" alias="CreateEmail">
+		<view name="inputChooseRecipients">/cms/managementtool/createEmailChooseRecipients.vm</view>
+		<view name="inputCreateEmail">/cms/managementtool/createEmailComposeText.vm</view>
+		<view name="success">/cms/managementtool/createEmailEmailSent.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

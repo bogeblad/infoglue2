@@ -739,7 +739,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 	private List getMessageCenterButtons() throws Exception
 	{
 		List buttons = new ArrayList();
-		buttons.add(new ImageButton("CreateEmail!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newEmail"), "tool.managementtool.createEmail.header"));
+		buttons.add(new ImageButton("CreateEmail!inputChooseRecipients.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newEmail"), "tool.managementtool.createEmail.header"));
 		
 		return buttons;
 	}

@@ -40,7 +40,7 @@ function handlehHttpReceiveSystemMessages()
 			i = i + 3;
 		}	
 	
-	    setTimeout('receiveSystemMessagesText();',4000); //executes the next data query in 4 seconds
+	    setTimeout('receiveSystemMessagesText();',30000); //executes the next data query in 30 seconds
   	}
 }
 
@@ -48,7 +48,7 @@ function handlehHttpReceiveSystemMessages()
 function handleMessage(type, extradata) 
 {
 	//alert("Got new message:" + extradata + ":" + type);
-	setTimeout(extradata,2000);
+	setTimeout(extradata,1000);
 }
 
 
@@ -130,7 +130,7 @@ function openChat(message)
 				var divHTML = "<div id=\"systemMessagesMain\">";
 				divHTML = divHTML + "<div id=\"systemMessagesMainHandle\" class=\"systemMessagesDivHandle\">";
 				divHTML = divHTML + "<div id=\"systemMessagesDivLeftHandle\" class=\"systemMessagesDivLeftHandle\">System message</div>";
-				divHTML = divHTML + "<div id=\"systemMessagesDivRightHandle\" class=\"systemMessagesDivRightHandle\"><a href=\"javascript:closeDiv('systemMessagesDialog'); closeDiv('systemMessages');\" class=\"whitelabel\">close</a></div>";
+				divHTML = divHTML + "<div id=\"systemMessagesDivRightHandle\" class=\"systemMessagesDivRightHandle\"><a href=\"javascript:closeChat();\" class=\"whitelabel\">close</a></div>";
 				divHTML = divHTML + "</div>";
 				divHTML = divHTML + "<div id=\"systemMessagesDivBody\" class=\"systemMessagesDivBody\">";
 				

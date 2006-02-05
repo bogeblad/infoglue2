@@ -514,7 +514,7 @@ function editContent(contentId)
 	<tr>
 		<td colspan="8">
 			#if($readonly == "")
-			<input type="image" img src="$ui.getString("images.structuretool.buttons.save")" width="50" height="25" border="0">
+			<input type="image" src="$ui.getString("images.structuretool.buttons.save")" width="50" height="25" border="0">
 			#end
 		</td>
 	</tr>

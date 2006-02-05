@@ -52,7 +52,7 @@
 	</tr>
 	<tr>
 		<td>
-			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
 			#set($cancelURL = "CategoryManagement!list.action")
 			#if($model.parentId)
 				#set($cancelURL = "CategoryManagement!edit.action?categoryId=$model.parentId")

@@ -422,6 +422,7 @@ div.minormarginalized {
 
 div.fullymarginalized {
 	height			 : 100%;
+	color			 : black;
 	padding-left	 : 15px;
 	padding-right    : 15px;
 	padding-top		 : 15px;

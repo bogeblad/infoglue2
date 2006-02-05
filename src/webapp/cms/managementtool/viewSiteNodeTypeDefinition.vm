@@ -44,7 +44,7 @@
 	<tr>
 		<td colspan="2">
 			<input type="hidden" name="siteNodeTypeDefinitionId" value="$!siteNodeTypeDefinitionId">
-			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
 			<a href="javascript:saveAndExit(document.editForm, 'UpdateSiteNodeTypeDefinition!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
 			<a href="ViewListSiteNodeTypeDefinition.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>

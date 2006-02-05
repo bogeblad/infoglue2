@@ -14,7 +14,7 @@
 	<p>
 		$ui.getString("tool.managementtool.yourMessage.label"):
 		<form id="chatForm" name="chatForm" onsubmit="return false;" action=""> 
-		  	<input type="textfield" id="message" name="message"/>
+		  	<input type="textfield" id="message" name="message" class="longtextfield"/>
 		  	<input type="checkbox" id="isSystemMessage" name="isSystemMessage" value="true"/> $ui.getString("tool.managementtool.isSystemMessage.label")<br/>
 		  	<input id="submit" type="button" value="$ui.getString("tool.managementtool.sendMessage.label")" onclick="sendComment();"/>
 	  	</form>

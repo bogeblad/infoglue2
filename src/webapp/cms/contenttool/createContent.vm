@@ -52,7 +52,7 @@
 		<input type="hidden" name="unrefreshedContentId" value="$!parentContentId">
 		<input type="hidden" name="changeTypeId" value="2">
 		<td>
-			<input type="image" img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
+			<input type="image" src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
 			<a href="ViewContent.action?contentId=$!parentContentId"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>

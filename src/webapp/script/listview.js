@@ -483,3 +483,10 @@ function closeDiv(id)
 {
 	document.getElementById(id).style.display = 'none';
 }
+
+function closeChat()
+{
+	closeDiv('systemMessagesDialog'); 
+	closeDiv('systemMessages');
+	document.getElementById("chatIFrame").src = "";
+}

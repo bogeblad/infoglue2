@@ -44,7 +44,7 @@
 		<input type="hidden" name="stateId" value="$!stateId">
 		<input type="hidden" name="attributeName" value="$!attributeName">
 		<td colspan="3">
-			<input type="image" img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
+			<input type="image" src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
 		</td>
 	</tr>
 	

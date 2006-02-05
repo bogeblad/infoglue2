@@ -42,7 +42,7 @@
 	<tr>
 		<input type="hidden" name="interceptorId" value="$!interceptorId">
 		<td>
-			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
 			<a href="javascript:saveAndExit(document.editForm, 'UpdateInterceptor!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
 			<a href="ViewListInterceptor.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>

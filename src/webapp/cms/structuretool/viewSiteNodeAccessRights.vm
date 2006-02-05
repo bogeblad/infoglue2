@@ -68,7 +68,7 @@
 	<tr>	
 		<input type="hidden" name="extranetUserId" value="$!extranetUserId">
 		<td>
-			<input type="image" img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0" onClick='JavaScript:showWorking();'>
+			<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0" onClick='JavaScript:showWorking();'>
 			<a href="javascript:saveAndExit(document.editForm, 'UpdateExtranetUser!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
 			<a href="ViewListExtranetUser.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>

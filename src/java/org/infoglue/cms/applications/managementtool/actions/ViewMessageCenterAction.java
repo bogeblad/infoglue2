@@ -62,21 +62,21 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 
     public String doGetMessages() throws Exception
     {
-    	System.out.println("Last id:" + lastId);
+    	//System.out.println("Last id:" + lastId);
 
     	if(lastId == null || lastId.intValue() == -1)
     		messages = chat.getMessages();
     	else
     		messages = chat.getMessages(lastId.intValue());
 
-    	System.out.println("Getting messages:" + messages.size());
+    	//System.out.println("Getting messages:" + messages.size());
 
     	return "successGetMessages";
     }
 
     public String doGetSystemMessages() throws Exception
     {
-    	System.out.println("Last id:" + lastId);
+    	//System.out.println("Last id:" + lastId);
 
     	if(lastId == null || lastId.intValue() == -1)
     	{
@@ -87,17 +87,17 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
     	else
     		messages = systemMessagesChat.getMessages(lastId.intValue());
 
-    	System.out.println("Getting system messages:" + messages.size());
+    	//System.out.println("Getting system messages:" + messages.size());
 
     	return "successGetSystemMessages";
     }
 
     public String doSendMessage() throws Exception
     {
-    	System.out.println("Adding message:" + message);
+    	//System.out.println("Adding message:" + message);
     	
     	chat.addMessage(this.getUserName(), CHAT_MESSAGE_TYPE, this.message);
-    	System.out.println("this.isSystemMessage:" + this.isSystemMessage);
+    	//System.out.println("this.isSystemMessage:" + this.isSystemMessage);
     	if(this.isSystemMessage)
     	    systemMessagesChat.addMessage(this.getUserName(), SYSTEM_MESSAGE_TYPE, "openChat('" + this.message + "');");
     	
