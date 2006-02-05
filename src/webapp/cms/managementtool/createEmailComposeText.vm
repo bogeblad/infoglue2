@@ -6,7 +6,9 @@
 
 <div class="fullymarginalized" style="color: black;">
 
-	<h3>$ui.getString("tool.managementtool.messages.header"):</h3>
+	<p class="subtitle">$ui.getString("tool.managementtool.createEmailComposeEmail.title")</p>
+	<p>$ui.getString("tool.managementtool.createEmailComposeEmail.intro")</p>
+
 	<p>
 		<form name="mailForm" action="CreateEmail.action"> 
 			<input type="hidden" name="recipients" value="$usersAddresses"/>
