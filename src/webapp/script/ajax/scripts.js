@@ -78,6 +78,31 @@ function openDiv(id)
 	}
 }
 
+function getDocumentHeight()
+{
+	var frame = parent.frames["toolarea"].frames["main"];
+	if(frame)
+	{
+		var x,y;
+		var test1 = frame.document.body.scrollHeight;
+		var test2 = frame.document.body.offsetHeight
+		if (test1 > test2) // all but Explorer Mac
+		{
+			x = frame.document.body.scrollWidth;
+			y = frame.document.body.scrollHeight;
+		}
+		else // Explorer Mac;
+		     //would also work in Explorer 6 Strict, Mozilla and Safari
+		{
+			x = frame.document.body.offsetWidth;
+			y = frame.document.body.offsetHeight;
+		}
+		return y + "px";
+	}
+	else
+		return 0 + "px";
+}
+
 function openChat(message)
 {
 	
@@ -85,7 +110,7 @@ function openChat(message)
 	//window.open("ViewMessageCenter!standaloneChat.action", "SystemChat", details);
 	
 	var frame = parent.frames["toolarea"].frames["main"];
-	alert("frame:" + frame);	
+	//alert("frame:" + frame);	
 	if(frame)
 	{
 		//alert("APA:" + parent.frames["toolarea"].frames["main"].document.getElementById("outputList"));
@@ -97,18 +122,15 @@ function openChat(message)
 		}
 		else
 		{
-			alert(message);
-		
 			var div = frame.document.getElementById("systemMessagesDialog");
 			//alert("div:" + div.innerHTML);	
 				
 			if(div)
-			{
-				
+			{				
 				var divHTML = "<div id=\"systemMessagesMain\">";
 				divHTML = divHTML + "<div id=\"systemMessagesMainHandle\" class=\"systemMessagesDivHandle\">";
 				divHTML = divHTML + "<div id=\"systemMessagesDivLeftHandle\" class=\"systemMessagesDivLeftHandle\">System message</div>";
-				divHTML = divHTML + "<div id=\"systemMessagesDivRightHandle\" class=\"systemMessagesDivRightHandle\"><a href=\"javascript:closeDiv('systemMessagesDialog');\" class=\"white\">close</a></div>";
+				divHTML = divHTML + "<div id=\"systemMessagesDivRightHandle\" class=\"systemMessagesDivRightHandle\"><a href=\"javascript:closeDiv('systemMessagesDialog'); closeDiv('systemMessages');\" class=\"whitelabel\">close</a></div>";
 				divHTML = divHTML + "</div>";
 				divHTML = divHTML + "<div id=\"systemMessagesDivBody\" class=\"systemMessagesDivBody\">";
 				
@@ -117,10 +139,18 @@ function openChat(message)
 				
 				div.innerHTML = divHTML;
 				//div.innerHTML = "AAAAAAAAAAAAAAAAAAAAAAAAAAA";
-				//alert("div:" + div.innerHTML);	
+				//alert("div:" + div.innerHTML);
+				systemMessagesDiv = frame.document.getElementById("systemMessages");
+				systemMessagesDiv.style.height = getDocumentHeight();
+				//alert("getDocumentHeight():" + getDocumentHeight());
 				openDiv("systemMessages");
 				openDiv("systemMessagesDialog");
 			}
+			else
+			{
+				alert(message);
+			}
+			
 		}
 	}
 }

@@ -384,6 +384,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 				return getServerNodesButtons();
 			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewServerNode.header"))
 				return getServerNodeDetailsButtons();
+			if(this.toolbarKey.equalsIgnoreCase("tool.managementtool.viewMessageCenter.header"))
+				return getMessageCenterButtons();
 			
 		}
 		catch(Exception e) {e.printStackTrace();}			
@@ -732,6 +734,14 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		buttons.add(new ImageButton("ViewServerNodeProperties.action?serverNodeId=" + this.serverNodeId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
 		
 		return buttons;				
+	}
+
+	private List getMessageCenterButtons() throws Exception
+	{
+		List buttons = new ArrayList();
+		buttons.add(new ImageButton("CreateEmail!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newEmail"), "tool.managementtool.createEmail.header"));
+		
+		return buttons;
 	}
 
 }

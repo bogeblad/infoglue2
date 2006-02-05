@@ -25,12 +25,15 @@
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
 	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript">
+		refreshManagementToolBar('$toolbarKey', '$arguments');
+	</script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
-<body class="managementtooledit" onload="javascript:refreshManagementToolBar('$toolbarKey', '$arguments');">
+<body class="managementtooledit" aonload="refreshManagementToolBar('$toolbarKey', '$arguments');">
 #workingDiv()
 <div class="listmarginalized">
 <!--div class="fullymarginalized"-->

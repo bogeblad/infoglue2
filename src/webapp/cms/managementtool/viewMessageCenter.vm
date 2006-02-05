@@ -2,24 +2,21 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementTool("tool.managementtool.viewGroup.header" "tool.managementtool.viewGroup.header" "groupName=$formatter.encodeURI($groupName)")
+#beginManagementTool("tool.managementtool.viewMessageCenter.header" "tool.managementtool.viewMessageCenter.header" "")
 
 <script src="script/ajaxchat/scripts.js" language="JavaScript" type="text/javascript"></script>
-<script type="text/javascript">
-	var disableSystemMessages = true;
-</script> 
 
 <div class="fullymarginalized" style="color: black;">
 
 
-	<p>Messages:</p>
-	<div id="outputList" style="width:100%; height: 400px; overflow: auto; border: 1px solid #333333; background-color: white;"></div>
+	<h3>$ui.getString("tool.managementtool.messages.header"):</h3>
+	<div id="outputList" style="width:80%; height: 300px; overflow: auto; border: 1px solid #333333; background-color: white;"></div>
 	<p>
-		Your Message:
+		$ui.getString("tool.managementtool.yourMessage.label"):
 		<form id="chatForm" name="chatForm" onsubmit="return false;" action=""> 
 		  	<input type="textfield" id="message" name="message"/>
-		  	<input type="checkbox" id="isSystemMessage" name="isSystemMessage" value="true"/> System message<br/>
-		  	<input id="submit" type="button" value="Send" onclick="sendComment();"/>
+		  	<input type="checkbox" id="isSystemMessage" name="isSystemMessage" value="true"/> $ui.getString("tool.managementtool.isSystemMessage.label")<br/>
+		  	<input id="submit" type="button" value="$ui.getString("tool.managementtool.sendMessage.label")" onclick="sendComment();"/>
 	  	</form>
 	</p>
 
