@@ -434,7 +434,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		this.browserBean.setRequest(getRequest());
 		
 		this.principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
-		
+
 		if(this.principal == null)
 		{
 			try
@@ -647,13 +647,20 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			else
 			{
 				getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
-				//Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(siteNodeId);
-				
+	
 				Map arguments = new HashMap();
 				arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
 			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 			    
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+			    Principal alternativePrincipal = loginWithCookies();
+			    if(alternativePrincipal == null)
+			        alternativePrincipal = loginWithRequestArguments();
+			    
+			    if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+			    {
+			        getLogger().info("The user " + alternativePrincipal.getName() + " was approved.");
+			    }
+				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 				{	
 					if(this.referer == null)
 						this.referer = this.getRequest().getHeader("Referer");
@@ -671,7 +678,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					else
 					{
 						getLogger().info("SiteNode is protected and user has no access - sending him to no access page.");
-						//final String url = "ExtranetLogin!noAccess.action?returnAddress=" + java.net.URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString(), "UTF-8");
 						String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 						getResponse().sendRedirect(url);
 						isRedirected = true;
@@ -768,8 +774,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    
         String userName = this.getRequest().getParameter("j_username");
 	    String password = this.getRequest().getParameter("j_password");
-	    
-	    if(userName != null && password != null)
+	    //System.out.println("userName:" + userName);
+	    //System.out.println("password:" + password);
+		
+		if(userName != null && password != null)
 	    {
 		    Map arguments = new HashMap();
 		    arguments.put("j_username", userName);
