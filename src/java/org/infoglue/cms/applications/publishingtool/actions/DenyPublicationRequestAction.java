@@ -47,7 +47,8 @@ public class DenyPublicationRequestAction extends InfoGlueAbstractAction
 	private Integer eventId;
 	private Integer repositoryId;
 	private List events;
-
+	private String comment;
+	
 	public Integer getEventId() 
 	{
 		return eventId;
@@ -68,13 +69,22 @@ public class DenyPublicationRequestAction extends InfoGlueAbstractAction
 		this.repositoryId = repositoryId;
 	}
 	
+	public String[] getSelList()
+	{
+		return getRequest().getParameterValues("sel");
+	}
 	
 	protected String doExecute() throws Exception 
 	{
 		setEvents(getRequest().getParameterValues("sel"));
 		
-		PublicationController.denyPublicationRequest(this.events, this.getInfoGluePrincipal().getName(), getApplicationBaseUrl(getRequest()));
+		PublicationController.denyPublicationRequest(this.events, this.getInfoGluePrincipal().getName(), this.comment, getApplicationBaseUrl(getRequest()));
 		return "success";
+	}
+
+	public String doComment() throws Exception 
+	{		
+		return "comment";
 	}
 
 	private String getApplicationBaseUrl(HttpServletRequest request)
@@ -94,6 +104,16 @@ public class DenyPublicationRequestAction extends InfoGlueAbstractAction
 		}		
 	
 		this.events = events;
+	}
+
+	public String getComment() 
+	{
+		return comment;
+	}
+
+	public void setComment(String comment) 
+	{
+		this.comment = comment;
 	}
 
 }

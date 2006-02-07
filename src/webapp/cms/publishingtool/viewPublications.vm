@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<script type="text/javascript" src="script/overlib.js"></script>
 <script Language=JavaScript>
 function showHide(a)
 {
@@ -45,6 +46,7 @@ function ruSure(txt, url)
 
 #beginPublishingTool("tool.publishingtool.welcomeHeader" "Publications" "repositoryId=$repositoryId")
 
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000; border: 1px solid #333333; background-color: #CCCCFF;"></div>
 
 <table width=100%>
 <tr>
@@ -113,9 +115,11 @@ function ruSure(txt, url)
 		#set($description = "${publicationEvent.description}")
 	#end
 
+	#set($fnutt = '"')
 	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
 	##set( $row = ["$icon $publicationEvent.name ($description)","$modifiedDate", "$denyUrlStart$deny$denyUrlEnd"] )
-	#set( $row = ["$icon $publicationEvent.name <span title='$publicationEvent.description'>($description)</span>","$modifiedDate"] )
+	#set($span = "<span onmouseover='return overlib(${fnutt}${publicationEvent.description}${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'>($description)</span>")
+	#set( $row = ["$icon $publicationEvent.name $span","$modifiedDate"] )
 	#set($cnt = $cnt + 1)
 
 	#lvAddRow($row $cnt $cId)

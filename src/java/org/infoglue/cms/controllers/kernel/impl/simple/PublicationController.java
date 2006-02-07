@@ -180,7 +180,7 @@ public class PublicationController extends BaseController
 	 * deliver the message back to the requester. If it is a deny of publishing we also deletes the
 	 * publish-version as it no longer has any purpose.
 	 */
-	public static void denyPublicationRequest(Integer eventId, String publisherUserName, String referenceUrl) throws SystemException
+	public static void denyPublicationRequest(Integer eventId, String publisherUserName, String comment, String referenceUrl) throws SystemException
 	{
     	Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
@@ -242,7 +242,7 @@ public class PublicationController extends BaseController
         	}
 
         	InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
-        	mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), referenceUrl);
+        	mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), comment, referenceUrl);
 
 			commitTransaction(db);
         }
@@ -261,7 +261,7 @@ public class PublicationController extends BaseController
 	 * deliver the message back to the requester. If it is a deny of publishing we also deletes the
 	 * publish-version as it no longer has any purpose.
 	 */
-	public static void denyPublicationRequest(List eventVOList, String publisherUserName, String referenceUrl) throws SystemException
+	public static void denyPublicationRequest(List eventVOList, String publisherUserName, String comment, String referenceUrl) throws SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
@@ -331,7 +331,7 @@ public class PublicationController extends BaseController
 					}
 				}
 
-				mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), referenceUrl);
+				mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), comment, referenceUrl);
 			}
 
 			commitTransaction(db);
@@ -349,7 +349,7 @@ public class PublicationController extends BaseController
 	/**
 	 * This method mails the rejection to the recipient.
 	 */
-	private static void mailNotification(Event event, String editorName, String recipient, String referenceUrl)
+	private static void mailNotification(Event event, String editorName, String recipient, String comment, String referenceUrl)
 	{
 	    String email = "";
 	    
@@ -370,6 +370,7 @@ public class PublicationController extends BaseController
 		    parameters.put("event", event);
 		    parameters.put("editorName", editorName);
 		    parameters.put("recipient", recipient);
+		    parameters.put("comment", comment);
 		    parameters.put("referenceUrl", referenceUrl);
 			
 			StringWriter tempString = new StringWriter();

@@ -2,6 +2,8 @@ Publication denied
 
 CMS notification: The changes you wanted published concerning "$event.getName()" was rejected by ${editorName}. 
 
+Reason: $comment
+
 You can go to the application now by clicking here: $referenceUrl 
 
 Please revise your changes and retry. 

@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.20 2006/02/07 10:47:18 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.21 2006/02/07 13:01:32 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1128,6 +1128,7 @@
 	</action>
 
 	<action name="org.infoglue.cms.applications.publishingtool.actions.DenyPublicationRequestAction" alias="DenyPublicationRequest">
+		<view name="comment">/cms/publishingtool/viewDenyPublicationComment.vm</view>
 		<view name="success">ViewPublications.action</view>
 		<view name="error">/cms/publishingtool/error.vm</view>
 	</action>
