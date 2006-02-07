@@ -24,8 +24,11 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -35,6 +38,9 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
+import org.infoglue.deliver.util.CacheController;
 
 
 /**
@@ -150,9 +156,19 @@ public class UserControllerProxy extends BaseController
 	
     public InfoGluePrincipal getUser(String userName) throws ConstraintException, SystemException, Exception
     {
-    	InfoGluePrincipal infoGluePrincipal = null;
+    	//InfoGluePrincipal infoGluePrincipal = null;
     	
-		infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
+    	InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal)CacheController.getCachedObjectFromAdvancedCache("principalCache", userName, 60);
+		if(infoGluePrincipal == null)
+		{
+			infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
+		   
+			if(infoGluePrincipal != null)
+				CacheController.cacheObjectInAdvancedCache("principalCache", userName, infoGluePrincipal, new String[]{}, false);
+				//CacheController.cacheObject("principalCache", userName, infoGluePrincipal);
+		}
+    	
+		//infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
     	
     	return infoGluePrincipal;
     }
