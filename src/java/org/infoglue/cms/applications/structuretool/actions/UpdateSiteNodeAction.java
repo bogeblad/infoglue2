@@ -97,22 +97,23 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			UpdateSiteNodeUCC updateSiteNodeUCC = UpdateSiteNodeUCCFactory.newUpdateSiteNodeUCC();
 			updateSiteNodeUCC.updateSiteNode(this.getInfoGluePrincipal(), this.siteNodeVO, this.siteNodeTypeDefinitionId, siteNodeVersionVO);		
 			
-	    	Map args = new HashMap();
-		    args.put("globalKey", "infoglue");
-		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-
 	    	String[] values = getRequest().getParameterValues("disabledLanguageId");
 	    	String valueString = "";
 	    	if(values != null)
 	    	{
-		    	for(int i=0; i<values.length; i++)
+	    		for(int i=0; i<values.length; i++)
 		    	{
 		    	    if(i > 0)
 		    	        valueString = valueString + ",";
 		    	    valueString = valueString + values[i];  
 		    	}
+
+		    	Map args = new HashMap();
+			    args.put("globalKey", "infoglue");
+			    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+		    	ps.setString("siteNode_" + getSiteNodeId() + "_disabledLanguages", valueString);
 	    	}
-	        ps.setString("siteNode_" + getSiteNodeId() + "_disabledLanguages", valueString);
 
 		//}
 		//catch(Exception e)
