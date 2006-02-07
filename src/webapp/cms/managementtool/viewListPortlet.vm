@@ -28,4 +28,7 @@
 #end
 #lvEnd()
 
+<p>
+	<a href="ViewListPortlet!simple.action">Simple</a>
+</p>
 #endManagementTool()

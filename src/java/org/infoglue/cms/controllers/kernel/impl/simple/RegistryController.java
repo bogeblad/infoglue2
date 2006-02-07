@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.26 2006/01/31 19:38:52 mattias Exp $
+ * $Id: RegistryController.java,v 1.27 2006/02/07 10:47:19 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -471,22 +471,25 @@ public class RegistryController extends BaseController
 	            String siteNodeIdString = match.substring(siteNodeStartIndex + 1, siteNodeEndIndex); 
 	            try
 	            {
-		            siteNodeId = new Integer(siteNodeIdString);
-		            getLogger().info("siteNodeId:" + siteNodeId);
-		            RegistryVO registryVO = new RegistryVO();
-		            registryVO.setEntityId(siteNodeId.toString());
-		            registryVO.setEntityName(SiteNode.class.getName());
-		            registryVO.setReferenceType(RegistryVO.INLINE_LINK);
-		            registryVO.setReferencingEntityId(contentVersion.getContentVersionId().toString());
-		            registryVO.setReferencingEntityName(ContentVersion.class.getName());
-		            registryVO.setReferencingEntityCompletingId(contentVersion.getOwningContent().getContentId().toString());
-		            registryVO.setReferencingEntityCompletingName(Content.class.getName());
-		            
-		            this.create(registryVO, db);
+		            if(siteNodeIdString.indexOf("templateLogic.siteNodeId") == -1)
+		            {
+		            	siteNodeId = new Integer(siteNodeIdString);
+			            getLogger().info("siteNodeId:" + siteNodeId);
+			            RegistryVO registryVO = new RegistryVO();
+			            registryVO.setEntityId(siteNodeId.toString());
+			            registryVO.setEntityName(SiteNode.class.getName());
+			            registryVO.setReferenceType(RegistryVO.INLINE_LINK);
+			            registryVO.setReferencingEntityId(contentVersion.getContentVersionId().toString());
+			            registryVO.setReferencingEntityName(ContentVersion.class.getName());
+			            registryVO.setReferencingEntityCompletingId(contentVersion.getOwningContent().getContentId().toString());
+			            registryVO.setReferencingEntityCompletingName(Content.class.getName());
+			            
+			            this.create(registryVO, db);
+		            }
 	            }
 	            catch(Exception e)
 	            {
-	                getLogger().warn("Tried to register old inline asset with exception as result:" + e.getMessage(), e);
+	                getLogger().warn("Tried to register inline sitenodes with exception as result:" + e.getMessage(), e);
 	            }
 	        }
 	    }

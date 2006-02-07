@@ -38,6 +38,7 @@ import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
 
 
 /**
@@ -48,6 +49,15 @@ import org.infoglue.cms.exception.SystemException;
 public class PortletAssetController extends DigitalAssetController 
 {
     private final static Logger logger = Logger.getLogger(PortletAssetController.class.getName());
+
+	/**
+	 * Factory method
+	 */
+
+	public static PortletAssetController getPortletAssetController()
+	{
+		return new PortletAssetController();
+	}
 
     public static DigitalAsset create(DigitalAssetVO digitalAssetVO, InputStream is) throws SystemException 
     {
@@ -86,15 +96,7 @@ public class PortletAssetController extends DigitalAssetController
         beginTransaction(db);
         try 
         {
-            OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl c WHERE c.assetFileName = $1");
-            oql.bind(name);
-
-            QueryResults results = oql.execute(Database.ReadOnly);
-
-            while (results.hasMore()) 
-            {
-                contents.add(results.next());
-            }
+        	contents = getDigitalAssetByName(name, db);
             
             commitTransaction(db);
         } 
@@ -107,4 +109,56 @@ public class PortletAssetController extends DigitalAssetController
 
         return contents;
     }
+
+    public static List getDigitalAssetByName(String name, Database db) throws SystemException, Exception
+    {
+        List contents = new ArrayList();
+
+        OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl c WHERE c.assetFileName = $1");
+        oql.bind(name);
+
+        QueryResults results = oql.execute(Database.ReadOnly);
+
+        while (results.hasMore()) 
+        {
+            contents.add(results.next());
+        }
+
+        return contents;
+    }
+
+	public DigitalAsset getPortletRegistryAsset() throws Exception 
+	{
+        List das = PortletAssetController.getDigitalAssetByName(PortletEntityRegistryServiceDBImpl.PORTLET_REGISTRY_CONTENT_NAME);
+        if (das != null && das.size() > 0) 
+        {
+            DigitalAsset da = (DigitalAsset) das.get(0);
+            logger.debug("Registry located as id=" + da.getId());
+            return da;
+        } 
+        else 
+        {
+        	logger.info("Portlet Registry not found");
+        }
+        
+        return null;
+    }
+
+	public DigitalAsset getPortletRegistryAsset(Database db) throws Exception 
+	{
+        List das = PortletAssetController.getDigitalAssetByName(PortletEntityRegistryServiceDBImpl.PORTLET_REGISTRY_CONTENT_NAME, db);
+        if (das != null && das.size() > 0) 
+        {
+            DigitalAsset da = (DigitalAsset) das.get(0);
+            logger.debug("Registry located as id=" + da.getId());
+            return da;
+        } 
+        else 
+        {
+        	logger.info("Portlet Registry not found");
+        }
+        
+        return null;
+    }
+
 }
