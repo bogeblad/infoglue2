@@ -52,7 +52,7 @@
 
 <table class="fullymarginalized" border="0" cellpadding="2" cellspacing="0">
   <tr>
-    <td colspan="4" class="header">InfoGlue Delivery Status</td>
+    <td colspan="4" class="header">InfoGlue Delivery Status ($serverName)</td>
   </tr>
   <tr>
     <td colspan="4"><hr/></td>
@@ -65,6 +65,19 @@
   <tr>
     <td class="text">$state.get(0)</td>
     <td class="text" colspan="3">$state.get(1)</td>
+  </tr>
+  #end
+  <tr>
+    <td colspan="4"><hr/></td>
+  </tr>
+  <tr>
+    <td class="label" bgcolor="gray">User</td>
+    <td class="label" colspan="3" bgcolor="gray">Last visited</td>
+  </tr>
+  #foreach($sessionInfoBean in $sessionInfoBeanList)
+  <tr>
+    <td class="text">$sessionInfoBean.principal.firstName $sessionInfoBean.principal.lastName ($sessionInfoBean.principal.name)</td>
+    <td class="text" colspan="3">$sessionInfoBean.lastAccessedDate</td>
   </tr>
   #end
   <tr>

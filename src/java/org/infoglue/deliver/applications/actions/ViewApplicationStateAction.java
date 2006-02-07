@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.File;
+import java.net.InetAddress;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -356,5 +357,26 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         this.cacheName = cacheName;
     }
+
+    public List getSessionInfoBeanList()
+    {
+    	return CmsSessionContextListener.getSessionInfoBeanList();
+    }
     
+    public String getServerName()
+    {
+    	String serverName = "Unknown";
+
+    	try
+    	{
+		    InetAddress localhost = InetAddress.getLocalHost();
+		    serverName = localhost.getHostName();
+    	}
+    	catch(Exception e)
+    	{
+    		
+    	}
+    	
+	    return serverName;
+    }
 }

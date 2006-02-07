@@ -23,8 +23,23 @@
 
 package org.infoglue.cms.util;
 
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionListener;
 import javax.servlet.http.HttpSessionEvent;
+
+import org.infoglue.cms.applications.databeans.SessionInfoBean;
+import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
  * This class keeps track of all sessions created / removed so we can see 
@@ -34,22 +49,68 @@ import javax.servlet.http.HttpSessionEvent;
  */
 
 public class CmsSessionContextListener implements HttpSessionListener 
-{
-    private	static int activeSessions =	0;
+{	
+	public static final Map sessions = Collections.synchronizedMap(new HashMap());
+	
+	private	static int activeSessions =	0;
 	
 	public void	sessionCreated(HttpSessionEvent	se)	
 	{
+		//System.out.println("Session created..");
 	    activeSessions++;
+	    synchronized (sessions)
+	    {
+	    	sessions.put(se.getSession().getId(), se.getSession());
+	    }
 	}
 	
 	public void	sessionDestroyed(HttpSessionEvent se) 
 	{
+		//System.out.println("Session destroyed..");
 	    if(activeSessions >	0)
 			activeSessions--;
+	    
+	    synchronized(sessions)
+	    {
+	    	sessions.remove(se.getSession().getId());
+	    }
 	}
 	
 	public static int getActiveSessions() 
 	{
 		return activeSessions;
 	}
+
+	static public List getSessionInfoBeanList()
+	{
+		List stiList = new ArrayList();
+
+		//System.out.println("Sessions:" + sessions.size());
+		synchronized(sessions)
+		{
+			Iterator iter = sessions.keySet().iterator();
+			while (iter.hasNext())
+			{
+				String s = (String) iter.next();
+				HttpSession sess = (HttpSession) sessions.get(s);
+			
+				SessionInfoBean sib = new SessionInfoBean();
+				
+				InfoGluePrincipal principal = (InfoGluePrincipal)sess.getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
+				if(principal == null)
+					principal = (InfoGluePrincipal)sess.getAttribute("infogluePrincipal");
+				
+				if(principal != null)
+				{
+					sib.setPrincipal(principal);
+					sib.setLastAccessedDate(new Date(sess.getLastAccessedTime()));
+					
+					stiList.add(sib);
+				}
+			}
+		}
+	
+		return stiList;
+	}
+
 }
