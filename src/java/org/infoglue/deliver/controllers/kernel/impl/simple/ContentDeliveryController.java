@@ -1356,15 +1356,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext) throws Exception
 	{
 	    boolean isValidContent = false;
-		
 		if(infoGluePrincipal == null)
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
 		
+		if(content.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
+			return true;
+
 		getLogger().info("content:" + content.getName());
 		
 		Integer protectedContentId = getProtectedContentId(db, content);
 		getLogger().info("IsProtected:" + protectedContentId);
-		
+
 		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 		{
 		    return false;
@@ -1431,7 +1433,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    CacheController.publishDateTime = publishDateTimeCandidate;
 			}
 		}
-		
+
 		return isValidContent;					
 	}
 
@@ -1463,6 +1465,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		try
 		{
 			getLogger().info("content:" + content.getId() + ":" + content.getIsProtected());
+
 			if(content != null && content.getIsProtected() != null)
 			{	
 				if(content.getIsProtected().intValue() == ContentVO.NO.intValue())
@@ -1471,9 +1474,28 @@ public class ContentDeliveryController extends BaseDeliveryController
 					protectedContentId = content.getId();
 				else if(content.getIsProtected().intValue() == ContentVO.INHERITED.intValue())
 				{
-					Content parentContent = content.getParentContent();
+					Content parentContent = null; //= content.getParentContent();
+					if(content instanceof MediumContentImpl)
+					{
+						Integer parentContentId = ((MediumContentImpl)content).getParentContentId();
+						if(parentContentId != null)
+							parentContent = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, parentContentId, db);
+					}
+					else if(content instanceof SmallContentImpl)
+					{
+						Integer parentContentId = ((SmallContentImpl)content).getParentContentId();
+						if(parentContentId != null)
+							parentContent = (SmallContentImpl)getObjectWithId(SmallContentImpl.class, parentContentId, db);
+					}
+					else if(content instanceof ContentImpl)
+					{
+						parentContent = content.getParentContent();
+					}
+					
 					if(parentContent != null)
+					{
 						protectedContentId = getProtectedContentId(db, parentContent); 
+					}
 				}
 			}
 
