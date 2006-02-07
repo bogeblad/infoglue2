@@ -1007,12 +1007,22 @@ public class AccessRightController extends BaseController
 	 */
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters) throws SystemException
 	{		
-	    if(infoGluePrincipal == null)
+		if(infoGluePrincipal == null)
 	      return false;
 	    
 	    if(infoGluePrincipal != null && infoGluePrincipal.getIsAdministrator())
 			return true;
 		
+	    //TODO
+		
+	    String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + extraParameters;
+		getLogger().info("key:" + key);
+		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
+		if(cachedIsPrincipalAuthorized != null)
+		{
+		    return cachedIsPrincipalAuthorized.booleanValue();
+		}
+
 		boolean isPrincipalAuthorized = false;
 		boolean limitOnGroups = false;
 		boolean principalHasRole = false;
@@ -1092,13 +1102,16 @@ public class AccessRightController extends BaseController
 
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
-			   
+		
+	    CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
+
 		return isPrincipalAuthorized;
 	}
 	
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
 	 */
+
 	public boolean getIsPrincipalAuthorized(InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
 	{
 		if(infoGluePrincipal.getIsAdministrator())
@@ -1136,26 +1149,16 @@ public class AccessRightController extends BaseController
 					
 		return isPrincipalAuthorized;
 	}
-
+	
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
 	 */
-	
+
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
 	{		
 	    if(infoGluePrincipal.getIsAdministrator())
 			return true;
 
-		/*
-		String key = "cachedAccessRightsVOList";
-		getLogger().info("key:" + key);
-		List cachedAccessRightsVOList = (List)CacheController.getCachedObject("authorizationCache", key);
-		if(cachedAccessRightsVOList == null)
-		{
-		    cachedAccessRightsVOList = this.getAccessRightVOList();
-		    CacheController.cacheObject("authorizationCache", key, cachedAccessRightsVOList);
-		}
-		*/
 		boolean isPrincipalAuthorized = false;
 		boolean limitOnGroups = false;
 		boolean principalHasRole = false;
@@ -1233,7 +1236,7 @@ public class AccessRightController extends BaseController
 	    
 		return isPrincipalAuthorized;
 	}
-	
+
 	//TEST
 	
 	
