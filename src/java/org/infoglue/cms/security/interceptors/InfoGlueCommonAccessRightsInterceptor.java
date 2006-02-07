@@ -166,7 +166,15 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			if(!contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{	
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Read", contentVersionId.toString()))
+				{
 					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1000"));
+				}
+				else
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentVersionVO.getContentId());
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+				}
 			}
 		}
 		else if(interceptionPointVO.getName().equalsIgnoreCase("ContentVersion.Write"))
@@ -176,7 +184,15 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			if(!contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{	
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Write", contentVersionId.toString()))
+				{
 					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1001"));
+				}
+				else
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentVersionVO.getContentId());
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Write", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1001"));
+				}
 			}
 		}
 		else if(interceptionPointVO.getName().equalsIgnoreCase("ContentVersion.Delete"))
