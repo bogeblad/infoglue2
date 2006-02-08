@@ -33,6 +33,7 @@ import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
 import org.infoglue.cms.exception.*;
 
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.CacheController;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -139,27 +140,43 @@ public class AvailableServiceBindingController extends BaseController
     
 	public AvailableServiceBindingVO getAvailableServiceBindingVOWithName(String name) throws SystemException, Bug
 	{
-		AvailableServiceBindingVO availableServiceBindingVO = null;
+	    System.out.println("getAvailableServiceBindingVOWithName:" + name);
 		
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		beginTransaction(db);
-
-		try
+	    String key = "" + name;
+		getLogger().info("key:" + key);
+		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
+		if(availableServiceBindingVO != null)
 		{
-			AvailableServiceBinding AvailableServiceBinding = getAvailableServiceBindingWithName(name, db, true);
-			if(AvailableServiceBinding != null)
-				availableServiceBindingVO = AvailableServiceBinding.getValueObject();
-			
-			commitTransaction(db);
+		    getLogger().info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
 		}
-		catch(Exception e)
+		else
 		{
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch a list of AvailableServiceBinding. Reason:" + e.getMessage(), e);    
+		
+			Database db = CastorDatabaseService.getDatabase();
+			ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	
+			beginTransaction(db);
+	
+			try
+			{
+				AvailableServiceBinding AvailableServiceBinding = getAvailableServiceBindingWithName(name, db, true);
+				if(AvailableServiceBinding != null)
+					availableServiceBindingVO = AvailableServiceBinding.getValueObject();
+		
+				CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);
+
+				commitTransaction(db);
+			}
+			catch(Exception e)
+			{
+				rollbackTransaction(db);
+				throw new SystemException("An error occurred when we tried to fetch a list of AvailableServiceBinding. Reason:" + e.getMessage(), e);    
+			}
+		
 		}
-    
+		
+	    System.out.println("getAvailableServiceBindingVOWithName end:::");
+
 		return availableServiceBindingVO;
 	}
 

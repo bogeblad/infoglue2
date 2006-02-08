@@ -36,6 +36,7 @@ import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
@@ -187,6 +188,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("rolePropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
 			}
+			else if(object.getClass().getName().equals(AvailableServiceBindingImpl.class.getName()))
+			{
+			    CacheController.clearCache("availableServiceBindingCache");
+			}
 			
     	}
     }
@@ -309,6 +314,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("rolePropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
 			}
+			else if(object.getClass().getName().equals(AvailableServiceBindingImpl.class.getName()))
+			{
+			    CacheController.clearCache("availableServiceBindingCache");
+			}
 
 
 
@@ -424,6 +433,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("rolePropertiesCache");
 				CacheController.clearCache("relatedCategoriesCache");
+			}
+			else if(object.getClass().getName().equals(AvailableServiceBindingImpl.class.getName()))
+			{
+			    CacheController.clearCache("availableServiceBindingCache");
 			}
 
 

@@ -36,6 +36,7 @@ import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.exception.*;
 
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.util.CacheController;
 
 import org.exolab.castor.jdo.Database;
@@ -215,16 +216,34 @@ public class InterceptionPointController extends BaseController
 
 	public InterceptionPointVO getInterceptionPointVOWithName(String interceptorPointName, Database db)  throws SystemException, Bug
 	{
-		String key = "" + interceptorPointName;
+	    String key = "" + interceptorPointName;
 		getLogger().info("key:" + key);
+		
+		InterceptionPointVO interceptionPointVO = null;
+		
+	    Object object = CacheController.getCachedObject("interceptionPointCache", key);
+		
+	    if(object instanceof NullObject)
+		{
+			return null;
+		}
+		else if(object != null)
+		{
+		    interceptionPointVO = (InterceptionPointVO)object;
+		}
+		else
+		{
+
+		/*
 		InterceptionPointVO interceptionPointVO = (InterceptionPointVO)CacheController.getCachedObject("interceptionPointCache", key);
 		if(interceptionPointVO != null)
 		{
+		    System.out.println("interceptionPointVO:" + interceptionPointVO.getName());
 			getLogger().info("There was an cached interceptionPointVO:" + interceptionPointVO);
 		}
 		else
 		{
-	
+		*/	
 			InterceptionPoint interceptorPoint = null;
 			
 			try
@@ -237,8 +256,13 @@ public class InterceptionPointController extends BaseController
 				{
 					interceptorPoint = (InterceptionPoint)results.next();
 					interceptionPointVO = interceptorPoint.getValueObject();
-				
+												 
 					CacheController.cacheObject("interceptionPointCache", key, interceptionPointVO);				
+				    System.out.println("Caching interceptionPointVO:" + key + ":" + interceptionPointVO.getName());
+				}
+				else
+				{	
+				    CacheController.cacheObject("interceptionPointCache", key, new NullObject());
 				}
 			}
 			catch(Exception e)
