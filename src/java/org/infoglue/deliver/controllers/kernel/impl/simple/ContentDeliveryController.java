@@ -28,6 +28,7 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
@@ -41,7 +42,9 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 
+import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
@@ -144,24 +147,32 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		ContentVersionVO contentVersionVO = null;
 		
+		/*
 		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
-		String contentVersionKey = "" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
+		String contentVersionKey = "contentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		getLogger().info("contentVersionKey:" + contentVersionKey);
-		contentVersionVO = (ContentVersionVO)CacheController.getCachedObject("contentVersionCache", contentVersionKey);
+		contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
 		
 		if(contentVersionVO != null)
 		{
+		    if(contentId.intValue() == 2322)
+		        System.out.println("There was a cached content version - should it be for key:" + contentVersionKey);
+		    
 			getLogger().info("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
 		}
 		else
 		{
-        	ContentVersion contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
+		*/
+		    if(contentId.intValue() == 2322)
+		        System.out.println("There was NOT a cached content version VO.");
+
+		    ContentVersion contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
         	
 			if(contentVersion != null)
 				contentVersionVO = contentVersion.getValueObject();
     	
-			CacheController.cacheObject("contentVersionCache", contentVersionKey, contentVersionVO);
-        }
+			//CacheController.cacheObjectInAdvancedCache("contentVersionCache", contentVersionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId()}, true);
+        //}
 		
 		if(contentVersionVO != null)
 		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionVO.getId());
@@ -183,7 +194,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
 		if(isValidContent)
 		{
-			contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext);
+			contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 			if(contentVersion == null && useLanguageFallback)
 			{
 				getLogger().info("Did not find it in requested languge... lets check the masterlanguage....");
@@ -191,7 +202,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
 				if(!languageId.equals(masterLanguageId))
 				{
-					contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode(), deliveryContext);
+					contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode(), deliveryContext, db);
 				}
 			}
 		}
@@ -203,8 +214,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * This method gets a contentVersion with a state and a language which is active.
 	 */
-	
-	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext) throws Exception
+	/*
+	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
 	{
 	    getLogger().info("content:" + content.getId());
 	    getLogger().info("operatingMode:" + operatingMode);
@@ -239,7 +250,61 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		return contentVersion;
 	}
+	*/
+
+	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
+    {
+	    ContentVersion contentVersion = null;
+		
+	    getLogger().info("content:" + content.getId());
+	    getLogger().info("operatingMode:" + operatingMode);
+	    getLogger().info("languageId:" + languageId);
+
+	    String versionKey = "" + content.getId() + "_" + languageId + "_" + operatingMode + "_contentVersionId";
+		//System.out.println("versionKey:" + versionKey);
+		
+		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+		if(contentVersionId != null)
+		{
+		    if(content.getId().intValue() == 2322)
+		        System.out.println("There wasa cached content version.");
+
+			getLogger().info("There was a cached content version id:" + contentVersionId);
+		    //System.out.println("There was a cached content version id:" + contentVersionId);
+		    contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
+		    //System.out.println("Loaded the version from cache instead of querying it:" + contentVersionId);
+		}
+		else
+		{
+		    if(content.getId().intValue() == 2322)
+		        System.out.println("There was NOT a cached content version.");
+
+		    System.out.println("Querying for verson: " + versionKey); 
+		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
+	    	oql.bind(content.getId());
+	    	oql.bind(languageId);
+	    	oql.bind(operatingMode);
+	    	oql.bind(true);
 	
+	    	
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+	        {
+	        	contentVersion = (ContentVersion)results.next();
+	        	getLogger().info("found one:" + contentVersion.getId());
+
+				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId()}, true);
+	        }  
+			
+		}
+		
+		if(contentVersion != null)
+		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersion.getId());
+
+		return contentVersion;
+    }
+
 
 	/**
 	 * This is the most common way of getting attributes from a content. 
@@ -248,21 +313,40 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML) throws SystemException, Exception
 	{	    
+	    boolean debug = false;
+	    if(attributeName.equalsIgnoreCase("Title"))
+	    {
+	        debug = true;
+	        System.out.println("Debugging title");
+	    }
+	        
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
 	    String versionKey = attributeKey + "_contentVersionId";
 		getLogger().info("attributeKey:" + attributeKey);
+		//System.out.println("attributeKey:" + attributeKey);
+		
 		//String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
 		//Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
 		
 		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey);
-		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", versionKey);
+		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		
 		if(attribute != null)
 		{
+		    if(debug)
+		    {
+		        System.out.println("There was an cached content attribute:" + attribute);
+		    }
+
 			getLogger().info("There was an cached content attribute:" + attribute);
 		}
 		else
 		{
+		    if(debug)
+		    {
+		        System.out.println("No cached attribute");
+		    }
+
         	ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
     	
         	if (contentVersionVO != null) 
@@ -278,7 +362,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			//CacheController.cacheObject("contentAttributeCache", versionKey, contentVersionId);
 
 			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId}, true);
-			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId}, true);
+			//CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId}, true);
 		}
 		//getLogger().info("Adding contentVersion:" + contentVersionId);
 		deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
@@ -1372,20 +1456,20 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		Integer protectedContentId = getProtectedContentId(db, content);
 		getLogger().info("IsProtected:" + protectedContentId);
-
+	    
 		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 		{
 		    return false;
 		}
-		
+			    
 		if(!includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
 			isValidContent = true; 
 		}
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
-			ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext);
-			
+		    ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
+
 			Integer repositoryId = null;
 			Repository repository = content.getRepository();
 			if(repository == null)
@@ -1404,7 +1488,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			{
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(repositoryId, db);
 				if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
-					contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext);
+					contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 			}
 
 			if(contentVersion != null)
@@ -1422,7 +1506,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			*/
 		}
-    			
+    	
 		if(isValidContent && !content.getExpireDateTime().before(new Date()))
 		{
 		    Date expireDateTimeCandidate = content.getExpireDateTime();
@@ -1439,7 +1523,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    CacheController.publishDateTime = publishDateTimeCandidate;
 			}
 		}
-
+	    
 		return isValidContent;					
 	}
 
