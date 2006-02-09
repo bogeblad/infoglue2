@@ -252,11 +252,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorHeader.vm"));
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorBody.vm"));
 			
-		    String addComponentHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.addComponentHTML");
-			String deleteComponentHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.deleteComponentHTML");
-			String accessRightsHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.accessRightsHTML");
-			String pageComponentsHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.pageComponentsHTML");
-			String viewSourceHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.viewSourceHTML");
+		    Locale locale = templateController.getLocale();
+		    String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
+			String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
+			String accessRightsHTML = getLocalizedString(locale, "deliver.editOnSight.accessRightsHTML");
+			String pageComponentsHTML = getLocalizedString(locale, "deliver.editOnSight.pageComponentsHTML");
+			String viewSourceHTML = getLocalizedString(locale, "deliver.editOnSight.viewSourceHTML");
 
 			extraBody = extraBody.replaceAll("\\$addComponentHTML", addComponentHTML);
 			extraBody = extraBody.replaceAll("\\$deleteComponentHTML", deleteComponentHTML);
@@ -606,13 +607,14 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    if(templateController.getRequestParameter("skipPropertiesDiv") != null && templateController.getRequestParameter("skipPropertiesDiv").equalsIgnoreCase("true"))
 	        return "";
 
-		//logger.info("***************************************************************");
-		//logger.info("componentId:" + componentId);
-
-		StringBuffer sb = new StringBuffer();
+	    StringBuffer sb = new StringBuffer();
 		Timer timer = new Timer();
 		timer.setActive(false);
 
+		Locale locale = templateController.getLocale();
+		
+		timer.printElapsedTime("After locale");
+	    
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
 		
 		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden;\">");
@@ -663,7 +665,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("			</td>");
 		sb.append("			<td class=\"igtd\">&nbsp;</td>");
 		sb.append("		</tr>");
-		
+
+		timer.printElapsedTime("getComponentPropertiesDiv: 3.5");
+
 		//logger.info("componentPropertiesString:" + componentPropertiesString);
 		Collection componentProperties = getComponentProperties(componentId, document);
 		timer.printElapsedTime("getComponentPropertiesDiv: 4");
@@ -904,12 +908,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"executeTask('" + view + "');\">" + componentTask.getName() + "</div>");
 		}
 		
-		String editHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.editHTML");
-		String addComponentHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.addComponentHTML");
-		String deleteComponentHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.deleteComponentHTML");
-		String propertiesHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.propertiesHTML");
-		String pageComponentsHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.pageComponentsHTML");
-		String viewSourceHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.viewSourceHTML");
+		Locale locale = templateController.getLocale();
+		String editHTML = getLocalizedString(locale, "deliver.editOnSight.editHTML");
+		String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
+		String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
+		String propertiesHTML = getLocalizedString(locale, "deliver.editOnSight.propertiesHTML");
+		String pageComponentsHTML = getLocalizedString(locale, "deliver.editOnSight.pageComponentsHTML");
+		String viewSourceHTML = getLocalizedString(locale, "deliver.editOnSight.viewSourceHTML");
 
 		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">" + editHTML + "</div>");
 		if(hasAccessToAddComponent)
@@ -1449,6 +1454,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 
 	private List getComponentProperties(Integer componentId, org.w3c.dom.Document document/*String componentPropertiesXML*/) throws Exception
 	{
+		//TODO - här kan vi säkert cache:a.
+		
 		//logger.info("componentPropertiesXML:" + componentPropertiesXML);
 		List componentProperties = new ArrayList();
 		Timer timer = new Timer();

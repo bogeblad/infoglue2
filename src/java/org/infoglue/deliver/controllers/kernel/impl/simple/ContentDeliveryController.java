@@ -251,8 +251,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
 	    String versionKey = attributeKey + "_contentVersionId";
 		getLogger().info("attributeKey:" + attributeKey);
-		String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
-		Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
+		//String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
+		//Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
+		
+		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey);
+		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", versionKey);
+		
 		if(attribute != null)
 		{
 			getLogger().info("There was an cached content attribute:" + attribute);
@@ -270,9 +274,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 			else
 				attribute = "";
 
-			CacheController.cacheObject("contentAttributeCache", attributeKey, attribute);
-		    //getLogger().info("Added in content attribute..." + versionKey + ":" + contentVersionId);
-			CacheController.cacheObject("contentAttributeCache", versionKey, contentVersionId);
+			//CacheController.cacheObject("contentAttributeCache", attributeKey, attribute);
+			//CacheController.cacheObject("contentAttributeCache", versionKey, contentVersionId);
+
+			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId}, true);
+			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId}, true);
 		}
 		//getLogger().info("Adding contentVersion:" + contentVersionId);
 		deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);

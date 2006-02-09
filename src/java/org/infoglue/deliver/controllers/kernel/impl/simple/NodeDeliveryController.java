@@ -1523,26 +1523,42 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public List getChildSiteNodes(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
-		if(siteNodeId == null)
+    	logger.warn("getChildSiteNodes:" + siteNodeId);
+
+    	if(siteNodeId == null)
 		{
 			return null;
 		}
-		 
-        List siteNodeVOList = new ArrayList();
 
-        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1 ORDER BY s.siteNodeId");
-		oql.bind(siteNodeId);
-		
-    	QueryResults results = oql.execute(Database.ReadOnly);
-		
-		while (results.hasMore()) 
-        {
-        	SiteNode siteNode = (SiteNode)results.next();
-			
-        	if(isValidSiteNode(siteNode, db))
-        	    siteNodeVOList.add(siteNode.getValueObject());
+        String key = "" + siteNodeId;
+		getLogger().info("key in getChildSiteNodes:" + key);
+		List siteNodeVOList = (List)CacheController.getCachedObject("childSiteNodesCache", key);
+		if(siteNodeVOList != null)
+		{
+		    getLogger().info("There was a cached list of child sitenodes:" + siteNodeVOList.size());
 		}
-		
+		else
+		{
+	        siteNodeVOList = new ArrayList();
+	
+	        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1 ORDER BY s.siteNodeId");
+			oql.bind(siteNodeId);
+			
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while (results.hasMore()) 
+	        {
+	        	SiteNode siteNode = (SiteNode)results.next();
+				
+	        	if(isValidSiteNode(siteNode, db))
+	        	    siteNodeVOList.add(siteNode.getValueObject());
+			}
+
+			CacheController.cacheObject("childSiteNodesCache", key, siteNodeVOList);
+		}
+
+    	logger.warn("getChildSiteNodes end:" + siteNodeId);
+
 		return siteNodeVOList;	
 	}
 

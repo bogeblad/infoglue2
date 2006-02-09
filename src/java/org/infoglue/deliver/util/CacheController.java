@@ -175,7 +175,7 @@ public class CacheController extends Thread
 	
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key)
 	{
-	    logger.info("getCachedObjectFromAdvancedCache start...");
+	    logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key);
 
 	    Object value = null;
 	    
@@ -196,7 +196,7 @@ public class CacheController extends Thread
 
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key, int updateInterval)
 	{
-	    logger.info("getCachedObjectFromAdvancedCache start...");
+	    logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key + ":" + updateInterval);
 
 	    //return getCachedObject(cacheName, key);
 	    Object value = null;
@@ -311,6 +311,10 @@ public class CacheController extends Thread
 				{	
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("localeCache") && entity.indexOf("Language") > 0)
+				{	
+					clear = true;
+				}
 				if((cacheName.equalsIgnoreCase("latestSiteNodeVersionCache") || cacheName.equalsIgnoreCase("pageCacheLatestSiteNodeVersions") || cacheName.equalsIgnoreCase("pageCacheSiteNodeTypeDefinition")) && entity.indexOf("SiteNode") > 0)
 				{	
 					clear = true;
@@ -342,10 +346,12 @@ public class CacheController extends Thread
 				if(cacheName.equalsIgnoreCase("contentAttributeCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0))
 				{	
 					clear = true;
+					selectiveCacheUpdate = true;
 				}
 				if(cacheName.equalsIgnoreCase("contentVersionCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0))
 				{	
 					clear = true;
+					selectiveCacheUpdate = true;
 				}
 				if(cacheName.equalsIgnoreCase("boundSiteNodeCache") && (entity.indexOf("ServiceBinding") > 0 || entity.indexOf("Qualifyer") > 0 || entity.indexOf("SiteNodeVersion") > 0 || entity.indexOf("SiteNodeVersion") > 0 || entity.indexOf("SiteNode") > 0 || entity.indexOf("AccessRight") > 0))
 				{
@@ -397,6 +403,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("childSiteNodesCache") && entity.indexOf("SiteNode") > 0)
+				{
+					clear = true;
+				}
 				if(cacheName.equalsIgnoreCase("propertySetCache") && entity.indexOf("SiteNode") > 0)
 				{
 				    clear = true;
@@ -437,9 +447,15 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("siteNodeLanguageCache") && (entity.indexOf("Repository") > 0 || entity.indexOf("Language") > 0 || entity.indexOf("SiteNode") > 0))
+				{
+					clear = true;
+				}
+				
 
 				if(clear)
 				{	
+				    System.out.println("clearing:" + e.getKey());
 				    logger.info("clearing:" + e.getKey());
 					Object object = e.getValue();
 					if(object instanceof Map)

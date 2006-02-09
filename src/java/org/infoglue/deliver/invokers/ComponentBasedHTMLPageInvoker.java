@@ -150,8 +150,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		String versionKey 	= attributeKey + "_contentVersionId";
 
 	    String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
-	    Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
+	    //Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
+	    Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", versionKey);
 		
+
 		if(cachedPageComponentsString != null)
 		{
 		    //logger.info("Returning cached...");
