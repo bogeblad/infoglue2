@@ -1242,6 +1242,16 @@ public class BasicTemplateController implements TemplateController
 	    return getContentAttribute(contentId, languageId, attributeName);
 	}
 
+	/**
+	 * This method deliveres a String with the content-attribute asked for in the language asked for.
+	 * As the siteNode can have multiple bindings as well as a content as a parameter this
+	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
+	 */
+	 
+	public String getContentAttributeWithReturningId(Integer contentId, Integer languageId, String attributeName, boolean clean, List contentVersionId) 
+	{
+	    return getContentAttribute(contentId, languageId, attributeName, contentVersionId);
+	}
 
 	/**
 	 * This method deliveres a String with the content-attribute asked for if it exists in the content
@@ -1362,7 +1372,8 @@ public class BasicTemplateController implements TemplateController
 		return attributeValue;
 	}
 
-	
+
+
 	/**
 	 * This method deliveres a String with the content-attribute asked for in the language asked for.
 	 * As the siteNode can have multiple bindings as well as a content as a parameter this
@@ -1387,6 +1398,31 @@ public class BasicTemplateController implements TemplateController
 		return attributeValue;
 	}
 	
+	
+	/**
+	 * This method deliveres a String with the content-attribute asked for in the language asked for.
+	 * As the siteNode can have multiple bindings as well as a content as a parameter this
+	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
+	 */
+	 
+	public String getContentAttribute(Integer contentId, Integer languageId, String attributeName, List contentVersionId) 
+	{
+		String attributeValue = "";
+		
+		this.deliveryContext.addUsedContent("content_" + contentId);
+		
+		try
+		{
+		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false, contentVersionId);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return attributeValue;
+	}
+
 	/**
 	 * Finds an attribute on the provided ContentVersion.
 	 */
@@ -2168,8 +2204,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			String qualifyerXML = this.getContentAttribute(contentId, attributeName, true);
-			
+		    String qualifyerXML = this.getContentAttribute(contentId, attributeName, true);
+		    
 			relatedContentVOList = getRelatedContentsFromXML(qualifyerXML);
 		}
 		catch(Exception e)
@@ -2227,7 +2263,7 @@ public class BasicTemplateController implements TemplateController
 					if(id == null || id.equals(""))
 						id = child.getText();
 		
-					ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), new Integer(id), this.deliveryContext);
+					ContentVO contentVO = this.getContent(new Integer(id));
 					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVO.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 						relatedContentVOList.add(contentVO);
 				}				

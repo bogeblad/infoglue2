@@ -154,7 +154,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		if(contentVersionVO != null)
 		{
-			getLogger().info("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
+			//getLogger().info("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
 		}
 		else
 		{
@@ -265,10 +265,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 		    //System.out.println("There was a cached content version id:" + contentVersionId);
 		    contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
 		    //System.out.println("Loaded the version from cache instead of querying it:" + contentVersionId);
+		    getLogger().info("contentVersion read");
 		}
 		else
 		{
-		    System.out.println("Querying for verson: " + versionKey); 
+		    //System.out.println("Querying for verson: " + versionKey); 
 		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
 	    	oql.bind(content.getId());
 	    	oql.bind(languageId);
@@ -290,6 +291,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentVersion != null)
 		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersion.getId());
 
+		getLogger().info("end getContentVersion");
+		
 		return contentVersion;
     }
 
@@ -301,9 +304,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML) throws SystemException, Exception
 	{	    	        
+	    return getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infogluePrincipal, escapeHTML, null);
+	}
+	
+	/**
+	 * This is the most common way of getting attributes from a content. 
+	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
+	 */
+
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, List usedContentVersionId) throws SystemException, Exception
+	{	
+		//System.out.println("usedContentVersionId:" + usedContentVersionId);
+
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
 	    String versionKey = attributeKey + "_contentVersionId";
-		getLogger().info("attributeKey:" + attributeKey);
+		//getLogger().info("attributeKey:" + attributeKey);
 		
 		//String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
 		//Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
@@ -313,7 +328,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		if(attribute != null)
 		{
-			getLogger().info("There was an cached content attribute:" + attribute);
+			//getLogger().info("There was an cached content attribute:" + attribute);
 		}
 		else
 		{
@@ -334,7 +349,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		//getLogger().info("Adding contentVersion:" + contentVersionId);
 		deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
-		
+
+		if(usedContentVersionId != null && contentVersionId != null)
+		    usedContentVersionId.add(contentVersionId);
+
 		return (attribute == null) ? "" : attribute;
 	}
 

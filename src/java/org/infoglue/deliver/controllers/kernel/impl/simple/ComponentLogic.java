@@ -1060,71 +1060,95 @@ public class ComponentLogic
 	{
 	    try
 		{
-	        String componentPropertiesXML = getPageComponentsString(this.templateController, siteNodeId, languageId, new Integer(-1));
+		    List contentVersionIdList = new ArrayList();
+
+	        String componentPropertiesXML = getPageComponentsString(this.templateController, siteNodeId, languageId, new Integer(-1), contentVersionIdList);
 	        //logger.info("componentPropertiesXML:" + componentPropertiesXML);
 	        
-	        HashMap property = null;
+		    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
+			Map property = (Map)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 			
-			if(componentPropertiesXML != null && componentPropertiesXML.length() > 0)
+			if(property != null)
 			{
-				Document document = XMLHelper.readDocumentFromByteArray(componentPropertiesXML.getBytes("UTF-8"));
-				String propertyXPath = "//component/properties/property[@name='" + propertyName + "']";
-				//logger.info("propertyXPath:" + propertyXPath);
-				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
-				//logger.info("*********************************************************anl:" + anl.getLength());
-								
-				for(int i=0; i < anl.getLength(); i++)
-				{
-					Element propertyElement = (Element)anl.item(i);
-
-					String name		= propertyElement.getAttribute("name");
-					String type		= propertyElement.getAttribute("type");
-					String entity 	= propertyElement.getAttribute("entity");
-					boolean isMultipleBinding = new Boolean(propertyElement.getAttribute("multiple")).booleanValue();
-					
-					String value = null;
-					
-					if(type.equalsIgnoreCase("textfield"))
-					{
-					    value = propertyElement.getAttribute("path");
-
-					    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
-
-					    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
-						    value = propertyElement.getAttribute("path_" + locale.getLanguage());
-					}
-					
-					property = new HashMap();
-					property.put("name", name);
-					property.put("path", value);
-					property.put("type", type);
-					
-					List bindings = new ArrayList();
-					NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
-					//logger.info("bindingNodeList:" + bindingNodeList.getLength());
-					for(int j=0; j < bindingNodeList.getLength(); j++)
-					{
-						Element bindingElement = (Element)bindingNodeList.item(j);
-						String entityName = bindingElement.getAttribute("entity");
-						String entityId = bindingElement.getAttribute("entityId");
-						//logger.info("Binding found:" + entityName + ":" + entityId);
-						if(entityName.equalsIgnoreCase("Content"))
-						{
-							//logger.info("Content added:" + entityName + ":" + entityId);
-							bindings.add(entityId);
-						}
-						else
-						{
-							//logger.info("SiteNode added:" + entityName + ":" + entityId);
-							bindings.add(entityId); 
-						} 
-					}
-
-					property.put("bindings", bindings);
-				}
+				//getLogger().info("There was an cached content attribute:" + attribute);
+			    //System.out.println("Returning cached property...");
 			}
-			
-			return property;
+			else
+			{
+			    //System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
+	        
+		        //HashMap property = null;
+				
+				if(componentPropertiesXML != null && componentPropertiesXML.length() > 0)
+				{
+					Document document = XMLHelper.readDocumentFromByteArray(componentPropertiesXML.getBytes("UTF-8"));
+					String propertyXPath = "//component/properties/property[@name='" + propertyName + "']";
+					//logger.info("propertyXPath:" + propertyXPath);
+					NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
+					//logger.info("*********************************************************anl:" + anl.getLength());
+									
+					for(int i=0; i < anl.getLength(); i++)
+					{
+						Element propertyElement = (Element)anl.item(i);
+	
+						String name		= propertyElement.getAttribute("name");
+						String type		= propertyElement.getAttribute("type");
+						String entity 	= propertyElement.getAttribute("entity");
+						boolean isMultipleBinding = new Boolean(propertyElement.getAttribute("multiple")).booleanValue();
+						
+						String value = null;
+						
+						if(type.equalsIgnoreCase("textfield"))
+						{
+						    value = propertyElement.getAttribute("path");
+	
+						    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
+	
+						    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
+							    value = propertyElement.getAttribute("path_" + locale.getLanguage());
+						}
+						
+						property = new HashMap();
+						property.put("name", name);
+						property.put("path", value);
+						property.put("type", type);
+						
+						List bindings = new ArrayList();
+						NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
+						//logger.info("bindingNodeList:" + bindingNodeList.getLength());
+						for(int j=0; j < bindingNodeList.getLength(); j++)
+						{
+							Element bindingElement = (Element)bindingNodeList.item(j);
+							String entityName = bindingElement.getAttribute("entity");
+							String entityId = bindingElement.getAttribute("entityId");
+							//logger.info("Binding found:" + entityName + ":" + entityId);
+							if(entityName.equalsIgnoreCase("Content"))
+							{
+								//logger.info("Content added:" + entityName + ":" + entityId);
+								bindings.add(entityId);
+							}
+							else
+							{
+								//logger.info("SiteNode added:" + entityName + ":" + entityId);
+								bindings.add(entityId); 
+							} 
+						}
+	
+						property.put("bindings", bindings);
+					}
+					
+					if(property != null && contentVersionIdList.size() > 0)
+			        {
+					    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
+					    
+					    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
+						CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId}, true);
+			        }
+				}			
+				
+				return property;
+				
+			}
 		}
 		catch(Exception e)
 		{
@@ -1256,101 +1280,124 @@ public class ComponentLogic
 	 
 	private Map getInheritedComponentProperty(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, String propertyName) throws Exception
 	{
+	    List contentVersionIdList = new ArrayList();
+	    
 	    //logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
-		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId);
-		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
+		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
 		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
 		
-		HashMap property = null;
+	    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
+		Map property = (Map)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 		
-		if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
+		if(property != null)
 		{
-			Document document = XMLHelper.readDocumentFromByteArray(inheritedPageComponentsXML.getBytes("UTF-8"));
-			String propertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
-			//logger.info("propertyXPath:" + propertyXPath);
-			//logger.info("propertyXPath:" + propertyXPath);
-			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
-			//logger.info("*********************************************************anl:" + anl.getLength());
+			//getLogger().info("There was an cached content attribute:" + attribute);
+		    //System.out.println("Returning cached property...");
+		}
+		else
+		{
+		    //System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
+        
+			//HashMap property = null;
 			
-			//If not found on the same component id - let's check them all and use the first we find.
-			if(anl == null || anl.getLength() == 0)
+			if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
 			{
-				String globalPropertyXPath = "//component/properties/property[@name='" + propertyName + "'][1]";
-				//logger.info("globalPropertyXPath:" + globalPropertyXPath);
-				//logger.info("globalPropertyXPath:" + globalPropertyXPath);
-				anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), globalPropertyXPath);
-				//logger.info("anl:" + anl.getLength());
+				Document document = XMLHelper.readDocumentFromByteArray(inheritedPageComponentsXML.getBytes("UTF-8"));
+				String propertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
+				//logger.info("propertyXPath:" + propertyXPath);
+				//logger.info("propertyXPath:" + propertyXPath);
+				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
 				//logger.info("*********************************************************anl:" + anl.getLength());
-			}			
-			
-			for(int i=0; i < anl.getLength(); i++)
-			{
-				Element propertyElement = (Element)anl.item(i);
-				//logger.info(XMLHelper.serializeDom(propertyElement, new StringBuffer()));
-				//logger.info("YES - we read the property...");		
 				
-				String name		= propertyElement.getAttribute("name");
-				String type		= propertyElement.getAttribute("type");
-				String entity 	= propertyElement.getAttribute("entity");
-				boolean isMultipleBinding = new Boolean(propertyElement.getAttribute("multiple")).booleanValue();
-				
-				//logger.info("name:" + name);
-				//logger.info("type:" + type);
-				//logger.info("entity:" + entity);
-				//logger.info("isMultipleBinding:" + isMultipleBinding);
-				
-				logger.info("name:" + name);
-				//logger.info("type:" + type);
-				//logger.info("entity:" + entity);
-				//logger.info("isMultipleBinding:" + isMultipleBinding);
-				
-				String value = null;
-				
-				if(type.equalsIgnoreCase("textfield"))
+				//If not found on the same component id - let's check them all and use the first we find.
+				if(anl == null || anl.getLength() == 0)
 				{
-				    value = propertyElement.getAttribute("path");
-
-				    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
-
-				    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
-					    value = propertyElement.getAttribute("path_" + locale.getLanguage());
-				}
-				else
-				{
-				    value = getComponentPropertyValue(inheritedPageComponentsXML, componentId, languageId, name);
-				}
+					String globalPropertyXPath = "//component/properties/property[@name='" + propertyName + "'][1]";
+					//logger.info("globalPropertyXPath:" + globalPropertyXPath);
+					//logger.info("globalPropertyXPath:" + globalPropertyXPath);
+					anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), globalPropertyXPath);
+					//logger.info("anl:" + anl.getLength());
+					//logger.info("*********************************************************anl:" + anl.getLength());
+				}			
 				
-				property = new HashMap();
-				property.put("name", name);
-				//property.put("path", "Inherited");
-				property.put("path", value);
-				property.put("type", type);
-				
-				List bindings = new ArrayList();
-				NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
-				//logger.info("bindingNodeList:" + bindingNodeList.getLength());
-				for(int j=0; j < bindingNodeList.getLength(); j++)
+				for(int i=0; i < anl.getLength(); i++)
 				{
-					Element bindingElement = (Element)bindingNodeList.item(j);
-					String entityName = bindingElement.getAttribute("entity");
-					String entityId = bindingElement.getAttribute("entityId");
-					//logger.info("Binding found:" + entityName + ":" + entityId);
-					if(entityName.equalsIgnoreCase("Content"))
+					Element propertyElement = (Element)anl.item(i);
+					//logger.info(XMLHelper.serializeDom(propertyElement, new StringBuffer()));
+					//logger.info("YES - we read the property...");		
+					
+					String name		= propertyElement.getAttribute("name");
+					String type		= propertyElement.getAttribute("type");
+					String entity 	= propertyElement.getAttribute("entity");
+					boolean isMultipleBinding = new Boolean(propertyElement.getAttribute("multiple")).booleanValue();
+					
+					//logger.info("name:" + name);
+					//logger.info("type:" + type);
+					//logger.info("entity:" + entity);
+					//logger.info("isMultipleBinding:" + isMultipleBinding);
+					
+					logger.info("name:" + name);
+					//logger.info("type:" + type);
+					//logger.info("entity:" + entity);
+					//logger.info("isMultipleBinding:" + isMultipleBinding);
+					
+					String value = null;
+					
+					if(type.equalsIgnoreCase("textfield"))
 					{
-						//logger.info("Content added:" + entityName + ":" + entityId);
-						bindings.add(entityId);
+					    value = propertyElement.getAttribute("path");
+	
+					    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
+	
+					    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
+						    value = propertyElement.getAttribute("path_" + locale.getLanguage());
 					}
 					else
 					{
-						//logger.info("SiteNode added:" + entityName + ":" + entityId);
-						bindings.add(entityId); 
-					} 
-				}
-
-				property.put("bindings", bindings);
-			}
-		}
+					    value = getComponentPropertyValue(inheritedPageComponentsXML, componentId, languageId, name);
+					}
 					
+					property = new HashMap();
+					property.put("name", name);
+					//property.put("path", "Inherited");
+					property.put("path", value);
+					property.put("type", type);
+					
+					List bindings = new ArrayList();
+					NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
+					//logger.info("bindingNodeList:" + bindingNodeList.getLength());
+					for(int j=0; j < bindingNodeList.getLength(); j++)
+					{
+						Element bindingElement = (Element)bindingNodeList.item(j);
+						String entityName = bindingElement.getAttribute("entity");
+						String entityId = bindingElement.getAttribute("entityId");
+						//logger.info("Binding found:" + entityName + ":" + entityId);
+						if(entityName.equalsIgnoreCase("Content"))
+						{
+							//logger.info("Content added:" + entityName + ":" + entityId);
+							bindings.add(entityId);
+						}
+						else
+						{
+							//logger.info("SiteNode added:" + entityName + ":" + entityId);
+							bindings.add(entityId); 
+						} 
+					}
+	
+					property.put("bindings", bindings);
+				}
+			}
+			
+			if(property != null && contentVersionIdList.size() > 0)
+	        {
+			    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
+			    
+			    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
+				CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId}, true);
+	        }
+
+		}
+		
 		return property;
 	}
 
@@ -1387,6 +1434,8 @@ public class ComponentLogic
 	
 	private String getComponentPropertyValue(String componentXML, Integer componentId, Integer languageId, String name) throws Exception
 	{
+	    //System.out.println("FIXA");
+	    
 		String value = "Undefined";
 		
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
@@ -1457,13 +1506,20 @@ public class ComponentLogic
 	 * This method fetches the pageComponent structure from the metainfo content.
 	 */
 	    
-	protected String getPageComponentsString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	protected String getPageComponentsString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, List usedContentVersionId) throws SystemException, Exception
 	{ 
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
+		String versionKey 	= cacheKey + "_contentVersionId";
 		String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+		
 		if(cachedPageComponentsString != null)
 		{
+		    //System.out.println("Returning cachedPageComponentsString..");
+		    if(usedContentVersionId != null)
+		        usedContentVersionId.add(contentVersionId);
+		    
 			return cachedPageComponentsString;
 		}
 		
@@ -1475,7 +1531,7 @@ public class ComponentLogic
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
 		
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();
-		pageComponentsString = templateController.getContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);
+		pageComponentsString = templateController.getContentAttributeWithReturningId(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true, usedContentVersionId);
 		
 		if(pageComponentsString == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
@@ -1483,7 +1539,9 @@ public class ComponentLogic
 		logger.info("pageComponentsString: " + pageComponentsString);
 	
 		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
-		
+		if(usedContentVersionId != null && usedContentVersionId.size() > 0)
+			CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, (Integer)usedContentVersionId.get(0), new String[]{"contentVersion_" + usedContentVersionId.get(0)}, true);
+
 		return pageComponentsString;
 	}
 

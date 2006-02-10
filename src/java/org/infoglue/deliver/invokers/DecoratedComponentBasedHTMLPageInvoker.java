@@ -175,8 +175,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
-		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate);
 		
+		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate);
+
 		this.setPageString(cacheString.toString());
 		
 		timer.printElapsedTime("End invokePage");

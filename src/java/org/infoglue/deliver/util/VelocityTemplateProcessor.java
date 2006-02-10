@@ -128,6 +128,9 @@ public class VelocityTemplateProcessor
 
 	public void dispatchJSP(Map params, PrintWriter pw, String templateAsString) throws ServletException, IOException, Exception
 	{
+	    Timer timer = new Timer();
+	    timer.setActive(false);
+
 		int hashCode = templateAsString.hashCode();
 
 		String contextRootPath = CmsPropertyHandler.getProperty("contextRootPath");
@@ -142,9 +145,12 @@ public class VelocityTemplateProcessor
     	RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/Template_" + hashCode + ".jsp");
 		templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.templateLogic", templateController);
     	CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
-		dispatch.include(templateController.getHttpServletRequest(), wrapper);
-		String result = wrapper.toString();
-		pw.println(result);
+		
+    	dispatch.include(templateController.getHttpServletRequest(), wrapper);
+
+    	String result = wrapper.toString();
+
+    	pw.println(result);
 	}
 	
 }

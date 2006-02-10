@@ -317,6 +317,14 @@ public interface TemplateController
             Integer langaugeId, String attributeName, boolean clean);
 
     /**
+     * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+     * value if OnSiteEdit is on.
+     */
+
+	public String getContentAttributeWithReturningId(Integer contentId, 
+	        Integer languageId, String attributeName, boolean clean, List contentVersionId);
+
+    /**
      * This method deliveres a String with the content-attribute asked for if it exists in the content
      * defined in the url-parameter contentId.
      */
@@ -345,6 +353,7 @@ public interface TemplateController
      */
     public abstract String getContentAttribute(Integer contentId,
             Integer languageId, String attributeName);
+	 
 
     /**
      * This method deliveres a String with the content-attribute asked for after it has been parsed and all special tags have been converted.

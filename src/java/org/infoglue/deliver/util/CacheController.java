@@ -175,7 +175,7 @@ public class CacheController extends Thread
 	
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key)
 	{
-	    logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key);
+	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key);
 
 	    Object value = null;
 	    
@@ -192,14 +192,14 @@ public class CacheController extends Thread
 			}
 	    }
 	    
-	    logger.info("getCachedObjectFromAdvancedCache stop...");
+	    //logger.info("getCachedObjectFromAdvancedCache stop...");
 
 		return value;
 	}
 
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key, int updateInterval)
 	{
-	    logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key + ":" + updateInterval);
+	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key + ":" + updateInterval);
 
 	    //return getCachedObject(cacheName, key);
 	    Object value = null;
@@ -214,7 +214,7 @@ public class CacheController extends Thread
 	        cacheAdministrator.cancelUpdate(key.toString());
 		}
 
-	    logger.info("getCachedObjectFromAdvancedCache stop...");
+	    //logger.info("getCachedObjectFromAdvancedCache stop...");
 
 		return value;
 	}
@@ -370,6 +370,11 @@ public class CacheController extends Thread
 					selectiveCacheUpdate = true;
 				}
 				if(cacheName.equalsIgnoreCase("componentCache") && entity.indexOf("Registry") == -1)
+				{	
+					clear = true;
+					selectiveCacheUpdate = true;
+				}
+				if(cacheName.equalsIgnoreCase("componentPropertyCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0))
 				{	
 					clear = true;
 					selectiveCacheUpdate = true;
