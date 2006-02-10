@@ -892,5 +892,74 @@ public class SiteNodeController extends BaseController
 	}
 
 
+    public void setMetaInfoContentId(Integer siteNodeId, Integer metaInfoContentId) throws ConstraintException, SystemException
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db);
+            siteNode.setMetaInfoContentId(metaInfoContentId);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+    }       
+
+    
+    
+    public List getSiteNodeVOListWithoutMetaInfoContentId() throws ConstraintException, SystemException
+    {
+		List siteNodeVOList = new ArrayList();
+
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            List siteNodes = getSiteNodesWithoutMetaInfoContentId(db);
+            siteNodeVOList = toVOList(siteNodes);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return siteNodeVOList;
+    }       
+
+    public List getSiteNodesWithoutMetaInfoContentId(Database db) throws ConstraintException, SystemException, Exception
+    {
+		List siteNodes = new ArrayList();
+
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.metaInfoContentId = $1");
+    	oql.bind(new Integer(-1));
+    	
+    	QueryResults results = oql.execute();
+		
+		while(results.hasMore()) 
+        {
+        	SiteNode siteNode = (SiteNodeImpl)results.next();
+        	siteNodes.add(siteNode);
+        }
+
+		return siteNodes;
+    }       
+
 }
  

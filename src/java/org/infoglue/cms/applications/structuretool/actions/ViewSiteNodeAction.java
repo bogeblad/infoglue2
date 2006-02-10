@@ -179,6 +179,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     			if(availableServiceBindingVO != null)
     			    metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
     			
+    			Integer metaInfoContentId = null;
+    			
     			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId());
     			Iterator serviceBindingIterator = serviceBindings.iterator();
     			while(serviceBindingIterator.hasNext())
@@ -190,6 +192,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     					if(boundContents.size() > 0)
     	    			{
     	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
+    	    				metaInfoContentId = contentVO.getId();
     	    				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
     	    				if(contentVersionVO != null && contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
     	    					isMetaInfoInWorkingState = true;
@@ -199,6 +202,9 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     				}
     			}
 
+    			if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
+    			    SiteNodeController.getController().setMetaInfoContentId(this.siteNodeVO.getId(), metaInfoContentId);
+    			    
     			if(isMetaInfoInWorkingState)
     			{
     			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8");

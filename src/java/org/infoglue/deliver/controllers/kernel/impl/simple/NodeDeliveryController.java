@@ -200,7 +200,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		//serviceDefinitionVO = getServiceDefinitionVO(siteNode, availableServiceBindingVO, db);
 		serviceDefinitionVO = getServiceDefinitionVO(qualifyerList, siteNode, availableServiceBindingVO, db);
-			
+		
+		getLogger().info("Loaded serviceDefinitionVO " + serviceDefinitionVO);
+		
 		if(serviceDefinitionVO == null)
 		{
 			//We check if the available service definition state that this is a inheritable binding            	
@@ -213,6 +215,11 @@ public class NodeDeliveryController extends BaseDeliveryController
             	    serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, parent.getSiteNodeId(), availableServiceBindingVO, db, inheritParentBindings);
         	}
 		}
+		
+		try{ throw new Exception("APA"); } catch(Exception e){e.printStackTrace();}
+		
+		getLogger().info("Loaded serviceDefinitionVO end...");
+		
 		return serviceDefinitionVO;
 	}
 	

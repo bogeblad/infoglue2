@@ -344,7 +344,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				attribute = "";
 
 			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId}, true);
-			CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId}, true);
+			if(contentVersionId != null)
+			    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId}, true);
 		}
 		
 		//getLogger().info("Adding contentVersion:" + contentVersionId);

@@ -1302,6 +1302,56 @@ public class ContentController extends BaseController
 		return result;
 	}
 
+	
+	public static List getInTransactionBoundContents(Database db, Integer serviceBindingId) throws SystemException, Exception
+	{
+		List result = new ArrayList();
+		
+		ServiceBinding serviceBinding = ServiceBindingController.getServiceBindingWithId(serviceBindingId, db);
+        
+		if(serviceBinding != null)
+		{
+			ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
+			if(serviceDefinition != null)
+			{
+				String serviceClassName = serviceDefinition.getClassName();
+				BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
+        		 
+				HashMap arguments = new HashMap();
+				arguments.put("method", "selectContentListOnIdList");
+            		
+				List qualifyerList = new ArrayList();
+				Collection qualifyers = serviceBinding.getBindingQualifyers();
+
+				qualifyers = sortQualifyers(qualifyers);
+
+				Iterator iterator = qualifyers.iterator();
+				while(iterator.hasNext())
+				{
+					Qualifyer qualifyer = (Qualifyer)iterator.next();
+					HashMap argument = new HashMap();
+					argument.put(qualifyer.getName(), qualifyer.getValue());
+					qualifyerList.add(argument);
+				}
+				arguments.put("arguments", qualifyerList);
+        		
+				List contents = service.selectMatchingEntities(arguments, db);
+        		
+				if(contents != null)
+				{
+					Iterator i = contents.iterator();
+					while(i.hasNext())
+					{
+						ContentVO candidate = (ContentVO)i.next();
+						result.add(candidate);        		
+					}
+				}
+			}
+		}
+	       	  		
+		return result;
+	}
+
 
 	/**
 	 * This method just sorts the list of qualifyers on sortOrder.

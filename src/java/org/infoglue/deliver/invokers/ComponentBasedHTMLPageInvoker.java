@@ -136,7 +136,12 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    
 	protected String getPageComponentsString(Database db, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{ 
-		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(db, templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", this.getDeliveryContext());		
+	    SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
+	    ContentVO contentVO = null;
+	    if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().intValue() > -1)
+	        contentVO = templateController.getContent(siteNodeVO.getMetaInfoContentId());
+	    else
+		    contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(db, templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", this.getDeliveryContext());		
 
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	

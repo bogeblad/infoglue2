@@ -27,16 +27,35 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
+import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.ValidationItem;
+import org.infoglue.cms.entities.structure.ServiceBinding;
+import org.infoglue.cms.entities.structure.ServiceBindingVO;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -107,7 +126,17 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         {
             db.close();
         }
-        
+
+        try
+        {
+            validateSiteNodes();
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
+
         return Action.SUCCESS;
     }
     
@@ -295,6 +324,83 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
     private void deleteDigitalAsset(DigitalAssetVO digitalAssetVO, Database db) throws Exception
     {
         DigitalAssetController.getController().delete(digitalAssetVO.getId(), db);
+    }
+
+    
+    private void validateSiteNodes() throws Exception
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        
+        db.begin();
+
+        try
+        {
+	
+	        String name = "Metainfo content ids on cmSiteNode";
+	        String description = "This many sitenodes did not have the new property set - bad for performance.";
+	
+	        try
+	        {
+	            List siteNodes = SiteNodeController.getController().getSiteNodesWithoutMetaInfoContentId(db);
+	            Iterator siteNodesIterator = siteNodes.iterator();
+	            while(siteNodesIterator.hasNext())
+	            {
+	                SiteNode siteNode = (SiteNode)siteNodesIterator.next(); 
+	                
+	                if(siteNode.getMetaInfoContentId() == null || siteNode.getMetaInfoContentId().intValue() == -1)
+	                {
+	                    Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNode.getRepository().getId());
+		    			Integer languageId = masterLanguage.getLanguageId();
+		    			
+		    			AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
+		    			Integer metaInfoAvailableServiceBindingId = null;
+		    			if(availableServiceBinding != null)
+		    			    metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
+		    			
+		    			Integer metaInfoContentId = null;
+		    			
+		    			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNode.getId());
+		
+		    			Collection serviceBindings = siteNodeVersion.getServiceBindings();
+		    			Iterator serviceBindingIterator = serviceBindings.iterator();
+		    			while(serviceBindingIterator.hasNext())
+		    			{
+		    				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+		    				if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+		    				{
+		    					List boundContents = ContentController.getInTransactionBoundContents(db, serviceBinding.getServiceBindingId()); 			
+		    					if(boundContents.size() > 0)
+		    	    			{
+		    	    				ContentVO content = (ContentVO)boundContents.get(0);
+		    	    				metaInfoContentId = content.getId();
+		     	    			}                					
+		    				}
+		    			}
+	    			
+	    			    siteNode.setMetaInfoContentId(metaInfoContentId);
+	                }
+	            }
+	            
+	            addValidationItem(name, description, true, "Fixed " + siteNodes.size() + " siteNodes.");
+	        }
+	        catch(Exception e)
+	        {
+	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
+	        }
+	        
+	        db.commit();
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            db.rollback();
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+            db.close();
+        }
+
     }
 
     /**
