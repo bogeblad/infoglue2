@@ -24,25 +24,14 @@
 package org.infoglue.deliver.util;
 
 import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.CacheManager;
-import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.Session;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
-import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.impl.simple.*;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.impl.simple.*;
-import org.infoglue.cms.entities.publishing.impl.simple.*;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.impl.simple.*;
-import org.infoglue.cms.entities.workflow.impl.simple.*;
 import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -50,44 +39,22 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FakeHttpServletRequest;
 import org.infoglue.cms.util.FakeHttpServletResponse;
 import org.infoglue.cms.util.FakeHttpSession;
-import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.databeans.WebPage;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.EditOnSiteBasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-import org.infoglue.deliver.invokers.PageInvoker;
-import org.infoglue.deliver.portal.PortalService;
-
-import com.opensymphony.oscache.base.CacheEntry;
-import com.opensymphony.oscache.base.NeedsRefreshException;
-import com.opensymphony.oscache.base.events.CacheEntryEventListener;
-import com.opensymphony.oscache.base.events.CacheMapAccessEventListener;
-import com.opensymphony.oscache.extra.CacheEntryEventListenerImpl;
-import com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl;
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-import com.steadystate.css.parser.selectors.BeginHyphenAttributeConditionImpl;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 
 public class ContentCentricCachePopulator

@@ -39,6 +39,7 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         }
         catch (NeedsRefreshException e)
         {
+        	event.getMap().cancelUpdate(event.getKey());
             return 0;
         }
     }
