@@ -434,6 +434,23 @@ public class LanguageController extends BaseController
 
         return languageVOList;
     }
+    
+    public List getLanguageVOList(Integer repositoryId, Database db) throws ConstraintException, SystemException
+    {
+        List languageVOList = new ArrayList();
+
+		Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
+        Collection repositoryLanguageList = repository.getRepositoryLanguages();
+    	Iterator repositoryLanguageIterator = repositoryLanguageList.iterator();
+    	while(repositoryLanguageIterator.hasNext())
+		{
+			RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguageIterator.next();
+			languageVOList.add(repositoryLanguage.getLanguage().getValueObject());
+		}
+        	
+        return languageVOList;
+    }
+
 
 
 	public List getLanguageList(Integer repositoryId, Database db) throws ConstraintException, SystemException
@@ -508,6 +525,37 @@ public class LanguageController extends BaseController
 				rollbackTransaction(db);
 				throw new SystemException(e.getMessage());
 			}
+		}
+		
+		return languageVO;	
+	}
+
+	
+	/**
+	 * This method returns the master language. 
+	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
+	 */
+	
+	public LanguageVO getMasterLanguage(Integer repositoryId, Database db) throws SystemException, Exception
+	{ 
+		LanguageVO languageVO = null;
+
+		String languageKey = "" + repositoryId;
+		getLogger().info("languageKey:" + languageKey);
+		languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
+		if(languageVO != null)
+		{
+			getLogger().info("There was an cached master language:" + languageVO.getName());
+		}
+		else
+		{
+			Language language = getMasterLanguage(db, repositoryId);
+	            
+			if(language != null)
+			{
+			    languageVO = language.getValueObject();
+			    CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
+			}				
 		}
 		
 		return languageVO;	

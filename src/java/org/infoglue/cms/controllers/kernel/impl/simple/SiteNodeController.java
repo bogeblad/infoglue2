@@ -83,6 +83,15 @@ public class SiteNodeController extends BaseController
 		return (SiteNodeVO) getVOWithId(SiteNodeImpl.class, siteNodeId);
     }
 
+	/**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
+    public static SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug
+    {
+		return (SiteNodeVO) getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+    }
+
     /**
 	 * This method gets the siteNodeVO with the given id
 	 */
@@ -901,9 +910,8 @@ public class SiteNodeController extends BaseController
 
         try
         {
-            SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db);
-            siteNode.setMetaInfoContentId(metaInfoContentId);
-            
+        	setMetaInfoContentId(siteNodeId, metaInfoContentId, db);
+        	
             commitTransaction(db);
         }
         catch(Exception e)
@@ -915,6 +923,11 @@ public class SiteNodeController extends BaseController
 
     }       
 
+    public void setMetaInfoContentId(Integer siteNodeId, Integer metaInfoContentId, Database db) throws ConstraintException, SystemException
+    {
+        SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db);
+        siteNode.setMetaInfoContentId(metaInfoContentId);
+    }       
     
     
     public List getSiteNodeVOListWithoutMetaInfoContentId() throws ConstraintException, SystemException

@@ -150,7 +150,7 @@ public abstract class BaseController
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
-				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap);
+				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap, db);
 			}
 			catch(ClassNotFoundException e)
 			{

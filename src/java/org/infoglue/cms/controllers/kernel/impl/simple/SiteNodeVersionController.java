@@ -401,6 +401,31 @@ public class SiteNodeVersionController extends BaseController
     	return returnVO;
     }        
 
+    public SiteNodeVersionVO updateStateId(Integer siteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	SiteNodeVersionVO siteNodeVersionVO = getSiteNodeVersionWithId(siteNodeVersionId, db).getValueObject();
+    	SiteNodeVersionVO returnVO = null;
+    	
+    	//Here we just updates the state if it's a publish-state-change.
+    	if(stateId.intValue() == 2)
+    	{    		
+	    	siteNodeVersionVO.setStateId(stateId);
+	    	siteNodeVersionVO.setVersionComment(versionComment);
+	    	returnVO = (SiteNodeVersionVO) updateEntity(SiteNodeVersionImpl.class, siteNodeVersionVO, db);
+    	}
+    	    	
+    	//Here we create a new version if it was a state-change back to working
+    	if(stateId.intValue() == 0)
+    	{
+			siteNodeVersionVO.setStateId(stateId);
+			siteNodeVersionVO.setVersionComment("");
+			returnVO = create(siteNodeId, infoGluePrincipal, siteNodeVersionVO, db).getValueObject();
+			//returnVO = getLatestSiteNodeVersionVO(siteNodeId, db);
+    	}
+    	
+    	return returnVO;
+    }        
+
 
 	public static void deleteVersionsForSiteNodeWithId(Integer siteNodeId) throws ConstraintException, SystemException, Bug
     {
@@ -538,7 +563,23 @@ public class SiteNodeVersionController extends BaseController
 
         return serviceBindningVOList;
 	}
+
 	
+   	/**
+	 * This method returns a list with AvailableServiceBidningVO-objects which are available for the
+	 * siteNodeTypeDefinition sent in
+	 */
+	
+	public static List getServiceBindningVOList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException
+	{
+        List serviceBindningVOList = null;
+
+        Collection serviceBindningList = getServiceBindningList(siteNodeVersionId, db);
+    	serviceBindningVOList = toVOList(serviceBindningList);
+
+        return serviceBindningVOList;
+	}
+
    	/**
 	 * This method returns a list with AvailableServiceBidningVO-objects which are available for the
 	 * siteNodeTypeDefinition sent in

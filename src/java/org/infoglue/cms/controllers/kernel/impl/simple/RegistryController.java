@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.27 2006/02/07 10:47:19 mattias Exp $
+ * $Id: RegistryController.java,v 1.28 2006/02/11 00:24:32 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -1292,6 +1292,47 @@ public class RegistryController extends BaseController
 		{
 		    rollbackTransaction(db);
 			throw new SystemException("An error occurred when we tried to fetch which sitenode uses a metainfo. Reason:" + e.getMessage(), e);			
+		}
+		
+		return result;
+	}
+
+	public List getReferencedObjects(String referencingEntityName, String referencingEntityId, Database db) throws SystemException, Exception
+	{
+	    List result = new ArrayList();
+	    
+		List registryVOList = getMatchingRegistryVOListForReferencingEntity(referencingEntityName, referencingEntityId, db);
+	    
+		Iterator i = registryVOList.iterator();
+		while(i.hasNext())
+		{
+		    RegistryVO registryVO = (RegistryVO)i.next();
+		    if(registryVO.getEntityName().indexOf("Content") > -1)
+            {
+                try
+                {
+                    Content content = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
+		    		getLogger().info("contentVersion:" + content.getContentId());
+		    		result.add(content.getValueObject());
+                }
+                catch(Exception e)
+                {
+                    getLogger().info("content:" + registryVO.getEntityId() + " did not exist - skipping..");
+                }
+            }
+            else if(registryVO.getEntityName().indexOf("SiteNode") > -1)
+            {
+                try
+                {
+	                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
+		    		getLogger().info("siteNode:" + siteNode.getId());
+		    		result.add(siteNode.getValueObject());
+		    	}
+                catch(Exception e)
+                {
+                    getLogger().info("siteNode:" + registryVO.getEntityId() + " did not exist - skipping..");
+                }
+            }
 		}
 		
 		return result;

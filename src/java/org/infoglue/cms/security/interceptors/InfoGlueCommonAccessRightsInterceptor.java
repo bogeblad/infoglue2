@@ -391,14 +391,21 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1000"));
 			}
 		}
-		else*/ if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Write"))
+		else*/if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Read"))
 		{
-			logger.info("******************************************************");
-			logger.info("SiteNodeVersion.ChangeAccessRights");
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
-			logger.info("VersionModifier:" + siteNodeVersion.getVersionModifier());
-			logger.info("infoGluePrincipal:" + infoGluePrincipal.getName());
+			if(!siteNodeVersion.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			{
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1000"));
+			}
+		}
+		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Write"))
+		{
+			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
+			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
 			if(!siteNodeVersion.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);

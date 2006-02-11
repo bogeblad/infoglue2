@@ -58,6 +58,11 @@ public class SiteNodeTypeDefinitionController extends BaseController
 		return (SiteNodeTypeDefinitionVO) getVOWithId(SiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId);
     }
 
+    public SiteNodeTypeDefinitionVO getSiteNodeTypeDefinitionVOWithId(Integer siteNodeTypeDefinitionId, Database db) throws SystemException, Bug
+    {
+		return (SiteNodeTypeDefinitionVO) getVOWithId(SiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
+    }
+
     public SiteNodeTypeDefinitionVO create(SiteNodeTypeDefinitionVO vo) throws ConstraintException, SystemException
     {
         SiteNodeTypeDefinition ent = new SiteNodeTypeDefinitionImpl();
@@ -281,7 +286,36 @@ public class SiteNodeTypeDefinitionController extends BaseController
 
         return availableServiceBindingVOList;
 	}
+
 	
+	/**
+	 * This method returns a list with AvailableServiceBidningVO-objects which are available for the
+	 * siteNodeTypeDefinition sent in
+	 */
+	
+	public List getAvailableServiceBindingVOList(Integer siteNodeTypeDefinitionId, Database db) throws ConstraintException, SystemException
+	{
+        List availableServiceBindingVOList = null;
+    	/*
+    	OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl asb WHERE asb.siteNodeTypeDefinition.siteNodeTypeDefinitionId = $1");
+    	oql.bind(siteNodeTypeDefinitionId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
+        {
+        	AvailableServiceBinding availableServiceBinding = (AvailableServiceBinding)results.next();
+			availableServiceBindingVOList.add(availableServiceBinding.getValueObject());
+        }
+        */
+
+    	SiteNodeTypeDefinition siteNodeTypeDefinition = getSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
+        Collection availableServiceBindingList = siteNodeTypeDefinition.getAvailableServiceBindings();
+    	availableServiceBindingVOList = toVOList(availableServiceBindingList);
+
+        return availableServiceBindingVOList;
+	}
+
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.

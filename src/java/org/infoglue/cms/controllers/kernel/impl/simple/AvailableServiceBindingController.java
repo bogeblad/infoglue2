@@ -180,6 +180,40 @@ public class AvailableServiceBindingController extends BaseController
 		return availableServiceBindingVO;
 	}
 
+
+    /**
+     * This method fetches an available service binding with the given name.
+     * 
+     * @throws SystemException
+     * @throws Bug
+     */
+    
+	public AvailableServiceBindingVO getAvailableServiceBindingVOWithName(String name, Database db) throws SystemException, Bug
+	{
+	    System.out.println("getAvailableServiceBindingVOWithName:" + name);
+		
+	    String key = "" + name;
+		getLogger().info("key:" + key);
+		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
+		if(availableServiceBindingVO != null)
+		{
+		    getLogger().info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
+		}
+		else
+		{
+		
+			AvailableServiceBinding AvailableServiceBinding = getAvailableServiceBindingWithName(name, db, true);
+			if(AvailableServiceBinding != null)
+				availableServiceBindingVO = AvailableServiceBinding.getValueObject();
+	
+			CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);
+		}
+		
+	    System.out.println("getAvailableServiceBindingVOWithName end:::");
+
+		return availableServiceBindingVO;
+	}
+
 	
 	/**
 	 * Returns the AvailableServiceBinding with the given name fetched within a given transaction.

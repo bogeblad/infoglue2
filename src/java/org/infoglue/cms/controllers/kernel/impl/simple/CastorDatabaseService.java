@@ -72,6 +72,7 @@ public class CastorDatabaseService //extends DatabaseService
             }
             */
             logger.info("Getting new databaseobject....");
+            //try {throw new Exception("SHIT....");} catch(Exception e){e.printStackTrace();}
             return getJDO().getDatabase();
         }
         catch(Exception e)

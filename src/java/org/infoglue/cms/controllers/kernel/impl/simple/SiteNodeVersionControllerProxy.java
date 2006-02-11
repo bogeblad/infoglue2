@@ -128,6 +128,23 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 	 * This method returns a specific siteNodeVersion-object
 	 */
 	
+    public SiteNodeVersionVO getACLatestActiveSiteNodeVersionVO(InfoGluePrincipal infogluePrincipal, Integer siteNodeId, Database db) throws ConstraintException, SystemException, Bug, Exception
+    {
+		SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersion(db, siteNodeId).getValueObject();
+		
+		Map hashMap = new HashMap();
+		hashMap.put("siteNodeVersionId", siteNodeVersionVO.getId());
+
+		intercept(hashMap, "SiteNodeVersion.Read", infogluePrincipal, db);
+    	
+		return getLatestActiveSiteNodeVersion(db, siteNodeId).getValueObject();
+    } 
+
+    
+	/**
+	 * This method returns a specific siteNodeVersion-object
+	 */
+	
     public SiteNodeVersionVO getACLatestActiveSiteNodeVersionVO(InfoGluePrincipal infogluePrincipal, Integer siteNodeId) throws ConstraintException, SystemException, Bug, Exception
     {
 		SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(siteNodeId);
@@ -139,7 +156,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
     	
 		return getLatestActiveSiteNodeVersionVO(siteNodeId);
     } 
-	
+
     
 	/**
 	 * This method creates a content after first checking that the user has rights to edit it.

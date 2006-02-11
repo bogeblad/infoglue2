@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -37,6 +38,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
+import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -106,6 +108,22 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 	} 
 
+	protected void initialize(Integer siteNodeId, Database db) throws Exception
+	{
+		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId, db);
+		getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
+		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
+		this.repositoryId = this.siteNodeVO.getRepositoryId();
+		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
+		
+		if(siteNodeVO.getSiteNodeTypeDefinitionId() != null)
+		{
+			this.siteNodeTypeDefinitionVO = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(siteNodeVO.getSiteNodeTypeDefinitionId(), db);
+			this.availableServiceBindings = SiteNodeTypeDefinitionController.getController().getAvailableServiceBindingVOList(siteNodeVO.getSiteNodeTypeDefinitionId(), db);
+			this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId(), db);
+		}
+	} 
+
 	protected void initializeSiteNodeCover(Integer siteNodeId) throws Exception
 	{
 		try
@@ -147,6 +165,47 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    }
 	} 
 
+	protected void initializeSiteNodeCover(Integer siteNodeId, Database db) throws Exception
+	{
+		try
+		{
+		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, db);
+		    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString(), db);
+		    getLogger().info("referenceBeanList:" + referenceBeanList.size());
+		    getLogger().info("referencingBeanList:" + referencingBeanList.size());
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+		}
+		
+		this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId, db);
+		
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+	    String disabledLanguagesString = ps.getString("siteNode_" + siteNodeId + "_disabledLanguages");
+	    getLogger().info("disabledLanguagesString:" + disabledLanguagesString);
+	    if(disabledLanguagesString != null && !disabledLanguagesString.equalsIgnoreCase(""))
+	    {
+	        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
+	        for(int i=0; i<disabledLanguagesStringArray.length; i++)
+	        {
+	            try
+	            {
+		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(disabledLanguagesStringArray[i]), db);
+		            getLogger().info("Adding languageVO to disabledLanguages:" + languageVO.getName());
+		    	    this.disabledLanguages.add(languageVO);
+	            }
+	            catch(Exception e)
+	            {
+	                getLogger().warn("An error occurred when we tried to get disabled language:" + e.getMessage(), e);
+	            }
+	        }
+	    }
+	} 
+
 /*    
     protected void initialize(Integer siteNodeId) throws Exception
     {
@@ -164,80 +223,131 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
     public String doExecute() throws Exception
     {
-        if(getSiteNodeId() != null)
-		{	
-            this.initialize(getSiteNodeId());
+    	String result = "success";
+    	
+        Database db = CastorDatabaseService.getDatabase();
+		
+		beginTransaction(db);
 
-            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVO.getSiteNodeTypeDefinitionId() != null && this.siteNodeVersionVO.getStateId().intValue() == SiteNodeVersionVO.WORKING_STATE.intValue() && getShowComponentsFirst().equalsIgnoreCase("true"))
-	        {
-                boolean isMetaInfoInWorkingState = false;
-    			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
-    			Integer languageId = masterLanguageVO.getLanguageId();
-    			
-    			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
-    			Integer metaInfoAvailableServiceBindingId = null;
-    			if(availableServiceBindingVO != null)
-    			    metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
-    			
-    			Integer metaInfoContentId = null;
-    			
-    			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId());
-    			Iterator serviceBindingIterator = serviceBindings.iterator();
-    			while(serviceBindingIterator.hasNext())
-    			{
-    				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
-    				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
-    				{
-    					List boundContents = ContentController.getBoundContents(serviceBindingVO.getServiceBindingId()); 			
-    					if(boundContents.size() > 0)
-    	    			{
-    	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
-    	    				metaInfoContentId = contentVO.getId();
-    	    				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
-    	    				if(contentVersionVO != null && contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-    	    					isMetaInfoInWorkingState = true;
+		try
+		{
+			getLogger().warn("1");
+			
+	        if(getSiteNodeId() != null)
+			{	
+	        	getLogger().warn("2");
+				
+	        	this.initialize(getSiteNodeId(), db);
 
-    	    				break;
-    	    			}                					
-    				}
-    			}
+	        	getLogger().warn("3");
 
-    			if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
-    			    SiteNodeController.getController().setMetaInfoContentId(this.siteNodeVO.getId(), metaInfoContentId);
-    			    
-    			if(isMetaInfoInWorkingState)
-    			{
-    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8");
-    			    url = this.getResponse().encodeURL(url);
-    				this.getResponse().sendRedirect(url);
-    			    return NONE;
-    			}
-    			else
-    			    return "success";
-	            
-    			//if(this.repositoryId == null)
-	            //    this.repositoryId = contentVO.getRepositoryId();
-	            
-	            //this.languageId = getMasterLanguageVO().getId();
-	            //return "viewVersion";
-	        }
-	        else
-	        {
-	            this.initializeSiteNodeCover(getSiteNodeId());
-	            
-    			return "success";
-	        }
+	            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVO.getSiteNodeTypeDefinitionId() != null && this.siteNodeVersionVO.getStateId().intValue() == SiteNodeVersionVO.WORKING_STATE.intValue() && getShowComponentsFirst().equalsIgnoreCase("true"))
+		        {
+	                boolean isMetaInfoInWorkingState = false;
+	    			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId, db);
+	    			Integer languageId = masterLanguageVO.getLanguageId();
+
+		        	getLogger().warn("3.1");
+
+	    			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
+	    			Integer metaInfoAvailableServiceBindingId = null;
+	    			if(availableServiceBindingVO != null)
+	    			    metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
+	    			
+	    			getLogger().warn("3.2");
+
+	    			Integer metaInfoContentId = null;
+	    			
+	    			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId(), db);
+	    			getLogger().warn("3.3");
+	    			Iterator serviceBindingIterator = serviceBindings.iterator();
+	    			while(serviceBindingIterator.hasNext())
+	    			{
+	    				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
+	    				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+	    				{
+	    	    			getLogger().warn("3.4");
+	    					List boundContents = ContentController.getInTransactionBoundContents(db, serviceBindingVO.getServiceBindingId()); 			
+	    	    			getLogger().warn("3.5");
+	    					if(boundContents.size() > 0)
+	    	    			{
+	    	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
+	    	    				metaInfoContentId = contentVO.getId();
+	    	    				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
+	    	    				if(contentVersionVO != null && contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+	    	    					isMetaInfoInWorkingState = true;
+	
+	    	    				break;
+	    	    			}                					
+	    				}
+	    			}
+	
+	    			if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
+	    			    SiteNodeController.getController().setMetaInfoContentId(this.siteNodeVO.getId(), metaInfoContentId, db);
+	    			    
+	    			if(isMetaInfoInWorkingState)
+	    			{
+	    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8");
+	    			    url = this.getResponse().encodeURL(url);
+	    				this.getResponse().sendRedirect(url);
+	    				result = NONE;
+	    			}
+	    			else
+	    				result = "success";
+		            
+	    			//if(this.repositoryId == null)
+		            //    this.repositoryId = contentVO.getRepositoryId();
+		            
+		            //this.languageId = getMasterLanguageVO().getId();
+		            //return "viewVersion";
+		        }
+		        else
+		        {
+		            this.initializeSiteNodeCover(getSiteNodeId(), db);
+		            
+		            result = "success";
+		        }
+			}
+			else
+			{
+				result = "blank";
+			}
+	        
+	        commitTransaction(db);
+	    }
+		catch(Exception e)
+		{
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
 		}
-		else
-			return "blank";
+		
+		return result;
     }
     
     public String doChangeState() throws Exception
     {
     	getLogger().info("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
-    	SiteNodeVersionController.getController().updateStateId(this.siteNodeVersionVO.getSiteNodeVersionId(), getStateId(), this.siteNodeVersionVO.getVersionComment(), this.getInfoGluePrincipal(), this.getSiteNodeId());
-    	this.initialize(getSiteNodeId());
-        return "success";
+
+    	Database db = CastorDatabaseService.getDatabase();
+		
+		beginTransaction(db);
+
+		try
+		{
+			SiteNodeVersionController.getController().updateStateId(this.siteNodeVersionVO.getSiteNodeVersionId(), getStateId(), this.siteNodeVersionVO.getVersionComment(), this.getInfoGluePrincipal(), this.getSiteNodeId());
+			this.initialize(getSiteNodeId(), db);
+
+			commitTransaction(db);
+	    }
+		catch(Exception e)
+		{
+			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+        
+		return "success";
     }
         
     public String doCommentVersion() throws Exception
@@ -588,7 +698,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     
     public EventVO getSiteNodeVersionEvent(Integer siteNodeVersionId)
 	{
-		EventVO eventVO = null;
+    	EventVO eventVO = null;
+    	
 		try
 		{
 			List events = EventController.getEventVOListForEntity(SiteNodeVersion.class.getName(), siteNodeVersionId);
@@ -599,7 +710,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		{
 			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
-		
+
 		return eventVO;
 	}
 

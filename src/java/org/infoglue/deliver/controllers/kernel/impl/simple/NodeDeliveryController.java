@@ -191,16 +191,23 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ServiceDefinitionVO getInheritedServiceDefinition(List qualifyerList, Integer siteNodeId, AvailableServiceBindingVO availableServiceBindingVO, Database db, boolean inheritParentBindings) throws SystemException, Exception
 	{
+		//getLogger().warn("1");
 		getLogger().info("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
 		ServiceDefinitionVO serviceDefinitionVO = null;
-		
+
+		//getLogger().warn("2");
+
 		//SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		getLogger().info("Loaded siteNode " + siteNode.getName());
-		
+
+		//getLogger().warn("3");
+
 		//serviceDefinitionVO = getServiceDefinitionVO(siteNode, availableServiceBindingVO, db);
 		serviceDefinitionVO = getServiceDefinitionVO(qualifyerList, siteNode, availableServiceBindingVO, db);
-		
+
+		//getLogger().warn("4");
+
 		getLogger().info("Loaded serviceDefinitionVO " + serviceDefinitionVO);
 		
 		if(serviceDefinitionVO == null)
@@ -216,7 +223,7 @@ public class NodeDeliveryController extends BaseDeliveryController
         	}
 		}
 		
-		try{ throw new Exception("APA"); } catch(Exception e){e.printStackTrace();}
+		//try{ throw new Exception("APA"); } catch(Exception e){e.printStackTrace();}
 		
 		getLogger().info("Loaded serviceDefinitionVO end...");
 		
@@ -291,6 +298,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			    object = new NullObject();
 			*/
 			
+			//getLogger().warn("3.1");
+
 		    OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.siteNodeVersion.owningSiteNode = $1 AND sb.availableServiceBinding = $2 AND sb.siteNodeVersion.isActive = $3 AND sb.siteNodeVersion.stateId >= $4 order by sb.siteNodeVersion.siteNodeVersionId DESC");
 			oql.bind(siteNode);
 			oql.bind(availableServiceBindingVO.getId());
@@ -298,11 +307,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 			oql.bind(getOperatingMode());
 			
 	    	QueryResults results = oql.execute(Database.ReadOnly);
-			
+
+	    	//getLogger().warn("3.2");
+
 			if (results.hasMore()) 
 	        {
 			    ServiceBinding serviceBinding = (ServiceBinding)results.next();
-		        //serviceBindingVO = serviceBinding.getValueObject();
+			    //getLogger().warn("3.3");
+
+			    //serviceBindingVO = serviceBinding.getValueObject();
 		        serviceDefinitionVO = serviceBinding.getServiceDefinition().getValueObject();
 		        Collection qualifyers = serviceBinding.getBindingQualifyers();
 				
@@ -1530,7 +1543,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public List getChildSiteNodes(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
-    	logger.warn("getChildSiteNodes:" + siteNodeId);
+		//logger.warn("getChildSiteNodes:" + siteNodeId);
 
     	if(siteNodeId == null)
 		{
@@ -1564,7 +1577,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			CacheController.cacheObject("childSiteNodesCache", key, siteNodeVOList);
 		}
 
-    	logger.warn("getChildSiteNodes end:" + siteNodeId);
+		//logger.warn("getChildSiteNodes end:" + siteNodeId);
 
 		return siteNodeVOList;	
 	}
