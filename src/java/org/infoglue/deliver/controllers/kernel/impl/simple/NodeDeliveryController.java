@@ -40,6 +40,7 @@ import org.infoglue.cms.services.*;
 import org.infoglue.cms.util.*;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
@@ -951,41 +952,56 @@ public class NodeDeliveryController extends BaseDeliveryController
 			
 			getLogger().info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
 
-		    AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
-        
-		    List qualifyerList = new ArrayList();
-	    	ServiceDefinitionVO serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, siteNodeId, availableServiceBindingVO, db, inheritParentBindings);
-			if(serviceDefinitionVO != null)
+			Integer metaInfoContentId = null;
+			if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
 			{
-				String serviceClassName = serviceDefinitionVO.getClassName();
-				BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
-    		 
-				HashMap arguments = new HashMap();
-				arguments.put("method", "selectContentListOnIdList");
-        		
-				arguments.put("arguments", qualifyerList);
-				
-				List contents = service.selectMatchingEntities(arguments, db);
-				
-				getLogger().info("Found bound contents:" + contents.size());	        		
-				if(contents != null)
+				SiteNode siteNode = getSiteNode(db, siteNodeId);
+				metaInfoContentId = siteNode.getMetaInfoContentId();
+			}
+			
+			if(metaInfoContentId != null && metaInfoContentId.intValue() > -1)
+			{
+				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(db, metaInfoContentId, deliveryContext);
+				boundContentVOList.add(contentVO);    
+			}
+			else
+			{
+				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
+	        
+			    List qualifyerList = new ArrayList();
+		    	ServiceDefinitionVO serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, siteNodeId, availableServiceBindingVO, db, inheritParentBindings);
+				if(serviceDefinitionVO != null)
 				{
-					Iterator i = contents.iterator();
-					while(i.hasNext())
+					String serviceClassName = serviceDefinitionVO.getClassName();
+					BaseService service = (BaseService)Class.forName(serviceClassName).newInstance();
+	    		 
+					HashMap arguments = new HashMap();
+					arguments.put("method", "selectContentListOnIdList");
+	        		
+					arguments.put("arguments", qualifyerList);
+					
+					List contents = service.selectMatchingEntities(arguments, db);
+					
+					getLogger().info("Found bound contents:" + contents.size());	        		
+					if(contents != null)
 					{
-						ContentVO candidate = (ContentVO)i.next();
-						getLogger().info("candidate:" + candidate.getName());
-						//Checking to see that now is between the contents publish and expire-date. 
-						//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
-						//	boundContentVOList.add(candidate);        		
-						Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
-						
-						getLogger().info("candidateContent:" + candidateContent.getName());
-						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
+						Iterator i = contents.iterator();
+						while(i.hasNext())
 						{
-							deliveryContext.addUsedContent("content_" + candidate.getId());
-
-						    boundContentVOList.add(candidate);    
+							ContentVO candidate = (ContentVO)i.next();
+							getLogger().info("candidate:" + candidate.getName());
+							//Checking to see that now is between the contents publish and expire-date. 
+							//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
+							//	boundContentVOList.add(candidate);        		
+							Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
+							
+							getLogger().info("candidateContent:" + candidateContent.getName());
+							if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
+							{
+								deliveryContext.addUsedContent("content_" + candidate.getId());
+	
+							    boundContentVOList.add(candidate);    
+							}
 						}
 					}
 				}

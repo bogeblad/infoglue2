@@ -88,7 +88,9 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
             {
                 getLogger().info("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
             }
-			
+		
+			//try{ throw new Exception("Hepp1"); }catch(Exception e){e.printStackTrace();}
+
 			CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);
 		}
 		
