@@ -471,7 +471,7 @@ public class CacheController extends Thread
 
 				if(clear)
 				{	
-				    System.out.println("clearing:" + e.getKey());
+				    //System.out.println("clearing:" + e.getKey());
 				    logger.info("clearing:" + e.getKey());
 					Object object = e.getValue();
 					if(object instanceof Map)

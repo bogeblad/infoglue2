@@ -231,15 +231,9 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
 		try
 		{
-			getLogger().warn("1");
-			
-	        if(getSiteNodeId() != null)
+			if(getSiteNodeId() != null)
 			{	
-	        	getLogger().warn("2");
-				
 	        	this.initialize(getSiteNodeId(), db);
-
-	        	getLogger().warn("3");
 
 	            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVO.getSiteNodeTypeDefinitionId() != null && this.siteNodeVersionVO.getStateId().intValue() == SiteNodeVersionVO.WORKING_STATE.intValue() && getShowComponentsFirst().equalsIgnoreCase("true"))
 		        {
@@ -247,28 +241,21 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId, db);
 	    			Integer languageId = masterLanguageVO.getLanguageId();
 
-		        	getLogger().warn("3.1");
-
 	    			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
 	    			Integer metaInfoAvailableServiceBindingId = null;
 	    			if(availableServiceBindingVO != null)
 	    			    metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
 	    			
-	    			getLogger().warn("3.2");
-
 	    			Integer metaInfoContentId = null;
 	    			
 	    			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId(), db);
-	    			getLogger().warn("3.3");
 	    			Iterator serviceBindingIterator = serviceBindings.iterator();
 	    			while(serviceBindingIterator.hasNext())
 	    			{
 	    				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
 	    				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
 	    				{
-	    	    			getLogger().warn("3.4");
 	    					List boundContents = ContentController.getInTransactionBoundContents(db, serviceBindingVO.getServiceBindingId()); 			
-	    	    			getLogger().warn("3.5");
 	    					if(boundContents.size() > 0)
 	    	    			{
 	    	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
