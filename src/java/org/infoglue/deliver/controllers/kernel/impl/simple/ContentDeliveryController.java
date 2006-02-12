@@ -164,7 +164,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			{
 				contentVersionVO = contentVersion.getValueObject();
 				
-				CacheController.cacheObjectInAdvancedCache("contentVersionCache", contentVersionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId()}, true);
+				CacheController.cacheObjectInAdvancedCache("contentVersionCache", contentVersionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 			}
     	
         }
@@ -183,6 +183,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	private ContentVersion getContentVersion(Integer siteNodeId, Integer contentId, Integer languageId, Database db, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
+		if(contentId == null || contentId.intValue() < 1)
+			return null;
+		
 		ContentVersion contentVersion = null;
 		
 		MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
@@ -283,7 +286,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	contentVersion = (ContentVersion)results.next();
 	        	getLogger().info("found one:" + contentVersion.getId());
 
-				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId()}, true);
+				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId(), "content_" + contentVersion.getValueObject().getContentId()}, true);
 	        }  
 			
 		}
@@ -329,10 +332,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(attribute != null)
 		{
 			//getLogger().info("There was an cached content attribute:" + attribute);
+			//if(contentId != null && contentId.intValue() == 3135)
+			//	System.out.println("There was an cached content attribute:" + attribute);
 		}
 		else
 		{
-        	ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
+			//if(contentId != null && contentId.intValue() == 3135)
+			//	System.out.println("No cached attribute");
+
+			ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
     	
         	if (contentVersionVO != null) 
 			{
@@ -343,9 +351,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			else
 				attribute = "";
 
-			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId}, true);
+			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
 			if(contentVersionId != null)
-			    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId}, true);
+			    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
 		}
 		
 		//getLogger().info("Adding contentVersion:" + contentVersionId);

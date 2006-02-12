@@ -31,7 +31,9 @@ import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.*;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -156,6 +158,13 @@ public class CacheController extends Thread
 	        eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
 	    }
 	    
+	    /*
+	    System.out.println("Putting " + cacheName + " with key: " + key + " in relation to:");
+	    for(int i=0; i<groups.length; i++)
+	    {
+	    	System.out.println("group:" + groups[i]);
+	    }
+	    */
 	    /*
 	    logger.info("Putting " + cacheName + " with key: " + key + " in relation to:");
 	    for(int i=0; i<groups.length; i++)
@@ -492,16 +501,31 @@ public class CacheController extends Thread
 				    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
 				    		 
 				    		cacheInstance.flushGroup("contentVersion_" + entityId);
-					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+				    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 					    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
 					    	//System.out.println("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
+
+					    	try
+					    	{
+						    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
+					    		if(contentVersionVO != null)
+					    		{
+					    			cacheInstance.flushGroup("content_" + contentVersionVO.getContentId());
+					    			//System.out.println("also clearing " + e.getKey() + " with group " + "content_" + contentVersionVO.getContentId());
+					    		}
+					    	}
+					    	catch(SystemException se)
+					    	{
+					    		logger.info("Missing content version: " + se.getMessage());
+					    	}
 					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("Content") > 0 && useSelectivePageCacheUpdate)
 					    {
 					    	cacheInstance.flushGroup("content_" + entityId);
 					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 					    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);
-					    }
+					    	//System.out.println("clearing " + e.getKey() + " with group " + "content_" + entityId);
+						}
 					    else
 					    {
 							cacheInstance.flushAll();

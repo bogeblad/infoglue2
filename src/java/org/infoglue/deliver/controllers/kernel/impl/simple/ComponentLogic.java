@@ -24,9 +24,12 @@
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.*;
 import org.infoglue.cms.entities.structure.*;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
@@ -38,7 +41,6 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Support;
 
 import org.w3c.dom.*;
-import org.w3c.dom.Document;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -1142,7 +1144,8 @@ public class ComponentLogic
 					    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
 					    
 					    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
-						CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId}, true);
+					    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+						CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
 			        }
 				}			
 				
@@ -1393,7 +1396,12 @@ public class ComponentLogic
 			    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
 			    
 			    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
-				CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId}, true);
+			    System.out.println("contentVersionId:" + contentVersionId);
+			    if(contentVersionId != null)
+			    {
+				    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+					CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
+			    }
 	        }
 
 		}
@@ -1540,8 +1548,13 @@ public class ComponentLogic
 	
 		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
 		if(usedContentVersionId != null && usedContentVersionId.size() > 0)
-			CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, (Integer)usedContentVersionId.get(0), new String[]{"contentVersion_" + usedContentVersionId.get(0)}, true);
-
+		{
+			Integer tempContentVersionId = (Integer)usedContentVersionId.get(0);
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(tempContentVersionId, this.templateController.getDatabase());
+			System.out.println("contentVersion:" + contentVersion.getValueObject().getId());
+			CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, tempContentVersionId, new String[]{"contentVersion_" + tempContentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
+		}
+		
 		return pageComponentsString;
 	}
 
