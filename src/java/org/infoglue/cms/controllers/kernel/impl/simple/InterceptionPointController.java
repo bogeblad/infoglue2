@@ -258,7 +258,7 @@ public class InterceptionPointController extends BaseController
 					interceptionPointVO = interceptorPoint.getValueObject();
 												 
 					CacheController.cacheObject("interceptionPointCache", key, interceptionPointVO);				
-				    System.out.println("Caching interceptionPointVO:" + key + ":" + interceptionPointVO.getName());
+				    //System.out.println("Caching interceptionPointVO:" + key + ":" + interceptionPointVO.getName());
 				}
 				else
 				{	

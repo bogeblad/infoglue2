@@ -31,6 +31,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.util.XMLHelper;
@@ -42,7 +43,6 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryContr
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 
 import org.w3c.dom.*;
-import org.w3c.dom.Document;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -87,6 +87,15 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
 	private void initialize() throws Exception
 	{
+		SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), this.siteNodeId);
+		getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
+		if(siteNodeVersionVO.getStateId().intValue() != SiteNodeVersionVO.WORKING_STATE.intValue())
+		{
+			try{throw new Exception("WHAT");}catch(Exception e){e.printStackTrace();}
+	    	List events = new ArrayList();
+			SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Edit on sight editing", true, this.getInfoGluePrincipal(), this.siteNodeId, events);
+		}
+		
 		Integer currentRepositoryId = SiteNodeController.getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
 		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);		
 		if(filterRepositoryId == null)

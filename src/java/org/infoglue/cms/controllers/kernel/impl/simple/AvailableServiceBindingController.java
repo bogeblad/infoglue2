@@ -140,8 +140,6 @@ public class AvailableServiceBindingController extends BaseController
     
 	public AvailableServiceBindingVO getAvailableServiceBindingVOWithName(String name) throws SystemException, Bug
 	{
-	    System.out.println("getAvailableServiceBindingVOWithName:" + name);
-		
 	    String key = "" + name;
 		getLogger().info("key:" + key);
 		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
@@ -175,8 +173,6 @@ public class AvailableServiceBindingController extends BaseController
 		
 		}
 		
-	    System.out.println("getAvailableServiceBindingVOWithName end:::");
-
 		return availableServiceBindingVO;
 	}
 
@@ -190,8 +186,6 @@ public class AvailableServiceBindingController extends BaseController
     
 	public AvailableServiceBindingVO getAvailableServiceBindingVOWithName(String name, Database db) throws SystemException, Bug
 	{
-	    System.out.println("getAvailableServiceBindingVOWithName:" + name);
-		
 	    String key = "" + name;
 		getLogger().info("key:" + key);
 		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
@@ -209,8 +203,6 @@ public class AvailableServiceBindingController extends BaseController
 			CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);
 		}
 		
-	    System.out.println("getAvailableServiceBindingVOWithName end:::");
-
 		return availableServiceBindingVO;
 	}
 
@@ -254,7 +246,9 @@ public class AvailableServiceBindingController extends BaseController
 		{
 			throw new SystemException("An error occurred when we tried to fetch a named AvailableServiceBinding. Reason:" + e.getMessage(), e);    
 		}
-		
+
+		//try{ throw new Exception("Hepp1"); }catch(Exception e){e.printStackTrace();}
+
 		return availableServiceBinding;		
 	}
 	
