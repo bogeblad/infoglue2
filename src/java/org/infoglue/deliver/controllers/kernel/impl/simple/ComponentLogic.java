@@ -1144,8 +1144,11 @@ public class ComponentLogic
 					    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
 					    
 					    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
-					    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
-						CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
+					    if(contentVersionId != null)
+					    {
+						    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+							CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
+					    }
 			        }
 				}			
 				
