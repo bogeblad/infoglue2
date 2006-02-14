@@ -47,6 +47,7 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +114,40 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId, db);
 		getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
+		
+	    if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
+	    {
+	        boolean hadMetaInfo = false;
+	        
+			AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, false);
+			
+			Collection serviceBindings = SiteNodeVersionController.getServiceBindningList(this.siteNodeVersionVO.getId(), db);
+			Iterator serviceBindingIterator = serviceBindings.iterator();
+			while(serviceBindingIterator.hasNext())
+			{
+				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+				if(serviceBinding.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBinding.getAvailableServiceBindingId().intValue())
+				{
+					List boundContents = ContentController.getBoundContents(db, serviceBinding.getServiceBindingId()); 			
+					if(boundContents.size() > 0)
+					{
+						ContentVO contentVO = (ContentVO)boundContents.get(0);
+						hadMetaInfo = true;
+						if(siteNodeVO.getMetaInfoContentId() == null || siteNodeVO.getMetaInfoContentId().intValue() == -1)
+						    SiteNodeController.getController().setMetaInfoContentId(siteNodeVO.getId(), contentVO.getContentId(), db);
+						
+						break;
+					}						
+				}
+			}
+
+    		if(!hadMetaInfo)
+    		{
+    		    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(this.siteNodeVO.getId(), db);
+    		    SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, siteNode.getRepository().getId(), this.getInfoGluePrincipal(), null).getValueObject();
+    		}
+	    }
+
 		this.repositoryId = this.siteNodeVO.getRepositoryId();
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
 		

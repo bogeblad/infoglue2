@@ -343,6 +343,12 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	        {
 	            List siteNodes = SiteNodeController.getController().getSiteNodesWithoutMetaInfoContentId(db);
 	            Iterator siteNodesIterator = siteNodes.iterator();
+	            
+	            AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
+    			Integer metaInfoAvailableServiceBindingId = null;
+    			if(availableServiceBinding != null)
+    			    metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
+	            
 	            while(siteNodesIterator.hasNext())
 	            {
 	                SiteNode siteNode = (SiteNode)siteNodesIterator.next(); 
@@ -352,15 +358,12 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	                    Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNode.getRepository().getId());
 		    			Integer languageId = masterLanguage.getLanguageId();
 		    			
-		    			AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
-		    			Integer metaInfoAvailableServiceBindingId = null;
-		    			if(availableServiceBinding != null)
-		    			    metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
-		    			
 		    			Integer metaInfoContentId = null;
 		    			
 		    			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNode.getId());
-		
+		    			
+		    			boolean hasMetaInfo = false;
+		    			
 		    			Collection serviceBindings = siteNodeVersion.getServiceBindings();
 		    			Iterator serviceBindingIterator = serviceBindings.iterator();
 		    			while(serviceBindingIterator.hasNext())
@@ -373,10 +376,21 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 		    	    			{
 		    	    				ContentVO content = (ContentVO)boundContents.get(0);
 		    	    				metaInfoContentId = content.getId();
+
+		    	    				hasMetaInfo = true;
+		    	    				
+		    	    				break;
 		     	    			}                					
 		    				}
 		    			}
 	    			
+		    			if(!hasMetaInfo)
+		    			{
+		        		    //System.out.println("Creating a new meta info for " + siteNode.getName());
+		        		    ContentVO contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, siteNode.getRepository().getId(), this.getInfoGluePrincipal(), null).getValueObject();
+		        		    metaInfoContentId = contentVO.getId(); 
+		    			}
+		    			    
 	    			    siteNode.setMetaInfoContentId(metaInfoContentId);
 	                }
 	            }

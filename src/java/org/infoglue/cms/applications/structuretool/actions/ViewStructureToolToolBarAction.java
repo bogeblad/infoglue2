@@ -39,6 +39,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 
@@ -67,7 +68,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	private Integer siteNodeVersionId = null;
 	private Integer lastPublishedSiteNodeVersionId = null;
 	private Integer metaInfoAvailableServiceBindingId = null;
-	private Integer serviceBindingId = null;
+	//private Integer serviceBindingId = null;
 	private SiteNodeVersionVO siteNodeVersionVO = null;
 	
 	/**
@@ -83,6 +84,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	    	{
 				this.siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
 				
+				/*
 				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
 				if(availableServiceBindingVO != null)
 					this.metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
@@ -98,12 +100,14 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 						break;
 					}
 				}
+				*/
 			}
 			else if(siteNodeId != null)
 			{
 				this.siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(siteNodeId);
 				this.siteNodeVersionId = this.siteNodeVersionVO.getSiteNodeVersionId();
 				
+				/*
 				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
 				if(availableServiceBindingVO != null)
 					this.metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
@@ -118,7 +122,8 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 						this.serviceBindingId = serviceBindingVO.getServiceBindingId();
 						break;
 					}
-				}		    
+				}	
+				*/	    
 			}
 	    }
 	    catch(Exception e)
@@ -303,8 +308,9 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		if(!hasPublishedVersion())
 		    buttons.add(new ImageButton(this.getCMSBaseUrl() + "/Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
 		
-		String serviceBindingIdString = this.serviceBindingId == null ? "" : this.serviceBindingId.toString();
-		buttons.add(new ImageButton(true, "javascript:openPopup('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "&availableServiceBindingId=" + this.metaInfoAvailableServiceBindingId + "&serviceBindingId=" + serviceBindingIdString + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
+		//String serviceBindingIdString = this.serviceBindingId == null ? "" : this.serviceBindingId.toString();
+		//buttons.add(new ImageButton(true, "javascript:openPopup('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "&availableServiceBindingId=" + this.metaInfoAvailableServiceBindingId + "&serviceBindingId=" + serviceBindingIdString + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
+		buttons.add(new ImageButton(true, "javascript:openPopup('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
 
 		//buttons.add(new ImageButton(true, "javascript:openPopup('" + CmsPropertyHandler.getProperty("previewDeliveryUrl") + "?siteNodeId=" + this.siteNodeId + "', 'SiteNode', 'width=800,height=600,resizable=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode"));
 		buttons.add(getPreviewButtons());
@@ -409,6 +415,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
 			Integer languageId = masterLanguageVO.getLanguageId();
 			
+			/*
 			if(serviceBindingId != null)
 			{
 				List boundContents = ContentController.getBoundContents(serviceBindingId); 			
@@ -420,6 +427,12 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 						isMetaInfoInWorkingState = true;
 				}
 			}
+			*/
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
+			if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+				isMetaInfoInWorkingState = true;
+	
 			
 			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
@@ -441,7 +454,8 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		    boolean isMetaInfoInWorkingState = false;
 			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
 			Integer languageId = masterLanguageVO.getLanguageId();
-			
+
+			/*
 			if(serviceBindingId != null)
 			{
 				List boundContents = ContentController.getBoundContents(serviceBindingId); 			
@@ -453,6 +467,13 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 						isMetaInfoInWorkingState = true;
 				}
 			}	
+			*/
+			
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
+			if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+				isMetaInfoInWorkingState = true;
+
 
 			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
@@ -482,7 +503,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", "UTF-8"), "UTF-8");
 		return new ImageButton(this.getCMSBaseUrl() + "/ViewAccessRights.action?interceptionPointCategory=SiteNodeVersion&extraParameters=" + this.siteNodeVersionId +"&colorScheme=StructureTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeAccessRights"), "Site Node Access Rights");
 	}
-
+/*
 	public Integer getServiceBindingId()
 	{
 		return serviceBindingId;
@@ -492,5 +513,5 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	{
 		serviceBindingId = integer;
 	}
-
+*/
 }

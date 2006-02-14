@@ -52,7 +52,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 {
     private Integer siteNodeVersionId;
     private Integer repositoryId;
-    private Integer availableServiceBindingId;
+    //private Integer availableServiceBindingId;
     private Integer serviceDefinitionId;
     private Integer bindingTypeId;
     private ConstraintExceptionBuffer ceb;
@@ -65,9 +65,9 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 	private Integer languageId = null;
 	private Integer metaInfoContentTypeDefinitionId = null;
 	
-   	private ServiceBindingVO serviceBindingVO = null;
+   	//private ServiceBindingVO serviceBindingVO = null;
    
-  
+  /*
   	public ViewAndCreateContentForServiceBindingAction()
 	{
 		this(new ServiceBindingVO());
@@ -78,7 +78,8 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		this.serviceBindingVO = serviceBindingVO;
 		this.ceb = new ConstraintExceptionBuffer();			
 	}	
-
+	*/
+	
 	public void setSiteNodeVersionId(Integer siteNodeVersionId)
 	{
 		this.siteNodeVersionId = siteNodeVersionId;
@@ -89,16 +90,18 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		this.repositoryId = repositoryId;
 	}
 
+	/*
 	public void setAvailableServiceBindingId(Integer availableServiceBindingId)
 	{
 		this.availableServiceBindingId = availableServiceBindingId;
 	}
+	*/
 
 	public void setServiceDefinitionId(Integer serviceDefinitionId)
 	{
 		this.serviceDefinitionId = serviceDefinitionId;
 	}
-
+/*
 	public void setBindingTypeId(Integer bindingTypeId)
 	{
 		this.serviceBindingVO.setBindingTypeId(bindingTypeId);
@@ -108,7 +111,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 	{
 		this.serviceBindingVO.setPath(path);
 	}
-	
+*/	
 	public Integer getSiteNodeVersionId()
 	{
 		return this.siteNodeVersionId;
@@ -129,10 +132,12 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		return this.repositoryId;
 	}
 
+	/*
 	public Integer getAvailableServiceBindingId()
 	{
 		return this.availableServiceBindingId;
 	}
+	*/
     
 	public Integer getServiceDefinitionId()
 	{
@@ -144,11 +149,12 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		return this.bindingTypeId;
 	}
 
+	/*
 	public void setServiceBindingId(Integer serviceBindingId)
 	{
 		this.serviceBindingVO.setServiceBindingId(serviceBindingId);
 	}
-
+*/
 	public ServiceDefinitionVO getSingleServiceDefinitionVO()
 	{
 		return this.singleServiceDefinitionVO;
@@ -198,9 +204,17 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
             
             if(metaInfoContent == null)
             {
-	    		boolean hadMetaInfo = false;
+                throw new Exception("The site node must have a meta information bound. Please run the appropriate scripts");
+            } 
+            else
+            {
+                this.contentVO = metaInfoContent.getValueObject();
+            }
+
+	    		/*
+                boolean hadMetaInfo = false;
 	    		if(this.serviceBindingVO.getId() == null)
-	        	{
+	    		{
 	    			AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, false);
 	    			
 	    			Collection serviceBindings = SiteNodeVersionController.getServiceBindningList(this.siteNodeVersionId, db);
@@ -247,6 +261,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
             {
                 this.contentVO = metaInfoContent.getValueObject();
             }
+            */
             
             this.languageId = getInitialLanguageVO(this.contentVO.getId()).getId();
             
