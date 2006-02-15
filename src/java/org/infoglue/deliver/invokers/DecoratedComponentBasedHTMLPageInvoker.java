@@ -1584,7 +1584,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					{		
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property2");
-						System.out.println("value0:" + value);
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}
@@ -1592,7 +1591,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					{		
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property2");
-						System.out.println("value0:" + value);
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}

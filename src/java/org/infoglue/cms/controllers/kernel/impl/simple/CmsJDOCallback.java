@@ -48,6 +48,7 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
@@ -163,6 +164,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
 			{
 				CacheController.clearCache("workflowCache");
+			}
+			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
+			{
+				CacheController.clearCache("principalCache");
 			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
@@ -294,6 +299,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("workflowCache");
 			}
+			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
+			{
+				CacheController.clearCache("principalCache");
+			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
 				CacheController.clearCache("groupListCache");
@@ -417,6 +426,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
 			{
 				CacheController.clearCache("workflowCache");
+			}
+			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
+			{
+				CacheController.clearCache("principalCache");
 			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
