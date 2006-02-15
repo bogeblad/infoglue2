@@ -146,6 +146,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "externalThumbnailGeneration");
 	    populate(ps, "URIEncoding");
 	    populate(ps, "workflowEncoding");
+	    populate(ps, "formsEncoding");
 	    populate(ps, "useShortTableNames");
 	    populate(ps, "logDatabaseMessages");
 	    populate(ps, "statistics.enabled");

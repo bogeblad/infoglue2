@@ -138,6 +138,9 @@
 	<tr>
 		<td>#editField("ServerNode.property.workflowEncoding" "workflowEncoding" "$this.getPropertyValue('workflowEncoding')" "51")</td>
 	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.formsEncoding" "formsEncoding" "$this.getPropertyValue('formsEncoding')" "51")</td>
+	</tr>
 
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.databaseSettings.label")</td>
