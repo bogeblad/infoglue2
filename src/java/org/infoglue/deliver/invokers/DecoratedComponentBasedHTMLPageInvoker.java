@@ -39,6 +39,7 @@ import org.infoglue.cms.io.FileHelper;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentBinding;
 import org.infoglue.deliver.applications.databeans.ComponentProperty;
+import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 import org.infoglue.deliver.applications.databeans.ComponentTask;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
@@ -813,6 +814,64 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				if(hasAccessToProperty)
 				    propertyIndex++;
 			}
+			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTAREA))
+			{
+				sb.append("		<tr class=\"igtr\">");
+				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\"></td>");
+				
+				System.out.println("value2:" + componentProperty.getValue());
+
+				if(hasAccessToProperty)
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><textarea class=\"propertytextarea\" name=\"" + componentProperty.getName() + "\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea></td>");
+				else
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getValue() + "</td>");
+	
+				if(hasAccessToProperty)
+					sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
+				else
+					sb.append("			<td class=\"igtd\" width=\"16\"></td>");
+				
+				sb.append("			<!--<td>&nbsp;</td>-->");
+				sb.append("		</tr>");
+				
+				if(hasAccessToProperty)
+				    propertyIndex++;
+			}
+			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.SELECTFIELD))
+			{
+				sb.append("		<tr class=\"igtr\">");
+				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\"></td>");
+				
+				if(hasAccessToProperty)
+				{
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><select class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\">");
+					
+					Iterator optionsIterator = componentProperty.getOptions().iterator();
+					while(optionsIterator.hasNext())
+					{
+					    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
+					    boolean isSame = componentProperty.getValue().equals(option.getValue());
+					    sb.append("<option value=\"" + option.getValue() + "\" " + (isSame ? " selected=\"1\"" : "") + "\">" + option.getName() + "</option>");
+					}
+					
+				    sb.append("</td>");
+				}
+				else
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getValue() + "</td>");
+	
+				if(hasAccessToProperty)
+					sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
+				else
+					sb.append("			<td class=\"igtd\" width=\"16\"></td>");
+				
+				sb.append("			<!--<td>&nbsp;</td>-->");
+				sb.append("		</tr>");
+				
+				if(hasAccessToProperty)
+				    propertyIndex++;
+			}
 		}
 		
 		timer.printElapsedTime("getComponentPropertiesDiv: 5");
@@ -1525,7 +1584,35 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					{		
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property2");
-
+						System.out.println("value0:" + value);
+						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						timer.printElapsedTime("Set property2");
+						System.out.println("value0:" + value);
+						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						timer.printElapsedTime("Set property2");
+						
+						NodeList optionList = binding.getElementsByTagName("option");
+						for(int j=0; j < optionList.getLength(); j++)
+						{
+							org.w3c.dom.Element option = (org.w3c.dom.Element)optionList.item(j);
+							String optionName	= option.getAttribute("name");
+							String optionValue	= option.getAttribute("value");
+							ComponentPropertyOption cpo = new ComponentPropertyOption();
+							cpo.setName(optionName);
+							cpo.setValue(optionValue);
+							property.getOptions().add(cpo);
+						}
+						
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}

@@ -34,6 +34,8 @@ public class ComponentProperty
 {
 	public static final String BINDING 		= "binding";
 	public static final String TEXTFIELD 	= "textfield";
+	public static final String TEXTAREA 	= "textarea";
+	public static final String SELECTFIELD 	= "select";
 	
 	private Integer id;
 	private String name;
@@ -47,7 +49,9 @@ public class ComponentProperty
 	private boolean isMultipleBinding = false;
 	private String visualizingAction = null;
 	private String createAction = null;
-		
+
+	private List options = new ArrayList();
+	
 	private List contentBindings = new ArrayList();
 	private List siteNodeBindings = new ArrayList();
 		
@@ -206,7 +210,12 @@ public class ComponentProperty
         
         return sb.toString();
     }
-    
+
+    public List getOptions()
+    {
+        return options;
+    }
+
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer();

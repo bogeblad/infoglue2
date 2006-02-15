@@ -1100,7 +1100,7 @@ public class ComponentLogic
 						
 						String value = null;
 						
-						if(type.equalsIgnoreCase("textfield"))
+						if(type.equalsIgnoreCase("textfield") || type.equalsIgnoreCase("textarea") || type.equalsIgnoreCase("select"))
 						{
 						    value = propertyElement.getAttribute("path");
 	
@@ -1349,7 +1349,7 @@ public class ComponentLogic
 					
 					String value = null;
 					
-					if(type.equalsIgnoreCase("textfield"))
+					if(type.equalsIgnoreCase("textfield") || type.equalsIgnoreCase("textarea") || type.equalsIgnoreCase("select"))
 					{
 					    value = propertyElement.getAttribute("path");
 	
@@ -1362,6 +1362,7 @@ public class ComponentLogic
 					{
 					    value = getComponentPropertyValue(inheritedPageComponentsXML, componentId, languageId, name);
 					}
+					System.out.println("value:" + value);
 					
 					property = new HashMap();
 					property.put("name", name);

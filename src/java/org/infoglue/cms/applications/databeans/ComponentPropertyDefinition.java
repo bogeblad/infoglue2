@@ -33,6 +33,8 @@ public class ComponentPropertyDefinition
 {
     public final static String BINDING 		= "binding";
     public final static String TEXTFIELD 	= "textfield";
+    public final static String TEXTFAREA 	= "textarea";
+    public final static String SELECTFIELD	= "select";
     
     private String name;
     private String type;

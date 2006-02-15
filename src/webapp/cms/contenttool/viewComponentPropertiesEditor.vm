@@ -109,8 +109,12 @@
 			
 			if(componentPropertyDefinition.type == "binding")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[0].selected = 1;
-			else
+			else if(componentPropertyDefinition.type == "textfield")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[1].selected = 1;
+			else if(componentPropertyDefinition.type == "textarea")
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[2].selected = 1;
+			else
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[3].selected = 1;
 
 			if(componentPropertyDefinition.entity == "Content")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_entity.options[0].selected = 1;
@@ -366,7 +370,7 @@
 		function validateTypeChoice()
 		{
 			selectBox = document.componentPropertyDefinitionForm.componentPropertyDefinition_type;
-			if(selectBox.value == "textfield")
+			if(selectBox.value == "textfield" || selectBox.value == "textarea" || selectBox.value == "selectfield")
 			{
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
@@ -435,6 +439,8 @@
 	<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox" onchange="validateTypeChoice();">
 		<option value="binding">binding</option>
 		<option value="textfield">textfield</option>
+		<option value="textarea">textarea</option>
+		<option value="selectfield">selectfield</option>
 	</select>
 </p>
 <p id="entityParagraph" style="display: block;">
