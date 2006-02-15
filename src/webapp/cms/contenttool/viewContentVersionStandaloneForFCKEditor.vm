@@ -46,13 +46,23 @@
 #if($stateId == 1 || $stateId == 2 || $stateId == 3)
 	#set($readonly = "disabled") 
 #else
-	#set($masterContentVersionVO = $this.getMasterContentVersionVO($contentId, $repositoryId))
-	#if($masterContentVersionVO.stateId == 1 || $masterContentVersionVO.stateId == 2 || $masterContentVersionVO.stateId == 3)
-		#set($readonly = "disabled") 
+	#if($contentTypeDefinitionVO.name == "Meta info")
+		#set($masterContentVersionVO = $this.getMasterContentVersionVO($contentId, $repositoryId))
+		#if($masterContentVersionVO.stateId == 1 || $masterContentVersionVO.stateId == 2 || $masterContentVersionVO.stateId == 3)
+			#set($readonly = "disabled") 
+		#else
+			#set($readonly = "")
+		#end
 	#else
-		#set($readonly = "")
-	#end	
+		#set($latestContentVersionVO = $this.getLatestContentVersionVO($contentId, $languageId))
+		#if($latestContentVersionVO.id != $contentVersionId)
+			#set($readonly = "disabled") 
+		#else
+			#set($readonly = "")
+		#end	
+	#end
 #end
+
 
 <body class="contenttooledit" #if($closeOnLoad == "true")onload="javascript:refreshCaller();"#end onkeypress="hotKeys(event);">
 
