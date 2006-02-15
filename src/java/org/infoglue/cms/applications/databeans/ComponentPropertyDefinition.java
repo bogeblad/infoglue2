@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.applications.databeans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This bean represents a Asset Key definition. Used mostly by the content type definition editor.
  * 
@@ -42,6 +45,8 @@ public class ComponentPropertyDefinition
     private Boolean multiple;
     private String allowedContentTypeNames;
     private String description;
+    
+    private List options = new ArrayList();
 
     
     public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, String allowedContentTypeNames, String description)
@@ -83,4 +88,8 @@ public class ComponentPropertyDefinition
     {
         return description;
     }
+
+	public List getOptions() {
+		return options;
+	}
 }

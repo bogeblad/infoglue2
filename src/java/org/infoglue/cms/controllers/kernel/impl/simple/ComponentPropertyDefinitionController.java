@@ -34,6 +34,7 @@ import java.util.List;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
+import org.infoglue.cms.applications.databeans.ComponentPropertyOptionDefinition;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -106,7 +107,23 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String description				= propertyElement.getAttribute("description");
 				    				    
 				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), allowedContentTypeNames, description);
+
 				    
+					NodeList optionsNodeList = propertiesElement.getElementsByTagName("option");
+					for(int k=0; k<optionsNodeList.getLength(); k++)
+					{
+					    Node optionNode = optionsNodeList.item(k);
+					    Element optionElement = (Element)optionNode;
+					    
+					    String optionName 	= optionElement.getAttribute("name");
+					    String optionValue 	= optionElement.getAttribute("value");
+					    				    
+					    ComponentPropertyOptionDefinition cpod = new ComponentPropertyOptionDefinition(optionName, optionValue);
+					    
+					    cpd.getOptions().add(cpod);
+					}
+
+					
 				    componentPropertyDefinitions.add(cpd);
 				}
 			}

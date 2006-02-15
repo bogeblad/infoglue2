@@ -10,6 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
 	<script type="text/javascript" src="script/vector.js"></script>
 	<script type="text/javascript" src="script/componentPropertyDefinition.js"></script>
+	<script type="text/javascript" src="script/componentPropertyOptionDefinition.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
 	<script language="JavaScript"> 
@@ -40,7 +41,23 @@
 				propertyMultiple= property.getMultiple();
 				propertyDescription= property.getDescription();
 				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
-				propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "'/>";
+				if(propertyType == "selectfield")
+				{
+					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' description='" + propertyDescription + "'>";
+
+					for (var j=0; j<property.getOptions().getSize(); j++)
+					{
+						var propertyOption = property.getOptions().getElementAt(j);
+						
+						propertyOptionName 	= propertyOption.getName();
+						propertyOptionValue	= propertyOption.getValue();
+						propertiesXML += "<option name='" + propertyOptionName + "' value='" + propertyOptionValue + "'/>";
+					}
+					
+					propertiesXML += "</property>";					
+				}
+				else
+					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -96,6 +113,47 @@
 			separator.setAttribute("height", "1");
 			parent.appendChild(separator);
 		}
+
+		function initOptions(componentPropertyDefinition)
+		{
+			//alert("Initializing options...");
+			var table = document.getElementById("options")
+			var parent = table.parentNode;
+			parent.removeChild(table);
+
+			mytable = document.createElement("TABLE");
+			mytable.setAttribute("id", "options");
+			mytable.setAttribute("border", "0");
+			mytable.setAttribute("width", "100%");
+			mytable.setAttribute("cellpadding", "2");
+			mytable.setAttribute("cellspacing", "0");
+	        mytablebody = document.createElement("TBODY");
+	        for (var i=0; i<componentPropertyDefinition.getOptions().getSize(); i++)
+			{
+				var componentPropertyOptionDefinition = componentPropertyDefinition.getOptions().getElementAt(i);
+				//alert("Element:" + componentPropertyOptionDefinition.getName());
+				var myTR = document.createElement("TR");
+				var actionTD = document.createElement("TD");
+				actionTD.setAttribute("width", "50");
+				actionTD.setAttribute("valign", "top");
+				addImageLink(actionTD, "javascript:movePropertyOptionDown(" + i + ");", "images/downArrow.gif");
+				addImageLink(actionTD, "javascript:movePropertyOptionUp(" + i + ");", "images/upArrow.gif");
+				addImageLink(actionTD, "javascript:deletePropertyOption(" + i + ");", "images/delete.gif");
+			
+				myTR.appendChild(actionTD);
+			
+				addTD(myTR, componentPropertyOptionDefinition.name)
+				addTD(myTR, componentPropertyOptionDefinition.value)
+
+				var actionTD = document.createElement("TD");
+				addImageLink(actionTD, "javascript:showOption(" + itemIndex + "," + i + ");", "images/properties.gif");
+				myTR.appendChild(actionTD);
+				mytablebody.appendChild(myTR);
+			}
+			mytable.appendChild(mytablebody);
+	        parent.appendChild(mytable);
+		}
+		
 		
 		function showProperties(index)
 		{
@@ -156,6 +214,8 @@
 			
 			validateTypeChoice();
 			
+			initOptions(componentPropertyDefinition);
+			
 			componentPropertyDefinitionDiv.style.visibility = 'visible';
 		}
 
@@ -164,6 +224,26 @@
 			document.getElementById("componentPropertyDefinition").style.visibility = 'hidden';
 			drawList();
 		}
+
+		function showOption(index, oIndex)
+		{
+			itemIndex = index;
+			optionIndex = oIndex;
+			
+			componentPropertyOptionDefinitionDiv = document.getElementById("componentPropertyOptionDefinition");
+			var componentPropertyDefinition = propertyVector.getElementAt(itemIndex);
+			document.getElementById("componentPropertyOptionDefinition_name").value = componentPropertyDefinition.getOptions().getElementAt(optionIndex).getName();
+			document.getElementById("componentPropertyOptionDefinition_value").value = componentPropertyDefinition.getOptions().getElementAt(optionIndex).getValue();
+					
+			componentPropertyOptionDefinitionDiv.style.visibility = 'visible';
+		}
+
+		function hidePropertyOption()
+		{
+			document.getElementById("componentPropertyOptionDefinition").style.visibility = 'hidden';
+			drawOptionList();
+		}
+
 		
 		function updateProperties()
 		{
@@ -206,6 +286,24 @@
 			
 			hideProperties();
 		}
+
+		function updatePropertyOption()
+		{
+			//alert("Updating property option");
+			componentPropertyOptionDefinitionDiv = document.getElementById("componentPropertyOptionDefinition");
+
+			var componentPropertyDefinition = propertyVector.getElementAt(itemIndex);
+			//alert("componentPropertyDefinition:" + itemIndex + ":" + componentPropertyDefinition.getName());
+			
+			var componentPropertyOptionDefinition = componentPropertyDefinition.getOptions().getElementAt(optionIndex);
+			//alert("componentPropertyOptionDefinition:" + componentPropertyOptionDefinition.getName());
+			
+			componentPropertyOptionDefinition.setName(document.getElementById("componentPropertyOptionDefinition_name").value);
+			componentPropertyOptionDefinition.setValue(document.getElementById("componentPropertyOptionDefinition_value").value);
+
+			hidePropertyOption();
+		}
+
 
 		function showAccessRights(extraParameters)
 		{
@@ -262,6 +360,54 @@
 	        parent.appendChild(mytable);
 		}
 
+
+		/**
+		 * This method draws the list of properties.
+		 */
+		 
+		function drawOptionList()
+		{
+			//alert("Drawing list...:" + propertyVector.getSize());
+			var table = document.getElementById("options")
+			var parent = table.parentNode;
+			parent.removeChild(table);
+
+			mytable = document.createElement("TABLE");
+			mytable.setAttribute("id", "options");
+			mytable.setAttribute("border", "0");
+			mytable.setAttribute("width", "100%");
+			mytable.setAttribute("cellpadding", "2");
+			mytable.setAttribute("cellspacing", "0");
+	        mytablebody = document.createElement("TBODY");
+	        var componentPropertyDefinition = propertyVector.getElementAt(itemIndex);
+	       	//alert("componentPropertyDefinition:" + componentPropertyDefinition + ":" + itemIndex);
+	        for (var i=0; i<componentPropertyDefinition.getOptions().getSize(); i++)
+			{
+				var componentPropertyOptionDefinition = componentPropertyDefinition.getOptions().getElementAt(i);
+				//alert("Element:" + componentPropertyOptionDefinition.getName());
+				var myTR = document.createElement("TR");
+				var actionTD = document.createElement("TD");
+				actionTD.setAttribute("width", "50");
+				actionTD.setAttribute("valign", "top");
+				addImageLink(actionTD, "javascript:movePropertyOptionDown(" + i + ");", "images/downArrow.gif");
+				addImageLink(actionTD, "javascript:movePropertyOptionUp(" + i + ");", "images/upArrow.gif");
+				addImageLink(actionTD, "javascript:deletePropertyOption(" + i + ");", "images/delete.gif");
+				myTR.appendChild(actionTD);
+				
+				addTD(myTR, componentPropertyOptionDefinition.name)
+				addTD(myTR, componentPropertyOptionDefinition.value)
+
+				var actionTD = document.createElement("TD");
+				addImageLink(actionTD, "javascript:showOption(" + itemIndex + "," + i + ");", "images/properties.gif");
+				myTR.appendChild(actionTD);
+
+				mytablebody.appendChild(myTR);
+			}
+			 
+	        mytable.appendChild(mytablebody);
+	        parent.appendChild(mytable);
+		}
+
 		function addTD(tr, text)
 		{
 			var propertyTD = document.createElement("TD");
@@ -294,6 +440,7 @@
 				
 			drawList();
 		}
+
 		
 		/**
 		 * This method moves a qualifyer 1 step up in the vector.
@@ -366,18 +513,110 @@
 				drawList();
 			}
 		}
+
+
+
+
+		/**
+		 * This method removes a property option from the vector.
+		 */
+		 
+		function deletePropertyOption(index)
+		{
+			propertyVector.getElementAt(itemIndex).getOptions().removeElementAt(index);
+			drawOptionList();
+		}
+		
+		/**
+		 * This method adds a property to the vector.
+		 */
+
+		function addOption()
+		{
+			property = propertyVector.getElementAt(itemIndex);
+			propertyOption = new ComponentPropertyOptionDefinition("name", "value");
+			property.getOptions().addElement(propertyOption);
+				
+			drawOptionList();
+		}
+
+		
+		/**
+		 * This method moves a qualifyer 1 step up in the vector.
+		 */
+		 
+		function movePropertyOptionUp(index)
+		{
+			if(index > 0)
+			{
+				var property 				= propertyVector.getElementAt(itemIndex);
+				
+				var propertyOption 			= property.getOptions().getElementAt(index);
+				var previousPropertyOption 	= property.getOptions().getElementAt(index - 1);
+				
+				name 		= propertyOption.getName();
+				value		= propertyOption.getValue();
+				
+				propertyOption.setName(previousPropertyOption.getName());
+				propertyOption.setValue(previousPropertyOption.getValue());
+				
+				previousPropertyOption.setName(name);
+				previousPropertyOption.setValue(value);
+				
+				drawOptionList();
+			}			
+		}
+
+		/**
+		 * This method moves a qualifyer 1 step up in the vector.
+		 */
+		 
+		function movePropertyOptionDown(index)
+		{
+			if(index > 0)
+			{
+				var property 				= propertyVector.getElementAt(itemIndex);
+				
+				var propertyOption 			= property.getOptions().getElementAt(index);
+				var previousPropertyOption 	= property.getOptions().getElementAt(index + 1);
+				
+				name 		= propertyOption.getName();
+				value		= propertyOption.getValue();
+				
+				propertyOption.setName(previousPropertyOption.getName());
+				propertyOption.setValue(previousPropertyOption.getValue());
+				
+				previousPropertyOption.setName(name);
+				previousPropertyOption.setValue(value);
+				
+				drawOptionList();
+			}			
+		}
+
+
+
+
 		
 		function validateTypeChoice()
 		{
 			selectBox = document.componentPropertyDefinitionForm.componentPropertyDefinition_type;
-			if(selectBox.value == "textfield" || selectBox.value == "textarea" || selectBox.value == "selectfield")
+			if(selectBox.value == "textfield" || selectBox.value == "textarea")
 			{
+				document.getElementById("optionsParagraph").style.display = "none";
+				document.getElementById("entityParagraph").style.display = "none";
+				document.getElementById("multipleParagraph").style.display = "none";
+				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+			}
+			else if(selectBox.value == "selectfield")
+			{
+				document.getElementById("optionsParagraph").style.display = "block";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 			}
 			else
 			{
+				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "block";
 				document.getElementById("multipleParagraph").style.display = "block";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "block";
@@ -395,7 +634,14 @@
 				//alert("$propertyDefinition");
 				
 				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description");
+
+				#foreach($propertyOptionDefinition in $propertyDefinition.options)
+					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
+					property.getOptions().addElement(propertyOption);
+				#end
+
 				propertyVector.addElement(property);
+					
 			#end
 	
 			//alert("propertyVector" + propertyVector.getSize());
@@ -403,9 +649,6 @@
 		}
 		
 		var propertyVector = new Vector(0);
-	
-	
-		
 	
 	</script>
 	
@@ -443,6 +686,19 @@
 		<option value="selectfield">selectfield</option>
 	</select>
 </p>
+<p id="optionsParagraph" style="display: block;">
+	<b>Options:</b>
+  	<table id="optionsParent" border="0">
+  	<tr>
+  		<td>
+  			<table id="options" border="0">
+  			</table>
+		</td>
+	</tr>
+  	</table>
+  	<a href="javascript:addOption();">Add new option</a>
+</p>
+
 <p id="entityParagraph" style="display: block;">
 	<b>Entity:</b>
 	<select size="1" name="componentPropertyDefinition_entity" id="componentPropertyDefinition_entity" class="sitedropbox">
@@ -473,6 +729,32 @@
 </form>
 </div>
 </div>
+
+
+<div id="componentPropertyOptionDefinition" class="smallPropDiv" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:150px; visibility:hidden; z-index:1">
+<div id="componentPropertyOptionDefinitionHandle" class="smallPropDivHandle">
+	Edit component property option
+</div>
+<div id="componentPropertyOptionDefinitionBody" class="smallPropDivBody">	
+
+<form name="componentPropertyOptionDefinitionForm">
+<p>
+	<b>Name:</b>
+	<input type="textfield" name="componentPropertyOptionDefinition_name" id="componentPropertyOptionDefinition_name" value=""/>
+</p>
+<p>
+	<b>Value:</b>
+	<input type="textfield" name="componentPropertyOptionDefinition_value" id="componentPropertyOptionDefinition_value" value=""/>
+</p>
+<p>
+	<a href="javascript:updatePropertyOption();"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+	<a href="javascript:hideDiv('componentPropertyOptionDefinition');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+</p>
+</form>
+</div>
+</div>
+
+
 
 <table class="contenttooledit" cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>

@@ -20,13 +20,15 @@ function ComponentPropertyDefinition(name, type, entity, multiple, allowedConten
 	this.multiple					= multiple;
 	this.allowedContentTypeNames 	= allowedContentTypeNames;
 	this.description				= description;
-  
+	this.options					= new Vector(0);
+	  
   	this.getName 					= getName;
   	this.getType 					= getType;
   	this.getEntity 					= getEntity;
   	this.getMultiple				= getMultiple;
   	this.getAllowedContentTypeNames = getAllowedContentTypeNames;
 	this.getDescription				= getDescription;
+	this.getOptions					= getOptions;
 	
   	this.setName 					= setName;
   	this.setType 					= setType;
@@ -64,6 +66,11 @@ function getAllowedContentTypeNames()
 function getDescription()
 {
 	return this.description;
+}
+
+function getOptions()
+{
+	return this.options;
 }
 
 function setName(name)
