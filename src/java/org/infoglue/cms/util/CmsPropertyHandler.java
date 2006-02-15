@@ -207,6 +207,8 @@ public class CmsPropertyHandler
 			initializeProperties();
 		
 		cachedProperties.setProperty(key, value);
+		
+		CacheController.clearCache("serverNodePropertiesCache");
 	}	
 
 	/**
@@ -233,23 +235,23 @@ public class CmsPropertyHandler
 	    if(localSettingsServerNodeId != null)
 	    {
 	        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + key);
-	        System.out.println("Local value: " + value);
+	        //System.out.println("Local value: " + value);
 	        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 	        {
 	            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-		        System.out.println("Global value: " + value);
+		        //System.out.println("Global value: " + value);
 	        }
 	    }
 		else
 		{
             value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-	        System.out.println("Global value immediately: " + value);
+	        //System.out.println("Global value immediately: " + value);
 		}
 	    
 	    if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 	    {
 	        value = getProperty(key);
-	        System.out.println("Property value: " + value);
+	        //System.out.println("Property value: " + value);
 	    }
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
@@ -262,6 +264,10 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("isPageCacheOn", true);
 	}
 
+	public static String getFormsEncoding()
+	{
+	    return getServerNodeProperty("formsEncoding", true);
+	}
 	
 	public static String getPreferredLanguageCode(String userName)
 	{

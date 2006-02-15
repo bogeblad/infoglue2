@@ -24,12 +24,18 @@
 package org.infoglue.cms.util;
 
 import java.io.IOException;
+import java.util.Enumeration;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.LanguageVO;
 
 
 public class SetCharacterEncodingFilter implements Filter 
@@ -82,7 +88,27 @@ public class SetCharacterEncodingFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException 
     {
         // Conditionally select and set the character encoding to be used
-        if (ignore || (request.getCharacterEncoding() == null)) 
+        String referer = ((HttpServletRequest)request).getHeader("referer");
+        if(referer != null && referer.length() > 0 && referer.indexOf("ViewPage!renderDecoratedPage.action") > -1)
+        {
+            try
+            {
+	            int startIndex = referer.indexOf("&languageId=");
+	            if(startIndex > -1)
+	            {
+	                int endIndex = referer.indexOf("&", startIndex + 12);
+		            String languageId = referer.substring(startIndex + 12, endIndex);
+		            //System.out.println("languageId:" + languageId);
+		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
+		            request.setCharacterEncoding(languageVO.getCharset());
+	            }
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else if (ignore || (request.getCharacterEncoding() == null)) 
         {
             String encoding = selectEncoding(request);
             if (encoding != null)

@@ -617,12 +617,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		timer.printElapsedTime("After locale");
 	    
 		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
-		
+		/*
+		String formsEncoding = CmsPropertyHandler.getFormsEncoding();
+		String acceptCharset = "";
+		if(formsEncoding != null && formsEncoding.length() > 0)
+		    acceptCharset = "accept-charset=\"" + formsEncoding + "\"";
+		*/
 		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden;\">");
 		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandle\">Properties</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\">close</a></div></div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
 		
-		sb.append("	<form accept-charset=\"UTF-8\" id=\"component" + componentId + "PropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
+		//sb.append("	<form " + acceptCharset + " id=\"component" + componentId + "PropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
+		sb.append("	<form id=\"component" + componentId + "PropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
 		sb.append("		<table class=\"igPropertiesTable\" border=\"0\" cellpadding=\"4\" cellspacing=\"0\">");
 
 		sb.append("		<tr class=\"igtr\">");
