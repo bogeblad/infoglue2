@@ -67,12 +67,37 @@ public class LanguageController extends BaseController
 	/**
 	 * This method returns a specific LanguageVO object
 	 */
-	
+	/*
 	public LanguageVO getLanguageVOWithId(Integer languageId) throws SystemException, Bug
 	{
 		return (LanguageVO)getVOWithId(LanguageImpl.class, languageId);
 	} 
+	*/
+	
+	/**
+	 * This method return a LanguageVO
+	 */
+	
+	public LanguageVO getLanguageVOWithId(Integer languageId) throws SystemException, Exception
+	{
+		String key = "" + languageId;
+		getLogger().info("key:" + key);
+		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("languageCache", key);
+		if(languageVO != null)
+		{
+			getLogger().info("There was an cached languageVO:" + languageVO);
+		}
+		else
+		{
+		    languageVO = (LanguageVO)getVOWithId(LanguageImpl.class, languageId);
+		    
+			CacheController.cacheObject("languageCache", key, languageVO);				
+		}
+				
+		return languageVO;
+	}
 
+	
 	/**
 	 * This method returns a specific LanguageVO object
 	 */

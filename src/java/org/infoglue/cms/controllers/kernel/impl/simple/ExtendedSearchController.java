@@ -162,7 +162,9 @@ public class ExtendedSearchController extends BaseController
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
 			{
-				oql.bind(i.next());
+			    Object o = i.next();
+			    //System.out.println("o:" + o.toString());
+				oql.bind(o);
 			}
 			return createResults(oql.execute(Database.ReadOnly));
 		} 

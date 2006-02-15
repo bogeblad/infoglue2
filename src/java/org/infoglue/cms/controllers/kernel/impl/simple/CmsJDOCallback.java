@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
+import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
@@ -192,6 +193,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 			    CacheController.clearCache("availableServiceBindingCache");
 			}
+			else if(object.getClass().getName().equals(LanguageImpl.class.getName()))
+			{
+			    CacheController.clearCache("languageCache");
+			}
 			
     	}
     }
@@ -318,6 +323,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 			    CacheController.clearCache("availableServiceBindingCache");
 			}
+			else if(object.getClass().getName().equals(LanguageImpl.class.getName()))
+			{
+			    CacheController.clearCache("languageCache");
+			}
 
 
 
@@ -437,6 +446,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(AvailableServiceBindingImpl.class.getName()))
 			{
 			    CacheController.clearCache("availableServiceBindingCache");
+			}
+			else if(object.getClass().getName().equals(LanguageImpl.class.getName()))
+			{
+			    CacheController.clearCache("languageCache");
 			}
 
 
