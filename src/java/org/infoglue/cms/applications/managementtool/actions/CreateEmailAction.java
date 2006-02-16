@@ -60,25 +60,18 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     {
     	if(recipients != null && recipients.length() > 0 && subject != null && subject.length() > 0 && message != null && message.length() > 0)
     	{
-    		try
-    		{
-    			if(from == null  || from.length() == 0)
-    			{
-	    			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
-	    			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
-	    				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
+			if(from == null  || from.length() == 0)
+			{
+    			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+    			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
+    				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
 
-	    			from = systemEmailSender;
-    			}
-    			
-    			message = "<div>" + message.replaceAll("\n", "<br/>") + "</div>";
-    			
-    			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
-    		}
-    		catch(Exception e)
-    		{
-    			getLogger().error("The notification was not sent. Reason:" + e.getMessage(), e);
-    		}
+    			from = systemEmailSender;
+			}
+			
+			message = "<div>" + message.replaceAll("\n", "<br/>") + "</div>";
+			
+			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
     	}
     	else
     	{

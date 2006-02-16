@@ -189,6 +189,7 @@ public class MailService
 	    catch (Exception e) 
 	    {
 	        e.printStackTrace();
+	        throw new SystemException("An error occurred when we tried to send this mail:" + e.getMessage(), e);
 	    }
 	    
 	    /*
