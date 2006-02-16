@@ -10,7 +10,7 @@
 	<p>$ui.getString("tool.managementtool.createEmailComposeEmail.intro")</p>
 
 	<p>
-		<form name="mailForm" action="CreateEmail.action"> 
+		<form name="mailForm" method="POST" action="CreateEmail.action"> 
 			<input type="hidden" name="recipients" value="$usersAddresses"/>
 			#if($errorMessage != "")
 			<span style="color:red">$errorMessage</span><br/>

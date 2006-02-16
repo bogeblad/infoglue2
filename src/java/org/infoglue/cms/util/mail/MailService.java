@@ -23,12 +23,19 @@
 
 package org.infoglue.cms.util.mail;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.mail.HtmlEmail;
+import org.apache.commons.mail.SimpleEmail;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import javax.mail.*;
 import javax.activation.*;
-import javax.mail.internet.*; 
+import javax.mail.internet.*;
 
 public class MailService 
 {
@@ -62,12 +69,13 @@ public class MailService
 	    try 
 	    {
 			Transport.send(message);
-	    } 
+	    }
 	    catch(MessagingException e) 
 	    {
 	    	e.printStackTrace();
 	      	throw new SystemException("Unable to send message.", e);
 	    }
+	    
     }
 
 	/**
@@ -99,10 +107,33 @@ public class MailService
 		{
 			Transport.send(message);
 		} 
-		catch(MessagingException e) 
-		{
-			throw new SystemException("Unable to send message.", e);
-		}
+	    catch(MessagingException e) 
+	    {
+	    	e.printStackTrace();
+	      	throw new SystemException("Unable to send message.", e);
+	    }
+
+	}
+
+	
+	/**
+	 *
+	 * @param from the sender of the email.
+	 * @param to the recipient of the email.
+	 * @param subject the subject of the email.
+	 * @param content the body of the email.
+	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
+	 */
+	public void sendEmail(String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
+	{
+        String contentType = CmsPropertyHandler.getProperty("mail.contentType");
+        if(contentType == null || contentType.length() == 0)
+            contentType = "text/html";
+
+	    if(contentType.equalsIgnoreCase("text/html"))
+	    	sendHTML(from, to, bcc, subject, content, encoding);
+	    else
+	        sendPlain(from, to, bcc, subject, content, encoding);
 	}
 	
 	/**
@@ -113,21 +144,136 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void send(String from, String to, String bcc, String subject, String content, String contentType, String encoding) throws SystemException 
+	public void sendHTML(String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
 	{
+		try 
+		{
+		    HtmlEmail email = new HtmlEmail();
+		    String mailServer = CmsPropertyHandler.getProperty("mail.smtp.host");
+		    String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+		    
+		    email.setHostName(mailServer);
+
+		  	boolean needsAuthentication = false;
+		  	try 
+		  	{
+				needsAuthentication = new Boolean(CmsPropertyHandler.getProperty("mail.smtp.auth")).booleanValue();
+		  	} 
+		  	catch (Exception ex) 
+		  	{
+				needsAuthentication = false;
+		  	}
+		  	
+		  	if (needsAuthentication) 
+		  	{
+				final String userName = CmsPropertyHandler.getProperty("mail.smtp.user");
+				final String password = CmsPropertyHandler.getProperty("mail.smtp.password");
+				
+				email.setAuthentication(userName, password);
+			} 
+		    
+		    email.setBounceAddress(systemEmailSender);
+		    email.setCharset(encoding);
+		   
+		    email.addTo(to, to);
+		    email.setFrom(from, from);
+		    email.setBcc(createInternetAddressesList(bcc));
+		    email.setSubject(subject);
+		    
+		    email.setHtmlMsg(content);
+	
+		    email.setTextMsg("Your email client does not support HTML messages");
+	
+		    email.send();
+		} 
+	    catch (Exception e) 
+	    {
+	        e.printStackTrace();
+	    }
+	    
+	    /*
 		final Message message = createMessage(from, to, bcc, subject, content, contentType, encoding);
 	 
 		try 
 		{
 			Transport.send(message);
 		} 
-		catch(MessagingException e) 
-		{
-			throw new SystemException("Unable to send message.", e);
-		}
+	    catch(MessagingException e) 
+	    {
+	    	e.printStackTrace();
+	      	throw new SystemException("Unable to send message.", e);
+	    }
+	    */
 	}
 
-		
+
+	/**
+	 *
+	 * @param from the sender of the email.
+	 * @param to the recipient of the email.
+	 * @param subject the subject of the email.
+	 * @param content the body of the email.
+	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
+	 */
+	public void sendPlain(String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
+	{
+		try 
+		{
+		    SimpleEmail email = new SimpleEmail();
+		    String mailServer = CmsPropertyHandler.getProperty("mail.smtp.host");
+		    String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+		    
+		    email.setHostName(mailServer);
+
+		  	boolean needsAuthentication = false;
+		  	try 
+		  	{
+				needsAuthentication = new Boolean(CmsPropertyHandler.getProperty("mail.smtp.auth")).booleanValue();
+		  	} 
+		  	catch (Exception ex) 
+		  	{
+				needsAuthentication = false;
+		  	}
+		  	
+		  	if (needsAuthentication) 
+		  	{
+				final String userName = CmsPropertyHandler.getProperty("mail.smtp.user");
+				final String password = CmsPropertyHandler.getProperty("mail.smtp.password");
+				
+				email.setAuthentication(userName, password);
+			} 
+		    
+		    email.setBounceAddress(systemEmailSender);
+		    email.setCharset(encoding);
+		   
+		    email.addTo(to, to);
+		    email.setFrom(from, from);
+		    email.setBcc(createInternetAddressesList(bcc));
+		    email.setSubject(subject);
+		    email.setMsg(content);
+	
+		    email.send();
+		} 
+	    catch (Exception e) 
+	    {
+	        e.printStackTrace();
+	    }
+	    
+	    /*
+		final Message message = createMessage(from, to, bcc, subject, content, contentType, encoding);
+	 
+		try 
+		{
+			Transport.send(message);
+		} 
+	    catch(MessagingException e) 
+	    {
+	    	e.printStackTrace();
+	      	throw new SystemException("Unable to send message.", e);
+	    }
+	    */
+	}
+
 	/**
 	 *
 	 */
@@ -224,5 +370,28 @@ public class MailService
 	    return addresses;
 	}
 
+	/**
+	 *
+	 */
+	private List createInternetAddressesList(String emailAddressString) throws SystemException
+	{
+	    String[] emailAddresses = emailAddressString.split(";");
+	    
+	    List addresses = new ArrayList();
+	    for(int i=0; i<emailAddresses.length; i++)
+	    {
+	        String email = emailAddresses[i];
+	        try 
+			{
+	            addresses.add(new InternetAddress(email));
+	        } 
+		    catch(AddressException e) 
+		    {
+		        throw new SystemException("Badly formatted email address [" + email + "].", e);
+		    }
+	    }
+	    
+	    return addresses;
+	}
 	
 }

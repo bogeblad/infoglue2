@@ -73,7 +73,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     			
     			message = "<div>" + message.replaceAll("\n", "<br/>") + "</div>";
     			
-    			MailServiceFactory.getService().send(from, from, recipients, subject, message);
+    			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
     		}
     		catch(Exception e)
     		{
