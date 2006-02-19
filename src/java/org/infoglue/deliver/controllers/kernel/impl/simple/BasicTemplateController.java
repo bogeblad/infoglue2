@@ -3530,7 +3530,8 @@ public class BasicTemplateController implements TemplateController
 			final List result = new ArrayList();
 			for(Iterator i = set.iterator(); i.hasNext(); ) {
 				final Content content = (Content) i.next();
-				result.add(content.getValueObject());
+				if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+					result.add(content.getValueObject());
 			}
 			return result;
 		}

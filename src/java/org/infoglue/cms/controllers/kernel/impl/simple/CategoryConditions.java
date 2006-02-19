@@ -72,11 +72,12 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 	private static final String CONTENT_CATEGORY_ALIAS_PREFIX = "ccat";
 	private static final String CONTENT_VERSION_ALIAS         = "cv";
 
-	private static final String CATEGORY_TABLE                = "cmcategory";
-	private static final String CONTENT_CATEGORY_TABLE        = "cmcontentcategory";
+	private static final String CATEGORY_TABLE                = "cmCategory";
+	private static final String CONTENT_CATEGORY_TABLE        = "cmContentCategory";
 
-	protected static final String ONE_CATEGORY_CLAUSE = SPACE + LEFT + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2}" + RIGHT + SPACE;
-	protected static final String CATEGORY_CLAUSE   = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + " {1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContVerId=" + CONTENT_VERSION_ALIAS + ".ContVerId)";
+	protected static final String ONE_CATEGORY_CLAUSE 		  = SPACE + LEFT + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2}" + RIGHT + SPACE;
+	protected static final String CATEGORY_CLAUSE   		  = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + " {1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContentVersionId=" + CONTENT_VERSION_ALIAS + ".ContentVersionId)";
+	protected static final String CATEGORY_CLAUSE_SHORT		  = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + " {1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContVerId=" + CONTENT_VERSION_ALIAS + ".ContVerId)";
 	//private static final String CATEGORY_CLAUSE = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.contentVersionId=" + CONTENT_VERSION_ALIAS + ".contentVersionId)";
 
 	/**
@@ -176,8 +177,14 @@ class CategoryAndCondition extends AbstractCategoryCondition {
 	 */
 	public String getWhereClauseOQL(final List bindings) {
 		final String categoryClause = getOneCategoryClause(attributeName, categoryVO, bindings);
-		return MessageFormat.format(CATEGORY_CLAUSE, new Object[] { getUniqueID(), categoryClause });
+		return MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { getUniqueID(), categoryClause });
 	}
+	
+    public static String getCATEGORY_CLAUSE()
+    {
+        return (ExtendedSearchController.useFull()) ? CATEGORY_CLAUSE : CATEGORY_CLAUSE_SHORT;
+    }
+
 }
 
 /**
@@ -224,7 +231,7 @@ class CategoryOrCondition extends AbstractCategoryCondition {
 			categoryClauses.append(getOneCategoryClause(attributeName, categoryVO, bindings));
 		}
 
-		return MessageFormat.format(CATEGORY_CLAUSE, new Object[] { getUniqueID(), LEFT + categoryClauses.toString() + RIGHT });
+		return MessageFormat.format(CategoryAndCondition.getCATEGORY_CLAUSE(), new Object[] { getUniqueID(), LEFT + categoryClauses.toString() + RIGHT });
 	}
 }
 

@@ -188,6 +188,25 @@ public class ExtendedSearchController extends BaseController
 		return results;
 	}
 	
+	private static Boolean useFull = null;
+    public static boolean useFull()
+    {
+        if(useFull == null)
+        {
+            String useShortTableNames = CmsPropertyHandler.getProperty("useShortTableNames");
+            if(useShortTableNames == null || !useShortTableNames.equalsIgnoreCase("true"))
+            {
+                useFull = new Boolean(true);
+            }
+            else
+            {
+                useFull = new Boolean(false);
+            }
+        }
+        
+        return useFull.booleanValue();
+    }
+
 	/**
 	 * Unused. 
 	 */
@@ -223,9 +242,9 @@ class SqlBuilder
 
 	//Here is all the table names used for building the search query.
 	private static final String CONTENT_TABLE_SHORT           = "cmCont";
-	private static final String CONTENT_TABLE                 = "cmcontent";
+	private static final String CONTENT_TABLE                 = "cmContent";
 	private static final String CONTENT_VERSION_TABLE_SHORT   = "cmContVer";
-	private static final String CONTENT_VERSION_TABLE         = "cmcontentversion";
+	private static final String CONTENT_VERSION_TABLE         = "cmContentVersion";
 	
 	//
 	private static final String CV_ACTIVE_CLAUSE              = CONTENT_VERSION_ALIAS + ".isActive=1";
@@ -270,6 +289,7 @@ class SqlBuilder
 		logger.debug("===[sql]==============================================================");
 		this.sql = generate();
 		logger.debug("======================================================================");
+		//System.out.println("sql:" + sql);
 		logger.debug(sql);
 		logger.debug("===[/sql]=============================================================");
 	}
@@ -295,7 +315,7 @@ class SqlBuilder
 	 */
 	private String generate() 
 	{
-		return "CALL SQL" + SPACE + (useFull() ? generateSelectClause() : generateSelectClauseShort()) + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + SmallContentImpl.class.getName();
+		return "CALL SQL" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort()) + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + SmallContentImpl.class.getName();
 	}
 	
 	/**
@@ -507,48 +527,29 @@ class SqlBuilder
 	{
 		return "$" + (bindings.size() + 1);
 	}
-	
-	private static Boolean useFull = null;
-    private static boolean useFull()
-    {
-        if(useFull == null)
-        {
-            String useShortTableNames = CmsPropertyHandler.getProperty("useShortTableNames");
-            if(useShortTableNames == null || !useShortTableNames.equalsIgnoreCase("true"))
-            {
-                useFull = new Boolean(true);
-            }
-            else
-            {
-                useFull = new Boolean(false);
-            }
-        }
-        
-        return useFull.booleanValue();
-    }
-	
+		
 	public static String getCONTENT_TABLE()
     {
-        return (useFull()) ? CONTENT_TABLE : CONTENT_TABLE_SHORT;
+        return (ExtendedSearchController.useFull()) ? CONTENT_TABLE : CONTENT_TABLE_SHORT;
     }
     public static String getCONTENT_VERSION_TABLE()
     {
-        return (useFull()) ? CONTENT_VERSION_TABLE : CONTENT_VERSION_TABLE_SHORT;
+        return (ExtendedSearchController.useFull()) ? CONTENT_VERSION_TABLE : CONTENT_VERSION_TABLE_SHORT;
     }
     public static String getC_CONTENT_TYPE_CLAUSE()
     {
-        return (useFull()) ? C_CONTENT_TYPE_CLAUSE : C_CONTENT_TYPE_CLAUSE_SHORT;
+        return (ExtendedSearchController.useFull()) ? C_CONTENT_TYPE_CLAUSE : C_CONTENT_TYPE_CLAUSE_SHORT;
     }
     public static String getCV_CONTENT_JOIN()
     {
-        return (useFull()) ? CV_CONTENT_JOIN : CV_CONTENT_JOIN_SHORT;
+        return (ExtendedSearchController.useFull()) ? CV_CONTENT_JOIN : CV_CONTENT_JOIN_SHORT;
     }
     public static String getCV_LATEST_VERSION_CLAUSE()
     {
-        return (useFull()) ? CV_LATEST_VERSION_CLAUSE : CV_LATEST_VERSION_CLAUSE_SHORT;
+        return (ExtendedSearchController.useFull()) ? CV_LATEST_VERSION_CLAUSE : CV_LATEST_VERSION_CLAUSE_SHORT;
     }
     public static String getFREETEXT_EXPRESSION()
     {
-        return (useFull()) ? FREETEXT_EXPRESSION : FREETEXT_EXPRESSION_SHORT;
+        return (ExtendedSearchController.useFull()) ? FREETEXT_EXPRESSION : FREETEXT_EXPRESSION_SHORT;
     }
 }
