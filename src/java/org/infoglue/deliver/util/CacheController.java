@@ -834,7 +834,7 @@ public class CacheController extends Thread
 	    
 	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3") && RequestAnalyser.getBlockRequests())
 	    {
-		    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+		    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 	        return;
 	    }
 	    
