@@ -336,8 +336,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, List usedContentVersionId) throws SystemException, Exception
 	{	
-	    try
-	    {
 		//System.out.println("usedContentVersionId:" + usedContentVersionId);
 
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
@@ -350,6 +348,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey);
 		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		
+	    try
+	    {
+
 		if(attribute != null)
 		{
 			//getLogger().info("There was an cached content attribute:" + attribute);
