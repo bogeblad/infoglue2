@@ -305,9 +305,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	contentVersion = (ContentVersion)results.next();
 	        	getLogger().info("found one:" + contentVersion.getId());
 
+	        	//System.out.println("Caching content version for key:" + versionKey);
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId(), "content_" + contentVersion.getValueObject().getContentId()}, true);
 	        }  
-			
+			//try{throw new Exception("APA");}catch(Exception e){e.printStackTrace();}
 		}
 		
 		if(contentVersion != null)

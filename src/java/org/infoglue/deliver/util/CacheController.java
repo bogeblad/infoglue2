@@ -769,6 +769,8 @@ public class CacheController extends Thread
 	    	    	    new ContentCentricCachePopulator().recache(dbWrapper, siteNodeId);
 	    	    	else if(recachePublishingMethod != null && recachePublishingMethod.equalsIgnoreCase("requestCentric"))
 	    	    	    new RequestCentricCachePopulator().recache(dbWrapper, siteNodeId);
+	    	    	else if(recachePublishingMethod != null && recachePublishingMethod.equalsIgnoreCase("requestAndMetaInfoCentric"))
+	    	    	    new RequestAndMetaInfoCentricCachePopulator().recache(dbWrapper, siteNodeId);
 	    	    	else
 	    	    	    logger.warn("No recaching was made during publishing - set the parameter recachePublishingMethod to 'contentCentric' or 'requestCentric' to recache.");
 	    	    }
@@ -856,7 +858,8 @@ public class CacheController extends Thread
 
 				try
 			    {
-				    if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+				    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
+					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
 				        if(!RequestAnalyser.getBlockRequests())
 				        {
