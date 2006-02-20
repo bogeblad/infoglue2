@@ -1362,7 +1362,6 @@ public class ComponentLogic
 					{
 					    value = getComponentPropertyValue(inheritedPageComponentsXML, componentId, languageId, name);
 					}
-					System.out.println("value:" + value);
 					
 					property = new HashMap();
 					property.put("name", name);

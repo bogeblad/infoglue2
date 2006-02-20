@@ -43,6 +43,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
@@ -221,26 +222,44 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		ContentVersion contentVersion = null;
 		
-		Collection contentVersions = content.getContentVersions();
+	    String versionKey = "" + content.getId() + "_" + languageId + "_" + operatingMode + "_contentVersionId";
+		//System.out.println("versionKey:" + versionKey);
 		
-		Iterator versionIterator = contentVersions.iterator();
-		while(versionIterator.hasNext())
+		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+		if(contentVersionId != null)
 		{
-			ContentVersion contentVersionCandidate = (ContentVersion)versionIterator.next();	
-			getLogger().info("contentVersionCandidate:" + contentVersionCandidate.getId() + ":" + contentVersionCandidate.getIsActive() + ":" + contentVersionCandidate.getLanguage() + ":" + contentVersionCandidate.getStateId() + ":" + operatingMode);
-			getLogger().info("" + contentVersionCandidate.getIsActive().booleanValue());
-			getLogger().info("" + contentVersionCandidate.getLanguage().getId().intValue());
-			getLogger().info("" + languageId.intValue());
-			getLogger().info("" + contentVersionCandidate.getStateId().intValue());
-			getLogger().info("" + operatingMode.intValue());
+			getLogger().info("There was a cached content version id:" + contentVersionId);
+		    //System.out.println("There was a cached content version id:" + contentVersionId);
+		    contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
+		    //System.out.println("Loaded the version from cache instead of querying it:" + contentVersionId);
+		    getLogger().info("contentVersion read");
+		}
+		else
+		{
+			Collection contentVersions = content.getContentVersions();
 			
-			if(contentVersionCandidate.getIsActive().booleanValue() && contentVersionCandidate.getLanguage().getId().intValue() ==  languageId.intValue() && contentVersionCandidate.getStateId().intValue() >= operatingMode.intValue())
+			Iterator versionIterator = contentVersions.iterator();
+			while(versionIterator.hasNext())
 			{
-				if(contentVersion == null || contentVersion.getId().intValue() < contentVersionCandidate.getId().intValue())
+				ContentVersion contentVersionCandidate = (ContentVersion)versionIterator.next();	
+				getLogger().info("contentVersionCandidate:" + contentVersionCandidate.getId() + ":" + contentVersionCandidate.getIsActive() + ":" + contentVersionCandidate.getLanguage() + ":" + contentVersionCandidate.getStateId() + ":" + operatingMode);
+				getLogger().info("" + contentVersionCandidate.getIsActive().booleanValue());
+				getLogger().info("" + contentVersionCandidate.getLanguage().getId().intValue());
+				getLogger().info("" + languageId.intValue());
+				getLogger().info("" + contentVersionCandidate.getStateId().intValue());
+				getLogger().info("" + operatingMode.intValue());
+				
+				if(contentVersionCandidate.getIsActive().booleanValue() && contentVersionCandidate.getLanguage().getId().intValue() ==  languageId.intValue() && contentVersionCandidate.getStateId().intValue() >= operatingMode.intValue())
 				{
-					contentVersion = contentVersionCandidate;
+					if(contentVersion == null || contentVersion.getId().intValue() < contentVersionCandidate.getId().intValue())
+					{
+						contentVersion = contentVersionCandidate;
+					}
 				}
 			}
+			
+			if(contentVersion != null)
+				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId(), "content_" + contentVersion.getValueObject().getContentId()}, true);
 		}
 		
 		if(contentVersion != null)
@@ -742,13 +761,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getAssetUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
-	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
+	    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+	    //String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
+	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeVO.getRepositoryId() + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
 		getLogger().info("assetCacheKey:" + assetCacheKey);
+	    //System.out.println("assetCacheKey:" + assetCacheKey);
+	    
 		String cacheName = "assetUrlCache";
 		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
 		if(cachedAssetUrl != null)
 		{
-			getLogger().info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+		    getLogger().info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
 			return cachedAssetUrl;
 		}
 		
@@ -757,7 +780,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		ContentVO contentVO = this.getContentVO(db, contentId, deliveryContext);
-		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);	
 		if (contentVersion != null) 
         {
         	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
@@ -795,7 +817,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
 			}
 		}				
-		else if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
+		else if(useLanguageFallback && languageId.intValue() != LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db).getId().intValue())
 		{
 	    	contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		    

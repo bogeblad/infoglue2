@@ -25,12 +25,15 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -467,10 +470,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	/**
 	 * This method returns the latest sitenodeVersion there is for the given siteNode.
 	 */
-	
+	/*
 	public SiteNodeVersion getLatestActiveSiteNodeVersion(Integer siteNodeId, Database db) throws SystemException, Exception
 	{
-		SiteNodeVersion siteNodeVersion = null;
+	    System.out.println("\n\nAAAAAAAAAAAAAA start");
+	    
+	    SiteNodeVersion siteNodeVersion = null;
 		
 		getLogger().info("Loading siteNode " + siteNodeId);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
@@ -495,6 +500,53 @@ public class NodeDeliveryController extends BaseDeliveryController
 			}
 		}
 
+		System.out.println("AAAAAAAAAAAAAA end\n\n");
+	    
+		return siteNodeVersion;
+	}
+	*/
+	
+	/**
+	 * This method returns the latest sitenodeVersion there is for the given siteNode.
+	 */
+	
+	public SiteNodeVersion getLatestActiveSiteNodeVersion(Integer siteNodeId, Database db) throws SystemException, Exception
+	{
+	    SiteNodeVersion siteNodeVersion = null;
+		
+	    String versionKey = "" + siteNodeId + "_" + getOperatingMode() + "_siteNodeVersionId";
+		//System.out.println("versionKey:" + versionKey);
+		
+	    
+		Integer siteNodeVersionId = (Integer)CacheController.getCachedObject("siteNodeVersionCache", versionKey);
+		if(siteNodeVersionId != null)
+		{
+		    getLogger().info("There was a cached sitenode version id:" + siteNodeVersionId);
+		    //System.out.println("There was a cached content version id:" + contentVersionId);
+		    siteNodeVersion = (SiteNodeVersion)getObjectWithId(SiteNodeVersionImpl.class, siteNodeVersionId, db);
+		    //System.out.println("Loaded the version from cache instead of querying it:" + contentVersionId);
+		    //getLogger().info("contentVersion read");
+		}
+		else
+		{
+		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.stateId >= $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
+			oql.bind(siteNodeId);
+			oql.bind(getOperatingMode());
+			oql.bind(true);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+		    {
+		    	siteNodeVersion = (SiteNodeVersion)results.next();
+			    CacheController.cacheObject("siteNodeVersionCache", versionKey, siteNodeVersion.getId());
+	        }	
+		
+		}
+		
+		//if(contentVersion != null)
+		//    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersion.getId());
+	
 		return siteNodeVersion;
 	}
 	
@@ -1577,7 +1629,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 	        siteNodeVOList = new ArrayList();
 	
-	        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1 ORDER BY s.siteNodeId");
+	        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode.siteNodeId = $1 ORDER BY s.siteNodeId");
 			oql.bind(siteNodeId);
 			
 	    	QueryResults results = oql.execute(Database.ReadOnly);
@@ -1662,7 +1714,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		if(isValidOnDates(siteNode.getPublishDateTime(), siteNode.getExpireDateTime()))
 		{
-			Collection versions = siteNode.getSiteNodeVersions();
+		    if(this.getLatestActiveSiteNodeVersion(siteNode.getId(), db) != null)
+		        isValidContent = true;
+			/*
+		    Collection versions = siteNode.getSiteNodeVersions();
 			Iterator versionsIterator = versions.iterator();
 			while(versionsIterator.hasNext())
 			{
@@ -1670,6 +1725,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				if(siteNodeVersion.getIsActive().booleanValue() && siteNodeVersion.getStateId().intValue() >= getOperatingMode().intValue())
 					isValidContent = true;
 			}
+			*/
 		}
 		
 		if(isValidContent && !siteNode.getExpireDateTime().before(new Date()))
