@@ -119,6 +119,7 @@ public class CacheController extends Thread
 	        synchronized(caches)
 	        {
 	            caches.put(newCacheName, cacheInstance);
+	            caches.remove(cacheName);
 	        }
 	    }
 	}	
