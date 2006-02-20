@@ -336,6 +336,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, List usedContentVersionId) throws SystemException, Exception
 	{	
+	    try
+	    {
 		//System.out.println("usedContentVersionId:" + usedContentVersionId);
 
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
@@ -381,6 +383,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(usedContentVersionId != null && contentVersionId != null)
 		    usedContentVersionId.add(contentVersionId);
 
+	    }
+	    catch(Exception e)
+	    {
+	        e.printStackTrace();
+	        throw e;
+	    }
+	    
 		return (attribute == null) ? "" : attribute;
 	}
 
