@@ -1466,7 +1466,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(infoGluePrincipal == null)
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
 		
-		if(content.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
+		if(content.getContentTypeDefinition() != null && content.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 			return true;
 
 		getLogger().info("content:" + content.getName());
