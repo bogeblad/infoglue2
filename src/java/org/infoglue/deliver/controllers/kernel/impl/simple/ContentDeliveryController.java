@@ -50,6 +50,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.*;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 
@@ -280,9 +281,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    String versionKey = "" + content.getId() + "_" + languageId + "_" + operatingMode + "_contentVersionId";
 		//System.out.println("versionKey:" + versionKey);
 		
-		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-		if(contentVersionId != null)
+		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+		//Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+		if(object instanceof NullObject)
 		{
+			getLogger().info("There was an cached parentSiteNodeVO but it was null:" + object);
+		}
+		else if(object != null)
+		{
+			Integer contentVersionId = (Integer)object;
 			getLogger().info("There was a cached content version id:" + contentVersionId);
 		    //System.out.println("There was a cached content version id:" + contentVersionId);
 		    contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
@@ -307,8 +314,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	        	//System.out.println("Caching content version for key:" + versionKey);
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId(), "content_" + contentVersion.getValueObject().getContentId()}, true);
-	        }  
-			//try{throw new Exception("APA");}catch(Exception e){e.printStackTrace();}
+	        }
+			else
+			{
+				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, new NullObject(), new String[]{"content_" + content.getId()}, true);
+			}
+			//if(content.getId().intValue() == 33 || content.getId().intValue() == 7 || content.getId().intValue() == 8 || content.getId().intValue() == 9)
+			//	try{throw new Exception("APA");}catch(Exception e){e.printStackTrace();}
 		}
 		
 		if(contentVersion != null)
@@ -327,6 +339,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML) throws SystemException, Exception
 	{	    	        
+		System.out.println("languageId:" + languageId);
 	    return getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infogluePrincipal, escapeHTML, null);
 	}
 	

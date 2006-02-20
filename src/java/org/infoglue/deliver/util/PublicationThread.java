@@ -67,6 +67,8 @@ public class PublicationThread extends Thread
 		    CacheController.clearCache("pageCacheParentSiteNodeCache");
 		    CacheController.clearCache("pageCacheLatestSiteNodeVersions");
 		    CacheController.clearCache("pageCacheSiteNodeTypeDefinition");
+
+		    CacheController.renameCache("newPagePathCache", "pagePathCache");
 		} 
 		catch (Exception e)
 		{

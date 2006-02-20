@@ -109,7 +109,20 @@ public class CacheController extends Thread
 	{
 		this.cacheExpireInterval = cacheExpireInterval;
 	}
-	
+
+	public static void renameCache(String cacheName, String newCacheName)
+	{
+	    Object cacheInstance = caches.get(cacheName);
+	    
+	    if(cacheInstance != null)
+	    {
+	        synchronized(caches)
+	        {
+	            caches.put(newCacheName, cacheInstance);
+	        }
+	    }
+	}	
+
 	public static void cacheObject(String cacheName, Object key, Object value)
 	{
 		if(!caches.containsKey(cacheName))
@@ -858,8 +871,8 @@ public class CacheController extends Thread
 
 				try
 			    {
-				    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
-					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+				    if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
+					//if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
 				        if(!RequestAnalyser.getBlockRequests())
 				        {

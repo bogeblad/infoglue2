@@ -148,30 +148,79 @@ public class RequestAndMetaInfoCentricCachePopulator
 		SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
 		SiteNodeVO rootSiteNodeVO = templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
 		
-		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController);
+		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController, principal, dbWrapper);
 
         
         logger.info("recache stopped..");
 	}
 	
 	
-	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
+	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId, TemplateController templateController, Principal principal, DatabaseWrapper dbWrapper) throws Exception
 	{
 	    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, templateController.getDatabase(), true);
 	    SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
+
+        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Title", true); 
+        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "NavigationTitle", true); 
+        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Description", true); 
+        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "ComponentStructure", true); 
+
 	    Collection childSiteNodes = siteNode.getChildSiteNodes();
 	    
 	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
         {
 	        SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
-	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId, templateController);
-	        
-	        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Title", true); 
-	        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "NavigationTitle", true); 
-	        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Description", true); 
-	        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "ComponentStructure", true); 
+	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId, templateController, principal, dbWrapper);
         }
+	 
+	    
+	    
+	    Integer contentId = new Integer(-1);
+	    
+        FakeHttpSession fakeHttpServletSession = new FakeHttpSession();
+        FakeHttpServletResponse fakeHttpServletResponse = new FakeHttpServletResponse();
+        FakeHttpServletRequest fakeHttpServletRequest = new FakeHttpServletRequest();
+        fakeHttpServletRequest.setParameter("siteNodeId", "" + siteNodeId);
+        fakeHttpServletRequest.setParameter("languageId", "" + languageId);
+        fakeHttpServletRequest.setParameter("contentId", "" + contentId);
+        fakeHttpServletRequest.setRequestURI("ViewPage.action");
+
+        fakeHttpServletRequest.setAttribute("siteNodeId", "" + siteNodeId);
+        fakeHttpServletRequest.setAttribute("languageId", "" + languageId);
+        fakeHttpServletRequest.setAttribute("contentId", "" + contentId);
+
+        fakeHttpServletRequest.setServletContext(DeliverContextListener.getServletContext());
+        
+        BrowserBean browserBean = new BrowserBean();
+	    //this.browserBean.setRequest(getRequest());
+	    
+		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		IntegrationDeliveryController integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
+		TemplateController subTemplateController = getTemplateController(dbWrapper, siteNodeId, languageId, contentId, new FakeHttpServletRequest(), (InfoGluePrincipal)principal, false, browserBean, nodeDeliveryController, integrationDeliveryController);
+		
+		DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*(InfoGluePrincipal)this.principal*/);
+		//deliveryContext.setRepositoryName(repositoryName);
+		deliveryContext.setSiteNodeId(siteNodeId);
+		deliveryContext.setContentId(contentId);
+		deliveryContext.setLanguageId(languageId);
+		deliveryContext.setPageKey("" + System.currentTimeMillis());
+		deliveryContext.setSession(new Session(fakeHttpServletSession));
+		deliveryContext.setInfoGlueAbstractAction(null);
+		deliveryContext.setHttpServletRequest(fakeHttpServletRequest);
+		deliveryContext.setHttpServletResponse(fakeHttpServletResponse);
+
+		subTemplateController.setDeliveryContext(deliveryContext);
+		
+		//We don't want a page cache entry to be created
+		deliveryContext.setDisablePageCache(true);
+
+		SiteNodeVO rootSiteNodeVO = templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
+
+		String pagePath = subTemplateController.getCurrentPagePath();
+		
+		CacheController.cacheObject("newPagePathCache", deliveryContext.getPageKey(), pagePath);
+
 	}
 	
    	/**
