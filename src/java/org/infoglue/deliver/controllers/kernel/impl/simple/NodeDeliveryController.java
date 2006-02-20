@@ -518,7 +518,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		//System.out.println("versionKey:" + versionKey);
 		
 	    
-		Integer siteNodeVersionId = (Integer)CacheController.getCachedObject("siteNodeVersionCache", versionKey);
+		Integer siteNodeVersionId = (Integer)CacheController.getCachedObject("latestSiteNodeVersionCache", versionKey);
 		if(siteNodeVersionId != null)
 		{
 		    getLogger().info("There was a cached sitenode version id:" + siteNodeVersionId);
@@ -539,7 +539,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			if (results.hasMore()) 
 		    {
 		    	siteNodeVersion = (SiteNodeVersion)results.next();
-			    CacheController.cacheObject("siteNodeVersionCache", versionKey, siteNodeVersion.getId());
+			    CacheController.cacheObject("latestSiteNodeVersionCache", versionKey, siteNodeVersion.getId());
 	        }	
 		
 		}
