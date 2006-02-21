@@ -46,6 +46,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
@@ -92,6 +93,15 @@ public class RequestAndMetaInfoCentricCachePopulator
         String recacheUrl = CmsPropertyHandler.getProperty("recacheUrl") + "?siteNodeId=" + siteNodeId + "&refresh=true&isRecacheCall=true";
         String response = helper.getUrlContent(recacheUrl);
         
+        String recacheBaseUrl = CmsPropertyHandler.getProperty("recacheUrl").replaceAll("/ViewPage.action", "");
+        String pathsToRecacheOnPublishing = CmsPropertyHandler.getProperty("pathsToRecacheOnPublishing");
+        String[] pathsToRecacheOnPublishingArray = pathsToRecacheOnPublishing.split(",");
+        for(int i = 0; i < pathsToRecacheOnPublishingArray.length; i++)
+        {
+            recacheUrl = recacheBaseUrl + pathsToRecacheOnPublishingArray[i] + "?refresh=true&isRecacheCall=true";
+            //System.out.println("calling recacheUrl:" + recacheUrl);
+            response = helper.getUrlContent(recacheUrl);
+        }
         
 		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(dbWrapper.getDatabase(), siteNodeId);
 		if(masterLanguageVO == null)
@@ -166,7 +176,9 @@ public class RequestAndMetaInfoCentricCachePopulator
 		    String templateString = templateController.getContentAttribute(template.getId(), languageId, "Template", true); 
 		}
 		
-		RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(dbWrapper.getDatabase());
+		RepositoryVO repository = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(dbWrapper.getDatabase());
+		
+		RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(dbWrapper.getDatabase(), "localhost", "8080", repository.getName());
 		
         logger.info("recache stopped..");
 	}
@@ -179,6 +191,7 @@ public class RequestAndMetaInfoCentricCachePopulator
 
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Title", true); 
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "NavigationTitle", true); 
+        templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "NiceURIName", true); 
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Description", true); 
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "ComponentStructure", true); 
 

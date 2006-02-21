@@ -198,7 +198,7 @@ public class ViewPageFilter implements Filter
 	                    }
 	                }
 	
-		            Iterator repositorVOListIterator = repositoryVOList.iterator();
+	                Iterator repositorVOListIterator = repositoryVOList.iterator();
 	                while(repositorVOListIterator.hasNext())
 	                {
 	                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
@@ -207,7 +207,7 @@ public class ViewPageFilter implements Filter
 	                    if(siteNodeId != null)
 	                        break;
 	                }
-	          
+	                
 	                BaseDeliveryController.rollbackTransaction(db);
 
 	                end = System.currentTimeMillis();
@@ -309,7 +309,7 @@ public class ViewPageFilter implements Filter
         }
 
         
-        List repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoriesFromServerName(db, serverName, portNumber, repositoryName);
+        List repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName);
         logger.info("repositories:" + repositories);
     
         if (repositories.size() == 0) 
