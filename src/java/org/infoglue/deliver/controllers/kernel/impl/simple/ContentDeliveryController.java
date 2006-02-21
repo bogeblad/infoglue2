@@ -53,6 +53,7 @@ import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -298,7 +299,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-		    //System.out.println("Querying for verson: " + versionKey); 
+		    Timer timer = new Timer();
+			//System.out.println("Querying for verson: " + versionKey); 
 		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
 	    	oql.bind(content.getId());
 	    	oql.bind(languageId);
@@ -319,6 +321,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			{
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, new NullObject(), new String[]{"content_" + content.getId()}, true);
 			}
+			
+		    timer.printElapsedTime("Querying for verson: " + versionKey + " took");
+
 			//if(content.getId().intValue() == 33 || content.getId().intValue() == 7 || content.getId().intValue() == 8 || content.getId().intValue() == 9)
 			//	try{throw new Exception("APA");}catch(Exception e){e.printStackTrace();}
 		}
@@ -349,6 +354,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, List usedContentVersionId) throws SystemException, Exception
 	{	
+		Timer timer = new Timer();
 		//System.out.println("usedContentVersionId:" + usedContentVersionId);
 
 	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
@@ -374,7 +380,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			//if(contentId != null && contentId.intValue() == 3135)
 			//	System.out.println("No cached attribute");
-
+			
 			ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
     	
         	if (contentVersionVO != null) 
@@ -403,6 +409,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        e.printStackTrace();
 	        throw e;
 	    }
+	    
+	    timer.printElapsedTime("Getting attribute " + attributeName + " on " + contentId + " in " + languageId + " took");
 	    
 		return (attribute == null) ? "" : attribute;
 	}
