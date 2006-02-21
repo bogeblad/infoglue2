@@ -1329,7 +1329,7 @@ public class NodeDeliveryController extends BaseDeliveryController
             siteNodes = this.getChildSiteNodes(db, parentSiteNodeId);
         }
         
-        System.out.println("siteNodes:" + siteNodes.size());
+        //System.out.println("siteNodes:" + siteNodes.size());
         
         Iterator siteNodeIterator = siteNodes.iterator();
         while (siteNodeIterator.hasNext()) 
@@ -1343,7 +1343,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        }
 	        
 	        logger.info("Continued with siteNode: " + siteNodeVO.getName());
-	        System.out.println("Continued with siteNode: " + siteNodeVO.getName());
+	        //System.out.println("Continued with siteNode: " + siteNodeVO.getName());
 	        
 	        ContentVO content = ContentDeliveryController.getContentDeliveryController().getContentVO(db, siteNodeVO.getMetaInfoContentId(), deliveryContext);
 	        if(content != null) 
@@ -1366,12 +1366,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 	                }
 	                
 	                getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
-	                System.out.println(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
 	                if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
 	                {
 	                    return siteNodeVO.getSiteNodeId();
 	                }
 	            }
+	        }
+	        else
+	        {
+	            throw new SystemException("You must run validation service in the management tool against this db - it needs to become up2date with the new model.");
 	        }
         }
         

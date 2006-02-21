@@ -277,7 +277,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		
 		System.out.println("The page delivery took " + elapsedTime + "ms");
-
 		
         return NONE;
     }
@@ -382,7 +381,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 		elapsedTime = new Date().getTime() - start;
 		getLogger().info("The page delivery took " + elapsedTime + "ms");
-		System.out.println("The page delivery took " + elapsedTime + "ms");
+		//System.out.println("The page delivery took " + elapsedTime + "ms");
 		
 		return NONE;
 	}
