@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -35,10 +36,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 
 import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
@@ -57,6 +64,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 import webwork.action.Action;
@@ -150,7 +158,16 @@ public class RequestAndMetaInfoCentricCachePopulator
 		
 		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController, principal, dbWrapper);
 
-        
+		List templates = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate", dbWrapper.getDatabase());
+		Iterator templatesIterator = templates.iterator();
+		{
+		    ContentVO template = (ContentVO)templatesIterator.next();
+
+		    String templateString = templateController.getContentAttribute(template.getId(), languageId, "Template", true); 
+		}
+		
+		RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(dbWrapper.getDatabase());
+		
         logger.info("recache stopped..");
 	}
 	
@@ -165,7 +182,12 @@ public class RequestAndMetaInfoCentricCachePopulator
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Description", true); 
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "ComponentStructure", true); 
 
-	    Collection childSiteNodes = siteNode.getChildSiteNodes();
+        List childPages = templateController.getChildPages(siteNodeId);
+        
+        templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
+        templateController.getParentSiteNode(siteNodeVO.getId());
+        
+        Collection childSiteNodes = siteNode.getChildSiteNodes();
 	    
 	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
@@ -174,7 +196,15 @@ public class RequestAndMetaInfoCentricCachePopulator
 	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId, templateController, principal, dbWrapper);
         }
 	 
-	    
+		Repository repository = RepositoryController.getController().getRepositoryWithId(siteNodeVO.getRepositoryId(), dbWrapper.getDatabase());
+		Collection languages = repository.getRepositoryLanguages();
+		Iterator languagesIterator = languages.iterator();
+		while(languagesIterator.hasNext())
+		{
+		    RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languagesIterator.next();
+		    LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(dbWrapper.getDatabase(), repositoryLanguage.getLanguage().getId(), siteNodeId);
+		}
+   
 	    
 	    Integer contentId = new Integer(-1);
 	    
