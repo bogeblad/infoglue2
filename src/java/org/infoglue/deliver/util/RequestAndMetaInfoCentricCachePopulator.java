@@ -95,12 +95,15 @@ public class RequestAndMetaInfoCentricCachePopulator
         
         String recacheBaseUrl = CmsPropertyHandler.getProperty("recacheUrl").replaceAll("/ViewPage.action", "");
         String pathsToRecacheOnPublishing = CmsPropertyHandler.getProperty("pathsToRecacheOnPublishing");
-        String[] pathsToRecacheOnPublishingArray = pathsToRecacheOnPublishing.split(",");
-        for(int i = 0; i < pathsToRecacheOnPublishingArray.length; i++)
+        if(pathsToRecacheOnPublishing.indexOf("pathsToRecacheOnPublishing") == -1)
         {
-            recacheUrl = recacheBaseUrl + pathsToRecacheOnPublishingArray[i] + "?refresh=true&isRecacheCall=true";
-            //System.out.println("calling recacheUrl:" + recacheUrl);
-            response = helper.getUrlContent(recacheUrl);
+	        String[] pathsToRecacheOnPublishingArray = pathsToRecacheOnPublishing.split(",");
+	        for(int i = 0; i < pathsToRecacheOnPublishingArray.length; i++)
+	        {
+	            recacheUrl = recacheBaseUrl + pathsToRecacheOnPublishingArray[i] + "?refresh=true&isRecacheCall=true";
+	            //System.out.println("calling recacheUrl:" + recacheUrl);
+	            response = helper.getUrlContent(recacheUrl);
+	        }
         }
         
 		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(dbWrapper.getDatabase(), siteNodeId);

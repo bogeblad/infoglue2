@@ -112,20 +112,33 @@ public class LanguageDeliveryController extends BaseDeliveryController
 
 	public List getAvailableLanguagesForRepository(Database db, Integer repositoryId) throws SystemException, Exception
     {
-        List list = new ArrayList();
-
-        Repository repository = (Repository) getObjectWithId(RepositoryImpl.class, repositoryId, db);
-        if (repository != null) 
-        {
-            for (Iterator i = repository.getRepositoryLanguages().iterator();i.hasNext();) 
-            {
-                RepositoryLanguage repositoryLanguage = (RepositoryLanguage) i.next();
-                Language language = repositoryLanguage.getLanguage();
-                if (language != null)
-                    list.add(language.getValueObject());
-            }
-        }
+		String key = "" + repositoryId + "_allLanguages";
+		getLogger().info("key:" + key);
+		List list = (List)CacheController.getCachedObject("languageCache", key);
+		if(list != null)
+		{
+			getLogger().info("There was an cached list:" + list);
+		}
+		else
+		{
+		    list = new ArrayList();
+		    
+	        Repository repository = (Repository) getObjectWithId(RepositoryImpl.class, repositoryId, db);
+	        if (repository != null) 
+	        {
+	            for (Iterator i = repository.getRepositoryLanguages().iterator();i.hasNext();) 
+	            {
+	                RepositoryLanguage repositoryLanguage = (RepositoryLanguage) i.next();
+	                Language language = repositoryLanguage.getLanguage();
+	                if (language != null)
+	                    list.add(language.getValueObject());
+	            }
+	        }
         
+	        if(list.size() > 0)
+	            CacheController.cacheObject("languageCache", key, list);				
+		}
+	        
         return list;
     } 
 	

@@ -1297,7 +1297,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		return navTitle;
 	}
 
-
+	
     public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String path, String attributeName, Integer parentSiteNodeId, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         /*
@@ -1317,71 +1317,128 @@ public class NodeDeliveryController extends BaseDeliveryController
 
         List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, repositoryId);
 
-        List bindings = new ArrayList();
-        StringBuffer sb = new StringBuffer(256);
-        sb.append("SELECT s FROM ");
-        sb.append("org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s ");
-        sb.append("WHERE ");
-        if (parentSiteNodeId == null || parentSiteNodeId.intValue() == -1) 
+        List siteNodes = new ArrayList();
+        
+        if(parentSiteNodeId == null || parentSiteNodeId.intValue() == -1)
         {
-            sb.append("is_undefined(s.parentSiteNode) ");
-        } 
-        else 
+            SiteNodeVO rootSiteNodeVO = this.getRootSiteNode(db, repositoryId);
+            siteNodes.add(rootSiteNodeVO);
+        }
+        else
         {
-            sb.append("s.parentSiteNode.siteNodeId = $").append((bindings.size()+1)).append(" ");
-            bindings.add(parentSiteNodeId);
+            siteNodes = this.getChildSiteNodes(db, parentSiteNodeId);
         }
         
-        sb.append("and s.repository.repositoryId = $").append((bindings.size()+1)).append(" ");
-        bindings.add(repositoryId);
-
-        getLogger().info("OQL ["+sb.toString()+"]");
-        OQLQuery oql = db.getOQLQuery( sb.toString() );
-        for (int i=0;i<bindings.size();i++) 
+        Iterator siteNodeIterator = siteNodes.iterator();
+        while (siteNodeIterator.hasNext()) 
         {
-            oql.bind(bindings.get(i));
-        }
-        
-        QueryResults results = oql.execute(Database.ReadOnly);
-        while (results.hasMore()) 
-        {
-            SiteNode siteNode = (SiteNode) results.next();
-            if (path == null || path.length() == 0) 
-            {
-                logger.info("Returning siteNode:" + siteNode.getName());
-                return siteNode.getSiteNodeId();
-            }
-            
-            logger.info("Continued with siteNode: " + siteNode.getName());
-            ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME, deliveryContext);
-            if(content != null) 
-            {
-                //getLogger().info("Content "+content.getContentId());
-                String pathCandidate = null;
-                for (int i=0;i<languages.size();i++) 
-                {
-                    LanguageVO language = (LanguageVO) languages.get(i);
-                    //getLogger().info("Language : "+language.getLanguageCode());
-                    
-                    if(attributeName.equals("SiteNode.name"))
-                        pathCandidate = siteNode.getName();
-                    else
-                    {
-	                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
+            SiteNodeVO siteNodeVO = (SiteNodeVO)siteNodeIterator.next();
+	        
+	        if (path == null || path.length() == 0) 
+	        {
+	            logger.info("Returning siteNode:" + siteNodeVO.getName());
+	            return siteNodeVO.getId();
+	        }
+	        
+	        logger.info("Continued with siteNode: " + siteNodeVO.getName());
+	        ContentVO content = ContentDeliveryController.getContentDeliveryController().getContentVO(db, siteNodeVO.getMetaInfoContentId(), deliveryContext);
+	        if(content != null) 
+	        {
+	            //getLogger().info("Content "+content.getContentId());
+	            String pathCandidate = null;
+	            for (int i=0;i<languages.size();i++) 
+	            {
+	                LanguageVO language = (LanguageVO) languages.get(i);
+	                //getLogger().info("Language : "+language.getLanguageCode());
+	                
+	                if(attributeName.equals("SiteNode.name"))
+	                    pathCandidate = siteNodeVO.getName();
+	                else
+	                {
+	                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNodeVO.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
 	                    
 	                    if((pathCandidate == null || pathCandidate.equals("")) && !attributeName.equals(NAV_TITLE_ATTRIBUTE_NAME))
-	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
-                    }
-                    
-                    getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
-                    if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
-                    {
-                        return siteNode.getSiteNodeId();
-                    }
-                }
-            }
+	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNodeVO.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
+	                }
+	                
+	                getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
+	                if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
+	                {
+	                    return siteNodeVO.getSiteNodeId();
+	                }
+	            }
+	        }
         }
-
+        
+            /*
+	        List bindings = new ArrayList();
+	        StringBuffer sb = new StringBuffer(256);
+	        sb.append("SELECT s FROM ");
+	        sb.append("org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s ");
+	        sb.append("WHERE ");
+	        if (parentSiteNodeId == null || parentSiteNodeId.intValue() == -1) 
+	        {
+	            sb.append("is_undefined(s.parentSiteNode) ");
+	        } 
+	        else 
+	        {
+	            sb.append("s.parentSiteNode.siteNodeId = $").append((bindings.size()+1)).append(" ");
+	            bindings.add(parentSiteNodeId);
+	        }
+	        
+	        sb.append("and s.repository.repositoryId = $").append((bindings.size()+1)).append(" ");
+	        bindings.add(repositoryId);
+	
+	        getLogger().info("OQL ["+sb.toString()+"]");
+	        OQLQuery oql = db.getOQLQuery( sb.toString() );
+	        for (int i=0;i<bindings.size();i++) 
+	        {
+	            oql.bind(bindings.get(i));
+	        }
+	        
+	        QueryResults results = oql.execute(Database.ReadOnly);
+	        while (results.hasMore()) 
+	        {
+	            SiteNode siteNode = (SiteNode) results.next();
+	            if (path == null || path.length() == 0) 
+	            {
+	                logger.info("Returning siteNode:" + siteNode.getName());
+	                return siteNode.getSiteNodeId();
+	            }
+	            
+	            logger.info("Continued with siteNode: " + siteNode.getName());
+	            ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME, deliveryContext);
+	            if(content != null) 
+	            {
+	                //getLogger().info("Content "+content.getContentId());
+	                String pathCandidate = null;
+	                for (int i=0;i<languages.size();i++) 
+	                {
+	                    LanguageVO language = (LanguageVO) languages.get(i);
+	                    //getLogger().info("Language : "+language.getLanguageCode());
+	                    
+	                    if(attributeName.equals("SiteNode.name"))
+	                        pathCandidate = siteNode.getName();
+	                    else
+	                    {
+		                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
+		                    
+		                    if((pathCandidate == null || pathCandidate.equals("")) && !attributeName.equals(NAV_TITLE_ATTRIBUTE_NAME))
+		                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
+	                    }
+	                    
+	                    getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
+	                    if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
+	                    {
+	                        return siteNode.getSiteNodeId();
+	                    }
+	                }
+	            }
+	        }
+            System.out.println("DDDD END");
+        }
+        */
+        
         return null;
     }
 

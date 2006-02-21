@@ -38,6 +38,7 @@ import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -90,7 +91,65 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         return repositoryVO;	
 	}
 	
+	public List getRepositoryVOListFromServerName(Database db, String serverName, String portNumber, String repositoryName) throws SystemException, Exception
+    {
+	    List repositories = new ArrayList();
+	    
+	    List cachedRepositories = (List)CacheController.getCachedObject("masterRepository", "allDNSRepositories");
+		if(cachedRepositories == null)
+		{
+		    cachedRepositories = new ArrayList();
+		    
+	        OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE is_defined(r.dnsName)");
+	        QueryResults results = oql.execute(Database.ReadOnly);
+		
+	        while (results.hasMore()) 
+	        {
+	            Repository repository = (Repository) results.next();
+	            cachedRepositories.add(repository.getValueObject());
+	        }
+	        
+			if(cachedRepositories.size() > 0)
+				CacheController.cacheObject("masterRepository", "allDNSRepositories", cachedRepositories);
+		}
+		
+		Iterator repositoriesIterator = cachedRepositories.iterator();
+        while (repositoriesIterator.hasNext()) 
+        {
+            RepositoryVO repositoryVO = (RepositoryVO) repositoriesIterator.next();
+            getLogger().info("repository:" + repositoryVO.getDnsName());
+            String[] dnsNames = splitStrings(repositoryVO.getDnsName());
+            getLogger().info("dnsNames:" + dnsNames);
+            for (int i=0;i<dnsNames.length;i++) 
+            {
+            	getLogger().info("dnsNames[i]:" + dnsNames[i]);
+                String dnsName = dnsNames[i];
+            	int protocolIndex = dnsName.indexOf("://");
+                if(protocolIndex > -1)
+                    dnsName = dnsName.substring(protocolIndex + 3);
+                
+                getLogger().info("Matching only server name - removed protocol if there:" + dnsName);
+                
+            	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0)
+                {
+            	    if(repositoryName != null && repositoryName.length() > 0)
+            	    {
+            	        getLogger().info("Has to check repositoryName also:" + repositoryName);
+                        if(repositoryVO.getName().equalsIgnoreCase(repositoryName))
+            	            repositories.add(repositoryVO);
+            	    }
+            	    else
+            	    {
+            	        repositories.add(repositoryVO);
+            	    }
+            	}
+            }
+        }
+        
+        return repositories;
+    }
 
+/*
 	public List getRepositoriesFromServerName(Database db, String serverName, String portNumber, String repositoryName) throws SystemException, Exception
     {
 	    List repositories = new ArrayList();
@@ -131,7 +190,8 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         
         return repositories;
     }
- 	
+*/
+	
     private String[] splitStrings(String str)
     {
         List list = new ArrayList();
