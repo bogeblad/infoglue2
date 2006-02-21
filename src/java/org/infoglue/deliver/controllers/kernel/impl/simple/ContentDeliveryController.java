@@ -366,6 +366,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey);
 		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+	    timer.printElapsedTime("1 took");
 		
 	    try
 	    {
@@ -382,6 +383,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			//	System.out.println("No cached attribute");
 			
 			ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
+		    timer.printElapsedTime("2 took");
     	
         	if (contentVersionVO != null) 
 			{
@@ -392,9 +394,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 			else
 				attribute = "";
 
+    	    timer.printElapsedTime("3 took");
+
 			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
 			if(contentVersionId != null)
 			    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
+			
+		    timer.printElapsedTime("4 took");
 		}
 		
 		//getLogger().info("Adding contentVersion:" + contentVersionId);
