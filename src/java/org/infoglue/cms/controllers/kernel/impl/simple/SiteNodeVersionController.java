@@ -282,6 +282,19 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersion;
     }
 
+	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+	    SiteNodeVersionVO siteNodeVersionVO = null;
+	    
+	    SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(db, siteNodeId);
+	    if(siteNodeVersion != null)
+	    	siteNodeVersionVO = siteNodeVersion.getValueObject();
+	    else
+	    	getLogger().warn("The siteNode " + siteNodeId + " did not have a latest active siteNodeVersion - very strange.");
+	    
+		return siteNodeVersionVO;
+    }
+
 	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
