@@ -1139,6 +1139,11 @@ public interface TemplateController
     /**
      * This method return true if the user logged in has access to the siteNode sent in.
      */
+    public abstract boolean getHasUserPageAccess(Integer siteNodeId, String interceptionPointName);
+
+    /**
+     * This method return true if the user logged in has access to the siteNode sent in.
+     */
     public abstract boolean getHasUserPageWriteAccess(Integer siteNodeId);
 
     /**

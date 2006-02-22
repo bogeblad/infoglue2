@@ -5010,9 +5010,27 @@ public class BasicTemplateController implements TemplateController
 					hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 				}
 			}
+		} 
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+		}
+		
+		return hasUserPageAccess;
+	}
 
-		    /*
-			if(!this.nodeDeliveryController.getIsPageProtected(siteNodeId))
+	/**
+	 * This method return true if the user logged in has access to the siteNode sent in.
+	 */
+	
+	public boolean getHasUserPageAccess(Integer siteNodeId, String interceptionPointName)
+	{
+		boolean hasUserPageAccess = false;
+		
+		try 
+		{
+		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId);
+			if(protectedSiteNodeVersionId == null)
 			{
 				logger.info("The page was not protected...");
 				hasUserPageAccess = true;
@@ -5025,12 +5043,10 @@ public class BasicTemplateController implements TemplateController
 				
 				if(principal != null)
 				{
-					SiteNodeVersionVO siteNodeVersionVO = this.nodeDeliveryController.getActiveSiteNodeVersionVO(siteNodeId);
-					hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", siteNodeVersionVO.getId().toString());
-					//hasUserPageAccess = ExtranetController.getController().getIsPrincipalAuthorized(principal, "SiteNode", "" + siteNodeId, this.nodeDeliveryController); } 
+					//SiteNodeVersionVO siteNodeVersionVO = this.nodeDeliveryController.getActiveSiteNodeVersionVO(siteNodeId);
+					hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, interceptionPointName, protectedSiteNodeVersionId.toString());
 				}
 			}
-			*/
 		} 
 		catch(Exception e)
 		{
@@ -5039,7 +5055,7 @@ public class BasicTemplateController implements TemplateController
 		
 		return hasUserPageAccess;
 	}
-	
+
 	
 	/**
 	 * This method return true if the user logged in has access to the content sent in.
