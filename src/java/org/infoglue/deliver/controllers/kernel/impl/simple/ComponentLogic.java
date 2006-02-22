@@ -1043,7 +1043,6 @@ public class ComponentLogic
 	public Map getComponentProperty(Integer siteNodeId, Integer languageId, String propertyName, boolean useInheritance)
 	{
 	    Map componentProperty = getComponentProperty(siteNodeId, languageId, propertyName);
-	    
 	    SiteNodeVO parentSiteNodeVO = this.templateController.getParentSiteNode(siteNodeId);
 	    while(componentProperty == null && useInheritance && parentSiteNodeVO != null)
 	    {
@@ -1072,12 +1071,12 @@ public class ComponentLogic
 			
 			if(property != null)
 			{
-				//getLogger().info("There was an cached content attribute:" + attribute);
+				logger.info("There was an cached property:" + key + ":" + property);
 			    //System.out.println("Returning cached property...");
 			}
 			else
 			{
-			    //System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
+			    logger.info("Have to fetch property from XML...:" + key);
 	        
 		        //HashMap property = null;
 				
@@ -1147,14 +1146,14 @@ public class ComponentLogic
 					    if(contentVersionId != null)
 					    {
 						    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
-							CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
+						    logger.info("Caching property:" + key);
+					        CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
 					    }
 			        }
-				}			
-				
-				return property;
-				
+				}							
 			}
+			
+			return property;
 		}
 		catch(Exception e)
 		{
