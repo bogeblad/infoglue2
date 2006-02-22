@@ -164,6 +164,8 @@ public class ViewPageFilter implements Filter
 	            try
 	            {
 	                repositoryVOList = getRepositoryId(httpRequest, db);
+	                logger.info("repositoryVOList:" + repositoryVOList.size());
+	                
 	                languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, db);
 	            
 		            Integer siteNodeId = null;
@@ -311,22 +313,33 @@ public class ViewPageFilter implements Filter
         
         List repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName);
         logger.info("repositories:" + repositories);
-    
-        if (repositories.size() == 0) 
-        {
-            try 
-            {
-                repositories.add(RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db));
-            } 
-            catch (Exception e1) 
-            {
-                logger.error("Failed to lookup master repository");
-            }
-        }
+                
 
         if (repositories.size() == 0)
-            throw new ServletException("Unable to find a repository for server-name " + serverName);
-
+        {
+            String redirectUrl = RedirectController.getController().getRedirectUrl(request);
+            logger.info("redirectUrl:" + redirectUrl);
+            if(redirectUrl == null || redirectUrl.length() == 0)
+            {
+                if (repositories.size() == 0) 
+                {
+                    try 
+                    {
+                        logger.info("Adding master repository instead - is this correct?");
+                        
+                        repositories.add(RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db));
+                    } 
+                    catch (Exception e1) 
+                    {
+                        logger.error("Failed to lookup master repository");
+                    }
+                }
+                
+                if (repositories.size() == 0)
+                    throw new ServletException("Unable to find a repository for server-name " + serverName);
+            }
+        }
+        
         CacheController.cacheObject(uriCache.CACHE_NAME, repCacheKey, repositories);
         //session.setAttribute(FilterConstants.REPOSITORY_ID, repository.getRepositoryId());
         return repositories;
