@@ -1065,7 +1065,7 @@ public class ComponentLogic
 		    List contentVersionIdList = new ArrayList();
 
 	        String componentPropertiesXML = getPageComponentsString(this.templateController, siteNodeId, languageId, new Integer(-1), contentVersionIdList);
-	        //logger.info("componentPropertiesXML:" + componentPropertiesXML);
+	        logger.info("componentPropertiesXML:" + componentPropertiesXML);
 	        
 		    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
 			Map property = (Map)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
