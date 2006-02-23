@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
+import org.infoglue.deliver.util.CacheController;
 
 import webwork.action.ActionContext;
 
@@ -191,6 +193,31 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return value;
 	}	
 
+	public Principal getAnonymousPrincipal() throws SystemException
+	{
+	    Principal principal = null;
+		try
+		{
+			principal = (Principal)CacheController.getCachedObject("userCache", "anonymous");
+			if(principal == null)
+			{
+			    Map arguments = new HashMap();
+			    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
+			    
+				principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+				
+				if(principal != null)
+					CacheController.cacheObject("userCache", "anonymous", principal);
+			}			
+		}
+		catch(Exception e) 
+		{
+		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		}
+		
+		return principal;
+	}
 	
 	/**
 	 * Used by the view pages to determine if the current user has sufficient access rights

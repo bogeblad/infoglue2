@@ -33,6 +33,7 @@ import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	    Collection accessRightGroups = AccessRightController.getController().getAccessRightGroupVOList(accessRightId);
 		return accessRightGroups;
 	}
-	
+		
 	public List getRoleList()
 	{
 		return this.roleList;

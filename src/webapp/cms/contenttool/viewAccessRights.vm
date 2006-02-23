@@ -20,6 +20,40 @@
 		document.getElementById("userName").value = userName;
 		document.addUserForm.submit();
 	}
+	
+	#set($anonymousPrincipal = $anonymousPrincipal)
+	//alert("anonymousPrincipal: + $anonymousPrincipal.roles");
+	var roles = new Array($anonymousPrincipal.roles.size());
+	
+	function confirmSave()
+	{
+		var x=0;
+		var selected = false;
+		for (x=0; x<roles.length; x++)
+		{
+			var roleElementId = roles[x];
+			//alert("roleElementId:" + roleElementId);
+			var element = document.getElementById(roleElementId);
+			//alert("element:" + element.checked);
+			if(element.checked)
+			{
+				selected = true;
+			}
+		}
+		
+		if(!selected)
+		{
+			if(confirm('$ui.getString("tool.contenttool.accessRightsAnonymousWarning")'))
+			{
+				document.editForm.submit();
+			}
+		}
+		else
+		{
+			document.editForm.submit();
+		}
+	}
+
 -->
 </script>
 
@@ -96,9 +130,22 @@
 							#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 						#end 
 						
+						#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNode.Read")
+							#set($anonymousRolesCount = 0)
+							#foreach($anonymousRole in $anonymousPrincipal.roles)
+								#if($anonymousRole.name == $role.name)
+									<script type="text/javascript">
+										//alert("Anonymous role found $role.name");
+										roles[$anonymousRolesCount] = "${interceptionPointVO.id}_${role.name}_hasAccess";
+									</script>
+									#set($anonymousRolesCount = $anonymousRolesCount + 1)
+								#end
+							#end
+						#end
+																	
 						<input type="hidden" name="${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
 						<input type="hidden" name="${interceptionPointVO.id}_${roleIndex}_roleName" value="$role.name">
-						<input type="checkbox" name="${interceptionPointVO.id}_${role.name}_hasAccess" value="true" $checked>
+						<input type="checkbox" id="${interceptionPointVO.id}_${role.name}_hasAccess" name="${interceptionPointVO.id}_${role.name}_hasAccess" value="true" $checked>
 						
 					</td>
 					<td></td>
@@ -114,7 +161,7 @@
 	</tr>
 	<tr>	
 		<td colspan="$interceptionPointIndex">
-			<a href="javascript:document.editForm.submit();"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
+			<a href="javascript:confirmSave();"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
 			<!--<a href="javascript:saveAndExit(document.editForm, 'UpdateAccessRights!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>-->
 			<a href="$returnAddress"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>
@@ -158,19 +205,21 @@
 		<td></td>
 		#set($interceptionPointIndex = 0)
 		#foreach($interceptionPointVO in $interceptionPointVOList)
-			<td align="center" nowrap>
-				#set($checked = "")
-				#if($accessRightsUserRow.accessRights.get($interceptionPointVO.id) == true)
-					#set($checked = "checked")
-				#end 
-				
-				<input type="hidden" name="${interceptionPointVO.id}_${userIndex}_userName" value="$accessRightsUserRow.userName">
-				<!--<input type="checkbox" name="${interceptionPointVO.id}_${accessRightsUserRow.userName}_hasAccess" value="true" $checked>-->
-				<input type="checkbox" name="${interceptionPointVO.id}_${accessRightsUserRow.userName}_hasAccess" value="true" disabled="true" $checked>
-				
-			</td>
-			<td></td>
-			#set($interceptionPointIndex = $interceptionPointIndex + 1)
+			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+				<td align="center" nowrap>
+					#set($checked = "")
+					#if($accessRightsUserRow.accessRights.get($interceptionPointVO.id) == true)
+						#set($checked = "checked")
+					#end 
+					
+					<input type="hidden" name="${interceptionPointVO.id}_${userIndex}_userName" value="$accessRightsUserRow.userName">
+					<!--<input type="checkbox" name="${interceptionPointVO.id}_${accessRightsUserRow.userName}_hasAccess" value="true" $checked>-->
+					<input type="checkbox" name="${interceptionPointVO.id}_${accessRightsUserRow.userName}_hasAccess" value="true" disabled="true" $checked>
+					
+				</td>
+				<td></td>
+				#set($interceptionPointIndex = $interceptionPointIndex + 1)
+			#end
 		#end
 		<td><a href="javascript:deleteUser('$accessRightsUserRow.userName');"><img src="images/delete.gif" width="12" height="12" border="0"></a></td>
 	</tr>
