@@ -195,6 +195,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
 	public Principal getAnonymousPrincipal() throws SystemException
 	{
+		/*
 	    Principal principal = null;
 		try
 		{
@@ -210,6 +211,20 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 				if(principal != null)
 					CacheController.cacheObject("userCache", "anonymous", principal);
 			}			
+		}
+		catch(Exception e) 
+		{
+		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		}
+		*/
+	    Principal principal = null;
+		try
+		{
+		    Map arguments = new HashMap();
+		    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+		    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
+		    
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 		}
 		catch(Exception e) 
 		{
