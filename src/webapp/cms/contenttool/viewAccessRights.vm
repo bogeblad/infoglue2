@@ -46,7 +46,7 @@
 		}
 		
 		//alert("hasGroupLimitation:" + hasGroupLimitation);
-		if(hasGroupLimitation)
+		if(selected && hasGroupLimitation)
 		{
 			var y=0;
 			var selected = false;
