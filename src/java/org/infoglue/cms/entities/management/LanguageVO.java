@@ -23,12 +23,15 @@
 
 package org.infoglue.cms.entities.management;
 
+import java.util.Locale;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.*;
 import org.infoglue.cms.util.*;
 import org.infoglue.cms.util.validators.*;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 
 /**
  * This entity represents a language
@@ -131,6 +134,38 @@ public class LanguageVO implements BaseEntityVO
 	public int hashCode()
 	{
 	    return this.languageId.intValue();
+	}
+
+	/**
+	 * Returns the locale matching this language languageCode.
+	 * @return java.util.Locale
+	 */
+
+	public Locale getLocale()
+	{
+		return LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithCode(this.languageCode);
+	}
+
+	/**
+	 * Returns the display name for this language
+	 * @return
+	 */
+	
+	public String getDisplayLanguage()
+	{
+	    Locale locale = getLocale();
+	    return locale.getDisplayLanguage(); 
+	}
+
+	/**
+	 * Returns the localized display name for this language
+	 * @return
+	 */
+
+	public String getLocalizedDisplayLanguage()
+	{
+	    Locale locale = getLocale();
+	    return locale.getDisplayLanguage(locale); 
 	}
 
 }

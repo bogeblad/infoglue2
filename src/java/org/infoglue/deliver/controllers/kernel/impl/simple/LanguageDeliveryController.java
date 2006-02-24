@@ -350,6 +350,41 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		return locale; 
 	}
 
+	/**
+	 * This method returns language with the languageCode sent in. 
+	 */
+	
+	public Locale getLocaleWithCode(String languageCode)
+	{
+		String key = "" + languageCode;
+		getLogger().info("key:" + key);
+		Locale locale = (Locale)CacheController.getCachedObject("localeCache", key);
+		if(locale != null)
+		{
+			getLogger().info("There was an cached locale:" + locale);
+		}
+		else
+		{
+			locale = Locale.getDefault();
+			
+			if (languageCode != null)
+			{
+				try 
+				{
+					locale = new Locale(languageCode);
+				} 
+				catch (Exception e) 
+				{
+					getLogger().error("An error occurred in getLocaleWithCode: getting locale with languageCode:" + languageCode + "," + e, e);
+				}	
+			}
+			
+			CacheController.cacheObject("localeCache", key, locale);				
+		}
+		
+		return locale; 
+	}
+
 
 	/**
 	 * This method returns language with the languageCode sent in. 
