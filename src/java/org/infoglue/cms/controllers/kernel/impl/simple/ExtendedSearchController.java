@@ -315,7 +315,7 @@ class SqlBuilder
 	 */
 	private String generate() 
 	{
-		return "CALL SQL" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort()) + SPACE + generateFromClause() + SPACE + generateWhereClause() + " AS " + SmallContentImpl.class.getName();
+		return "CALL SQL" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort()) + SPACE + generateFromClause() + SPACE + generateWhereClause() + SPACE + (ExtendedSearchController.useFull() ? generateOrderByClause() : generateOrderByClauseShort()) + SPACE + "AS " + SmallContentImpl.class.getName();
 	}
 	
 	/**
@@ -408,6 +408,23 @@ class SqlBuilder
 		
 		return clauses;
 	}
+
+	/**
+	 * 
+	 */
+	private String generateOrderByClauseShort() 
+	{
+		return "ORDER BY " + CONTENT_ALIAS + ".ContId";
+	}
+
+	/**
+	 * 
+	 */
+	private String generateOrderByClause() 
+	{
+		return "ORDER BY " + CONTENT_ALIAS + ".contentId";
+	}
+
 	
 	/**
 	 * 
