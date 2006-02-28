@@ -420,6 +420,7 @@ public class CacheController extends Thread
 				}
 				if((cacheName.equalsIgnoreCase("assetUrlCache") || cacheName.equalsIgnoreCase("assetThumbnailUrlCache")) && (entity.indexOf("DigitalAsset") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 				{
+					clear = true;
 				}
 				if(cacheName.equalsIgnoreCase("sortedChildContentsCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 				{
@@ -502,13 +503,13 @@ public class CacheController extends Thread
 					        
 					    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
 
-					    if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
+				    	if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
 					    {
 					    	cacheInstance.flushAll();
 					    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
 						    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 					    	logger.info("clearing:" + e.getKey());
-					   }
+					    }
 					    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
 					    {
 					        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
@@ -542,7 +543,7 @@ public class CacheController extends Thread
 						}
 					    else
 					    {
-							cacheInstance.flushAll();
+					    	cacheInstance.flushAll();
 					    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
 						    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 							logger.info("clearing:" + e.getKey());
