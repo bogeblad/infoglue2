@@ -31,21 +31,21 @@
 	
 	function confirmSave()
 	{
-		#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNode.Read")					
-			var x=0;
-			var selected = false;
-			for (x=0; x<roles.length; x++)
+		var x=0;
+		var selected = false;
+		//alert("roles:" + roles.length);
+		for (x=0; x<roles.length; x++)
+		{
+			var roleElementId = roles[x];
+			//alert("roleElementId:" + roleElementId);
+			var element = document.getElementById(roleElementId);
+			//alert("element:" + element.checked);
+			if(element && element.checked)
 			{
-				var roleElementId = roles[x];
-				//alert("roleElementId:" + roleElementId);
-				var element = document.getElementById(roleElementId);
-				//alert("element:" + element.checked);
-				if(element && element.checked)
-				{
-					selected = true;
-				}
+				selected = true;
 			}
-			
+		}
+		
 		//alert("hasGroupLimitation:" + hasGroupLimitation);
 		if(selected && hasGroupLimitation)
 		{
@@ -64,21 +64,18 @@
 				}
 			}
 		} 
-		
-			if(!selected)
-			{
-				if(confirm('$ui.getString("tool.contenttool.accessRightsAnonymousWarning")'))
-				{
-					document.editForm.submit();
-				}
-			}
-			else
+	
+		if(!selected && useAnonymousWarningCheck)
+		{
+			if(confirm('$ui.getString("tool.contenttool.accessRightsAnonymousWarning")'))
 			{
 				document.editForm.submit();
 			}
-		#else
+		}
+		else
+		{
 			document.editForm.submit();
-		#end
+		}
 	}
 
 -->
@@ -105,12 +102,17 @@
 	#set($interceptionPointIndex = $interceptionPointIndex + 1)
 #end
 
+<script type="text/javascript">var useAnonymousWarningCheck = false;</script>
+
 <table border="0" width="95%" cellpadding="0" cellspacing="0">
 	<tr class="darkgreen">
 		<td class="smalllabel">Role</td>
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		#set($colspan = 1)
 		#foreach($interceptionPointVO in $interceptionPointVOList)
+			#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
+				<script type="text/javascript">useAnonymousWarningCheck = true;</script>	
+			#end
 			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
 				#set($accessRightId = -1)
 				#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
@@ -158,7 +160,7 @@
 							#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 						#end 
 						
-						#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNode.Read")
+						#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
 							#set($anonymousRolesCount = 0)
 							#foreach($anonymousRole in $anonymousPrincipal.roles)
 								#if($anonymousRole.name == $role.name)
@@ -209,12 +211,14 @@
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		#set($colspan = 1)
 		#foreach($interceptionPointVO in $interceptionPointVOList)
-			#set($accessRightId = -1)
-			#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
-			#set($dotIndex = $interceptionPointVO.name.indexOf(".") + 1)
-			<td align="center" class="smalllabel">$interceptionPointVO.name.substring($dotIndex)</td>
-			<td><img src="images/trans.gif" width="20" height="1"></td>
-			#set($colspan = $colspan + 3)
+			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+				#set($accessRightId = -1)
+				#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
+				#set($dotIndex = $interceptionPointVO.name.indexOf(".") + 1)
+				<td align="center" class="smalllabel">$interceptionPointVO.name.substring($dotIndex)</td>
+				<td><img src="images/trans.gif" width="20" height="1"></td>
+				#set($colspan = $colspan + 3)
+			#end
 		#end
 		<td><img src="images/trans.gif" width="20" height="1"></td>		
 	</tr>
@@ -260,20 +264,22 @@
 		<td></td>
 		#set($interceptionPointIndex = 0)
 		#foreach($interceptionPointVO in $interceptionPointVOList)
-			<td align="center" nowrap>
-				#set($checked = "")
-				#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
-					#set($checked = "checked")
-					#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
-				#end 
-				
-				<input type="hidden" name="${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
-				<input type="hidden" name="interceptionPointId" value="$interceptionPointVO.id">
-				<input type="checkbox" name="${interceptionPointVO.id}_hasAccess" value="true" $checked>
-				
-			</td>
-			<td></td>
-			#set($interceptionPointIndex = $interceptionPointIndex + 1)
+			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+				<td align="center" nowrap>
+					#set($checked = "")
+					#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
+						#set($checked = "checked")
+						#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
+					#end 
+					
+					<input type="hidden" name="${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
+					<input type="hidden" name="interceptionPointId" value="$interceptionPointVO.id">
+					<input type="checkbox" name="${interceptionPointVO.id}_hasAccess" value="true" $checked>
+					
+				</td>
+				<td></td>
+				#set($interceptionPointIndex = $interceptionPointIndex + 1)
+			#end
 		#end
 	</tr>
 	
@@ -314,7 +320,7 @@
 		
 		<script type="text/javascript">
 		
-			function confirmGroupSave(form, field)
+			function confirmGroupSave(form, field, interceptionPointName)
 			{
 				var y=0;
 				var selected = false;
@@ -325,7 +331,7 @@
 					//alert("groupElementId:" + groupElementId);
 					var element = document.getElementById(groupElementId);
 					//alert("element:" + element.checked);
-					if(element.checked)
+					if(element && element.checked)
 					{
 						selected = true;
 					}
@@ -345,7 +351,8 @@
 				}	
 				
 				//alert("allUnchecked:" + allUnchecked);
-				if(!selected && !allUnchecked)
+				//alert("interceptionPointName:" + interceptionPointName);
+				if(!selected && !allUnchecked && (interceptionPointName == "SiteNodeVersion.Read" || interceptionPointName == "Content.Read"))
 				{
 					if(confirm('$ui.getString("tool.contenttool.accessRightsAnonymousWarning")'))
 					{
@@ -387,7 +394,7 @@
 				#end
 			#end
 
-			#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNode.Read")
+			#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
 				#set($anonymousGroupsCount = 0)
 				#foreach($anonymousGroup in $anonymousPrincipal.groups)
 					#if($anonymousGroup.name == $group.name)
@@ -410,7 +417,7 @@
 		</tr>
 		<tr>
 		  	<td colspan="2">
-		  	<a href="javascript:confirmGroupSave(document.groups${accessRightId}Form, document.groups${accessRightId}Form.groupName);"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
+		  	<a href="javascript:confirmGroupSave(document.groups${accessRightId}Form, document.groups${accessRightId}Form.groupName, '$interceptionPointVO.name');"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
 		  	<img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" onclick="hideDiv('groups$accessRightId');">
 		  	</td>
 		</tr>
