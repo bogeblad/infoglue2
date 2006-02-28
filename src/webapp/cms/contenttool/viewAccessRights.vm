@@ -31,20 +31,21 @@
 	
 	function confirmSave()
 	{
-		var x=0;
-		var selected = false;
-		for (x=0; x<roles.length; x++)
-		{
-			var roleElementId = roles[x];
-			//alert("roleElementId:" + roleElementId);
-			var element = document.getElementById(roleElementId);
-			//alert("element:" + element.checked);
-			if(element.checked)
+		#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNode.Read")					
+			var x=0;
+			var selected = false;
+			for (x=0; x<roles.length; x++)
 			{
-				selected = true;
+				var roleElementId = roles[x];
+				//alert("roleElementId:" + roleElementId);
+				var element = document.getElementById(roleElementId);
+				//alert("element:" + element.checked);
+				if(element && element.checked)
+				{
+					selected = true;
+				}
 			}
-		}
-		
+			
 		//alert("hasGroupLimitation:" + hasGroupLimitation);
 		if(selected && hasGroupLimitation)
 		{
@@ -64,17 +65,20 @@
 			}
 		} 
 		
-		if(!selected)
-		{
-			if(confirm('$ui.getString("tool.contenttool.accessRightsAnonymousWarning")'))
+			if(!selected)
+			{
+				if(confirm('$ui.getString("tool.contenttool.accessRightsAnonymousWarning")'))
+				{
+					document.editForm.submit();
+				}
+			}
+			else
 			{
 				document.editForm.submit();
 			}
-		}
-		else
-		{
+		#else
 			document.editForm.submit();
-		}
+		#end
 	}
 
 -->
@@ -396,10 +400,10 @@
 				#end
 			#end
 
-			<tr>
+		<tr>
 			  	<td><input type="checkbox" id="${interceptionPointVO.id}_${group.name}_hasAccess" name="groupName" value="${group.name}" $selected></td>
-			  	<td>$group.name</td>
-			</tr>
+		  	<td>$group.name</td>
+		</tr>
 		#end
 		<tr>
 		  	<td colspan="2">&nbsp;</td>
