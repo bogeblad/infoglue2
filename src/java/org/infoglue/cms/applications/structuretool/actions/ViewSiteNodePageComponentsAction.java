@@ -78,8 +78,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private String currentAction 		 	 = null;
 	private Integer filterRepositoryId 		 = null; 
 	private String sortProperty 			 = "name";
-	private String[] allowedContentTypeNames = null;
-	private String[] allowedComponentNames = null;
+	private String[] allowedContentTypeIds	 = null;
+	private String[] allowedComponentNames 	 = null;
 	
 	public ViewSiteNodePageComponentsAction()
 	{
@@ -1320,31 +1320,31 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
         this.direction = direction;
     }
     
-    public String[] getAllowedContentTypeNames()
+    public String[] getAllowedContentTypeIds()
     {
-        return allowedContentTypeNames;
+        return allowedContentTypeIds;
     }
     
-    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
     {
-        this.allowedContentTypeNames = allowedContentTypeNames;
+        this.allowedContentTypeIds = allowedContentTypeIds;
     }
-    
-    public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+
+    public String getAllowedContentTypeIdsAsUrlEncodedString() throws Exception
     {
         StringBuffer sb = new StringBuffer();
         
-        for(int i=0; i<allowedContentTypeNames.length; i++)
+        for(int i=0; i<allowedContentTypeIds.length; i++)
         {
             if(i > 0)
                 sb.append("&");
             
-            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNames[i], "UTF-8"));
+            sb.append("allowedContentTypeIds=" + URLEncoder.encode(allowedContentTypeIds[i], "UTF-8"));
         }
-        
+
         return sb.toString();
     }
-    
+
     public boolean getShowSimple()
     {
         return showSimple;

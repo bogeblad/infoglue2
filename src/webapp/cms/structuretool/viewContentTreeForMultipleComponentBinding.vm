@@ -30,7 +30,7 @@
 		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&$allowedContentTypeNamesAsUrlEncodedString&showSimple=$showSimple";
+			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&$allowedContentTypeIdsAsUrlEncodedString&showSimple=$showSimple";
 			document.location.href = url;
 		}
 
@@ -438,7 +438,7 @@
 				#if($tree == "applet")
 					#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
 				#else
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree!bindingView.action?repositoryId=${repositoryId}&${allowedContentTypeNamesAsUrlEncodedString}" width="350" height="400" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree!bindingView.action?repositoryId=${repositoryId}&${allowedContentTypeIdsAsUrlEncodedString}" width="350" height="400" align="baseline"></IFRAME>
 				#end
 			</td>
 		</tr>	

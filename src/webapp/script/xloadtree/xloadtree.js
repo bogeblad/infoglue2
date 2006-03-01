@@ -69,6 +69,7 @@ function WebFXLoadTree(sText, sXmlSrc, sAction, sBehavior, sIcon, sOpenIcon) {
 	
 	// setup default property values
 	this.src = sXmlSrc;
+	//alert("sXmlSrc:" + sXmlSrc);
 	this.loading = false;
 	this.loaded = false;
 	this.errorText = "";
@@ -106,6 +107,7 @@ function WebFXLoadTreeItem(sText, sXmlSrc, sAction, eParent, sIcon, sOpenIcon, h
 
 	// setup default property values
 	this.src = sXmlSrc;
+	//alert("sXmlSrc:" + sXmlSrc);
 	this.loading = false;
 	this.loaded = false;
 	this.errorText = "";
@@ -194,6 +196,7 @@ function _xmlTreeToJsTree(oNode) {
 	var icon = oNode.getAttribute("icon");
 	var openIcon = oNode.getAttribute("openIcon");
 	var src = oNode.getAttribute("src");
+	//alert("src:" + src);
 	var hasChildren = oNode.getAttribute("hasChildren");
 	
 	// Stefan Sik addition 20041120

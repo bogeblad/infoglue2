@@ -26,6 +26,10 @@ package org.infoglue.deliver.applications.databeans;
 import java.net.URLEncoder;
 import java.util.*;
 
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+
 /**
  * 
  */
@@ -208,6 +212,24 @@ public class ComponentProperty
             sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNamesArray[i], "UTF-8"));
         }
         
+        return sb.toString();
+    }
+
+    public String getAllowedContentTypeIdAsUrlEncodedString(Database db) throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeNamesArray.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            String allowedContentTypeName = allowedContentTypeNamesArray[i];
+            ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(allowedContentTypeName, db);
+            sb.append("allowedContentTypeIds=" + contentTypeDefinitionVO.getId());
+        }
+        
+        System.out.println("AllowedContentTypeId:" + sb.toString());
         return sb.toString();
     }
 

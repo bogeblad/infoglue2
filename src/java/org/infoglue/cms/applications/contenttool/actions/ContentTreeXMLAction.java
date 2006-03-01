@@ -78,7 +78,7 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
 	private String action = "";
 	private boolean createAction = false;
 	private boolean useTemplate = false;
-	private String[] allowedContentTypeNames = null;
+	private String[] allowedContentTypeIds = null;
 
 	public INodeSupplier getNodeSupplier() throws SystemException
 	{
@@ -296,8 +296,8 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
     			String src= action + "?repositoryId=" + r.getId() + urlArgSeparator + "parent=" + contentVO.getId();
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
-    			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+				String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
+    			if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
     	        String text=r.getName();
     	        Element element = root.addElement("tree");
     	        element
@@ -313,7 +313,7 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
     	
     	sup = getNodeSupplier();
 		((ContentNodeSupplier) sup).setShowLeafs(showLeafs.compareTo("yes")==0);
-		((ContentNodeSupplier) sup).setAllowedContentTypeNames(allowedContentTypeNames);
+		((ContentNodeSupplier) sup).setAllowedContentTypeIds(allowedContentTypeIds);
     	
     	if(parent == null)
     	{
@@ -323,8 +323,8 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
 			String src = action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + node.getId();
 			if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 			if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-			String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
-			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+			String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
+			if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
 	        
 			
 	        Element elm = root.addElement("tree");
@@ -360,8 +360,8 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(createAction && src.length() >0) src += urlArgSeparator + "showLeafs=" + showLeafs;
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
-    			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+				String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
+    			if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
     	        
 		        Element elm = root.addElement("tree");
 		        elm
@@ -480,26 +480,26 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
 		this.showLeafs = showLeafs;
 	}
 	
-    public String[] getAllowedContentTypeNames()
+    public String[] getAllowedContentTypeIds()
     {
-        return allowedContentTypeNames;
+        return allowedContentTypeIds;
     }
     
-    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
     {
-        this.allowedContentTypeNames = allowedContentTypeNames;
+        this.allowedContentTypeIds = allowedContentTypeIds;
     }
     
-    public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+    public String getAllowedContentTypeIdsAsUrlEncodedString() throws Exception
     {
         StringBuffer sb = new StringBuffer();
         
-        for(int i=0; i<allowedContentTypeNames.length; i++)
+        for(int i=0; i<allowedContentTypeIds.length; i++)
         {
             if(i > 0)
                 sb.append("&");
             
-            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNames[i], "UTF-8"));
+            sb.append("allowedContentTypeIds=" + URLEncoder.encode(allowedContentTypeIds[i], "UTF-8"));
         }
         
         return sb.toString();

@@ -76,7 +76,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 {
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.14 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.15 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -89,7 +89,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
     protected boolean createAction = false;
     protected boolean useTemplate = false;
     protected VisualFormatter formatter = new VisualFormatter();
-	protected String[] allowedContentTypeNames = null;
+	protected String[] allowedContentTypeIds = null;
 	
 	/*
 	 * 
@@ -316,10 +316,10 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
     	        String src= action + "?repositoryId=" + r.getId() + urlArgSeparator + "parent=" + entityVO.getId();
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
-				getLogger().info("allowedContentTypeNamesUrlEncodedString1:" + allowedContentTypeNamesUrlEncodedString);
-				if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) 
-				    src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+				String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
+				getLogger().info("allowedContentTypeIdsUrlEncodedString1:" + allowedContentTypeIdsUrlEncodedString);
+				if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) 
+				    src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
     	        
 				getLogger().info("src:" + src);
     			
@@ -347,10 +347,10 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 			String src = action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + node.getId();
 			if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 			if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-			String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
-			getLogger().info("allowedContentTypeNamesUrlEncodedString2:" + allowedContentTypeNamesUrlEncodedString);
-			if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) 
-			    src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+			String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
+			getLogger().info("allowedContentTypeIdsUrlEncodedString2:" + allowedContentTypeIdsUrlEncodedString);
+			if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) 
+			    src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
 	        
 			getLogger().info("src2:" + src);
 
@@ -389,8 +389,8 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(createAction && src.length() >0) src += urlArgSeparator + "showLeafs=" + showLeafs;
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
-				String allowedContentTypeNamesUrlEncodedString = getAllowedContentTypeNamesAsUrlEncodedString();
-				if(allowedContentTypeNamesUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeNamesUrlEncodedString;
+				String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
+				if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
     	        
 		        Element elm = root.addElement("tree");
 		        elm
@@ -493,29 +493,29 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		this.showLeafs = showLeafs;
 	}
 	
-    public String[] getAllowedContentTypeNames()
+    public String[] getAllowedContentTypeIds()
     {
-        return allowedContentTypeNames;
+        return allowedContentTypeIds;
     }
     
-    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
     {
-        this.allowedContentTypeNames = allowedContentTypeNames;
+        this.allowedContentTypeIds = allowedContentTypeIds;
     }
     
-	public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+	public String getAllowedContentTypeIdsAsUrlEncodedString() throws Exception
     {
-	    if(allowedContentTypeNames == null)
+	    if(allowedContentTypeIds == null)
 	        return "";
 	    
         StringBuffer sb = new StringBuffer();
         
-        for(int i=0; i<allowedContentTypeNames.length; i++)
+        for(int i=0; i<allowedContentTypeIds.length; i++)
         {
             if(i > 0)
                 sb.append("&");
             
-            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNames[i], "UTF-8"));
+            sb.append("allowedContentTypeIds=" + URLEncoder.encode(allowedContentTypeIds[i], "UTF-8"));
         }
         
         return sb.toString();

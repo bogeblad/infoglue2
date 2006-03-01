@@ -58,7 +58,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 
 	private ArrayList cacheLeafs;
 	private boolean showLeafs = true;
-	private String[] allowedContentTypeNames = null;
+	private String[] allowedContentTypeIds = null;
 	private InfoGluePrincipal infogluePrincipal = null;
 	
 	public ContentNodeSupplier(Integer repositoryId, InfoGluePrincipal infogluePrincipal) throws SystemException
@@ -119,7 +119,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		//Filter list on content type names if set such is stated
 		try
 		{
-		    if(allowedContentTypeNames != null)
+		    if(allowedContentTypeIds != null)
 			{
 		        List filteredList = new ArrayList();
 		        Iterator iterator = children.iterator();
@@ -130,10 +130,11 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 					{
 						ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
 						boolean exists = false;
-						for(int i=0; i<allowedContentTypeNames.length; i++)
+						for(int i=0; i<allowedContentTypeIds.length; i++)
 						{
-						    String allowedName = allowedContentTypeNames[i];
-							if(allowedName.equalsIgnoreCase(contentTypeDefinitionVO.getName()))
+						    String allowedId = allowedContentTypeIds[i];
+						    
+						    if(allowedId.equalsIgnoreCase(contentTypeDefinitionVO.getId().toString()))
 							{
 						        exists = true;
 						        break;
@@ -211,13 +212,13 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		this.showLeafs = showLeafs;
 	}
 
-    public String[] getAllowedContentTypeNames()
+    public String[] getAllowedContentTypeIds()
     {
-        return allowedContentTypeNames;
+        return allowedContentTypeIds;
     }
     
-    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
     {
-        this.allowedContentTypeNames = allowedContentTypeNames;
+        this.allowedContentTypeIds = allowedContentTypeIds;
     }
 }

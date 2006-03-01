@@ -47,7 +47,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	private String treeMode = "classic";
 	private Integer select;
 	private BaseNode rootNode = null;
-	private String[] allowedContentTypeNames = null;
+	private String[] allowedContentTypeIds = null;
 	private String bodyClass;
 	
 	/* Experiment 2003-09-11 TODO:
@@ -100,7 +100,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 		{
 			ContentNodeSupplier contentNodeSupplier = new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal());
 			contentNodeSupplier.setShowLeafs(showLeafs.compareTo("yes")==0);
-			contentNodeSupplier.setAllowedContentTypeNames(allowedContentTypeNames);
+			contentNodeSupplier.setAllowedContentTypeIds(allowedContentTypeIds);
 			sup = contentNodeSupplier;
         }
 		
@@ -230,28 +230,28 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 		this.treeMode = treeMode;
 	}
 	
-    public String[] getAllowedContentTypeNames()
+    public String[] getAllowedContentTypeIds()
     {
-        return allowedContentTypeNames;
+        return allowedContentTypeIds;
     }
     
-    public void setAllowedContentTypeNames(String[] allowedContentTypeNames)
+    public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
     {
-        this.allowedContentTypeNames = allowedContentTypeNames;
+        this.allowedContentTypeIds = allowedContentTypeIds;
     }
     
-    public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
+    public String getAllowedContentTypeIdsAsUrlEncodedString() throws Exception
     {
         StringBuffer sb = new StringBuffer();
         
-        for(int i=0; i<allowedContentTypeNames.length; i++)
+        for(int i=0; i<allowedContentTypeIds.length; i++)
         {
             if(i > 0)
                 sb.append("&");
             
-            sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNames[i], "UTF-8"));
+            sb.append("allowedContentTypeIds=" + URLEncoder.encode(allowedContentTypeIds[i], "UTF-8"));
         }
-        
+
         return sb.toString();
     }
     
