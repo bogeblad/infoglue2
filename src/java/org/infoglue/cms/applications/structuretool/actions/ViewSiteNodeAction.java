@@ -38,6 +38,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.entities.management.*;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -337,6 +338,12 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	        
 	        commitTransaction(db);
 	    }
+		catch(ConstraintException ce)
+		{
+			getLogger().info("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
 		catch(Exception e)
 		{
 			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
