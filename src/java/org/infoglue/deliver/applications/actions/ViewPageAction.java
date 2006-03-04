@@ -276,7 +276,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 		}
 		
-		System.out.println("The page delivery took " + elapsedTime + "ms");
+		//System.out.println("The page delivery took " + elapsedTime + "ms");
 		
         return NONE;
     }

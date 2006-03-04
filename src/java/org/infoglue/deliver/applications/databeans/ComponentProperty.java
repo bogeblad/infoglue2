@@ -229,7 +229,6 @@ public class ComponentProperty
             sb.append("allowedContentTypeIds=" + contentTypeDefinitionVO.getId());
         }
         
-        System.out.println("AllowedContentTypeId:" + sb.toString());
         return sb.toString();
     }
 
