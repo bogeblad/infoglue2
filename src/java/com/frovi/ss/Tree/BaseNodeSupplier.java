@@ -10,7 +10,6 @@ import java.util.Collection;
  */
 public abstract class BaseNodeSupplier implements INodeSupplier
 {
-	private Integer defaultRootNodeId = new Integer(0);
 	private BaseNode rootNode = null;
 	
 	public boolean hasChildren()

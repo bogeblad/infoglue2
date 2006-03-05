@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -44,7 +43,6 @@ public class testRecursive {
 		List l = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursive(new Integer(84),new Integer(0), true);
 		
 		Iterator it = l.iterator();
-		ContentVO contentVO = null;
 		ContentVersionVO contentVersionVO; 
 		
 		while (it.hasNext())
