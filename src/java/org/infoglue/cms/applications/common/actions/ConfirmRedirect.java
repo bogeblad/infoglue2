@@ -38,7 +38,9 @@ import webwork.util.ServletValueStack;
  */
 public class ConfirmRedirect extends InfoGlueAbstractAction {
 
-  	private String unparsedURL;
+	private static final long serialVersionUID = 8512298644737456785L;
+
+	private String unparsedURL;
 
 
 	public void setUrl(String unparsedURL) 

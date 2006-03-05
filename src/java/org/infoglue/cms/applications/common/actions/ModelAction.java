@@ -1,7 +1,7 @@
 package org.infoglue.cms.applications.common.actions;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.infoglue.cms.entities.kernel.Persistent;
 import org.infoglue.cms.exception.ConstraintException;

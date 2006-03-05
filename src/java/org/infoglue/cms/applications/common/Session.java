@@ -23,22 +23,17 @@
 
 package org.infoglue.cms.applications.common;
 
-import org.infoglue.cms.entities.management.SystemUser;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
-
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import webwork.action.factory.SessionMap;
+import org.infoglue.cms.entities.management.SystemUser;
+import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
+import org.infoglue.cms.security.InfoGluePrincipal;
+
 import webwork.action.ActionContext;
+import webwork.action.factory.SessionMap;
 
 
 /**

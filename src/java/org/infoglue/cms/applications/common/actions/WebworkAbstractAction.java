@@ -23,35 +23,31 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.lang.reflect.Method;
+import java.net.URLEncoder;
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConfigurationError;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-
-import java.lang.reflect.Method;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import org.infoglue.cms.util.StringManager;
+import org.infoglue.cms.util.StringManagerFactory;
+import org.infoglue.deliver.util.BrowserBean;
 
 import webwork.action.Action;
 import webwork.action.CommandDriven;
 import webwork.action.ResultException;
 import webwork.action.ServletRequestAware;
 import webwork.action.ServletResponseAware;
-
-import org.infoglue.cms.util.StringManager;
-import org.infoglue.cms.util.StringManagerFactory;
-
-import org.infoglue.cms.applications.common.Session;
-import org.infoglue.deliver.util.BrowserBean;
-
-import org.apache.log4j.Logger;
-
-import java.util.Locale;
-import java.net.URLEncoder;
 
 /**
  * @author Mattias Bogeblad

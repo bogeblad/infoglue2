@@ -33,7 +33,9 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewCMSToolFooterAction extends InfoGlueAbstractAction
 {
-    public String doExecute() throws Exception
+	private static final long serialVersionUID = 3673372385470882657L;
+
+	public String doExecute() throws Exception
     {
         return "success";
     }

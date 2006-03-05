@@ -23,10 +23,9 @@
 
 package org.infoglue.cms.applications.common.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.exception.ConfigurationError;
-
 import java.util.StringTokenizer;
+
+import org.infoglue.cms.exception.ConfigurationError;
 
 import webwork.util.ServletValueStack;
 
@@ -38,10 +37,11 @@ import webwork.util.ServletValueStack;
 public class ExtendedRedirect extends InfoGlueAbstractAction 
 {
 
+	private static final long serialVersionUID = -8254805372363786462L;
+	
 	private static final String UNPARSED_PARAMETER_DELIMITER = "#";
-  	private String unparsedURL;
-
-
+  	
+	private String unparsedURL;
 
 	/**
 	 *
@@ -51,7 +51,6 @@ public class ExtendedRedirect extends InfoGlueAbstractAction
 	{
 		this.unparsedURL = unparsedURL;
 	}
-
 
 	/**
 	 *

@@ -25,7 +25,6 @@
 package org.infoglue.cms.applications.cmstool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
@@ -45,6 +44,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class UpdateCacheAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = -1669612689042389758L;
+	
 	private String className = null;
 	private String objectId = null;
 	private String objectName = null;

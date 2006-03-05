@@ -33,21 +33,10 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewCMSToolAction extends InfoGlueAbstractAction
 {
-   /*
-    private Integer toolId = new Integer(0);
-	
-   
-    public void setToolId(Integer toolId)
-    {
-    	this.toolId = toolId;
-    }
+	private static final long serialVersionUID = -2904286525405758091L;
 
-    public Integer getToolId()
-    {
-    	return this.toolId;
-    }
- */
-    public String doExecute() throws Exception
+	
+	public String doExecute() throws Exception
     {
         return "success";
     }

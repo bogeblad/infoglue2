@@ -23,11 +23,11 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.util.Locale;
+
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
-
-import java.util.Locale;
 
 import webwork.action.CommandDriven;
 

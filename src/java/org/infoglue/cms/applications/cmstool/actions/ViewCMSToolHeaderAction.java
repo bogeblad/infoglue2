@@ -23,12 +23,9 @@
 
 package org.infoglue.cms.applications.cmstool.actions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -39,21 +36,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
 {
-    //private Integer toolId = new Integer(0);
-	private String userName = "";
+	private static final long serialVersionUID = -6699854300371586633L;
 
-	/*
-    public void setToolId(Integer toolId)
-    {
-    	this.toolId = toolId;
-    }
-
-    public Integer getToolId()
-    {
-    	return this.toolId;
-    }
-    */
-	
 	public String getUserName()
 	{
 		return this.getInfoGluePrincipal().getName();

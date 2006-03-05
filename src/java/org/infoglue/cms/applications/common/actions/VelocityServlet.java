@@ -23,12 +23,6 @@
 
 package org.infoglue.cms.applications.common.actions;
 
-import org.infoglue.cms.exception.ConfigurationError;
-import org.infoglue.cms.applications.common.Session;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.util.StringManager;
-import org.infoglue.cms.util.StringManagerFactory;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -42,11 +36,16 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
+import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.exception.ConfigurationError;
+import org.infoglue.cms.util.StringManager;
+import org.infoglue.cms.util.StringManagerFactory;
+
+import webwork.view.velocity.WebWorkVelocityServlet;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-
-import webwork.view.velocity.WebWorkVelocityServlet;
 
 /**
  *
@@ -60,6 +59,8 @@ import webwork.view.velocity.WebWorkVelocityServlet;
  */
 public class VelocityServlet extends WebWorkVelocityServlet
 {
+	private static final long serialVersionUID = 408929363112264207L;
+
 	private static final String PACKAGE_NAMES_INIT_PARAM = "packageNames";
 
 	private String packageNames[];

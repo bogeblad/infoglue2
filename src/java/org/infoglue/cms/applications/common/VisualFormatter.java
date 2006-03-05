@@ -23,14 +23,13 @@
 
 package org.infoglue.cms.applications.common;
 
-import org.apache.log4j.Logger;
-import org.infoglue.cms.util.CmsPropertyHandler;
-
-import java.util.Date;
-import java.util.Locale;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
+import java.util.Date;
+import java.util.Locale;
+
+import org.apache.log4j.Logger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class VisualFormatter
 {

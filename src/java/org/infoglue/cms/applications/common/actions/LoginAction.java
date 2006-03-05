@@ -23,12 +23,14 @@
 
 package org.infoglue.cms.applications.common.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import org.infoglue.cms.controllers.usecases.common.*;
+import org.infoglue.cms.controllers.usecases.common.LoginUCC;
+import org.infoglue.cms.controllers.usecases.common.LoginUCCFactory;
+import org.infoglue.cms.security.AuthenticationModule;
 
 public class LoginAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 35668814570153876L;
+
 	private String userName     = null;
 	private String password     = null;
 	private String errorMessage = "";
@@ -95,11 +97,22 @@ public class LoginAction extends InfoGlueAbstractAction
 		}
 	}	
 	
-	public String doLogout()
+	/**
+	 * This command invalidates the current session and then calls the authentication module logout method so it can
+	 * do it's stuff. Sometimes it involves redirecting the user somewhere and then we returns nothing in this method.
+	 */
+
+	public String doLogout() throws Exception
 	{
 		getHttpSession().invalidate();
 		
-		return "logout";
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null);
+		boolean redirected = authenticationModule.logoutUser(getRequest(), getResponse());
+		
+		if(redirected)
+			return NONE;
+		else
+			return "logout";
 	}
 	
 	public String getPrincipal()
