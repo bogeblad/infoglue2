@@ -204,6 +204,9 @@
 		<td>#editField("ServerNode.property.loginUrl" "loginUrl" "$this.getPropertyValue('loginUrl')" "51")</td>
 	</tr>
 	<tr>
+		<td>#editField("ServerNode.property.logoutUrl" "logoutUrl" "$this.getPropertyValue('logoutUrl')" "51")</td>
+	</tr>
+	<tr>
 		<td>#editField("ServerNode.property.invalidLoginUrl" "invalidLoginUrl" "$this.getPropertyValue('invalidLoginUrl')" "51")</td>
 	</tr>
 	<tr>
@@ -235,6 +238,50 @@
 	<tr>
 		<td>#editField("ServerNode.property.casServiceUrl" "casServiceUrl" "$this.getPropertyValue('casServiceUrl')" "51")</td>
 	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.casLogoutUrl" "casLogoutUrl" "$this.getPropertyValue('casLogoutUrl')" "51")</td>
+	</tr>
+
+	<tr>
+		<td>#subTitle("entity.ServerNode.property.deliverSecuritySettings.label")</td>
+	</tr>		
+	<tr>
+		<td>#editField("ServerNode.property.loginUrl" "deliver_loginUrl" "$this.getPropertyValue('deliver', 'loginUrl')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.logoutUrl" "deliver_logoutUrl" "$this.getPropertyValue('deliver', 'logoutUrl')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.invalidLoginUrl" "deliver_invalidLoginUrl" "$this.getPropertyValue('deliver', 'invalidLoginUrl')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.successLoginBaseUrl" "deliver_successLoginBaseUrl" "$this.getPropertyValue('deliver', 'successLoginBaseUrl')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.authenticatorClass" "deliver_authenticatorClass" "$this.getPropertyValue('deliver', 'authenticatorClass')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.authorizerClass" "deliver_authorizerClass" "$this.getPropertyValue('deliver', 'authorizerClass')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.serverName" "deliver_serverName" "$this.getPropertyValue('deliver', 'serverName')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.authConstraint" "deliver_authConstraint" "$this.getPropertyValue('deliver', 'authConstraint')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editTextArea("ServerNode.property.extraSecurityParameters" "deliver_extraSecurityParameters" "$this.getDataPropertyValue('deliver', 'extraSecurityParameters')" "50" "10" "normaltextarea")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.casValidateUrl" "deliver_casValidateUrl" "$this.getPropertyValue('deliver', 'casValidateUrl')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.casServiceUrl" "deliver_casServiceUrl" "$this.getPropertyValue('deliver', 'casServiceUrl')" "51")</td>
+	</tr>
+	<tr>
+		<td>#editField("ServerNode.property.casLogoutUrl" "deliver_casLogoutUrl" "$this.getPropertyValue('deliver', 'casLogoutUrl')" "51")</td>
+	</tr>
+
 	
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.cmsGUI.label")</td>
