@@ -23,7 +23,6 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import java.io.ByteArrayInputStream;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,18 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.dom4j.Document;
-import org.dom4j.Node;
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.VisualFormatter;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
-
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -55,10 +48,6 @@ import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 
 /**
@@ -145,30 +134,8 @@ public class ExtranetController extends BaseDeliveryController
 		Principal principal = null;
 		
 		try
-		{
-		    String authenticatorClass 	= InfoGlueAuthenticationFilter.authenticatorClass;
-		    String authorizerClass 	  	= InfoGlueAuthenticationFilter.authorizerClass;
-		    String invalidLoginUrl 		= InfoGlueAuthenticationFilter.invalidLoginUrl;
-		    String loginUrl 			= InfoGlueAuthenticationFilter.loginUrl;
-		    String serverName 			= InfoGlueAuthenticationFilter.serverName;
-		    Properties extraProperties 	= InfoGlueAuthenticationFilter.extraProperties;
-		    String casRenew 			= InfoGlueAuthenticationFilter.casRenew;
-		    String casServiceUrl 		= InfoGlueAuthenticationFilter.casServiceUrl;
-		    String casValidateUrl 		= InfoGlueAuthenticationFilter.casValidateUrl;
-		    
-		    AuthenticationModule authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
-			authenticationModule.setAuthenticatorClass(authenticatorClass);
-			authenticationModule.setAuthorizerClass(authorizerClass);
-			authenticationModule.setInvalidLoginUrl(invalidLoginUrl);
-			authenticationModule.setLoginUrl(loginUrl);
-			authenticationModule.setServerName(serverName);
-			authenticationModule.setExtraProperties(extraProperties);
-			authenticationModule.setCasRenew(casRenew);
-			authenticationModule.setCasServiceUrl(casServiceUrl);
-			authenticationModule.setCasValidateUrl(casValidateUrl);
-			authenticationModule.setTransactionObject(null);
-			
-			String authenticatedUserName = authenticationModule.authenticateUser(request);
+		{			
+			String authenticatedUserName = AuthenticationModule.getAuthenticationModule(null).authenticateUser(request);
 			getLogger().info("authenticatedUserName:" + authenticatedUserName);
 			principal = UserControllerProxy.getController().getUser(authenticatedUserName);
 			getLogger().info("principal:" + principal);
