@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.servlet.http.Cookie;
@@ -61,7 +60,6 @@ import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
-import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
@@ -76,17 +74,16 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
-import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -100,7 +97,6 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.MathHelper;
 import org.infoglue.deliver.util.ObjectConverter;
-import org.infoglue.deliver.util.Support;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 import org.infoglue.deliver.util.charts.ChartHelper;
 import org.infoglue.deliver.util.forms.FormHelper;
@@ -109,7 +105,6 @@ import org.infoglue.deliver.util.graphics.ColorHelper;
 import org.infoglue.deliver.util.graphics.FOPHelper;
 import org.infoglue.deliver.util.graphics.FontHelper;
 import org.infoglue.deliver.util.graphics.ImageRenderer;
-import org.infoglue.deliver.util.graphics.AdvancedImageRenderer;
 import org.infoglue.deliver.util.rss.RssHelper;
 import org.infoglue.deliver.util.webservices.InfoGlueWebServices;
 import org.infoglue.deliver.util.webservices.WebServiceHelper;
@@ -5519,6 +5514,17 @@ public class BasicTemplateController implements TemplateController
 		return LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), this.languageId);
 	}
 
+
+	/**
+	 * This method returns the logout url.
+	 * @author Mattias Bogeblad
+	 */
+	
+	public String getLogoutURL() throws Exception
+	{
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(this.getDatabase());
+	    return authenticationModule.getLogoutUrl();
+	}
 
    	/**
 	 * This method should be much more sophisticated later and include a check to see if there is a 
