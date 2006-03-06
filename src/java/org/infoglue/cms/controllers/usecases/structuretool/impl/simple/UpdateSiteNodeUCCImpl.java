@@ -23,22 +23,24 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
-import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCC;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-
-import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
+import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCC;
+import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.management.impl.simple.*;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-
-import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 
 public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSiteNodeUCC
 {
@@ -55,7 +57,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
         try
         {
             //add validation here if needed
-            siteNode = SiteNodeController.getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
+            siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
             siteNode.setValueObject(siteNodeVO);
 
 			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNodeVO.getSiteNodeId(), false).getValueObject();
@@ -104,7 +106,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
         try
         {
             //add validation here if needed
-            siteNode = SiteNodeController.getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
+            siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
             siteNode.setValueObject(siteNodeVO);
             
             if(siteNodeTypeDefinitionId != null)

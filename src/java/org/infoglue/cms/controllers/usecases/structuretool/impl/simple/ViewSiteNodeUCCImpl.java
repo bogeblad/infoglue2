@@ -23,18 +23,16 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
-import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeUCC;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.SiteNode;
-
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.*;
-
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeUCC;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ViewSiteNodeUCCImpl extends BaseUCCController implements ViewSiteNodeUCC
 {
@@ -50,7 +48,7 @@ public class ViewSiteNodeUCCImpl extends BaseUCCController implements ViewSiteNo
 
         try
         {
-            siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db);
+            siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
         
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
