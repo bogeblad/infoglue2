@@ -23,17 +23,15 @@
 
 package org.infoglue.cms.util;
 
-import org.infoglue.cms.exception.ConfigurationError;
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.IOException;
-
-import java.util.Properties;
 import java.net.URL;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.exception.ConfigurationError;
 
 
 /**

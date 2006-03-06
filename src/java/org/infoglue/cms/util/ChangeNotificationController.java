@@ -23,10 +23,11 @@
 
 package org.infoglue.cms.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.infoglue.cms.treeservice.ss.SiteNodeNodeSupplier;
 
 public class ChangeNotificationController
 {

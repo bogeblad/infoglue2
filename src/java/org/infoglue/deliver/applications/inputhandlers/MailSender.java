@@ -24,10 +24,14 @@
  
 package org.infoglue.deliver.applications.inputhandlers;
 
-import org.exolab.castor.jdo.Database;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.mail.*;
-import org.infoglue.cms.util.*;
+import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
@@ -36,11 +40,6 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryCo
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
-
-import java.io.*;
-import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * This is the first implementation of the InfoGlueInputHandler which emails a recipent the feedback.

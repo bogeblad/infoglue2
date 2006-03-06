@@ -26,14 +26,7 @@ package org.infoglue.deliver.applications.filters;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.Filter;
@@ -43,30 +36,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.Redirect;
-import org.infoglue.cms.entities.management.RedirectVO;
-import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGluePrincipal;
-
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
-import org.infoglue.deliver.util.CacheController;
 
 /**
  * This filters urls registered to be redirected.

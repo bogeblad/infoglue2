@@ -1,9 +1,11 @@
 /*
- * $Id: DomainUtils.java,v 1.1 2004/12/01 23:37:04 frank Exp $
+ * $Id: DomainUtils.java,v 1.2 2006/03/06 18:49:15 mattias Exp $
  *****************************************************************************/
 package org.infoglue.cms.util;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.SortedSet;
 
 /**
  * Utility class for the domain objects.  This class cannot be instantiated.

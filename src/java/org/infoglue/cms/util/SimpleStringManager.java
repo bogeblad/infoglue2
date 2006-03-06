@@ -23,14 +23,14 @@
 
 package org.infoglue.cms.util;
 
-import org.apache.log4j.Logger;
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConfigurationError;
-
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import org.apache.log4j.Logger;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConfigurationError;
 
 /**
  *

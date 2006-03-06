@@ -23,14 +23,18 @@
 
 package org.infoglue.cms.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 import org.apache.xerces.parsers.DOMParser;
-
-import java.io.*;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.w3c.dom.*;
-import org.w3c.dom.Document;
  
 /**
  * This class is an utility class meant to be filled with reusable snippets of code concerning handling of XML 

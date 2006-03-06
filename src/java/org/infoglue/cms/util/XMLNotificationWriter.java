@@ -5,17 +5,13 @@
 package org.infoglue.cms.util;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
 

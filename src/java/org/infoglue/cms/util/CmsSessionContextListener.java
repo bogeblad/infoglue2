@@ -23,19 +23,17 @@
 
 package org.infoglue.cms.util;
 
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionListener;
 import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 import org.infoglue.cms.applications.databeans.SessionInfoBean;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;

@@ -23,11 +23,10 @@
 
 package org.infoglue.cms.util;
 
-import java.util.logging.Level;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.LogRecord;
-
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
 
 /**
  * This class just formats the log-message the way we like it....

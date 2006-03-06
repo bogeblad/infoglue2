@@ -23,14 +23,13 @@
 
 package org.infoglue.cms.util;
 
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConfigurationError;
-
 import java.text.MessageFormat;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConfigurationError;
 
 
 /**

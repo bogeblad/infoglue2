@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.infoglue.deliver.portal.PathParser;
 import org.infoglue.deliver.portal.PortalControlURL;
 

@@ -28,7 +28,6 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 

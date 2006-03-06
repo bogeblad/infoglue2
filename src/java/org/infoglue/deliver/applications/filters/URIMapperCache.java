@@ -23,11 +23,7 @@
 
 package org.infoglue.deliver.applications.filters;
 
-import org.apache.commons.collections.LRUMap;
 import org.infoglue.deliver.util.CacheController;
-
-import java.util.Map;
-import java.util.Collections;
 
 
 /**

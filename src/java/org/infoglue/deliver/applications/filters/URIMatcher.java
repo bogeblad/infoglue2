@@ -23,10 +23,10 @@
 
 package org.infoglue.deliver.applications.filters;
 
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Created by IntelliJ IDEA.

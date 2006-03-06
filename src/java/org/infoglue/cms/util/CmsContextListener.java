@@ -23,8 +23,10 @@
 
 package org.infoglue.cms.util;
 
-import javax.servlet.*;
 import java.io.File;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.infoglue.deliver.util.CacheController;
 

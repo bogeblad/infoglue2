@@ -23,12 +23,10 @@
 
 package org.infoglue.cms.util;
 
-import org.infoglue.cms.exception.Bug;
-
 import org.apache.log4j.Logger;
-
 import org.apache.oro.text.perl.MalformedPerl5PatternException;
-import org.apache.oro.text.perl.Perl5Util; 
+import org.apache.oro.text.perl.Perl5Util;
+import org.infoglue.cms.exception.Bug;
 
 
 /**

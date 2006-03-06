@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.util;
 
-import java.util.*;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;

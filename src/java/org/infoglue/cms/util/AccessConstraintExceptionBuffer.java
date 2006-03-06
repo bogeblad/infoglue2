@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.util;
 
-import org.infoglue.cms.exception.AccessConstraintException;
-
 import java.util.Iterator;
+
+import org.infoglue.cms.exception.AccessConstraintException;
 
 
 /**

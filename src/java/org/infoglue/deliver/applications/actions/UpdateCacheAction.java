@@ -28,8 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
-import org.infoglue.cms.util.*;
-
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.util.CacheController;
 

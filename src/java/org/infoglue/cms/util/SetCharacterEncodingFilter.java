@@ -24,7 +24,6 @@
 package org.infoglue.cms.util;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

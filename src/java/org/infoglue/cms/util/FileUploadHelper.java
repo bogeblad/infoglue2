@@ -23,22 +23,20 @@
 
 package org.infoglue.cms.util;
 
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 
-import org.infoglue.cms.util.CmsPropertyHandler;
-
 import webwork.multipart.MultiPartRequestWrapper;
-
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.io.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 /**

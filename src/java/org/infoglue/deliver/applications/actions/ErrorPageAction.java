@@ -27,10 +27,8 @@ package org.infoglue.deliver.applications.actions;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletResponse;
 
-import org.infoglue.cms.applications.common.actions.Error;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.util.CharResponseWrapper;
 
 
 /**

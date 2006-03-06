@@ -23,36 +23,24 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.applications.filters.RedirectFilter;
-import org.infoglue.deliver.applications.filters.ViewPageFilter;
-import org.infoglue.deliver.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.CmsSessionContextListener;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.io.*;
-
-import webwork.action.Action;
-import webwork.action.ActionContext;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.io.File;
-import java.net.InetAddress;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * This is the action that shows the application state and also can be used to set up surveilence.

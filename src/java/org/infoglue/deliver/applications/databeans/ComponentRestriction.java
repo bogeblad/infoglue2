@@ -23,9 +23,6 @@
 
 package org.infoglue.deliver.applications.databeans;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author mattias

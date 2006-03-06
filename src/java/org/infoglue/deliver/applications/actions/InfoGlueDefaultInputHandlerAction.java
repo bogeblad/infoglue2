@@ -23,24 +23,23 @@
 
 package org.infoglue.deliver.applications.actions;
 
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import java.security.Principal;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.inputhandlers.InfoGlueInputHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
-
-
-import javax.servlet.http.*;
-
-import java.security.Principal;
-import java.util.*;
 
 /**
  * This is the action that receives most input from the outside and invokes the appropriate class

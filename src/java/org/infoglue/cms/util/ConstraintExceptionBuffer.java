@@ -23,12 +23,12 @@
 
 package org.infoglue.cms.util;
 
-import org.infoglue.cms.exception.AccessConstraintException;
-import org.infoglue.cms.exception.ConstraintException;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.exception.ConstraintException;
 
 
 /**

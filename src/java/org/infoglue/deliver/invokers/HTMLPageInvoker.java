@@ -23,22 +23,15 @@
 
 package org.infoglue.deliver.invokers;
 
-import org.apache.log4j.Logger;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-import org.infoglue.deliver.util.VelocityTemplateProcessor;
-
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
-import java.util.HashMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 /**
  * @author Mattias Bogeblad

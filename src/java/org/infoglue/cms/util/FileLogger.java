@@ -24,8 +24,7 @@
 package org.infoglue.cms.util;
 
 import java.util.Calendar;
-import java.util.*;
-
+import java.util.Map;
 import java.util.logging.Logger;
 
 

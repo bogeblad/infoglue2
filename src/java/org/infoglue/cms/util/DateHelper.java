@@ -23,7 +23,6 @@
 
 package org.infoglue.cms.util;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**

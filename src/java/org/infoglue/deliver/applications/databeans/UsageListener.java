@@ -22,7 +22,6 @@
  */
 package org.infoglue.deliver.applications.databeans;
 
-import java.util.List;
 
 /**
  * @author mattias

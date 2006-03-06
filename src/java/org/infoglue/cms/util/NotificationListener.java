@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.util;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * This is the interface for all controllers that wants to listen to new 
