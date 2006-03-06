@@ -23,19 +23,34 @@
 
 package org.infoglue.deliver.invokers;
 
-import org.infoglue.cms.applications.common.VisualFormatter;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.dom4j.Document;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PageTemplateController;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.StringManager;
+import org.infoglue.cms.util.StringManagerFactory;
+import org.infoglue.cms.util.XMLHelper;
+import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentBinding;
 import org.infoglue.deliver.applications.databeans.ComponentProperty;
@@ -54,23 +69,6 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 import org.w3c.dom.NodeList;
-
-import java.io.*;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.exolab.castor.jdo.Database;
 
 /**
 * @author Mattias Bogeblad
@@ -98,7 +96,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String decoratePageTemplate = "";
 		
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext());
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(this.getDeliveryContext());
 		
 		timer.printElapsedTime("Initialized controllers");
 		
@@ -1703,7 +1700,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			contentId  = new Integer(this.getRequest().getParameter("contentId"));
 
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		
 		/*
 		String componentXML = getPageComponentsString(this.getTemplateController(), siteNodeId, languageId, contentId);			
