@@ -23,37 +23,29 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.RedirectVO;
-import org.infoglue.cms.entities.management.ServerNodeVO;
-import org.infoglue.cms.entities.management.ServerNode;
-import org.infoglue.cms.entities.management.impl.simple.RedirectImpl;
-import org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-
-import org.infoglue.deliver.util.CacheController;
+import javax.servlet.http.HttpServletRequest;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ServerNode;
+import org.infoglue.cms.entities.management.ServerNodeVO;
+import org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class ServerNodeController extends BaseController
 { 

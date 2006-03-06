@@ -22,13 +22,11 @@
 */
 package org.infoglue.deliver.taglib.common;
 
-import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 /**

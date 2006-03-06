@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.entities.management.RedirectVO;
-import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
+import org.infoglue.cms.entities.management.RedirectVO;
 
 /**
  * This class implements the action class for viewRedirect.
@@ -36,6 +36,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewRedirectAction extends InfoGlueAbstractAction
 { 
+	private static final long serialVersionUID = 1L;
 
     private RedirectVO redirectVO;
 

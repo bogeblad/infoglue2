@@ -23,21 +23,18 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
-import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This class implements the action class for viewRepositoryProperties.
@@ -48,6 +45,8 @@ import java.util.Map;
 
 public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAction
 { 
+	private static final long serialVersionUID = 1L;
+
 	private RepositoryVO repositoryVO 			= new RepositoryVO();
 	private PropertySet propertySet				= null; 
 	private List contentTypeDefinitionVOList 	= null;

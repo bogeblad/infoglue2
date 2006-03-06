@@ -22,15 +22,14 @@
 */
 package org.infoglue.deliver.util;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Map;
 
-import org.infoglue.cms.util.CmsPropertyHandler;
-
-import freemarker.template.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 /**
  * @author mattias

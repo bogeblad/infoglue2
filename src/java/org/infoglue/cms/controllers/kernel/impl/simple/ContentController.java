@@ -23,41 +23,42 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
-
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInfoBean;
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.content.*;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.entities.management.impl.simple.*;
-import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
-import org.infoglue.cms.entities.structure.*;
-
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.RepositoryLanguage;
+import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.entities.management.ServiceDefinition;
+import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.structure.Qualifyer;
+import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.workflow.InfoGlueAuthorizationCondition;
-
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.services.*;
+import org.infoglue.cms.services.BaseService;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
-
-
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.security.Principal;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * @author Mattias Bogeblad

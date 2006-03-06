@@ -23,16 +23,17 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.entities.management.ServerNodeVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateServerNodeAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private ServerNodeVO serverNodeVO;
 	private ConstraintExceptionBuffer ceb;
-
 	
 	public CreateServerNodeAction()
 	{

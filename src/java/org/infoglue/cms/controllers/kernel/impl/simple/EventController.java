@@ -23,30 +23,24 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
-
-import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.structure.SiteNodeVersion;
-import org.infoglue.cms.entities.workflow.*;
-import org.infoglue.cms.entities.workflow.EventVO;
-import org.infoglue.cms.entities.workflow.impl.simple.EventImpl;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.entities.management.impl.simple.*;
-
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
-
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
-
-import java.util.List;
-import java.util.ArrayList;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.workflow.Event;
+import org.infoglue.cms.entities.workflow.EventVO;
+import org.infoglue.cms.entities.workflow.impl.simple.EventImpl;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
  * @author Mattias Bogeblad

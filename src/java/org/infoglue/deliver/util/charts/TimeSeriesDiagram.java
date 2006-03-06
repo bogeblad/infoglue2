@@ -23,6 +23,16 @@
  
 package org.infoglue.deliver.util.charts;
 
+import java.awt.Color;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -30,36 +40,15 @@ import org.jfree.chart.StandardLegend;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickMarkPosition;
 import org.jfree.chart.axis.DateTickUnit;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.Timeline;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
-import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.urls.XYURLGenerator;
-import org.jfree.data.time.*;
+import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.Week;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.Spacer;
-
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
-
-import java.awt.Color;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * An example of a time series chart.  For the most part, default settings are used, except that

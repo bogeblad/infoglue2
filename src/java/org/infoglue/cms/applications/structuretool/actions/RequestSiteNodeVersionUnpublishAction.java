@@ -23,11 +23,10 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
-import org.infoglue.cms.entities.workflow.*;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
+import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 /**
  * This action adds the given siteNodeVersion to the event-list and thereby notifying the 

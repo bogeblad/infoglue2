@@ -25,8 +25,11 @@ package org.infoglue.deliver.util.graphics;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
+import java.io.DataOutputStream;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.Vector;
 
 public class GifEncoder
 {

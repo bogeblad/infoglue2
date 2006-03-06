@@ -24,13 +24,11 @@
 package org.infoglue.cms.entities.management.impl.simple;
 
 
-import java.util.ArrayList;
-
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ServerNode;
 import org.infoglue.cms.entities.management.ServerNodeVO;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 
 
 public class ServerNodeImpl implements ServerNode

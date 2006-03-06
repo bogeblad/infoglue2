@@ -23,18 +23,16 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
-
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -47,6 +45,7 @@ import java.util.List;
 
 public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 1L;
 
 	private List siteNodeVersionVOList = new ArrayList();
 	private List contentVersionVOList = new ArrayList();

@@ -23,22 +23,20 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.io.*;
-import org.infoglue.cms.exception.*;
-import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
-import org.infoglue.deliver.applications.databeans.WebPage;
-
 import java.io.File;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
+import org.infoglue.deliver.applications.databeans.WebPage;
 
 /**
  * This is the most basic template controller supplying the templates using it with
@@ -436,8 +434,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		while(i.hasNext())
 		{
 			WebPage webPage = (WebPage)i.next();
-			Integer contentId = super.getContentId(webPage.getSiteNodeId(), super.META_INFO_BINDING_NAME);
-			String navigationTitle = decorateTag(contentId, this.getLanguageId(), super.NAV_TITLE_ATTRIBUTE_NAME, webPage.getNavigationTitle());
+			Integer contentId = super.getContentId(webPage.getSiteNodeId(), META_INFO_BINDING_NAME);
+			String navigationTitle = decorateTag(contentId, this.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, webPage.getNavigationTitle());
 			webPage.setNavigationTitle(navigationTitle);
 		}
 		
@@ -457,8 +455,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		while(i.hasNext())
 		{
 			WebPage webPage = (WebPage)i.next();
-			Integer contentId = super.getContentId(webPage.getSiteNodeId(), super.META_INFO_BINDING_NAME);
-			String navigationTitle = decorateTag(contentId, this.getLanguageId(), super.NAV_TITLE_ATTRIBUTE_NAME, webPage.getNavigationTitle());
+			Integer contentId = super.getContentId(webPage.getSiteNodeId(), META_INFO_BINDING_NAME);
+			String navigationTitle = decorateTag(contentId, this.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, webPage.getNavigationTitle());
 			webPage.setNavigationTitle(navigationTitle);
 		}
 		
@@ -475,8 +473,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	public String getPageNavTitle(String structureBindningName) 
 	{
 		Integer siteNodeId = super.getSiteNodeId(structureBindningName);
-		Integer contentId = super.getContentId(siteNodeId, super.META_INFO_BINDING_NAME);
-		String navTitle = decorateTag(contentId, this.getLanguageId(), super.NAV_TITLE_ATTRIBUTE_NAME, super.getPageNavTitle(structureBindningName));
+		Integer contentId = super.getContentId(siteNodeId, META_INFO_BINDING_NAME);
+		String navTitle = decorateTag(contentId, this.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, super.getPageNavTitle(structureBindningName));
 						
 		return navTitle;
 	}

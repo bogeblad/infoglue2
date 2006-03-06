@@ -23,29 +23,27 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.kernel.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
-
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * This class handles all interaction with Languages and persistence of them.

@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 import java.io.Serializable;
+
 import javax.servlet.http.HttpServletRequest;
 
 public final class BrowserBean implements Serializable

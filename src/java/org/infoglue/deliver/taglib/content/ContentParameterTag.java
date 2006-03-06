@@ -30,9 +30,6 @@ import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.util.DateHelper;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**

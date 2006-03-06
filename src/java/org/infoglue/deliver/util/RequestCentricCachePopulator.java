@@ -23,28 +23,10 @@
 
 package org.infoglue.deliver.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
-
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.FakeHttpServletRequest;
-import org.infoglue.cms.util.FakeHttpServletResponse;
-
-import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
-import org.infoglue.deliver.applications.filters.PortalServletRequest;
-
-import webwork.action.Action;
-import webwork.action.ActionContext;
-import webwork.action.factory.ActionFactory;
 
 
 public class RequestCentricCachePopulator

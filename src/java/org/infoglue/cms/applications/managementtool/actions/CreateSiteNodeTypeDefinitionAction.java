@@ -23,15 +23,16 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateSiteNodeTypeDefinitionAction extends InfoGlueAbstractAction
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	private SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO;
 	private ConstraintExceptionBuffer ceb;
     private String name;
@@ -50,10 +51,12 @@ public class CreateSiteNodeTypeDefinitionAction extends InfoGlueAbstractAction
 		this.ceb = new ConstraintExceptionBuffer();
 			
 	}	
+	
     public Integer getSiteNodeTypeDefinitionId()
     {
     	return this.siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId();	
     }
+    
     public java.lang.String getName()
     {
     	if(this.name != null)

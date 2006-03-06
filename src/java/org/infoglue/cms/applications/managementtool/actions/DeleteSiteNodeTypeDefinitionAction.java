@@ -25,9 +25,8 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
-
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.SystemException;
 
 /**
  * This action removes a siteNodeTypeDefinition from the system.

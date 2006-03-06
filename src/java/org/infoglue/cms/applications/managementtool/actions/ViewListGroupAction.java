@@ -23,10 +23,10 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
-
-import java.util.List;
 
 
 /**
@@ -38,6 +38,8 @@ import java.util.List;
 
 public class ViewListGroupAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 1L;
+
 	private List groups;
 		
 	protected String doExecute() throws Exception 

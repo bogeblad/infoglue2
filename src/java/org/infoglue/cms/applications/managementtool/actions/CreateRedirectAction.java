@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.entities.management.RedirectVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateRedirectAction extends InfoGlueAbstractAction

@@ -23,38 +23,16 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.structure.ServiceBinding;
-import org.infoglue.cms.entities.structure.ServiceBindingVO;
-import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.SiteNodeVersion;
-import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.entities.management.impl.simple.*;
-
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
-import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collection;
 
 public class PageTemplateController extends BaseController 
 {

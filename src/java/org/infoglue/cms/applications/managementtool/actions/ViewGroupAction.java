@@ -23,19 +23,20 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.security.InfoGlueGroup;
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
-//import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import java.util.*;
+import org.infoglue.cms.security.InfoGlueGroup;
 
 public class ViewGroupAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private String groupName;
 	private boolean supportsUpdate = true;
 	private InfoGlueGroup infoGlueGroup;

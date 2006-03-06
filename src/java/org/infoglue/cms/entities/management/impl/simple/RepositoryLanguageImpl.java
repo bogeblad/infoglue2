@@ -26,8 +26,8 @@ package org.infoglue.cms.entities.management.impl.simple;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.RepositoryLanguageVO;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 
 
 public class RepositoryLanguageImpl implements RepositoryLanguage

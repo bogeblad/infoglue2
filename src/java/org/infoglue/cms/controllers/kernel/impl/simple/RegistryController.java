@@ -20,16 +20,16 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.28 2006/02/11 00:24:32 mattias Exp $
+ * $Id: RegistryController.java,v 1.29 2006/03/06 18:11:08 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +40,6 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.applications.databeans.ReferenceVersionBean;
 import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -52,10 +51,8 @@ import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 

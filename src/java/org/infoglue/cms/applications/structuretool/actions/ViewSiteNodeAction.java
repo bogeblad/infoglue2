@@ -23,38 +23,50 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.entities.structure.ServiceBindingVO;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.workflow.EventVO;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServiceBindingController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.entities.management.*;
+import org.infoglue.cms.entities.structure.QualifyerVO;
+import org.infoglue.cms.entities.structure.ServiceBinding;
+import org.infoglue.cms.entities.structure.ServiceBindingVO;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Map;
 
 
 /** 
@@ -64,6 +76,8 @@ import java.util.Map;
 
 public class ViewSiteNodeAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private Integer unrefreshedSiteNodeId 	= new Integer(0);
 	private Integer changeTypeId 			= new Integer(0);
 	private Integer repositoryId 			= null;

@@ -23,19 +23,17 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
-import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
-import org.infoglue.cms.services.BaseService;
-
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
+import org.infoglue.cms.entities.management.ServiceDefinitionVO;
+import org.infoglue.cms.entities.structure.ServiceBindingVO;
+import org.infoglue.cms.services.BaseService;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  * This action represents the CreateSiteNode Usecase.
@@ -43,6 +41,7 @@ import java.util.HashMap;
 
 public class ViewListTemplateAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
 
     private Integer siteNodeVersionId;
     private Integer repositoryId;

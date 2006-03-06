@@ -27,14 +27,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
  * This class implements submit to publish on many sitenode versions at once.

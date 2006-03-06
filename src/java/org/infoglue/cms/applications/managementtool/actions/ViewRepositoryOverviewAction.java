@@ -33,6 +33,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 public class ViewRepositoryOverviewAction extends ViewRepositoryAction
 { 
+	private static final long serialVersionUID = 1L;
 
 
 }

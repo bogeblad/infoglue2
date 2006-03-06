@@ -23,12 +23,10 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
-
-
 import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 
 /**
  * 	Action class for usecase ViewListWorkflowDefinition
@@ -38,6 +36,8 @@ import java.util.List;
 
 public class ViewListWorkflowDefinitionAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 1L;
+
 	private List workflowDefinitions;
 	
 	protected String doExecute() throws Exception 

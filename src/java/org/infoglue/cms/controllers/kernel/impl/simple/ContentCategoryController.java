@@ -20,28 +20,29 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.15 2005/11/09 15:51:45 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.16 2006/03/06 18:09:40 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.Category;
-import org.infoglue.cms.entities.management.CategoryVO;
-import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
-import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.content.ContentCategoryVO;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.PersistenceException;
 import org.infoglue.cms.entities.content.ContentCategory;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
-import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.Category;
+import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.PersistenceException;
 
 /**
  * The ContentCategoryController manages all actions related to persistence

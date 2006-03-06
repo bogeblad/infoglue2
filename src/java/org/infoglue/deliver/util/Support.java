@@ -24,8 +24,6 @@
 package org.infoglue.deliver.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;

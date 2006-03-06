@@ -23,7 +23,8 @@
 
 package org.infoglue.deliver.taglib.content;
 
-import javax.servlet.jsp.JspException;import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 

@@ -23,11 +23,11 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-
-import java.util.List;
 
 
 /**
@@ -40,6 +40,8 @@ import java.util.List;
 
 public class ViewListSystemUserAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 1L;
+
 	private List infogluePrincipals;
 	
 	private String mode 				= null;

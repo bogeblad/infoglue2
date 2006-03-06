@@ -23,19 +23,19 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeUCCFactory;
-
+import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-
-import java.util.List;
 
 public class ViewSiteNodeVersionAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private Integer unrefreshedSiteNodeId = new Integer(0);
 	private Integer changeTypeId = new Integer(0);
 	private SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO;

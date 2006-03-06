@@ -23,42 +23,17 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
+import java.util.List;
+
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinition;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.util.CacheController;
-import org.infoglue.cms.security.InfoGluePrincipal;
-
-import org.infoglue.cms.util.DomainUtils;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.io.*;
-
-import javax.xml.transform.TransformerException;
-
-import org.apache.xerces.parsers.DOMParser;
-import org.apache.xpath.XPathAPI;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.NamedNodeMap;
 
 /**
  * @author Mattias Bogeblad

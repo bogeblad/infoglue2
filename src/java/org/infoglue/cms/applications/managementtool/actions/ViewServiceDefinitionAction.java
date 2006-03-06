@@ -23,13 +23,14 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 
 public class ViewServiceDefinitionAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
 
     private ServiceDefinitionVO serviceDefinitionVO;
 

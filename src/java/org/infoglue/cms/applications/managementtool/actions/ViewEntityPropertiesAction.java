@@ -23,31 +23,30 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
-import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 {

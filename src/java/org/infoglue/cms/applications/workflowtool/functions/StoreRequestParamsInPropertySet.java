@@ -19,19 +19,19 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: StoreRequestParamsInPropertySet.java,v 1.2 2005/06/06 11:53:12 mattias Exp $
+ * $Id: StoreRequestParamsInPropertySet.java,v 1.3 2006/03/06 17:52:59 mattias Exp $
  */
 package org.infoglue.cms.applications.workflowtool.functions;
 
-import java.util.*;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 
-import com.opensymphony.workflow.FunctionProvider;
 import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.FunctionProvider;
 
 /**
- * @version $Revision: 1.2 $ $Date: 2005/06/06 11:53:12 $
+ * @version $Revision: 1.3 $ $Date: 2006/03/06 17:52:59 $
  */
 public class StoreRequestParamsInPropertySet implements FunctionProvider
 {

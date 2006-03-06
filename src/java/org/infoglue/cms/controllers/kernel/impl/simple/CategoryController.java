@@ -20,13 +20,13 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.13 2005/09/01 14:11:39 mattias Exp $
+ * $Id: CategoryController.java,v 1.14 2006/03/06 18:08:48 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;

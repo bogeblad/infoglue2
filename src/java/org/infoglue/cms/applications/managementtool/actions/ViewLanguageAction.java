@@ -23,12 +23,13 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewLanguageAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
 
     private LanguageVO languageVO;
 

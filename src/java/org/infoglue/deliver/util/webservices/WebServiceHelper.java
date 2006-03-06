@@ -27,15 +27,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+import javax.xml.rpc.ParameterMode;
+
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.encoding.XMLType;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
-
-import javax.xml.namespace.QName;
-import javax.xml.rpc.ParameterMode;
 
 /** 
  * This class helps in requesting information from an webservice.

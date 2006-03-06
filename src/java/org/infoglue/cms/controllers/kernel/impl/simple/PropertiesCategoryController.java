@@ -20,21 +20,24 @@
  *
  * ===============================================================================
  *
- * $Id: PropertiesCategoryController.java,v 1.2 2005/08/23 14:03:57 mattias Exp $
+ * $Id: PropertiesCategoryController.java,v 1.3 2006/03/06 18:11:08 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.Category;
-import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
-import org.infoglue.cms.entities.management.PropertiesCategoryVO;
-import org.infoglue.cms.entities.management.PropertiesCategory;
-import org.infoglue.cms.entities.management.impl.simple.PropertiesCategoryImpl;
-import org.infoglue.cms.exception.SystemException;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.Category;
+import org.infoglue.cms.entities.management.PropertiesCategory;
+import org.infoglue.cms.entities.management.PropertiesCategoryVO;
+import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.PropertiesCategoryImpl;
+import org.infoglue.cms.exception.SystemException;
 
 /**
  * The PropertiesCategoryController manages all actions related to persistence

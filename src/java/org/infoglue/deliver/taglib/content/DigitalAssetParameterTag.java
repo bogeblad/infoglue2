@@ -23,18 +23,12 @@
 package org.infoglue.deliver.taglib.content;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.apache.commons.fileupload.FileItem;
-import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.io.FileHelper;
-import org.infoglue.cms.webservices.elements.Attachment;
 import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.deliver.taglib.AbstractTag;
 

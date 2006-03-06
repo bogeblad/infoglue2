@@ -23,11 +23,10 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-
-
-import java.util.List;
 
 /**
  * 	Action class for usecase ViewListContentTypeDefinitionUCC 
@@ -37,6 +36,7 @@ import java.util.List;
 
 public class ViewListContentTypeDefinitionAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 1L;
 
 	private List contentTypeDefinitions;
 	

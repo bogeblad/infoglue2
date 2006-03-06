@@ -22,9 +22,6 @@
  */
 package org.infoglue.deliver.taglib.content;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.cms.webservices.elements.RemoteAttachment;

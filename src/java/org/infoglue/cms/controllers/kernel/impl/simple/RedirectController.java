@@ -23,8 +23,16 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.management.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.Redirect;
 import org.infoglue.cms.entities.management.RedirectVO;
 import org.infoglue.cms.entities.management.impl.simple.RedirectImpl;
@@ -32,15 +40,6 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.util.CacheController;
-
-import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 /**

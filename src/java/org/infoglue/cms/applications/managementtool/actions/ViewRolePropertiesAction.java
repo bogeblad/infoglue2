@@ -23,40 +23,23 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.List;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
-import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
-import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
-import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.security.InfoGlueRole;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private String roleName;
 	private RolePropertiesVO rolePropertiesVO;
 	private List rolePropertiesVOList;

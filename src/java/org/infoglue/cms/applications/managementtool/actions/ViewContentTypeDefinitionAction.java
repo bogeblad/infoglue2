@@ -23,28 +23,26 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
-import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.XMLHelper;
-
-import org.infoglue.cms.exception.*;
-
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.CategoryAttribute;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
-import java.io.*;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xpath.XPathAPI;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.CategoryAttribute;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.XMLHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -61,6 +59,8 @@ import org.xml.sax.SAXException;
 
 public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	public static final String USE_EDITOR = "useEditor";
 
 	private static CategoryController categoryController = CategoryController.getController();

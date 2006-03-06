@@ -25,8 +25,8 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 
 /**

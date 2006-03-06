@@ -32,6 +32,8 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public class ViewStructureToolMenuHtmlAction extends TreeViewAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private Integer repositoryId;
 	private Integer select;
 	private String treeMode = "classic";

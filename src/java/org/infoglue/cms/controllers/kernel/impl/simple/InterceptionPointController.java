@@ -23,6 +23,16 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.AccessRightGroup;
@@ -31,24 +41,13 @@ import org.infoglue.cms.entities.management.AccessRightUser;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Interceptor;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
-import org.infoglue.cms.exception.*;
-
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.util.CacheController;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class is a helper class for the use case handle InterceptionPoint

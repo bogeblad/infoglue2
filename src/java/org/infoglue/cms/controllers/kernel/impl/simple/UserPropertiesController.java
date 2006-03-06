@@ -23,37 +23,36 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.entities.management.UserProperties;
-import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.DigitalAsset;
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.ContentTypeDefinition;
-import org.infoglue.cms.entities.management.UserPropertiesVO;
-import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.UserContentTypeDefinition;
-import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
-import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
-import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
-
-import java.io.StringReader;
-import java.util.Collection;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.UserContentTypeDefinition;
+import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
+import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * This class is the controller for all handling of extranet roles properties.

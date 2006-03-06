@@ -23,12 +23,12 @@
 
 package org.infoglue.cms.entities.management.impl.simple;
 
+import java.util.Collection;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.exception.ConstraintException;
-
-import java.util.Collection;
 
 public class ContentTypeDefinitionImpl implements ContentTypeDefinition
 {

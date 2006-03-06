@@ -23,14 +23,10 @@
 
 package org.infoglue.cms.entities.management.impl.simple;
 
-import java.util.Collection;
-
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.AccessRightGroup;
 import org.infoglue.cms.entities.management.AccessRightGroupVO;
-import org.infoglue.cms.entities.management.AccessRightVO;
-import org.infoglue.cms.entities.management.InterceptionPoint;
 
 public class AccessRightGroupImpl implements AccessRightGroup
 {

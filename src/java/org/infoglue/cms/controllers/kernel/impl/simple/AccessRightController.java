@@ -23,6 +23,18 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.contenttool.actions.databeans.AccessRightsUserRow;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
@@ -39,25 +51,13 @@ import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-
 import org.infoglue.deliver.util.CacheController;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * This class is a helper class for the use case handle Accesss

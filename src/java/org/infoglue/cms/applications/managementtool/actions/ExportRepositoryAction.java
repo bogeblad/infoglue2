@@ -25,9 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Date;
 
 import org.exolab.castor.jdo.Database;
@@ -45,7 +43,6 @@ import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 

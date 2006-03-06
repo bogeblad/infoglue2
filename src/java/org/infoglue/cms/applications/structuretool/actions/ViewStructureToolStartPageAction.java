@@ -24,8 +24,7 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 
 
 /**
@@ -36,6 +35,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 public class ViewStructureToolStartPageAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
     private Integer repositoryId;
     
     public String doExecute() throws Exception

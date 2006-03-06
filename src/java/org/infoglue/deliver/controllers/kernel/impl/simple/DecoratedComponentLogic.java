@@ -23,7 +23,6 @@
  
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.util.*;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 
 public class DecoratedComponentLogic extends ComponentLogic 

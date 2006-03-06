@@ -24,17 +24,14 @@
 package org.infoglue.deliver.taglib.structure;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.cms.util.sorters.ContentSort;
 import org.infoglue.cms.util.sorters.HardcodedPageComparator;
 import org.infoglue.cms.util.sorters.PageComparator;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 public class SortPagesTag extends TemplateControllerTag 

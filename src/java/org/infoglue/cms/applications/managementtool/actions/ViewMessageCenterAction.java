@@ -23,11 +23,12 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.entities.management.Chat;
 import org.infoglue.cms.entities.management.Message;
-
-import java.util.*;
 
 /**
  * This class represents the message center where you can chat with users
@@ -37,6 +38,8 @@ import java.util.*;
 
 public class ViewMessageCenterAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private static Chat systemMessagesChat = new Chat();
 	private static Chat chat = new Chat();
 	private Integer lastId;

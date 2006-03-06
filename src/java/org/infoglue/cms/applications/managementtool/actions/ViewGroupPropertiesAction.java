@@ -23,22 +23,23 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.GroupPropertiesVO;
-import org.infoglue.cms.entities.management.GroupProperties;
-import org.infoglue.cms.security.InfoGlueGroup;
-
-import org.infoglue.cms.util.CmsPropertyHandler;
-
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.GroupPropertiesVO;
+import org.infoglue.cms.security.InfoGlueGroup;
+import org.infoglue.cms.util.CmsPropertyHandler;
+
 public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private String groupName;
 	private GroupPropertiesVO groupPropertiesVO;
 	private List groupPropertiesVOList;

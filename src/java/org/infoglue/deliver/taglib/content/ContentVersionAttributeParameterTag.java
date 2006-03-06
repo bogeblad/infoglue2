@@ -22,15 +22,9 @@
 */
 package org.infoglue.deliver.taglib.content;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
-import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**

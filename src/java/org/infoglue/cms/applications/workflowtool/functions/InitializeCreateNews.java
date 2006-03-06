@@ -19,25 +19,22 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: InitializeCreateNews.java,v 1.6 2005/07/10 21:04:34 mattias Exp $
+ * $Id: InitializeCreateNews.java,v 1.7 2006/03/06 17:52:59 mattias Exp $
  */
 package org.infoglue.cms.applications.workflowtool.functions;
 
-import java.util.*;
-
-import com.opensymphony.workflow.FunctionProvider;
-import com.opensymphony.module.propertyset.PropertySet;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.infoglue.cms.applications.tasktool.actions.BasicScriptController;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.FunctionProvider;
 
 
 /**
  * THIS IS VERY TEMPORARY SOLUTION FOR ASSESSING WHERE TO PUT THE NEWS ITEMS.
- * @version $Revision: 1.6 $ $Date: 2005/07/10 21:04:34 $
+ * @version $Revision: 1.7 $ $Date: 2006/03/06 17:52:59 $
  */
 public class InitializeCreateNews implements FunctionProvider
 {

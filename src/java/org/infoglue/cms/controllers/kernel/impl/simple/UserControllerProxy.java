@@ -24,11 +24,8 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -38,8 +35,6 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.CacheController;
 
 

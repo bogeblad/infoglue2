@@ -25,7 +25,6 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 import org.infoglue.cms.entities.management.InterceptorVO;
-
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 
@@ -37,6 +36,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class UpdateInterceptorAction extends ViewInterceptorAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private InterceptorVO interceptorVO = new InterceptorVO();
 	private ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 	

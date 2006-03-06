@@ -23,44 +23,43 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
-
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.entities.management.impl.simple.*;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.RegistryVO;
+import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
-import org.infoglue.cms.entities.content.*;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
-import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
-import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
-import org.infoglue.cms.util.validators.ContentVersionValidator;
-import org.infoglue.deliver.applications.actions.ViewPageAction;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.io.*;
-
-import org.apache.xerces.parsers.DOMParser;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.CDATASection;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 

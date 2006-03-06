@@ -23,30 +23,26 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.management.AccessRight;
-import org.infoglue.cms.entities.management.AccessRightVO;
-import org.infoglue.cms.entities.management.InterceptionPoint;
-import org.infoglue.cms.entities.content.*;
-import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
-import org.infoglue.cms.entities.workflow.*;
-
-import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.DateHelper;
-
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
+import org.infoglue.cms.entities.content.ContentCategory;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightVO;
+import org.infoglue.cms.entities.management.InterceptionPoint;
+import org.infoglue.cms.entities.workflow.EventVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 
 public class ContentStateController extends BaseController 
 {

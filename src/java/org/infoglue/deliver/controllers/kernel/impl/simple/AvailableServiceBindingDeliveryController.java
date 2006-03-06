@@ -23,15 +23,13 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.util.*;
-
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.util.CacheController;
-
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.util.CacheController;
 
 
 public class AvailableServiceBindingDeliveryController extends BaseDeliveryController

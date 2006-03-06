@@ -23,15 +23,16 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateAvailableServiceBindingAction extends InfoGlueAbstractAction
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	private AvailableServiceBindingVO availableServiceBindingVO;
 	private ConstraintExceptionBuffer ceb;
     private String name;

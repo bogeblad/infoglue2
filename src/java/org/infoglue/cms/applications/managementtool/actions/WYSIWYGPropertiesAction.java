@@ -31,13 +31,11 @@ import java.util.Map;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.io.FileHelper;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.applications.databeans.NullObject;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
-import com.opensymphony.module.propertyset.*;
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This class/action returns the WYSIWYG configuration in full.
@@ -47,6 +45,8 @@ import com.opensymphony.module.propertyset.*;
 
 public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private Integer repositoryId = null;
 
 	private String WYSIWYGProperties = "";

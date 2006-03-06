@@ -23,20 +23,21 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
-
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import java.util.List;
 
 public class ViewSystemUserAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private String userName;
 	private boolean supportsUpdate = true;
 	private InfoGluePrincipal infoGluePrincipal;

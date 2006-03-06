@@ -25,9 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
-
 import org.infoglue.cms.entities.management.InterceptorVO;
-
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**

@@ -22,18 +22,9 @@
  */
 package org.infoglue.cms.entities.management.impl.simple;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-
-import org.infoglue.cms.entities.content.DigitalAsset;
-import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.entities.management.PropertiesCategoryVO;
-import org.infoglue.cms.entities.management.PropertiesCategory;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.PropertiesCategory;
+import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 
 /**
  * @author Frank Febbraro (frank@phase2technology.com)

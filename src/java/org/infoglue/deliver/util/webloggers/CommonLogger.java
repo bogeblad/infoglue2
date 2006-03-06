@@ -23,16 +23,19 @@
 
 package org.infoglue.deliver.util.webloggers;
 
-import org.apache.log4j.Logger;
-import org.infoglue.cms.util.*;
-
-import java.io.*;
-import java.util.Date;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * The CommonLogger class implements the abstract Logger class.

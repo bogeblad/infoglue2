@@ -23,13 +23,13 @@
 
 package org.infoglue.deliver.services;
 
-import org.infoglue.cms.util.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.webloggers.CommonLogger;
 import org.infoglue.deliver.util.webloggers.Logger;
 import org.infoglue.deliver.util.webloggers.W3CExtendedLogger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 
 /**

@@ -24,7 +24,6 @@
 package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;

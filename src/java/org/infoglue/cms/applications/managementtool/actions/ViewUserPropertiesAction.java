@@ -23,6 +23,10 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.List;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
@@ -30,15 +34,12 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
-
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.List;
 
 public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 {
+	private static final long serialVersionUID = 1L;
+
     public ViewUserPropertiesAction()
     {
         this.setCurrentAction("ViewUserProperties.action");

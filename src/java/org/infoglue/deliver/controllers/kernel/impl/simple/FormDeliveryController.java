@@ -23,23 +23,21 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
-import org.infoglue.cms.entities.management.*;
-
-
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
+import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.cms.entities.management.ContentTypeAttributeParameter;
+import org.infoglue.cms.entities.management.ContentTypeAttributeParameterValue;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
-import org.xml.sax.InputSource; 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.io.*;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 public class FormDeliveryController
 {

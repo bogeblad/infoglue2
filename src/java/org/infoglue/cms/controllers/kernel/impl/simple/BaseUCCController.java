@@ -23,8 +23,6 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.exception.*;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -33,6 +31,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.exception.SystemException;
 
 public abstract class BaseUCCController
 {

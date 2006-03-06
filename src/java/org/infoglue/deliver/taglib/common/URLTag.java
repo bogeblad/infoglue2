@@ -34,8 +34,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.apache.log4j.Logger;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 /**

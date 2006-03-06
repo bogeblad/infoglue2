@@ -6,7 +6,7 @@
  */
 package org.infoglue.deliver.portal.dispatcher;
 
-import java.io.*;
+import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -39,7 +39,7 @@ import webwork.util.ServletValueStack;
  *
  * @author Rickard Öberg (rickard@middleware-company.com)
  * @author Matt Baldree (matt@smallleap.com)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class DeliveryServletDispatcher extends ServletDispatcher
 {

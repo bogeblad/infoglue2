@@ -30,27 +30,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Node;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.mydesktop.ShortcutVO;
-import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
-import org.infoglue.cms.entities.mydesktop.WorkflowVO;
-import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.util.workflow.WorkflowFacade;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-import com.opensymphony.workflow.WorkflowException;
 
 /**
  * This controller fetches all shortcuts available. They can exist on personal, role or global level.

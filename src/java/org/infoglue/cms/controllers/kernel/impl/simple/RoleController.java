@@ -23,21 +23,21 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
-
-import org.exolab.castor.jdo.Database;
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * RoleHelper.java

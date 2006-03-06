@@ -25,7 +25,6 @@ package org.infoglue.deliver.taglib.structure;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 public class HasPageAccessTag extends ComponentLogicTag 

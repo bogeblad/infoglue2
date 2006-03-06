@@ -26,19 +26,18 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.Iterator;
 import java.util.List;
 
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-import org.infoglue.cms.entities.management.RedirectVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.mail.MailServiceFactory;
 
 public class CreateEmailAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private List users = null;
 	private List roles = null;
 	private List groups = null;

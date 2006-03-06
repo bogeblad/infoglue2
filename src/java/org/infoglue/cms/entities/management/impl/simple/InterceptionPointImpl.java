@@ -29,8 +29,7 @@ import java.util.Collection;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.ConstraintException;
 
 public class InterceptionPointImpl implements InterceptionPoint
 {

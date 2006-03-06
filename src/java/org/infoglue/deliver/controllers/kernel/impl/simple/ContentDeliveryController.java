@@ -23,51 +23,44 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.Repository;
-import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
-import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
-import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
-import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
-import org.infoglue.cms.entities.content.ContentCategoryVO;
-import org.infoglue.cms.entities.content.DigitalAsset;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
-
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.databeans.NullObject;
-import org.infoglue.deliver.controllers.kernel.URLComposer;
-import org.infoglue.deliver.util.CacheController;
-import org.infoglue.deliver.util.Timer;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
-
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Date;
-import java.util.Vector;
-import java.io.*;
-import java.net.URLEncoder;
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.NullObject;
+import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.util.CacheController;
 
 
 public class ContentDeliveryController extends BaseDeliveryController

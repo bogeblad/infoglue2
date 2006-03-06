@@ -25,22 +25,16 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.entities.management.InterceptionPoint;
-import org.infoglue.cms.entities.management.InterceptionPointVO;
-import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
 
 
 /**

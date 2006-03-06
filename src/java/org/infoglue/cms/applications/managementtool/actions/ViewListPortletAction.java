@@ -25,22 +25,17 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletApplicationEntityList;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
-import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.io.FileHelper;
-import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
 
 /**
  * @author jand
@@ -48,6 +43,8 @@ import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
  */
 public class ViewListPortletAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 1L;
+
 	private Hashtable portlets = new Hashtable();
 	private String portletRegistry;
 

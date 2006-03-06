@@ -25,7 +25,6 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,14 +34,10 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-
 import org.infoglue.cms.util.sorters.ContentComparator;
-import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
-import org.infoglue.deliver.util.Timer;
 
 /**
  * This class handles all access to components.

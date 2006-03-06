@@ -24,7 +24,6 @@
 package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 /**
  * @author Mattias Bogeblad
@@ -32,6 +31,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 public class DeleteGroupAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private String groupName;
 	
 	protected String doExecute() throws Exception 

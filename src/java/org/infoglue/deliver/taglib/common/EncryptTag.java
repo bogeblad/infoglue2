@@ -24,7 +24,6 @@
 package org.infoglue.deliver.taglib.common;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 

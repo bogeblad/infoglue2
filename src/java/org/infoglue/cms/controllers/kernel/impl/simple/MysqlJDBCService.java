@@ -31,9 +31,11 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
  *
  * this one needs to be rewritten.
  */
-import java.sql.*;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import org.infoglue.cms.util.CmsPropertyHandler;
+
 import com.opensymphony.util.TextUtils;
 
 public class MysqlJDBCService

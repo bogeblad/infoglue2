@@ -31,7 +31,6 @@ import java.util.Vector;
 import org.apache.catalina.util.URL;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 
@@ -40,6 +39,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  *
  */
 public class ViewListUp2DateAction extends InfoGlueAbstractAction {
+
+	private static final long serialVersionUID = 1L;
 
 	UpdateController uc;
 	private String currentUpdateServer = "";

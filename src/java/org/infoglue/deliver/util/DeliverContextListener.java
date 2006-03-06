@@ -23,12 +23,14 @@
 
 package org.infoglue.deliver.util;
 
-import javax.servlet.*;
+import java.io.File;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
-
-import java.io.File;
 
 /**
  * This class functions as the entry-point for all initialization of the Cms-tool.

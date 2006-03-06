@@ -33,13 +33,9 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
-import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
 
 /**

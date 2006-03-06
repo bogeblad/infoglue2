@@ -23,13 +23,12 @@
 
 package org.infoglue.cms.entities.management.impl.simple;
 
+import java.util.Collection;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
-
-import org.infoglue.cms.exception.*;
-
-import java.util.Collection;
+import org.infoglue.cms.exception.ConstraintException;
 
 public class ServiceDefinitionImpl implements ServiceDefinition
 {

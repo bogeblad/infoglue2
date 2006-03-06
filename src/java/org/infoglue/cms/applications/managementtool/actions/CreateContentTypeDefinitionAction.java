@@ -23,16 +23,17 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.io.FileHelper;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 
 public class CreateContentTypeDefinitionAction extends InfoGlueAbstractAction
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
 	private ConstraintExceptionBuffer ceb;
     private String name;

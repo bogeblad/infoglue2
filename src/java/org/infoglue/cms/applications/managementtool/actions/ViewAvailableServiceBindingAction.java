@@ -23,16 +23,16 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.util.*;
-
-import java.util.List;
 
 public class ViewAvailableServiceBindingAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
 
     private AvailableServiceBindingVO availableServiceBindingVO;
 	private List availableServiceDefinitionVOList;

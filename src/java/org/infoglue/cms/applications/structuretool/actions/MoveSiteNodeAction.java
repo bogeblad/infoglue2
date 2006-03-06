@@ -23,10 +23,9 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
-import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**

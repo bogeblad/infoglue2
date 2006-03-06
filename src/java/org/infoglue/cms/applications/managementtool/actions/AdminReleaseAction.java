@@ -27,7 +27,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -35,6 +34,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class AdminReleaseAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
     private final static Logger logger = Logger.getLogger(AdminReleaseAction.class.getName());
 
  	private String adminCommand = "";

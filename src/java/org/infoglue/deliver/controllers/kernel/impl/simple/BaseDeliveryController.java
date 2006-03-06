@@ -34,8 +34,6 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.Bug;

@@ -23,25 +23,29 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
-import org.infoglue.cms.entities.content.*;
-import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.ServiceDefinitionVO;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * This action first checks if there is a bound content linked - if not one is created in a special folder.

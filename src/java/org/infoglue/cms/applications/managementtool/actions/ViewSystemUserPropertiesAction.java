@@ -23,25 +23,26 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
 import org.dom4j.Document;
 import org.dom4j.Node;
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
-
 import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import java.util.List;
 
 public class ViewSystemUserPropertiesAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private final String currentAction		= "ViewSystemUserProperties.action";
 	private final String updateAction 		= "UpdateSystemUserProperties";
 	private final String labelKey 			= "SystemUser Properties";

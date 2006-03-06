@@ -23,13 +23,14 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
 import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.entities.management.ServiceDefinitionVO;
+import org.infoglue.cms.entities.structure.ServiceBindingVO;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  * This action shows the Content-tree when binding stuff.
@@ -37,6 +38,7 @@ import java.util.List;
 
 public class ViewStructureTreeForServiceBindingAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
 
     private Integer siteNodeVersionId;
     private Integer repositoryId;

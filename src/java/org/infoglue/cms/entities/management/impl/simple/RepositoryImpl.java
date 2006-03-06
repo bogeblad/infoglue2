@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 
 
 public class RepositoryImpl implements Repository

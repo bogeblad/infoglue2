@@ -23,20 +23,19 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.management.ServiceDefinition;
-import org.infoglue.cms.entities.management.ServiceDefinitionVO;
-import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
-
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
+import java.util.List;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
-
-import java.util.List;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ServiceDefinition;
+import org.infoglue.cms.entities.management.ServiceDefinitionVO;
+import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ServiceDefinitionController extends BaseController
 {

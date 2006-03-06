@@ -1,23 +1,12 @@
 package org.infoglue.deliver.taglib.content;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.DateHelper;
-import org.infoglue.cms.webservices.elements.RemoteAttachment;
-import org.infoglue.deliver.taglib.AbstractTag;
-import org.infoglue.deliver.taglib.TemplateControllerTag;
-import org.infoglue.deliver.util.webservices.DynamicWebservice;
 
 /**
  * This tag helps update a content in the cms from the delivery application.

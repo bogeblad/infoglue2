@@ -24,13 +24,12 @@
 package org.infoglue.cms.entities.management.impl.simple;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
-import org.infoglue.cms.entities.management.Language;
 
 public class UserPropertiesImpl implements UserProperties
 {

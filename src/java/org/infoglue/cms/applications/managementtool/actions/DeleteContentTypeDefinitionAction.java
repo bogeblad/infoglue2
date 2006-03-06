@@ -24,9 +24,9 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.exception.SystemException;
 
 /**
  * This action removes a contentTypeDefinition from the system.
@@ -36,6 +36,8 @@ import org.infoglue.cms.exception.*;
 
 public class DeleteContentTypeDefinitionAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
 	private Integer contentTypeDefinitionId;
 	

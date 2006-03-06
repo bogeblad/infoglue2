@@ -25,9 +25,8 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
-
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.SystemException;
 
 /**
  * This action removes a serviceDefinition from the system.

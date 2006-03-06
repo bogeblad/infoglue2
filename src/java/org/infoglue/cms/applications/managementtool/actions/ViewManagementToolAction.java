@@ -33,6 +33,8 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewManagementToolAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
     private Integer repositoryId = new Integer(0);
     
     public void setRepositoryId(Integer repositoryId)

@@ -25,19 +25,14 @@ package org.infoglue.deliver.util;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -55,11 +50,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FakeHttpServletRequest;
 import org.infoglue.cms.util.FakeHttpServletResponse;
 import org.infoglue.cms.util.FakeHttpSession;
-
-import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.filters.PortalServletRequest;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
@@ -67,10 +59,6 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryContr
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-
-import webwork.action.Action;
-import webwork.action.ActionContext;
-import webwork.action.factory.ActionFactory;
 
 
 public class RequestAndMetaInfoCentricCachePopulator

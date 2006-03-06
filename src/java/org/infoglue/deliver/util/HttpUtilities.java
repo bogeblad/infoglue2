@@ -24,9 +24,18 @@
 package org.infoglue.deliver.util;
 
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 

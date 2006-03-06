@@ -27,9 +27,9 @@ import java.util.Collection;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
-import org.infoglue.cms.entities.management.Language;
 
 public class RolePropertiesImpl implements RoleProperties
 {

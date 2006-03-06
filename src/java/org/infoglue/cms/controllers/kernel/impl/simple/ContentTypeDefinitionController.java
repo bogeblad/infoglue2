@@ -23,42 +23,41 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
-import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.util.CacheController;
-import org.infoglue.cms.security.InfoGluePrincipal;
-
-import org.infoglue.cms.util.DomainUtils;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.util.HashMap;
-import java.util.List;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.io.*;
 
 import javax.xml.transform.TransformerException;
 
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xpath.XPathAPI;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.CategoryAttribute;
+import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.cms.entities.management.ContentTypeAttributeParameter;
+import org.infoglue.cms.entities.management.ContentTypeAttributeParameterValue;
+import org.infoglue.cms.entities.management.ContentTypeAttributeValidator;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.NamedNodeMap;
+import org.xml.sax.InputSource;
 
 /**
  * @author ss

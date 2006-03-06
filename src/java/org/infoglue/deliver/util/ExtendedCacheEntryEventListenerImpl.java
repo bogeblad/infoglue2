@@ -24,7 +24,8 @@
 package org.infoglue.deliver.util;
 
 import com.opensymphony.oscache.base.NeedsRefreshException;
-import com.opensymphony.oscache.base.events.*;
+import com.opensymphony.oscache.base.events.CacheEntryEvent;
+import com.opensymphony.oscache.base.events.CachewideEvent;
 import com.opensymphony.oscache.extra.CacheEntryEventListenerImpl;
 
 public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListenerImpl 

@@ -23,39 +23,20 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.exolab.castor.jdo.Database;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.xml.Marshaller;
-import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
-import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.Repository;
-import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-
-import org.infoglue.cms.util.CmsPropertyHandler;
 
 
 /**

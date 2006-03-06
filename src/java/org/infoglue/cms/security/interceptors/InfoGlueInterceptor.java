@@ -26,10 +26,10 @@ package org.infoglue.cms.security.interceptors;
 import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
  * @author Mattias Bogeblad

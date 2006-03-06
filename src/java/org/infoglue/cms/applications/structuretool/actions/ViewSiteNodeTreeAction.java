@@ -36,7 +36,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewSiteNodeTreeAction extends InfoGlueAbstractAction
 {
-    
+	private static final long serialVersionUID = 1L;
+   
     private Integer repositoryId;
     private Integer siteNodeId; 
     private String tree;

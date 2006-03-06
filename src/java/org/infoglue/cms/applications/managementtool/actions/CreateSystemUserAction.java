@@ -39,6 +39,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateSystemUserAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private ConstraintExceptionBuffer ceb;
 	private SystemUserVO systemUserVO;
 	private InfoGluePrincipal infoGluePrincipal;

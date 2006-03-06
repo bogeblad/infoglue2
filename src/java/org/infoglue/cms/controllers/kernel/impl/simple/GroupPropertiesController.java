@@ -23,6 +23,17 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.xerces.parsers.DOMParser;
+import org.dom4j.Element;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.DigitalAsset;
@@ -32,19 +43,16 @@ import org.infoglue.cms.entities.management.GroupContentTypeDefinition;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.PropertiesCategory;
 import org.infoglue.cms.entities.management.PropertiesCategoryVO;
-import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
-import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.CDATASection;
@@ -52,19 +60,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import org.apache.xerces.parsers.DOMParser;
-import org.dom4j.Element;
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.io.StringReader;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 /**
  * This class is the controller for all handling of extranet groups properties.

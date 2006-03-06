@@ -43,8 +43,6 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
-import org.infoglue.deliver.applications.filters.ViewPageFilter;
-
 
 import com.opensymphony.workflow.Workflow;
 import com.opensymphony.workflow.basic.BasicWorkflow;

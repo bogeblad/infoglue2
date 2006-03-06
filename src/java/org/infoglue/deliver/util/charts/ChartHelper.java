@@ -23,15 +23,12 @@
  
 package org.infoglue.deliver.util.charts;
 
-import org.apache.log4j.Logger;
-import org.infoglue.cms.util.*;
-import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-
-import org.jfree.chart.ChartUtilities;
-
 import java.io.File;
+
+import org.apache.log4j.Logger;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.jfree.chart.ChartUtilities;
 
 /**
  * @author Mattias Bogeblad

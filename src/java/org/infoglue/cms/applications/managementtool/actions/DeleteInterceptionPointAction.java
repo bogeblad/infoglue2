@@ -36,6 +36,8 @@ import org.infoglue.cms.entities.management.InterceptionPointVO;
 
 public class DeleteInterceptionPointAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private InterceptionPointVO interceptionPointVO = new InterceptionPointVO();
 		
 	protected String doExecute() throws Exception 

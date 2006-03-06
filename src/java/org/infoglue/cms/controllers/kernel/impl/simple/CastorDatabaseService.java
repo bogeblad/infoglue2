@@ -24,8 +24,8 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.JDO;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.JDO;
 import org.infoglue.cms.exception.SystemException;
 
 public class CastorDatabaseService //extends DatabaseService

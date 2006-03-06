@@ -23,15 +23,17 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import java.util.List;
 
 public class ViewInterceptionPointAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private Integer interceptionPointId;
     private InterceptionPointVO interceptionPointVO;
     private List allInterceptors;

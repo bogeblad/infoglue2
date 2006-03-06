@@ -23,14 +23,11 @@
 package org.infoglue.deliver.taglib.common;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
-import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.util.rss.RssHelper;
 

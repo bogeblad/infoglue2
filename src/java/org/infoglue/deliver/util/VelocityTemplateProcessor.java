@@ -23,22 +23,24 @@
 
 package org.infoglue.deliver.util;
 
-import org.apache.log4j.Logger;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.*;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.io.FileHelper;
-
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Iterator;
-import java.io.*;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+
+import org.apache.log4j.Logger;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.infoglue.cms.io.FileHelper;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 /**
  *

@@ -24,25 +24,19 @@ package org.infoglue.deliver.taglib.common;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.apache.log4j.Logger;
-import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
-import org.infoglue.deliver.taglib.content.RemoteContentServiceTag;
 import org.infoglue.deliver.util.rss.RssHelper;
 
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
  * This tag will generate a SyndEntry item to be used in a syndFeed.  

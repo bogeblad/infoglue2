@@ -42,6 +42,8 @@ import com.frovi.ss.Tree.INodeSupplier;
  */
 public class ViewManagementToolMenuHtmlAction extends TreeViewAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private Integer repositoryId;
 	private String name;
     private RepositoryVO repositoryVO;

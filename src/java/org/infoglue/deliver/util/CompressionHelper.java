@@ -26,16 +26,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import java.util.zip.Inflater;
 
 import org.apache.log4j.Logger;
-import org.infoglue.deliver.invokers.PageInvoker;
 
 /**
  * This helper class can compress and decompress a string. Useful in pagecache etc.

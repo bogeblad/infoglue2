@@ -42,6 +42,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateRoleAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private RoleVO roleVO;
 	private InfoGlueRole infoGlueRole;
 	private ConstraintExceptionBuffer ceb;

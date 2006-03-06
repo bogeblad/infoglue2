@@ -28,8 +28,7 @@ import java.util.ArrayList;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.ConstraintException;
 
 public class LanguageImpl implements Language
 {

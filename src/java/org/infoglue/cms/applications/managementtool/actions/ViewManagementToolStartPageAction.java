@@ -23,11 +23,10 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
 import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 
 /**
  * This class implements the action class for the startpage in the management tool.
@@ -37,6 +36,8 @@ import java.util.List;
 
 public class ViewManagementToolStartPageAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
     private List repositories;
     
     public String doExecute() throws Exception

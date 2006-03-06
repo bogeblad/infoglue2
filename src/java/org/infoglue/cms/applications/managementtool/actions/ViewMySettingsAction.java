@@ -23,24 +23,13 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
-import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * This class implements the action class for viewRepositoryProperties.
@@ -51,6 +40,8 @@ import java.util.Map;
 
 public class ViewMySettingsAction extends InfoGlueAbstractAction
 { 
+	private static final long serialVersionUID = 1L;
+
 	private PropertySet propertySet				= null; 
 	
 	private String languageCode 				= null;

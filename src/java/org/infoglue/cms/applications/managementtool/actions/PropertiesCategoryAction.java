@@ -1,9 +1,9 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.ModelAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.entities.kernel.Persistent;
 import org.infoglue.cms.entities.management.PropertiesCategoryVO;
-import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.exception.SystemException;
 
 /**

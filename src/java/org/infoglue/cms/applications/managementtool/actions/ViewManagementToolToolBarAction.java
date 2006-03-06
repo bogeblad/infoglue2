@@ -55,6 +55,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private String title = "";
 	private String name  = "";
 	private String toolbarKey = "";

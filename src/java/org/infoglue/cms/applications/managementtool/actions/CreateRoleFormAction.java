@@ -27,11 +27,12 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class CreateRoleFormAction extends InfoGlueAbstractAction
 {
-
-      private java.lang.Integer roleId = null;
-        private java.lang.String name = null;
+	private static final long serialVersionUID = 1L;
+	
+    private java.lang.Integer roleId = null;
+    private java.lang.String name = null;
   
-      public java.lang.Integer getRoleId()
+    public java.lang.Integer getRoleId()
     {
         return this.roleId;
     }
@@ -40,7 +41,8 @@ public class CreateRoleFormAction extends InfoGlueAbstractAction
     {
         this.roleId = roleId;
     }
-        public java.lang.String getName()
+    
+    public java.lang.String getName()
     {
         return this.name;
     }

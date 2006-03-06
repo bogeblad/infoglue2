@@ -24,7 +24,6 @@
 package org.infoglue.deliver.util.graphics;
 
 import org.apache.avalon.framework.logger.Logger;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 
 
 /**

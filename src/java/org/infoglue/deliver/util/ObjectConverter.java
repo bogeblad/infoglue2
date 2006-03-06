@@ -23,7 +23,9 @@
 
 package org.infoglue.deliver.util;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 

@@ -23,15 +23,21 @@
  
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.entities.content.*;
-import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
@@ -39,16 +45,9 @@ import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Support;
-
-import org.w3c.dom.*;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class ComponentLogic 
 {

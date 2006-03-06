@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
@@ -55,6 +54,7 @@ public class IncludeTag extends TemplateControllerTag
 			    Integer componentContentId = this.getController().getComponentLogic().getInfoGlueComponent().getContentId();
 	
 			    List relatedContents = this.getController().getRelatedContents(componentContentId, relationAttributeName);
+
 			    Iterator i = relatedContents.iterator();
 			    while(i.hasNext())
 			    {
@@ -65,11 +65,13 @@ public class IncludeTag extends TemplateControllerTag
 			            break;
 	                }
 			    }
-	
+
 			    template = this.getController().getContentAttribute(contentId, "Template");
 		    }
 		    else
+		    {
 		        template = this.getController().getContentAttribute(contentId, "Template");
+		    }
 		    
 		    String result = this.getController().renderString(template, false);
 		    produceResult(result);

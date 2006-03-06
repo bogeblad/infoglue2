@@ -36,6 +36,8 @@ import org.infoglue.cms.entities.management.InterceptorVO;
 
 public class DeleteInterceptorAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private InterceptorVO interceptorVO = new InterceptorVO();
 		
 	protected String doExecute() throws Exception 

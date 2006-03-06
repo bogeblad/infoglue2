@@ -27,11 +27,12 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class CreateTransactionHistoryFormAction extends InfoGlueAbstractAction
 {
-
-      private java.lang.Integer transactionHistoryId = null;
-        private java.lang.String name = null;
+	private static final long serialVersionUID = 1L;
+	
+    private java.lang.Integer transactionHistoryId = null;
+    private java.lang.String name = null;
   
-      public java.lang.Integer getTransactionHistoryId()
+    public java.lang.Integer getTransactionHistoryId()
     {
         return this.transactionHistoryId;
     }
@@ -40,7 +41,8 @@ public class CreateTransactionHistoryFormAction extends InfoGlueAbstractAction
     {
         this.transactionHistoryId = transactionHistoryId;
     }
-        public java.lang.String getName()
+        
+    public java.lang.String getName()
     {
         return this.name;
     }

@@ -23,17 +23,24 @@
 
 package org.infoglue.deliver.util;
 
+import java.security.Principal;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
-
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FakeHttpServletRequest;
@@ -47,14 +54,6 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryCo
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 public class ContentCentricCachePopulator

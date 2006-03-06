@@ -23,13 +23,10 @@
 
 package org.infoglue.deliver.taglib.structure;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 public class ChildComponentsTag extends ComponentLogicTag 

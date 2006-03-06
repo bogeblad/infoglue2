@@ -23,18 +23,20 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.security.InfoGlueRole;
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import java.util.*;
+import org.infoglue.cms.security.InfoGlueRole;
 
 public class ViewRoleAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private String roleName;
 	private boolean supportsUpdate = true;
 	private InfoGlueRole infoGlueRole;

@@ -26,18 +26,18 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryException;
 import org.exolab.castor.jdo.QueryResults;
-
-import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.kernel.IBaseEntity;
+import org.infoglue.cms.entities.kernel.ValidatableEntityVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.exception.Bug;
@@ -45,7 +45,6 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
-
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.validators.Constants;
 import org.infoglue.cms.util.validators.ConstraintRule;

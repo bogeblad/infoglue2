@@ -22,25 +22,19 @@
 */
 package org.infoglue.deliver.taglib.common;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
-import org.infoglue.deliver.util.CacheController;
 
 /**
  * This tag will get a cookie value  

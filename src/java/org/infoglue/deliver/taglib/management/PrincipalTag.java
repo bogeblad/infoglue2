@@ -25,7 +25,6 @@ package org.infoglue.deliver.taglib.management;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 

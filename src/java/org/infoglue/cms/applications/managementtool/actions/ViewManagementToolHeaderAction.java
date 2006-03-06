@@ -23,10 +23,10 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
 import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 
 
 /**
@@ -37,7 +37,7 @@ import java.util.List;
 
 public class ViewManagementToolHeaderAction extends InfoGlueAbstractAction
 {
-    
+	private static final long serialVersionUID = 1L;   
      
 	private List repositories;
     

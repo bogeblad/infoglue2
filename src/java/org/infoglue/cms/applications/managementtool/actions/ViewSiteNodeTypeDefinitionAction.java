@@ -23,15 +23,16 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import java.util.List;
 
 public class ViewSiteNodeTypeDefinitionAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
 
     private SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO;
     private List assignedAvailableServiceBindingVOList;

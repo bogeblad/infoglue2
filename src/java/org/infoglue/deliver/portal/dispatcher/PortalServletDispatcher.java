@@ -38,11 +38,7 @@ import org.apache.pluto.portalImpl.core.PortletContainerFactory;
 import org.apache.pluto.portalImpl.factory.FactoryAccess;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.factorymanager.FactoryManager;
-import org.infoglue.cms.util.FileUploadHelper;
 import org.infoglue.deliver.portal.ServletConfigContainer;
-
-import webwork.dispatcher.ServletDispatcher;
-import webwork.multipart.MultiPartRequestWrapper;
 
 /**
  * Overides the webwork(1) servlet dispatcher in order to initiate the pluto

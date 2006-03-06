@@ -28,8 +28,7 @@ import java.util.ArrayList;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.ConstraintException;
 
 public class SiteNodeTypeDefinitionImpl implements SiteNodeTypeDefinition
 {

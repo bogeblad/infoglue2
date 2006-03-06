@@ -23,13 +23,11 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.util.*;
+import javax.servlet.http.HttpServletRequest;
 
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.util.HttpUtilities;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 public class IntegrationDeliveryController

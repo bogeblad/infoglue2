@@ -1,17 +1,13 @@
 package org.infoglue.deliver.taglib.content;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.util.webservices.DynamicWebservice;
 

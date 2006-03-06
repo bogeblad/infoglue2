@@ -27,11 +27,14 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.persist.spi.CallbackInterceptor;
-import org.infoglue.cms.util.ChangeNotificationController;
-import org.infoglue.cms.util.NotificationMessage;
-import org.infoglue.cms.util.RemoteCacheUpdater;
-
-import org.infoglue.cms.entities.management.AccessRightGroup;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
@@ -54,20 +57,11 @@ import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
-
-import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
-import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
-import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
-import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
-import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
-import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.Bug;
-
-import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
+import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.infoglue.deliver.util.CacheController;
 
 

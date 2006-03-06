@@ -23,7 +23,6 @@
 package org.infoglue.cms.applications.workflowtool.function.defaultvalue;
 
 import com.opensymphony.workflow.WorkflowException;
-import com.opensymphony.workflow.util.ScriptVariableParser;
 
 public class StringPopulator extends Populator {
 	/**

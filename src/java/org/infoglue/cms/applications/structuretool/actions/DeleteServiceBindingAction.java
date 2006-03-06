@@ -23,10 +23,10 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
-import org.infoglue.cms.entities.structure.*;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServiceBindingController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**

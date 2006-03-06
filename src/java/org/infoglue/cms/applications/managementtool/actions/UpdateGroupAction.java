@@ -25,7 +25,6 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
-//import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 

@@ -29,8 +29,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
-
-import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
