@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.security;
 
+import java.security.Principal;
 import java.util.Map;
 import java.util.Properties;
 
@@ -30,61 +31,130 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.exception.SystemException;
+
 /**
  * This interface defines what a authenticationmodule has to fulfill.
  * 
  * @author Mattias Bogeblad
  */
 
-public interface AuthenticationModule
+public abstract class AuthenticationModule
 {
+    private final static Logger logger = Logger.getLogger(AuthenticationModule.class.getName());
 
-	public String authenticateUser(HttpServletRequest request, HttpServletResponse response, FilterChain fc) throws Exception;
+	public static AuthenticationModule getAuthenticationModule(Object transactionObject) throws SystemException
+	{
+		AuthenticationModule authenticationModule = null;
+		
+		try
+		{
+		    String authenticatorClass 	= InfoGlueAuthenticationFilter.authenticatorClass;
+		    String authorizerClass 	  	= InfoGlueAuthenticationFilter.authorizerClass;
+		    String invalidLoginUrl 		= InfoGlueAuthenticationFilter.invalidLoginUrl;
+		    String loginUrl 			= InfoGlueAuthenticationFilter.loginUrl;
+		    String logoutUrl 			= InfoGlueAuthenticationFilter.logoutUrl;
+		    String serverName 			= InfoGlueAuthenticationFilter.serverName;
+		    Properties extraProperties 	= InfoGlueAuthenticationFilter.extraProperties;
+		    String casRenew 			= InfoGlueAuthenticationFilter.casRenew;
+		    String casServiceUrl 		= InfoGlueAuthenticationFilter.casServiceUrl;
+		    String casValidateUrl 		= InfoGlueAuthenticationFilter.casValidateUrl;
+		    String casLogoutUrl 		= InfoGlueAuthenticationFilter.casLogoutUrl;
 
-	public String authenticateUser(Map request) throws Exception;
-
-	public String getAuthenticatorClass();
-
-	public void setAuthenticatorClass(String authenticatorClass);
-
-	public String getAuthorizerClass();
-
-	public void setAuthorizerClass(String authorizerClass);
-
-	public String getInvalidLoginUrl();
-
-	public void setInvalidLoginUrl(String invalidLoginUrl);
-
-	public String getLoginUrl();
-
-	public void setLoginUrl(String loginUrl);
-
-	public String getServerName();
-
-	public void setServerName(String serverName);
-
-	public Properties getExtraProperties();
-
-	public void setExtraProperties(Properties properties);
+		    /*	
+		    System.out.println("**********************************************");
+		    System.out.println("authenticatorClass:" + authenticatorClass);
+		    System.out.println("authorizerClass:" + authorizerClass);
+		    System.out.println("loginUrl:" + loginUrl);
+		    System.out.println("logoutUrl:" + logoutUrl);
+		    System.out.println("**********************************************");
+		    */
+		    
+		    authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
+			authenticationModule.setAuthenticatorClass(authenticatorClass);
+			authenticationModule.setAuthorizerClass(authorizerClass);
+			authenticationModule.setInvalidLoginUrl(invalidLoginUrl);
+			authenticationModule.setLoginUrl(loginUrl);
+			authenticationModule.setLogoutUrl(logoutUrl);
+			authenticationModule.setServerName(serverName);
+			authenticationModule.setExtraProperties(extraProperties);
+			authenticationModule.setCasRenew(casRenew);
+			authenticationModule.setCasServiceUrl(casServiceUrl);
+			authenticationModule.setCasValidateUrl(casValidateUrl);
+			authenticationModule.setCasLogoutUrl(casLogoutUrl);
+			authenticationModule.setTransactionObject(transactionObject);			
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred when we tried to get an authenticationModule:" + e, e);
+			throw new SystemException("An error occurred when we tried to get an authenticationModule: " + e.getMessage(), e);
+		}
+		
+		return authenticationModule;
+	}
 	
-	public String getCasRenew();
+	public abstract String authenticateUser(HttpServletRequest request, HttpServletResponse response, FilterChain fc) throws Exception;
 
-	public void setCasRenew(String casRenew);
+	public abstract String authenticateUser(Map request) throws Exception;
 
-	public String getCasServiceUrl();
+	public abstract Principal loginUser(HttpServletRequest request, HttpServletResponse response, Map status) throws Exception;
 
-	public void setCasServiceUrl(String casServiceUrl);
-
-	public String getCasValidateUrl();
-
-	public void setCasValidateUrl(String casValidateUrl);
+	public abstract boolean logoutUser(HttpServletRequest request, HttpServletResponse response) throws Exception;
 	
-	public String getCasAuthorizedProxy();
+	public abstract String getLoginDialogUrl(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
-	public void setCasAuthorizedProxy(String casAuthorizedProxy);
+	public abstract String getAuthenticatorClass();
 
-	public Object getTransactionObject();
+	public abstract void setAuthenticatorClass(String authenticatorClass);
 
-	public void setTransactionObject(Object transactionObject);
+	public abstract String getAuthorizerClass();
+
+	public abstract void setAuthorizerClass(String authorizerClass);
+
+	public abstract String getInvalidLoginUrl();
+
+	public abstract void setInvalidLoginUrl(String invalidLoginUrl);
+
+	public abstract String getLoginUrl();
+
+	public abstract void setLoginUrl(String loginUrl);
+
+	public abstract String getLogoutUrl();
+
+	public abstract void setLogoutUrl(String logoutUrl);
+
+	public abstract String getServerName();
+
+	public abstract void setServerName(String serverName);
+
+	public abstract Properties getExtraProperties();
+
+	public abstract void setExtraProperties(Properties properties);
+	
+	public abstract String getCasRenew();
+
+	public abstract void setCasRenew(String casRenew);
+
+	public abstract String getCasServiceUrl();
+
+	public abstract void setCasServiceUrl(String casServiceUrl);
+
+	public abstract String getCasValidateUrl();
+
+	public abstract void setCasValidateUrl(String casValidateUrl);
+
+	public abstract String getCasLogoutUrl();
+
+	public abstract void setCasLogoutUrl(String casLogoutUrl);
+
+	public abstract String getCasAuthorizedProxy();
+
+	public abstract void setCasAuthorizedProxy(String casAuthorizedProxy);
+
+	public abstract Object getTransactionObject();
+
+	public abstract void setTransactionObject(Object transactionObject);
 
 }
