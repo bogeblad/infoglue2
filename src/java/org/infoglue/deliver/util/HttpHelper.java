@@ -36,6 +36,7 @@ import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -408,7 +409,31 @@ public class HttpHelper
 	    return inStream;   
 	}
 	
-	
+	/**
+	 * This method gets a cookie.
+	 * 
+	 * @param cookieName
+	 */
+
+	public String getCookie(HttpServletRequest request, String cookieName)
+	{
+	    if(request != null)
+	    {
+		    Cookie[] cookies = request.getCookies();
+		    if(cookies != null)
+		    {
+			    for(int i=0; i<cookies.length; i++)
+			    {
+			        Cookie cookie = cookies[i];
+			        if(cookie.getName().equals(cookieName))
+			            return cookie.getValue();
+			    }
+		    }
+	    }
+	    
+	    return null;
+	}
+
 
 	/**
 	 * This method converts the request-object to a hashtable instead.
