@@ -23,7 +23,10 @@
 
 package org.infoglue.cms.entities.mydesktop;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -36,6 +39,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class WorkflowStepVO implements BaseEntityVO
 {
+	private static final long serialVersionUID = 1L;
+
 	private WorkflowVO workflow;
 	private Long workflowId;
 	private Integer id;

@@ -23,23 +23,25 @@
 
 package org.infoglue.cms.util.workflow;
 
-import com.opensymphony.module.propertyset.*;
-import com.opensymphony.module.propertyset.database.JDBCPropertySet;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
 
-import com.opensymphony.util.Data;
-import com.opensymphony.util.EJBUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 
-
-import java.sql.*;
-
-import java.util.*;
-import java.util.Date;
-
-import javax.sql.DataSource;
+import com.opensymphony.module.propertyset.InvalidPropertyTypeException;
+import com.opensymphony.module.propertyset.PropertyException;
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.database.JDBCPropertySet;
+import com.opensymphony.util.Data;
 
 
 /**
@@ -82,7 +84,7 @@ import javax.sql.DataSource;
  *  <li><b>col.number</b> - column name for the number value</li>
  * </ul>
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author <a href="mailto:epesh@hotmail.com">Joseph B. Ottinger</a>
  * @author <a href="mailto:plightbo@hotmail.com">Pat Lightbody</a>
  */

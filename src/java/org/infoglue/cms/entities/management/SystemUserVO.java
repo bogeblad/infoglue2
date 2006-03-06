@@ -29,11 +29,11 @@ import java.util.Iterator;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.kernel.ValidatableEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
-import org.infoglue.cms.util.validators.Range;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.validators.ConstraintRule;
 import org.infoglue.cms.util.validators.Constants;
+import org.infoglue.cms.util.validators.ConstraintRule;
 import org.infoglue.cms.util.validators.EmailValidator;
+import org.infoglue.cms.util.validators.Range;
 import org.infoglue.cms.util.validators.StringValidator;
 
 

@@ -23,8 +23,14 @@
  
 package org.infoglue.cms.plugins.codeeditor;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+
+import javax.swing.JComponent;
 
 public class Rule extends JComponent 
 {

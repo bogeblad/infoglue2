@@ -23,8 +23,6 @@
 
 package org.infoglue.cms.entities.management;
 
-import java.util.Collection;
-
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 
 public interface AccessRightRole extends IBaseEntity

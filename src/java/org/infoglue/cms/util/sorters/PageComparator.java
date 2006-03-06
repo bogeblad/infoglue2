@@ -1,14 +1,11 @@
 package org.infoglue.cms.util.sorters;
 
+import java.util.Comparator;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-
 import org.infoglue.deliver.applications.databeans.WebPage;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-
-import java.util.Comparator;
 
 /**
  * Sort on a particular property, using reflection to find the value

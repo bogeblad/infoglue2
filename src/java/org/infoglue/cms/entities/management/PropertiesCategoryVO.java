@@ -19,12 +19,11 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: PropertiesCategoryVO.java,v 1.1 2005/04/20 16:06:33 mattias Exp $
+ * $Id: PropertiesCategoryVO.java,v 1.2 2006/03/06 17:19:50 mattias Exp $
  */
 package org.infoglue.cms.entities.management;
 
 import org.infoglue.cms.entities.kernel.Persistent;
-import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DomainUtils;
 

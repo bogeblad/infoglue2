@@ -24,16 +24,15 @@ package org.infoglue.cms.util.workflow;
 
 import java.util.Iterator;
 
-import org.infoglue.cms.security.*;
-import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
-import org.infoglue.cms.util.workflow.StepFilter;
 import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
  * Filters steps according to owner.  If a step has no owner, it is assumed that anyone can view it.
  * An administrator can view all steps regardless of owner.
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.9 $ $Date: 2005/09/13 13:23:04 $
+ * @version $Revision: 1.10 $ $Date: 2006/03/06 17:28:55 $
  */
 public class OwnerStepFilter implements StepFilter
 {

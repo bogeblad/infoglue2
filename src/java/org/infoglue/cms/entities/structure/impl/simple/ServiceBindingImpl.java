@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.entities.structure.impl.simple;
 
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
 
 public class ServiceBindingImpl implements ServiceBinding
 {

@@ -23,8 +23,9 @@
  
 package org.infoglue.cms.plugins.codeeditor;
 
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.StringTokenizer;
 
 public class TextAreaInputListener extends KeyAdapter

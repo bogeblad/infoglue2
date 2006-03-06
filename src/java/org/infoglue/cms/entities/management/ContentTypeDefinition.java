@@ -23,8 +23,8 @@
 
 package org.infoglue.cms.entities.management;
 
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.entities.kernel.IBaseEntity;
+import org.infoglue.cms.exception.ConstraintException;
 
 public interface ContentTypeDefinition extends IBaseEntity
 {

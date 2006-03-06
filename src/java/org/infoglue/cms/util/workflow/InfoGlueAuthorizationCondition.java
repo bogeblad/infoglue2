@@ -1,19 +1,17 @@
 package org.infoglue.cms.util.workflow;
 
-import com.opensymphony.module.propertyset.PropertySet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.opensymphony.workflow.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.deliver.util.charts.ChartHelper;
 
-
-import java.util.*;
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.Condition;
+import com.opensymphony.workflow.WorkflowContext;
 
 /**
  * This action checks if the user has a particular role.

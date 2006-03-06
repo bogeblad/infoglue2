@@ -23,11 +23,11 @@
 
 package org.infoglue.cms.services;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-
-import java.util.List;
-import java.util.HashMap;
 
 /**
  * This is the service which fetches contents from this content-system. 

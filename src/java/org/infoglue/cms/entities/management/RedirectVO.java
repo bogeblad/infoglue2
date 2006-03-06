@@ -27,8 +27,8 @@ import java.util.regex.Pattern;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.RedirectImpl;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.util.validators.*;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.validators.ValidatorFactory;
 
 public class RedirectVO implements BaseEntityVO
 {

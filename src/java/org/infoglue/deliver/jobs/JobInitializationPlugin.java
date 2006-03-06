@@ -28,21 +28,21 @@ package org.infoglue.deliver.jobs;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
 import java.net.URL;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerConfigException;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.jobs.FileScanJob;
 import org.quartz.jobs.FileScanListener;
 import org.quartz.spi.SchedulerPlugin;
-
-import org.quartz.xml.*;
+import org.quartz.xml.JobSchedulingDataProcessor;
 
 /**
 * This plugin loads an XML file to add jobs and schedule them with triggers

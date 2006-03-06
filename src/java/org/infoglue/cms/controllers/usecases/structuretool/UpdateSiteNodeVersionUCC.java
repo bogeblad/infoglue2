@@ -24,8 +24,8 @@
 package org.infoglue.cms.controllers.usecases.structuretool;
 
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 
 public interface UpdateSiteNodeVersionUCC
 {

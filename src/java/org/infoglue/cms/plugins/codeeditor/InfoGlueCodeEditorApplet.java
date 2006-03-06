@@ -23,11 +23,14 @@
  
 package org.infoglue.cms.plugins.codeeditor;
 
-import javax.swing.*;
 import java.awt.Color;
-import java.awt.*;
+import java.awt.Dimension;
 
-import netscape.javascript.*;
+import javax.swing.BorderFactory;
+import javax.swing.JApplet;
+import javax.swing.JScrollPane;
+
+import netscape.javascript.JSObject;
 
 
 public class InfoGlueCodeEditorApplet extends JApplet implements InfoGlueCodeEditorController

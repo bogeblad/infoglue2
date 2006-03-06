@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.validators.Constants;
 import org.infoglue.cms.util.validators.ConstraintRule;
 import org.infoglue.cms.util.validators.ConstraintRuleList;
-import org.infoglue.cms.util.validators.Constants;
 import org.infoglue.cms.util.validators.EmailValidator;
 import org.infoglue.cms.util.validators.StringValidator;
 

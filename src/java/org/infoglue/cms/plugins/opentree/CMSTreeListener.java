@@ -23,11 +23,14 @@
  
 package org.infoglue.cms.plugins.opentree;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
 import java.awt.event.MouseAdapter;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreePath;
 
 
 //import se.sprawl.cms.entities.content.ContentVO;

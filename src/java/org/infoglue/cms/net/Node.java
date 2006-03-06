@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.net;
 
-import java.io.*;
+import java.io.Serializable;
 
 public class Node implements Serializable
 {

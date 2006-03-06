@@ -23,14 +23,22 @@
  
 package org.infoglue.cms.plugins.opentree;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.net.URL;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JApplet;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.*;
 
-import netscape.javascript.*;
+import netscape.javascript.JSObject;
 
 /**
  * This is the applet-class. It is very simple and apart from initializing the tree

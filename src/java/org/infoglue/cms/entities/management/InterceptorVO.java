@@ -24,8 +24,8 @@
 package org.infoglue.cms.entities.management;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.util.validators.*;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.validators.ValidatorFactory;
 
 public class InterceptorVO implements BaseEntityVO
 {

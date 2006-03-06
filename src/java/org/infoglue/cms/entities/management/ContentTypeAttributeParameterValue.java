@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.entities.management;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * This javabean carries information about one attributes parameters values. For example an

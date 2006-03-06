@@ -23,7 +23,9 @@
 
 package org.infoglue.cms.entities.mydesktop;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -37,6 +39,8 @@ import org.infoglue.cms.util.workflow.StepFilter;
 
 public class WorkflowVO implements BaseEntityVO
 {
+	private static final long serialVersionUID = 1L;
+
 	private Long workflowId;
 	private String name;  // the name of the workflow
 	private String title; // the name of the workflow instance

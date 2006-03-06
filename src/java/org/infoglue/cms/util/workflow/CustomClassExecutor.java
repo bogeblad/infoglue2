@@ -23,25 +23,21 @@
 
 package org.infoglue.cms.util.workflow;
 
-import com.opensymphony.module.propertyset.PropertySet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import com.opensymphony.workflow.*;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
-import org.infoglue.cms.util.css.CSSHelper;
-
 
 import webwork.action.ActionContext;
 
-import webwork.dispatcher.GenericDispatcher;
-
-import java.security.Principal;
-
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.FunctionProvider;
+import com.opensymphony.workflow.WorkflowContext;
+import com.opensymphony.workflow.WorkflowException;
 
 
 /**

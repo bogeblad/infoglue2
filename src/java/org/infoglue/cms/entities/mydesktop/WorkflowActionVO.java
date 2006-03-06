@@ -19,7 +19,7 @@
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
 *
 * ===============================================================================
-* $Id: WorkflowActionVO.java,v 1.7 2005/01/18 16:32:12 jed Exp $
+* $Id: WorkflowActionVO.java,v 1.8 2006/03/06 17:20:32 mattias Exp $
 */
 
 package org.infoglue.cms.entities.mydesktop;
@@ -27,7 +27,7 @@ package org.infoglue.cms.entities.mydesktop;
 import java.util.Map;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.util.*;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  * This is the general action description object. Can be used by any workflow engine hopefully.
@@ -37,6 +37,8 @@ import org.infoglue.cms.util.*;
 
 public class WorkflowActionVO implements BaseEntityVO
 {
+	private static final long serialVersionUID = 1L;
+
 	private Integer id;
 	private Long workflowId;
 	private WorkflowStepVO step;

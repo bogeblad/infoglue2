@@ -24,8 +24,9 @@
 package org.infoglue.cms.entities.management;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.*;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class RepositoryLanguageVO  implements BaseEntityVO
 {

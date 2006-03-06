@@ -23,12 +23,24 @@
  
 package org.infoglue.cms.plugins.opentree;
 
-import org.infoglue.cms.net.*;
-import org.infoglue.cms.net.Node;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import java.util.*;
-import java.io.*;
-import java.net.*;
+import org.infoglue.cms.net.CommunicationEnvelope;
+import org.infoglue.cms.net.Node;
 
 
 public class Communicator

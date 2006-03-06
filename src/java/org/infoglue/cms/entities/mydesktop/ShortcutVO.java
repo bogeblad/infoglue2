@@ -23,11 +23,8 @@
 
 package org.infoglue.cms.entities.mydesktop;
 
-import java.util.*;
-
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.workflow.StepFilter;
 
 /**
  * This contains a shortcut object.

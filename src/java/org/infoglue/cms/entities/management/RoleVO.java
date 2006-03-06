@@ -23,10 +23,10 @@
 
 package org.infoglue.cms.entities.management;
 
-import org.infoglue.cms.util.validators.*;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.validators.ValidatorFactory;
 
 public class RoleVO  implements BaseEntityVO
 {

@@ -23,7 +23,8 @@
 
 package org.infoglue.cms.util.validators;
 
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 

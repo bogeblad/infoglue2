@@ -23,34 +23,13 @@
 
 package org.infoglue.cms.util.workflow;
 
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.module.propertyset.PropertySetManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
 
 import com.opensymphony.workflow.StoreException;
-import com.opensymphony.workflow.query.Expression;
-import com.opensymphony.workflow.query.FieldExpression;
-import com.opensymphony.workflow.query.NestedExpression;
-import com.opensymphony.workflow.query.WorkflowExpressionQuery;
-import com.opensymphony.workflow.query.WorkflowQuery;
-import com.opensymphony.workflow.spi.SimpleStep;
-import com.opensymphony.workflow.spi.SimpleWorkflowEntry;
-import com.opensymphony.workflow.spi.Step;
-import com.opensymphony.workflow.spi.WorkflowEntry;
-import com.opensymphony.workflow.spi.WorkflowStore;
-import com.opensymphony.workflow.spi.jdbc.JDBCWorkflowStore;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.sql.*;
-
-import java.util.*;
-import java.util.Date;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-import javax.sql.DataSource;
 
 
 /**

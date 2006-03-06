@@ -23,14 +23,25 @@
  
 package org.infoglue.cms.plugins.codeeditor;
 
-import javax.swing.*;
 import java.awt.Color;
-import java.awt.*;
-import java.util.List;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.swing.text.*;
-import javax.swing.event.*;
+import java.util.List;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.TabSet;
+import javax.swing.text.TabStop;
 
 /**
  * This class is the basic for the editor.

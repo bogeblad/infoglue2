@@ -23,8 +23,9 @@
  
 package org.infoglue.cms.plugins.opentree;
 
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeNode;
-import javax.swing.event.*;
 
 public class NodeTreeSelectionListener implements TreeSelectionListener 
 {

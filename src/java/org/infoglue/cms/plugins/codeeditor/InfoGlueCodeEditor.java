@@ -23,9 +23,12 @@
  
 package org.infoglue.cms.plugins.codeeditor;
 
-import javax.swing.*;
 import java.awt.Color;
-import java.awt.*;
+import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 public class InfoGlueCodeEditor extends JFrame implements InfoGlueCodeEditorController
 {

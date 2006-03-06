@@ -23,8 +23,8 @@
 
 package org.infoglue.cms.services;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
 import org.exolab.castor.jdo.Database;
 

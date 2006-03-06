@@ -1,10 +1,9 @@
 package org.infoglue.cms.entities.publishing;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.ArrayList;
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a helper class that will provide convenience methods for getting information

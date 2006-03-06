@@ -23,8 +23,11 @@
  
 package org.infoglue.cms.plugins.codeeditor;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * URL utility class. Used for tasks involving getting url-contents from remote addresses 

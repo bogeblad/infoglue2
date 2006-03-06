@@ -20,12 +20,12 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryVO.java,v 1.2 2004/12/13 13:50:08 jed Exp $
+ * $Id: CategoryVO.java,v 1.3 2006/03/06 17:19:50 mattias Exp $
  */
 package org.infoglue.cms.entities.management;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.infoglue.cms.entities.kernel.Persistent;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;

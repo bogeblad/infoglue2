@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.entities.kernel;
 
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import java.io.Serializable;
 
-import java.io.*;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public interface BaseEntityVO extends Serializable
 {

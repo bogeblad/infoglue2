@@ -1,7 +1,5 @@
 package org.infoglue.cms.util.validators;
 
-import java.util.Iterator;
-
 import org.apache.commons.validator.Field;
 import org.apache.commons.validator.GenericTypeValidator;
 import org.apache.commons.validator.GenericValidator;

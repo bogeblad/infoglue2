@@ -23,10 +23,8 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool;
 
-import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeVersionUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.impl.simple.ViewSiteNodeVersionUCCImpl;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.SystemException;
 
 public class ViewSiteNodeVersionUCCFactory
 {

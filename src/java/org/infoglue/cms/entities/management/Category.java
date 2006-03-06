@@ -20,13 +20,12 @@
  *
  * ===============================================================================
  *
- * $Id: Category.java,v 1.2 2005/01/04 15:29:26 mattias Exp $
+ * $Id: Category.java,v 1.3 2006/03/06 17:19:50 mattias Exp $
  */
 
 package org.infoglue.cms.entities.management;
 
 import org.infoglue.cms.entities.kernel.IBaseEntity;
-import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 
 /**
  * This is a Category to be used for categorizing Content

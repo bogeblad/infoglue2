@@ -23,11 +23,11 @@
 
 package org.infoglue.cms.entities.management;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is a pure javabean carrying the information about one content type attribute.

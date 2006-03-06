@@ -23,14 +23,8 @@
 
 package org.infoglue.cms.entities.structure.impl.simple;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
-import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 public class SmallSiteNodeImpl extends SiteNodeImpl
 {

@@ -23,9 +23,10 @@
  
 package org.infoglue.cms.plugins.opentree;
 
-import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Iterator;
+import java.util.List;
 
-import java.util.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class CMSNode extends DefaultMutableTreeNode
 {

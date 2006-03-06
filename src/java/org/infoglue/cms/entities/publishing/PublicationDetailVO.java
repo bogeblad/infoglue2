@@ -27,8 +27,6 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 
-import java.util.Date;
-
 public class PublicationDetailVO implements BaseEntityVO
 { 
 	public static final Integer UNDEFINED        = new Integer(0);

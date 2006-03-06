@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.entities.publishing;
 
-import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.kernel.IBaseEntity;
 
 public interface PublicationDetail extends IBaseEntity
 {

@@ -23,11 +23,20 @@
  
 package org.infoglue.cms.plugins.codeeditor;
 
-import javax.swing.*;
 import java.awt.Color;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.text.*;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 /**
  * This class is the dialog showing available methods in the templateLogic-object.

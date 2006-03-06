@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.entities.publishing.impl.simple;
 
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.publishing.PublicationDetail;
 import org.infoglue.cms.entities.publishing.PublicationDetailVO;
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
 
 public class PublicationDetailImpl implements PublicationDetail
 {

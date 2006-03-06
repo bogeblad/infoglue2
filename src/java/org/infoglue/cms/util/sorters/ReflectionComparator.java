@@ -1,10 +1,9 @@
 package org.infoglue.cms.util.sorters;
 
+import java.util.Comparator;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
-
-
-import java.util.Comparator;
 
 /**
  * Sort on a particular property, using reflection to find the value

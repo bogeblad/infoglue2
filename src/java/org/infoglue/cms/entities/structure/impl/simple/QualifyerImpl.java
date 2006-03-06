@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.entities.structure.impl.simple;
 
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.QualifyerVO;
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
 
 public class QualifyerImpl implements Qualifyer
 {

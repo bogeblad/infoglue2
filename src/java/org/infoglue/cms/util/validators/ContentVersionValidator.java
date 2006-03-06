@@ -2,7 +2,6 @@ package org.infoglue.cms.util.validators;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Set;
 
