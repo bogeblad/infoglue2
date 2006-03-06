@@ -106,7 +106,7 @@
 				<% session.invalidate(); %>
 				<br>
 				<br>
-				<a href="ViewCMSTool.action">Try again</a>
+				<a href="ViewCMSTool.action">Try again</a> | <a href="Login!logout.action">Logout</a>
 				
 			</td>
 		</tr>
