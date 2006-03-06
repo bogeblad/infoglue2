@@ -23,52 +23,52 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
-import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
-import org.infoglue.cms.entities.structure.ServiceBinding;
-import org.infoglue.cms.entities.structure.Qualifyer;
-import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
-import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
-import org.infoglue.cms.entities.structure.SiteNodeVersion;
-import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.services.*;
-import org.infoglue.cms.util.*;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.databeans.NullObject;
-import org.infoglue.deliver.applications.databeans.WebPage;
-import org.infoglue.deliver.applications.filters.URIMapperCache;
-import org.infoglue.deliver.applications.filters.ViewPageFilter;
-import org.infoglue.deliver.controllers.kernel.URLComposer;
-import org.infoglue.deliver.util.CacheController;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
-
-import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Date;
-
-import javax.servlet.http.HttpSession;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.ServiceDefinitionVO;
+import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
+import org.infoglue.cms.entities.structure.Qualifyer;
+import org.infoglue.cms.entities.structure.ServiceBinding;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.services.BaseService;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.NullObject;
+import org.infoglue.deliver.applications.filters.URIMapperCache;
+import org.infoglue.deliver.applications.filters.ViewPageFilter;
+import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.HttpHelper;
 
 
 public class NodeDeliveryController extends BaseDeliveryController
@@ -679,9 +679,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the pageCacheKey for the page.
 	 */
 	
-	public String getPageCacheKey(Database db, HttpSession session, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+	public String getPageCacheKey(Database db, HttpSession session, HttpServletRequest request, /*TemplateController templateController, */Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
 	{
-	    String pageKey = CacheController.getPageCacheKey(session, templateController, siteNodeId, languageId, contentId, userAgent, queryString, extra);
+	    String pageKey = CacheController.getPageCacheKey(session, request/*, templateController*/, siteNodeId, languageId, contentId, userAgent, queryString, extra);
 
 		try
 		{
@@ -720,7 +720,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        	    else
 	        	        cookieAttribute = pageKey.substring(cookieAttributeStartIndex + 8);
 
-	        	    pageKey = pageKey.replaceAll("\\$cookie." + cookieAttribute, "" + templateController.getCookie(cookieAttribute));    	    
+	        	    HttpHelper httpHelper = new HttpHelper();
+	        	    pageKey = pageKey.replaceAll("\\$cookie." + cookieAttribute, "" + httpHelper.getCookie(request, cookieAttribute));    	    
 	    	    
 	        	    cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
 	    	    }
