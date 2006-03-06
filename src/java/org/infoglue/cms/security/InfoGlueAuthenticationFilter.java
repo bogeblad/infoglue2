@@ -23,27 +23,27 @@
 
 package org.infoglue.cms.security;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.security.Principal;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.Session;
-import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.SystemException;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
-
-import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This filter protects actions withing InfoGlue from access without authentication. 
@@ -58,6 +58,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 	public final static String INFOGLUE_FILTER_USER = "org.infoglue.cms.security.user";
 	
  	public static String loginUrl 				= null;
+ 	public static String logoutUrl 				= null;
 	public static String invalidLoginUrl 		= null;
 	public static String successLoginBaseUrl	= null;
 	public static String authenticatorClass 	= null;
@@ -68,11 +69,13 @@ public class InfoGlueAuthenticationFilter implements Filter
  	public static Properties extraProperties	= null;
 	public static String casValidateUrl			= null;
 	public static String casServiceUrl			= null;
+	public static String casLogoutUrl			= null;
 	public static String casRenew				= null;
  	
 	public void init(FilterConfig config) throws ServletException 
 	{
 		loginUrl 			= config.getInitParameter("org.infoglue.cms.security.loginUrl");
+		logoutUrl 			= config.getInitParameter("org.infoglue.cms.security.logoutUrl");
 		invalidLoginUrl 	= config.getInitParameter("org.infoglue.cms.security.invalidLoginUrl");
 		successLoginBaseUrl = config.getInitParameter("org.infoglue.cms.security.successLoginBaseUrl");
 		authenticatorClass 	= config.getInitParameter("org.infoglue.cms.security.authenticatorClass");
@@ -82,6 +85,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		extraParametersFile	= config.getInitParameter("org.infoglue.cms.security.extraParametersFile");
 		casValidateUrl		= config.getInitParameter("org.infoglue.cms.security.casValidateUrl");
 		casServiceUrl		= config.getInitParameter("org.infoglue.cms.security.casServiceUrl");
+		casLogoutUrl		= config.getInitParameter("org.infoglue.cms.security.casLogoutUrl");
 		//casRenew			= config.getInitParameter("org.infoglue.cms.security.casRenew");
 			    
 		if(extraParametersFile != null)
@@ -108,7 +112,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		String URI = httpServletRequest.getRequestURI();
 		String URL = httpServletRequest.getRequestURL().toString();
 
-		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf("UpdateCache") > -1)
+		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1)
 		{
     	    fc.doFilter(request, response); 
 			return;
@@ -145,7 +149,21 @@ public class InfoGlueAuthenticationFilter implements Filter
 		// otherwise, we need to authenticate somehow
 		try
 		{
-		    String authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
+			boolean isAdministrator = false;
+
+			String userName = request.getParameter("j_username");
+			String password = request.getParameter("j_password");
+			
+			if(userName != null && password != null)
+			{
+				String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
+				String administratorPassword = CmsPropertyHandler.getProperty("administratorPassword");
+				isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
+			}
+			
+			String authenticatedUserName = userName;
+			if(!isAdministrator)
+				authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
 			
 			if(authenticatedUserName != null)
 			{	
@@ -293,8 +311,11 @@ public class InfoGlueAuthenticationFilter implements Filter
 		
 		InfoGluePrincipal infoGluePrincipal = authorizationModule.getAuthorizedInfoGluePrincipal(userName);
 		logger.info("infoGluePrincipal:" + infoGluePrincipal);
-		logger.info("roles:" + infoGluePrincipal.getRoles());
-		logger.info("groups:" + infoGluePrincipal.getGroups());
+		if(infoGluePrincipal != null)
+		{
+			logger.info("roles:" + infoGluePrincipal.getRoles());
+			logger.info("groups:" + infoGluePrincipal.getGroups());
+		}
 		
 		return infoGluePrincipal;		
   	}
@@ -307,15 +328,23 @@ public class InfoGlueAuthenticationFilter implements Filter
 	{
 	    try
 		{
-		    authenticatorClass 	= CmsPropertyHandler.getProperty("authenticatorClass");
-		    authorizerClass 	= CmsPropertyHandler.getProperty("authorizerClass");
-		    invalidLoginUrl 	= CmsPropertyHandler.getProperty("invalidLoginUrl");
-		    successLoginBaseUrl = CmsPropertyHandler.getProperty("successLoginBaseUrl");
-		    loginUrl 			= CmsPropertyHandler.getProperty("loginUrl");
-		    serverName 			= CmsPropertyHandler.getProperty("serverName");
-		    casRenew 			= CmsPropertyHandler.getProperty("casRenew");
-		    casServiceUrl 		= CmsPropertyHandler.getProperty("casServiceUrl");
-		    casValidateUrl 		= CmsPropertyHandler.getProperty("casValidateUrl");
+		    authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true);
+		    authorizerClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true);
+		    invalidLoginUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true);
+		    successLoginBaseUrl = CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true);
+		    loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true);
+		    logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true);
+		    serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true);
+		    casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true);
+		    casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true);
+		    casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true);
+		    casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true);
+		    
+		    /*
+		    System.out.println("loginUrl:" + loginUrl);
+		    System.out.println("authenticatorClass:" + authenticatorClass);
+		    System.out.println("authorizerClass:" + authorizerClass);
+		    */
 		    
 		    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraParametersFile");
 		    
@@ -338,10 +367,12 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    logger.info("invalidLoginUrl:" + invalidLoginUrl);
 		    logger.info("successLoginBaseUrl:" + successLoginBaseUrl);
 		    logger.info("loginUrl:" + loginUrl);
+		    logger.info("logoutUrl:" + logoutUrl);
 		    logger.info("serverName:" + serverName);
 		    logger.info("casRenew:" + casRenew);
 		    logger.info("casServiceUrl:" + casServiceUrl);
 		    logger.info("casValidateUrl:" + casValidateUrl);
+		    logger.info("casLogoutUrl:" + casLogoutUrl);
 		}
 		catch(Exception e)
 		{
