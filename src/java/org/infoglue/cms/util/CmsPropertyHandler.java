@@ -23,16 +23,15 @@
 
 package org.infoglue.cms.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.InetAddress;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.io.*;
-import java.net.InetAddress;
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
@@ -211,6 +210,11 @@ public class CmsPropertyHandler
 		CacheController.clearCache("serverNodePropertiesCache");
 	}	
 
+	public static String getServerNodeProperty(String key, boolean inherit)
+	{
+		return getServerNodeProperty(null, key, inherit);
+	}
+	
 	/**
 	 * This method gets the serverNodeProperty but also fallbacks to the old propertyfile if not found in the propertyset.
 	 * 
@@ -219,11 +223,11 @@ public class CmsPropertyHandler
 	 * @return
 	 */
 	
-	public static String getServerNodeProperty(String key, boolean inherit)
+	public static String getServerNodeProperty(String prefix, String key, boolean inherit)
 	{
 	    String value = null;
 	    
-        String cacheKey = "" + key + "_" + inherit;
+        String cacheKey = "" + prefix + "_" + key + "_" + inherit;
         String cacheName = "serverNodePropertiesCache";
 		logger.info("cacheKey:" + cacheKey);
 		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
@@ -234,19 +238,46 @@ public class CmsPropertyHandler
 	    
 	    if(localSettingsServerNodeId != null)
 	    {
-	        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + key);
-	        //System.out.println("Local value: " + value);
-	        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
-	        {
-	            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-		        //System.out.println("Global value: " + value);
-	        }
+	    	if(prefix != null)
+	    	{
+		        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + prefix + "_" + key);
+		        //System.out.println("Local value: " + value);
+		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+		        {
+		            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
+			        //System.out.println("Global value: " + value);
+			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+			        {
+			            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+				        //System.out.println("Global value: " + value);
+			        }
+
+		        }
+	    	}
+	    	else
+	    	{
+		        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + key);
+		        //System.out.println("Local value: " + value);
+		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+		        {
+		            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+			        //System.out.println("Global value: " + value);
+		        }	    		
+	    	}
 	    }
 		else
 		{
-            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-	        //System.out.println("Global value immediately: " + value);
-		}
+			if(prefix != null)
+	    	{
+				value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
+				//System.out.println("Global value immediately: " + value);
+	    	}
+			else
+			{
+				value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+				//System.out.println("Global value immediately: " + value);				
+			}
+	    }
 	    
 	    if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 	    {
@@ -259,6 +290,11 @@ public class CmsPropertyHandler
 	    return value;
 	}
 
+	/**
+	 * This method clears the serverNodeProperty.
+	 */
+	
+	
 	public static String getIsPageCacheOn()
 	{
 	    return getServerNodeProperty("isPageCacheOn", true);
