@@ -23,43 +23,36 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.management.AvailableServiceBinding;
-import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
-import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.RegistryVO;
-import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-import org.infoglue.cms.entities.structure.ServiceBindingVO;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.SiteNodeVersion;
-import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.structure.ServiceBinding;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
-
-import org.infoglue.cms.security.InfoGluePrincipal;
-
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.DateHelper;
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.RegistryVO;
+import org.infoglue.cms.entities.structure.ServiceBinding;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 
 public class SiteNodeVersionController extends BaseController 
 {
@@ -190,7 +183,7 @@ public class SiteNodeVersionController extends BaseController
 
         try
         {
-        	SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db);
+        	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
             
         	siteNodeVersion = new SiteNodeVersionImpl();
         	siteNodeVersion.setOwningSiteNode((SiteNodeImpl)siteNode);
@@ -222,7 +215,7 @@ public class SiteNodeVersionController extends BaseController
 	{
     	SiteNodeVersion siteNodeVersion = null;
 
-    	SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db);
+    	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
         
     	siteNodeVersion = new SiteNodeVersionImpl();
     	siteNodeVersion.setOwningSiteNode((SiteNodeImpl)siteNode);

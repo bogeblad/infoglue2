@@ -23,12 +23,30 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.kernel.*;
-import org.infoglue.cms.entities.structure.ServiceBinding;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.ServiceDefinition;
+import org.infoglue.cms.entities.management.ServiceDefinitionVO;
+import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -36,30 +54,14 @@ import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
-import org.infoglue.cms.entities.management.*;
-import org.infoglue.cms.entities.management.impl.simple.*;
-
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
-
-import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
-
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.Map;
 
 public class SiteNodeController extends BaseController 
 {
@@ -102,7 +104,7 @@ public class SiteNodeController extends BaseController
     }
 
 
-    public static SiteNode getSiteNodeWithId(Integer siteNodeId, Database db) throws SystemException, Bug
+    public SiteNode getSiteNodeWithId(Integer siteNodeId, Database db) throws SystemException, Bug
     {
         return getSiteNodeWithId(siteNodeId, db, false);
     }
@@ -138,7 +140,7 @@ public class SiteNodeController extends BaseController
 	 * This method deletes a siteNode and also erases all the children and all versions.
 	 */
 	    
-    public static void delete(SiteNodeVO siteNodeVO) throws ConstraintException, SystemException
+    public void delete(SiteNodeVO siteNodeVO) throws ConstraintException, SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
@@ -166,7 +168,7 @@ public class SiteNodeController extends BaseController
 	 * This method deletes a siteNode and also erases all the children and all versions.
 	 */
 	    
-	public static void delete(SiteNodeVO siteNodeVO, Database db) throws ConstraintException, SystemException, Exception
+	public void delete(SiteNodeVO siteNodeVO, Database db) throws ConstraintException, SystemException, Exception
 	{
 		SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
 		SiteNode parent = siteNode.getParentSiteNode();
@@ -303,7 +305,7 @@ public class SiteNodeController extends BaseController
 
         if(parentSiteNodeId != null)
         {
-       		parentSiteNode = SiteNodeController.getSiteNodeWithId(parentSiteNodeId, db);
+       		parentSiteNode = getSiteNodeWithId(parentSiteNodeId, db);
 			if(repositoryId == null)
 				repositoryId = parentSiteNode.getRepository().getRepositoryId();	
         }		
@@ -367,7 +369,7 @@ public class SiteNodeController extends BaseController
 
 			if(parentSiteNodeId != null)
 			{
-				parentSiteNode = SiteNodeController.getSiteNodeWithId(parentSiteNodeId, db);
+				parentSiteNode = getSiteNodeWithId(parentSiteNodeId, db);
 				if(repositoryId == null)
 					repositoryId = parentSiteNode.getRepository().getRepositoryId();	
 			}		
@@ -459,7 +461,7 @@ public class SiteNodeController extends BaseController
 
 		try
 		{
-			SiteNode siteNode = SiteNodeController.getSiteNodeWithId(parentSiteNodeId, db);
+			SiteNode siteNode = getSiteNodeWithId(parentSiteNodeId, db);
 			Collection children = siteNode.getChildSiteNodes();
 			childrenVOList = SiteNodeController.toVOList(children);
         	
@@ -645,9 +647,9 @@ public class SiteNodeController extends BaseController
             	throw new ConstraintException("SiteNode.parentSiteNodeId", "3401");
             }
             
-            siteNode          = SiteNodeController.getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
+            siteNode          = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
             oldParentSiteNode = siteNode.getParentSiteNode();
-            newParentSiteNode = SiteNodeController.getSiteNodeWithId(newParentSiteNodeId, db);
+            newParentSiteNode = getSiteNodeWithId(newParentSiteNodeId, db);
             
             if(oldParentSiteNode.getId().intValue() == newParentSiteNodeId.intValue())
             {
@@ -925,7 +927,7 @@ public class SiteNodeController extends BaseController
 
     public void setMetaInfoContentId(Integer siteNodeId, Integer metaInfoContentId, Database db) throws ConstraintException, SystemException
     {
-        SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db);
+        SiteNode siteNode = getSiteNodeWithId(siteNodeId, db);
         siteNode.setMetaInfoContentId(metaInfoContentId);
     }       
     
