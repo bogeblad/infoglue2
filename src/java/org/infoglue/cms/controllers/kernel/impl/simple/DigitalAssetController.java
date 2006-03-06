@@ -23,30 +23,37 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.UserProperties;
-import org.infoglue.cms.entities.content.*;
-import org.infoglue.cms.entities.content.impl.simple.*;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.graphics.*;
-
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.graphics.ThumbnailGenerator;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.io.*;
-import java.net.URLEncoder;
 
 /**
  * @author Mattias Bogeblad
@@ -146,8 +153,7 @@ public class DigitalAssetController extends BaseController
    	public static DigitalAssetVO create(DigitalAssetVO digitalAssetVO, InputStream is, String entity, Integer entityId) throws ConstraintException, SystemException
    	{
 		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
+        
 		DigitalAsset digitalAsset = null;
 		
 		beginTransaction(db);
@@ -259,7 +265,6 @@ public class DigitalAssetController extends BaseController
 		logger.info("oldAssetKey:" + oldAssetKey);
 		logger.info("newContentVersionId:" + newContentVersionId);
 		logger.info("newAssetKey:" + newAssetKey);
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 		
 		DigitalAsset oldDigitalAsset = getDigitalAsset(originalContentVersionId, oldAssetKey, db);
 		
@@ -344,7 +349,6 @@ public class DigitalAssetController extends BaseController
    	public void delete(Integer digitalAssetId, String entity, Integer entityId) throws ConstraintException, SystemException
    	{
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
         beginTransaction(db);
 
@@ -404,7 +408,6 @@ public class DigitalAssetController extends BaseController
    	public static DigitalAssetVO update(DigitalAssetVO digitalAssetVO, InputStream is) throws ConstraintException, SystemException
     {
 		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 		
 		DigitalAsset digitalAsset = null;
 		
@@ -482,7 +485,6 @@ public class DigitalAssetController extends BaseController
 	public static List getDigitalAssetVOList(Integer contentVersionId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
     	List digitalAssetVOList = new ArrayList();
 
@@ -518,7 +520,6 @@ public class DigitalAssetController extends BaseController
 	public static List getDigitalAssetVOList(Integer contentId, Integer languageId, boolean useLanguageFallback) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
         List digitalAssetVOList = null;
 
@@ -606,7 +607,6 @@ public class DigitalAssetController extends BaseController
 	public static String getDigitalAssetUrl(Integer digitalAssetId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
     	String assetUrl = null;
 
@@ -684,7 +684,6 @@ public class DigitalAssetController extends BaseController
 	public static String getDigitalAssetThumbnailUrl(Integer digitalAssetId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
     	String assetUrl = null;
 
@@ -763,7 +762,6 @@ public class DigitalAssetController extends BaseController
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
     	String assetUrl = null;
 
@@ -808,7 +806,6 @@ public class DigitalAssetController extends BaseController
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
     	String assetUrl = null;
 
@@ -900,7 +897,6 @@ public class DigitalAssetController extends BaseController
 	public static DigitalAssetVO getDigitalAssetVO(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
     	DigitalAssetVO digitalAssetVO = null;
 
@@ -962,7 +958,6 @@ public class DigitalAssetController extends BaseController
 	public static String getDigitalAssetThumbnailUrl(Integer contentId, Integer languageId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
     	String assetUrl = null;
 

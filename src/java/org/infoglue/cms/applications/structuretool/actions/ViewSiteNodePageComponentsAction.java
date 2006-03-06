@@ -24,36 +24,50 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.entities.content.*;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.XMLHelper;
-import org.infoglue.cms.util.sorters.ContentComparator;
-import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.net.URLEncoder;
-import java.util.*;
 
 
 
 public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	public static final String CATEGORY_TREE = "showCategoryTree";
 	public static final String CATEGORY_TREE_MULTIPLE = "showCategoryTreeForMultipleBinding";
 
@@ -272,11 +286,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
 		Integer newComponentId = new Integer(0);
 
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-		
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		
 		if(this.pageTemplateContentId != null)
 		{
@@ -325,11 +335,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
 		Integer newComponentId = new Integer(0);
 
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-		
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		
 		if(this.specifyBaseTemplate.equalsIgnoreCase("true"))
 		{
@@ -391,10 +397,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		initialize();
 			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
-		
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 		
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
 		//getLogger().info("componentXML:" + componentXML);
@@ -613,10 +615,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		getLogger().info("doDeleteComponent:" + this.getRequest().getQueryString());
 		
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
-	
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 		
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
 
@@ -674,10 +672,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		String propertyName = this.getRequest().getParameter("propertyName");
 			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
-	
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 		
 		String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
 
@@ -767,10 +761,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//getLogger().info("propertyName:" + propertyName);
 			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
-		
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 		
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
 		//getLogger().info("componentXML:" + componentXML);
@@ -845,10 +835,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//getLogger().info("contentId:" + contentId);
 			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
-		
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 		
 		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
@@ -904,10 +890,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			//getLogger().info("**********************************************************************************");
 				
 			NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-			IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
-			
-			boolean USE_LANGUAGE_FALLBACK        			= true;
-			boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 			
 			//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
 			String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
@@ -979,10 +961,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//getLogger().info("propertyName:" + propertyName);
 			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
-	
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
 		
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
 		//getLogger().info("componentXML:" + componentXML);
