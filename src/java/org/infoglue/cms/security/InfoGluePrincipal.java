@@ -24,7 +24,6 @@
 package org.infoglue.cms.security;
 
 import java.security.Principal;
-import java.util.Iterator;
 import java.util.List;
 
 
