@@ -27,8 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.entities.content.ContentVO;
 
 /**
@@ -39,11 +40,11 @@ import org.infoglue.cms.entities.content.ContentVO;
 
 public class DeleteContentAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private ContentVO contentVO;
-	private Integer contentId;
 	private Integer parentContentId;
 	private Integer changeTypeId;
-	private Integer repositoryId;
 	private String[] registryId;
 	
 	//Used for the relatedPages control
