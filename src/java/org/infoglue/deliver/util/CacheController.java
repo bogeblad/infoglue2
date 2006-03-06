@@ -24,41 +24,78 @@
 package org.infoglue.deliver.util;
 
 //import org.exolab.castor.jdo.CacheManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.Session;
-import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.CmsJDOCallback;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.impl.simple.*;
-import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.impl.simple.*;
-import org.infoglue.cms.entities.publishing.impl.simple.*;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.impl.simple.*;
-import org.infoglue.cms.entities.workflow.impl.simple.*;
+import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
+import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
+import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
+import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
+import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
+import org.infoglue.cms.entities.management.impl.simple.RedirectImpl;
+import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
+import org.infoglue.cms.entities.management.impl.simple.RoleContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl;
+import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
+import org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl;
+import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
+import org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl;
+import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.ActionDefinitionImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.ActionImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.ActorImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.ConsequenceDefinitionImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.ConsequenceImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.EventImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
+import org.infoglue.cms.entities.workflow.impl.simple.WorkflowImpl;
 import org.infoglue.cms.exception.SystemException;
-
-import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BaseDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-import org.infoglue.deliver.invokers.PageInvoker;
-import org.infoglue.deliver.portal.PortalService;
 
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
@@ -67,19 +104,6 @@ import com.opensymphony.oscache.base.events.CacheMapAccessEventListener;
 import com.opensymphony.oscache.extra.CacheEntryEventListenerImpl;
 import com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-import com.steadystate.css.parser.selectors.BeginHyphenAttributeConditionImpl;
-
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import javax.servlet.http.HttpSession;
 
 
 public class CacheController extends Thread
@@ -123,6 +147,11 @@ public class CacheController extends Thread
 	        }
 	    }
 	}	
+
+	public static void clearServerNodeProperty()
+	{
+		clearCache("serverNodePropertiesCache");
+   	}
 
 	public static void cacheObject(String cacheName, Object key, Object value)
 	{
@@ -222,6 +251,9 @@ public class CacheController extends Thread
 
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key, int updateInterval)
 	{
+		if(cacheName == null || key == null)
+			return null;
+		
 	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key + ":" + updateInterval);
 
 	    //return getCachedObject(cacheName, key);
@@ -313,6 +345,7 @@ public class CacheController extends Thread
 		{
 			logger.info("Clearing some caches");
 			logger.info("entity:" + entity);
+
 			for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
 			{
 				Map.Entry e = (Map.Entry) i.next();
@@ -482,8 +515,11 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("ServerNodeProperties"))
+				{
+					clear = true;
+				}
 				
-
 				if(clear)
 				{	
 				    //System.out.println("clearing:" + e.getKey());
@@ -873,6 +909,21 @@ public class CacheController extends Thread
 
 				try
 			    {
+					//Here we do what we need to if the server properties has changed.
+				    if(className != null && className.equalsIgnoreCase("ServerNodeProperties"))
+				    {
+						try 
+						{
+							clearServerNodeProperty();
+							InfoGlueAuthenticationFilter.initializeProperties();
+							logger.info("Updating InfoGlueAuthenticationFilter");
+						} 
+						catch (SystemException e1) 
+						{
+							logger.warn("Could not refresh authentication filter:" + e1.getMessage(), e1);
+						}
+				    }
+
 				    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
 					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
@@ -892,9 +943,9 @@ public class CacheController extends Thread
 					        isDependsClass = true;
 				
 					    CacheController.clearCaches(className, objectId, null);
-				
+
 					    logger.info("Updating className with id:" + className + ":" + objectId);
-						if(className != null)
+						if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))
 						{
 						    //Class[] types = {Class.forName(className)};
 						    Class type = Class.forName(className);
@@ -973,7 +1024,7 @@ public class CacheController extends Thread
      * @return
      */
     
-    public static String getPageCacheKey(HttpSession session, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+    public static String getPageCacheKey(HttpSession session, HttpServletRequest request, /*, TemplateController templateController*/ Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
     {
     	String pageKey = null;
     	String pageKeyProperty = CmsPropertyHandler.getProperty("pageKey");
@@ -1011,7 +1062,8 @@ public class CacheController extends Thread
         	    else
         	        cookieAttribute = pageKey.substring(cookieAttributeStartIndex + 8);
 
-        	    pageKey = pageKey.replaceAll("\\$cookie." + cookieAttribute, "" + templateController.getCookie(cookieAttribute));    	    
+        	    HttpHelper httpHelper = new HttpHelper();
+        	    pageKey = pageKey.replaceAll("\\$cookie." + cookieAttribute, "" + httpHelper.getCookie(request, cookieAttribute));    	    
     	    
         	    cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
     	    }
