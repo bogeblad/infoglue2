@@ -25,7 +25,6 @@ package org.infoglue.deliver.applications.actions;
 
 import java.net.URLEncoder;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -33,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
@@ -137,13 +137,29 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		return NONE;
 	}	
 	
+	/**
+	 * This command invalidates the current session and then calls the authentication module logout method so it can
+	 * do it's stuff. Sometimes it involves redirecting the user somewhere and then we returns nothing in this method.
+	 */
+
 	public String doLogout() throws Exception
 	{
 		getHttpSession().invalidate();
-		this.getResponse().sendRedirect(this.returnAddress);
-		return NONE;
-	}
 		
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null);
+		boolean redirected = authenticationModule.logoutUser(getRequest(), getResponse());
+		
+		if(redirected)
+		{
+			return NONE;
+		}
+		else
+		{
+			this.getResponse().sendRedirect(this.returnAddress);
+			return NONE;
+		}
+	}
+
 	public String urlEncode(String string, String encoding)
 	{
 		String endodedString = string;
