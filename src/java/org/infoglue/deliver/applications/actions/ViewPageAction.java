@@ -23,31 +23,6 @@
 
 package org.infoglue.deliver.applications.actions;
 
-import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.controllers.kernel.impl.simple.*;
-import org.infoglue.deliver.invokers.PageInvoker;
-import org.infoglue.deliver.portal.PortalService;
-import org.infoglue.deliver.services.StatisticsService;
-import org.infoglue.deliver.util.BrowserBean;
-import org.infoglue.deliver.util.CacheController;
-import org.infoglue.deliver.util.RequestAnalyser;
-import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
-
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Date;
@@ -55,10 +30,45 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.AuthenticationModule;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.DesEncryptionHelper;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.EditOnSiteBasicTemplateController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.invokers.PageInvoker;
+import org.infoglue.deliver.portal.PortalService;
+import org.infoglue.deliver.services.StatisticsService;
+import org.infoglue.deliver.util.BrowserBean;
+import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 
 
 /**
@@ -69,6 +79,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ViewPageAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 1L;
+
     public final static Logger logger = Logger.getLogger(ViewPageAction.class.getName());
 
 	//These are the standard parameters which uniquely defines which page to show.
@@ -161,14 +173,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 		try
 		{
-	    	validateAndModifyInputParameters(dbWrapper.getDatabase());
+			validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
-			this.templateController 			= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
 			getLogger().info("before pageKey...");
-	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.templateController, this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
+	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 	    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 
 	    	getLogger().info("pageKey:" + pageKey);
@@ -180,6 +191,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(protectedSiteNodeVersionId != null)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
 		
+			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
+			
 			getLogger().info("handled extranet users");
 	
 			// ----
@@ -208,7 +221,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        }
 	
 	        getLogger().info("handled portal action");
-			
+	        
 			if(!isUserRedirected)
 			{	
 				getLogger().info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
@@ -307,11 +320,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	
 			this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
-			this.templateController 			= getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
 
 			//String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + getRequest().getQueryString() + "_" + this.showSimple + "_pagecomponentDecorated";
 			//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
-	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.templateController, this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
+	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 
 			getLogger().info("A pageKey:" + pageKey);
 			String pagePath	= null;
@@ -324,6 +336,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 			getLogger().info("handled extranet users");
 	
+			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
+
 			if(!isUserRedirected)
 			{	
 				getLogger().info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
@@ -450,7 +464,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 				    
 					this.principal = ExtranetController.getController().getAuthenticatedPrincipal(db, arguments);
-					
+
 					if(principal != null)
 						CacheController.cacheObject("userCache", "anonymous", this.principal);
 				}
@@ -604,77 +618,131 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			getLogger().info("principal:" + principal);
+
 			if(principal == null)
 			{
-			    principal = loginWithCookies();
+				Principal anonymousPrincipal = getAnonymousPrincipal();
+				boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+				if(isAuthorized)
+				{	
+					principal = anonymousPrincipal;
+				}
+			}
+			
+			if(principal == null)
+			{				
+				Map status = new HashMap();
+				status.put("redirected", new Boolean(false));
+				principal = AuthenticationModule.getAuthenticationModule(db).loginUser(getRequest(), getResponse(), status);
+				Boolean redirected = (Boolean)status.get("redirected");
+				if(redirected != null && redirected.booleanValue())
+				{
+				    this.getHttpSession().removeAttribute("infogluePrincipal");
+				    this.principal = null;
+				    return true;
+				}
+				else if(principal != null)
+				{
+				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+				    this.principal = principal;
+				}
+				
+				if(principal == null)
+					principal = loginWithCookies();
+				
 			    if(principal == null)
 			        principal = loginWithRequestArguments();
-			    
+
 			    if(principal == null)
-			    {
+			    {	
 				    try
 					{
-						principal = (Principal)CacheController.getCachedObject("userCache", "anonymous");
-						if(principal == null)
-						{
-						    Map arguments = new HashMap();
-						    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
-						    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
-						    
-							principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
-							if(principal != null)
-								CacheController.cacheObject("userCache", "anonymous", principal);
-						}
+						principal = getAnonymousPrincipal();
 						
 						if(principal != null)
 						{
 						    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 						    
-							SiteNodeVersionVO siteNodeVersionVO = this.nodeDeliveryController.getActiveSiteNodeVersionVO(db, siteNodeId);
-							boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", siteNodeVersionVO.getId().toString());
+							boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 							if(!isAuthorized)
 							{	
+								this.getHttpSession().removeAttribute("infogluePrincipal");
 								getLogger().info("SiteNode is protected and user was not found - sending him to login page.");
-								String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
-								getResponse().sendRedirect(url);
+								String redirectUrl = getRedirectUrl(getRequest(), getResponse());
+								//String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+								getResponse().sendRedirect(redirectUrl);
 								isRedirected = true;
 							}
 						}
 					}
 					catch(Exception e) 
 					{
+					    e.printStackTrace();
 					    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
 					}
 			    }
+				else
+				{
+					boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+					if(!isAuthorized)
+					{	
+						if(this.referer == null)
+							this.referer = this.getRequest().getHeader("Referer");
+						
+						if(this.referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
+							this.referer = "/"; 
+
+						if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
+						{
+							getLogger().info("SiteNode is protected and user was anonymous - sending him to login page.");
+							//String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+							String url = getRedirectUrl(getRequest(), getResponse());
+							
+							getResponse().sendRedirect(url);
+							isRedirected = true;
+						}
+						else
+						{
+							getLogger().info("SiteNode is protected and user has no access - sending him to no access page.");
+						    String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+							getResponse().sendRedirect(url);
+							isRedirected = true;
+						}
+					}
+					else
+					{
+						this.getHttpSession().setAttribute("infogluePrincipal", principal);
+					    this.principal = principal;
+					}
+				}
+
 			}
 			else
 			{
 				getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
-	
-				Map arguments = new HashMap();
-				arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
-			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
-			    
-			    Principal alternativePrincipal = loginWithCookies();
+
+				Principal alternativePrincipal = loginWithCookies();
 			    if(alternativePrincipal == null)
 			        alternativePrincipal = loginWithRequestArguments();
-			    
+
 			    if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 			    {
 			        getLogger().info("The user " + alternativePrincipal.getName() + " was approved.");
 			    }
-				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(arguments), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 				{	
 					if(this.referer == null)
 						this.referer = this.getRequest().getHeader("Referer");
 					
 					if(this.referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
-						referer = "/"; 
+						this.referer = "/"; 
 
 					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 					{
 						getLogger().info("SiteNode is protected and user was anonymous - sending him to login page.");
-						String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+						//String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+						String url = getRedirectUrl(getRequest(), getResponse());
+						
 						getResponse().sendRedirect(url);
 						isRedirected = true;
 					}
@@ -682,6 +750,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					{
 						getLogger().info("SiteNode is protected and user has no access - sending him to no access page.");
 						String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+
 						getResponse().sendRedirect(url);
 						isRedirected = true;
 					}
@@ -777,10 +846,22 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    
         String userName = this.getRequest().getParameter("j_username");
 	    String password = this.getRequest().getParameter("j_password");
+	    String ticket 	= null; //this.getRequest().getParameter("ticket");
 	    //System.out.println("userName:" + userName);
 	    //System.out.println("password:" + password);
+	    //System.out.println("ticket:" + ticket);
 		
-		if(userName != null && password != null)
+		if(ticket != null)
+	    {
+			//System.out.println("ticket used in loginWithRequestArguments:" + ticket);
+		    Map arguments = new HashMap();
+		    arguments.put("ticket", ticket);
+		    
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+			if(principal != null)
+			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+	    }		    
+	    else if(userName != null && password != null)
 	    {
 		    Map arguments = new HashMap();
 		    arguments.put("j_username", userName);
@@ -794,7 +875,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    
 	    return principal;
 	}
-
 	
 	/**
 	 * Gets the SiteNodeType definition of this given node
@@ -828,7 +908,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 		return siteNodeTypeDefinitionVO;
 	}
-	
+
+  	private String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception 
+  	{
+		String url = AuthenticationModule.getAuthenticationModule(null).getLoginDialogUrl(request, response);
+		
+		return url;
+  	}
+
 	/**
 	 * Setters and getters for all things sent to the page in the request
 	 */

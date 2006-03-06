@@ -24,6 +24,7 @@
 package org.infoglue.cms.security;
 
 import java.net.URLEncoder;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -37,7 +38,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -46,11 +46,12 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
+public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 {
     private final static Logger logger = Logger.getLogger(InfoGlueBasicAuthenticationModule.class.getName());
 
 	private String loginUrl 			= null;
+	private String logoutUrl			= null;
 	private String invalidLoginUrl 		= null;
 	private String successLoginUrl		= null;
 	private String authenticatorClass 	= null;
@@ -59,6 +60,7 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 	private String casServiceUrl		= null;
 	private String casRenew				= null;
 	private String casValidateUrl		= null;
+	private String casLogoutUrl			= null;
 	private String casAuthorizedProxy 	= null;
 	private Properties extraProperties 	= null;
 	private Database transactionObject 	= null;
@@ -181,6 +183,20 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 	}
 	
 	/**
+	 * This method handles all of the logic for checking how to handle a login.
+	 */
+	
+	public String getLoginDialogUrl(HttpServletRequest request, HttpServletResponse response) throws Exception
+	{
+	    String referer = request.getHeader("Referer");
+		
+		if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
+			referer = "/"; 
+
+	    return request.getContextPath() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(request.getRequestURL().toString() + "?" + request.getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+	}
+	
+	/**
 	 * This method authenticates against the infoglue extranet user database.
 	 */
 	
@@ -210,6 +226,15 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 		return isAuthenticated;
 	}
 
+	public Principal loginUser(HttpServletRequest request, HttpServletResponse response, Map status) throws Exception 
+	{
+		return null;
+	}
+
+	public boolean logoutUser(HttpServletRequest request, HttpServletResponse response) throws Exception 
+	{
+		return false;
+	}
 
 
 	public String getAuthenticatorClass()
@@ -250,6 +275,16 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
 	public void setLoginUrl(String loginUrl)
 	{
 		this.loginUrl = loginUrl;
+	}
+
+	public String getLogoutUrl()
+	{
+		return logoutUrl;
+	}
+
+	public void setLogoutUrl(String logoutUrl)
+	{
+		this.logoutUrl = logoutUrl;
 	}
 
     public String getSuccessLoginUrl()
@@ -331,5 +366,16 @@ public class InfoGlueBasicAuthenticationModule implements AuthenticationModule
     {
         this.transactionObject = (Database)transactionObject; 
     }
+
+
+	public String getCasLogoutUrl() {
+		return casLogoutUrl;
+	}
+
+
+	public void setCasLogoutUrl(String casLogoutUrl) {
+		this.casLogoutUrl = casLogoutUrl;
+	}
+
     
 }

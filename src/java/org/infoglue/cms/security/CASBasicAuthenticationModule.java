@@ -24,17 +24,19 @@
 package org.infoglue.cms.security;
 
 import java.net.URLEncoder;
+import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,9 +44,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.controllers.usecases.common.impl.simple.LoginUCCImpl;
-
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 import edu.yale.its.tp.cas.client.Util;
@@ -56,17 +57,19 @@ import edu.yale.its.tp.cas.client.Util;
  * which is a singe sign on service.
  */
 
-public class CASBasicAuthenticationModule implements AuthenticationModule//, AuthorizationModule
+public class CASBasicAuthenticationModule extends AuthenticationModule//, AuthorizationModule
 {
     private final static Logger logger = Logger.getLogger(CASBasicAuthenticationModule.class.getName());
 
 	private String loginUrl 			= null;
+	private String logoutUrl 			= null;
 	private String invalidLoginUrl 		= null;
 	private String authenticatorClass 	= null;
 	private String authorizerClass 		= null;
 	private String serverName			= null;
 	private String casValidateUrl		= null;
 	private String casServiceUrl		= null;
+	private String casLogoutUrl			= null;
 	private String casAuthorizedProxy 	= null;
 	private String casRenew				= null;
 	private Properties extraProperties	= null;
@@ -131,6 +134,8 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 			return null;
 		}
 
+		//request.getSession().setAttribute("ticket", ticket);
+	
 		//fc.doFilter(request, response);
 		return authenticatedUserName;
 	}
@@ -144,6 +149,9 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 	{
 		String authenticatedUserName = null;
 
+		if(request.containsKey("j_username"))
+		    return (String)request.get("j_username");
+		
 		String ticket = (String)request.get("ticket");
 		logger.info("ticket:" + ticket);
 		
@@ -152,7 +160,7 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 		{
 			return null;
 		} 
-	   	
+		
 		authenticatedUserName = authenticate(ticket);
 		logger.info("authenticatedUserName:" + authenticatedUserName);
 
@@ -160,14 +168,80 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 	}
 	
 	/**
+	 * This method handles all of the logic for checking how to handle a login.
+	 */
+	
+	public String getLoginDialogUrl(HttpServletRequest request, HttpServletResponse response) throws Exception
+	{
+		String url = null;
+
+		HttpSession session = ((HttpServletRequest)request).getSession();
+
+		String ticket = request.getParameter("ticket");
+		logger.info("ticket:" + ticket);
+		
+		// no ticket?  abort request processing and redirect
+		if (ticket == null || ticket.equals("")) 
+		{
+			if (loginUrl == null) 
+			{
+				throw new ServletException(
+						"When InfoGlueFilter protects pages that do not receive a 'userName' " +
+						"parameter, it needs a org.infoglue.cms.security.loginUrl " +
+						"filter parameter");
+			}
+  
+			String requestURI = request.getRequestURI();
+			logger.info("requestURI:" + requestURI);
+			
+			String redirectUrl = "";
+
+			if(requestURI.indexOf("?") > 0)
+				redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+			else
+				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+	
+			logger.info("redirectUrl:" + redirectUrl);
+
+			return redirectUrl;
+		} 
+	   	
+		String authenticatedUserName = authenticate(ticket);
+		logger.info("authenticatedUserName:" + authenticatedUserName);
+		if(authenticatedUserName == null)
+		{
+			String requestURI = request.getRequestURI();
+			logger.info("requestURI:" + requestURI);
+	
+			String redirectUrl = "";
+	
+			if(requestURI.indexOf("?") > 0)
+				redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+			else
+				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+		
+			logger.info("redirectUrl:" + redirectUrl);
+			response.sendRedirect(redirectUrl);
+	
+			return redirectUrl;
+		}
+
+		return url;
+	}
+	
+	
+	
+
+	/**
 	 * This method authenticates against the infoglue extranet user database.
 	 */
 	
 	private String authenticate(String ticket) throws Exception
 	{
+		boolean isAuthenticated = false;
+		
 	    logger.info("ticket:" + ticket);
-	
-		TrustManager[] trustAllCerts = new TrustManager[]
+	    TrustManager[] trustAllCerts = new TrustManager[]
 		{
 			new X509TrustManager() 
 			{
@@ -195,7 +269,16 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
                 }
 			}
 		};
-		
+
+		HostnameVerifier hv = new HostnameVerifier() {
+		    public boolean verify(String urlHostName, SSLSession session) {
+		        System.out.println("Warning: URL Host: "+urlHostName+" vs. "+session.getPeerHost());
+		        return true;
+		    }
+		};
+		 
+		HttpsURLConnection.setDefaultHostnameVerifier(hv);
+
 		SSLContext sc = SSLContext.getInstance("SSL");
 		sc.init(null, trustAllCerts, new java.security.SecureRandom());
 		HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
@@ -217,10 +300,6 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 		//pv.setProxyCallbackUrl("https://gavin.adm.gu.se:9070/uPortal/CasProxyServlet");
 		//pv.setProxyCallbackUrl("http://localhost:8080/infoglueCMSAuthDev/CasProxyServlet");
 
-		//Properties properties = System.getProperties();
-		//properties.list(System.out);
-		//System.setProperty("javax.net.debug", "all");
-		
 		/* contact CAS and validate */
 		pv.validate(); 
 
@@ -250,6 +329,25 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 		
 		return authenticatedUserName;
 	} 
+
+	public Principal loginUser(HttpServletRequest request, HttpServletResponse response, Map status) throws Exception 
+	{
+		Principal principal = null;
+		
+		String authenticatedUserName = getAuthenticatedUserName(request, response, status);
+		if(authenticatedUserName != null)
+			principal = UserControllerProxy.getController().getUser(authenticatedUserName);
+
+		return principal;
+	}
+
+	
+	public boolean logoutUser(HttpServletRequest request, HttpServletResponse response) throws Exception 
+	{
+		response.sendRedirect(this.getCasLogoutUrl() + "?service=" + this.getCasServiceUrl());
+		
+		return true;
+	}
 
 	/**
 	 * Returns either the configured service or figures it out for the current
@@ -311,7 +409,17 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 	{
 		this.loginUrl = loginUrl;
 	}
-	
+
+	public String getLogoutUrl()
+	{
+		return logoutUrl;
+	}
+
+	public void setLogoutUrl(String logoutUrl)
+	{
+		this.logoutUrl = logoutUrl;
+	}
+
 	public String getServerName()
 	{
 		return serverName;
@@ -362,6 +470,16 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
 		this.casValidateUrl = casValidateUrl;
 	}
 
+	public String getCasLogoutUrl()
+	{
+		return casLogoutUrl;
+	}
+
+	public void setCasLogoutUrl(String casLogoutUrl)
+	{
+		this.casLogoutUrl = casLogoutUrl;
+	}
+
 	public String getCasAuthorizedProxy()
 	{
 		return casAuthorizedProxy;
@@ -380,4 +498,72 @@ public class CASBasicAuthenticationModule implements AuthenticationModule//, Aut
     public void setTransactionObject(Object transactionObject)
     {
     }
+
+
+	/**
+	 * This method handles all of the logic for checking how to handle a login.
+	 */
+	
+	private String getAuthenticatedUserName(HttpServletRequest request, HttpServletResponse response, Map status) throws Exception
+	{
+		String authenticatedUserName = null;
+
+		HttpSession session = ((HttpServletRequest)request).getSession();
+
+		String ticket = request.getParameter("ticket");
+		logger.info("ticket:" + ticket);
+		
+		// no ticket?  abort request processing and redirect
+		if (ticket == null || ticket.equals("")) 
+		{
+			if (loginUrl == null) 
+			{
+				throw new ServletException(
+						"When InfoGlueFilter protects pages that do not receive a 'userName' " +
+						"parameter, it needs a org.infoglue.cms.security.loginUrl " +
+						"filter parameter");
+			}
+  
+			String requestURI = request.getRequestURI();
+			logger.info("requestURI:" + requestURI);
+			
+			String redirectUrl = "";
+
+			if(requestURI.indexOf("?") > 0)
+				redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+			else
+				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+	
+			logger.info("redirectUrl:" + redirectUrl);
+			
+			response.sendRedirect(redirectUrl);
+			status.put("redirected", new Boolean(true));
+			return null;
+		} 
+	   	
+		authenticatedUserName = authenticate(ticket);
+		logger.info("authenticatedUserName:" + authenticatedUserName);
+		if(authenticatedUserName == null)
+		{
+			String requestURI = request.getRequestURI();
+			logger.info("requestURI:" + requestURI);
+	
+			String redirectUrl = "";
+	
+			if(requestURI.indexOf("?") > 0)
+				redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+			else
+				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+		
+			logger.info("redirectUrl:" + redirectUrl);
+			response.sendRedirect(redirectUrl);
+	
+			status.put("redirected", new Boolean(true));
+
+			return null;
+		}
+
+		return authenticatedUserName;
+	}
+
 }

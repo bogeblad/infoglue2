@@ -24,24 +24,22 @@
 package org.infoglue.cms.security;
 
 import java.net.URLEncoder;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.naming.Context;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import javax.naming.Context;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-
 import org.apache.log4j.Logger;
-import org.infoglue.cms.security.AuthenticationModule;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -50,11 +48,12 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class JNDIBasicAuthenticationModule implements AuthenticationModule
+public class JNDIBasicAuthenticationModule extends AuthenticationModule
 {
     private final static Logger logger = Logger.getLogger(JNDIBasicAuthenticationModule.class.getName());
     
     private String loginUrl 			= null;
+    private String logoutUrl 			= null;
     private String invalidLoginUrl 		= null;
     private String successLoginUrl		= null;
     private String authenticatorClass 	= null;
@@ -63,6 +62,7 @@ public class JNDIBasicAuthenticationModule implements AuthenticationModule
     private String casServiceUrl		= null;
     private String casRenew				= null;
     private String casValidateUrl		= null;
+	private String casLogoutUrl			= null;
     private String casAuthorizedProxy 	= null;
     private Properties extraProperties 	= null;
     
@@ -191,6 +191,92 @@ public class JNDIBasicAuthenticationModule implements AuthenticationModule
         return authenticatedUserName;
     }
     
+    
+	/**
+	 * This method handles all of the logic for checking how to handle a login.
+	 */
+	
+	public String getLoginDialogUrl(HttpServletRequest request, HttpServletResponse response) throws Exception
+	{
+		String url = null;
+
+        //otherwise, we need to authenticate somehow
+        String userName = request.getParameter("j_username");
+        String password = request.getParameter("j_password");
+        
+        // no userName?  abort request processing and redirect
+        if (userName == null || userName.equals(""))
+        {
+            if (loginUrl == null)
+            {
+                throw new ServletException(
+                        "When InfoGlueFilter protects pages that do not receive a 'userName' " +
+                        "parameter, it needs a org.infoglue.cms.security.loginUrl " +
+                        "filter parameter");
+            }
+            
+            String requestURI = request.getRequestURI();
+            
+            String requestQueryString = request.getQueryString();
+            if(requestQueryString != null)
+            {
+                requestQueryString = "?" + requestQueryString;
+            }
+            else
+            {
+                requestQueryString = "";
+            }
+            
+            logger.info("requestQueryString:" + requestQueryString);
+            
+            String redirectUrl = "";
+            
+            if(requestURI.indexOf("?") > 0)
+            {
+                redirectUrl = loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+            }
+            else
+            {
+                redirectUrl = loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+            }
+            
+            logger.info("redirectUrl:" + redirectUrl);
+            return redirectUrl;
+        }
+        
+        boolean isAuthenticated = authenticate(userName, password, new HashMap());
+        logger.info("authenticated:" + isAuthenticated);
+        String authenticatedUserName = userName;
+        
+        if(!isAuthenticated)
+        {
+            String referringUrl = request.getRequestURI();
+            if(request.getParameter("referringUrl") != null)
+                referringUrl = request.getParameter("referringUrl");
+            
+            String requestQueryString = request.getQueryString();
+            if(requestQueryString != null)
+                requestQueryString = "?" + requestQueryString;
+            else
+                requestQueryString = "";
+            
+            logger.info("requestQueryString:" + requestQueryString);
+            
+            String redirectUrl = "";
+            
+            if(referringUrl.indexOf("?") > 0)
+                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
+            else
+                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "?errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
+            
+            //String redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
+            logger.info("redirectUrl:" + redirectUrl);
+            return redirectUrl;
+        }
+
+		return url;
+	}
+
     /**
      * This method authenticates against the infoglue extranet user database.
      */
@@ -215,6 +301,15 @@ public class JNDIBasicAuthenticationModule implements AuthenticationModule
         return isAuthenticated;
     }
     
+	public Principal loginUser(HttpServletRequest request, HttpServletResponse response, Map status) throws Exception 
+	{
+		return null;
+	}
+
+	public boolean logoutUser(HttpServletRequest request, HttpServletResponse response) throws Exception 
+	{
+		return false;
+	}
     
     private boolean bindUserUsingJNDI(String userName, String password)
     {
@@ -294,6 +389,16 @@ public class JNDIBasicAuthenticationModule implements AuthenticationModule
         this.loginUrl = loginUrl;
     }
     
+	public String getLogoutUrl()
+	{
+		return logoutUrl;
+	}
+
+	public void setLogoutUrl(String logoutUrl)
+	{
+		this.logoutUrl = logoutUrl;
+	}
+
     public String getSuccessLoginUrl()
     {
         return successLoginUrl;
@@ -372,5 +477,17 @@ public class JNDIBasicAuthenticationModule implements AuthenticationModule
     public void setTransactionObject(Object transactionObject)
     {
     }
+
+
+	public String getCasLogoutUrl() 
+	{
+		return casLogoutUrl;
+	}
+
+
+	public void setCasLogoutUrl(String casLogoutUrl) 
+	{
+		this.casLogoutUrl = casLogoutUrl;
+	}
     
 }
