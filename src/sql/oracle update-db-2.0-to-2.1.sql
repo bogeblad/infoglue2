@@ -79,3 +79,5 @@ CREATE TABLE cmRedirect
 	redirectUrl		varchar2(1024) NOT NULL,
 	PRIMARY KEY (id)
 );
+
+alter table cmSiNo add metaInfoContentId number DEFAULT -1;
