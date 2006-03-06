@@ -23,24 +23,18 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.ServerNodeVO;
-import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
-import org.infoglue.cms.util.ChangeNotificationController;
-import org.infoglue.cms.util.NotificationMessage;
-import org.infoglue.cms.util.RemoteCacheUpdater;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
-import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.module.propertyset.PropertySetManager;
-
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
+import org.infoglue.cms.entities.management.ServerNodeVO;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This class implements the action class for viewServerNodeProperties.
@@ -51,6 +45,8 @@ import java.util.Map;
 
 public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAction
 { 
+	private static final long serialVersionUID = 1L;
+
 	private ServerNodeVO serverNodeVO 			= new ServerNodeVO();
 	private PropertySet propertySet				= null; 
 	private List serverNodeVOList				= null;
@@ -161,6 +157,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "mail.smtp.password");
 	    populate(ps, "systemEmailSender");
 	    populate(ps, "loginUrl");
+	    populate(ps, "logoutUrl");
 	    populate(ps, "invalidLoginUrl");
 	    populate(ps, "successLoginBaseUrl");
 	    populate(ps, "authenticatorClass");
@@ -171,6 +168,21 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populateData(ps, "extraSecurityParameters");
 	    populate(ps, "casValidateUrl");
 	    populate(ps, "casServiceUrl");
+	    populate(ps, "casLogoutUrl");
+	    
+	    populate(ps, "deliver_loginUrl");
+	    populate(ps, "deliver_logoutUrl");
+	    populate(ps, "deliver_invalidLoginUrl");
+	    populate(ps, "deliver_successLoginBaseUrl");
+	    populate(ps, "deliver_authenticatorClass");
+	    populate(ps, "deliver_authorizerClass");
+	    populate(ps, "deliver_serverName");
+	    populate(ps, "deliver_authConstraint");
+	    populate(ps, "deliver_extraParametersFile");
+	    populateData(ps, "deliver_extraSecurityParameters");
+	    populate(ps, "deliver_casValidateUrl");
+	    populate(ps, "deliver_casServiceUrl");
+	    populate(ps, "deliver_casLogoutUrl");
 	    populateData(ps, "shortcuts");
 	    
 		NotificationMessage notificationMessage = new NotificationMessage("ViewServerNodePropertiesAction.doSave():", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
@@ -216,6 +228,13 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 		return propertySet;
 	}
 
+	public String getPropertyValue(String prefix, String key) 
+	{
+		String value = propertySet.getString("serverNode_" + this.getServerNodeId() + "_" + prefix + "_" + key);
+
+		return (value != null ? value : "");
+	}
+
 	public String getPropertyValue(String key) 
 	{
 		String value = propertySet.getString("serverNode_" + this.getServerNodeId() + "_" + key);
@@ -229,7 +248,14 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    
 		return (valueBytes != null ? new String(valueBytes, "utf-8") : "");
 	}
-	
+
+	public String getDataPropertyValue(String prefix, String key) throws Exception
+	{
+		byte[] valueBytes = propertySet.getData("serverNode_" + this.getServerNodeId() + "_" + prefix + "_" + key);
+	    
+		return (valueBytes != null ? new String(valueBytes, "utf-8") : "");
+	}
+
     public List getServerNodeVOList()
     {
         return serverNodeVOList;
