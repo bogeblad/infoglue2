@@ -23,21 +23,24 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
-import org.infoglue.cms.entities.management.GroupProperties;
-import org.infoglue.cms.entities.management.RoleProperties;
-import org.infoglue.cms.entities.management.UserProperties;
-import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.dom.DOMBuilder;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-
-import java.util.List;
-import java.util.*;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
+import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.RoleProperties;
+import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.structure.QualifyerVO;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.dom.DOMBuilder;
 
 /**
  * This action is the base action for all relation editors.

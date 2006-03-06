@@ -19,15 +19,16 @@
 * Place, Suite 330 / Boston, MA 02111-1307 / USA.
 *
 * ===============================================================================
-* $Id: WorkflowVOTest.java,v 1.4 2005/01/17 21:03:37 jed Exp $
+* $Id: WorkflowVOTest.java,v 1.5 2006/03/06 16:54:41 mattias Exp $
 */
 package org.infoglue.cms.entities.mydesktop;
 
 import java.util.Iterator;
 
-import org.infoglue.cms.util.InfoGlueTestCase;
-import org.infoglue.cms.util.workflow.*;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.InfoGlueTestCase;
+import org.infoglue.cms.util.workflow.OwnerStepFilter;
+import org.infoglue.cms.util.workflow.StepFilter;
 
 public class WorkflowVOTest extends InfoGlueTestCase
 {

@@ -23,17 +23,16 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import java.util.List;
+
+import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
-
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
-import java.util.List;
 
 /**
  * This action represents a tree where the user can select where to save his new content.

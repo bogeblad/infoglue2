@@ -20,18 +20,18 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryControllerTest.java,v 1.1 2004/12/01 23:35:09 frank Exp $
+ * $Id: CategoryControllerTest.java,v 1.2 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
-import org.infoglue.cms.entities.management.CategoryVO;
-import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.util.InfoGlueTestCase;
 
 /**

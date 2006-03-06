@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.publishing.PublicationVO;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class DeleteEditionAction extends ViewPublicationsAction
 {

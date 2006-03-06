@@ -23,11 +23,11 @@
 
 package org.infoglue.cms.applications.managementtool;
 
+import junit.framework.TestCase;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
-
-import junit.framework.TestCase;
 
 /**
  * @author Mattias Bogeblad

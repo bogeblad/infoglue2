@@ -23,19 +23,19 @@
 
 package org.infoglue.cms.treeservice;
 
-import org.apache.log4j.Logger;
-import org.infoglue.cms.net.*;
-import org.infoglue.cms.security.interceptors.InfoGlueOSWorkflowInterceptor;
-
-import javax.servlet.*;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.content.ContentVO;
-
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+
+import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.net.CommunicationEnvelope;
+import org.infoglue.cms.net.Node;
 
 
 public class ContentService extends JServiceBuilder

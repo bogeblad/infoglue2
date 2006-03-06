@@ -1,16 +1,16 @@
 /**
- * $Id: OwnerStepFilterTest.java,v 1.1 2004/12/29 16:52:08 jed Exp $
+ * $Id: OwnerStepFilterTest.java,v 1.2 2006/03/06 16:54:41 mattias Exp $
  * Created by jed on Dec 28, 2004
  */
 package org.infoglue.cms.util.workflow;
 
-import org.infoglue.cms.util.InfoGlueTestCase;
-import org.infoglue.cms.entities.mydesktop.*;
+import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.InfoGlueTestCase;
 
 /**
  * @author jed
- * @version $Revision: 1.1 $ $Date: 2004/12/29 16:52:08 $
+ * @version $Revision: 1.2 $ $Date: 2006/03/06 16:54:41 $
  */
 public class OwnerStepFilterTest extends InfoGlueTestCase
 {

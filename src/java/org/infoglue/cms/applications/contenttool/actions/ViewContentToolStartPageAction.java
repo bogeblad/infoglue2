@@ -24,7 +24,7 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 
 /**
  * This class implements the action class for the startpage in the content tool.
@@ -34,6 +34,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 public class ViewContentToolStartPageAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
     private Integer repositoryId; 
     
     public String doExecute() throws Exception

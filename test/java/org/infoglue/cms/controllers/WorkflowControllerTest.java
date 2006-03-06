@@ -20,19 +20,20 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowControllerTest.java,v 1.2 2005/06/10 19:53:18 jed Exp $
+ * $Id: WorkflowControllerTest.java,v 1.3 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
 import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
-import org.infoglue.cms.entities.mydesktop.*;
+import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.workflow.NewsWorkflowTestCase;
 
 /**
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
- * @version $Revision: 1.2 $ $Date: 2005/06/10 19:53:18 $
+ * @version $Revision: 1.3 $ $Date: 2006/03/06 16:54:01 $
  */
 public class WorkflowControllerTest extends NewsWorkflowTestCase
 {

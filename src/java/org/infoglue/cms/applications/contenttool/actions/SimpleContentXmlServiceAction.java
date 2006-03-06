@@ -39,7 +39,9 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 
-public class SimpleContentXmlServiceAction extends InfoGlueAbstractAction {
+public class SimpleContentXmlServiceAction extends InfoGlueAbstractAction 
+{	
+	private static final long serialVersionUID = 1L;
 	
 	private String serviceRequest = null;
 	private Integer contentVersionId = null;

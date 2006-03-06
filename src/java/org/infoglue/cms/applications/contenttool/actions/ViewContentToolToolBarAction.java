@@ -23,25 +23,22 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.ImageButton;
-import org.infoglue.cms.util.CmsPropertyHandler;
-
-
-import org.infoglue.cms.entities.content.*;
-import org.infoglue.cms.entities.workflow.*;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.entities.structure.*;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.net.URLEncoder;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * This class implements the action class for the framed page in the content tool.
@@ -51,6 +48,8 @@ import java.net.URLEncoder;
 
 public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private String title = "";
 	private String name  = "";
 	private String toolbarKey = "";

@@ -23,20 +23,16 @@
 
 package org.infoglue.cms.controllers.usecases.common.impl.simple;
 
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.controllers.usecases.common.LoginUCC;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-
-import org.infoglue.cms.entities.management.SystemUser;
-
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.*;
-
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.*;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.usecases.common.LoginUCC;
+import org.infoglue.cms.entities.management.SystemUser;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class LoginUCCImpl extends BaseUCCController implements LoginUCC
 {

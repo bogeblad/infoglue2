@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.controllers.usecases.common;
 
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.SystemException;
 
 public interface LoginUCC
 {

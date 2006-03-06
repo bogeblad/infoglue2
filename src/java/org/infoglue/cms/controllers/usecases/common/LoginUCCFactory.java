@@ -23,10 +23,8 @@
 
 package org.infoglue.cms.controllers.usecases.common;
 
-import org.infoglue.cms.controllers.usecases.common.LoginUCC;
 import org.infoglue.cms.controllers.usecases.common.impl.simple.LoginUCCImpl;
-
-import org.infoglue.cms.exception.*;
+import org.infoglue.cms.exception.SystemException;
 
 public class LoginUCCFactory
 {

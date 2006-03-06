@@ -32,6 +32,8 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewCalendarAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private String formPath;
 	private String date;
 	

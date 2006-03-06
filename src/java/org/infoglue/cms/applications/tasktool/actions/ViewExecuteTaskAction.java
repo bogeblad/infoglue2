@@ -24,21 +24,31 @@
 package org.infoglue.cms.applications.tasktool.actions;
 
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.entities.content.*;
-import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.util.*;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
-import org.apache.velocity.*;
-
-import java.io.*;
-import java.util.*;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 
 public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private Integer taskContentId = null;
 	private Integer contentId = null;
 

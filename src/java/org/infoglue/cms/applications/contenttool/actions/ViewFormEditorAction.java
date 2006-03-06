@@ -23,16 +23,16 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import org.infoglue.cms.io.*;
-
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.*;
 
 import org.apache.xerces.parsers.DOMParser;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.io.FileHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -47,6 +47,8 @@ import org.xml.sax.InputSource;
 
 public class ViewFormEditorAction extends InfoGlueAbstractAction //extends ViewContentTypeDefinitionAction
 { 
+	private static final long serialVersionUID = 1L;
+	
 	private Integer contentVersionId;
 	private String contentVersionAttributeName;
 	private String attributeName;

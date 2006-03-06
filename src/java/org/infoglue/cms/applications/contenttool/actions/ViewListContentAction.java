@@ -23,10 +23,9 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-
 import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
  * 	Action class for usecase ViewListContentUCC 
@@ -36,7 +35,8 @@ import java.util.List;
 
 public class ViewListContentAction extends InfoGlueAbstractAction 
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	private List contentVOList;
 	
 

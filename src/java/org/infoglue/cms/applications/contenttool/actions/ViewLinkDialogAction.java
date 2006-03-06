@@ -23,14 +23,12 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-
 import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 /**
  * This action shows the Content-tree when binding stuff.
@@ -38,7 +36,11 @@ import java.util.List;
 
 public class ViewLinkDialogAction extends InfoGlueAbstractAction
 {
-    private Integer repositoryId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5831748113035322067L;
+	private Integer repositoryId;
     private Integer contentId;
     private Integer languageId;
     private String textAreaId;

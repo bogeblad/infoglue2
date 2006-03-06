@@ -23,10 +23,11 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.applications.common.VisualFormatter;
 
 
 /**
@@ -36,6 +37,7 @@ import org.infoglue.cms.applications.common.VisualFormatter;
   */
 public class UpdateContentAction extends ViewContentAction //WebworkAbstractAction
 {
+	private static final long serialVersionUID = 1L;
 	
 	private ContentVO contentVO = null;
     private Integer repositoryId;

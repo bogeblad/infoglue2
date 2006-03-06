@@ -23,6 +23,14 @@
 
 package org.infoglue.cms.util.dom;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.dom4j.Document;
@@ -34,12 +42,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
-
 import org.xml.sax.InputSource;
-
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is a utility-class for handling DOM-objects.

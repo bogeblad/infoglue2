@@ -23,10 +23,9 @@
 
 package org.infoglue.cms.entities.workflow.impl.simple;
 
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.workflow.ActionDefinition;
 import org.infoglue.cms.entities.workflow.ActionDefinitionVO;
-
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
 
 public class ActionDefinitionImpl implements ActionDefinition
 {

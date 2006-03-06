@@ -23,20 +23,22 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import webwork.action.ActionContext;
 import webwork.multipart.MultiPartRequestWrapper;
-
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.io.*;
-import java.util.List;
 
 
 public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbstractAction

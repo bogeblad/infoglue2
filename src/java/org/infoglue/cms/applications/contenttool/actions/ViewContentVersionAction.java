@@ -59,15 +59,18 @@ import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.css.CSSHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
-import com.opensymphony.module.propertyset.*;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 
 public class ViewContentVersionAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private static CategoryController categoryController = CategoryController.getController();
 	private static ContentCategoryController contentCategoryController = ContentCategoryController.getController();
 

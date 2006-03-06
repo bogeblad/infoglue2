@@ -23,14 +23,13 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import java.util.List;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.RemoteCacheUpdater;
-
-import java.util.List;
 
 /**
  * This class implements the action class for the startpage in the management tool.
@@ -40,6 +39,8 @@ import java.util.List;
 
 public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
     private List repositories;
     
     public String doExecute() throws Exception

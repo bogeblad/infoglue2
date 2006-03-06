@@ -23,12 +23,14 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
@@ -40,10 +42,6 @@ import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  *
  *  @author Stefan Sik
@@ -54,7 +52,8 @@ import java.util.List;
 
 public class UnpublishContentVersionAction extends InfoGlueAbstractAction 
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	private List contentVersionVOList = new ArrayList();
 	private List contentVOList		  = new ArrayList();
 	private Integer contentId;

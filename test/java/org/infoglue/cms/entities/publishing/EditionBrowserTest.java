@@ -1,9 +1,8 @@
 package org.infoglue.cms.entities.publishing;
 
 import java.util.ArrayList;
-import java.util.Collections;
+
 import org.infoglue.cms.entities.ValidationTestCase;
-import org.infoglue.cms.entities.management.CategoryVO;
 
 /**
  * Test the EditionBrowser calculations

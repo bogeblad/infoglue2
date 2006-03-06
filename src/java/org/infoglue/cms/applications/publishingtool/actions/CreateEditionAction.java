@@ -23,16 +23,16 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.workflow.EventVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.validators.ConstraintRule;
-import org.infoglue.cms.exception.SystemException;
 
 public class CreateEditionAction extends ViewPublicationsAction
 {

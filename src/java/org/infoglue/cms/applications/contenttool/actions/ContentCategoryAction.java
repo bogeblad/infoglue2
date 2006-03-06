@@ -1,9 +1,9 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.applications.common.actions.ModelAction;
-import org.infoglue.cms.entities.kernel.Persistent;
-import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
+import org.infoglue.cms.entities.kernel.Persistent;
 import org.infoglue.cms.exception.SystemException;
 
 /**
@@ -13,6 +13,8 @@ import org.infoglue.cms.exception.SystemException;
  */
 public class ContentCategoryAction extends ModelAction
 {
+	private static final long serialVersionUID = 9134962841574157622L;
+
 	private ContentCategoryController controller = ContentCategoryController.getController();
 	private Integer contentId;
 	private Integer languageId;

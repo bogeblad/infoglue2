@@ -20,14 +20,18 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletResponse.java,v 1.2 2005/11/08 22:51:13 mattias Exp $
+ * $Id: FakeHttpServletResponse.java,v 1.3 2006/03/06 16:54:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Locale;
-import javax.servlet.http.*;
+
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * A quick-and-dirty stub of HttpServletRequest.  All methods are no-ops, which can be implemented as needed later.

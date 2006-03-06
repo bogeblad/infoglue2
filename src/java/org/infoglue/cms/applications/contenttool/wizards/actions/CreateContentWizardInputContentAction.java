@@ -23,15 +23,14 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  * This action represents the create content step in the wizards.

@@ -23,25 +23,25 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.exception.AccessConstraintException;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.VisualFormatter;
-
-import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.util.sorters.ReflectionComparator;
-
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.module.propertyset.PropertySetManager;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This action represents the CreateContent Usecase.
@@ -49,7 +49,8 @@ import java.util.Map;
 
 public class CreateContentAction extends InfoGlueAbstractAction
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	private Integer parentContentId;
     private Integer contentTypeDefinitionId;
     private Integer repositoryId;

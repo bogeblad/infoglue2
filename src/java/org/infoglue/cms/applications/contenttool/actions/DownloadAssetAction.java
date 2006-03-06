@@ -34,6 +34,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 
 public class DownloadAssetAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private Integer contentId;
 	private Integer languageId;
 	private String assetKey;

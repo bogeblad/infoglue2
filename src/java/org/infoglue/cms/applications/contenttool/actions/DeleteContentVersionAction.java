@@ -35,6 +35,8 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 
 public class DeleteContentVersionAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private ContentVersionVO contentVersionVO;
 	private Integer contentId;
 	private Integer repositoryId;

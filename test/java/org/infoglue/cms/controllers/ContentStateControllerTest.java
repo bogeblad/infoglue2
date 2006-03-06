@@ -20,22 +20,27 @@
  *
  * ===============================================================================
  *
- * $Id: ContentStateControllerTest.java,v 1.3 2005/11/05 14:28:41 mattias Exp $
+ * $Id: ContentStateControllerTest.java,v 1.4 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 
-import org.infoglue.cms.entities.management.CategoryVO;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.workflow.EventVO;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.util.InfoGlueTestCase;
 
 /**

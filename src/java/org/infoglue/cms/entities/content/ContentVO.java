@@ -23,18 +23,15 @@
 
 package org.infoglue.cms.entities.content;
 
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.DateHelper;
-import org.infoglue.cms.util.validators.*;
-
-
-import java.util.Date;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
+import org.infoglue.cms.util.validators.ValidatorFactory;
 
 public class ContentVO implements BaseEntityVO
 { 

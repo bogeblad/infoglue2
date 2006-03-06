@@ -20,30 +20,19 @@
  *
  * ===============================================================================
  *
- * $Id: SiteNodeVersionControllerTest.java,v 1.2 2006/01/20 17:23:46 mattias Exp $
+ * $Id: SiteNodeVersionControllerTest.java,v 1.3 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.entities.management.CategoryVO;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.ContentCategoryVO;
-import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
@@ -92,7 +81,7 @@ public class SiteNodeVersionControllerTest extends InfoGlueTestCase
 
 	private void testSiteNode(InfoGluePrincipal principal, Integer siteNodeId, Database db) throws ConstraintException, SystemException, Exception
 	{
-        SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db);
+        SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
         siteNode.getValueObject().setName(siteNode.getValueObject().getName().substring(0,10) + System.currentTimeMillis());
 
 		SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNode.getSiteNodeId(), false).getValueObject();

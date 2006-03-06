@@ -20,11 +20,12 @@
  *
  * ===============================================================================
  *
- * $Id: CreateNewsTest.java,v 1.8 2005/06/10 19:51:05 jed Exp $
+ * $Id: CreateNewsTest.java,v 1.9 2006/03/06 16:55:12 mattias Exp $
  */
 package org.infoglue.cms.workflow;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.InvalidActionException;

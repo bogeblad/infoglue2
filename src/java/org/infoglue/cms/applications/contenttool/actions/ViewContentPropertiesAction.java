@@ -23,21 +23,19 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.content.ContentVO;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.module.propertyset.PropertySetManager;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This class implements the action class for viewContentProperties.
@@ -48,6 +46,8 @@ import java.util.Map;
 
 public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractAction
 { 
+	private static final long serialVersionUID = 1L;
+	
 	private ContentVO contentVO 				= new ContentVO();
 	private PropertySet propertySet				= null; 
 	private List contentTypeDefinitionVOList 	= null;

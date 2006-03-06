@@ -23,8 +23,8 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -33,10 +33,9 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 import webwork.action.Action;
-
-import java.util.List;
 
 
 /**
@@ -49,7 +48,8 @@ import java.util.List;
 
 public class SearchContentAction extends InfoGlueAbstractAction 
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	private List contentVersionVOList;
 	private Integer repositoryId;
 	private String searchString;

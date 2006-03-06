@@ -26,6 +26,8 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 public class ViewContentVersionAttributeAction extends ViewContentVersionAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private String attributeName = null;	
 		
     public ViewContentVersionAttributeAction()

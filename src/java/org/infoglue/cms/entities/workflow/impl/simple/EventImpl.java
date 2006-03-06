@@ -23,9 +23,9 @@
 
 package org.infoglue.cms.entities.workflow.impl.simple;
 
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.workflow.Event;
 import org.infoglue.cms.entities.workflow.EventVO;
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
 
 public class EventImpl implements Event
 {

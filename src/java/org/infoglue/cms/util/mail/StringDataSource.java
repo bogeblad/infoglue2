@@ -23,8 +23,13 @@
  
 package org.infoglue.cms.util.mail;
 
-import java.io.*;
-import javax.activation.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+
+import javax.activation.DataSource;
 
 /**
  * A simple DataSource implementation

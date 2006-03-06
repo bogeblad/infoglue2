@@ -23,16 +23,15 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
-
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * This action represents the create content versions including assets in the wizards.

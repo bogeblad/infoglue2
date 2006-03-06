@@ -20,17 +20,25 @@
  *
  * ===============================================================================
  *
- * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.6 2005/09/13 13:23:04 mattias Exp $
+ * $Id: ViewMyDesktopToolStartPageActionTest.java,v 1.7 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.applications.mydesktoptool.actions;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
-import org.infoglue.cms.util.*;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
-import org.infoglue.cms.entities.mydesktop.*;
-import webwork.action.*;
+import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowVO;
+import org.infoglue.cms.util.FakeHttpServletRequest;
+import org.infoglue.cms.util.FakeHttpServletResponse;
+import org.infoglue.cms.util.WebWorkTestCase;
+import org.infoglue.cms.util.WorkflowTestCase;
+
+import webwork.action.Action;
+import webwork.action.ActionContext;
+
 import com.opensymphony.module.propertyset.PropertySet;
 
 /**

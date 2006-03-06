@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 
 
 /**
@@ -33,6 +33,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 public class ViewStructureRelationEditorAction extends ViewRelationEditorAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * The default constructor. It sets the parameters needed for the interaction.
 	 */

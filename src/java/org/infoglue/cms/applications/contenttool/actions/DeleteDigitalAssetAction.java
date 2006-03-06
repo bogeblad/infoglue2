@@ -24,7 +24,7 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 
 /**
  * This action removes a content from the system.
@@ -34,6 +34,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 public class DeleteDigitalAssetAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private Integer digitalAssetId;
 	private String entity;
 	private Integer entityId;

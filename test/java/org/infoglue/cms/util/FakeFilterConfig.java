@@ -20,14 +20,15 @@
  *
  * ===============================================================================
  *
- * $Id: FakeFilterConfig.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: FakeFilterConfig.java,v 1.2 2006/03/06 16:54:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
-import java.util.*;
-import javax.servlet.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
-import org.infoglue.cms.util.CmsPropertyHandler;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 
 /**
  * Allows us to configure the InfoGlueAuthorizationFilter for testing outside of a servlet environment.  Parameter

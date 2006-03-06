@@ -20,23 +20,13 @@
  *
  * ===============================================================================
  *
- * $Id: MysqlJDBCServiceTest.java,v 1.1 2005/02/21 15:07:14 frank Exp $
+ * $Id: MysqlJDBCServiceTest.java,v 1.2 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
-import java.util.List;
-import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.CategoryAttribute;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.MysqlJDBCService;
-import org.infoglue.cms.util.ResourceHelper;
-import org.infoglue.cms.util.InfoGlueTestCase;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.InfoGlueTestCase;
 
 /**
  * @author Frank Febbraro (frank@phase2technology.com)

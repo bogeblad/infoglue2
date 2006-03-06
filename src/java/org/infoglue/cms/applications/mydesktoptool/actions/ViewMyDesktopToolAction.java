@@ -33,7 +33,8 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewMyDesktopToolAction extends InfoGlueAbstractAction
 {
- 	
+	private static final long serialVersionUID = 1L;
+
     public String doExecute() throws Exception
     {
         return "success";

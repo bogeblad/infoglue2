@@ -20,16 +20,16 @@
  *
  * ===============================================================================
  *
- * $Id: WebWorkTestCase.java,v 1.2 2005/07/10 21:07:07 mattias Exp $
+ * $Id: WebWorkTestCase.java,v 1.3 2006/03/06 16:54:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
 import java.util.Map;
 
-import webwork.action.ActionContext;
-import webwork.action.Action;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.WebworkAbstractAction;
+
+import webwork.action.Action;
+import webwork.action.ActionContext;
 
 /**
  * Base ServletTestCase that sets up WebWork facilities so that WebWork

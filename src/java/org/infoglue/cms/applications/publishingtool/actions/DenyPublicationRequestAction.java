@@ -26,14 +26,13 @@ package org.infoglue.cms.applications.publishingtool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.SystemException;
-
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Mattias Bogeblad

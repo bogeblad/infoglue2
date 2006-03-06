@@ -23,21 +23,16 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
-import org.infoglue.cms.controllers.usecases.common.impl.simple.LoginUCCImpl;
-import org.infoglue.cms.controllers.usecases.structuretool.CreateSiteNodeVersionUCC;
-
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-
-import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.controllers.usecases.structuretool.CreateSiteNodeVersionUCC;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
-
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.*;
-
-import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateSiteNodeVersionUCCImpl extends BaseUCCController implements CreateSiteNodeVersionUCC
 {

@@ -23,11 +23,13 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-
 import java.util.List;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ComponentPropertyDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 
 
 /**
@@ -36,6 +38,8 @@ import java.util.List;
 
 public class ViewComponentPropertiesEditorAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
     private Integer contentVersionId;
     private Integer contentId;
     private String attributeName;

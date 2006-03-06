@@ -23,35 +23,24 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
-import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-
-import org.infoglue.cms.entities.structure.ServiceBindingVO;
-import org.infoglue.cms.entities.structure.SiteNode;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.SiteNodeVersion;
-import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.management.AvailableServiceBinding;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.Repository;
-import org.infoglue.cms.entities.management.ServiceDefinition;
-import org.infoglue.cms.entities.management.ServiceDefinitionVO;
-
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.*;
-
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.*;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSiteNodeTreeUCC
 {

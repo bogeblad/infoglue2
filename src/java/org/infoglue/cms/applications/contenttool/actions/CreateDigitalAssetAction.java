@@ -23,40 +23,41 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.awt.Image;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.List;
+
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
-import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
-import webwork.action.Action;
 import webwork.action.ActionContext;
-import webwork.config.Configuration;
 import webwork.multipart.MultiPartRequestWrapper;
-
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-import java.awt.Image;
-import java.io.*;
-import java.util.List;
 
 
 public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private String entity;
 	private Integer entityId;
 

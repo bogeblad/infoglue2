@@ -36,6 +36,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 
 public class ReplaceContentAction extends SearchContentAction 
 {
+	private static final long serialVersionUID = 1L;
+	
 	//This is for replace
     //private Integer repositoryId	= null;
     //private String searchString		= null;

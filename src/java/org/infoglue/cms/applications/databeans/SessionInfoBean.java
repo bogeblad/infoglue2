@@ -22,9 +22,7 @@
 */
 package org.infoglue.cms.applications.databeans;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
 

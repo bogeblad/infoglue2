@@ -23,20 +23,23 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.awt.Image;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Enumeration;
+
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.content.*;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 import webwork.action.ActionContext;
 import webwork.multipart.MultiPartRequestWrapper;
-
-import java.util.Enumeration;
-import java.awt.Image;
-import java.io.*;
 
 
 /**
@@ -47,6 +50,8 @@ import java.io.*;
 
 public class UpdateDigitalAssetAction extends ViewDigitalAssetAction 
 {
+	private static final long serialVersionUID = 1L;
+	
 	private Integer contentVersionId = null;
 	private Integer digitalAssetId   = null;
 	private String digitalAssetKey   = null;

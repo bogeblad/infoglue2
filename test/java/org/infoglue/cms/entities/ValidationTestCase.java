@@ -1,6 +1,7 @@
 package org.infoglue.cms.entities;
 
 import junit.framework.TestCase;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 

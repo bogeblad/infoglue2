@@ -23,10 +23,11 @@
 
 package org.infoglue.cms.util.mail;
 
-import org.infoglue.cms.util.CmsPropertyHandler;
-
 import java.util.Properties;
+
 import javax.mail.Session;
+
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 
 /**

@@ -23,21 +23,21 @@
 
 package org.infoglue.cms.treeservice;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+
 import org.apache.log4j.Logger;
-import org.infoglue.cms.net.*;
-
-import javax.servlet.*;
-
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCCFactory;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.net.CommunicationEnvelope;
+import org.infoglue.cms.net.Node;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
-
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 
 public class SiteNodeService extends JServiceBuilder

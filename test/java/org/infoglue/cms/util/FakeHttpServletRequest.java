@@ -20,16 +20,26 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.9 2005/11/10 19:36:48 mattias Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.10 2006/03/06 16:54:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
-import java.io.*;
-import java.security.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Vector;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.management.LanguageVO;

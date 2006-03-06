@@ -33,7 +33,8 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewContentToolMenuAction extends InfoGlueAbstractAction
 {
-    
+	private static final long serialVersionUID = 1L;
+	
     private Integer repositoryId;
     private String tree;
     private String showVersions;

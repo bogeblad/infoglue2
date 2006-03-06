@@ -23,14 +23,13 @@
 
 package org.infoglue.cms.entities.content;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import java.util.Date;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.validators.ContentVersionValidator;
-
-import java.util.Date;
 
 public class ContentVersionVO implements BaseEntityVO
 {

@@ -68,7 +68,9 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public class ContentTreeXMLAction extends InfoGlueAbstractAction
 {
-    private static String TYPE_FOLDER = "ContentFolder";
+	private static final long serialVersionUID = 3321168219082615063L;
+
+	private static String TYPE_FOLDER = "ContentFolder";
     private static String TYPE_ITEM = "ContentItem";
     private static String TYPE_REPOSITORY = "Repository";
 	private String showLeafs = "yes";

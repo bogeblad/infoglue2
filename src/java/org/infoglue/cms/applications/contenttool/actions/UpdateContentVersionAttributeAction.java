@@ -23,19 +23,17 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import java.io.StringReader;
+
+import org.apache.xerces.parsers.DOMParser;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.*;
-
-import java.io.*;
-
+import org.infoglue.cms.util.XMLHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import org.xml.sax.InputSource; 
-import org.apache.xerces.parsers.DOMParser;
+import org.xml.sax.InputSource;
 
 /**
   * This is the action-class for UpdateContentVersionVersion
@@ -45,6 +43,7 @@ import org.apache.xerces.parsers.DOMParser;
 
 public class UpdateContentVersionAttributeAction extends ViewContentVersionAction 
 {
+	private static final long serialVersionUID = 1L;
 	
 	private ContentVersionVO contentVersionVO;
 	private Integer contentId;

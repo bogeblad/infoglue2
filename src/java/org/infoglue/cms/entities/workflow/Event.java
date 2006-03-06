@@ -23,7 +23,7 @@
 
 package org.infoglue.cms.entities.workflow;
 
-import org.infoglue.cms.entities.kernel.*;
+import org.infoglue.cms.entities.kernel.IBaseEntity;
 
 public interface Event extends IBaseEntity
 {

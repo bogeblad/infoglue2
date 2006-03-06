@@ -28,7 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
@@ -38,6 +40,8 @@ import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 
 public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = -6759369582248131484L;
+
 	private Integer contentId;
 	private List contentVersionId = new ArrayList();
 	private List siteNodeVersionId = new ArrayList();

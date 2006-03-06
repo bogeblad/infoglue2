@@ -26,12 +26,14 @@ package org.infoglue.cms.applications.contenttool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 
 
 public class ChangeContentStateAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 2617481307791186845L;
+
 	private Integer contentId;
 	private Integer contentVersionId;
 	private Integer stateId;

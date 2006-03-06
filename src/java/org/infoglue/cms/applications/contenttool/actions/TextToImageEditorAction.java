@@ -37,8 +37,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -64,6 +62,8 @@ import org.infoglue.deliver.util.BrowserBean;
  */
 public class TextToImageEditorAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
     private Integer languageId = null;
     private Integer contentId = null;
     private Integer siteNodeId = null;

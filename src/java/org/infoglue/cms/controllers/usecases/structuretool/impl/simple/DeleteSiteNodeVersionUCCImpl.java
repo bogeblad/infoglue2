@@ -23,18 +23,15 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
-import org.infoglue.cms.controllers.usecases.structuretool.DeleteSiteNodeVersionUCC;
-
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.controllers.usecases.structuretool.DeleteSiteNodeVersionUCC;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
-
-import org.infoglue.cms.exception.*;
-import org.infoglue.cms.util.*;
-
-import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class DeleteSiteNodeVersionUCCImpl extends BaseUCCController implements DeleteSiteNodeVersionUCC
 {

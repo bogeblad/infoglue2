@@ -23,17 +23,15 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.ImageButton;
-import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.entities.management.RepositoryVO;
-
-import org.infoglue.cms.util.CmsPropertyHandler;
-
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+
+import org.infoglue.cms.applications.common.ImageButton;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * This class implements the action class for the framed page in the management tool.
@@ -43,6 +41,8 @@ import java.util.ArrayList;
 
 public class ViewPublishingToolToolBarAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private String title = "";
 	private String name  = "";
 	private String toolbarKey = "";

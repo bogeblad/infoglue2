@@ -20,18 +20,23 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.8 2005/09/13 13:23:04 mattias Exp $
+ * $Id: WorkflowTestCase.java,v 1.9 2006/03/06 16:54:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
 
-import org.infoglue.cms.security.*;
-import org.infoglue.cms.entities.mydesktop.*;
-import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowVO;
+import org.infoglue.cms.security.InfoGluePrincipal;
+
 import com.opensymphony.module.propertyset.PropertySet;
 
 /**

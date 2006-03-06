@@ -23,10 +23,9 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.applications.common.VisualFormatter;
-
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 

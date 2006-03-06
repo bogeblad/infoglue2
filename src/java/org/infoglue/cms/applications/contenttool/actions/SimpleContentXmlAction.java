@@ -58,6 +58,8 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public class SimpleContentXmlAction extends SimpleXmlServiceAction
 {
+	private static final long serialVersionUID = 1L;
+	
     private static String TYPE_FOLDER = "ContentFolder";
     private static String TYPE_ITEM = "ContentItem";
 	private String digitalAssetKey;

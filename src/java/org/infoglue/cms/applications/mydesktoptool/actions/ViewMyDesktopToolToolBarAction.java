@@ -23,12 +23,11 @@
 
 package org.infoglue.cms.applications.mydesktoptool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
  * This class implements the action class for the framed page in the management tool.
@@ -38,6 +37,8 @@ import java.util.ArrayList;
 
 public class ViewMyDesktopToolToolBarAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private String title = "";
 	private String name  = "";
 	private String toolbarKey = "";

@@ -20,21 +20,21 @@
  *
  * ===============================================================================
  *
- * $Id: ContentTypeDefinitionControllerTest.java,v 1.1 2004/12/01 23:35:09 frank Exp $
+ * $Id: ContentTypeDefinitionControllerTest.java,v 1.2 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
-import java.util.List;
-import java.io.InputStream;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.CategoryAttribute;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.util.ResourceHelper;
+import org.infoglue.cms.entities.management.CategoryAttribute;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.util.InfoGlueTestCase;
+import org.infoglue.cms.util.ResourceHelper;
 
 /**
  * @author Frank Febbraro (frank@phase2technology.com)

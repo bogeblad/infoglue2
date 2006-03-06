@@ -35,6 +35,8 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 
 public class ViewPublishingToolMenuAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
     private RepositoryVO repositoryVO;
     private Integer repositoryId;
 	private String name;

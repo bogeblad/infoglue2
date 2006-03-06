@@ -20,17 +20,19 @@
  *
  * ===============================================================================
  *
- * $Id: NewsWorkflowTestCase.java,v 1.5 2005/06/10 18:32:43 jed Exp $
+ * $Id: NewsWorkflowTestCase.java,v 1.6 2006/03/06 16:55:11 mattias Exp $
  */
 package org.infoglue.cms.workflow;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.infoglue.cms.util.*;
+import org.infoglue.cms.util.FakeHttpServletRequest;
+import org.infoglue.cms.util.WorkflowTestCase;
 
 /**
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
- * @version $Revision: 1.5 $ $Date: 2005/06/10 18:32:43 $
+ * @version $Revision: 1.6 $ $Date: 2006/03/06 16:55:11 $
  */
 public class NewsWorkflowTestCase extends WorkflowTestCase
 {

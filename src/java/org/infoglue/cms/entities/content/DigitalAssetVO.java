@@ -24,7 +24,6 @@
 package org.infoglue.cms.entities.content;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class DigitalAssetVO implements BaseEntityVO, Cloneable

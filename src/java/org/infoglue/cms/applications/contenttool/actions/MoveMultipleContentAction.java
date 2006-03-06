@@ -31,11 +31,11 @@ import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.structure.QualifyerVO;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 
@@ -45,6 +45,8 @@ import org.infoglue.cms.util.dom.DOMBuilder;
 
 public class MoveMultipleContentAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
     //Initial params
     private Integer originalContentId;
     private Integer repositoryId;

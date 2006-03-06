@@ -33,7 +33,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageControl
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.treeservice.ss.ContentNodeSupplier;
 import org.infoglue.cms.treeservice.ss.ContentNodeVersionSupplier;
-
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import com.frovi.ss.Tree.BaseNode;
@@ -41,6 +40,8 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private Integer repositoryId;
 	private String showVersions;
 	private String showLeafs = "yes";

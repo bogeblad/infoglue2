@@ -23,13 +23,12 @@
 
 package org.infoglue.cms.entities.structure;
 
-import org.infoglue.cms.entities.content.ContentVersionVO;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class SiteNodeVersionVO implements BaseEntityVO
 {

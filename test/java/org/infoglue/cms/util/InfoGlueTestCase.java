@@ -20,25 +20,26 @@
  *
  * ===============================================================================
  *
- * $Id: InfoGlueTestCase.java,v 1.6 2005/12/06 22:06:11 mattias Exp $
+ * $Id: InfoGlueTestCase.java,v 1.7 2006/03/06 16:54:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.cms.entities.management.RepositoryVO;
 
 /**
  * The base class of all InfoGlue tests cases will setup the things that need to be setup

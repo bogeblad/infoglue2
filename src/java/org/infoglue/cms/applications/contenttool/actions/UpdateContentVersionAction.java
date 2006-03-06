@@ -23,14 +23,12 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import java.util.Date;
-
 import org.apache.log4j.Logger;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.deliver.util.PublicationThread;
 
 /**
   * This is the action-class for UpdateContentVersionVersion
@@ -40,6 +38,8 @@ import org.infoglue.deliver.util.PublicationThread;
 
 public class UpdateContentVersionAction extends ViewContentVersionAction 
 {
+	private static final long serialVersionUID = 1L;
+	
     public final static Logger logger = Logger.getLogger(UpdateContentVersionAction.class.getName());
 
 	private ContentVersionVO contentVersionVO;

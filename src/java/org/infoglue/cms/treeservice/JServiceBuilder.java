@@ -23,17 +23,24 @@
 
 package org.infoglue.cms.treeservice;
 
-import org.apache.log4j.Logger;
-import org.infoglue.cms.net.*;
-
-
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.net.*;
-
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.infoglue.cms.net.CommunicationEnvelope;
+import org.infoglue.cms.net.Node;
 
 public abstract class JServiceBuilder extends HttpServlet
 {

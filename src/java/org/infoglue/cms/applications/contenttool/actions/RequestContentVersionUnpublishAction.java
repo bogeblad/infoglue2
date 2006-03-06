@@ -23,11 +23,10 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import org.infoglue.cms.entities.workflow.*;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-
+import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 
 /**
@@ -37,7 +36,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.*;
 
 public class RequestContentVersionUnpublishAction extends InfoGlueAbstractAction
 {
-
+	private static final long serialVersionUID = 1L;
+	
    	private ConstraintExceptionBuffer ceb;
 	private EventVO eventVO;  
 	private Integer repositoryId;

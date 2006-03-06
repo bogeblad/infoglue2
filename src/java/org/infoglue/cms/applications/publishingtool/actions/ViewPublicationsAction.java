@@ -30,8 +30,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.publishing.EditionBrowser;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 
 /**
@@ -43,6 +43,8 @@ import org.infoglue.cms.exception.SystemException;
  */
 public class ViewPublicationsAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+
 	private int startIndex = 0;
 	private Integer repositoryId;
 	private Integer publicationId;

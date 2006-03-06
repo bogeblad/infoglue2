@@ -23,24 +23,14 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.exception.AccessConstraintException;
-import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -51,6 +41,8 @@ import java.util.List;
 
 public class ViewContentVersionDifferenceAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 1L;
+	
 	private Integer contentVersionId1;
 	private Integer contentVersionId2;
 

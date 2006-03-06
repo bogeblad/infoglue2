@@ -36,7 +36,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewContentTreeAction extends InfoGlueAbstractAction implements ViewContentTreeActionInterface
 {
-    
+	private static final long serialVersionUID = 1L;
+	
     private Integer repositoryId;
     private Integer contentId;
     private String tree;

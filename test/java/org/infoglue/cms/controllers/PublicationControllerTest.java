@@ -20,19 +20,23 @@
  *
  * ===============================================================================
  *
- * $Id: PublicationControllerTest.java,v 1.2 2005/03/01 23:27:20 frank Exp $
+ * $Id: PublicationControllerTest.java,v 1.3 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
-import java.util.*;
-import org.infoglue.cms.entities.publishing.PublicationVO;
-import org.infoglue.cms.entities.publishing.PublicationDetailVO;
-import org.infoglue.cms.entities.publishing.EditionBrowser;
-import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
-import org.infoglue.cms.util.InfoGlueTestCase;
-import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.entities.publishing.EditionBrowser;
+import org.infoglue.cms.entities.publishing.PublicationDetailVO;
+import org.infoglue.cms.entities.publishing.PublicationVO;
+import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.InfoGlueTestCase;
 
 /**
  * @author Frank Febbraro (frank@phase2technology.com)

@@ -20,23 +20,30 @@
  *
  * ===============================================================================
  *
- * $Id: ContentDeliveryControllerTest.java,v 1.3 2005/04/03 20:35:37 mattias Exp $
+ * $Id: ContentDeliveryControllerTest.java,v 1.4 2006/03/06 16:58:49 mattias Exp $
  */
 package org.infoglue.deliver.controllers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
 
-import org.infoglue.cms.entities.management.CategoryVO;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
-import org.infoglue.cms.util.InfoGlueTestCase;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.InfoGlueTestCase;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
-import org.exolab.castor.jdo.Database;
 
 /**
  * @author Frank Febbraro (frank@phase2technology.com)

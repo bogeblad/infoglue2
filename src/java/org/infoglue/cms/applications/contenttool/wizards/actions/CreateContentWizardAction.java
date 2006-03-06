@@ -23,7 +23,17 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -33,16 +43,8 @@ import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
-
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This action represents the CreateContent with help of a wizard. It guides the user through creating a new content
@@ -51,6 +53,8 @@ import java.util.List;
 
 public class CreateContentWizardAction extends InfoGlueAbstractAction implements ViewContentTreeActionInterface
 {
+	private static final long serialVersionUID = 1L;
+	
 	//Used by the tree only
 	private Integer contentId;
 	private String tree;

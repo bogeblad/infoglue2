@@ -24,7 +24,6 @@
 package org.infoglue.cms.entities.workflow.impl.simple;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-
 import org.infoglue.cms.entities.workflow.Workflow;
 import org.infoglue.cms.entities.workflow.WorkflowVO;
 

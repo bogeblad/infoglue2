@@ -20,18 +20,22 @@
  *
  * ===============================================================================
  *
- * $Id: FakeServletContext.java,v 1.1 2004/11/29 15:29:10 jed Exp $
+ * $Id: FakeServletContext.java,v 1.2 2006/03/06 16:54:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
-import java.util.Set;
-import java.util.Enumeration;
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.InputStream;
-import javax.servlet.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Set;
 
-import org.infoglue.cms.util.FakeFilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
+
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 
 /**

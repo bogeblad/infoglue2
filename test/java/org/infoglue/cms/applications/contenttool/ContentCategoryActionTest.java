@@ -20,18 +20,18 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryActionTest.java,v 1.1 2004/12/02 23:08:46 frank Exp $
+ * $Id: ContentCategoryActionTest.java,v 1.2 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.applications.contenttool;
 
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-import org.infoglue.cms.entities.management.CategoryVO;
-import org.infoglue.cms.entities.content.ContentCategoryVO;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.applications.contenttool.actions.ContentCategoryAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.WebWorkTestCase;
 

@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: CategoryNodeSupplier.java,v 1.2 2005/07/10 21:05:50 mattias Exp $
+ * $Id: CategoryNodeSupplier.java,v 1.3 2006/03/06 16:52:20 mattias Exp $
  */
 package org.infoglue.cms.treeservice.ss;
 
@@ -33,8 +33,6 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.treeservice.SiteNodeService;
-
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.BaseNodeSupplier;

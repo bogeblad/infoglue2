@@ -20,13 +20,16 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpSession.java,v 1.2 2005/06/09 16:52:44 mattias Exp $
+ * $Id: FakeHttpSession.java,v 1.3 2006/03/06 16:54:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
-import java.util.*;
-import javax.servlet.http.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
 
 /**
  * A quick-and-dirty stub of HttpSession.

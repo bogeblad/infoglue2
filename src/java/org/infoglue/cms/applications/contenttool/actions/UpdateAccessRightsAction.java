@@ -45,6 +45,8 @@ import webwork.action.Action;
 
 public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 {
+	private static final long serialVersionUID = 1L;
+	
 	private Integer interceptionPointId;
 	private Integer accessRightId;
 	private String parameters = "";

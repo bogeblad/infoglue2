@@ -20,18 +20,18 @@
  *
  * ===============================================================================
  *
- * $Id: ViewContentTypeDefinitionActionTest.java,v 1.1 2004/12/02 23:08:46 frank Exp $
+ * $Id: ViewContentTypeDefinitionActionTest.java,v 1.2 2006/03/06 16:54:01 mattias Exp $
  */
 package org.infoglue.cms.applications.managementtool;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.CategoryAttribute;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.ContentTypeDefinitionControllerTest;
 import org.infoglue.cms.applications.managementtool.actions.ViewContentTypeDefinitionAction;
+import org.infoglue.cms.controllers.ContentTypeDefinitionControllerTest;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.entities.management.CategoryAttribute;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.util.WebWorkTestCase;
 
 /**
