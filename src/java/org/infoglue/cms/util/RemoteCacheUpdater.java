@@ -23,9 +23,20 @@
 
 package org.infoglue.cms.util;
 
-import java.util.*;
-import java.io.*; 
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
@@ -149,7 +160,14 @@ public class RemoteCacheUpdater implements NotificationListener
 		    String deliverUrl = (String)urlsIterator.next();
 			String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
 			logger.info("Updating cache at " + address);
-			String response = postToUrl(address, hashedMessage);			    
+			try
+			{
+				String response = postToUrl(address, hashedMessage);
+			}
+			catch(Exception e)
+			{
+				logger.warn("Error updating cache at " + address + ":" + e.getMessage(), e);
+			}
 		}
 
 /*
