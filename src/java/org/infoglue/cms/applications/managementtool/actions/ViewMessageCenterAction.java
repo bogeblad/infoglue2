@@ -65,14 +65,10 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 
     public String doGetMessages() throws Exception
     {
-    	//System.out.println("Last id:" + lastId);
-
     	if(lastId == null || lastId.intValue() == -1)
     		messages = chat.getMessages();
     	else
     		messages = chat.getMessages(lastId.intValue());
-
-    	//System.out.println("Getting messages:" + messages.size());
 
     	return "successGetMessages";
     }

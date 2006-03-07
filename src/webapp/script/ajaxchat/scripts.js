@@ -20,24 +20,26 @@ function receiveChatText() {
 //deals with the servers' reply to requesting new content
 function handlehHttpReceiveChat() 
 {
-  if (httpReceiveChat.readyState == 4) 
-  {
-    results = httpReceiveChat.responseText.split('---'); //the fields are seperated by ---
-    
-    if(results.length > 2)
-	{
-	    i = 0;
-	    lastId = results[i];
-	    userName = results[i+1];
-	    message = results[i+2];
-	
-		//alert("lastId:" + lastId);
-		insertNewContent(userName, message); //inserts the new content into the page
-		i = i + 3;
-	}	
-
-    setTimeout('receiveChatText();',4000); //executes the next data query in 4 seconds
-  }
+  	if (httpReceiveChat.readyState == 4) 
+  	{
+   		if(httpReceiveChat.responseText != "empty")
+  		{
+		    results = httpReceiveChat.responseText.split('---'); //the fields are seperated by ---
+		    
+		    if(results.length > 2)
+			{
+			    i = 0;
+			    lastId = results[i];
+			    userName = results[i+1];
+			    message = results[i+2];
+			
+				//alert("lastId:" + lastId);
+				insertNewContent(userName, message); //inserts the new content into the page
+				i = i + 3;
+			}	
+		}
+	    setTimeout('receiveChatText();',4000); //executes the next data query in 4 seconds
+  	}
 }
 
 //inserts the new content into the page
