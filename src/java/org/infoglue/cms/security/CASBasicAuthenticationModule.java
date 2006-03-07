@@ -45,6 +45,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import edu.yale.its.tp.cas.client.ProxyTicketValidator;
@@ -330,14 +331,18 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		return authenticatedUserName;
 	} 
 
-	public Principal loginUser(HttpServletRequest request, HttpServletResponse response, Map status) throws Exception 
+	public Principal loginUser(HttpServletRequest request, HttpServletResponse response, Map status) throws SystemException, Exception 
 	{
 		Principal principal = null;
 		
 		String authenticatedUserName = getAuthenticatedUserName(request, response, status);
 		if(authenticatedUserName != null)
+		{
 			principal = UserControllerProxy.getController().getUser(authenticatedUserName);
-
+			if(principal == null)
+				throw new SystemException("The CAS-authenticated user " + authenticatedUserName + " was not located in the authorization system's user database.");
+		}
+		
 		return principal;
 	}
 

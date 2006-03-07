@@ -667,7 +667,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							if(!isAuthorized)
 							{	
 								this.getHttpSession().removeAttribute("infogluePrincipal");
-								getLogger().info("SiteNode is protected and user was not found - sending him to login page.");
+								getLogger().info("SiteNode is protected and anonymous user was allowed - sending him to login page.");
 								String redirectUrl = getRedirectUrl(getRequest(), getResponse());
 								//String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 								getResponse().sendRedirect(redirectUrl);
@@ -677,7 +677,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					}
 					catch(Exception e) 
 					{
-					    e.printStackTrace();
 					    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
 					}
 			    }
