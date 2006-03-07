@@ -79,8 +79,6 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 
     public String doGetSystemMessages() throws Exception
     {
-    	System.out.println("Last id:" + lastId);
-
     	if(lastId == null || lastId.intValue() == -1)
     	{
     	    Message message = new Message(systemMessagesChat.getMessageId(), "administrator", INDEX_MESSAGE_TYPE, "Undefined");
@@ -89,8 +87,6 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
     	}
     	else
     		messages = systemMessagesChat.getMessages(lastId.intValue());
-
-    	System.out.println("Getting system messages:" + messages.size());
 
     	return "successGetSystemMessages";
     }
