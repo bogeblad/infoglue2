@@ -87,7 +87,8 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
     	}
     	else
     		messages = systemMessagesChat.getMessages(lastId.intValue());
-
+    	
+    	System.out.println("ProblemUrl:" + this.getCurrentURL());
     	return "successGetSystemMessages";
     }
 
