@@ -679,13 +679,23 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the pageCacheKey for the page.
 	 */
 	
-	public String getPageCacheKey(Database db, HttpSession session, HttpServletRequest request, /*TemplateController templateController, */Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+	public String getPageCacheKey(Database db, HttpSession session, HttpServletRequest request, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
 	{
-	    String pageKey = CacheController.getPageCacheKey(session, request/*, templateController*/, siteNodeId, languageId, contentId, userAgent, queryString, extra);
+	    String pageKey = CacheController.getPageCacheKey(session, request, siteNodeId, languageId, contentId, userAgent, queryString, extra);
 
 		try
 		{
+			
 			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+			while(latestSiteNodeVersionVO == null || latestSiteNodeVersionVO.getPageCacheKey() == null || latestSiteNodeVersionVO.getPageCacheKey().length() == 0 || latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
+			{
+				SiteNodeVO parentSiteNodeVO = getParentSiteNode(db, siteNodeId);
+				if(parentSiteNodeVO != null)
+					latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, parentSiteNodeVO.getId());
+				else
+					break;
+			}
+
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getPageCacheKey() != null && latestSiteNodeVersionVO.getPageCacheKey().length() > 0 && !latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
 			    pageKey = latestSiteNodeVersionVO.getPageCacheKey();
@@ -732,7 +742,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 		catch(Exception e)
 		{
 			getLogger().warn("An error occurred trying to get if the siteNodeVersion had a different pageCacheKey:" + e.getMessage(), e);
-			e.printStackTrace();
 		}
 
 		return pageKey;
