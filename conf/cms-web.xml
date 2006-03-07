@@ -27,62 +27,22 @@
 			<param-value>UTF-8</param-value>
 		</init-param>
 	</filter>
+
 	<filter>
 		<filter-name>InfoGlue Authentication Filter</filter-name>
 		<filter-class>org.infoglue.cms.security.InfoGlueAuthenticationFilter</filter-class>
-		<!-- HERE COMES THE CAS/JNDI-SETUP -->
-		<!--
-		<init-param>
-      		<param-name>org.infoglue.cms.security.loginUrl</param-name>
-     		<param-value>https://gavin.it.gu.se:8433/cas/login</param-value>
-	    </init-param>
-	    <init-param>
-      		<param-name>org.infoglue.cms.security.invalidLoginUrl</param-name>
-     		<param-value>Login!invalidLogin.action</param-value>
-	    </init-param>
-		<init-param>
-      		<param-name>org.infoglue.cms.security.casValidateUrl</param-name>
-     		<param-value>https://gavin.it.gu.se:8433/cas/serviceValidate</param-value>
-	    </init-param>
-	    <init-param>
-      		<param-name>org.infoglue.cms.security.casServiceUrl</param-name>
-     		<param-value>http://localhost:8080/infoglueCMS2Dev/ViewCMSTool.action</param-value>
-	    </init-param>
-	    <init-param>
-      		<param-name>org.infoglue.cms.security.authenticatorClass</param-name>
-     		<param-value>org.infoglue.cms.security.CASBasicAuthenticationModule</param-value>
-	    </init-param>
-	    <init-param>
-	      <param-name>org.infoglue.cms.security.serverName</param-name>
-    	  <param-value>localhost:8080</param-value>
-    	</init-param> 
-	    <init-param>
-      		<param-name>org.infoglue.cms.security.authorizerClass</param-name>
-     		<param-value>org.infoglue.cms.security.JNDIBasicAuthorizationModule</param-value>
-     		<param-value>org.infoglue.cms.security.OpenLDAPJNDIBasicAuthorizationModule</param-value>
-	    </init-param>
-	    <init-param>
-      		<param-name>org.infoglue.cms.security.extraParametersFile</param-name>
-     		<param-value>JNDIParameters.properties</param-value>
-	    </init-param>
-	    <init-param>
-	    	<param-name>org.infoglue.cms.security.authConstraint</param-name>
-	    	<param-value>CN=InfoGlue Tool Users,OU=InfoGlueRoles,DC=SprawlAD</param-value>
-	    	<param-value>CN=InfoGlue Tool Users,OU=roles,OU=staff,DC=gu,DC=se</param-value>
-	    </init-param>
-	    -->
-		<!-- HERE COMES THE INFOGLUE-SETUP -->
 		<init-param>
 			<param-name>org.infoglue.cms.security.loginUrl</param-name>
-			<!--<param-value>https://localhost:8443/infoglueCMS2/Login.action</param-value>-->
 			<param-value>Login.action</param-value>
 		</init-param>
-		<!--
+		<init-param>
+      		<param-name>org.infoglue.cms.security.logoutUrl</param-name>
+     		<param-value>Login!logout.action</param-value>
+	    </init-param>
 		<init-param>
 			<param-name>org.infoglue.cms.security.successLoginBaseUrl</param-name>
 			<param-value>http://localhost:8080</param-value>
 		</init-param>
-		-->
 		<init-param>
 			<param-name>org.infoglue.cms.security.invalidLoginUrl</param-name>
 			<param-value>Login!invalidLogin.action</param-value>
@@ -94,19 +54,7 @@
 		<init-param>
 			<param-name>org.infoglue.cms.security.authorizerClass</param-name>
 			<param-value>org.infoglue.cms.security.InfoGlueBasicAuthorizationModule</param-value>
-			<!--<param-value>org.infoglue.cms.security.JNDIBasicAuthorizationModule</param-value>-->
 		</init-param>
-		<!--
-		<init-param>
-      		<param-name>org.infoglue.cms.security.extraParametersFile</param-name>
-     		<param-value>JNDIParameters.properties</param-value>
-	    </init-param>
-	    <init-param>
-	    	<param-name>org.infoglue.cms.security.authConstraint</param-name>
-     		<param-value>CN=InfoGlue Tool Users,OU=InfoGlueRoles,DC=SprawlAD</param-value>
-	    	<param-value>CN=InfoGlue Tool Users,OU=roles,OU=staff,DC=gu,DC=se</param-value>
-	    </init-param>
-	    -->
 		<init-param>
 			<param-name>org.infoglue.cms.security.authConstraint</param-name>
 			<param-value>cmsUser</param-value>
@@ -116,6 +64,7 @@
 			<param-value>InfoGlueAuthorizationParameters.properties</param-value>
 		</init-param>
 	</filter>
+-->	
 	
 	<!-- Define filter mappings for the defined filters -->
 	<filter-mapping>
