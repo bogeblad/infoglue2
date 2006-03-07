@@ -686,18 +686,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			
 			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
-			/*
+			
 			while(latestSiteNodeVersionVO == null || latestSiteNodeVersionVO.getPageCacheKey() == null || latestSiteNodeVersionVO.getPageCacheKey().length() == 0 || latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
-			    System.out.println("Loop:" + latestSiteNodeVersionVO.getId());
-				SiteNodeVO parentSiteNodeVO = getParentSiteNode(db, siteNodeId);
-			    System.out.println("parentSiteNodeVO:" + parentSiteNodeVO.getId());
+				SiteNodeVO parentSiteNodeVO = getParentSiteNode(db, latestSiteNodeVersionVO.getSiteNodeId());
 				if(parentSiteNodeVO != null)
 					latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, parentSiteNodeVO.getId());
 				else
 					break;
 			}
-			*/
 			
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getPageCacheKey() != null && latestSiteNodeVersionVO.getPageCacheKey().length() > 0 && !latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
