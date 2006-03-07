@@ -682,20 +682,23 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public String getPageCacheKey(Database db, HttpSession session, HttpServletRequest request, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
 	{
 	    String pageKey = CacheController.getPageCacheKey(session, request, siteNodeId, languageId, contentId, userAgent, queryString, extra);
-
-		try
+	    try
 		{
 			
 			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+			/*
 			while(latestSiteNodeVersionVO == null || latestSiteNodeVersionVO.getPageCacheKey() == null || latestSiteNodeVersionVO.getPageCacheKey().length() == 0 || latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
+			    System.out.println("Loop:" + latestSiteNodeVersionVO.getId());
 				SiteNodeVO parentSiteNodeVO = getParentSiteNode(db, siteNodeId);
+			    System.out.println("parentSiteNodeVO:" + parentSiteNodeVO.getId());
 				if(parentSiteNodeVO != null)
 					latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, parentSiteNodeVO.getId());
 				else
 					break;
 			}
-
+			*/
+			
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getPageCacheKey() != null && latestSiteNodeVersionVO.getPageCacheKey().length() > 0 && !latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
 			    pageKey = latestSiteNodeVersionVO.getPageCacheKey();
