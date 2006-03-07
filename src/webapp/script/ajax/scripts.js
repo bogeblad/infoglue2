@@ -24,22 +24,25 @@ function handlehHttpReceiveSystemMessages()
 {
   	if (httpReceiveSystemMessages.readyState == 4) 
   	{
-    	results = httpReceiveSystemMessages.responseText.split('---'); //the fields are seperated by ---
-    
-	    if(results.length > 2)
-		{
-		    i = 0;
-		    lastId = results[i];
-		    type = results[i+1];
-		    extradata = results[i+2];
+  		//alert("message:" + httpReceiveSystemMessages.responseText);
+  		if(httpReceiveSystemMessages.responseText != "empty")
+  		{
+	    	results = httpReceiveSystemMessages.responseText.split('---'); //the fields are seperated by ---
+	    
+		    if(results.length > 2)
+			{
+			    i = 0;
+			    lastId = results[i];
+			    type = results[i+1];
+			    extradata = results[i+2];
+			
+				//alert("lastId:" + lastId);
+				if(type != "-1")
+					handleMessage(type, extradata);
 		
-			//alert("lastId:" + lastId);
-			if(type != "-1")
-				handleMessage(type, extradata);
-	
-			i = i + 3;
+				i = i + 3;
+			}	
 		}	
-	
 	    setTimeout('receiveSystemMessagesText();',30000); //executes the next data query in 30 seconds
   	}
 }
