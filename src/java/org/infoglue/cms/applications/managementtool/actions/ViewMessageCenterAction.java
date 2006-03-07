@@ -79,7 +79,7 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 
     public String doGetSystemMessages() throws Exception
     {
-    	//System.out.println("Last id:" + lastId);
+    	System.out.println("Last id:" + lastId);
 
     	if(lastId == null || lastId.intValue() == -1)
     	{
@@ -90,7 +90,7 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
     	else
     		messages = systemMessagesChat.getMessages(lastId.intValue());
 
-    	//System.out.println("Getting system messages:" + messages.size());
+    	System.out.println("Getting system messages:" + messages.size());
 
     	return "successGetSystemMessages";
     }
