@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.21 2006/02/07 13:01:32 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.22 2006/03/08 22:39:47 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -893,6 +893,7 @@
 	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputContentVersionsAction" alias="CreateContentWizardInputContentVersions">
 		<view name="inputAssets">CreateContentWizardInputAssets!input.action</view>
 		<view name="inputContentVersions">/cms/contenttool/wizards/createContentWizardInputContentVersions.vm</view>
+		<view name="inputContentVersionsForFCKEditor">/cms/contenttool/wizards/createContentWizardInputContentVersionsForFCKEditor.vm</view>
 		<view name="success">CreateContentWizardFinish.action</view>
 		<view name="error">/cms/contenttool/wizards/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
@@ -901,6 +902,7 @@
 		<view name="stateLocation">CreateContentWizardChooseParent.action</view>
 		<view name="inputContent">CreateContentWizardInputContent!input.action</view>
 		<view name="inputContentVersions">CreateContentWizardInputContentVersions!input.action</view>
+		<view name="inputContentVersionsForFCKEditor">CreateContentWizardInputContentVersions!input.action</view>
 		<view name="success">ViewContent.action</view>
 		<view name="error">/cms/contenttool/wizards/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>

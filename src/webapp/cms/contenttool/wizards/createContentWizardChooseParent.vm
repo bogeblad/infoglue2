@@ -92,13 +92,17 @@
 		</tr>
 		<tr>
 			<td>
-				<a href="javascript:document.inputForm.submit();"><img src="$ui.getString("images.contenttool.buttons.save")" border="0"></a>
+				<a href="javascript:document.inputForm.submit();"><img src="$ui.getString("images.contenttool.buttons.next")" border="0"></a>
 				<a href="javascript:window.opener.location.reload();window.close();"><img src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" border="0"></a>
 			</td>
 		</tr>		
 		<tr>
 			<td>
 				<form name="inputForm" action="$returnAddress">
+					#foreach($allowedContentTypeId in $allowedContentTypeIds)
+					<input type="hidden" name="allowedContentTypeIds" value="$allowedContentTypeId">
+					#end
+					<input type="hidden" name="allowedContentTypeIdsAsUrlEncodedString" value="$allowedContentTypeIdsAsUrlEncodedString">
 					<input type="hidden" name="parentContentId" value="">
 					<input type="hidden" name="repositoryId" value="$repositoryId">
 					<input type="hidden" name="path" value="">
@@ -109,11 +113,6 @@
 	</td>	
 </tr>
 </table>
-
-<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:5px; visibility:visble; z-index:0">
-<hr size=1 noshade>
-<small><font color="#666666">$ui.getString("tool.common.treestyleLabel"): <a style="color: #666666" href="javascript:changeTree('applet');">$ui.getString("tool.common.treestyleApplet")</a> | <a style="color: #666666" href="javascript:changeTree('html');">$ui.getString("tool.common.treestyleHTML")</a> </small></font>
-</div>
 
 </body>
 </html>

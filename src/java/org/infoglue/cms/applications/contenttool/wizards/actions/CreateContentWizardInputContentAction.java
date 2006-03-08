@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,12 +39,13 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateContentWizardInputContentAction extends InfoGlueAbstractAction
 {
-	private String[] allowedContentTypeDefinitionId;
 	private List contentTypeDefinitionVOList = new ArrayList();
 	private String returnAddress;
 	private ContentVO contentVO;
 	private Integer contentTypeDefinitionId;
 	private ConstraintExceptionBuffer ceb;
+
+	private String[] allowedContentTypeIds	 = null;
 
 
 	public CreateContentWizardInputContentAction()
@@ -59,15 +61,15 @@ public class CreateContentWizardInputContentAction extends InfoGlueAbstractActio
 
 	private void initialiaze() throws Exception
 	{
-		if(allowedContentTypeDefinitionId == null)
+		if(allowedContentTypeIds == null)
 		{
 			this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		}
 		else
 		{
-			for(int i=0; i < allowedContentTypeDefinitionId.length; i++)
+			for(int i=0; i < allowedContentTypeIds.length; i++)
 			{
-				String allowedContentTypeDefinitionIdString = allowedContentTypeDefinitionId[i];
+				String allowedContentTypeDefinitionIdString = allowedContentTypeIds[i];
 				System.out.println("allowedContentTypeDefinitionIdString:" + allowedContentTypeDefinitionIdString);
 				this.contentTypeDefinitionVOList.add(ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(new Integer(allowedContentTypeDefinitionIdString)));
 			}
@@ -96,6 +98,7 @@ public class CreateContentWizardInputContentAction extends InfoGlueAbstractActio
 	 
 	public String doExecute() throws Exception
 	{
+		System.out.println("AAA1");
 		this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
 
 		ceb = this.contentVO.validate();
@@ -104,7 +107,8 @@ public class CreateContentWizardInputContentAction extends InfoGlueAbstractActio
 			initialiaze();
 	
 		ceb.throwIfNotEmpty();
-
+		System.out.println("AAA2");
+		
 		return "success";
 	}
 
@@ -186,5 +190,30 @@ public class CreateContentWizardInputContentAction extends InfoGlueAbstractActio
 	{
 		returnAddress = string;
 	}
+
+    public String getAllowedContentTypeIdsAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeIds.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedContentTypeIds=" + URLEncoder.encode(allowedContentTypeIds[i], "UTF-8"));
+        }
+
+        return sb.toString();
+    }
+
+    public String[] getAllowedContentTypeIds()
+    {
+        return allowedContentTypeIds;
+    }
+    
+    public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
+    {
+        this.allowedContentTypeIds = allowedContentTypeIds;
+    }
 
 }

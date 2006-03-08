@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
@@ -50,8 +51,8 @@ public class CreateContentWizardChooseParentAction extends CreateContentWizardAb
 	private ConstraintExceptionBuffer ceb;
 	
 	private String returnAddress;
-
-
+	private String[] allowedContentTypeIds	 = null;
+	
 	public CreateContentWizardChooseParentAction()
 	{
 		this(new ContentVO());
@@ -160,5 +161,30 @@ public class CreateContentWizardChooseParentAction extends CreateContentWizardAb
 	{
 		returnAddress = string;
 	}
+
+    public String getAllowedContentTypeIdsAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeIds.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedContentTypeIds=" + URLEncoder.encode(allowedContentTypeIds[i], "UTF-8"));
+        }
+
+        return sb.toString();
+    }
+
+    public String[] getAllowedContentTypeIds()
+    {
+        return allowedContentTypeIds;
+    }
+    
+    public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
+    {
+        this.allowedContentTypeIds = allowedContentTypeIds;
+    }
 
 }

@@ -2,11 +2,23 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#if($isBranch)
-	#beginContentTool("Create new folder" "New folder" "" "0" "0" "0")
-#else
-	#beginContentTool("Create new content" "New content" "" "0" "0" "0")
-#end
+<html>
+<head>
+	<title>Create</title>
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
+	<script type="text/javascript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/calendar1.js"></script>
+	<script type="text/javascript" src="script/editor.js"></script>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+</head>
+
+<body class="contenttooledit">
+#set( $lvColor = "green")
 
 <div class="fullymarginalized">
 <form name="editForm" method="POST" action="CreateContentWizardInputContent.action">
@@ -47,7 +59,7 @@
 		<input type="hidden" name="changeTypeId" value="2">
 		<input type="hidden" name="returnAddress" value="$returnAddress">
 		<td>
-			<input type="image" src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
+			<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0">
 			<a href="ViewContent.action?contentId=$!parentContentId"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>

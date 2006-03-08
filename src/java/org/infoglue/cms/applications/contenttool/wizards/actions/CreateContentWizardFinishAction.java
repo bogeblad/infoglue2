@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.wizards.actions;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 
@@ -49,39 +50,59 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	
 	public String doExecute() throws Exception
 	{
-		CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
-		
-		if(createContentWizardInfoBean.getParentContentId() == null)
+		try
 		{
-			return "stateLocation"; 
-		} 
-		
-		createContentWizardInfoBean.getContent().setCreator(this.getInfoGluePrincipal().getName());
-		this.ceb = createContentWizardInfoBean.getContent().getValueObject().validate();
-		
-		if(!this.ceb.isEmpty())
-		{
-			return "inputContent";
+			System.out.println("0.1");
+	
+			CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
+			
+			if(createContentWizardInfoBean.getParentContentId() == null)
+			{
+				return "stateLocation"; 
+			} 
+	
+			System.out.println("0.2");
+	
+			createContentWizardInfoBean.getContent().setCreator(this.getInfoGluePrincipal().getName());
+			this.ceb = createContentWizardInfoBean.getContent().getValueObject().validate();
+			
+			if(!this.ceb.isEmpty())
+			{
+				return "inputContent";
+			}
+			
+			System.out.println("0.3");
+	
+			if(createContentWizardInfoBean.getContentVersions().size() == 0)
+			{
+		    	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
+		    	System.out.println("wysiwygEditor:" + wysiwygEditor);
+		    	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
+		    	    return "inputContentVersions";
+		    	else
+		    	    return "inputContentVersionsForFCKEditor";
+
+			}
+			//ceb.throwIfNotEmpty();
+	    			
+	    	System.out.println("About to create everything....");	
+	    	ContentVO contentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), createContentWizardInfoBean);
+			this.contentId = contentVO.getContentId();
+			
+			String returnAddress = createContentWizardInfoBean.getReturnAddress();
+			System.out.println("returnAddress:" + returnAddress);
+			returnAddress = returnAddress.replaceAll("#entityId", this.contentId.toString());
+			returnAddress = returnAddress.replaceAll("#path", contentVO.getName());
+			System.out.println("returnAddress:" + returnAddress);
+			
+			this.invalidateCreateContentWizardInfoBean();
+			
+			this.getResponse().sendRedirect(returnAddress);
 		}
-		
-		if(createContentWizardInfoBean.getContentVersions().size() == 0)
+		catch(Exception e)
 		{
-			return "inputContentVersions";
+			e.printStackTrace();
 		}
-		//ceb.throwIfNotEmpty();
-    			
-    	System.out.println("About to create everything....");	
-    	ContentVO contentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), createContentWizardInfoBean);
-		this.contentId = contentVO.getContentId();
-		
-		String returnAddress = createContentWizardInfoBean.getReturnAddress();
-		System.out.println("returnAddress:" + returnAddress);
-		returnAddress = returnAddress.replaceAll("#entityId", this.contentId.toString());
-		System.out.println("returnAddress:" + returnAddress);
-		
-		this.invalidateCreateContentWizardInfoBean();
-		
-		this.getResponse().sendRedirect(returnAddress);
 		
 		return NONE;
 	}
