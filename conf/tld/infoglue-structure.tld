@@ -122,6 +122,16 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+    	<attribute>
+    	    <name>escapeHTML</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>hideUnauthorizedPages</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>	 
 	<tag>
 		<name>childPages</name>
@@ -145,6 +155,16 @@
     	</attribute>
         <attribute>
     	    <name>useInheritance</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>escapeHTML</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>hideUnauthorizedPages</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>

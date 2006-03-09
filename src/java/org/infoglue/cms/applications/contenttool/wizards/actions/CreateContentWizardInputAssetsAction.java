@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
@@ -70,16 +71,15 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 		Iterator assetKeysIterator = assetKeys.iterator();
 		while(assetKeysIterator.hasNext())
 		{
-			String assetKey = (String)assetKeysIterator.next();
-			if(!createContentWizardInfoBean.getDigitalAssets().containsKey(assetKey + "_" + this.languageId))
+			AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
+			if(!createContentWizardInfoBean.getDigitalAssets().containsKey(assetKeyDefinition.getAssetKey() + "_" + this.languageId))
 			{
-				mandatoryAssetKey = assetKey;
+				mandatoryAssetKey = assetKeyDefinition.getAssetKey();
 				missingAsset = true;
 				break;
 			}
 		}
 		
-		System.out.println("missingAsset:" + missingAsset);
 		if(missingAsset)
 			return "input";
     	else
@@ -123,7 +123,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					newAsset.setAssetFileSize(new Integer(new Long(renamedFile.length()).intValue()));
 					//is = new FileInputStream(renamedFile);
 					//DigitalAssetController.create(newAsset, is, this.contentVersionId);
-					
+
 					CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
 					createContentWizardInfoBean.getDigitalAssets().put(digitalAssetKey + "_" + this.languageId, newAsset);
 					

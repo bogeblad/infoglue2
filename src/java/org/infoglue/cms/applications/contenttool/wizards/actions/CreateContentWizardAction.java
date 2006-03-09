@@ -147,7 +147,6 @@ public class CreateContentWizardAction extends InfoGlueAbstractAction implements
 			for(int i=0; i < allowedContentTypeDefinitionId.length; i++)
 			{
 				String allowedContentTypeDefinitionIdString = allowedContentTypeDefinitionId[i];
-				System.out.println("allowedContentTypeDefinitionIdString:" + allowedContentTypeDefinitionIdString);
 				this.contentTypeDefinitionVOList.add(ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(new Integer(allowedContentTypeDefinitionIdString)));
 			}
 		}

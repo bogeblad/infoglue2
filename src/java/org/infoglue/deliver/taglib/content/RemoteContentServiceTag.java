@@ -134,7 +134,6 @@ public class RemoteContentServiceTag extends TemplateControllerTag
    /*
    public void addContent(final ContentVO contentVO) 
    {
-       //System.out.println("ADDING CONTENT");
        //Map contentMap = new HashMap();
        //contentMap.put("name", "Kalle" + contentVO.getName());
        //this.contents.add(contentMap);

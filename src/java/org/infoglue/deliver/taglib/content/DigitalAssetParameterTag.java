@@ -136,7 +136,6 @@ public class DigitalAssetParameterTag extends AbstractTag
 		}
 		
 		RemoteAttachment attachment = new RemoteAttachment(this.assetKey, this.contentType, this.bytes);
-		System.out.println("Adding attachement in tag:" + attachment);
 		
 		((ContentVersionParameterInterface) parent).addDigitalAsset(attachment);
 	}

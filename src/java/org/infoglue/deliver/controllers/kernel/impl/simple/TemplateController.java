@@ -915,15 +915,21 @@ public interface TemplateController
      * The method returns a list of WebPage-objects that is the children of the given 
      * siteNode. The method is great for navigation-purposes on a structured site. 
      */
+    public abstract List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages);
+
+    /**
+     * The method returns a list of WebPage-objects that is the children of the given 
+     * siteNode. The method is great for navigation-purposes on a structured site. 
+     */
     public abstract List getChildPages(Integer siteNodeId);
 
+    
     public abstract List getBoundPages(String structureBindningName);
 
     /**
      * This methods get a list of bound pages with the structureBindningName sent in which resides on the siteNodeId sent in.
      */
-    public abstract List getBoundPages(Integer siteNodeId,
-            String structureBindningName);
+    public abstract List getBoundPages(Integer siteNodeId, String structureBindningName);
 
     /**
      * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
@@ -1224,6 +1230,16 @@ public interface TemplateController
 
 	public String getEditOnSightTag(Integer contentId, Integer languageId, String attributeName, String html, boolean showInPublishedMode);
 
+	/**
+	 * This method returns the neccessairy html to assign by klicking on a link.
+	 * @param propertyName
+	 * @param html
+	 * @param showInPublishedMode
+	 * @return
+	 */
+	public String getAssignPropertyBindingTag(String propertyName, boolean createNew, String html, boolean showInPublishedMode);
+
+	
     public boolean getThreatFoldersAsContents();
     
     public void setThreatFoldersAsContents(boolean threatFoldersAsContents);

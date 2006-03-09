@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.wizards.actions;
 import java.util.Iterator;
 import java.util.List;
 
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -64,9 +65,7 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 	 
 	public String doInput() throws Exception
 	{
-		System.out.println("1.1");
 		CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
-		System.out.println("1.2");
 		
 		Integer contentTypeDefinitionId = createContentWizardInfoBean.getContentTypeDefinitionId();
 		this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
@@ -74,27 +73,23 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
 		List assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 		
-		System.out.println("1.3");
-
 		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
 		if(this.languageId == null)
 			this.languageId = masterLanguageVO.getLanguageId();
 		
+		/*
 		boolean missingAsset = false;
 		Iterator assetKeysIterator = assetKeys.iterator();
 		while(assetKeysIterator.hasNext())
 		{
-			String assetKey = (String)assetKeysIterator.next();
-			if(!createContentWizardInfoBean.getDigitalAssets().containsKey(assetKey + "_" + masterLanguageVO.getId()))
+			AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
+			if(!createContentWizardInfoBean.getDigitalAssets().containsKey(assetKeyDefinition.getAssetKey() + "_" + masterLanguageVO.getId()))
 				return "inputAssets";
 		}
+		*/
 		
-		System.out.println("1.4");
-
 		this.contentTypeAttributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());
 		
-		System.out.println("1.5");
-
     	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
     	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
     	    return "inputContentVersions";
@@ -111,13 +106,10 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 	 
 	public String doExecute() throws Exception
 	{
-		System.out.println("1.1");
-
 		CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
 		
 		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-		System.out.println("languageId: " + languageId);
-		System.out.println("contentVersionVO: " + contentVersionVO.getVersionValue());
+
 		createContentWizardInfoBean.getContentVersions().put(languageId, this.contentVersionVO);
 
 		//getCreateContentWizardInfoBean()
@@ -166,7 +158,6 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 
 	public void setVersionValue(String versionValue)
 	{
-		System.out.println("versionValue: " + versionValue);
 		this.contentVersionVO.setVersionValue(versionValue);
 	}
 

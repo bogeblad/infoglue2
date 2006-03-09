@@ -70,7 +70,6 @@ public class CreateContentWizardInputContentAction extends InfoGlueAbstractActio
 			for(int i=0; i < allowedContentTypeIds.length; i++)
 			{
 				String allowedContentTypeDefinitionIdString = allowedContentTypeIds[i];
-				System.out.println("allowedContentTypeDefinitionIdString:" + allowedContentTypeDefinitionIdString);
 				this.contentTypeDefinitionVOList.add(ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(new Integer(allowedContentTypeDefinitionIdString)));
 			}
 		}		
@@ -98,7 +97,6 @@ public class CreateContentWizardInputContentAction extends InfoGlueAbstractActio
 	 
 	public String doExecute() throws Exception
 	{
-		System.out.println("AAA1");
 		this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
 
 		ceb = this.contentVO.validate();
@@ -107,7 +105,6 @@ public class CreateContentWizardInputContentAction extends InfoGlueAbstractActio
 			initialiaze();
 	
 		ceb.throwIfNotEmpty();
-		System.out.println("AAA2");
 		
 		return "success";
 	}

@@ -327,7 +327,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				if(inheritIndex > -1)
 				{    
 				    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
-				    //System.out.println("inheritString:" + inheritString);
 				    inherit = Boolean.getBoolean(inheritString);
 				}
 
@@ -336,7 +335,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				if(allowedComponentNamesIndex > -1)
 				{    
 				    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 23, slotString.indexOf("\"", allowedComponentNamesIndex + 23));
-				    //System.out.println("allowedComponentNames:" + allowedComponentNames);
 				    allowedComponentNamesArray = allowedComponentNames.split(",");
 				}
 				
@@ -572,7 +570,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					if(inheritIndex > -1)
 					{    
 					    String inheritString = slot.substring(inheritIndex + 9, slot.indexOf("\"", inheritIndex + 9));
-					    //System.out.println("inheritString:" + inheritString);
 					    inherit = Boolean.getBoolean(inheritString);
 					}
 
@@ -704,20 +701,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
 		
-		//logger.info("inheritedComponents:" + inheritedComponents);
-		//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
 		boolean restrictAll = false;
-		//System.out.println("Restrictions on " + id + " was " + component.getRestrictions().size());
 		Iterator restrictionsIterator = component.getRestrictions().iterator();
 		while(restrictionsIterator.hasNext())
 		{
 		    ComponentRestriction restriction = (ComponentRestriction)restrictionsIterator.next();
 		    if(restriction.getType().equalsIgnoreCase("blockComponents"))
 		    {
-		        //System.out.println("It was a block components restriction....:" + restriction.getSlotId() + ":" + id + restriction.getArguments());
 		        if(restriction.getSlotId().equalsIgnoreCase(id) && restriction.getArguments().equalsIgnoreCase("*"))
 		        {
-		            //System.out.println("Restriction matched the slot - perhaps we should not render...");
 		            restrictAll = true;
 		        }
 		    }

@@ -23,6 +23,7 @@
  
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
@@ -809,12 +811,22 @@ public class ComponentLogic
 	{
 	    return getChildPages(propertyName, this.useInheritance);
 	}
-	
+
+	public List getChildPages(String propertyName, boolean useInheritance)
+	{
+	    return getChildPages(propertyName, useInheritance, false, false);
+	}
+
+	public List getChildPages(String propertyName, boolean useInheritance, boolean escapeHTML)
+	{
+	    return getChildPages(propertyName, this.useInheritance, escapeHTML, false);
+	}
+
 	/**
 	 * This method returns a list of childpages.
 	 */
 
-	public List getChildPages(String propertyName, boolean useInheritance)
+	public List getChildPages(String propertyName, boolean useInheritance, boolean escapeHTML, boolean hideUnauthorizedPages)
 	{
 	    List childPages = new ArrayList();
 	    
@@ -1753,4 +1765,5 @@ public class ComponentLogic
 
         return assetUrl;
     }
+    
 }

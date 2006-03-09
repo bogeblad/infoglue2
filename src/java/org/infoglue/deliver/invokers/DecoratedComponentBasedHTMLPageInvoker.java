@@ -424,7 +424,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				if(allowedComponentNamesIndex > -1)
 				{    
 				    String allowedComponentNames = slot.substring(allowedComponentNamesIndex + 23, slot.indexOf("\"", allowedComponentNamesIndex + 23));
-				    //System.out.println("allowedComponentNames:" + allowedComponentNames);
 				    allowedComponentNamesArray = allowedComponentNames.split(",");
 
 				    slotBean.setId(id);
@@ -436,7 +435,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				if(inheritIndex > -1)
 				{    
 				    String inheritString = slot.substring(inheritIndex + 9, slot.indexOf("\"", inheritIndex + 9));
-				    //System.out.println("inheritString:" + inheritString);
 				    inherit = Boolean.getBoolean(inheritString);
 				}
 				slotBean.setInherit(inherit);
@@ -457,7 +455,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				    principal = templateController.getPrincipal(cmsUserName);
 
 				String clickToAddHTML = "";
-				//System.out.println("Checking access to:" + id + ":" + component.getSlotName() + ":" + component.getName() + ":" + slotBean.getId() + ":" + slotBean.getName());
 				boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + component.getContentId() + "_" + id);
 				if(hasAccessToAddComponent)
 				    clickToAddHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.slotInstructionHTML");
@@ -474,10 +471,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						if(subComponent != null)
 						{
 							component.getComponents().put(subComponent.getSlotName(), subComponent);
-							//logger.info("Adding subcomponent:" + subComponent.getName() + " to " + component.getName());
-							//logger.info("");
-							//logger.info("Is it inherited: " + subComponent.getIsInherited());
-							//logger.info("");
 							if(subComponent.getIsInherited())
 							{
 								//logger.info("Inherited..." + contentId);
@@ -502,14 +495,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								
 								if(!this.getTemplateController().getDeliveryContext().getShowSimple())
 								{    
-								    //System.out.println("SubComponent: " + subComponent.getName());
-								    //System.out.println("SlotName: " + subComponent.getSlotName());
 								    String allowedComponentNamesAsEncodedString = null;
 
 								    for(int i=0; i < subComponent.getParentComponent().getSlotList().size(); i++)
 								    {
 								        Slot subSlotBean = (Slot)subComponent.getParentComponent().getSlotList().get(i);
-								        //System.out.println("slots2: " + subSlotBean.getId() + ":" + subSlotBean.getName());
+
 								        if(subSlotBean.getId() != null && subSlotBean.getId().equals(subComponent.getSlotName()))
 								        {
 								            allowedComponentNamesAsEncodedString = subSlotBean.getAllowedComponentsArrayAsUrlEncodedString();
@@ -539,7 +530,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					subComponentString += "" + clickToAddHTML;
 				}
 				
-				//System.out.println("component:" + component.getName());
 				if(!component.getIsInherited())
 				{
 				    String allowedComponentNamesAsEncodedString = null;
@@ -547,7 +537,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				    for(int i=0; i < component.getSlotList().size(); i++)
 				    {
 				        Slot subSlotBean = (Slot)component.getSlotList().get(i);
-				        //System.out.println("slots2 BB: " + subSlotBean.getId() + ":" + subSlotBean.getName());
 				        if(subSlotBean.getId() != null && subSlotBean.getId().equals(id))
 				        {
 				            allowedComponentNamesAsEncodedString = subSlotBean.getAllowedComponentsArrayAsUrlEncodedString();
@@ -601,7 +590,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method creates a div for the components properties.
 	 */
 	
-	private String getComponentPropertiesDiv(TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, Integer componentContentId, org.w3c.dom.Document document/*String componentPropertiesString*/) throws Exception
+	private String getComponentPropertiesDiv(TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, Integer componentContentId, org.w3c.dom.Document document) throws Exception
 	{	
 	    if(templateController.getRequestParameter("skipPropertiesDiv") != null && templateController.getRequestParameter("skipPropertiesDiv").equalsIgnoreCase("true"))
 	        return "";
@@ -637,10 +626,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("			");
 		sb.append("			<select class=\"mediumdrop\" name=\"languageId\" onChange=\"javascript:changeLanguage(" + siteNodeId + ", this, " + contentId + ");\">");
 		
-		timer.printElapsedTime("getComponentPropertiesDiv: 1");
-		
 		List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(getDatabase(), siteNodeId);
-		timer.printElapsedTime("getComponentPropertiesDiv: 2");
 
 		Iterator languageIterator = languages.iterator();
 		int index = 0;
@@ -660,7 +646,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				sb.append("					<option value=\"" + languageVO.getLanguageId() + "\">" + languageVO.getName() + "</option>");
 			}
 			index++;
-			timer.printElapsedTime("getComponentPropertiesDiv: 3");
 		}
 		sb.append("			</select>");
 		sb.append("			<!--");
@@ -671,14 +656,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("			<td class=\"igtd\">&nbsp;</td>");
 		sb.append("		</tr>");
 
-		timer.printElapsedTime("getComponentPropertiesDiv: 3.5");
-
-		//logger.info("componentPropertiesString:" + componentPropertiesString);
 		Collection componentProperties = getComponentProperties(componentId, document);
-		timer.printElapsedTime("getComponentPropertiesDiv: 4");
 
 		int propertyIndex = 0;
-		//logger.info("componentProperties:" + componentProperties.size());
 		Iterator componentPropertiesIterator = componentProperties.iterator();
 		while(componentPropertiesIterator.hasNext())
 		{
@@ -691,7 +671,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 			boolean hasAccessToProperty = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditProperty", "" + componentContentId + "_" + componentProperty.getName());
 
-			//logger.info("componentProperty type:" + componentProperty.getType());
 			if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.BINDING))
 			{
 				String assignUrl = "";
@@ -763,10 +742,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					}
 					else if(componentProperty.getEntityClass().equalsIgnoreCase("SiteNode"))
 					{
+						createUrl = null;
+						/*
 						if(componentProperty.getIsMultipleBinding())
 							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 						else
 							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
+						*/
 					}
 				}
 				
@@ -792,7 +774,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 				if(componentProperty.getValue().equalsIgnoreCase("Undefined"))
 				{	
-					if(hasAccessToProperty)
+					if(hasAccessToProperty && createUrl != null)
 						sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + createUrl + "\"><img src=\"" + componentEditorUrl + "/images/createContent.gif\" border=\"0\" alt=\"Create new content to show\"></a></td>");
 					else
 						sb.append("			<td class=\"igtd\" width=\"16\">&nbsp;</td>");
@@ -1134,8 +1116,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			else
 				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"images/endline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
 
-			
-			//System.out.println("SlotName: " + slot.getAllowedComponentsArray());
 		    String allowedComponentNamesAsEncodedString = slot.getAllowedComponentsArrayAsUrlEncodedString();
 
 		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"iglabel\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + slot.getId() + "ClickableDiv', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=" + slot.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + "', '', '" + slot.getId() + "', '" + component.getContentId() + "');</script></td>");
@@ -1439,7 +1419,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
    	
 		try
 		{
-		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
+		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();
 		    //logger.info("masterLanguageId:" + masterLanguageId);
 		    componentPropertiesString = templateController.getContentAttribute(contentId, masterLanguageId, "ComponentProperties", true);
 
@@ -1524,11 +1504,17 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		return componentTasksString;
 	}
 	
+	public Collection getComponentProperties(Integer componentId, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer componentContentId) throws Exception
+	{
+		org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, componentContentId);
+		return getComponentProperties(componentId, componentPropertiesDocument, templateController);
+	}
+	
 	/*
 	 * This method returns a bean representing a list of ComponentProperties that the component has.
 	 */
 	 
-	private List getComponentProperties(Integer componentId, org.w3c.dom.Document document/*String componentPropertiesXML*/) throws Exception
+	private List getComponentProperties(Integer componentId, org.w3c.dom.Document document) throws Exception
 	{
 		//TODO - här kan vi säkert cache:a.
 		
@@ -1643,6 +1629,120 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method returns a bean representing a list of ComponentProperties that the component has.
 	 */
 	 
+	private List getComponentProperties(Integer componentId, org.w3c.dom.Document document, TemplateController templateController) throws Exception
+	{
+		//TODO - här kan vi säkert cache:a.
+		
+		//logger.info("componentPropertiesXML:" + componentPropertiesXML);
+		List componentProperties = new ArrayList();
+		Timer timer = new Timer();
+		timer.setActive(false);
+
+		try
+		{
+			if(document != null)
+			{
+			//if(componentPropertiesXML != null && componentPropertiesXML.length() > 0)
+			//{
+				//org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentPropertiesXML.getBytes("UTF-8"));
+
+				timer.printElapsedTime("Read document");
+
+				String propertyXPath = "//property";
+				//logger.info("propertyXPath:" + propertyXPath);
+				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
+				timer.printElapsedTime("Set property xpath");
+				//logger.info("*********************************************************anl:" + anl.getLength());
+				for(int i=0; i < anl.getLength(); i++)
+				{
+					org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
+					
+					String name							 = binding.getAttribute("name");
+					String description					 = binding.getAttribute("description");
+					String type							 = binding.getAttribute("type");
+					String allowedContentTypeNamesString = binding.getAttribute("allowedContentTypeDefinitionNames");
+					String visualizingAction 			 = binding.getAttribute("visualizingAction");
+					String createAction 				 = binding.getAttribute("createAction");
+					//logger.info("name:" + name);
+					//logger.info("type:" + type);
+
+					ComponentProperty property = new ComponentProperty();
+					property.setComponentId(componentId);
+					property.setName(name);
+					property.setDescription(description);
+					property.setType(type);
+					property.setVisualizingAction(visualizingAction);
+					property.setCreateAction(createAction);
+					if(allowedContentTypeNamesString != null && allowedContentTypeNamesString.length() > 0)
+					{
+					    String[] allowedContentTypeNamesArray = allowedContentTypeNamesString.split(",");
+					    property.setAllowedContentTypeNamesArray(allowedContentTypeNamesArray);
+					}
+					
+					if(type.equalsIgnoreCase(ComponentProperty.BINDING))
+					{
+						String entity 	= binding.getAttribute("entity");
+						boolean isMultipleBinding = new Boolean(binding.getAttribute("multiple")).booleanValue();
+						
+						property.setEntityClass(entity);
+						String value = getComponentPropertyValue(componentId, name, templateController);
+						timer.printElapsedTime("Set property1");
+
+						property.setValue(value);
+						property.setIsMultipleBinding(isMultipleBinding);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.TEXTFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name, templateController);
+						timer.printElapsedTime("Set property2");
+						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	
+					{		
+						String value = getComponentPropertyValue(componentId, name, templateController);
+						timer.printElapsedTime("Set property2");
+						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name, templateController);
+						timer.printElapsedTime("Set property2");
+						
+						NodeList optionList = binding.getElementsByTagName("option");
+						for(int j=0; j < optionList.getLength(); j++)
+						{
+							org.w3c.dom.Element option = (org.w3c.dom.Element)optionList.item(j);
+							String optionName	= option.getAttribute("name");
+							String optionValue	= option.getAttribute("value");
+							ComponentPropertyOption cpo = new ComponentPropertyOption();
+							cpo.setName(optionName);
+							cpo.setValue(optionValue);
+							property.getOptions().add(cpo);
+						}
+						
+						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					
+					componentProperties.add(property);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.warn("The component with id " + componentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
+		}
+							
+		return componentProperties;
+	}
+
+	/*
+	 * This method returns a bean representing a list of ComponentProperties that the component has.
+	 */
+	 
 	private List getComponentTasks(Integer componentId, org.w3c.dom.Document document) throws Exception
 	{
 		List componentTasks = new ArrayList();
@@ -1708,26 +1808,14 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		        
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), languageId);
 		
-		timer.printElapsedTime("AAA1");
-		
 		Integer contentId  = new Integer(-1);
 		if(this.getRequest().getParameter("contentId") != null && this.getRequest().getParameter("contentId").length() > 0)
 			contentId  = new Integer(this.getRequest().getParameter("contentId"));
 
-		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		
-		/*
-		String componentXML = getPageComponentsString(this.getTemplateController(), siteNodeId, languageId, contentId);			
-		////logger.info("componentXML:" + componentXML);
-
-		timer.printElapsedTime("AAA2");
-
-		org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
-		*/
 		org.w3c.dom.Document document = getPageComponentsDocument(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);
 		
-		timer.printElapsedTime("AAA3");
-
 		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
 		//logger.info("componentXPath:" + componentXPath);
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
@@ -1737,17 +1825,60 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			String id 			= property.getAttribute("type");
 			String path 		= property.getAttribute("path");
-			//logger.info("path:" + path);
-			//logger.info("path:" + "path_" + locale.getLanguage() + ":" + property.hasAttribute("path_" + locale.getLanguage()));
+
 			if(property.hasAttribute("path_" + locale.getLanguage()))
 				path = property.getAttribute("path_" + locale.getLanguage());
-			//logger.info("path:" + path);
 				
 			value 				= path;
 		}
-		timer.printElapsedTime("AAA4");
 
+		return value;
+	}
+
+	/**
+	 * This method returns a value for a property if it's set. The value is collected in the
+	 * properties for the page.
+	 */
+	
+	private String getComponentPropertyValue(Integer componentId, String name, TemplateController templateController) throws Exception
+	{
+		String value = "Undefined";
 		
+		Timer timer = new Timer();
+		timer.setActive(false);
+				
+		Integer languageId = null;
+		if(this.getRequest() != null && this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
+		    languageId = new Integer(this.getRequest().getParameter("languageId"));
+		else
+		    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), templateController.getSiteNodeId()).getId();
+		        
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
+		
+		Integer contentId  = new Integer(-1);
+		if(this.getRequest() != null && this.getRequest().getParameter("contentId") != null && this.getRequest().getParameter("contentId").length() > 0)
+			contentId  = new Integer(this.getRequest().getParameter("contentId"));
+
+		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), languageId, contentId);
+		
+		org.w3c.dom.Document document = getPageComponentsDocument(templateController.getDatabase(), templateController, templateController.getSiteNodeId(), languageId, contentId);
+		
+		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
+		//logger.info("componentXPath:" + componentXPath);
+		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+		for(int i=0; i < anl.getLength(); i++)
+		{
+			org.w3c.dom.Element property = (org.w3c.dom.Element)anl.item(i);
+			
+			String id 			= property.getAttribute("type");
+			String path 		= property.getAttribute("path");
+
+			if(property.hasAttribute("path_" + locale.getLanguage()))
+				path = property.getAttribute("path_" + locale.getLanguage());
+				
+			value 				= path;
+		}
+
 		return value;
 	}
 

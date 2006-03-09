@@ -154,8 +154,6 @@ public abstract class PageInvoker
 		//timer.printElapsedTime("Getting server node property");
 		
 		logger.info("isPageCacheOn:" + isPageCacheOn);
-		//System.out.println("isPageCacheOn:" + isPageCacheOn);
-		//System.out.println("isPageCacheOn2:" + isPageCacheOn2);
 		String refresh = this.getRequest().getParameter("refresh");
 		
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))

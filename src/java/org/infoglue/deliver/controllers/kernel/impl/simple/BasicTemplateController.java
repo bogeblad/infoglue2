@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -88,10 +89,12 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.SiteNodeComparator;
+import org.infoglue.deliver.applications.databeans.ComponentProperty;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
@@ -4026,7 +4029,7 @@ public class BasicTemplateController implements TemplateController
 	{
 	    return getChildPages(false);
 	}
-	
+
 	/**
 	 * The method returns a list of WebPage-objects that is the children of the current 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 
@@ -4034,30 +4037,21 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(boolean escapeHTML)
 	{
+		return getChildPages(false, false);
+	}
+	
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the current 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(boolean escapeHTML, boolean hideUnauthorizedPages)
+	{
 		List childPages = new ArrayList();
 		try
 		{
 			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), this.siteNodeId);
-			Iterator i = childNodeVOList.iterator();
-			while(i.hasNext())
-			{
-				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				try
-				{
-					WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-					webPage.setLanguageId(this.languageId);
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
-					childPages.add(webPage);
-				}
-				catch(Exception e)
-				{
-				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
-				}
-			}
+			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
 		}
 		catch(Exception e)
 		{
@@ -4077,7 +4071,7 @@ public class BasicTemplateController implements TemplateController
 	{
 	    return getChildPages(structureBindingName, false);
 	}
-	
+
 	/**
 	 * The method returns a list of WebPage-objects that is the children of the given 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 
@@ -4085,30 +4079,21 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(String structureBindingName, boolean escapeHTML)
 	{
+	    return getChildPages(structureBindingName, escapeHTML, false);
+	}
+
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(String structureBindingName, boolean escapeHTML, boolean hideUnauthorizedPages)
+	{
 		List childPages = new ArrayList();
 		try
 		{
 			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), this.getSiteNodeId(structureBindingName));
-			Iterator i = childNodeVOList.iterator();
-			while(i.hasNext())
-			{
-				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				try
-				{
-				    WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-					webPage.setLanguageId(this.languageId);
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
-					childPages.add(webPage);
-				}
-				catch(Exception e)
-				{
-				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
-				}
-			}
+			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
 		}
 		catch(Exception e)
 		{
@@ -4119,30 +4104,24 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
-	 * The method returns a list of WebPage-objects that is the children of the given 
-	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 * This method takes a list of sitenodes and converts it to a page list instead.
+	 * 
+	 * @param childNodeVOList
+	 * @param escapeHTML
+	 * @param hideUnauthorizedPages
+	 * @return
+	 * @throws Exception
 	 */
-	
-	public List getChildPages(Integer siteNodeId)
-	{
-	    return getChildPages(siteNodeId, false);
-	}
-	
-	/**
-	 * The method returns a list of WebPage-objects that is the children of the given 
-	 * siteNode. The method is great for navigation-purposes on a structured site. 
-	 */
-	
-	public List getChildPages(Integer siteNodeId, boolean escapeHTML)
+	private List getPages(List childNodeVOList, boolean escapeHTML, boolean hideUnauthorizedPages) throws Exception
 	{
 		List childPages = new ArrayList();
-		try
+
+		Iterator i = childNodeVOList.iterator();
+		while(i.hasNext())
 		{
-			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
-			Iterator i = childNodeVOList.iterator();
-			while(i.hasNext())
+			SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
+			if(!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId()))
 			{
-				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
 				try
 				{
 					WebPage webPage = new WebPage();						
@@ -4159,6 +4138,43 @@ public class BasicTemplateController implements TemplateController
 				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
 				}
 			}
+		}
+		
+		return childPages;
+	}
+	
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId)
+	{
+	    return getChildPages(siteNodeId, false, false);
+	}
+
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, boolean escapeHTML)
+	{
+	    return getChildPages(siteNodeId, escapeHTML, false);
+	}
+
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages)
+	{
+		List childPages = new ArrayList();
+		try
+		{
+			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
+			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
 		}
 		catch(Exception e)
 		{
@@ -4175,41 +4191,32 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(Integer siteNodeId, String sortAttribute, String sortOrder)
 	{
-	    return getChildPages(siteNodeId, sortAttribute, sortOrder, false);
+	    return getChildPages(siteNodeId, sortAttribute, sortOrder, false, false);
 	}
-	
+
 	/**
 	 * The method returns a list of WebPage-objects that is the children of the given 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 
 	 */
 	
-	public List getChildPages(Integer siteNodeId, String sortAttribute, String sortOrder, boolean escapeHTML)
+	public List getChildPages(Integer siteNodeId, String sortAttribute, String sortOrder, boolean hideUnauthorizedPages)
+	{
+	    return getChildPages(siteNodeId, sortAttribute, sortOrder, false, hideUnauthorizedPages);
+	}
+
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, String sortAttribute, String sortOrder, boolean escapeHTML, boolean hideUnauthorizedPages)
 	{
 		List childPages = new ArrayList();
 		try
 		{
 			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
 			Collections.sort(childNodeVOList, new SiteNodeComparator(sortAttribute, sortOrder, this));
-			Iterator i = childNodeVOList.iterator();
-			while(i.hasNext())
-			{
-				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				try
-				{
-					WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-					webPage.setLanguageId(this.languageId);
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
-					childPages.add(webPage);
-				}
-				catch(Exception e)
-				{
-				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
-				}
-			}
+			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
 		}
 		catch(Exception e)
 		{
@@ -4224,58 +4231,50 @@ public class BasicTemplateController implements TemplateController
 	 * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
 	 * The method is great for navigation-purposes on any site. 
 	 */
-
-	private HashMap cachedBindings = new HashMap();
 	
 	public List getBoundPages(String structureBindningName)
 	{
-		//Checking for a read binding in this request...
-		if(cachedBindings.containsKey(structureBindningName))
-			return (List)cachedBindings.get(structureBindningName);
-			
-		List boundPages = new ArrayList();
-		try
-		{
-			List siteNodeVOList = this.nodeDeliveryController.getBoundSiteNodes(getDatabase(), this.siteNodeId, structureBindningName);	
-			
-			Iterator i = siteNodeVOList.iterator();
-			while(i.hasNext())
-			{
-				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				try
-				{
-					WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-					webPage.setLanguageId(this.languageId);
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, false));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
-					boundPages.add(webPage); 
-				}
-				catch(Exception e)
-				{
-				    logger.info("An error occurred when looking up one of the bound pages:" + e.getMessage(), e);
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			logger.error("An error occurred trying to get the bound pages:" + e.getMessage(), e);
-		}
-		
-		//Caching bindings
-		cachedBindings.put(structureBindningName, boundPages);
-		
-		return boundPages;
+		return getBoundPages(structureBindningName, false, false);
+	}
+
+	/**
+	 * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
+	 * The method is great for navigation-purposes on any site. 
+	 */
+
+	public List getBoundPages(String structureBindningName, boolean escapeHTML)
+	{
+		return getBoundPages(structureBindningName, escapeHTML, false);
+	}
+
+	/**
+	 * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
+	 * The method is great for navigation-purposes on any site. 
+	 */
+
+	public List getBoundPages(String structureBindningName, boolean escapeHTML, boolean hideUnauthorizedPages)
+	{
+		return getBoundPages(this.siteNodeId, structureBindningName, escapeHTML, false);
 	}
 	
+
+	public List getBoundPages(Integer siteNodeId, String structureBindningName)
+	{
+		return getBoundPages(siteNodeId, structureBindningName, false, false);
+	}
+
+	public List getBoundPages(Integer siteNodeId, String structureBindningName, boolean escapeHTML)
+	{
+		return getBoundPages(siteNodeId, structureBindningName, escapeHTML, false);
+	}
+
+	private HashMap cachedBindings = new HashMap();
 
 	/**
 	 * This methods get a list of bound pages with the structureBindningName sent in which resides on the siteNodeId sent in.
 	 */
 	
-	public List getBoundPages(Integer siteNodeId, String structureBindningName)
+	public List getBoundPages(Integer siteNodeId, String structureBindningName, boolean escapeHTML, boolean hideUnauthorizedPages)
 	{
 		//Checking for a read binding in this request...
 		if(cachedBindings.containsKey(siteNodeId + "_" + structureBindningName))
@@ -4285,27 +4284,7 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			List siteNodeVOList = this.nodeDeliveryController.getBoundSiteNodes(getDatabase(), siteNodeId, structureBindningName);	
-			
-			Iterator i = siteNodeVOList.iterator();
-			while(i.hasNext())
-			{
-				SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
-				try
-				{
-					WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
-					webPage.setLanguageId(this.languageId);
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, false));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
-					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
-					boundPages.add(webPage); 
-				}
-				catch(Exception e)
-				{
-				    logger.info("An error occurred when looking up one of the childPages:" + e.getMessage(), e);
-				}
-			}
+			boundPages = getPages(siteNodeVOList, escapeHTML, hideUnauthorizedPages);
 		}
 		catch(Exception e)
 		{
@@ -5605,6 +5584,144 @@ public class BasicTemplateController implements TemplateController
 			return decoratedAttributeValue;
 	    }
 	} 
+
+	
+	/**
+	 * This method returns the neccessairy html to assign by klicking on a link.
+	 * @param componentContentId
+	 * @param propertyName
+	 * @param html
+	 * @param showInPublishedMode
+	 * @return
+	 */
+	public String getAssignPropertyBindingTag(String propertyName, boolean createNew, String html, boolean showInPublishedMode)
+	{
+		String result = "";
+		
+		try
+		{
+			String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+	
+			DecoratedComponentBasedHTMLPageInvoker dec = new DecoratedComponentBasedHTMLPageInvoker();
+			Collection properties = dec.getComponentProperties(this.getComponentLogic().getInfoGlueComponent().getId(), this, siteNodeId, languageId, this.getComponentLogic().getInfoGlueComponent().getContentId());
+	
+			ComponentProperty property = null;
+			Iterator propertiesIterator = properties.iterator();
+			while(propertiesIterator.hasNext())
+			{
+				ComponentProperty propertyCandidate = (ComponentProperty)propertiesIterator.next();
+				if(propertyCandidate.getName().equals(propertyName))	
+					property = propertyCandidate;
+			}
+			
+			String contentId = "-1";
+			
+			String createUrl = "";
+			String assignUrl = "";
+			
+			Integer componentId = this.getComponentLogic().getInfoGlueComponent().getId();
+			Integer repositoryId = this.getSiteNode().getRepositoryId();
+			
+			if(property.getVisualizingAction() != null && !property.getVisualizingAction().equals(""))
+			{
+				assignUrl = componentEditorUrl + property.getVisualizingAction() + "?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple();
+			}
+			else
+			{	
+				if(property.getEntityClass().equalsIgnoreCase("Content"))
+				{
+				    String allowedContentTypeIdParameters = "";
+
+				    if(property.getAllowedContentTypeNamesArray() != null && property.getAllowedContentTypeNamesArray().length > 0)
+				    {
+				        allowedContentTypeIdParameters = "&" + property.getAllowedContentTypeIdAsUrlEncodedString(getDatabase());
+				        logger.info("allowedContentTypeIdParameters:" + allowedContentTypeIdParameters);
+				    }
+				    
+					if(property.getIsMultipleBinding())
+						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple();
+					else
+						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple();
+				}
+				else if(property.getEntityClass().equalsIgnoreCase("SiteNode"))
+				{
+					if(property.getIsMultipleBinding())
+						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple();
+					else
+						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple();
+				}
+				else if(property.getEntityClass().equalsIgnoreCase("Category"))
+				{
+					if(property.getIsMultipleBinding())
+						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showCategoryTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple();
+					else
+						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showCategoryTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple();
+				}
+			}
+
+			
+			if(property.getCreateAction() != null && !property.getCreateAction().equals(""))
+			{
+				createUrl = componentEditorUrl + property.getCreateAction() + "?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple();
+			}
+			else
+			{	
+				if(property.getVisualizingAction() != null && !property.getVisualizingAction().equals(""))
+				{
+					createUrl = assignUrl;
+				}
+				else if(property.getEntityClass().equalsIgnoreCase("Content"))
+				{
+				    String allowedContentTypeIdParameters = "";
+	
+				    if(property.getAllowedContentTypeNamesArray() != null && property.getAllowedContentTypeNamesArray().length > 0)
+				    {
+				        allowedContentTypeIdParameters = "&" + property.getAllowedContentTypeIdAsUrlEncodedString(getDatabase());
+				        logger.info("allowedContentTypeIdParameters:" + allowedContentTypeIdParameters);
+				    }
+	
+				    String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + property.getName() + "&path=#path&showSimple=" + getDeliveryContext().getShowSimple() + "", "UTF-8");
+					
+					if(property.getIsMultipleBinding())
+						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&showSimple=" + getDeliveryContext().getShowSimple();
+					else
+						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&showSimple=" + getDeliveryContext().getShowSimple();
+				}
+				else if(property.getEntityClass().equalsIgnoreCase("SiteNode"))
+				{
+					if(property.getIsMultipleBinding())
+						createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple();
+					else
+						createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple();
+				}
+			}
+	
+		    if(showInPublishedMode == false && this.getOperatingMode().intValue() == 3)
+		    	result = "";
+		    else
+		    {
+			    String editOnSiteUrl = CmsPropertyHandler.getProperty("editOnSiteUrl");
+
+			    String url = assignUrl;
+			    if(!createNew)
+			    	result = "<a href=\"#\" onClick=\"window.open('" + assignUrl + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=' + (document.body.clientHeight / 4) + ',toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			    else
+			    	result = "<a href=\"" + createUrl + "\">" + html + "</a>";
+			    
+			    //String decoratedHTML = "<a href=\"#\" onClick=\"window.open('" + url + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=' + (document.body.clientHeight / 4) + ',toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+				//String decoratedHTML = "<a href=\"" + url + "\">" + html + "</a>";
+				//result = decoratedHTML;
+		    }
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			result = "";
+		}
+		
+		//System.out.println("result:" + result);
+		return result;
+	}
 
 
 	public DeliveryContext getDeliveryContext() 

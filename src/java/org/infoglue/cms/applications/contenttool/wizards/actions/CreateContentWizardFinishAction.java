@@ -52,16 +52,12 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	{
 		try
 		{
-			System.out.println("0.1");
-	
 			CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
 			
 			if(createContentWizardInfoBean.getParentContentId() == null)
 			{
 				return "stateLocation"; 
 			} 
-	
-			System.out.println("0.2");
 	
 			createContentWizardInfoBean.getContent().setCreator(this.getInfoGluePrincipal().getName());
 			this.ceb = createContentWizardInfoBean.getContent().getValueObject().validate();
@@ -70,13 +66,10 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 			{
 				return "inputContent";
 			}
-			
-			System.out.println("0.3");
 	
 			if(createContentWizardInfoBean.getContentVersions().size() == 0)
 			{
 		    	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
-		    	System.out.println("wysiwygEditor:" + wysiwygEditor);
 		    	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
 		    	    return "inputContentVersions";
 		    	else
@@ -85,15 +78,12 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 			}
 			//ceb.throwIfNotEmpty();
 	    			
-	    	System.out.println("About to create everything....");	
 	    	ContentVO contentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), createContentWizardInfoBean);
 			this.contentId = contentVO.getContentId();
 			
 			String returnAddress = createContentWizardInfoBean.getReturnAddress();
-			System.out.println("returnAddress:" + returnAddress);
 			returnAddress = returnAddress.replaceAll("#entityId", this.contentId.toString());
 			returnAddress = returnAddress.replaceAll("#path", contentVO.getName());
-			System.out.println("returnAddress:" + returnAddress);
 			
 			this.invalidateCreateContentWizardInfoBean();
 			
