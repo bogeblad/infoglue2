@@ -1291,7 +1291,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public List getSortedChildContents(InfoGluePrincipal infoGluePrincipal, Integer languageId, Integer contentId, Integer siteNodeId, Database db, boolean searchRecursive, Integer maximumNumberOfLevels, String sortAttribute, String sortOrder, boolean useLanguageFallback, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		
-		String sortedChildContentsKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + searchRecursive + "_" + maximumNumberOfLevels + "_" + sortAttribute + "_" + sortOrder + "_" + useLanguageFallback + "_" + includeFolders;
+		String sortedChildContentsKey = "" + infoGluePrincipal.getName() + "_" + languageId + "_" + contentId + "_" + siteNodeId + "_" + searchRecursive + "_" + maximumNumberOfLevels + "_" + sortAttribute + "_" + sortOrder + "_" + useLanguageFallback + "_" + includeFolders;
 		getLogger().info("sortedChildContentsKey:" + sortedChildContentsKey);
 		String cacheName = "sortedChildContentsCache";
 		List cachedSortedContentVOList = (List)CacheController.getCachedObject(cacheName, sortedChildContentsKey);
@@ -1334,7 +1334,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		return contentTypeDefinitionVO;
 	}
-
 
 
 	/**
@@ -1397,11 +1396,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db, includeFolders, deliveryContext);
     
     		if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
-    			contents.add(content);
+    		{
+   				contents.add(content);
+    		}
         }
 	}
 
-	/**
+	
+	/** 
 	 * This method recurses into the dept of the content-children and fills the list of contents.
 	 */
 	
