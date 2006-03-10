@@ -366,7 +366,7 @@
 						#set($wysiwygHeight = $height - 20)
 					#end
 			
-					<textarea $readonly rows="$rows" cols="$cols" style="visibility: visible; width:${width}px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="$attribute.name" name="$attribute.name" $readonly>#*$this.getAttributeValue($attribute.name)*#</textarea> 
+					<textarea $readonly rows="$rows" cols="$cols" style="visibility: visible; width:${width}px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="$attribute.name" name="$attribute.name" $readonly>#*$!this.getAttributeValue($attribute.name)*#</textarea> 
 					
 					#if($enableWYSIWYG == "true")
 						<!-- Here comes the WYSIWYG-editor layer -->
@@ -558,7 +558,7 @@
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
 					<select $readonly size="1" id="$attribute.name" name="$attribute.name" class="$class">
 		    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-		    				<option value="$value.id" #checkSelected("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
+		    				<option value="$value.id" #checkSelected("$value.id" "$!this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
 		    			#end
 		    		</select>
 
@@ -566,14 +566,14 @@
 				<!-- Handles the input type checkbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
 	    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
+						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$!this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 
 				#elseif($attribute.inputType == "radiobutton")
 				<!-- Handles the input type radiobutton -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
 	    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
+						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$!this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 
 				#end
@@ -757,8 +757,7 @@
 	<tr>
 		<input type="hidden" id="languageId" name="languageId" value="$languageId"/>
 		<td colspan="3">
-			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
+			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0"></a>
 		</td>
 	</tr>
 </table>

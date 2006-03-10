@@ -146,7 +146,7 @@
 				oFCKeditor.Width = document.getElementById(plainTextAreaName).style.width;
 				oFCKeditor.Height = document.getElementById(plainTextAreaName).style.height;
 				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
-				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
+				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=-1&languageId=$languageId";
 				oFCKeditor.Config["AutoDetectLanguage"] = false ;
 				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
 				oFCKeditor.ReplaceTextarea();
@@ -239,8 +239,7 @@
 	<tr>
 		<td colspan="3">
 		    #if($readonly == "")
-			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
+			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0"></a>
 			#end
 			<a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a></td>
 		</td>
@@ -482,7 +481,7 @@
 						    </tr>
 						    </table>
 						</div>
-						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
+						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$!this.getAttributeValue($attribute.name)">
 						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
@@ -529,7 +528,7 @@
 						    </tr>
 						    </table>
 						</div>
-						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
+						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$!this.getAttributeValue($attribute.name)">
 						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
@@ -571,7 +570,7 @@
 						    </tr>
 						    </table>
 						</div>	
-						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
+						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$!this.getAttributeValue($attribute.name)">
 						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
@@ -644,7 +643,7 @@
 						    </tr>
 						    </table>
 						</div>	
-						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
+						<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$!this.getAttributeValue($attribute.name)">
 						
 						<script type="text/javascript">
 							document.getElementById('${attribute.name}').style.display = "none";
@@ -690,7 +689,7 @@
 					#printError("ContentVersion.$attribute.name")
 					<select $readonly size="1" id="$attribute.name" name="$attribute.name" class="$class" $onchange>
 		    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-		    				<option value="$value.id" #checkSelected("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
+		    				<option value="$value.id" #checkSelected("$value.id" "$!this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
 		    			#end
 		    		</select>
 
@@ -699,7 +698,7 @@
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
 	    			#printError("ContentVersion.$attribute.name")
 					#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
+						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$!this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 
 				#elseif($attribute.inputType == "radiobutton")
@@ -707,7 +706,7 @@
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
 	    			#printError("ContentVersion.$attribute.name")
 					#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
+						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$!this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 
 				#end
@@ -1085,8 +1084,7 @@
 			<input type="hidden" id="languageId" name="languageId" value="$languageId"/>
 			
 		    #if($readonly == "")
-			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
+			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0"></a>
 			#end
 			<a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a></td>
 		</td>

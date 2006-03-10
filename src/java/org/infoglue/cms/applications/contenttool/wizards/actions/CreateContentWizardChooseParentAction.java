@@ -45,6 +45,12 @@ public class CreateContentWizardChooseParentAction extends CreateContentWizardAb
 	private Integer contentId;
 	private String tree;
 	private String hideLeafs;
+	private Integer siteNodeId;
+	private Integer languageId;
+	private String componentId;
+	private String propertyName;
+	private String refreshAddress;
+	private String showSimple;
 	
 	private Integer parentContentId;
 	private Integer repositoryId;
@@ -52,6 +58,8 @@ public class CreateContentWizardChooseParentAction extends CreateContentWizardAb
 	
 	private String returnAddress;
 	private String[] allowedContentTypeIds	 = null;
+	
+	private List repositories;
 	
 	public CreateContentWizardChooseParentAction()
 	{
@@ -65,13 +73,13 @@ public class CreateContentWizardChooseParentAction extends CreateContentWizardAb
 
 	public String doExecute() throws Exception
 	{
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+
 		return "success";
 	}
 	
 	public Integer getTopRepositoryId() throws ConstraintException, SystemException, Bug
-	{
-		List repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
-		
+	{		
 		Integer topRepositoryId = null;
 
 		if (repositoryId != null)
@@ -186,5 +194,75 @@ public class CreateContentWizardChooseParentAction extends CreateContentWizardAb
     {
         this.allowedContentTypeIds = allowedContentTypeIds;
     }
+
+	public List getRepositories() 
+	{
+		return repositories;
+	}
+
+	public String getComponentId() 
+	{
+		return componentId;
+	}
+
+	public void setComponentId(String componentId) 
+	{
+		this.componentId = componentId;
+	}
+
+	public Integer getLanguageId() 
+	{
+		return languageId;
+	}
+
+	public void setLanguageId(Integer languageId) 
+	{
+		this.languageId = languageId;
+	}
+
+	public String getPropertyName() 
+	{
+		return propertyName;
+	}
+
+	public void setPropertyName(String propertyName) 
+	{
+		this.propertyName = propertyName;
+	}
+
+	public String getRefreshAddress() 
+	{
+		return refreshAddress;
+	}
+
+	public String getEncodedRefreshAddress() throws Exception
+	{
+		return URLEncoder.encode(refreshAddress, "UTF-8");
+	}
+
+	public void setRefreshAddress(String refreshAddress) 
+	{
+		this.refreshAddress = refreshAddress;
+	}
+
+	public String getShowSimple() 
+	{
+		return showSimple;
+	}
+
+	public void setShowSimple(String showSimple) 
+	{
+		this.showSimple = showSimple;
+	}
+
+	public Integer getSiteNodeId() 
+	{
+		return siteNodeId;
+	}
+
+	public void setSiteNodeId(Integer siteNodeId) 
+	{
+		this.siteNodeId = siteNodeId;
+	}
 
 }
