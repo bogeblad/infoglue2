@@ -114,7 +114,10 @@ public class VelocityTemplateProcessor
 		    if(CmsPropertyHandler.getProperty("operatingMode").equalsIgnoreCase("0") && (CmsPropertyHandler.getProperty("disableTemplateDebug") == null || !CmsPropertyHandler.getProperty("disableTemplateDebug").equalsIgnoreCase("true")))
 		        pw.println("Error:" + e.getMessage());
 		    else
+		    {
+			    logger.warn("Error:" + e.getMessage(), e);
 		        throw e;
+		    }
 		}
 	}
 
