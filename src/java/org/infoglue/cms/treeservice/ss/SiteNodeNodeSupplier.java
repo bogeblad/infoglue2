@@ -109,7 +109,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 		}
 		
 		//Sort the tree nodes if setup to do so
-		String sortProperty = CmsPropertyHandler.getProperty("structure.tree.sort");
+		String sortProperty = CmsPropertyHandler.getStructureTreeSort();
 		if(sortProperty != null)
 			Collections.sort(children, new ReflectionComparator(sortProperty));
 		

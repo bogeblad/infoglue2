@@ -54,17 +54,17 @@ public class BasicURLComposer extends URLComposer
 
     public String composeDigitalAssetUrl(String dnsName, String filename, DeliveryContext deliveryContext)
     {
-        String disableEmptyUrls = CmsPropertyHandler.getProperty("disableEmptyUrls");
+        String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
         if((filename == null || filename.equals("")) && (disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("no")))
             return "";
             
         String assetUrl = "";
         
-        String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
+        String enableNiceURI = CmsPropertyHandler.getEnableNiceURI();
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
 
-        String useDNSNameInUrls = CmsPropertyHandler.getProperty("useDNSNameInURI");
+        String useDNSNameInUrls = CmsPropertyHandler.getUseDNSNameInURI();
         if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
             useDNSNameInUrls = "false";
 
@@ -82,7 +82,7 @@ public class BasicURLComposer extends URLComposer
 	        }
 	        
 	        String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
-	        String digitalAssetPath = CmsPropertyHandler.getProperty("digitalAssetBaseUrl");
+	        String digitalAssetPath = CmsPropertyHandler.getDigitalAssetBaseUrl();
 	        if (!digitalAssetPath.startsWith("/"))
 	        	digitalAssetPath = "/" + digitalAssetPath;
 	        
@@ -102,7 +102,7 @@ public class BasicURLComposer extends URLComposer
         }
         else
         {
-            assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + filename;
+            assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + filename;
         }
         
         return assetUrl;
@@ -111,16 +111,16 @@ public class BasicURLComposer extends URLComposer
     public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
     {
         /*
-        String disableEmptyUrls = CmsPropertyHandler.getProperty("disableEmptyUrls");
+        String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
         if(filename == null || filename.equals("") && disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("no"))
             return "";
         */
         
-    	String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
+    	String enableNiceURI = CmsPropertyHandler.getEnableNiceURI();
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
         
-        String useDNSNameInUrls = CmsPropertyHandler.getProperty("useDNSNameInURI");
+        String useDNSNameInUrls = CmsPropertyHandler.getUseDNSNameInURI();
         if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
             useDNSNameInUrls = "false";
 
@@ -135,7 +135,7 @@ public class BasicURLComposer extends URLComposer
     		    String dnsName = siteNode.getRepository().getDnsName();
     		    logger.info("dnsName:" + dnsName + " for siteNode " + siteNode.getName());
     		    
-    		    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+    		    String operatingMode = CmsPropertyHandler.getOperatingMode();
     		    String keyword = "";
     		    if(operatingMode.equalsIgnoreCase("0"))
     		        keyword = "working=";
@@ -233,19 +233,19 @@ public class BasicURLComposer extends URLComposer
 	            String arguments = "siteNodeId=" + siteNodeId + getRequestArgumentDelimiter() + "languageId=" + languageId + getRequestArgumentDelimiter() + "contentId=" + contentId;
 
 	            SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db, true);
-	    		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+	    		String dnsName = CmsPropertyHandler.getWebServerAddress();
 	    		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 	    			dnsName = siteNode.getRepository().getDnsName();
 
-	            String url = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
+	            String url = dnsName + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments;
 
 				if(deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
 				{
-		            String componentRendererUrl = CmsPropertyHandler.getProperty("componentRendererUrl");
+		            String componentRendererUrl = CmsPropertyHandler.getComponentRendererUrl();
 					if(componentRendererUrl.endsWith("/"))
 					    componentRendererUrl += "/";
 					
-					url = componentRendererUrl + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
+					url = componentRendererUrl + CmsPropertyHandler.getComponentRendererAction() + "?" + arguments;
 				}
 				
 	            //getLogger().info("url:" + url);
@@ -279,11 +279,11 @@ public class BasicURLComposer extends URLComposer
 	            
 				if(deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
 				{
-				    sb.append(servletContext + "/" + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments);
+				    sb.append(servletContext + "/" + CmsPropertyHandler.getComponentRendererAction() + "?" + arguments);
 				}
 				else
 				{
-				    sb.append(servletContext + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments);
+				    sb.append(servletContext + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments);
 		        }
 	            //getLogger().info("url:" + url);
 
@@ -296,7 +296,7 @@ public class BasicURLComposer extends URLComposer
     {
         String pageUrl = composePageUrl(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext);
 
-        String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
+        String enableNiceURI = CmsPropertyHandler.getEnableNiceURI();
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
         
@@ -317,7 +317,7 @@ public class BasicURLComposer extends URLComposer
 
     private String getRequestArgumentDelimiter()
     {
-        String requestArgumentDelimiter = CmsPropertyHandler.getProperty("requestArgumentDelimiter");
+        String requestArgumentDelimiter = CmsPropertyHandler.getRequestArgumentDelimiter();
         if(requestArgumentDelimiter == null || requestArgumentDelimiter.equalsIgnoreCase("") || (!requestArgumentDelimiter.equalsIgnoreCase("&") && !requestArgumentDelimiter.equalsIgnoreCase("&amp;")))
             requestArgumentDelimiter = "&";
 
@@ -326,25 +326,25 @@ public class BasicURLComposer extends URLComposer
 
     public String composePageBaseUrl(String dnsName)
     {
-        String useDNSNameInUrls = CmsPropertyHandler.getProperty("useDNSNameInURI");
+        String useDNSNameInUrls = CmsPropertyHandler.getUseDNSNameInURI();
         if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
             useDNSNameInUrls = "false";
 
         if(!useDNSNameInUrls.equalsIgnoreCase("false"))
         {
-            return dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction");
+            return dnsName + "/" + CmsPropertyHandler.getApplicationBaseAction();
         }
         
         if(ActionContext.getRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
 		{
-            //String componentRendererUrl = CmsPropertyHandler.getProperty("componentRendererUrl");
+            //String componentRendererUrl = CmsPropertyHandler.getComponentRendererUrl();
 		    //if(componentRendererUrl.endsWith("/"))
 		    //   componentRendererUrl += "/";
 			
-			return "/" + CmsPropertyHandler.getProperty("componentRendererUrl");
+			return "/" + CmsPropertyHandler.getComponentRendererUrl();
 		}
         
-        return "/" + CmsPropertyHandler.getProperty("applicationBaseAction");
+        return "/" + CmsPropertyHandler.getApplicationBaseAction();
     }
 
 

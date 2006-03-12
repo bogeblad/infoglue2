@@ -72,7 +72,7 @@ public class UpdatePortletRegistryAction extends InfoGlueAbstractAction
             {
             	logger.info("Creating new " + PortletEntityRegistryServiceDBImpl.PORTLET_REGISTRY_CONTENT_NAME);
 
-                String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+                String filePath = CmsPropertyHandler.getDigitalAssetPath();
                 DigitalAssetVO newAsset = new DigitalAssetVO();
                 newAsset.setAssetContentType("text/xml");
                 newAsset.setAssetKey(PortletEntityRegistryServiceDBImpl.PORTLET_REGISTRY_CONTENT_NAME);

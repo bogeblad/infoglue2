@@ -584,7 +584,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	
 	public String getShowComponentsFirst()
 	{
-	    return CmsPropertyHandler.getProperty("showComponentsFirst");
+	    return CmsPropertyHandler.getShowComponentsFirst();
 	}
 	
 	/**

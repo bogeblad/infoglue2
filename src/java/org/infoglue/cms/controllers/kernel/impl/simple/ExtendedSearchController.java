@@ -193,7 +193,7 @@ public class ExtendedSearchController extends BaseController
     {
         if(useFull == null)
         {
-            String useShortTableNames = CmsPropertyHandler.getProperty("useShortTableNames");
+            String useShortTableNames = CmsPropertyHandler.getUseShortTableNames();
             if(useShortTableNames == null || !useShortTableNames.equalsIgnoreCase("true"))
             {
                 useFull = new Boolean(true);

@@ -149,7 +149,7 @@ public class PortletEntityRegistryServiceDBImpl extends PortletEntityRegistrySer
             if (da == null) {
                 LOG.info("Creating new " + PORTLET_REGISTRY_CONTENT_NAME);
 
-                String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+                String filePath = CmsPropertyHandler.getDigitalAssetPath();
                 DigitalAssetVO newAsset = new DigitalAssetVO();
                 newAsset.setAssetContentType("text/xml");
                 newAsset.setAssetKey(PORTLET_REGISTRY_CONTENT_NAME);

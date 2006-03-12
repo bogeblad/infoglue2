@@ -70,21 +70,21 @@ public final class CmsContextListener implements ServletContextListener
 			System.out.println("contextRootPath:" + contextRootPath);
 			CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
 			
-			String logPath = CmsPropertyHandler.getProperty("logPath");
+			String logPath = CmsPropertyHandler.getLogPath();
 			if(logPath == null || logPath.equals(""))
 			{
 				logPath = contextRootPath + "logs" + File.separator + "infogluecms.log";
 				CmsPropertyHandler.setProperty("logPath", logPath);
 			}			
 			
-			String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+			String URIEncoding = CmsPropertyHandler.getURIEncoding();
 			if(URIEncoding == null || URIEncoding.equals(""))
 			{
 				URIEncoding = "ISO-8859-1";
 				CmsPropertyHandler.setProperty("URIEncoding", URIEncoding);
 			}			
 			
-			String assetPath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String assetPath = CmsPropertyHandler.getDigitalAssetPath();
 			if(assetPath == null || assetPath.equals(""))
 			{
 				assetPath = contextRootPath + "digitalAssets";
@@ -97,11 +97,11 @@ public final class CmsContextListener implements ServletContextListener
 				}
 			}
 
-			String expireCacheAutomaticallyString = CmsPropertyHandler.getProperty("expireCacheAutomatically");
+			String expireCacheAutomaticallyString = CmsPropertyHandler.getExpireCacheAutomatically();
 			if(expireCacheAutomaticallyString != null)
 				cacheController.setExpireCacheAutomatically(Boolean.getBoolean(expireCacheAutomaticallyString));
 
-			String intervalString = CmsPropertyHandler.getProperty("cacheExpireInterval");
+			String intervalString = CmsPropertyHandler.getCacheExpireInterval();
 			if(intervalString != null)
 				cacheController.setCacheExpireInterval(Integer.parseInt(intervalString));
 		

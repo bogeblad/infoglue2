@@ -160,7 +160,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		//TODO - TEST
 		decoratePageTemplate += propertiesDivs + tasksDivs;
 		
-		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		
 		//-- moved the creation of a default context into the baseclass
 		// (robert)
@@ -187,7 +187,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 	 private String showInitialBindingDialog(Integer siteNodeId, Integer languageId, Integer contentId)
 	 {
-		 String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		 String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		 String url = "javascript:window.open('" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&specifyBaseTemplate=true&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "', 'BaseTemplate', 'width=600,height=700,left=50,top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes');";
 		 
 		 String pageTemplateHTML = " or choose a page template below.<br><br>";
@@ -248,8 +248,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + component.getContentId() + "_" + component.getSlotName());
 			boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + component.getContentId() + "_" + component.getSlotName());
 			
-		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorHeader.vm"));
-		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/pageComponentEditorBody.vm"));
+		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorHeader.vm"));
+		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorBody.vm"));
 			
 		    Locale locale = templateController.getLocale();
 		    String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
@@ -357,7 +357,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		//logger.info("decorateComponent:" + component.getName());
 		
-		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
 		Timer timer = new Timer();
 		timer.setActive(false);
@@ -603,7 +603,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		timer.printElapsedTime("After locale");
 	    
-		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		/*
 		String formsEncoding = CmsPropertyHandler.getFormsEncoding();
 		String acceptCharset = "";
@@ -940,7 +940,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		Timer timer = new Timer();
 		timer.setActive(false);
 
-		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		
 		//if(component.getIsInherited())
 		//    sb.append("<div id=\"inheritedComponent" + component.getId() + "Menu\" class=\"skin0\">");
@@ -1011,7 +1011,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    
 		StringBuffer sb = new StringBuffer();
 		
-		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
 		sb.append("<div id=\"pageComponents\" style=\"right:5px; top:5px; visibility:hidden; display: none;\">");
 
@@ -1054,7 +1054,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	private void renderComponentTree(TemplateController templateController, StringBuffer sb, InfoGlueComponent component, int level, int position, int maxPosition) throws Exception
 	{
-		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
 		ContentVO componentContentVO = templateController.getContent(component.getContentId());
 		
@@ -1182,9 +1182,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		StringBuffer sb = new StringBuffer();
 			
-		String componentEditorUrl 		= CmsPropertyHandler.getProperty("componentEditorUrl");
-		String componentRendererUrl 	= CmsPropertyHandler.getProperty("componentRendererUrl");
-		String componentRendererAction 	= CmsPropertyHandler.getProperty("componentRendererAction");
+		String componentEditorUrl 		= CmsPropertyHandler.getComponentEditorUrl();
+		String componentRendererUrl 	= CmsPropertyHandler.getComponentRendererUrl();
+		String componentRendererAction 	= CmsPropertyHandler.getComponentRendererAction();
 		
 		
 		sb.append("<div id=\"buffer\" style=\"top: 0px; left: 0px; z-index:200;\"><img src=\"images/componentDraggedIcon.gif\"></div>");

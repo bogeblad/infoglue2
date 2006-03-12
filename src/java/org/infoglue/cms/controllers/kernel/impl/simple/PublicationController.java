@@ -152,7 +152,7 @@ public class PublicationController extends BaseController
 	 */
 	public static EditionBrowser getEditionPage(Integer repositoryId, int startIndex) throws SystemException
 	{
-		int pageSize = new Integer(CmsPropertyHandler.getProperty("edition.pageSize")).intValue();
+		int pageSize = new Integer(CmsPropertyHandler.getEditionPageSize()).intValue();
 
     	Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
@@ -374,14 +374,14 @@ public class PublicationController extends BaseController
 	    {
 	        String template;
 	        
-	        String contentType = CmsPropertyHandler.getProperty("mail.contentType");
+	        String contentType = CmsPropertyHandler.getMailContentType();
 	        if(contentType == null || contentType.length() == 0)
 	            contentType = "text/html";
 	        
 	        if(contentType.equalsIgnoreCase("text/plain"))
-	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/publishingtool/deniedPublication_plain.vm"));
+	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/publishingtool/deniedPublication_plain.vm"));
 		    else
-	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/publishingtool/deniedPublication_html.vm"));
+	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/publishingtool/deniedPublication_html.vm"));
 		        
 		    Map parameters = new HashMap();
 		    parameters.put("event", event);
@@ -395,9 +395,9 @@ public class PublicationController extends BaseController
 			new VelocityTemplateProcessor().renderTemplate(parameters, pw, template);
 			email = tempString.toString();
 	    
-			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
 			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
-				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
+				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
 
 			logger.info("email:" + email);
 			MailServiceFactory.getService().send(systemEmailSender, recipient, "CMS - Publishing was denied!!", email, contentType, "UTF-8");

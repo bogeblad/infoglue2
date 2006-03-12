@@ -148,17 +148,13 @@ public abstract class PageInvoker
 		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.getTemplateController().getLanguageId());
 		logger.info("languageVO:" + languageVO);
 		
-		String isPageCacheOn = CmsPropertyHandler.getProperty("isPageCacheOn");
-		//Timer timer = new Timer();
-		//String isPageCacheOn2 = CmsPropertyHandler.getIsPageCacheOn();
-		//timer.printElapsedTime("Getting server node property");
-		
+		String isPageCacheOn = CmsPropertyHandler.getIsPageCacheOn();
 		logger.info("isPageCacheOn:" + isPageCacheOn);
 		String refresh = this.getRequest().getParameter("refresh");
 		
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))
 		{
-			String compressPageCache = CmsPropertyHandler.getProperty("compressPageCache");
+			String compressPageCache = CmsPropertyHandler.getCompressPageCache();
 			if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 			{
 			    byte[] cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
@@ -297,7 +293,7 @@ public abstract class PageInvoker
 		context.put("templateLogic", getTemplateController());		
 		
 		// -- check if the portal is active
-        String portalEnabled = CmsPropertyHandler.getProperty("enablePortal") ;
+        String portalEnabled = CmsPropertyHandler.getEnablePortal() ;
         boolean active = ((portalEnabled != null) && portalEnabled.equals("true"));
 		if (active) 
 		{

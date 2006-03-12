@@ -45,7 +45,7 @@ public class RequestAnalyser
 	
 	static
 	{
-	    final String maxClients = CmsPropertyHandler.getProperty("maxClients");
+	    final String maxClients = CmsPropertyHandler.getMaxClients();
         if(maxClients != null && !maxClients.equals("") && maxClients.indexOf("@") == -1)
         {
             try

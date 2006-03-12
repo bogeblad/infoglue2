@@ -261,7 +261,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         
         try
         {
-            String contextPath = CmsPropertyHandler.getProperty("contextRootPath");
+            String contextPath = CmsPropertyHandler.getContextRootPath();
             File file = new File(contextPath + "images" + File.separator + "workinganim.gif");
             
             is = new FileInputStream(file);

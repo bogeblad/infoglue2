@@ -160,7 +160,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		}
 		
 		//Sort the tree nodes if setup to do so
-		String sortProperty = CmsPropertyHandler.getProperty("content.tree.sort");
+		String sortProperty = CmsPropertyHandler.getContentTreeSort();
 		if(sortProperty != null)
 			Collections.sort(children, new ReflectionComparator(sortProperty));
 		

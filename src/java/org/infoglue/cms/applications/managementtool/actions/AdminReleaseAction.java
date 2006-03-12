@@ -89,10 +89,10 @@ public class AdminReleaseAction extends InfoGlueAbstractAction
 	public static String ExecuteCommand (String cmd) throws Exception
 	{ 
 		String op = "RESULT OF ACTION:<br>";
-		String buildName = CmsPropertyHandler.getProperty("buildName");
-		String admin_tools = CmsPropertyHandler.getProperty("adminToolsPath");
-		String dbRelease = CmsPropertyHandler.getProperty("dbRelease");
-		String dbScriptPath = CmsPropertyHandler.getProperty("dbScriptPath");
+		String buildName = CmsPropertyHandler.getBuildName();
+		String admin_tools = CmsPropertyHandler.getAdminToolsPath();
+		String dbRelease = CmsPropertyHandler.getDbRelease();
+		String dbScriptPath = CmsPropertyHandler.getDbScriptPath();
 
 		logger.info("admin tools: " + admin_tools);
 		logger.info("cmd: " + cmd);

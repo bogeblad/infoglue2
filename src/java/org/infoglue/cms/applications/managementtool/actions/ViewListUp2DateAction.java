@@ -48,7 +48,7 @@ public class ViewListUp2DateAction extends InfoGlueAbstractAction {
 
 	protected String doExecute() throws Exception {
 		String path = getRequest().getRealPath("/") + "up2date/";
-		String url = CmsPropertyHandler.getProperty("up2dateUrl");	
+		String url = CmsPropertyHandler.getUp2dateUrl();	
 
 		try {
 			URL u = new URL(url);

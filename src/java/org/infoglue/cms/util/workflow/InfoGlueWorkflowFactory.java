@@ -268,7 +268,7 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
     {
         try 
         {
-            String encoding = CmsPropertyHandler.getProperty("workflowEncoding");
+            String encoding = CmsPropertyHandler.getWorkflowEncoding();
             if(encoding == null || encoding.length() == 0 || encoding.equalsIgnoreCase("@workflowEncoding@"))
                 encoding = "UTF-8";
             

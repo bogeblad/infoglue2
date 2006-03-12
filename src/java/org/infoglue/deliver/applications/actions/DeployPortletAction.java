@@ -48,7 +48,7 @@ public class DeployPortletAction extends InfoGlueAbstractAction {
     private static final Log log = LogFactory.getLog(DeployPortletAction.class);
 
     // TODO fixme;
-    private static final String PORTLET_BASE = CmsPropertyHandler.getProperty("portletBase");
+    private static final String PORTLET_BASE = CmsPropertyHandler.getPortletBase();
 
     private Integer digitalAssetId;
 

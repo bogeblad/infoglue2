@@ -80,7 +80,7 @@ public class VelocityTemplateProcessor
 		    else
 		    {
 		        boolean useFreeMarker = false;
-		        String useFreeMarkerString = CmsPropertyHandler.getProperty("useFreeMarker");
+		        String useFreeMarkerString = CmsPropertyHandler.getUseFreeMarker();
 		        if(useFreeMarkerString != null && useFreeMarkerString.equalsIgnoreCase("true"))
 		            useFreeMarker = true;
 		        
@@ -111,7 +111,7 @@ public class VelocityTemplateProcessor
 		{
 		    logger.warn("templateAsString:" + templateAsString);
 		    
-		    if(CmsPropertyHandler.getProperty("operatingMode").equalsIgnoreCase("0") && (CmsPropertyHandler.getProperty("disableTemplateDebug") == null || !CmsPropertyHandler.getProperty("disableTemplateDebug").equalsIgnoreCase("true")))
+		    if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0") && (CmsPropertyHandler.getDisableTemplateDebug() == null || !CmsPropertyHandler.getDisableTemplateDebug().equalsIgnoreCase("true")))
 		        pw.println("Error:" + e.getMessage());
 		    else
 		    {
@@ -138,7 +138,7 @@ public class VelocityTemplateProcessor
 
 		int hashCode = templateAsString.hashCode();
 
-		String contextRootPath = CmsPropertyHandler.getProperty("contextRootPath");
+		String contextRootPath = CmsPropertyHandler.getContextRootPath();
 		String fileName = contextRootPath + "jsp" + File.separator + "Template_" + hashCode + ".jsp";
 		
 		File template = new File(fileName);

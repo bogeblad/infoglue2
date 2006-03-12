@@ -93,7 +93,7 @@ public class ChartHelper
 			}
 
 			/*
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			File file = new File(filePath + java.io.File.separator + fileName);
 			ChartUtilities.saveChartAsPNG(file, demo.getChart(), width, height);
 			*/

@@ -76,21 +76,21 @@ public final class DeliverContextListener implements ServletContextListener
 			
 			CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
 			
-			String logPath = CmsPropertyHandler.getProperty("logPath");
+			String logPath = CmsPropertyHandler.getLogPath();
 			if(logPath == null || logPath.equals(""))
 			{
 				logPath = contextRootPath + "logs" + File.separator + "infogluedeliver.log";
 				CmsPropertyHandler.setProperty("logPath", logPath);
 			}
 
-			String statisticsLogPath = CmsPropertyHandler.getProperty("statisticsLogPath");
+			String statisticsLogPath = CmsPropertyHandler.getStatisticsLogPath();
 			if(statisticsLogPath == null || statisticsLogPath.equals(""))
 			{
 				statisticsLogPath = contextRootPath + "logs";
 				CmsPropertyHandler.setProperty("statisticsLogPath", statisticsLogPath);
 			}
 
-			String assetPath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String assetPath = CmsPropertyHandler.getDigitalAssetPath();
 			if(assetPath == null || assetPath.equals(""))
 			{
 				assetPath = contextRootPath + "digitalAssets";
@@ -103,18 +103,18 @@ public final class DeliverContextListener implements ServletContextListener
 				CmsPropertyHandler.setProperty("digitalAssetPath.0", assetPath);
 			}
 
-			String assetUploadPath = CmsPropertyHandler.getProperty("digitalAssetUploadPath");
+			String assetUploadPath = CmsPropertyHandler.getDigitalAssetUploadPath();
 			if(assetUploadPath == null || assetUploadPath.equals(""))
 			{
 			    assetUploadPath = contextRootPath + "uploads";
 				CmsPropertyHandler.setProperty("digitalAssetUploadPath", assetUploadPath);
 			}
 
-			String expireCacheAutomaticallyString = CmsPropertyHandler.getProperty("expireCacheAutomatically");
+			String expireCacheAutomaticallyString = CmsPropertyHandler.getExpireCacheAutomatically();
 			if(expireCacheAutomaticallyString != null)
 				cacheController.setExpireCacheAutomatically(Boolean.getBoolean(expireCacheAutomaticallyString));
 
-			String intervalString = CmsPropertyHandler.getProperty("cacheExpireInterval");
+			String intervalString = CmsPropertyHandler.getCacheExpireInterval();
 			if(intervalString != null)
 				cacheController.setCacheExpireInterval(Integer.parseInt(intervalString));
 		

@@ -174,7 +174,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						
 						String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
 		            	//String filePath = file.getParentFile().getPath();
-		            	String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+		            	String filePath = CmsPropertyHandler.getDigitalAssetPath();
 		            	fileSystemName = filePath + File.separator + tempFileName;
 		            	
 						//getLogger().info("New fileSystemName:" + fileSystemName);

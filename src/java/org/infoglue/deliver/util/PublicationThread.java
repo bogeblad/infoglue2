@@ -44,7 +44,7 @@ public class PublicationThread extends Thread
 		try
 		{
 		    int publicationDelay = 5000;
-		    String publicationThreadDelay = CmsPropertyHandler.getProperty("publicationThreadDelay");
+		    String publicationThreadDelay = CmsPropertyHandler.getPublicationThreadDelay();
 		    if(publicationThreadDelay != null && !publicationThreadDelay.equalsIgnoreCase("") && publicationThreadDelay.indexOf("publicationThreadDelay") == -1)
 		        publicationDelay = Integer.parseInt(publicationThreadDelay);
 		    

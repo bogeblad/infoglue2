@@ -155,6 +155,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "mail.smtp.auth");
 	    populate(ps, "mail.smtp.user");
 	    populate(ps, "mail.smtp.password");
+	    populate(ps, "mail.contentType");
 	    populate(ps, "systemEmailSender");
 	    populate(ps, "loginUrl");
 	    populate(ps, "logoutUrl");
@@ -184,7 +185,48 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliver_casServiceUrl");
 	    populate(ps, "deliver_casLogoutUrl");
 	    populateData(ps, "shortcuts");
+
+	    populate(ps, "protectContentTypes");
+	    populate(ps, "protectWorkflows");
+	    populate(ps, "protectCategories");
+
+	    populate(ps, "maxRows");
+	    populate(ps, "showContentVersionFirst");
+	    populate(ps, "tree");
+	    populate(ps, "treemode");
+	    populate(ps, "showComponentsFirst");
+	    populate(ps, "showAllWorkflows");
+	    populate(ps, "editOnSight");
+	    populate(ps, "previewDeliveryUrl");
+	    populate(ps, "stagingDeliveryUrl");
+	    populate(ps, "edition.pageSize");
+	    populate(ps, "content.tree.sort");
+	    populate(ps, "structure.tree.sort");
+	    populate(ps, "disableEmptyUrls");
+	    populate(ps, "cacheUpdateAction");
+	    populate(ps, "logPath");
+
+	    populate(ps, "logTransactions");
+	    populate(ps, "enableExtranetCookies");
+	    populate(ps, "useAlternativeBrowserLanguageCheck");
+	    populate(ps, "caseSensitiveRedirects");
+	    populate(ps, "useDNSNameInURI");
 	    
+	    populate(ps, "extranetCookieTimeout");
+	    populate(ps, "webServicesBaseUrl");
+	    populate(ps, "publicationThreadDelay");
+	    populate(ps, "pathsToRecacheOnPublishing");
+	    populate(ps, "disableTemplateDebug");
+	    populate(ps, "dbRelease");
+	    populate(ps, "dbUser");
+	    populate(ps, "dbPassword");
+	    populate(ps, "masterServer");
+	    populate(ps, "slaveServer");
+	    populate(ps, "buildName");
+	    populate(ps, "adminToolsPath");
+	    populate(ps, "dbScriptPath");
+	    populate(ps, "digitalAssetUploadPath");
+
 		NotificationMessage notificationMessage = new NotificationMessage("ViewServerNodePropertiesAction.doSave():", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
 		//ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 		RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);

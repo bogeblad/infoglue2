@@ -2572,7 +2572,7 @@ public class BasicTemplateController implements TemplateController
 			}
 			
 			/*
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			File pdfFile = new File(filePath + java.io.File.separator + fileName);
 			if(!pdfFile.exists())
 			{
@@ -2582,11 +2582,11 @@ public class BasicTemplateController implements TemplateController
 			}
 			*/
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
-			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
 
-			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		catch(Exception e)
@@ -2633,7 +2633,7 @@ public class BasicTemplateController implements TemplateController
 			}
 			
 			/*
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			File pdfFile = new File(filePath + java.io.File.separator + fileName);
 			if(!pdfFile.exists())
 			{
@@ -2644,11 +2644,11 @@ public class BasicTemplateController implements TemplateController
 			*/
 			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
-			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
 
-			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		catch(Exception e)
@@ -2894,7 +2894,7 @@ public class BasicTemplateController implements TemplateController
         }
 
         SiteNode siteNode = this.nodeDeliveryController.getSiteNode( getDatabase(), this.siteNodeId );
-        String dnsName = CmsPropertyHandler.getProperty( "webServerAddress" );
+        String dnsName = CmsPropertyHandler.getWebServerAddress();
         if ( siteNode != null && siteNode.getRepository().getDnsName() != null
                 && !siteNode.getRepository().getDnsName().equals( "" ) )
         {
@@ -2955,7 +2955,7 @@ public class BasicTemplateController implements TemplateController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 			/*
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			File imageFile = new File(filePath + java.io.File.separator + fileName);
 			if(!imageFile.exists())
 			{
@@ -2981,11 +2981,11 @@ public class BasicTemplateController implements TemplateController
 			*/
 			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
-			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
 
-			//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		catch(Exception e)
@@ -3115,7 +3115,7 @@ public class BasicTemplateController implements TemplateController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 			/*
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			File imageFile = new File(filePath + java.io.File.separator + fileName);
 			if(!imageFile.exists())
 			{
@@ -3141,11 +3141,11 @@ public class BasicTemplateController implements TemplateController
 			*/
 			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
-			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
 				
-			//assetUrl = dnsName + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		catch(Exception e)
@@ -3163,7 +3163,7 @@ public class BasicTemplateController implements TemplateController
 	
 	public String getDigitalAssetBaseUrl() throws Exception
 	{
-		String url = getRepositoryBaseUrl() + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl");
+		String url = getRepositoryBaseUrl() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl();
 		
 		return url;
 	}
@@ -3195,7 +3195,7 @@ public class BasicTemplateController implements TemplateController
 		String url = "";
 		
 		SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
-		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+		String dnsName = CmsPropertyHandler.getWebServerAddress();
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
 
@@ -3551,7 +3551,7 @@ public class BasicTemplateController implements TemplateController
 		Integer operatingMode = new Integer(0); //Default is working
 		try
 		{
-			operatingMode = new Integer(CmsPropertyHandler.getProperty("operatingMode"));
+			operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
 			//logger.info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
@@ -5530,8 +5530,8 @@ public class BasicTemplateController implements TemplateController
 		    ((BasicTemplateController) templateController).setPersistedContext(true);
 		}		
 		
-		String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
-		String editOnSite = CmsPropertyHandler.getProperty("editOnSite");
+		String operatingMode = CmsPropertyHandler.getOperatingMode();
+		String editOnSite = CmsPropertyHandler.getEditOnSite();
 		boolean isEditOnSightDisabled = templateController.getIsEditOnSightDisabled();
 		boolean allowEditOnSightAtAll = false;
 		if(request.getRequestURL().indexOf("!renderDecoratedPage") > -1)
@@ -5579,7 +5579,7 @@ public class BasicTemplateController implements TemplateController
 	        return "";
 	    else
 	    {
-		    String editOnSiteUrl = CmsPropertyHandler.getProperty("editOnSiteUrl");
+		    String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
 			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=' + (document.body.clientHeight / 4) + ',toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
 			return decoratedAttributeValue;
 	    }
@@ -5600,7 +5600,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+			String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 	
 			DecoratedComponentBasedHTMLPageInvoker dec = new DecoratedComponentBasedHTMLPageInvoker();
 			Collection properties = dec.getComponentProperties(this.getComponentLogic().getInfoGlueComponent().getId(), this, siteNodeId, languageId, this.getComponentLogic().getInfoGlueComponent().getContentId());
@@ -5700,7 +5700,7 @@ public class BasicTemplateController implements TemplateController
 		    	result = "";
 		    else
 		    {
-			    String editOnSiteUrl = CmsPropertyHandler.getProperty("editOnSiteUrl");
+			    String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
 
 			    String url = assignUrl;
 			    if(!createNew)

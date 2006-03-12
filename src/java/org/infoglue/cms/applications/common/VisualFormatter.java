@@ -397,7 +397,7 @@ public class VisualFormatter
 		if(s == null)
 			return null;
 		
-		String encoding = CmsPropertyHandler.getProperty("URIEncoding");
+		String encoding = CmsPropertyHandler.getURIEncoding();
 		
 		return URLEncoder.encode(s, encoding);
 	}

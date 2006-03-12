@@ -63,7 +63,7 @@ public class PreviewEditionAction extends ViewPublicationsAction
     
     public String getPreviewUrl()
     {
-    	return CmsPropertyHandler.getProperty("previewDeliveryUrl");
+    	return CmsPropertyHandler.getPreviewDeliveryUrl();
     }
     
     public List getContentVersionsToPublish()

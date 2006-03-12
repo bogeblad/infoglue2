@@ -189,13 +189,13 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
      
     public String getReturnAddress() throws Exception
     {
-    	String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+    	String URIEncoding = CmsPropertyHandler.getURIEncoding();
         return this.getCurrentAction() + "?userName=" + URLEncoder.encode(this.userName, URIEncoding) + "&languageId=" + this.getLanguageId();
     }
     
     public String getCancelAddress() throws Exception
     {
-    	String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+    	String URIEncoding = CmsPropertyHandler.getURIEncoding();
         return this.getCancelAction() + "?userName=" + URLEncoder.encode(this.userName, URIEncoding);
     }
 

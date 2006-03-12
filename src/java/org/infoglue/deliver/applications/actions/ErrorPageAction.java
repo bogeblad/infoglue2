@@ -64,7 +64,7 @@ public class ErrorPageAction extends InfoGlueAbstractAction
         this.getResponse().setContentType("text/html; charset=UTF-8");
         this.getResponse().setStatus(responseCode);
 
-        String errorUrl = CmsPropertyHandler.getProperty("errorUrl");
+        String errorUrl = CmsPropertyHandler.getErrorUrl();
         if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
         {
             if(errorUrl.indexOf("http") > -1)
@@ -106,7 +106,7 @@ public class ErrorPageAction extends InfoGlueAbstractAction
         this.getResponse().setContentType("text/html; charset=UTF-8");
         this.getResponse().setStatus(responseCode);
 
-        String errorUrl = CmsPropertyHandler.getProperty("errorBusyUrl");
+        String errorUrl = CmsPropertyHandler.getErrorBusyUrl();
         if(errorUrl != null && errorUrl.indexOf("@errorBusyUrl@") == -1)
         {
             if(errorUrl.indexOf("http") > -1)

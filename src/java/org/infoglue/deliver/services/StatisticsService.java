@@ -54,7 +54,7 @@ public class StatisticsService
 	{
 		this.logger = new CommonLogger();
 
-		String statisticsLogger = CmsPropertyHandler.getProperty("statisticsLogger");
+		String statisticsLogger = CmsPropertyHandler.getStatisticsLogger();
 		if(statisticsLogger != null && statisticsLogger.equalsIgnoreCase("W3CExtendedLogger"))
 			this.logger = new W3CExtendedLogger();
 	}
@@ -79,7 +79,7 @@ public class StatisticsService
 	 */
 	public void registerRequest(HttpServletRequest request, HttpServletResponse response, String pagePath, long elapsedTime)
 	{
-		String enabled = CmsPropertyHandler.getProperty("statistics.enabled");
+		String enabled = CmsPropertyHandler.getStatisticsEnabled();
 		if(Boolean.valueOf(enabled).booleanValue())
 			this.logger.logRequest(request, response, pagePath, elapsedTime);
 	}

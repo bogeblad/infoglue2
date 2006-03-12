@@ -95,10 +95,10 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			
 			VisualFormatter visualFormatter = new VisualFormatter();
 			String fileName = "Export_" + repository.getName() + "_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd") + ".xml";
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			String fileSystemName =  filePath + File.separator + fileName;
 						
-			fileUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+			fileUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			this.fileName = fileName;
 						
 			String encoding = "UTF-8";

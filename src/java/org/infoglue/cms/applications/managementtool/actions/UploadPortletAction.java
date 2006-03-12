@@ -91,7 +91,7 @@ public class UploadPortletAction extends InfoGlueAbstractAction {
                 }
                 String contentType = mpr.getContentType(name);
                 String fileName = mpr.getFilesystemName(name);
-                String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+                String filePath = CmsPropertyHandler.getDigitalAssetPath();
 
                 // Pluto prepare portlet-war
                 String appName = fileName;

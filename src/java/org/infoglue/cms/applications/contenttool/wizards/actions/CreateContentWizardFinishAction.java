@@ -69,7 +69,7 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	
 			if(createContentWizardInfoBean.getContentVersions().size() == 0)
 			{
-		    	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
+		    	String wysiwygEditor = CmsPropertyHandler.getWysiwygEditor();
 		    	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
 		    	    return "inputContentVersions";
 		    	else

@@ -61,7 +61,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	{
 	    if(attributeValue != null && !attributeValue.trim().equals(""))
 	    {
-			String editOnSiteUrl = CmsPropertyHandler.getProperty("editOnSiteUrl");
+			String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
 			String decoratedAttributeValue = "<span oncontextmenu=\"setContentItemParameters(" + contentId + "," + languageId + ",'" + attributeName + "'); setEditUrl('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "&forceWorkingChange=true');\">" + attributeValue + "</span>";
 			return decoratedAttributeValue;
 	    }
@@ -81,8 +81,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		
 		try
 		{
-		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/editOnSiteHeader.vm"));
-		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "preview/editOnSiteBody.vm"));
+		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/editOnSiteHeader.vm"));
+		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/editOnSiteBody.vm"));
 		    
 			String servletContext = request.getContextPath();
 			extraHeader = extraHeader.replaceAll("\\{applicationContext\\}", servletContext);

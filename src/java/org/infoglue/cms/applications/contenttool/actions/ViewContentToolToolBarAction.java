@@ -403,11 +403,11 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 					        else
 					            dnsName = dnsName.substring(startIndex);
 	
-						    workingUrl = dnsName.split("=")[1] + CmsPropertyHandler.getProperty("componentRendererUrl") + "ViewPage.action";
+						    workingUrl = dnsName.split("=")[1] + CmsPropertyHandler.getComponentRendererUrl() + "ViewPage.action";
 					    }
 					    else
 					    {
-					        workingUrl = CmsPropertyHandler.getProperty("previewDeliveryUrl");
+					        workingUrl = CmsPropertyHandler.getPreviewDeliveryUrl();
 					    }
 					    
 					    ImageButton previewSiteButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "', 'SitePreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.previewSite"), "tool.contenttool.previewSite.header");

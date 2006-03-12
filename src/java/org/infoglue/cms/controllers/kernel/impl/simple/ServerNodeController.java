@@ -49,7 +49,7 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class ServerNodeController extends BaseController
 { 
-    private String useUpdateSecurity = CmsPropertyHandler.getProperty("useUpdateSecurity");
+    private String useUpdateSecurity = CmsPropertyHandler.getUseUpdateSecurity();
     
 	/**
 	 * Factory method

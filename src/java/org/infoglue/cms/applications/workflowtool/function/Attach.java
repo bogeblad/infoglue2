@@ -108,7 +108,7 @@ public class Attach extends ContentFunction
 	 */
 	private String getDigitalAssetsDirectory()
 	{
-    	return CmsPropertyHandler.getProperty("digitalAssetPath");
+    	return CmsPropertyHandler.getDigitalAssetPath();
 	}
 
 	/**

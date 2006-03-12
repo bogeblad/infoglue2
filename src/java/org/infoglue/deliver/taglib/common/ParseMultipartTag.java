@@ -79,7 +79,7 @@ public class ParseMultipartTag extends TemplateControllerTag
 			
 			//Set factory constraints
 			factory.setSizeThreshold(maxSize.intValue());
-			//factory.setRepository(new File(CmsPropertyHandler.getProperty("digitalAssetPath")));
+			//factory.setRepository(new File(CmsPropertyHandler.getDigitalAssetPath()));
 			
 			//Create a new file upload handler
 			ServletFileUpload upload = new ServletFileUpload(factory);
@@ -110,8 +110,6 @@ public class ParseMultipartTag extends TemplateControllerTag
 
 				        if(isValidContentType(contentType))
 				        {
-					        //File uploadedFile = new File(CmsPropertyHandler.getProperty("digitalAssetUploadPath") + File.separator + fileName);
-				            //item.write(uploadedFile);
 				            files.add(item);
 				        }
 				        else

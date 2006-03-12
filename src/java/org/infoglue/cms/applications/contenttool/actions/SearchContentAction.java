@@ -106,7 +106,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	    int maxRows = 100;
 		try
 		{
-			maxRows = Integer.parseInt(CmsPropertyHandler.getProperty("maxRows"));
+			maxRows = Integer.parseInt(CmsPropertyHandler.getMaxRows());
 		}
 		catch(Exception e)
 		{

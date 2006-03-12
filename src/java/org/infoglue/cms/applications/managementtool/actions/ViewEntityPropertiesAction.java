@@ -318,7 +318,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 	{
 		try
 		{	
-		    String protectCategories = CmsPropertyHandler.getProperty("protectCategories");
+		    String protectCategories = CmsPropertyHandler.getProtectCategories();
 		    if(protectCategories != null && protectCategories.equalsIgnoreCase("true"))
 		        return getCategoryController().getAuthorizedActiveChildren(categoryId, this.getInfoGluePrincipal());
 			else

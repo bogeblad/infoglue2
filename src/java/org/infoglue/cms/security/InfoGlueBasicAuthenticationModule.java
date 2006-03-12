@@ -204,8 +204,8 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 	{
 		boolean isAuthenticated = false;
 		
-		String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
-		String administratorPassword = CmsPropertyHandler.getProperty("administratorPassword");
+		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
+		String administratorPassword = CmsPropertyHandler.getAdministratorPassword();
 		//logger.info("administratorUserName:" + administratorUserName);
 		//logger.info("administratorPassword:" + administratorPassword);
 		//logger.info("userName:" + userName);

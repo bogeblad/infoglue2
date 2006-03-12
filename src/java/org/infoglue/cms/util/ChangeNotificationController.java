@@ -49,7 +49,7 @@ public class ChangeNotificationController
 			instance = new ChangeNotificationController();
 			//instance.registerListener(new FileLogger());
 			
-			String logTransactions = CmsPropertyHandler.getProperty("logTransactions");
+			String logTransactions = CmsPropertyHandler.getLogTransactions();
 			if(logTransactions == null || !logTransactions.equalsIgnoreCase("false"))
 			    instance.registerListener(new TransactionHistoryWriter());
 			

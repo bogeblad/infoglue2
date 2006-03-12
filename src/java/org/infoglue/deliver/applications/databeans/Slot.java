@@ -116,7 +116,7 @@ public class Slot
 	                sb.append("&");
 	            
 	            //sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentsArray[i], "UTF-8"));
-	            String encoding = CmsPropertyHandler.getProperty("URIEncoding");
+	            String encoding = CmsPropertyHandler.getURIEncoding();
 	            
 	            sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentsArray[i], encoding));
 	        }

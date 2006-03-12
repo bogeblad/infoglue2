@@ -39,10 +39,10 @@ public class InstallUpdateMainAction extends InfoGlueAbstractAction
 	private String updatePackageId;
 	
 
-	protected String doExecute() throws Exception {
-
+	protected String doExecute() throws Exception 
+	{
 		// String path = getRequest().getRealPath("/") + "up2date\\";
-		// String url = CmsPropertyHandler.getProperty("up2dateUrl");	
+		// String url = CmsPropertyHandler.getUp2dateUrl();	
 	
 		// uc = new UpdateController(url, path);
 		

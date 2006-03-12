@@ -131,7 +131,7 @@ public class MailService
 	 */
 	public void sendEmail(String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
 	{
-        String contentType = CmsPropertyHandler.getProperty("mail.contentType");
+        String contentType = CmsPropertyHandler.getMailContentType();
         if(contentType == null || contentType.length() == 0)
             contentType = "text/html";
 
@@ -154,15 +154,15 @@ public class MailService
 		try 
 		{
 		    HtmlEmail email = new HtmlEmail();
-		    String mailServer = CmsPropertyHandler.getProperty("mail.smtp.host");
-		    String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+		    String mailServer = CmsPropertyHandler.getMailSmtpHost();
+		    String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
 		    
 		    email.setHostName(mailServer);
 
 		  	boolean needsAuthentication = false;
 		  	try 
 		  	{
-				needsAuthentication = new Boolean(CmsPropertyHandler.getProperty("mail.smtp.auth")).booleanValue();
+				needsAuthentication = new Boolean(CmsPropertyHandler.getMailSmtpAuth()).booleanValue();
 		  	} 
 		  	catch (Exception ex) 
 		  	{
@@ -171,8 +171,8 @@ public class MailService
 		  	
 		  	if (needsAuthentication) 
 		  	{
-				final String userName = CmsPropertyHandler.getProperty("mail.smtp.user");
-				final String password = CmsPropertyHandler.getProperty("mail.smtp.password");
+				final String userName = CmsPropertyHandler.getMailSmtpUser();
+				final String password = CmsPropertyHandler.getMailSmtpPassword();
 				
 				email.setAuthentication(userName, password);
 			} 
@@ -226,15 +226,15 @@ public class MailService
 		try 
 		{
 		    SimpleEmail email = new SimpleEmail();
-		    String mailServer = CmsPropertyHandler.getProperty("mail.smtp.host");
-		    String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+		    String mailServer = CmsPropertyHandler.getMailSmtpHost();
+		    String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
 		    
 		    email.setHostName(mailServer);
 
 		  	boolean needsAuthentication = false;
 		  	try 
 		  	{
-				needsAuthentication = new Boolean(CmsPropertyHandler.getProperty("mail.smtp.auth")).booleanValue();
+				needsAuthentication = new Boolean(CmsPropertyHandler.getMailSmtpAuth()).booleanValue();
 		  	} 
 		  	catch (Exception ex) 
 		  	{
@@ -243,8 +243,8 @@ public class MailService
 		  	
 		  	if (needsAuthentication) 
 		  	{
-				final String userName = CmsPropertyHandler.getProperty("mail.smtp.user");
-				final String password = CmsPropertyHandler.getProperty("mail.smtp.password");
+				final String userName = CmsPropertyHandler.getMailSmtpUser();
+				final String password = CmsPropertyHandler.getMailSmtpPassword();
 				
 				email.setAuthentication(userName, password);
 			} 

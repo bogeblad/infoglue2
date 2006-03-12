@@ -115,8 +115,8 @@ public class CommonLogger extends org.infoglue.deliver.util.webloggers.Logger
 	    	
 	    	if(logBuffer.size() > 100)
 	    	{
-	    		String logPath = CmsPropertyHandler.getProperty("statisticsLogPath");
-				String statisticsLogOneFilePerDay = CmsPropertyHandler.getProperty("statisticsLogOneFilePerDay");
+	    		String logPath = CmsPropertyHandler.getStatisticsLogPath();
+				String statisticsLogOneFilePerDay = CmsPropertyHandler.getStatisticsLogOneFilePerDay();
 				File file = new File(logPath + File.separator + "statistics.log");
 				if(statisticsLogOneFilePerDay != null && statisticsLogOneFilePerDay.equalsIgnoreCase("true"))
 					file = new File(logPath + File.separator + "stat" + date + ".log");

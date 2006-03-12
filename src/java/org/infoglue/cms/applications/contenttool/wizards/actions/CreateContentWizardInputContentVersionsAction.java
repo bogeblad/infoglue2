@@ -90,7 +90,7 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		
 		this.contentTypeAttributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());
 		
-    	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
+    	String wysiwygEditor = CmsPropertyHandler.getWysiwygEditor();
     	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
     	    return "inputContentVersions";
     	else

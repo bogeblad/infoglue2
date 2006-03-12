@@ -532,7 +532,7 @@ public class CacheController extends Thread
 					}
 					else
 					{
-					    String useSelectivePageCacheUpdateString = CmsPropertyHandler.getProperty("useSelectivePageCacheUpdate");
+					    String useSelectivePageCacheUpdateString = CmsPropertyHandler.getUseSelectivePageCacheUpdate();
 					    boolean useSelectivePageCacheUpdate = false;
 					    if(useSelectivePageCacheUpdateString != null && useSelectivePageCacheUpdateString.equalsIgnoreCase("true"))
 					        useSelectivePageCacheUpdate = true;
@@ -806,8 +806,8 @@ public class CacheController extends Thread
 	    	
 	    	beginTransaction(db);
 		    
-	    	String siteNodesToRecacheOnPublishing = CmsPropertyHandler.getProperty("siteNodesToRecacheOnPublishing");
-	    	String recachePublishingMethod = CmsPropertyHandler.getProperty("recachePublishingMethod");
+	    	String siteNodesToRecacheOnPublishing = CmsPropertyHandler.getSiteNodesToRecacheOnPublishing();
+	    	String recachePublishingMethod = CmsPropertyHandler.getRecachePublishingMethod();
 	    	logger.info("siteNodesToRecacheOnPublishing:" + siteNodesToRecacheOnPublishing);
 	    	if(siteNodesToRecacheOnPublishing != null && !siteNodesToRecacheOnPublishing.equals("") && !siteNodesToRecacheOnPublishing.equals("siteNodesToRecacheOnPublishing"))
 	    	{
@@ -883,7 +883,7 @@ public class CacheController extends Thread
     
     public static void evictWaitingCache() throws Exception
     {	    
-	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+	    String operatingMode = CmsPropertyHandler.getOperatingMode();
 	    
 	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3") && RequestAnalyser.getBlockRequests())
 	    {
@@ -1027,7 +1027,7 @@ public class CacheController extends Thread
     public static String getPageCacheKey(HttpSession session, HttpServletRequest request, /*, TemplateController templateController*/ Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
     {
     	String pageKey = null;
-    	String pageKeyProperty = CmsPropertyHandler.getProperty("pageKey");
+    	String pageKeyProperty = CmsPropertyHandler.getPageKey();
     	if(pageKeyProperty != null && pageKeyProperty.length() > 0)
     	{    
     	    pageKey = pageKeyProperty;

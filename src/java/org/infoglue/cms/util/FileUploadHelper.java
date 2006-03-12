@@ -71,7 +71,7 @@ public class FileUploadHelper
 						String fileName = "Import_" + System.currentTimeMillis() + fileSystemName;
 						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
 						
-						String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+						String filePath = CmsPropertyHandler.getDigitalAssetPath();
 						fileSystemName =  filePath + File.separator + fileName;
 		            	
 						renamedFile = new File(fileSystemName);

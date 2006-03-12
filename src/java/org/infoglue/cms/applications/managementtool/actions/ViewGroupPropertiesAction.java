@@ -189,13 +189,13 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
      
     public String getReturnAddress() throws Exception
     {
-    	String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+    	String URIEncoding = CmsPropertyHandler.getURIEncoding();
         return this.getCurrentAction() + "?groupName=" + URLEncoder.encode(this.groupName, URIEncoding) + "&languageId=" + this.getLanguageId();
     }
 
     public String getCancelAddress() throws Exception
     {
-    	String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+    	String URIEncoding = CmsPropertyHandler.getURIEncoding();
         return this.getCancelAction() + "?groupName=" + URLEncoder.encode(this.groupName, URIEncoding);
     }
 

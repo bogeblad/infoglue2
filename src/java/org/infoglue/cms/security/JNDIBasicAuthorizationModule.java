@@ -96,8 +96,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	{
 		InfoGluePrincipal infogluePrincipal = null;
 		
-		String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
-		String administratorEmail 	 = CmsPropertyHandler.getProperty("administratorEmail");
+		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
+		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
 		
 		final boolean isAdministrator = userName.equalsIgnoreCase(administratorUserName) ? true : false;
 		if(isAdministrator)

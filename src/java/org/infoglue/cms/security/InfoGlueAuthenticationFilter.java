@@ -124,7 +124,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 	
 		HttpSession session = ((HttpServletRequest)request).getSession();
 		
-		String sessionTimeout = CmsPropertyHandler.getProperty("session.timeout");
+		String sessionTimeout = CmsPropertyHandler.getSessionTimeout();
 		if(sessionTimeout == null)
 		    sessionTimeout = "1800";
 		
@@ -156,8 +156,8 @@ public class InfoGlueAuthenticationFilter implements Filter
 			
 			if(userName != null && password != null)
 			{
-				String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
-				String administratorPassword = CmsPropertyHandler.getProperty("administratorPassword");
+				String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
+				String administratorPassword = CmsPropertyHandler.getAdministratorPassword();
 				isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
 			}
 			

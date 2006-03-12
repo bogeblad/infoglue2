@@ -152,7 +152,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 					fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
 					
 					String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
-	            	String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+	            	String filePath = CmsPropertyHandler.getDigitalAssetPath();
 	            	fileSystemName = filePath + File.separator + tempFileName;
 	            	
 	            	DigitalAssetVO newAsset = new DigitalAssetVO();

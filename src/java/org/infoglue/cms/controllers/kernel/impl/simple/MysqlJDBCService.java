@@ -40,17 +40,14 @@ import com.opensymphony.util.TextUtils;
 
 public class MysqlJDBCService
 {
-	public static final String MASTER_KEY = "masterServer";
-	public static final String SLAVE_KEY = "slaveServer";
-
    	java.sql.Connection jdbcMasterConnection = null;
    	java.sql.Connection jdbcSlaveConnection = null;
 
-	String dbRelease = CmsPropertyHandler.getProperty("dbRelease");
-	String dbUser = CmsPropertyHandler.getProperty("dbUser");
-	String dbPassword = CmsPropertyHandler.getProperty("dbPassword");
-	String masterServer = CmsPropertyHandler.getProperty(MASTER_KEY);
-	String slaveServer = CmsPropertyHandler.getProperty(SLAVE_KEY);
+	String dbRelease = CmsPropertyHandler.getDbRelease();
+	String dbUser = CmsPropertyHandler.getDbUser();
+	String dbPassword = CmsPropertyHandler.getDbPassword();
+	String masterServer = CmsPropertyHandler.getMasterServer();
+	String slaveServer = CmsPropertyHandler.getSlaveServer();
 
 	private boolean enabled = false;
 

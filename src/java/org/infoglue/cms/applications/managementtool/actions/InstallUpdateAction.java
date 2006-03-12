@@ -54,7 +54,7 @@ public class InstallUpdateAction extends InfoGlueAbstractAction {
 		String path = getRequest().getRealPath("/") + "up2date/";
 		
 		System.out.println("UP2DATE: PATH: " + path);
-		String url = CmsPropertyHandler.getProperty("up2dateUrl");	
+		String url = CmsPropertyHandler.getUp2dateUrl();	
 	
 		
 		

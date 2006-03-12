@@ -105,7 +105,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 			sup = contentNodeSupplier;
         }
 		
-		String treeMode = CmsPropertyHandler.getProperty("treemode"); 
+		String treeMode = CmsPropertyHandler.getTreeMode(); 
 		if(treeMode != null) setTreeMode(treeMode);
 		
 

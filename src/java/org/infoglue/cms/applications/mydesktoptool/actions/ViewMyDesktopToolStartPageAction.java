@@ -231,7 +231,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	private void populateLists() throws SystemException
 	{
 		availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
-		final String showAllWorkflows = CmsPropertyHandler.getProperty("showAllWorkflows");
+		final String showAllWorkflows = CmsPropertyHandler.getShowAllWorkflows();
 		if(showAllWorkflows == null || showAllWorkflows.equalsIgnoreCase("true"))
 		{
 			workflowVOList = controller.getCurrentWorkflowVOList(getInfoGluePrincipal());

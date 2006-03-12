@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: MysqlJDBCServiceTest.java,v 1.2 2006/03/06 16:54:01 mattias Exp $
+ * $Id: MysqlJDBCServiceTest.java,v 1.3 2006/03/12 10:53:40 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -71,8 +71,8 @@ public class MysqlJDBCServiceTest extends InfoGlueTestCase
 
 	private void setProperties(String master, String slave)
 	{
-		setProperty(MysqlJDBCService.MASTER_KEY, master);
-		setProperty(MysqlJDBCService.SLAVE_KEY, slave);
+		setProperty("masterServer", master);
+		setProperty("slaveServer", slave);
 	}
 
 	private void setProperty(String key, String value)

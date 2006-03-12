@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeFilterConfig.java,v 1.2 2006/03/06 16:54:41 mattias Exp $
+ * $Id: FakeFilterConfig.java,v 1.3 2006/03/12 10:53:40 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -41,22 +41,29 @@ public class FakeFilterConfig implements FilterConfig
 
 	public FakeFilterConfig()
 	{
-		initParameters.put("org.infoglue.cms.security.loginUrl", CmsPropertyHandler.getProperty("loginUrl"));
-		initParameters.put("org.infoglue.cms.security.invalidLoginUrl",
-											CmsPropertyHandler.getProperty("invalidLoginUrl"));
-		initParameters.put("org.infoglue.cms.security.authenticatorClass",
-											CmsPropertyHandler.getProperty("authenticatorClass"));
-		initParameters.put("org.infoglue.cms.security.authorizerClass",
-											CmsPropertyHandler.getProperty("authorizerClass"));
-		initParameters.put("org.infoglue.cms.security.serverName", CmsPropertyHandler.getProperty("serverName"));
-		initParameters.put("org.infoglue.cms.security.authConstraint",
-											CmsPropertyHandler.getProperty("authConstraint"));
-		initParameters.put("org.infoglue.cms.security.extraParametersFile",
-											CmsPropertyHandler.getProperty("extraParametersFile"));
-		initParameters.put("org.infoglue.cms.security.casValidateUrl",
-											CmsPropertyHandler.getProperty("casValidateUrl"));
-		initParameters.put("org.infoglue.cms.security.casServiceUrl",
-											CmsPropertyHandler.getProperty("casServiceUrl"));
+		String authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true);
+		String authorizerClass 		= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true);
+		String invalidLoginUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true);
+		String successLoginBaseUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true);
+		String loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true);
+		String logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true);
+		String serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true);
+		String casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true);
+		String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true);
+		String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true);
+		String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true);
+		String authConstraint 		= CmsPropertyHandler.getServerNodeProperty("deliver", "authConstraint", true);
+		String extraParametersFile 		= CmsPropertyHandler.getServerNodeProperty("deliver", "extraParametersFile", true);
+
+		initParameters.put("org.infoglue.cms.security.loginUrl", loginUrl);
+		initParameters.put("org.infoglue.cms.security.invalidLoginUrl",	invalidLoginUrl);
+		initParameters.put("org.infoglue.cms.security.authenticatorClass", authenticatorClass);
+		initParameters.put("org.infoglue.cms.security.authorizerClass",	authorizerClass);
+		initParameters.put("org.infoglue.cms.security.serverName", serverName);
+		initParameters.put("org.infoglue.cms.security.authConstraint", authConstraint);
+		initParameters.put("org.infoglue.cms.security.extraParametersFile",	extraParametersFile);
+		initParameters.put("org.infoglue.cms.security.casValidateUrl", casValidateUrl);
+		initParameters.put("org.infoglue.cms.security.casServiceUrl", casServiceUrl);
 	}
 
 	/**

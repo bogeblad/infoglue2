@@ -67,7 +67,7 @@ public class PreviewProvider extends InfoglueFunction
 	 */
 	protected void execute() throws WorkflowException 
 	{
-		final String baseURL   = CmsPropertyHandler.getProperty("previewDeliveryUrl");
+		final String baseURL   = CmsPropertyHandler.getPreviewDeliveryUrl();
 		final URLHelper helper = new URLHelper(baseURL, content.getId(), previewSiteNode.getId(), language.getId());
 		setPropertySetString(PREVIEW_URL_PROPERTYSET_KEY, helper.getURL());
 	}

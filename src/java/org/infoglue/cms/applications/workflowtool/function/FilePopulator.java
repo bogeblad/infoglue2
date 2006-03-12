@@ -112,7 +112,7 @@ public class FilePopulator extends InfoglueFunction
 	 */
 	private String getFullPath()
 	{
-		return CmsPropertyHandler.getProperty("contextRootPath") + path;
+		return CmsPropertyHandler.getContextRootPath() + path;
 	}
 
 	/**

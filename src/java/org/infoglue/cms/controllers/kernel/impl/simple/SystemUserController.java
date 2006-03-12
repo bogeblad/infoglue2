@@ -530,9 +530,9 @@ public class SystemUserController extends BaseController
 		
 		try
 		{
-			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
 			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
-				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
+				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
 	
 			MailServiceFactory.getService().send(systemEmailSender, systemUser.getEmail(), null, "InfoGlue Information - Password changed!!", sb.toString());
 		}

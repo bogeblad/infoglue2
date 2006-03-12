@@ -311,7 +311,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	{
 	    List contentTypeVOList = null;
 	    
-	    String protectContentTypes = CmsPropertyHandler.getProperty("protectContentTypes");
+	    String protectContentTypes = CmsPropertyHandler.getProtectContentTypes();
 	    if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
 	        contentTypeVOList = ContentTypeDefinitionController.getController().getAuthorizedContentTypeDefinitionVOList(this.getInfoGluePrincipal());
 		else
@@ -357,7 +357,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
     
 	public String getShowContentVersionFirst()
 	{
-	    return CmsPropertyHandler.getProperty("showContentVersionFirst");
+	    return CmsPropertyHandler.getShowContentVersionFirst();
 	}
 	
 	public LanguageVO getMasterLanguageVO() throws Exception

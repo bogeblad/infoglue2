@@ -50,7 +50,7 @@ public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
 	
 	public String getHelpUrl()
 	{
-	    return CmsPropertyHandler.getProperty("helpUrl");
+	    return CmsPropertyHandler.getHelpUrl();
 	}
 
 	public String doExecute() throws Exception

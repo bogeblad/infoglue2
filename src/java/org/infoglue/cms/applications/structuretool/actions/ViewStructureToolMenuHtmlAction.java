@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.applications.common.actions.TreeViewAbstractAction;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.treeservice.ss.SiteNodeNodeSupplier;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -49,9 +50,9 @@ public class ViewStructureToolMenuHtmlAction extends TreeViewAbstractAction
 	/**
 	 * @see org.infoglue.cms.applications.common.actions.TreeViewAbstractAction#getNodeSupplier()
 	 */
-	protected INodeSupplier getNodeSupplier() throws Exception, org.infoglue.cms.exception.SystemException
+	protected INodeSupplier getNodeSupplier() throws Exception, SystemException
 	{
-		String treeMode = CmsPropertyHandler.getProperty("treemode"); 
+		String treeMode = CmsPropertyHandler.getTreeMode(); 
 		if(treeMode != null) setTreeMode(treeMode);
 		SiteNodeNodeSupplier sup = new SiteNodeNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal());
 		rootNode = sup.getRootNode();

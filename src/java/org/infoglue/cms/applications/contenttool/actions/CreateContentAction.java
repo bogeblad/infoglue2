@@ -170,7 +170,7 @@ public class CreateContentAction extends InfoGlueAbstractAction
 	{	
 	    List contentTypeVOList = null;
 	    
-	    String protectContentTypes = CmsPropertyHandler.getProperty("protectContentTypes");
+	    String protectContentTypes = CmsPropertyHandler.getProtectContentTypes();
 	    if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
 	        contentTypeVOList = ContentTypeDefinitionController.getController().getAuthorizedContentTypeDefinitionVOList(this.getInfoGluePrincipal());
 		else

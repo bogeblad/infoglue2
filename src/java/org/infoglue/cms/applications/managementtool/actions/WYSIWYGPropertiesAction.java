@@ -98,7 +98,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	        try
             {
                 if(this.WYSIWYGProperties == null || this.WYSIWYGProperties.equals(""))
-                    this.WYSIWYGProperties = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/contenttool/WYSIWYGConfig.js"));
+                    this.WYSIWYGProperties = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/contenttool/WYSIWYGConfig.js"));
             }
             catch (Exception e1)
             {
@@ -153,7 +153,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	        try
             {
 	            if(this.StylesXML == null || this.StylesXML.equals(""))
-	                this.StylesXML = FileHelper.getFileAsString(new File(CmsPropertyHandler.getProperty("contextRootPath") + "cms/contenttool/StylesXML.xml"));
+	                this.StylesXML = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/contenttool/StylesXML.xml"));
             }
             catch (Exception e1)
             {

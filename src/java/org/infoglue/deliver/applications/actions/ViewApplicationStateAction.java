@@ -247,7 +247,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
             return NONE;
         }
         
-        String sessionTimeout = CmsPropertyHandler.getProperty("session.timeout");
+        String sessionTimeout = CmsPropertyHandler.getSessionTimeout();
 		if(sessionTimeout == null)
 		    sessionTimeout = "1800";
 		
@@ -285,11 +285,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		
 		try
 		{
-			File testAsset = new File(CmsPropertyHandler.getProperty("digitalAssetPath") + File.separator + "test.txt");
+			File testAsset = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "test.txt");
 			FileHelper.writeToFile(testAsset, "ViewApplicationState checking file permissions in asset directory", false);
 			testAsset.delete();
 			
-			File testLog = new File(new File(CmsPropertyHandler.getProperty("logPath")).getParent() + File.separator + "test.txt");
+			File testLog = new File(new File(CmsPropertyHandler.getLogPath()).getParent() + File.separator + "test.txt");
 			FileHelper.writeToFile(testLog, "ViewApplicationState checking file permissions in logs directory", false);
 			testLog.delete();
 

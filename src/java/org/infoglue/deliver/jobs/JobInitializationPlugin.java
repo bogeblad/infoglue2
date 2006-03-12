@@ -303,7 +303,7 @@ public class JobInitializationPlugin implements SchedulerPlugin, FileScanListene
             }
             if(file == null || !file.exists())
             {
-                String fileName = CmsPropertyHandler.getProperty("contextRootPath") + "WEB-INF" + File.separator + "classes" + File.separator + "jobs.xml";
+                String fileName = CmsPropertyHandler.getContextRootPath() + "WEB-INF" + File.separator + "classes" + File.separator + "jobs.xml";
                 file = new File(fileName);
             }
         }        

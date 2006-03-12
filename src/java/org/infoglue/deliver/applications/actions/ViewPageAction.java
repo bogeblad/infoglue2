@@ -200,7 +200,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			// ----
 			
 			// -- check if the portal is active
-	        String portalEnabled = CmsPropertyHandler.getProperty("enablePortal") ;
+	        String portalEnabled = CmsPropertyHandler.getEnablePortal();
 	        boolean portalActive = ((portalEnabled != null) && portalEnabled.equals("true"));
 			
 	        if (portalActive && !isRecacheCall) 
@@ -417,11 +417,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		templateController.setBrowserBean(browserBean);
 		templateController.setDeliveryControllers(this.nodeDeliveryController, null, this.integrationDeliveryController);	
 		
-		String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+		String operatingMode = CmsPropertyHandler.getOperatingMode();
 		
 		if(operatingMode != null && (operatingMode.equals("0") || operatingMode.equals("1") || operatingMode.equals("2")))
 		{
-		    String editOnSite = CmsPropertyHandler.getProperty("editOnSite");
+		    String editOnSite = CmsPropertyHandler.getEditOnSite();
 			boolean isEditOnSightDisabled = templateController.getIsEditOnSightDisabled();
 			
 			if(allowEditOnSightAtAll && !isEditOnSightDisabled && editOnSite != null && editOnSite.equalsIgnoreCase("true"))
@@ -498,7 +498,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		if(getLanguageId() == null)
 		{
 		    LanguageVO browserLanguageVO = null;
-		    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getProperty("useAlternativeBrowserLanguageCheck");
+		    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getUseAlternativeBrowserLanguageCheck();
 		    if(useAlternativeBrowserLanguageCheck == null || !useAlternativeBrowserLanguageCheck.equalsIgnoreCase("true"))
 		        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId(), (InfoGluePrincipal)this.principal);
 		    else
@@ -783,8 +783,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    
 	    boolean enableExtranetCookies = false;
 	    int extranetCookieTimeout = 43200; //30 days default
-	    String enableExtranetCookiesString = CmsPropertyHandler.getProperty("enableExtranetCookies");
-	    String extranetCookieTimeoutString = CmsPropertyHandler.getProperty("extranetCookieTimeout");
+	    String enableExtranetCookiesString = CmsPropertyHandler.getEnableExtranetCookies();
+	    String extranetCookieTimeoutString = CmsPropertyHandler.getExtranetCookieTimeout();
 	    if(enableExtranetCookiesString != null && enableExtranetCookiesString.equalsIgnoreCase("true"))
 	    {
 	        enableExtranetCookies = true;

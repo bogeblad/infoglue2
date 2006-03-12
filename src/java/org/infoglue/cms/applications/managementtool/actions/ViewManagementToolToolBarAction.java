@@ -82,7 +82,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 	private Integer redirectId = null;
 	private Integer serverNodeId = null;
 	
-	private String URIEncoding = CmsPropertyHandler.getProperty("URIEncoding");
+	private String URIEncoding = CmsPropertyHandler.getURIEncoding();
 	
 	private InterceptionPointVO interceptionPointVO = null;
 	
@@ -631,7 +631,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		this.name = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentTypeDefinitionId).getName();
 		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteContentTypeDefinition.header&yesDestination=" + URLEncoder.encode("DeleteContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListContentTypeDefinition.action?title=ContentTypeDefinitions", "UTF-8") + "&message=tool.managementtool.deleteContentTypeDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteContentTypeDefinition"), "tool.managementtool.deleteContentTypeDefinition.header"));
 		
-		String protectContentTypes = CmsPropertyHandler.getProperty("protectContentTypes");
+		String protectContentTypes = CmsPropertyHandler.getProtectContentTypes();
 		if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
 		{
 			String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentTypeDefinition.action?contentTypeDefinitionId=" + this.contentTypeDefinitionId, "UTF-8"), "UTF-8");
@@ -709,7 +709,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		List buttons = new ArrayList();
 		this.name = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(this.workflowDefinitionId).getName();
 		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteWorkflowDefinition.header&yesDestination=" + URLEncoder.encode("DeleteWorkflowDefinition.action?workflowDefinitionId=" + this.workflowDefinitionId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListWorkflowDefinition.action", "UTF-8") + "&message=tool.managementtool.deleteWorkflowDefinition.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinition.header"));
-	    final String protectWorkflows = CmsPropertyHandler.getProperty("protectWorkflows");
+	    final String protectWorkflows = CmsPropertyHandler.getProtectWorkflows();
 	    if(protectWorkflows != null && protectWorkflows.equalsIgnoreCase("true"))
 	    {
 			String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewWorkflowDefinition.action?workflowDefinitionId=" + this.workflowDefinitionId, "UTF-8"), "UTF-8");

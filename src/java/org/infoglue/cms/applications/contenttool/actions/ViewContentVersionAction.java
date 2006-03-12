@@ -247,7 +247,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     {
     	this.initialize(getContentVersionId(), getContentId(), this.languageId);
         
-    	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
+    	String wysiwygEditor = CmsPropertyHandler.getWysiwygEditor();
     	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
     	    return "success";
     	else
@@ -259,7 +259,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 	    this.initialize(getContentVersionId(), getContentId(), this.languageId);
 		    
-    	String wysiwygEditor = CmsPropertyHandler.getProperty("wysiwygEditor");
+    	String wysiwygEditor = CmsPropertyHandler.getWysiwygEditor();
     	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
     	    return "standalone";
     	else
@@ -925,7 +925,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	
 	public String getDeliveryBaseUrl()
 	{
-		String previewDeliveryUrl = CmsPropertyHandler.getProperty("previewDeliveryUrl");
+		String previewDeliveryUrl = CmsPropertyHandler.getPreviewDeliveryUrl();
 		int index = previewDeliveryUrl.lastIndexOf("/");
 		if(index > 0)
 		{
@@ -961,7 +961,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		try
 		{	
-		    String protectCategories = CmsPropertyHandler.getProperty("protectCategories");
+		    String protectCategories = CmsPropertyHandler.getProtectCategories();
 		    if(protectCategories != null && protectCategories.equalsIgnoreCase("true"))
 		        return categoryController.getAuthorizedActiveChildren(categoryId, this.getInfoGluePrincipal());
 			else

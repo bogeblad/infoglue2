@@ -158,7 +158,7 @@ public class RemoteCacheUpdater implements NotificationListener
 		while(urlsIterator.hasNext())
 		{
 		    String deliverUrl = (String)urlsIterator.next();
-			String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
+			String address = deliverUrl + "/" + CmsPropertyHandler.getCacheUpdateAction();
 			logger.info("Updating cache at " + address);
 			try
 			{
@@ -181,7 +181,7 @@ public class RemoteCacheUpdater implements NotificationListener
 		String deliverUrl = null;
 		while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
 		{ 
-			String address = deliverUrl + "/" + CmsPropertyHandler.getProperty("cacheUpdateAction");
+			String address = deliverUrl + "/" + CmsPropertyHandler.getCacheUpdateAction();
 			logger.info("Updating cache at " + address);
 			String response = postToUrl(address, hashedMessage);
 			i++;

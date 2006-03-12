@@ -81,7 +81,7 @@ public class ViewStructureToolMenuAction extends InfoGlueAbstractAction
 
 	public String getShowComponentsFirst()
 	{
-	    return CmsPropertyHandler.getProperty("showComponentsFirst");
+	    return CmsPropertyHandler.getShowComponentsFirst();
 	}
 	
 	public LanguageVO getMasterLanguageVO() throws Exception

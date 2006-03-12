@@ -212,7 +212,7 @@ public class IISLogger extends Logger
     	
 		if(logBuffer.size() > 20)
 		{
-			String logPath = CmsPropertyHandler.getProperty("statisticsLogPath");
+			String logPath = CmsPropertyHandler.getStatisticsLogPath();
 			File file = new File(logPath + File.separator + "stat" + date + ".log");
 			boolean isFileCreated = file.exists();
 				

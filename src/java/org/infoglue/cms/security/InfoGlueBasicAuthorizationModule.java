@@ -101,8 +101,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	    
 		InfoGluePrincipal infogluePrincipal = null;
 		
-		String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
-		String administratorEmail 	 = CmsPropertyHandler.getProperty("administratorEmail");
+		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
+		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
 		
 		final boolean isAdministrator = (userName != null && userName.equalsIgnoreCase(administratorUserName)) ? true : false;
 		if(isAdministrator)
@@ -250,7 +250,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		List roles = new ArrayList();
 		List groups = new ArrayList();
 		
-		String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
+		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
 		
 		boolean isAdministrator = userName.equalsIgnoreCase(administratorUserName) ? true : false;
 		if(isAdministrator)

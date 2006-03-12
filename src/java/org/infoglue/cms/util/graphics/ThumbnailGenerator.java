@@ -89,11 +89,11 @@ public class ThumbnailGenerator
 		if(thumbHeight < 1)
 		    thumbHeight = 1;
 		    
-		if(CmsPropertyHandler.getProperty("externalThumbnailGeneration") != null && !CmsPropertyHandler.getProperty("externalThumbnailGeneration").equalsIgnoreCase("")  && !CmsPropertyHandler.getProperty("externalThumbnailGeneration").equalsIgnoreCase("@externalThumbnailGeneration@"))
+		if(CmsPropertyHandler.getExternalThumbnailGeneration() != null && !CmsPropertyHandler.getExternalThumbnailGeneration().equalsIgnoreCase("") && !CmsPropertyHandler.getExternalThumbnailGeneration().equalsIgnoreCase("@externalThumbnailGeneration@"))
 		{
 		    String[] args = new String[5];
 		    
-		    args[0] = CmsPropertyHandler.getProperty("externalThumbnailGeneration");
+		    args[0] = CmsPropertyHandler.getExternalThumbnailGeneration();
 		    args[1] = "-resize";
 		    args[2] = String.valueOf(thumbWidth) + "x" + String.valueOf(thumbHeight);
 		    args[3] = originalFile;

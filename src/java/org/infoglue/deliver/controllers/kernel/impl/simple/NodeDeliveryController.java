@@ -131,7 +131,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		Integer operatingMode = new Integer(0); //Default is working
 		try
 		{
-			operatingMode = new Integer(CmsPropertyHandler.getProperty("operatingMode"));
+			operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
 			//getLogger().info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
@@ -1204,26 +1204,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public String getPageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
 	{
 		String pageUrl = "";
-		
-		/*
-		if(siteNodeId == null)
-			siteNodeId = new Integer(-1);
-
-		if(languageId == null)
-			languageId = new Integer(-1);
-
-		if(contentId == null)
-			contentId = new Integer(-1);
-		
-		//String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
-		
-		SiteNode siteNode = getSiteNode(db, siteNodeId);
-		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
-		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
-			dnsName = siteNode.getRepository().getDnsName();
-			
-		//pageUrl = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction") + "?" + arguments;
-		*/
 
 		pageUrl = urlComposer.composePageUrl(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext); 
 		
@@ -1235,7 +1215,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     {
 		/*
 	    SiteNode siteNode = getSiteNode(db, siteNodeId);
-		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+		String dnsName = CmsPropertyHandler.getWebServerAddress();
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
 		*/
@@ -1273,11 +1253,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		String pageUrl = "";
 		
 		SiteNode siteNode = this.getSiteNode(db, this.siteNodeId);
-		String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+		String dnsName = CmsPropertyHandler.getWebServerAddress();
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
 						
-		//pageUrl = dnsName + "/" + CmsPropertyHandler.getProperty("applicationBaseAction");
 		pageUrl = urlComposer.composePageBaseUrl(dnsName); 
 		
 		return pageUrl;
@@ -1474,7 +1453,7 @@ public class NodeDeliveryController extends BaseDeliveryController
             return "";
         }
         
-        String niceURIEncoding = CmsPropertyHandler.getProperty("niceURIEncoding");
+        String niceURIEncoding = CmsPropertyHandler.getNiceURIEncoding();
         if(niceURIEncoding == null || niceURIEncoding.length() == 0)
             niceURIEncoding = "UTF-8";
         

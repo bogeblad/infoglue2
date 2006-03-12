@@ -68,7 +68,7 @@ public class ExpireCacheJob implements Job
 
 				try
                 {
-	        	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+	        	    String operatingMode = CmsPropertyHandler.getOperatingMode();
 	        	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
 	        	    {
 	        	        logger.info("Updating all caches as this was a publishing-update");
@@ -111,7 +111,7 @@ public class ExpireCacheJob implements Job
                 
                 try
                 {
-	        	    String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+	        	    String operatingMode = CmsPropertyHandler.getOperatingMode();
 	        	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
 	        	    {
 	        	        logger.info("Updating all caches as this was a publishing-update");

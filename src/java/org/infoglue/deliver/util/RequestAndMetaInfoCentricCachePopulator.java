@@ -78,11 +78,11 @@ public class RequestAndMetaInfoCentricCachePopulator
         logger.info("recache starting..");
 
         HttpHelper helper = new HttpHelper();
-        String recacheUrl = CmsPropertyHandler.getProperty("recacheUrl") + "?siteNodeId=" + siteNodeId + "&refresh=true&isRecacheCall=true";
+        String recacheUrl = CmsPropertyHandler.getRecacheUrl() + "?siteNodeId=" + siteNodeId + "&refresh=true&isRecacheCall=true";
         String response = helper.getUrlContent(recacheUrl);
         
-        String recacheBaseUrl = CmsPropertyHandler.getProperty("recacheUrl").replaceAll("/ViewPage.action", "");
-        String pathsToRecacheOnPublishing = CmsPropertyHandler.getProperty("pathsToRecacheOnPublishing");
+        String recacheBaseUrl = CmsPropertyHandler.getRecacheUrl().replaceAll("/ViewPage.action", "");
+        String pathsToRecacheOnPublishing = CmsPropertyHandler.getPathsToRecacheOnPublishing();
         if(pathsToRecacheOnPublishing.indexOf("pathsToRecacheOnPublishing") == -1)
         {
 	        String[] pathsToRecacheOnPublishingArray = pathsToRecacheOnPublishing.split(",");

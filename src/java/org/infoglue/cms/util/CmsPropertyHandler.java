@@ -290,21 +290,473 @@ public class CmsPropertyHandler
 	    return value;
 	}
 
-	/**
-	 * This method clears the serverNodeProperty.
-	 */
+	public static String getContextRootPath()
+	{
+	    return getProperty("contextRootPath");
+	}
+
+	public static String getOperatingMode()
+	{
+	    return getProperty("operatingMode");
+	}
 	
+	public static String getUp2dateUrl()
+	{
+	    return getProperty("up2dateUrl");
+	}
+
+	public static String getURLComposerClass()
+	{
+	    return getProperty("URLComposerClass");
+	}
+
+	public static String getMaxClients()
+	{
+	    return getProperty("maxClients");
+	}
+
+	public static String getAdministratorUserName()
+	{
+	    return getProperty("administratorUserName");
+	}
+
+	public static String getAdministratorPassword()
+	{
+	    return getProperty("administratorPassword");
+	}
+
+	public static String getAdministratorEmail()
+	{
+	    return getProperty("administratorEmail");
+	}
+
+	public static String getDbRelease()
+	{
+	    return getProperty("dbRelease");
+	}
+
+	public static String getDbUser()
+	{
+	    return getProperty("dbUser");
+	}
+
+	public static String getDbPassword()
+	{
+	    return getProperty("dbPassword");
+	}
+
+	public static String getMasterServer()
+	{
+	    return getProperty("masterServer");
+	}
+	public static String getSlaveServer()
+	{
+	    return getProperty("slaveServer");
+	}
+
+	public static String getBuildName()
+	{
+	    return getProperty("buildName");
+	}
+	public static String getAdminToolsPath()
+	{
+	    return getProperty("adminToolsPath");
+	}
+	public static String getDbScriptPath()
+	{
+	    return getProperty("dbScriptPath");
+	}
+
+	public static String getDigitalAssetUploadPath()
+	{
+	    return getServerNodeProperty("digitalAssetUploadPath", true);
+	}
+	
+	public static String getExtranetCookieTimeout()
+	{
+	    return getServerNodeProperty("extranetCookieTimeout", true);
+	}
+
+	public static String getWebServicesBaseUrl()
+	{
+	    return getServerNodeProperty("webServicesBaseUrl", true);
+	}
+
+	public static String getPublicationThreadDelay()
+	{
+	    return getServerNodeProperty("publicationThreadDelay", true);
+	}
+
+	public static String getPathsToRecacheOnPublishing()
+	{
+	    return getServerNodeProperty("pathsToRecacheOnPublishing", true);
+	}
+
+	public static String getDisableTemplateDebug()
+	{
+	    return getServerNodeProperty("disableTemplateDebug", true);
+	}
+
+	public static String getTree()
+	{
+	    return getServerNodeProperty("tree", true);
+	}
+
+	public static String getTreeMode()
+	{
+	    return getServerNodeProperty("treemode", true);
+	}
+
+	public static String getPreviewDeliveryUrl()
+	{
+	    return getServerNodeProperty("previewDeliveryUrl", true);
+	}
+
+	public static String getStagingDeliveryUrl()
+	{
+	    return getServerNodeProperty("stagingDeliveryUrl", true);
+	}
+
+	public static String getEditionPageSize()
+	{
+		return getServerNodeProperty("edition.pageSize", true);
+	}
+	
+	public static String getContentTreeSort()
+	{
+		return getServerNodeProperty("content.tree.sort", true);
+	}
+
+	public static String getStructureTreeSort()
+	{
+		return getServerNodeProperty("structure.tree.sort", true);
+	}
+
+	public static String getDisableEmptyUrls()
+	{
+		return getServerNodeProperty("disableEmptyUrls", true);
+	}
+
+	public static String getCacheUpdateAction()
+	{
+		return getServerNodeProperty("cacheUpdateAction", true);
+	}
+
+	public static String getLogPath()
+	{
+		return getServerNodeProperty("logPath", true);
+	}
+
+	public static String getLogTransactions()
+	{
+		return getServerNodeProperty("logTransactions", true);
+	}
+	
+	public static String getEnableExtranetCookies()
+	{
+		return getServerNodeProperty("enableExtranetCookies", true);
+	}
+	
+	public static String getUseAlternativeBrowserLanguageCheck()
+	{
+		return getServerNodeProperty("useAlternativeBrowserLanguageCheck", true);
+	}
+	
+	public static String getCaseSensitiveRedirects()
+	{
+		return getServerNodeProperty("caseSensitiveRedirects", true);
+	}
+	
+	public static String getUseDNSNameInURI()
+	{
+		return getServerNodeProperty("useDNSNameInURI", true);
+	}
+    
+	public static String getWysiwygEditor()
+	{
+		return getServerNodeProperty("wysiwygEditor", true);
+	}
+
+	public static String getProtectContentTypes()
+	{
+		return getServerNodeProperty("protectContentTypes", true);
+	}
+
+	public static String getProtectWorkflows()
+	{
+		return getServerNodeProperty("protectWorkflows", true);
+	}
+
+	public static String getProtectCategories()
+	{
+		return getServerNodeProperty("protectCategories", true);
+	}
+
+	public static String getMaxRows()
+	{
+		return getServerNodeProperty("maxRows", true);
+	}
+	
+	public static String getShowContentVersionFirst()
+	{
+		return getServerNodeProperty("showContentVersionFirst", true);
+	}
+	
+	public static String getShowComponentsFirst()
+	{
+		return getServerNodeProperty("showComponentsFirst", true);
+	}
+	
+	public static String getShowAllWorkflows()
+	{
+		return getServerNodeProperty("showAllWorkflows", true);
+	}
 	
 	public static String getIsPageCacheOn()
 	{
 	    return getServerNodeProperty("isPageCacheOn", true);
 	}
 
+	public static String getEditOnSite()
+	{
+	    return getServerNodeProperty("editOnSite", true);
+	}
+
+	public static String getUseSelectivePageCacheUpdate()
+	{
+	    return getServerNodeProperty("useSelectivePageCacheUpdate", true);
+	}
+
+	public static String getExpireCacheAutomatically()
+	{
+	    return getServerNodeProperty("expireCacheAutomatically", true);
+	}
+
+	public static String getCacheExpireInterval()
+	{
+	    return getServerNodeProperty("cacheExpireInterval", true);
+	}
+
+	public static String getSessionTimeout()
+	{
+	    return getServerNodeProperty("session.timeout", true);
+	}
+
+	public static String getCompressPageCache()
+	{
+	    return getServerNodeProperty("compressPageCache", true);
+	}
+
+	public static String getSiteNodesToRecacheOnPublishing()
+	{
+	    return getServerNodeProperty("siteNodesToRecacheOnPublishing", true);
+	}
+
+	public static String getRecachePublishingMethod()
+	{
+	    return getServerNodeProperty("recachePublishingMethod", true);
+	}
+
+	public static String getRecacheUrl()
+	{
+	    return getServerNodeProperty("recacheUrl", true);
+	}
+
+	public static String getUseUpdateSecurity()
+	{
+	    return getServerNodeProperty("useUpdateSecurity", true);
+	}
+	
+	public static String getAllowedAdminIP()
+	{
+	    return getServerNodeProperty("allowedAdminIP", true);
+	}
+
+	public static String getPageKey()
+	{
+	    return getServerNodeProperty("pageKey", true);
+	}
+	
+	public static String getCmsBaseUrl()
+	{
+	    return getServerNodeProperty("cmsBaseUrl", true);
+	}
+
+	public static String getComponentEditorUrl()
+	{
+	    return getServerNodeProperty("componentEditorUrl", true);
+	}
+
+	public static String getComponentRendererUrl()
+	{
+	    return getServerNodeProperty("pacomponentRendererUrlgeKey", true);
+	}
+
+	public static String getComponentRendererAction()
+	{
+	    return getServerNodeProperty("componentRendererAction", true);
+	}
+
+	public static String getEditOnSiteUrl()
+	{
+	    return getServerNodeProperty("editOnSiteUrl", true);
+	}
+
+	public static String getUseFreeMarker()
+	{
+	    return getServerNodeProperty("useFreeMarker", true);
+	}
+
+	public static String getWebServerAddress()
+	{
+	    return getServerNodeProperty("webServerAddress", true);
+	}
+
+	public static String getApplicationBaseAction()
+	{
+	    return getServerNodeProperty("applicationBaseAction", true);
+	}
+
+	public static String getDigitalAssetBaseUrl()
+	{
+	    return getServerNodeProperty("digitalAssetBaseUrl", true);
+	}
+
+	public static String getImagesBaseUrl()
+	{
+	    return getServerNodeProperty("imagesBaseUrl", true);
+	}
+
+	public static String getDigitalAssetPath()
+	{
+	    return getServerNodeProperty("digitalAssetPath", true);
+	}
+
+	public static String getEnableNiceURI()
+	{
+	    return getServerNodeProperty("enableNiceURI", true);
+	}
+
+	public static String getNiceURIEncoding()
+	{
+	    return getServerNodeProperty("niceURIEncoding", true);
+	}
+
+	public static String getNiceURIAttributeName()
+	{
+	    return getServerNodeProperty("niceURIAttributeName", true);
+	}
+
+	public static String getRequestArgumentDelimiter()
+	{
+	    return getServerNodeProperty("requestArgumentDelimiter", true);
+	}
+
+	public static String getErrorUrl()
+	{
+	    return getServerNodeProperty("errorUrl", true);
+	}
+
+	public static String getErrorBusyUrl()
+	{
+	    return getServerNodeProperty("errorBusyUrl", true);
+	}
+
+	public static String getExternalThumbnailGeneration()
+	{
+	    return getServerNodeProperty("externalThumbnailGeneration", true);
+	}
+
+	public static String getURIEncoding()
+	{
+	    return getServerNodeProperty("URIEncoding", true);
+	}
+
+	public static String getWorkflowEncoding()
+	{
+	    return getServerNodeProperty("workflowEncoding", true);
+	}
+
 	public static String getFormsEncoding()
 	{
 	    return getServerNodeProperty("formsEncoding", true);
 	}
+
+	public static String getUseShortTableNames()
+	{
+	    return getServerNodeProperty("useShortTableNames", true);
+	}
+
+	public static String getLogDatabaseMessages()
+	{
+	    return getServerNodeProperty("logDatabaseMessages", true);
+	}
+
+	public static String getStatisticsEnabled()
+	{
+	    return getServerNodeProperty("statistics.enabled", true);
+	}
+
+	public static String getStatisticsLogPath()
+	{
+	    return getServerNodeProperty("statisticsLogPath", true);
+	}
+
+	public static String getStatisticsLogOneFilePerDay()
+	{
+	    return getServerNodeProperty("statisticsLogOneFilePerDay", true);
+	}
+
+	public static String getStatisticsLogger()
+	{
+	    return getServerNodeProperty("statisticsLogger", true);
+	}
+
+	public static String getEnablePortal()
+	{
+	    return getServerNodeProperty("enablePortal", true);
+	}
+
+	public static String getPortletBase()
+	{
+	    return getServerNodeProperty("portletBase", true);
+	}
+
+	public static String getMailSmtpHost()
+	{
+	    return getServerNodeProperty("mail.smtp.host", true);
+	}
+
+	public static String getMailSmtpAuth()
+	{
+	    return getServerNodeProperty("mail.smtp.auth", true);
+	}
+
+	public static String getMailSmtpUser()
+	{
+	    return getServerNodeProperty("mail.smtp.user", true);
+	}
+
+	public static String getMailSmtpPassword()
+	{
+	    return getServerNodeProperty("mail.smtp.password", true);
+	}
+
+	public static String getMailContentType()
+	{
+	    return getServerNodeProperty("mail.contentType", true);
+	}
 	
+	public static String getSystemEmailSender()
+	{
+	    return getServerNodeProperty("systemEmailSender", true);
+	}
+
+	public static String getHelpUrl()
+	{
+	    return getServerNodeProperty("helpUrl", true);
+	}
+
 	public static String getPreferredLanguageCode(String userName)
 	{
         return propertySet.getString("principal_" + userName + "_languageCode");
@@ -321,7 +773,7 @@ public class CmsPropertyHandler
 	    
         String cacheKey = "" + key;
         String cacheName = "propertySetCache";
-		logger.info("cacheKey:" + cacheKey);
+		//logger.info("cacheKey:" + cacheKey);
 		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
 		if(value != null)
 		{
@@ -329,6 +781,7 @@ public class CmsPropertyHandler
 		}
 	    
 		value = propertySet.getString(key);
+		logger.info("propertySetCache did not have value... refetched:" + value);
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
 	    

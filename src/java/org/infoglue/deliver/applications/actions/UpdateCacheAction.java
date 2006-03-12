@@ -69,7 +69,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doTest() throws Exception
     {
-        String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+        String operatingMode = CmsPropertyHandler.getOperatingMode();
 		
         if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
         {
@@ -97,7 +97,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
-        String operatingMode = CmsPropertyHandler.getProperty("operatingMode");
+        String operatingMode = CmsPropertyHandler.getOperatingMode();
 		
         if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
         {

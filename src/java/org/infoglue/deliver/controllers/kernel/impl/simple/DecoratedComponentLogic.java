@@ -58,12 +58,12 @@ public class DecoratedComponentLogic extends ComponentLogic
 			
 			String arguments = "siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId;
 			
-			String dnsName = CmsPropertyHandler.getProperty("componentRendererUrl");
+			String dnsName = CmsPropertyHandler.getComponentRendererUrl();
 			
 			if(dnsName.endsWith("/"))
-			    pageUrl = dnsName + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
+			    pageUrl = dnsName + CmsPropertyHandler.getComponentRendererAction() + "?" + arguments;
 			else
-			    pageUrl = dnsName + "/" + CmsPropertyHandler.getProperty("componentRendererAction") + "?" + arguments;
+			    pageUrl = dnsName + "/" + CmsPropertyHandler.getComponentRendererAction() + "?" + arguments;
 		}
 		catch(Exception e)
 		{

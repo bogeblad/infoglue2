@@ -183,7 +183,7 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	public boolean getEnableExtranetCookies()
 	{
 	    boolean enableExtranetCookies = false;
-	    String enableExtranetCookiesString = CmsPropertyHandler.getProperty("enableExtranetCookies");
+	    String enableExtranetCookiesString = CmsPropertyHandler.getEnableExtranetCookies();
 	    if(enableExtranetCookiesString != null && enableExtranetCookiesString.equalsIgnoreCase("true"))
 	    {
 	        enableExtranetCookies = true;
@@ -264,7 +264,7 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	    
 	    boolean enableExtranetCookies = getEnableExtranetCookies();
 	    int extranetCookieTimeout = 43200; //30 days default
-	    String extranetCookieTimeoutString = CmsPropertyHandler.getProperty("extranetCookieTimeout");
+	    String extranetCookieTimeoutString = CmsPropertyHandler.getExtranetCookieTimeout();
 	    if(extranetCookieTimeoutString != null)
 	    {
 	        try

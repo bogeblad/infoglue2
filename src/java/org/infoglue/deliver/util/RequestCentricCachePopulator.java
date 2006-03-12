@@ -79,7 +79,7 @@ public class RequestCentricCachePopulator
         } 
         */
         HttpHelper helper = new HttpHelper();
-        String recacheUrl = CmsPropertyHandler.getProperty("recacheUrl") + "?siteNodeId=" + siteNodeId + "&refresh=true&isRecacheCall=true";
+        String recacheUrl = CmsPropertyHandler.getRecacheUrl() + "?siteNodeId=" + siteNodeId + "&refresh=true&isRecacheCall=true";
         //System.out.println("recacheUrl:" + recacheUrl);
         String response = helper.getUrlContent(recacheUrl);
         //System.out.println("response:" + response);

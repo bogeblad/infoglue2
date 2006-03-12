@@ -101,7 +101,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
     	if(digitalAsset != null)
 		{
 			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-			//String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			//String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			
 			int i = 0;
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
@@ -114,7 +114,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
 			
-			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
 				dnsName = repository.getDnsName();
 				
@@ -149,11 +149,11 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 
-			//String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			//String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
 			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
 			
-			String dnsName = CmsPropertyHandler.getProperty("webServerAddress");
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
 				dnsName = repository.getDnsName();
 				
@@ -371,7 +371,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 
-			//File assetDirectory = new File(CmsPropertyHandler.getProperty("digitalAssetPath"));
+			//File assetDirectory = new File(CmsPropertyHandler.getDigitalAssetPath());
 			//File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
 			//for(int i=0; i<files.length; i++)
 			//{

@@ -27,7 +27,7 @@ public abstract class InfoGlueWebServiceTag extends TemplateControllerTag
     /**
      *  
      */
-    private String targetEndpointAddress = CmsPropertyHandler.getProperty("webServicesBaseUrl") + "RemoteContentService";
+    private String targetEndpointAddress = CmsPropertyHandler.getWebServicesBaseUrl() + "RemoteContentService";
 
     /**
      *  

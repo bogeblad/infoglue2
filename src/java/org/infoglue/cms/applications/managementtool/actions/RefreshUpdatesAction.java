@@ -42,7 +42,7 @@ public class RefreshUpdatesAction extends InfoGlueAbstractAction
 	protected String doExecute() throws Exception {
 		getLogger().info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
-		String url = CmsPropertyHandler.getProperty("up2dateUrl");	
+		String url = CmsPropertyHandler.getUp2dateUrl();	
 	
 		uc = new UpdateController(url, path);
 		uc.refreshAvailableUpdates();

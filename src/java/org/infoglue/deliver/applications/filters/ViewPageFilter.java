@@ -85,13 +85,13 @@ public class ViewPageFilter implements Filter
         this.filterConfig = filterConfig;
         String filterURIs = filterConfig.getInitParameter(FilterConstants.FILTER_URIS_PARAMETER);
 
-        String caseSensitiveString = CmsPropertyHandler.getProperty("caseSensitive");
+        String caseSensitiveString = CmsPropertyHandler.getCaseSensitiveRedirects();
         logger.info("caseSensitiveString:" + caseSensitiveString);
         caseSensitive = Boolean.getBoolean(caseSensitiveString);
         
         uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), caseSensitive);
 
-        attributeName = CmsPropertyHandler.getProperty("niceURIAttributeName");
+        attributeName = CmsPropertyHandler.getNiceURIAttributeName();
         logger.info("attributeName from properties:" + attributeName);
         
         if(attributeName == null || attributeName.indexOf("@") > -1)
@@ -126,7 +126,7 @@ public class ViewPageFilter implements Filter
         }
         */
         
-        String enableNiceURI = CmsPropertyHandler.getProperty("enableNiceURI");
+        String enableNiceURI = CmsPropertyHandler.getEnableNiceURI();
         if (enableNiceURI == null)
             enableNiceURI = "false";
 

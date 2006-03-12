@@ -61,9 +61,9 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	{
 			if(from == null  || from.length() == 0)
 			{
-    			String systemEmailSender = CmsPropertyHandler.getProperty("systemEmailSender");
+    			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
     			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
-    				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getProperty("mail.smtp.host");
+    				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
 
     			from = systemEmailSender;
 			}

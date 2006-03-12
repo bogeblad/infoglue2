@@ -386,7 +386,7 @@ public class DigitalAssetController extends BaseController
 	{ 
 		try
 		{
-			File assetDirectory = new File(CmsPropertyHandler.getProperty("digitalAssetPath"));
+			File assetDirectory = new File(CmsPropertyHandler.getDigitalAssetPath());
 			File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
 			for(int i=0; i<files.length; i++)
 			{
@@ -621,9 +621,9 @@ public class DigitalAssetController extends BaseController
 				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				//String filePath = digitalAsset.getAssetFilePath();
-				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+				String filePath = CmsPropertyHandler.getDigitalAssetPath();
 				dumpDigitalAsset(digitalAsset, fileName, filePath);
-				assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+				assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			}			       	
 
             commitTransaction(db);
@@ -647,7 +647,7 @@ public class DigitalAssetController extends BaseController
 	public InputStream getAssetInputStream(DigitalAsset digitalAsset) throws Exception
 	{
 	    String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-		String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+		String filePath = CmsPropertyHandler.getDigitalAssetPath();
 		dumpDigitalAsset(digitalAsset, fileName, filePath);
 		return new FileInputStream(filePath + File.separator + fileName);
 	}
@@ -666,9 +666,9 @@ public class DigitalAssetController extends BaseController
 		{
 			logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			dumpDigitalAsset(digitalAsset, fileName, filePath);
-			assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+			assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 		}			       	
     	
 		return assetUrl;
@@ -702,7 +702,7 @@ public class DigitalAssetController extends BaseController
 				{
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					logger.info("fileName:" + fileName);
-					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					logger.info("filePath:" + filePath);
 					String thumbnailFileName = digitalAsset.getDigitalAssetId() + "_thumbnail_" + digitalAsset.getAssetFileName();
 					//String thumbnailFileName = "thumbnail_" + fileName;
@@ -714,7 +714,7 @@ public class DigitalAssetController extends BaseController
 						tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, 75, 75, 100);
 						logger.info("transform done...");
 					}
-					assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
+					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
 					logger.info("assetUrl:" + assetUrl);
 				}
 				else
@@ -779,10 +779,10 @@ public class DigitalAssetController extends BaseController
 					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					//String filePath = digitalAsset.getAssetFilePath();
-					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					
 					dumpDigitalAsset(digitalAsset, fileName, filePath);
-					assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 				}			       	
 			}
 			            
@@ -853,10 +853,10 @@ public class DigitalAssetController extends BaseController
 				logger.info("digitalAsset:" + digitalAsset.getAssetKey());
 				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+				String filePath = CmsPropertyHandler.getDigitalAssetPath();
 				
 				dumpDigitalAsset(digitalAsset, fileName, filePath);
-				assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+				assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			}
 			else
 			{
@@ -879,10 +879,10 @@ public class DigitalAssetController extends BaseController
 					logger.info("digitalAsset:" + digitalAsset.getAssetKey());
 					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					
 					dumpDigitalAsset(digitalAsset, fileName, filePath);
-					assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + fileName;
+					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 				}
 			}
 		}
@@ -979,7 +979,7 @@ public class DigitalAssetController extends BaseController
 					{
 						String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 						//String filePath = digitalAsset.getAssetFilePath();
-						String filePath = CmsPropertyHandler.getProperty("digitalAssetPath");
+						String filePath = CmsPropertyHandler.getDigitalAssetPath();
 						String thumbnailFileName = digitalAsset.getDigitalAssetId() + "_thumbnail_" + digitalAsset.getAssetFileName();
 						//String thumbnailFileName = "thumbnail_" + fileName;
 						File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
@@ -988,7 +988,7 @@ public class DigitalAssetController extends BaseController
 							ThumbnailGenerator tg = new ThumbnailGenerator();
 							tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, 150, 150, 100);
 						}
-						assetUrl = CmsPropertyHandler.getProperty("webServerAddress") + "/" + CmsPropertyHandler.getProperty("digitalAssetBaseUrl") + "/" + thumbnailFileName;
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
 					}
 					else
 					{

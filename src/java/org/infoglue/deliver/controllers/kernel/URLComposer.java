@@ -43,7 +43,7 @@ public abstract class URLComposer
 
     public static URLComposer getURLComposer()
     {
-        String className = CmsPropertyHandler.getProperty("URLComposerClass");
+        String className = CmsPropertyHandler.getURLComposerClass();
         if (className == null || className.trim().equals(""))
             return new BasicURLComposer();
 

@@ -319,17 +319,17 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
     public String getComponentRendererUrl()
     {
-        return CmsPropertyHandler.getProperty("componentRendererUrl");
+        return CmsPropertyHandler.getComponentRendererUrl();
     }
     
     public String getComponentRendererAction()
     {
-        return CmsPropertyHandler.getProperty("componentRendererAction");
+        return CmsPropertyHandler.getComponentRendererAction();
     }
     
     public String getCMSBaseUrl()
     {
-        return CmsPropertyHandler.getProperty("cmsBaseUrl");
+        return CmsPropertyHandler.getCmsBaseUrl();
     }
     
     public Locale getLocale()

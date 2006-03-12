@@ -98,7 +98,7 @@ public class ViewContentTreeAction extends InfoGlueAbstractAction implements Vie
 
 		// If that fails, try global properties for default tree
 		if (tree == null)
-			setTree(CmsPropertyHandler.getProperty("tree"));
+			setTree(CmsPropertyHandler.getTree());
 
 		// Still no tree, force applet version
 		if (tree == null)

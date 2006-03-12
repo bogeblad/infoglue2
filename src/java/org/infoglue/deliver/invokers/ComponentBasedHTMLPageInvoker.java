@@ -498,7 +498,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	{
 		String decoratedComponent = "";
 		
-		String componentEditorUrl = CmsPropertyHandler.getProperty("componentEditorUrl");
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		templateController.setComponentLogic(new ComponentLogic(templateController, component));
 		templateController.getDeliveryContext().getUsageListeners().add(templateController.getComponentLogic().getComponentDeliveryContext());
 

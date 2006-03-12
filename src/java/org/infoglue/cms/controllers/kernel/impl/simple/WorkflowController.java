@@ -127,7 +127,7 @@ public class WorkflowController extends BaseController
     
 	public boolean getIsAccessApproved(String workflowName, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
-	    final String protectWorkflows = CmsPropertyHandler.getProperty("protectWorkflows");
+	    final String protectWorkflows = CmsPropertyHandler.getProtectWorkflows();
 	    if(protectWorkflows == null || !protectWorkflows.equalsIgnoreCase("true"))
 	    {
 	    	return true;

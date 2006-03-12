@@ -223,11 +223,11 @@ public class ViewPublishingToolToolBarAction extends InfoGlueAbstractAction
 		        else
 		            dnsName = dnsName.substring(startIndex);
 
-			    previewUrl = dnsName.split("=")[1] + CmsPropertyHandler.getProperty("componentRendererUrl").replaceAll("Working", "Preview") + "ViewPage.action";
+			    previewUrl = dnsName.split("=")[1] + CmsPropertyHandler.getComponentRendererUrl().replaceAll("Working", "Preview") + "ViewPage.action";
 		    }
 		    else
 		    {
-		        previewUrl = CmsPropertyHandler.getProperty("stagingDeliveryUrl");
+		        previewUrl = CmsPropertyHandler.getStagingDeliveryUrl();
 		    }
 
 			buttons.add(new ImageButton(true, "javascript:openPopup('" + previewUrl + "?repositoryName=" + repositoryName + "', 'StagingPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.publishingtool.buttons.previewEnvironment"), "tool.publishtool.previewEnvironment.header"));
