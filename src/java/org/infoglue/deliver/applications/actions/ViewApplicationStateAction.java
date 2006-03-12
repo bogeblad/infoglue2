@@ -62,6 +62,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	
 	private String cacheName				= "";
 
+	private String className				= "";
+	private String logLevel					= "";
+
 	/**
 	 * The constructor for this action - contains nothing right now.
 	 */
@@ -97,6 +100,21 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return null;
     }
 
+    private Category getCategory(String className)
+    {
+        Enumeration enumeration = Logger.getCurrentCategories();
+        while(enumeration.hasMoreElements())
+        {
+            Category category = (Category)enumeration.nextElement();
+            if(category.getName().equalsIgnoreCase(className))
+                return category;
+        }
+        
+        Category category = Category.getInstance(className);
+       
+        return category;
+    }
+
     /**
      * This action allows clearing of the given cache manually.
      */
@@ -114,6 +132,28 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearCache(cacheName);
         
         //this.getHttpSession().invalidate();
+        
+        return "cleared";
+    }
+
+    /**
+     * This action allows setting of the loglevel on any class.
+     */
+    public String doSetLogLevel() throws Exception
+    {
+    	Level newLevel = Level.ERROR;
+    	if(this.logLevel.equalsIgnoreCase("debug"))
+    		newLevel = Level.DEBUG;
+    	if(this.logLevel.equalsIgnoreCase("info"))
+    		newLevel = Level.INFO;
+    	else if(this.logLevel.equalsIgnoreCase("warn"))
+    		newLevel = Level.WARN;
+    	else if(this.logLevel.equalsIgnoreCase("error"))
+    		newLevel = Level.ERROR;
+    	
+    	Category category = getCategory(this.className);
+    	if(category != null)
+    		category.setLevel(newLevel);
         
         return "cleared";
     }
@@ -367,4 +407,12 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	
 	    return serverName;
     }
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public void setLogLevel(String logLevel) {
+		this.logLevel = logLevel;
+	}
 }

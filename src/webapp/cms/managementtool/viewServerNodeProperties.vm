@@ -133,6 +133,9 @@
 		<td>#subTitle("entity.ServerNode.property.urlEncoding.label")</td>
 	</tr>		
 	<tr>
+		<td>#editField("ServerNode.property.inputCharacterEncoding" "inputCharacterEncoding" "$this.getPropertyValue('inputCharacterEncoding')" "51")</td>
+	</tr>	
+	<tr>
 		<td>#editField("ServerNode.property.URIEncoding" "URIEncoding" "$this.getPropertyValue('URIEncoding')" "51")</td>
 	</tr>
 	<tr>
@@ -201,20 +204,20 @@
 		<td>#subTitle("entity.ServerNode.property.protectionSettings.label")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.protectContentTypes" "protectContentTypes" "$this.getPropertyValue('protectContentTypes')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.protectContentTypes" "protectContentTypes" "$this.getPropertyValue('protectContentTypes')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.protectWorkflows" "protectWorkflows" "$this.getPropertyValue('protectWorkflows')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.protectWorkflows" "protectWorkflows" "$this.getPropertyValue('protectWorkflows')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.protectCategories" "protectCategories" "$this.getPropertyValue('protectCategories')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.protectCategories" "protectCategories" "$this.getPropertyValue('protectCategories')")</td>
 	</tr>
 	
 	<tr>
 		<td>#editField("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.showContentVersionFirst" "showContentVersionFirst" "$this.getPropertyValue('showContentVersionFirst')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.showContentVersionFirst" "showContentVersionFirst" "$this.getPropertyValue('showContentVersionFirst')")</td>
 	</tr>
 	<tr>
 		<td>#editField("ServerNode.property.tree" "tree" "$this.getPropertyValue('tree')" "51")</td>
@@ -223,10 +226,10 @@
 		<td>#editField("ServerNode.property.showComponentsFirst" "showComponentsFirst" "$this.getPropertyValue('showComponentsFirst')" "51")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.showAllWorkflows" "showAllWorkflows" "$this.getPropertyValue('showAllWorkflows')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.showAllWorkflows" "showAllWorkflows" "$this.getPropertyValue('showAllWorkflows')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.editOnSight" "editOnSight" "$this.getPropertyValue('editOnSight')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.editOnSight" "editOnSight" "$this.getPropertyValue('editOnSight')")</td>
 	</tr>
 	<tr>
 		<td>#editField("ServerNode.property.previewDeliveryUrl" "previewDeliveryUrl" "$this.getPropertyValue('previewDeliveryUrl')" "51")</td>
@@ -244,7 +247,7 @@
 		<td>#editField("ServerNode.property.structure.tree.sort" "structure.tree.sort" "$this.getPropertyValue('structure.tree.sort')" "51")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.disableEmptyUrls" "disableEmptyUrls" "$this.getPropertyValue('disableEmptyUrls')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.disableEmptyUrls" "disableEmptyUrls" "$this.getPropertyValue('disableEmptyUrls')")</td>
 	</tr>
 	<tr>
 		<td>#editField("ServerNode.property.cacheUpdateAction" "cacheUpdateAction" "$this.getPropertyValue('cacheUpdateAction')" "51")</td>
@@ -253,19 +256,19 @@
 		<td>#editField("ServerNode.property.logPath" "logPath" "$this.getPropertyValue('logPath')" "51")</td>
 	</tr>	
 	<tr>
-		<td>#editField("ServerNode.property.logTransactions" "logTransactions" "$this.getPropertyValue('logTransactions')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.logTransactions" "logTransactions" "$this.getPropertyValue('logTransactions')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.enableExtranetCookies" "enableExtranetCookies" "$this.getPropertyValue('enableExtranetCookies')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.enableExtranetCookies" "enableExtranetCookies" "$this.getPropertyValue('enableExtranetCookies')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.useAlternativeBrowserLanguageCheck" "useAlternativeBrowserLanguageCheck" "$this.getPropertyValue('useAlternativeBrowserLanguageCheck')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.useAlternativeBrowserLanguageCheck" "useAlternativeBrowserLanguageCheck" "$this.getPropertyValue('useAlternativeBrowserLanguageCheck')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.caseSensitiveRedirects" "caseSensitiveRedirects" "$this.getPropertyValue('caseSensitiveRedirects')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.caseSensitiveRedirects" "caseSensitiveRedirects" "$this.getPropertyValue('caseSensitiveRedirects')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.useDNSNameInURI" "useDNSNameInURI" "$this.getPropertyValue('useDNSNameInURI')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.useDNSNameInURI" "useDNSNameInURI" "$this.getPropertyValue('useDNSNameInURI')")</td>
 	</tr>
 
 	<tr>
@@ -281,7 +284,7 @@
 		<td>#editField("ServerNode.property.pathsToRecacheOnPublishing" "pathsToRecacheOnPublishing" "$this.getPropertyValue('pathsToRecacheOnPublishing')" "51")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.disableTemplateDebug" "disableTemplateDebug" "$this.getPropertyValue('disableTemplateDebug')" "51")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.disableTemplateDebug" "disableTemplateDebug" "$this.getPropertyValue('disableTemplateDebug')")</td>
 	</tr>
 	<tr>
 		<td>#editField("ServerNode.property.dbRelease" "dbRelease" "$this.getPropertyValue('dbRelease')" "51")</td>
@@ -309,7 +312,7 @@
 	</tr>
 	<tr>
 		<td>#editField("ServerNode.property.digitalAssetUploadPath" "digitalAssetUploadPath" "$this.getPropertyValue('digitalAssetUploadPath')" "51")</td>
-	</tr>
+	</tr>	
 	
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.securitySettings.label")</td>

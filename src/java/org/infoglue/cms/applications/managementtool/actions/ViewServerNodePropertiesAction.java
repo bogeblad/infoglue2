@@ -226,6 +226,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "adminToolsPath");
 	    populate(ps, "dbScriptPath");
 	    populate(ps, "digitalAssetUploadPath");
+	    populate(ps, "inputCharacterEncoding");
 
 		NotificationMessage notificationMessage = new NotificationMessage("ViewServerNodePropertiesAction.doSave():", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
 		//ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
