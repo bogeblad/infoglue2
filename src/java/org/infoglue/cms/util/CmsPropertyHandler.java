@@ -589,7 +589,7 @@ public class CmsPropertyHandler
 
 	public static String getComponentRendererUrl()
 	{
-	    return getServerNodeProperty("pacomponentRendererUrlgeKey", true);
+	    return getServerNodeProperty("componentRendererUrl", true);
 	}
 
 	public static String getComponentRendererAction()
