@@ -76,6 +76,15 @@
 		{
 			var listForm = document.listForm;
 			var commentElm = document.getElementById("xversionComment");
+			
+			/*
+			if (commentElm.value == "")
+			{
+				alert('You must state a comment');
+			  	return;
+			}
+			*/
+			
 			var overrideVersionModifyerElm = document.getElementById("xoverrideVersionModifyer");
 			if (checkMarkedVersions() == 0)
 			{

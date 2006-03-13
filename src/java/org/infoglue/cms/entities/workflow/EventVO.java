@@ -39,7 +39,7 @@ public class EventVO implements BaseEntityVO
 	
     private java.lang.Integer eventId;
     private java.lang.String name			 = "";
-    private java.lang.String description	 = "";
+    private java.lang.String description	 = "No comment";
     private java.lang.String entityClass	 = "";
     private java.lang.Integer entityId		 = null;
     private java.util.Date creationDateTime  = DateHelper.getSecondPreciseDate();
@@ -81,7 +81,8 @@ public class EventVO implements BaseEntityVO
                 
     public void setDescription(java.lang.String description)
     {
-        this.description = description;
+    	if(description != null && description.length() > 0)
+    		this.description = description;
     }
 
     public java.lang.String getEntityClass()
