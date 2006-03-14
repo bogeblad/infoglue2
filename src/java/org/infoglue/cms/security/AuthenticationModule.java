@@ -89,6 +89,7 @@ public abstract class AuthenticationModule
 				{
 					successLoginUrl = successLoginUrl.substring(0, index);
 				}
+				logger.info("successLoginUrl:" + successLoginUrl);
 				authenticationModule.setCasServiceUrl(successLoginUrl);
 			}
 			else

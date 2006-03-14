@@ -109,7 +109,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			else
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
 	
-			logger.info("redirectUrl:" + redirectUrl);
+			logger.info("redirectUrl 1:" + redirectUrl);
 			response.sendRedirect(redirectUrl);
 
 			return null;
@@ -129,7 +129,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			else
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
 		
-			logger.info("redirectUrl:" + redirectUrl);
+			logger.info("redirectUrl 2:" + redirectUrl);
 			response.sendRedirect(redirectUrl);
 	
 			return null;
@@ -202,7 +202,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			else
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
 	
-			logger.info("redirectUrl:" + redirectUrl);
+			logger.info("redirectUrl 3:" + redirectUrl);
 
 			return redirectUrl;
 		} 
@@ -221,7 +221,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			else
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
 		
-			logger.info("redirectUrl:" + redirectUrl);
+			logger.info("redirectUrl 4:" + redirectUrl);
 			response.sendRedirect(redirectUrl);
 	
 			return redirectUrl;
@@ -292,7 +292,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		/* set its parameters */
 		pv.setCasValidateUrl(casValidateUrl);
 		
-		pv.setService(casServiceUrl);
+		pv.setService(URLEncoder.encode(casServiceUrl, "UTF-8"));
 
 		pv.setServiceTicket(ticket);
 
@@ -369,7 +369,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		  	+ "edu.yale.its.tp.cas.client.filter.serverName");
 
 	  	// use the given string if it's provided
-	  	if (casServiceUrl != null)
+	  	if (casServiceUrl != null && casServiceUrl.length() > 0)
 			return URLEncoder.encode(casServiceUrl, "UTF-8");
 	  	else
 			// otherwise, return our best guess at the service
@@ -541,7 +541,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			else
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
 	
-			logger.info("redirectUrl:" + redirectUrl);
+			logger.info("redirectUrl 6:" + redirectUrl);
 			
 			response.sendRedirect(redirectUrl);
 			status.put("redirected", new Boolean(true));
@@ -562,7 +562,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			else
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
 		
-			logger.info("redirectUrl:" + redirectUrl);
+			logger.info("redirectUrl 7:" + redirectUrl);
 			response.sendRedirect(redirectUrl);
 	
 			status.put("redirected", new Boolean(true));
