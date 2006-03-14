@@ -135,7 +135,7 @@ public class ExtranetController extends BaseDeliveryController
 		
 		try
 		{			
-			String authenticatedUserName = AuthenticationModule.getAuthenticationModule(null).authenticateUser(request);
+			String authenticatedUserName = AuthenticationModule.getAuthenticationModule(null, null).authenticateUser(request);
 			getLogger().info("authenticatedUserName:" + authenticatedUserName);
 			principal = UserControllerProxy.getController().getUser(authenticatedUserName);
 			getLogger().info("principal:" + principal);

@@ -106,7 +106,7 @@ public class LoginAction extends InfoGlueAbstractAction
 	{
 		getHttpSession().invalidate();
 		
-		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null);
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
 		boolean redirected = authenticationModule.logoutUser(getRequest(), getResponse());
 		
 		if(redirected)

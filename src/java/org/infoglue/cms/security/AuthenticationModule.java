@@ -45,7 +45,7 @@ public abstract class AuthenticationModule
 {
     private final static Logger logger = Logger.getLogger(AuthenticationModule.class.getName());
 
-	public static AuthenticationModule getAuthenticationModule(Object transactionObject) throws SystemException
+	public static AuthenticationModule getAuthenticationModule(Object transactionObject, String successLoginUrl) throws SystemException
 	{
 		AuthenticationModule authenticationModule = null;
 		
@@ -81,7 +81,19 @@ public abstract class AuthenticationModule
 			authenticationModule.setServerName(serverName);
 			authenticationModule.setExtraProperties(extraProperties);
 			authenticationModule.setCasRenew(casRenew);
-			authenticationModule.setCasServiceUrl(casServiceUrl);
+			
+			if(successLoginUrl != null && successLoginUrl.length() > 0)
+			{
+				int index = successLoginUrl.indexOf("&ticket=");
+				if(index > -1)
+				{
+					successLoginUrl = successLoginUrl.substring(0, index);
+				}
+				authenticationModule.setCasServiceUrl(successLoginUrl);
+			}
+			else
+				authenticationModule.setCasServiceUrl(casServiceUrl);
+			
 			authenticationModule.setCasValidateUrl(casValidateUrl);
 			authenticationModule.setCasLogoutUrl(casLogoutUrl);
 			authenticationModule.setTransactionObject(transactionObject);			

@@ -214,8 +214,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            if (actionExecuted) 
 	            {
 	                getLogger().info("---> PortletAction was executed, returning NONE as a redirect has been issued");
-	                //TODO: maybe statistics service should run here
 	                getLogger().warn("No statistics have been run for this request");
+	                isUserRedirected = true;
 	                return NONE;
 	            }
 	        }
@@ -633,7 +633,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{				
 				Map status = new HashMap();
 				status.put("redirected", new Boolean(false));
-				principal = AuthenticationModule.getAuthenticationModule(db).loginUser(getRequest(), getResponse(), status);
+				principal = AuthenticationModule.getAuthenticationModule(db, this.getCurrentURL()).loginUser(getRequest(), getResponse(), status);
 				Boolean redirected = (Boolean)status.get("redirected");
 				if(redirected != null && redirected.booleanValue())
 				{
@@ -910,7 +910,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
   	private String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception 
   	{
-		String url = AuthenticationModule.getAuthenticationModule(null).getLoginDialogUrl(request, response);
+		String url = AuthenticationModule.getAuthenticationModule(null, this.getCurrentURL()).getLoginDialogUrl(request, response);
 		
 		return url;
   	}

@@ -5501,7 +5501,7 @@ public class BasicTemplateController implements TemplateController
 	
 	public String getLogoutURL() throws Exception
 	{
-		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(this.getDatabase());
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(this.getDatabase(), null);
 	    return authenticationModule.getLogoutUrl();
 	}
 

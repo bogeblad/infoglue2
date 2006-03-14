@@ -291,7 +291,9 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		
 		/* set its parameters */
 		pv.setCasValidateUrl(casValidateUrl);
+		
 		pv.setService(casServiceUrl);
+
 		pv.setServiceTicket(ticket);
 
 		/* 

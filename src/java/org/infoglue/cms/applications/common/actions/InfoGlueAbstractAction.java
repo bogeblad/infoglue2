@@ -85,7 +85,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	
 	public String getLogoutURL() throws Exception
 	{
-		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null);
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
 	    return authenticationModule.getLogoutUrl();
 	}
 
