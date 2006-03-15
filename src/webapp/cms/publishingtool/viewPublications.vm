@@ -118,7 +118,7 @@ function ruSure(txt, url)
 	#set($fnutt = '"')
 	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
 	##set( $row = ["$icon $publicationEvent.name ($description)","$modifiedDate", "$denyUrlStart$deny$denyUrlEnd"] )
-	#set($span = "<span onmouseover='return overlib(${fnutt}${publicationEvent.description}${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'>($description)</span>")
+	#set($span = "<span onmouseover='return overlib(${fnutt}${formatter.cleanForJavascriptStrings($publicationEvent.description)}${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'>($description)</span>")
 	#set( $row = ["$icon $publicationEvent.name $span","$modifiedDate"] )
 	#set($cnt = $cnt + 1)
 
