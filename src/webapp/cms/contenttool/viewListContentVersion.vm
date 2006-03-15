@@ -85,6 +85,12 @@
 			  	return;
 			}
 			*/
+			if (commentElm.value.length > 255)
+			{
+				alert('The comment is to long - only 255 characters allowed.');
+			  	return;
+			}
+
 
 			var overrideVersionModifyerElm = document.getElementById("xoverrideVersionModifyer");
 			if (checkMarkedVersions() == 0)

@@ -59,6 +59,20 @@
 		{
 			var listForm = document.listForm;
 			var commentElm = document.getElementById("xversionComment");
+			
+			/*
+			if (commentElm.value == "")
+			{
+				alert('You must state a comment');
+			  	return;
+			}
+			*/
+			if (commentElm.value.length > 255)
+			{
+				alert('The comment is to long - only 255 characters allowed.');
+			  	return;
+			}
+			
 			var overrideVersionModifyerElm = document.getElementById("xoverrideVersionModifyer");
 			if (checkMarkedVersions() == 0)
 			{
