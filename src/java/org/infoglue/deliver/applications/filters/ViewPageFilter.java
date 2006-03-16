@@ -164,45 +164,48 @@ public class ViewPageFilter implements Filter
 	                languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, db);
 	            
 		            Integer siteNodeId = null;
-		            String[] nodeNames = splitString(requestURI, "/");
-		            logger.info("nodeNames:" + nodeNames.length);
-		            //logger.info("RepositoryId.: "+repositoryId);
-		            //logger.info("LanguageId...: "+languageId);
-		            //logger.info("RequestURI...: "+requestURI);
+	                if(languageId != null)
+	                {
+			            String[] nodeNames = splitString(requestURI, "/");
+			            logger.info("nodeNames:" + nodeNames.length);
+			            //logger.info("RepositoryId.: "+repositoryId);
+			            //logger.info("LanguageId...: "+languageId);
+			            //logger.info("RequestURI...: "+requestURI);
+			
+		                InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
+		                if (infoGluePrincipal == null) 
+		                {
+		                    try 
+		                    {
+		                        infoGluePrincipal = (InfoGluePrincipal) CacheController.getCachedObject("userCache", "anonymous");
+		                        if (infoGluePrincipal == null) 
+		                        {
+		                            Map arguments = new HashMap();
+		        				    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+		        				    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
+		        					infoGluePrincipal = (InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(db, arguments);
+		        					if(infoGluePrincipal != null)
+		        						CacheController.cacheObject("userCache", "anonymous", infoGluePrincipal);
+		                        }
+		                        //this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
 		
-	                InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
-	                if (infoGluePrincipal == null) 
-	                {
-	                    try 
-	                    {
-	                        infoGluePrincipal = (InfoGluePrincipal) CacheController.getCachedObject("userCache", "anonymous");
-	                        if (infoGluePrincipal == null) 
-	                        {
-	                            Map arguments = new HashMap();
-	        				    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
-	        				    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
-	        					infoGluePrincipal = (InfoGluePrincipal)ExtranetController.getController().getAuthenticatedPrincipal(db, arguments);
-	        					if(infoGluePrincipal != null)
-	        						CacheController.cacheObject("userCache", "anonymous", infoGluePrincipal);
-	                        }
-	                        //this.principal = ExtranetController.getController().getAuthenticatedPrincipal("anonymous", "anonymous");
-	
-	                    } 
-	                    catch (Exception e) 
-	                    {
-	    	                BaseDeliveryController.rollbackTransaction(db);
-	                        throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
-	                    }
-	                }
-	
-	                Iterator repositorVOListIterator = repositoryVOList.iterator();
-	                while(repositorVOListIterator.hasNext())
-	                {
-	                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
-	                    logger.info("Getting node from:" + repositoryVO.getName());
-	                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO.getId(), nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
-	                    if(siteNodeId != null)
-	                        break;
+		                    } 
+		                    catch (Exception e) 
+		                    {
+		    	                BaseDeliveryController.rollbackTransaction(db);
+		                        throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		                    }
+		                }
+		
+		                Iterator repositorVOListIterator = repositoryVOList.iterator();
+		                while(repositorVOListIterator.hasNext())
+		                {
+		                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
+		                    logger.info("Getting node from:" + repositoryVO.getName());
+		                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO.getId(), nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
+		                    if(siteNodeId != null)
+		                        break;
+		                }
 	                }
 	                
 	                BaseDeliveryController.rollbackTransaction(db);
@@ -368,6 +371,9 @@ public class ViewPageFilter implements Filter
         
         logger.info("Looking for languageId for repository " + repositoryId);
         Locale requestLocale = request.getLocale();
+       
+        if(repositoryId == null)
+        	return null;
         
         try 
         {
@@ -393,11 +399,12 @@ public class ViewPageFilter implements Filter
         {
             logger.error("Failed to fetch available languages for repository " + repositoryId);
         }
-	        
+
         if (languageId == null)
             throw new ServletException("Unable to determine language for repository " + repositoryId);
 
         session.setAttribute(FilterConstants.LANGUAGE_ID, languageId);
+        
         return languageId;
     }
 
