@@ -30,8 +30,12 @@ import java.util.Map;
 import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.entities.management.ServerNodeVO;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.RemoteCacheUpdater;
+import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -228,17 +232,20 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "digitalAssetUploadPath");
 	    populate(ps, "inputCharacterEncoding");
 
+		try 
+		{
+			CacheController.clearServerNodeProperty();
+			InfoGlueAuthenticationFilter.initializeProperties();
+		} 
+		catch (SystemException e) 
+		{
+			e.printStackTrace();
+		}
+
 		NotificationMessage notificationMessage = new NotificationMessage("ViewServerNodePropertiesAction.doSave():", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
 		//ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 		RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
-		
-	    //TODO - hack to get the caches to be updated when properties are affected..
-	    /*
-	    ServerNodeVO serverNodeVO = ServerNodeController.getController().getFirstServerNodeVO();
-	    serverNodeVO.setDescription(serverNodeVO.getDescription() + ".");
-	    ServerNodeController.getController().update(serverNodeVO);
-	    */
-	    
+			    
     	return "save";
     }
 
