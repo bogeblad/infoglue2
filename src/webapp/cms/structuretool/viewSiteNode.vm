@@ -205,30 +205,47 @@ function editContent(contentId)
 	<tr>
 		<td bgcolor="#F0E1B4" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
+	#set($referenceLimit = 20)
 	#set($hasContentReferences = false)
 	#set($isOdd = true)
+	#set($count = 0)	
 	#foreach ($referenceBean in $referenceBeanList)
 		#if($referenceBean.referencingCompletingObject.class.name.indexOf("Content") > -1)
-			#set($hasContentReferences = true)
-			#set($lastIndex = $referenceBean.versions.size() - 1)
-			#if($isOdd)
-				#set($class = "class='lightapricot'")
-				#set($isOdd = false)
-			#else
-				#set($class = "class='white'")
-				#set($isOdd = true)
+			#if($count < $referenceLimit)
+				#set($hasContentReferences = true)
+				#set($lastIndex = $referenceBean.versions.size() - 1)
+				#if($isOdd)
+					#set($class = "class='lightapricot'")
+					#set($isOdd = false)
+				#else
+					#set($class = "class='white'")
+					#set($isOdd = true)
+				#end
+				<tr $class>
+					<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
+					<td width="100%">
+						<a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$referenceBean.versions.get($lastIndex).referencingObject.languageId" target="_blank">$referenceBean.name</a>
+	 					- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.contenttool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.contenttool.versions"))
+	 				</td>
+					<td width="16"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$referenceBean.versions.get($lastIndex).referencingObject.languageId" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				</tr>	
 			#end
-			<tr $class>
-				<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
-				<td width="100%">
-					<a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$referenceBean.versions.get($lastIndex).referencingObject.languageId" target="_blank">$referenceBean.name</a>
- 					- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.contenttool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.contenttool.versions"))
- 				</td>
-				<td width="16"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$referenceBean.versions.get($lastIndex).referencingObject.languageId" target="_blank"><img src="images/edit.gif" border="0"></a></td>
-			</tr>	
-
+			#set($count = $count + 1)
 		#end
 	#end
+	#if($count > $referenceLimit)
+		#if($isOdd)
+			#set($class = "class='lightapricot'")
+			#set($isOdd = false)
+		#else
+			#set($class = "class='white'")
+			#set($isOdd = true)
+		#end
+		<tr $class>
+			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.moreContentReferencesFound") $count</td>		
+		</tr>	
+	#end
+	
 	#if(!$hasContentReferences)
 		<tr $class>
 			<td colspan="3">$ui.getString("tool.structuretool.noContentReferencesFound")</td>		
@@ -248,27 +265,44 @@ function editContent(contentId)
 	</tr>
 	#set($hasPageReferences = false)
 	#set($isOdd = true)
+	#set($count = 0)	
 	#foreach ($referenceBean in $referenceBeanList)
 		#if($referenceBean.referencingCompletingObject.class.name.indexOf("SiteNode") > -1)
-			#set($hasPageReferences = true)
-			#set($lastIndex = $referenceBean.versions.size() - 1)
-			#if($isOdd)
-				#set($class = "class='lightapricot'")
-				#set($isOdd = false)
-			#else
-				#set($class = "class='white'")
-				#set($isOdd = true)
+			#if($count < $referenceLimit)
+				#set($hasPageReferences = true)
+				#set($lastIndex = $referenceBean.versions.size() - 1)
+				#if($isOdd)
+					#set($class = "class='lightapricot'")
+					#set($isOdd = false)
+				#else
+					#set($class = "class='white'")
+					#set($isOdd = true)
+				#end
+				<tr $class>
+					<td width="16"><img src="images/tree/structureRoot.gif"></td>
+					<td width="100%">
+						<a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a>
+						- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.structuretool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.structuretool.versions"))
+					</td>
+					<td width="16"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				</tr>	
 			#end
-			<tr $class>
-				<td width="16"><img src="images/tree/structureRoot.gif"></td>
-				<td width="100%">
-					<a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a>
-					- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.structuretool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.structuretool.versions"))
-				</td>
-				<td width="16"><a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
-			</tr>	
+			#set($count = $count + 1)			
 		#end
 	#end
+	#if($count > $referenceLimit)
+		#if($isOdd)
+			#set($class = "class='lightapricot'")
+			#set($isOdd = false)
+		#else
+			#set($class = "class='white'")
+			#set($isOdd = true)
+		#end
+		<tr $class>
+			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.morePageReferencesFound") $count</td>		
+		</tr>	
+	#end
+	
 	#if(!$hasPageReferences)
 		<tr $class>
 			<td colspan="3">$ui.getString("tool.contenttool.noPageReferencesFound")</td>		
@@ -288,43 +322,60 @@ function editContent(contentId)
 		<td bgcolor="#F0E1B4" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($isOdd = true)
+	#set($count = 0)
 	#foreach ($referencingEntity in $referencingBeanList)
-		#if($referencingEntity.class.name.indexOf("Content") > -1)
-			#set($lastIndex = $referencingBeanList.size() - 1)
-			#if($isOdd)
-				#set($class = "class='lightapricot'")
-				#set($isOdd = false)
-			#else
-				#set($class = "class='white'")
-				#set($isOdd = true)
+		#if($count < $referenceLimit)
+			#if($referencingEntity.class.name.indexOf("Content") > -1)
+				#set($lastIndex = $referencingBeanList.size() - 1)
+				#if($isOdd)
+					#set($class = "class='lightapricot'")
+					#set($isOdd = false)
+				#else
+					#set($class = "class='white'")
+					#set($isOdd = true)
+				#end
+				<tr $class>
+					<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
+					<td width="100%">
+						<a href="ViewContent.action?contentId=$referencingEntity.id" target="_blank">$referencingEntity.name</a>
+	 				</td>
+					<td width="16"><a href="ViewContent.action?contentId=$referencingEntity.id" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				</tr>	
+				
+			#elseif($referencingEntity.class.name.indexOf("SiteNode") > -1)
+				#set($lastIndex = $referencingBeanList.size() - 1)
+				#if($isOdd)
+					#set($class = "class='lightapricot'")
+					#set($isOdd = false)
+				#else
+					#set($class = "class='white'")
+					#set($isOdd = true)
+				#end
+				<tr $class>
+					<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
+					<td width="100%">
+						<a href="ViewSiteNode.action?contentId=$referencingEntity.id" target="_blank">$referencingEntity.name</a>
+	 				</td>
+					<td width="16"><a href="ViewSiteNode.action?contentId=$referencingEntity.id" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				</tr>	
+	
 			#end
-			<tr $class>
-				<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
-				<td width="100%">
-					<a href="ViewContent.action?contentId=$referencingEntity.id" target="_blank">$referencingEntity.name</a>
- 				</td>
-				<td width="16"><a href="ViewContent.action?contentId=$referencingEntity.id" target="_blank"><img src="images/edit.gif" border="0"></a></td>
-			</tr>	
-
-		#elseif($referencingEntity.class.name.indexOf("SiteNode") > -1)
-			#set($lastIndex = $referencingBeanList.size() - 1)
-			#if($isOdd)
-				#set($class = "class='lightapricot'")
-				#set($isOdd = false)
-			#else
-				#set($class = "class='white'")
-				#set($isOdd = true)
-			#end
-			<tr $class>
-				<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
-				<td width="100%">
-					<a href="ViewSiteNode.action?contentId=$referencingEntity.id" target="_blank">$referencingEntity.name</a>
- 				</td>
-				<td width="16"><a href="ViewSiteNode.action?contentId=$referencingEntity.id" target="_blank"><img src="images/edit.gif" border="0"></a></td>
-			</tr>	
-
 		#end
+		#set($count = $count + 1)		
 	#end
+	#if($count > $referenceLimit)
+		#if($isOdd)
+			#set($class = "class='lightapricot'")
+			#set($isOdd = false)
+		#else
+			#set($class = "class='white'")
+			#set($isOdd = true)
+		#end
+		<tr $class>
+			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.morePageReferencesFound") $count</td>		
+		</tr>	
+	#end
+	
 	#if($referencingBeanList.size() == 0)
 		<tr $class>
 			<td colspan="3">$ui.getString("tool.structuretool.noContentOrSiteNodesReferencedFound")</td>		
