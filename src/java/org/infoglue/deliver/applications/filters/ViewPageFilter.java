@@ -436,58 +436,69 @@ public class ViewPageFilter implements Filter
         return (String[]) list.toArray(new String[list.size()]);
     }
 
-    private HttpServletRequest prepareRequest(
-        HttpServletRequest request,
-        Integer siteNodeId,
-        Integer languageId) {
-        HttpServletRequest wrappedRequest =
-            new IGHttpServletRequest(request, siteNodeId, languageId);
+    private HttpServletRequest prepareRequest(HttpServletRequest request, Integer siteNodeId, Integer languageId) 
+    {
+        HttpServletRequest wrappedRequest = new IGHttpServletRequest(request, siteNodeId, languageId);
 
         return wrappedRequest;
     }
     
 
-    private class IGHttpServletRequest extends HttpServletRequestWrapper {
+    private class IGHttpServletRequest extends HttpServletRequestWrapper 
+    {
         Map requestParameters = new HashMap();
-
-        public IGHttpServletRequest(
-            HttpServletRequest httpServletRequest,
-            Integer siteNodeId,
-            Integer languageId) {
-            super(httpServletRequest);
-            requestParameters.putAll(httpServletRequest.getParameterMap());
+        
+        public IGHttpServletRequest(HttpServletRequest httpServletRequest, Integer siteNodeId, Integer languageId) 
+        {
+    		super(httpServletRequest);
+    		
+    		requestParameters.putAll(httpServletRequest.getParameterMap());
             requestParameters.put("siteNodeId", new String[] { String.valueOf(siteNodeId)});
             requestParameters.put("languageId", new String[] { String.valueOf(languageId)});
+        
             if (requestParameters.get("contentId") == null)
                 requestParameters.put("contentId", new String[] { String.valueOf(-1)});
+
+            String originalServletPath = ((HttpServletRequest)httpServletRequest).getServletPath();
+            String originalRequestURL = ((HttpServletRequest)httpServletRequest).getRequestURL().toString();
+    		//System.out.println("originalServletPath:" + originalServletPath);
+            //System.out.println("originalRequestURL:" + originalRequestURL);
+            requestParameters.put("originalServletPath", new String[] { originalServletPath });
+    		requestParameters.put("originalRequestURL", new String[] { originalRequestURL });
 
             //logger.info("siteNodeId:" + siteNodeId);
             //logger.info("languageId:" + languageId);
             //logger.info("contentId:" + requestParameters.get("contentId"));
         }
 
-        public String getParameter(String s) {
+        public String getParameter(String s) 
+        {
             String[] array = (String[]) requestParameters.get(s);
             if (array != null && array.length > 0)
                 return array[0];
+        
             return null;
         }
 
-        public Map getParameterMap() {
+        public Map getParameterMap() 
+        {
             return Collections.unmodifiableMap(requestParameters);
         }
 
-        public Enumeration getParameterNames() {
+        public Enumeration getParameterNames() 
+        {
             return new ParameterNamesEnumeration(requestParameters.keySet().iterator());
         }
 
-        public String[] getParameterValues(String s) {
+        public String[] getParameterValues(String s) 
+        {
             String[] array = (String[]) requestParameters.get(s);
             if (array != null && array.length > 0)
                 return array;
+            
             return null;
         }
-
+        
     }
 
     private class ParameterNamesEnumeration implements Enumeration {

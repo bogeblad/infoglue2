@@ -47,17 +47,21 @@ public class PortalServletRequest extends HttpServletRequestWrapper
     /**
      * @param req
      */
-    public PortalServletRequest(HttpServletRequest req) {
+    
+    public PortalServletRequest(HttpServletRequest req) 
+    {
         super(req);
         paramMap = PathParser.copyParameters(req.getParameterMap());
+        
         // Extend parameter map with infoglue parameters.
         // TODO paramMap should be immutable
-        paramMap.putAll(
-            PathParser.parsePathParameters(PortalControlURL.IG, req.getServletPath(), false));
+        paramMap.putAll(PathParser.parsePathParameters(PortalControlURL.IG, req.getServletPath(), false));
 
-        if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) 
+        {
             StringBuffer str = new StringBuffer();
-            for (Iterator it = paramMap.keySet().iterator(); it.hasNext();) {
+            for (Iterator it = paramMap.keySet().iterator(); it.hasNext();) 
+            {
                 String name = (String) it.next();
                 str.append(name);
                 str.append(": ");
@@ -68,36 +72,48 @@ public class PortalServletRequest extends HttpServletRequestWrapper
             log.debug("Available params: " + str);
         }
     }
+    
+
 
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#getParameterMap()
      */
-    public Map getParameterMap() {
-        return paramMap;
+    
+    public Map getParameterMap() 
+    {
+    	return paramMap;
     }
 
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#getParameter(java.lang.String)
      */
-    public String getParameter(String name) {
+    
+    public String getParameter(String name) 
+    {
         String[] values = (String[]) paramMap.get(name);
-        if (values != null && values.length > 0) {
+        if (values != null && values.length > 0) 
+        {
             return values[0];
         }
+    
         return null;
     }
 
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#getParameterNames()
      */
-    public Enumeration getParameterNames() {
+    
+    public Enumeration getParameterNames() 
+    {
         return Collections.enumeration(paramMap.keySet());
     }
 
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#getParameterValues(java.lang.String)
      */
-    public String[] getParameterValues(String name) {
+    
+    public String[] getParameterValues(String name) 
+    {
         return (String[]) paramMap.get(name);
     }
 }

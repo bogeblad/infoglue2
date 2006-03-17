@@ -38,7 +38,8 @@ import org.apache.pluto.portalImpl.core.PortalControlParameter;
 /**
  * @author robert
  */
-public class PathParser {
+public class PathParser 
+{
     private static final Log log = LogFactory.getLog(PathParser.class);
 
     public static final String MULTI_VALUE = "__";
@@ -52,44 +53,58 @@ public class PathParser {
     private String pid = null;
     private String actionControl = null;
 
-    public PathParser(String pPath) {
+    public PathParser(String pPath) 
+    {
         this.path = pPath.substring(0, pPath.lastIndexOf('/'));
         String tmp = pPath.substring(pPath.lastIndexOf('/') + 1, pPath.length());
         StringTokenizer actionTok = new StringTokenizer(tmp, ";");
-        while (actionTok.hasMoreTokens()) {
+        while (actionTok.hasMoreTokens()) 
+        {
             String token = actionTok.nextToken();
-            if (token.endsWith(".action")) {
+            if (token.endsWith(".action")) 
+            {
                 this.action = token;
-            } else {
+            } 
+            else 
+            {
                 //TODO: implement me, I'm ;jsessionid=123cheese
             }
         }
 
         this.parsedPath = new LinkedList();
 
-        for (StringTokenizer tok = new StringTokenizer(this.path, "/."); tok.hasMoreTokens();) {
+        for (StringTokenizer tok = new StringTokenizer(this.path, "/."); tok.hasMoreTokens();) 
+        {
             this.parsedPath.add(tok.nextElement());
         }
 
         this.stateFullParameterMap = new HashMap();
         this.stateLessParameterMap = new HashMap();
         this.globalNavigation = new LinkedList();
-        for (Iterator iter = parsedPath.iterator(); iter.hasNext();) {
+        for (Iterator iter = parsedPath.iterator(); iter.hasNext();) 
+        {
             String element = (String) iter.next();
 
-            if (PortalControlParameter.isControlParameter(element)) {
-
-                if (PortalControlParameter.isStateFullParameter(element)) {
-                    if (iter.hasNext()) {
+            if (PortalControlParameter.isControlParameter(element)) 
+            {
+                if (PortalControlParameter.isStateFullParameter(element)) 
+                {
+                    if (iter.hasNext()) 
+                    {
                         stateFullParameterMap.put(element, iter.next());
                     }
-                } else {
-                    if (iter.hasNext()) {
+                } 
+                else 
+                {
+                    if (iter.hasNext()) 
+                    {
                         stateLessParameterMap.put(element, iter.next());
                     }
                 }
 
-            } else {
+            } 
+            else 
+            {
                 globalNavigation.add(element);
             }
         }
@@ -130,13 +145,16 @@ public class PathParser {
      * @param parameters Map
      * @return
      */
-    public static Map copyParameters(Map parameters) {
+    public static Map copyParameters(Map parameters) 
+    {
         HashMap map = new HashMap(parameters.size());
-        for (Iterator iter = parameters.keySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = parameters.keySet().iterator(); iter.hasNext();) 
+        {
             String key = (String) iter.next();
             Object value = parameters.get(key);
             map.put(key, value);
         }
+        
         return map;
     }
 

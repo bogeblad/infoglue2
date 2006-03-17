@@ -1024,8 +1024,12 @@ public class CacheController extends Thread
      * @return
      */
     
-    public static String getPageCacheKey(HttpSession session, HttpServletRequest request, /*, TemplateController templateController*/ Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
-    {
+    public static String getPageCacheKey(HttpSession session, HttpServletRequest request, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+    {    		
+    	String originalRequestURL = request.getParameter("originalRequestURL");
+    	if(originalRequestURL == null || originalRequestURL.length() == 0)
+    		originalRequestURL = request.getRequestURL().toString();
+
     	String pageKey = null;
     	String pageKeyProperty = CmsPropertyHandler.getPageKey();
     	if(pageKeyProperty != null && pageKeyProperty.length() > 0)
@@ -1072,7 +1076,7 @@ public class CacheController extends Thread
     	else
     	    pageKey  = "" + siteNodeId + "_" + languageId + "_" + contentId + "_" + userAgent + "_" + queryString;
     	
-    	return pageKey + extra;
+    	return originalRequestURL + "_" + pageKey + extra;
     }
     
     

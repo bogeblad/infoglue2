@@ -40,7 +40,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * @author jand
  *
  */
-public class PortalParameterFilter implements Filter {
+public class PortalParameterFilter implements Filter 
+{
     private static final Log log = LogFactory.getLog(PortalParameterFilter.class);
 
     private boolean active = true;
@@ -48,7 +49,8 @@ public class PortalParameterFilter implements Filter {
     /* (non-Javadoc)
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
-    public void init(FilterConfig arg0) throws ServletException {
+    public void init(FilterConfig arg0) throws ServletException 
+    {
         String portalEnabled = CmsPropertyHandler.getEnablePortal();
         active = ((active) && (portalEnabled != null) && portalEnabled.equalsIgnoreCase("true"));
 
@@ -58,12 +60,16 @@ public class PortalParameterFilter implements Filter {
     /* (non-Javadoc)
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
-    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
-        throws IOException, ServletException {
-        if (active) {
-            log.debug("wrapping " + ((HttpServletRequest) req).getRequestURI());
-            chain.doFilter(new PortalServletRequest((HttpServletRequest) req), resp);
-        } else {
+    
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException 
+    {
+        if (active) 
+        {
+        	log.debug("wrapping " + ((HttpServletRequest) req).getRequestURI());
+        	chain.doFilter(new PortalServletRequest((HttpServletRequest) req), resp);
+        } 
+        else 
+        {
             chain.doFilter(req, resp);
         }
     }
@@ -71,7 +77,8 @@ public class PortalParameterFilter implements Filter {
     /* (non-Javadoc)
      * @see javax.servlet.Filter#destroy()
      */
-    public void destroy() {
+    public void destroy() 
+    {
 
     }
 

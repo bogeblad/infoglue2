@@ -698,7 +698,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 			
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getPageCacheKey() != null && latestSiteNodeVersionVO.getPageCacheKey().length() > 0 && !latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
-			    pageKey = latestSiteNodeVersionVO.getPageCacheKey();
+		    	String originalRequestURL = request.getParameter("originalRequestURL");
+		    	if(originalRequestURL == null || originalRequestURL.length() == 0)
+		    		originalRequestURL = request.getRequestURL().toString();
+
+			    pageKey = originalRequestURL + "_" + latestSiteNodeVersionVO.getPageCacheKey();
 			    pageKey = pageKey.replaceAll("\\$siteNodeId", "" + siteNodeId);
 			    pageKey = pageKey.replaceAll("\\$languageId", "" + languageId);
 			    pageKey = pageKey.replaceAll("\\$contentId", "" + contentId);
