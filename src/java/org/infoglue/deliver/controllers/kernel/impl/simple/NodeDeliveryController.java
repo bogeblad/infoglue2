@@ -686,12 +686,22 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			
 			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+			Integer currentSiteNodeId = siteNodeId;
 			
 			while(latestSiteNodeVersionVO == null || latestSiteNodeVersionVO.getPageCacheKey() == null || latestSiteNodeVersionVO.getPageCacheKey().length() == 0 || latestSiteNodeVersionVO.getPageCacheKey().equalsIgnoreCase("default"))
 			{
-				SiteNodeVO parentSiteNodeVO = getParentSiteNode(db, latestSiteNodeVersionVO.getSiteNodeId());
+				if(currentSiteNodeId == null)
+					break;
+				
+				SiteNodeVO parentSiteNodeVO = getParentSiteNode(db, currentSiteNodeId);
 				if(parentSiteNodeVO != null)
+				{
 					latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVOForPageCache(db, parentSiteNodeVO.getId());
+					if(latestSiteNodeVersionVO != null)
+						currentSiteNodeId = latestSiteNodeVersionVO.getSiteNodeId();
+					else
+						currentSiteNodeId = null;	
+				}
 				else
 					break;
 			}
