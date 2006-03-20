@@ -38,6 +38,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingCo
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -297,6 +298,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    			    metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
 	    			
 	    			Integer metaInfoContentId = null;
+	    			ContentVersionVO metaInfoContentVersionVO = null;
 	    			
 	    			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId(), db);
 	    			Iterator serviceBindingIterator = serviceBindings.iterator();
@@ -310,8 +312,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    	    			{
 	    	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
 	    	    				metaInfoContentId = contentVO.getId();
-	    	    				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
-	    	    				if(contentVersionVO != null && contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+	    	    				metaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
+	    	    				if(metaInfoContentVersionVO != null && metaInfoContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 	    	    					isMetaInfoInWorkingState = true;
 	
 	    	    				break;
@@ -322,6 +324,12 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    			if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
 	    			    SiteNodeController.getController().setMetaInfoContentId(this.siteNodeVO.getId(), metaInfoContentId, db);
 	    			    
+	    			if(this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE) && !isMetaInfoInWorkingState)
+	    			{
+	    				metaInfoContentVersionVO = ContentStateController.changeState(metaInfoContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Automatic", true, this.getInfoGluePrincipal(), null, db, new ArrayList()).getValueObject();
+	    				isMetaInfoInWorkingState = true;
+	    			}
+	    			
 	    			if(isMetaInfoInWorkingState)
 	    			{
 	    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8");
