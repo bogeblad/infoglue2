@@ -1514,7 +1514,7 @@ public class ComponentLogic
 		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
 		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
 		
-	    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
+	    String key = "all_" + siteNodeId + "_" + languageId + "_" + propertyName;
 		List properties = (List)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 		
 		if(properties != null)
