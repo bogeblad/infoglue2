@@ -547,6 +547,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("compressPageCache", true);
 	}
 
+	public static String getCompressPageResponse()
+	{
+	    return getServerNodeProperty("compressPageResponse", true);
+	}
+
 	public static String getSiteNodesToRecacheOnPublishing()
 	{
 	    return getServerNodeProperty("siteNodesToRecacheOnPublishing", true);

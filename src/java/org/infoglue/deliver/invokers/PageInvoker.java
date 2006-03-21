@@ -23,9 +23,13 @@
 
 package org.infoglue.deliver.invokers;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -230,10 +234,40 @@ public abstract class PageInvoker
 		this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
 		logger.info("contentType:" + contentType + "; charset=" + languageVO.getCharset());
 		
-		PrintWriter out = this.getResponse().getWriter();
-		out.println(pageString);
-		out.flush();
-		out.close();
+		String compressPageResponse = CmsPropertyHandler.getCompressPageResponse();
+		if(compressPageResponse != null && compressPageResponse.equalsIgnoreCase("true"))
+		{
+			OutputStream out = null;
+			
+			String encodings = this.getRequest().getHeader("Accept-Encoding");
+		    System.out.println("encodings:" + encodings);
+			if (encodings != null && encodings.indexOf("gzip") != -1) 
+		    {
+		    	this.getResponse().setHeader("Content-Encoding", "gzip");
+		    	out = new GZIPOutputStream(this.getResponse().getOutputStream());
+		    }
+		    else if (encodings != null && encodings.indexOf("compress") != -1) 
+		    {
+		    	this.getResponse().setHeader("Content-Encoding", "x-compress");
+		    	out = new ZipOutputStream(this.getResponse().getOutputStream());
+		    	((ZipOutputStream)out).putNextEntry(new ZipEntry("dummy name"));
+		    }
+		    else 
+		    {
+		      out = this.getResponse().getOutputStream();
+		    }
+		    
+		    out.write(pageString.getBytes());
+			out.flush();
+			out.close();
+		}
+		else
+		{
+			PrintWriter out = this.getResponse().getWriter();
+			out.println(pageString);
+			out.flush();
+			out.close();
+		}	    
 		
 		logger.info("sent all data to client:" + pageString.length());
 	}

@@ -256,7 +256,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			
 	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
-			getLogger().error("Registered request in statistics service");
+			getLogger().info("Registered request in statistics service");
 		}
 		catch(Exception e)
 		{
@@ -270,11 +270,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
-			getLogger().error("Before closing transaction");
+			getLogger().info("Before closing transaction");
 
 			closeTransaction(dbWrapper.getDatabase());
 		  
-			getLogger().error("After closing transaction");
+			getLogger().info("After closing transaction");
 
 			//if(isRecacheCall)
 	        //{
