@@ -59,7 +59,7 @@ public class PortalParameterFilter implements Filter
     /* (non-Javadoc)
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
-    public void init(FilterConfig arg0) throws ServletException 
+    public void init(FilterConfig filterConfig) throws ServletException 
     {
         String portalEnabled = CmsPropertyHandler.getEnablePortal();
         active = ((active) && (portalEnabled != null) && portalEnabled.equalsIgnoreCase("true"));
