@@ -688,6 +688,7 @@ function highlightie5(event)
 	{
 		layer.style.backgroundColor = "#B6BDD2";
 		layer.style.border = "1px solid black";
+		layer.style.padding = "2px 10px 2px 30px";
 		
 		if (display_url)
 			window.status = layer.url;
@@ -702,6 +703,8 @@ function lowlightie5(event)
 	{
 		layer.style.backgroundColor = "";
 		layer.style.border = "0px solid white";
+		layer.style.padding = "3px 11px 3px 31px";
+
 		window.status = "";
 	}
 }
