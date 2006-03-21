@@ -254,8 +254,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			        throw new SystemException("An error was thrown when trying to use the page invoker class assigned to this page type:" + e.getMessage(), e);
 				}
 			}
-				        
+			
 	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
+			getLogger().error("Registered request in statistics service");
 		}
 		catch(Exception e)
 		{
@@ -269,9 +270,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
-		    closeTransaction(dbWrapper.getDatabase());
+			getLogger().error("Before closing transaction");
+
+			closeTransaction(dbWrapper.getDatabase());
 		  
-	        //if(isRecacheCall)
+			getLogger().error("After closing transaction");
+
+			//if(isRecacheCall)
 	        //{
 		    //    logger.warn("ThreadId:" + Thread.currentThread().getName());
 	        //}

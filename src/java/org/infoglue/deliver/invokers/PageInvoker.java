@@ -233,7 +233,9 @@ public abstract class PageInvoker
 		PrintWriter out = this.getResponse().getWriter();
 		out.println(pageString);
 		out.flush();
-		out.close();		
+		out.close();
+		
+		logger.info("sent all data to client:" + pageString.length());
 	}
 
 	
