@@ -23,6 +23,8 @@
 
 package org.infoglue.deliver.invokers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -254,10 +256,10 @@ public abstract class PageInvoker
 		    }
 		    else 
 		    {
-		      out = this.getResponse().getOutputStream();
+		    	out = this.getResponse().getOutputStream();
 		    }
 		    
-		    out.write(pageString.getBytes());
+		    out.write(pageString.getBytes(languageVO.getCharset()));
 			out.flush();
 			out.close();
 		}
