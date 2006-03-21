@@ -328,17 +328,17 @@ public class InfoGlueAuthenticationFilter implements Filter
 	{
 	    try
 		{
-		    authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true);
-		    authorizerClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true);
-		    invalidLoginUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true);
-		    successLoginBaseUrl = CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true);
-		    loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true);
-		    logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true);
-		    serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true);
-		    casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true);
-		    casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true);
-		    casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true);
-		    casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true);
+		    authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true, null);
+		    authorizerClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true, null);
+		    invalidLoginUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true, null);
+		    successLoginBaseUrl = CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true, null);
+		    loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true, null);
+		    logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true, null);
+		    serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true, null);
+		    casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true, null);
+		    casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true, null);
+		    casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
+		    casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
 		    
 		    /*
 		    System.out.println("loginUrl:" + loginUrl);
@@ -388,17 +388,17 @@ public class InfoGlueAuthenticationFilter implements Filter
 	{
 	    try
 		{
-		    String authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true);
-		    String authorizerClass		= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true);
-		    String invalidLoginUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true);
-		    String successLoginBaseUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true);
-		    String loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true);
-		    String logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true);
-		    String serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true);
-		    String casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true);
-		    String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true);
-		    String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true);
-		    String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true);
+		    String authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true, null);
+		    String authorizerClass		= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true, null);
+		    String invalidLoginUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true, null);
+		    String successLoginBaseUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true, null);
+		    String loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true, null);
+		    String logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true, null);
+		    String serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true, null);
+		    String casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true, null);
+		    String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true, null);
+		    String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
+		    String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
 		    
 		    if(authenticatorClass != null)
 		    	InfoGlueAuthenticationFilter.authenticatorClass = authenticatorClass;

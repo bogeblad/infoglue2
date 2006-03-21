@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeFilterConfig.java,v 1.3 2006/03/12 10:53:40 mattias Exp $
+ * $Id: FakeFilterConfig.java,v 1.4 2006/03/21 22:18:09 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -41,19 +41,19 @@ public class FakeFilterConfig implements FilterConfig
 
 	public FakeFilterConfig()
 	{
-		String authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true);
-		String authorizerClass 		= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true);
-		String invalidLoginUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true);
-		String successLoginBaseUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true);
-		String loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true);
-		String logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true);
-		String serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true);
-		String casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true);
-		String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true);
-		String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true);
-		String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true);
-		String authConstraint 		= CmsPropertyHandler.getServerNodeProperty("deliver", "authConstraint", true);
-		String extraParametersFile 		= CmsPropertyHandler.getServerNodeProperty("deliver", "extraParametersFile", true);
+		String authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true, null);
+		String authorizerClass 		= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true, null);
+		String invalidLoginUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true, null);
+		String successLoginBaseUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true, null);
+		String loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true, null);
+		String logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true, null);
+		String serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true, null);
+		String casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true, null);
+		String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true, null);
+		String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
+		String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
+		String authConstraint 		= CmsPropertyHandler.getServerNodeProperty("deliver", "authConstraint", true, null);
+		String extraParametersFile 		= CmsPropertyHandler.getServerNodeProperty("deliver", "extraParametersFile", true, null);
 
 		initParameters.put("org.infoglue.cms.security.loginUrl", loginUrl);
 		initParameters.put("org.infoglue.cms.security.invalidLoginUrl",	invalidLoginUrl);

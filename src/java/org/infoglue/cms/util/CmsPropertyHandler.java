@@ -213,9 +213,14 @@ public class CmsPropertyHandler
 
 	public static String getServerNodeProperty(String key, boolean inherit)
 	{
-		return getServerNodeProperty(null, key, inherit);
+		return getServerNodeProperty(null, key, inherit, null);
 	}
-	
+
+	public static String getServerNodeProperty(String key, boolean inherit, String defaultValue)
+	{
+		return getServerNodeProperty(null, key, inherit, defaultValue);
+	}
+
 	/**
 	 * This method gets the serverNodeProperty but also fallbacks to the old propertyfile if not found in the propertyset.
 	 * 
@@ -224,7 +229,7 @@ public class CmsPropertyHandler
 	 * @return
 	 */
 	
-	public static String getServerNodeProperty(String prefix, String key, boolean inherit)
+	public static String getServerNodeProperty(String prefix, String key, boolean inherit, String defaultValue)
 	{
 	    String value = null;
 	    
@@ -237,7 +242,8 @@ public class CmsPropertyHandler
 			return value;
 		}
 	    
-		Timer timer1 = new Timer();
+		Timer timer = new Timer();
+		
 	    if(localSettingsServerNodeId != null)
 	    {
 	    	if(prefix != null)
@@ -286,10 +292,15 @@ public class CmsPropertyHandler
 	        value = getProperty(key);
 	        //System.out.println("Property value: " + value);
 	    }
+
+	    //try{throw new Exception("APA");}catch(Exception e){e.printStackTrace();}
+
+	    if(value == null && defaultValue != null)
+	    	value = defaultValue;
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
 	    
-	    timer1.printElapsedTime("Getting property took:");
+	    timer.printElapsedTime("Getting property " + cacheKey + " took:");
 	    
 	    return value;
 	}
@@ -378,7 +389,7 @@ public class CmsPropertyHandler
 	
 	public static String getExtranetCookieTimeout()
 	{
-	    return getServerNodeProperty("extranetCookieTimeout", true);
+	    return getServerNodeProperty("extranetCookieTimeout", true, "1800");
 	}
 
 	public static String getWebServicesBaseUrl()
@@ -388,7 +399,7 @@ public class CmsPropertyHandler
 
 	public static String getPublicationThreadDelay()
 	{
-	    return getServerNodeProperty("publicationThreadDelay", true);
+	    return getServerNodeProperty("publicationThreadDelay", true, "5000");
 	}
 
 	public static String getPathsToRecacheOnPublishing()
@@ -398,17 +409,17 @@ public class CmsPropertyHandler
 
 	public static String getDisableTemplateDebug()
 	{
-	    return getServerNodeProperty("disableTemplateDebug", true);
+	    return getServerNodeProperty("disableTemplateDebug", true, "false");
 	}
 
 	public static String getTree()
 	{
-	    return getServerNodeProperty("tree", true);
+	    return getServerNodeProperty("tree", true, "html");
 	}
 
 	public static String getTreeMode()
 	{
-	    return getServerNodeProperty("treemode", true);
+	    return getServerNodeProperty("treemode", true, "dynamic");
 	}
 
 	public static String getPreviewDeliveryUrl()
@@ -423,27 +434,27 @@ public class CmsPropertyHandler
 
 	public static String getEditionPageSize()
 	{
-		return getServerNodeProperty("edition.pageSize", true);
+		return getServerNodeProperty("edition.pageSize", true, "10");
 	}
 	
 	public static String getContentTreeSort()
 	{
-		return getServerNodeProperty("content.tree.sort", true);
+		return getServerNodeProperty("content.tree.sort", true, "name");
 	}
 
 	public static String getStructureTreeSort()
 	{
-		return getServerNodeProperty("structure.tree.sort", true);
+		return getServerNodeProperty("structure.tree.sort", true, "name");
 	}
 
 	public static String getDisableEmptyUrls()
 	{
-		return getServerNodeProperty("disableEmptyUrls", true);
+		return getServerNodeProperty("disableEmptyUrls", true, "yes");
 	}
 
 	public static String getCacheUpdateAction()
 	{
-		return getServerNodeProperty("cacheUpdateAction", true);
+		return getServerNodeProperty("cacheUpdateAction", true, "UpdateCache.action");
 	}
 
 	public static String getLogPath()
@@ -453,107 +464,107 @@ public class CmsPropertyHandler
 
 	public static String getLogTransactions()
 	{
-		return getServerNodeProperty("logTransactions", true);
+		return getServerNodeProperty("logTransactions", true, "false");
 	}
 	
 	public static String getEnableExtranetCookies()
 	{
-		return getServerNodeProperty("enableExtranetCookies", true);
+		return getServerNodeProperty("enableExtranetCookies", true, "false");
 	}
 	
 	public static String getUseAlternativeBrowserLanguageCheck()
 	{
-		return getServerNodeProperty("useAlternativeBrowserLanguageCheck", true);
+		return getServerNodeProperty("useAlternativeBrowserLanguageCheck", true, "false");
 	}
 	
 	public static String getCaseSensitiveRedirects()
 	{
-		return getServerNodeProperty("caseSensitiveRedirects", true);
+		return getServerNodeProperty("caseSensitiveRedirects", true, "false");
 	}
 	
 	public static String getUseDNSNameInURI()
 	{
-		return getServerNodeProperty("useDNSNameInURI", true);
+		return getServerNodeProperty("useDNSNameInURI", true, "false");
 	}
     
 	public static String getWysiwygEditor()
 	{
-		return getServerNodeProperty("wysiwygEditor", true);
+		return getServerNodeProperty("wysiwygEditor", true, "FCKEditor");
 	}
 
 	public static String getProtectContentTypes()
 	{
-		return getServerNodeProperty("protectContentTypes", true);
+		return getServerNodeProperty("protectContentTypes", true, "false");
 	}
 
 	public static String getProtectWorkflows()
 	{
-		return getServerNodeProperty("protectWorkflows", true);
+		return getServerNodeProperty("protectWorkflows", true, "false");
 	}
 
 	public static String getProtectCategories()
 	{
-		return getServerNodeProperty("protectCategories", true);
+		return getServerNodeProperty("protectCategories", true, "false");
 	}
 
 	public static String getMaxRows()
 	{
-		return getServerNodeProperty("maxRows", true);
+		return getServerNodeProperty("maxRows", true, "100");
 	}
 	
 	public static String getShowContentVersionFirst()
 	{
-		return getServerNodeProperty("showContentVersionFirst", true);
+		return getServerNodeProperty("showContentVersionFirst", true, "true");
 	}
 	
 	public static String getShowComponentsFirst()
 	{
-		return getServerNodeProperty("showComponentsFirst", true);
+		return getServerNodeProperty("showComponentsFirst", true, "true");
 	}
 	
 	public static String getShowAllWorkflows()
 	{
-		return getServerNodeProperty("showAllWorkflows", true);
+		return getServerNodeProperty("showAllWorkflows", true, "true");
 	}
 	
 	public static String getIsPageCacheOn()
 	{
-	    return getServerNodeProperty("isPageCacheOn", true);
+	    return getServerNodeProperty("isPageCacheOn", true, "true");
 	}
 
 	public static String getEditOnSite()
 	{
-	    return getServerNodeProperty("editOnSite", true);
+	    return getServerNodeProperty("editOnSite", true, "true");
 	}
 
 	public static String getUseSelectivePageCacheUpdate()
 	{
-	    return getServerNodeProperty("useSelectivePageCacheUpdate", true);
+	    return getServerNodeProperty("useSelectivePageCacheUpdate", true, "true");
 	}
 
 	public static String getExpireCacheAutomatically()
 	{
-	    return getServerNodeProperty("expireCacheAutomatically", true);
+	    return getServerNodeProperty("expireCacheAutomatically", true, "false");
 	}
 
 	public static String getCacheExpireInterval()
 	{
-	    return getServerNodeProperty("cacheExpireInterval", true);
+	    return getServerNodeProperty("cacheExpireInterval", true, "1800");
 	}
 
 	public static String getSessionTimeout()
 	{
-	    return getServerNodeProperty("session.timeout", true);
+	    return getServerNodeProperty("session.timeout", true, "1800");
 	}
 
 	public static String getCompressPageCache()
 	{
-	    return getServerNodeProperty("compressPageCache", true);
+	    return getServerNodeProperty("compressPageCache", true, "true");
 	}
 
 	public static String getCompressPageResponse()
 	{
-	    return getServerNodeProperty("compressPageResponse", true);
+	    return getServerNodeProperty("compressPageResponse", true, "false");
 	}
 
 	public static String getSiteNodesToRecacheOnPublishing()
@@ -573,7 +584,7 @@ public class CmsPropertyHandler
 
 	public static String getUseUpdateSecurity()
 	{
-	    return getServerNodeProperty("useUpdateSecurity", true);
+	    return getServerNodeProperty("useUpdateSecurity", true, "true");
 	}
 	
 	public static String getAllowedAdminIP()
@@ -613,7 +624,7 @@ public class CmsPropertyHandler
 
 	public static String getUseFreeMarker()
 	{
-	    return getServerNodeProperty("useFreeMarker", true);
+	    return getServerNodeProperty("useFreeMarker", true, "false");
 	}
 
 	public static String getWebServerAddress()
@@ -643,22 +654,22 @@ public class CmsPropertyHandler
 
 	public static String getEnableNiceURI()
 	{
-	    return getServerNodeProperty("enableNiceURI", true);
+	    return getServerNodeProperty("enableNiceURI", true, "true");
 	}
 
 	public static String getNiceURIEncoding()
 	{
-	    return getServerNodeProperty("niceURIEncoding", true);
+	    return getServerNodeProperty("niceURIEncoding", true, "UTF-8");
 	}
 
 	public static String getNiceURIAttributeName()
 	{
-	    return getServerNodeProperty("niceURIAttributeName", true);
+	    return getServerNodeProperty("niceURIAttributeName", true, "NiceURIName");
 	}
 
 	public static String getRequestArgumentDelimiter()
 	{
-	    return getServerNodeProperty("requestArgumentDelimiter", true);
+	    return getServerNodeProperty("requestArgumentDelimiter", true, "&amp;");
 	}
 
 	public static String getErrorUrl()
@@ -678,32 +689,32 @@ public class CmsPropertyHandler
 
 	public static String getURIEncoding()
 	{
-	    return getServerNodeProperty("URIEncoding", true);
+	    return getServerNodeProperty("URIEncoding", true, "UTF-8");
 	}
 
 	public static String getWorkflowEncoding()
 	{
-	    return getServerNodeProperty("workflowEncoding", true);
+	    return getServerNodeProperty("workflowEncoding", true, "UTF-8");
 	}
 
 	public static String getFormsEncoding()
 	{
-	    return getServerNodeProperty("formsEncoding", true);
+	    return getServerNodeProperty("formsEncoding", true, "UTF-8");
 	}
 
 	public static String getUseShortTableNames()
 	{
-	    return getServerNodeProperty("useShortTableNames", true);
+	    return getServerNodeProperty("useShortTableNames", true, "false");
 	}
 
 	public static String getLogDatabaseMessages()
 	{
-	    return getServerNodeProperty("logDatabaseMessages", true);
+	    return getServerNodeProperty("logDatabaseMessages", true, "false");
 	}
 
 	public static String getStatisticsEnabled()
 	{
-	    return getServerNodeProperty("statistics.enabled", true);
+	    return getServerNodeProperty("statistics.enabled", true, "false");
 	}
 
 	public static String getStatisticsLogPath()
@@ -713,17 +724,17 @@ public class CmsPropertyHandler
 
 	public static String getStatisticsLogOneFilePerDay()
 	{
-	    return getServerNodeProperty("statisticsLogOneFilePerDay", true);
+	    return getServerNodeProperty("statisticsLogOneFilePerDay", true, "false");
 	}
 
 	public static String getStatisticsLogger()
 	{
-	    return getServerNodeProperty("statisticsLogger", true);
+	    return getServerNodeProperty("statisticsLogger", true, "W3CExtendedLogger");
 	}
 
 	public static String getEnablePortal()
 	{
-	    return getServerNodeProperty("enablePortal", true);
+	    return getServerNodeProperty("enablePortal", true, "true");
 	}
 
 	public static String getPortletBase()
@@ -753,7 +764,7 @@ public class CmsPropertyHandler
 
 	public static String getMailContentType()
 	{
-	    return getServerNodeProperty("mail.contentType", true);
+	    return getServerNodeProperty("mail.contentType", true, "text/html");
 	}
 	
 	public static String getSystemEmailSender()

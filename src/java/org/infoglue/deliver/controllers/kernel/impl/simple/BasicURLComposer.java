@@ -55,7 +55,7 @@ public class BasicURLComposer extends URLComposer
     public String composeDigitalAssetUrl(String dnsName, String filename, DeliveryContext deliveryContext)
     {
         String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
-        if((filename == null || filename.equals("")) && (disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("no")))
+        if((filename == null || filename.equals("")) && (disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("yes")))
             return "";
             
         String assetUrl = "";
