@@ -236,7 +236,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 		try 
 		{
 			CacheController.clearServerNodeProperty();
-			InfoGlueAuthenticationFilter.initializeProperties();
+			InfoGlueAuthenticationFilter.initializeCMSProperties();
 		} 
 		catch (SystemException e) 
 		{

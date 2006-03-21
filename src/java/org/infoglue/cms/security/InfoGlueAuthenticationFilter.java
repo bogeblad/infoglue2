@@ -381,5 +381,88 @@ public class InfoGlueAuthenticationFilter implements Filter
 		}
 	}
 
+	//TODO - These getters are an ugly way of getting security properties unless initialized by the filter.
+	//We should handle this different later on.
+	
+	public static void initializeCMSProperties() throws SystemException
+	{
+	    try
+		{
+		    String authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true);
+		    String authorizerClass		= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true);
+		    String invalidLoginUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true);
+		    String successLoginBaseUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true);
+		    String loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true);
+		    String logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true);
+		    String serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true);
+		    String casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true);
+		    String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true);
+		    String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true);
+		    String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true);
+		    
+		    if(authenticatorClass != null)
+		    	InfoGlueAuthenticationFilter.authenticatorClass = authenticatorClass;
+		    if(authorizerClass != null)
+		    	InfoGlueAuthenticationFilter.authorizerClass = authorizerClass;
+		    if(invalidLoginUrl != null)
+		    	InfoGlueAuthenticationFilter.invalidLoginUrl = invalidLoginUrl;
+		    if(successLoginBaseUrl != null)
+		    	InfoGlueAuthenticationFilter.successLoginBaseUrl = successLoginBaseUrl;
+		    if(loginUrl != null)
+		    	InfoGlueAuthenticationFilter.loginUrl = loginUrl;
+		    if(logoutUrl != null)
+		    	InfoGlueAuthenticationFilter.logoutUrl = logoutUrl;
+		    if(serverName != null)
+		    	InfoGlueAuthenticationFilter.serverName = serverName;
+		    if(casRenew != null)
+		    	InfoGlueAuthenticationFilter.casRenew = casRenew;
+		    
+		    if(casServiceUrl != null)
+		    	InfoGlueAuthenticationFilter.casServiceUrl = casServiceUrl;
+		    if(casValidateUrl != null)
+		    	InfoGlueAuthenticationFilter.casValidateUrl = casValidateUrl;
+		    if(casLogoutUrl != null)
+		    	InfoGlueAuthenticationFilter.casLogoutUrl = casLogoutUrl;
+		    /*
+		    System.out.println("loginUrl:" + loginUrl);
+		    System.out.println("authenticatorClass:" + authenticatorClass);
+		    System.out.println("authorizerClass:" + authorizerClass);
+		    */
+		    
+		    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraParametersFile");
+		    
+		    if(extraPropertiesFile != null)
+			{
+				try
+				{
+					extraProperties = new Properties();
+					extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraPropertiesFile));	
+				}	
+				catch(Exception e)
+				{
+				    logger.error("Error loading properties from file " + "/" + extraPropertiesFile + ". Reason:" + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			    
+		    logger.info("authenticatorClass:" + authenticatorClass);
+		    logger.info("authorizerClass:" + authorizerClass);
+		    logger.info("invalidLoginUrl:" + invalidLoginUrl);
+		    logger.info("successLoginBaseUrl:" + successLoginBaseUrl);
+		    logger.info("loginUrl:" + loginUrl);
+		    logger.info("logoutUrl:" + logoutUrl);
+		    logger.info("serverName:" + serverName);
+		    logger.info("casRenew:" + casRenew);
+		    logger.info("casServiceUrl:" + casServiceUrl);
+		    logger.info("casValidateUrl:" + casValidateUrl);
+		    logger.info("casLogoutUrl:" + casLogoutUrl);
+		}
+		catch(Exception e)
+		{
+		    logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			throw new SystemException("Setting the security parameters failed: " + e.getMessage(), e);
+		}
+	}
+
 }
  
