@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.entities.management.ServerNodeVO;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -236,6 +237,7 @@ public class CmsPropertyHandler
 			return value;
 		}
 	    
+		Timer timer1 = new Timer();
 	    if(localSettingsServerNodeId != null)
 	    {
 	    	if(prefix != null)
@@ -286,6 +288,8 @@ public class CmsPropertyHandler
 	    }
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
+	    
+	    timer1.printElapsedTime("Getting property took:");
 	    
 	    return value;
 	}
