@@ -300,7 +300,7 @@ public class CmsPropertyHandler
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
 	    
-	    timer.printElapsedTime("Getting property " + cacheKey + " took:");
+	    logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
 	    
 	    return value;
 	}
