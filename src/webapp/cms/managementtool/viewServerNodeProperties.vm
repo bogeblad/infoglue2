@@ -32,6 +32,9 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.compressPageCache" "compressPageCache" "$this.getPropertyValue('compressPageCache')")</td>
 	</tr>
 	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.compressPageResponse" "compressPageResponse" "$this.getPropertyValue('compressPageResponse')")</td>
+	</tr>
+	<tr>
 		<td>#editField("ServerNode.property.siteNodesToRecacheOnPublishing" "siteNodesToRecacheOnPublishing" "$this.getPropertyValue('siteNodesToRecacheOnPublishing')" "51")</td>
 	</tr>
 	<tr>

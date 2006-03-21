@@ -118,6 +118,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "cacheExpireInterval");
 	    populate(ps, "session.timeout");
 	    populate(ps, "compressPageCache");
+	    populate(ps, "compressPageResponse");
 	    populate(ps, "siteNodesToRecacheOnPublishing");
 	    populate(ps, "recachePublishingMethod");
 	    populate(ps, "recacheUrl");

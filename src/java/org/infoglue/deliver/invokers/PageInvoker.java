@@ -235,13 +235,13 @@ public abstract class PageInvoker
 		logger.info("contentType:" + contentType + "; charset=" + languageVO.getCharset());
 		
 		String compressPageResponse = CmsPropertyHandler.getCompressPageResponse();
+		logger.info("compressPageResponse:" + compressPageResponse);
 		if(compressPageResponse != null && compressPageResponse.equalsIgnoreCase("true"))
 		{
 			OutputStream out = null;
 			
 			String encodings = this.getRequest().getHeader("Accept-Encoding");
-		    System.out.println("encodings:" + encodings);
-			if (encodings != null && encodings.indexOf("gzip") != -1) 
+		    if (encodings != null && encodings.indexOf("gzip") != -1) 
 		    {
 		    	this.getResponse().setHeader("Content-Encoding", "gzip");
 		    	out = new GZIPOutputStream(this.getResponse().getOutputStream());
