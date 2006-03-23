@@ -337,6 +337,8 @@ public class VisualFormatter
 
 	    String lineSep = System.getProperty("line.separator");
 		s = s.replaceAll(lineSep, "<br/>");
+		s = s.replaceAll("\n", "<br/>");
+		s = s.replaceAll("\r", "<br/>");
 		     
 		StringBuffer sb = new StringBuffer();
 		int n = s.length();
