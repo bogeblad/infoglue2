@@ -640,7 +640,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{				
 				Map status = new HashMap();
 				status.put("redirected", new Boolean(false));
-				principal = AuthenticationModule.getAuthenticationModule(db, this.getCurrentURL()).loginUser(getRequest(), getResponse(), status);
+				principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL()).loginUser(getRequest(), getResponse(), status);
 				Boolean redirected = (Boolean)status.get("redirected");
 				if(redirected != null && redirected.booleanValue())
 				{
@@ -651,6 +651,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				else if(principal != null)
 				{
 				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+
 				    this.principal = principal;
 				}
 				
@@ -669,7 +671,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						if(principal != null)
 						{
 						    this.getHttpSession().setAttribute("infogluePrincipal", principal);
-						    
+							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+
 							boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 							if(!isAuthorized)
 							{	
@@ -718,7 +721,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					else
 					{
 						this.getHttpSession().setAttribute("infogluePrincipal", principal);
-					    this.principal = principal;
+						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+		
+						this.principal = principal;
 					}
 				}
 
@@ -831,7 +836,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    
 				principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 				if(principal != null)
+				{
 				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+				}
 			    
 		    }
 	    }
@@ -865,7 +873,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    
 			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 			if(principal != null)
+			{
 			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+				this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+			}
 	    }		    
 	    else if(userName != null && password != null)
 	    {
@@ -875,8 +886,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    
 			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
 			if(principal != null)
+			{
 			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
-		    
+				this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+			}
 	    }
 	    
 	    return principal;
@@ -917,7 +930,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
   	private String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception 
   	{
-		String url = AuthenticationModule.getAuthenticationModule(null, this.getCurrentURL()).getLoginDialogUrl(request, response);
+		String url = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL()).getLoginDialogUrl(request, response);
 		
 		return url;
   	}

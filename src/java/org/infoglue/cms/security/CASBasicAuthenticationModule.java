@@ -67,6 +67,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	private String invalidLoginUrl 		= null;
 	private String authenticatorClass 	= null;
 	private String authorizerClass 		= null;
+	private String successLoginUrl		= null;
 	private String serverName			= null;
 	private String casValidateUrl		= null;
 	private String casServiceUrl		= null;
@@ -571,6 +572,18 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		}
 
 		return authenticatedUserName;
+	}
+
+
+	public String getSuccessLoginUrl()
+	{
+		return successLoginUrl;
+	}
+
+
+	public void setSuccessLoginUrl(String successLoginUrl)
+	{
+		this.successLoginUrl = successLoginUrl;
 	}
 
 }

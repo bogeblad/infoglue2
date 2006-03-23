@@ -91,6 +91,7 @@ public abstract class AuthenticationModule
 				}
 				logger.info("successLoginUrl:" + successLoginUrl);
 				authenticationModule.setCasServiceUrl(successLoginUrl);
+				authenticationModule.setSuccessLoginUrl(successLoginUrl);
 			}
 			else
 				authenticationModule.setCasServiceUrl(casServiceUrl);
@@ -133,6 +134,10 @@ public abstract class AuthenticationModule
 	public abstract String getLoginUrl();
 
 	public abstract void setLoginUrl(String loginUrl);
+
+    public abstract String getSuccessLoginUrl();
+    
+    public abstract void setSuccessLoginUrl(String successLoginUrl);
 
 	public abstract String getLogoutUrl();
 

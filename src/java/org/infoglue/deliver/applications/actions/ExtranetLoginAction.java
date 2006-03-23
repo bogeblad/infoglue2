@@ -122,7 +122,8 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		{
 			//getLogger().info("Yes - we try to send the user back to:" + this.returnAddress);		
 			this.getHttpSession().setAttribute("infogluePrincipal", principal);
-			
+			this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+
 			handleCookies();
 			
 		    this.getResponse().sendRedirect(this.returnAddress);

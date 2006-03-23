@@ -188,12 +188,25 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 	
 	public String getLoginDialogUrl(HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
+		String returnAddress = null;
+
 	    String referer = request.getHeader("Referer");
 		
 		if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
 			referer = "/"; 
 
-	    return request.getContextPath() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(request.getRequestURL().toString() + "?" + request.getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+		System.out.println("successLoginUrl:" + successLoginUrl);
+		if(successLoginUrl != null)
+		{
+			returnAddress = successLoginUrl;
+		}
+		else
+		{
+			returnAddress = request.getRequestURL().toString() + "?" + request.getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+		}
+		
+		System.out.println("returnAddress:" + returnAddress);
+		return request.getContextPath() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
 	}
 	
 	/**

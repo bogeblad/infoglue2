@@ -679,8 +679,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
 		
-		//logger.info("AAAAAAAAAAAAAA " + component.getSlotList().size());
-			
 		Iterator slotIterator = component.getSlotList().iterator();
 		while(slotIterator.hasNext())
 		{

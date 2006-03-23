@@ -110,15 +110,19 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString();
 	}
 
-	public String getCurrentFullURL()
+	public String getOriginalFullURL()
 	{
     	String originalRequestURL = this.getRequest().getParameter("originalRequestURL");
     	if(originalRequestURL == null || originalRequestURL.length() == 0)
     		originalRequestURL = this.getRequest().getRequestURL().toString();
 
-    	return originalRequestURL;
+    	String originalQueryString = this.getRequest().getParameter("originalQueryString");
+    	if(originalQueryString == null || originalQueryString.length() == 0)
+    		originalQueryString = this.getRequest().getQueryString();
+
+    	return originalRequestURL + "?" + originalQueryString;
 	}
-	
+
 	/**
 	 * This method returns the session timeout value.
 	 */
