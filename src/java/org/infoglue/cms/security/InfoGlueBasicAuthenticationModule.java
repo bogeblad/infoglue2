@@ -195,7 +195,7 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 		if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
 			referer = "/"; 
 
-		System.out.println("successLoginUrl:" + successLoginUrl);
+		logger.info("successLoginUrl:" + successLoginUrl);
 		if(successLoginUrl != null)
 		{
 			returnAddress = successLoginUrl;
@@ -205,7 +205,7 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 			returnAddress = request.getRequestURL().toString() + "?" + request.getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 		}
 		
-		System.out.println("returnAddress:" + returnAddress);
+		logger.info("returnAddress:" + returnAddress);
 		return request.getContextPath() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
 	}
 	
