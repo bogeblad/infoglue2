@@ -121,8 +121,15 @@ public class CmsPropertyHandler
 		    
 		    if(serverNodeName == null || serverNodeName.length() == 0)
 		    {
-			    InetAddress localhost = InetAddress.getLocalHost();
-			    serverNodeName = localhost.getHostName();
+		    	try
+		    	{
+				    InetAddress localhost = InetAddress.getLocalHost();
+				    serverNodeName = localhost.getHostName();
+		    	}
+		    	catch(Exception e)
+		    	{
+		    		System.out.println("Error initializing serverNodeName:" + e.getMessage());
+		    	}
 		    }
 		    
 		    System.out.println("serverNodeName:" + serverNodeName);
