@@ -170,6 +170,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
 		this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
 		context.put("currentUrl", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
+		context.put("contextName", this.getRequest().getContextPath());
+		
 		this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
