@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.Iterator;
 import java.util.List;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
@@ -67,8 +68,17 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 
     			from = systemEmailSender;
 			}
-			
-			message = "<div>" + message.replaceAll("\n", "<br/>") + "</div>";
+
+	        String contentType = CmsPropertyHandler.getMailContentType();
+	        if(contentType == null || contentType.length() == 0)
+	            contentType = "text/html";
+
+		    if(contentType.equalsIgnoreCase("text/html"))
+		    {
+		    	VisualFormatter ui = new VisualFormatter();
+		    	message = ui.escapeHTMLforXMLService(message);
+				message = "<div>" + message.replaceAll("\n", "<br/>\n") + "</div>";
+		    }
 			
 			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
     	}
