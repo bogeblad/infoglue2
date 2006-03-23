@@ -45,7 +45,8 @@ import org.infoglue.deliver.portal.services.PortletWindowRegistryService;
  * @author jan danils
  * @author jöran stark
  */
-public class PortalService {
+public class PortalService 
+{
     private static final Log log = LogFactory.getLog(PortalService.class);
 
     /**
@@ -58,64 +59,72 @@ public class PortalService {
      * @return true if an action request is sent false otherwise.
      * @throws PortalException
      */
-    public boolean service(HttpServletRequest request, HttpServletResponse response)
-        throws PortalException {
+    
+    public boolean service(HttpServletRequest request, HttpServletResponse response) throws PortalException 
+    {
         log.debug("*** service start");
         ServletConfig cfg = ServletConfigContainer.getContainer().getServletConfig();
-        if (cfg == null) {
+        if (cfg == null) 
+        {
             throw new RuntimeException("ServletConfig is null (the PortalServletDispatcher should initiate it)");
         }
 
         // -- Check if the request is a portlet action...
         String portletWindowId = null;
-        try {
-            DynamicInformationProviderIG provider =
-                (DynamicInformationProviderIG) InformationProviderAccess.getDynamicProvider(
-                    request);
+        
+        try 
+        {
+            DynamicInformationProviderIG provider = (DynamicInformationProviderIG) InformationProviderAccess.getDynamicProvider(request);
             portletWindowId = provider.getPortalURL().getActionWindowID();
-        } catch (Throwable e) {
+        } 
+        catch (Throwable e) 
+        {
             log.error("Failed to locate DynamicInformationProviderIG", e);
             throw new PortalException(e);
         }
 
         // Do we have a portlet-action?
-        if (portletWindowId == null) {
+        if (portletWindowId == null) 
+        {
             log.debug("null actionwindow - no actionrequest returning false");
             return false;
-        } else {
+        } 
+        else 
+        {
             log.debug("actionwindow found [" + portletWindowId + "]");
         }
 
         // Locate portlet-window instance
-        PortletWindowRegistryService windowService =
-            (PortletWindowRegistryService) ServiceManager.getService(
-                PortletWindowRegistryService.class);
+        PortletWindowRegistryService windowService = (PortletWindowRegistryService) ServiceManager.getService(PortletWindowRegistryService.class);
         PortletWindow actionWindow = windowService.getPortletWindow(portletWindowId);
-        if (actionWindow == null) {
+
+        if (actionWindow == null) 
+        {
             log.error("PortletWindow action requested but not found: " + portletWindowId);
             return false;
         }
 
         // -- now that we got everything we need - send the action to the portletcontainer
-        try {
+        try 
+        {
             log.debug("ask container to process portlet action");
-            PortletContainerFactory.getPortletContainer().processPortletAction(
-                actionWindow,
-                request,
-                response);
-
+    		PortletContainerFactory.getPortletContainer().processPortletAction(actionWindow, request, response);
             log.debug("action sent and executed without exception");
-
-        } catch (PortletException e) {
+        } 
+        catch (PortletException e) 
+        {
             log.error("PortletException: ", e);
             throw new PortalException(e);
-        } catch (PortletContainerException e) {
+        } 
+        catch (PortletContainerException e) 
+        {
             log.error("PortletContainerException: ", e);
             throw new PortalException(e);
         }
         // This catch block is for compliance
         // of TCK's Portlet.ProcessActionIOExceptionTest
-        catch (Exception e) {
+        catch (Exception e) 
+        {
             log.error("Unknown exception [" + e.getClass().getName() + "]", e);
             throw new PortalException(e);
         }

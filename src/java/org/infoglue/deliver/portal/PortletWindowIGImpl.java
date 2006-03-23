@@ -39,8 +39,10 @@ import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.portalImpl.core.PortletContainerFactory;
 import org.apache.pluto.portalImpl.servlet.ServletObjectAccess;
 import org.apache.pluto.portalImpl.servlet.ServletResponseImpl;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
-class PortletWindowIGImpl implements PortletWindowIG {
+class PortletWindowIGImpl implements PortletWindowIG 
+{
     private final Log log = LogFactory.getLog(PortletWindowIGImpl.class);
 
     private HttpServletResponse response;
@@ -51,14 +53,15 @@ class PortletWindowIGImpl implements PortletWindowIG {
 
     private PortletContainer portletContainer;
 
-    PortletWindowIGImpl(PortletWindow window, HttpServletRequest request,
-            HttpServletResponse response) throws PortletException, PortletContainerException {
+    PortletWindowIGImpl(PortletWindow window, HttpServletRequest request, HttpServletResponse response) throws PortletException, PortletContainerException 
+    {
         this.response = response;
         this.renderWindow = window;
 
         // Locate portlet container
         portletContainer = PortletContainerFactory.getPortletContainer();
-        if (portletContainer == null) {
+        if (portletContainer == null) 
+        {
             log.error("Portlet container not found!");
         }
 
@@ -75,34 +78,42 @@ class PortletWindowIGImpl implements PortletWindowIG {
      * 
      * @see org.infoglue.cms.portal.PortletWindowIG#render()
      */
-    public String render() throws PortalException {
-        log.debug("render(" + renderWindow.getPortletEntity().getId() + ", " + renderWindow.getId()
-                + ") invoked");
-        try {
+    
+    public String render() throws PortalException 
+    {
+        log.debug("render(" + renderWindow.getPortletEntity().getId() + ", " + renderWindow.getId() + ") invoked");
+        
+        try 
+        {
             // Create a buffered response to "catch" output from rendering the
             // portlet
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
-            ServletResponseImpl wrappedResponse = (ServletResponseImpl) ServletObjectAccess
-                    .getStoredServletResponse(response, pw);
+            ServletResponseImpl wrappedResponse = (ServletResponseImpl) ServletObjectAccess.getStoredServletResponse(response, pw);
+            
+    		InfoGluePrincipal infogluePrincipal = (InfoGluePrincipal)wrappedRequest.getSession().getAttribute("infogluePrincipal");
+            wrappedRequest.setAttribute("infogluePrincipal", wrappedRequest.getSession().getAttribute("infogluePrincipal"));
+            wrappedRequest.setAttribute("infoglueRemoteUser", infogluePrincipal.getName());
 
             // -- Ask portlet container to render the portlet (into buffer)
             portletContainer.renderPortlet(renderWindow, wrappedRequest, wrappedResponse);
             log.debug("Rendering OK!");
-
+            
             // Return the contents of rendering
             String contents = sw.toString();
-            if (contents.length() == 0) {
+            if (contents.length() == 0) 
+            {
                 log.warn("Rendering generated an empty string");
             }
-            log.debug("render(" + renderWindow.getPortletEntity().getId() + ", " + renderWindow.getId()
-                    + ") done");
+            
+            log.debug("render(" + renderWindow.getPortletEntity().getId() + ", " + renderWindow.getId() + ") done");
 
             return contents;
-        } catch (Throwable t) {
+        } 
+        catch (Throwable t) 
+        {
             throw new PortalException(t);
         }
-        
     }
 
     /*
@@ -111,7 +122,9 @@ class PortletWindowIGImpl implements PortletWindowIG {
      * @see org.infoglue.cms.portal.PortletWindowIG#setParameter(java.lang.String,
      *      java.lang.Object)
      */
-    public void setAttribute(String key, Object value) {
+    
+    public void setAttribute(String key, Object value) 
+    {
         wrappedRequest.setAttribute(key, value);
     }
 
@@ -121,9 +134,10 @@ class PortletWindowIGImpl implements PortletWindowIG {
      * @see org.infoglue.cms.portal.PortletWindowIG#setParameter(java.lang.String,
      *      java.lang.String[])
      */
-    public void setParameter(String key, String value) {
-        if (wrappedRequest.getParameter(key) == null
-                || wrappedRequest.getParameter(key).equalsIgnoreCase(""))
+    
+    public void setParameter(String key, String value) 
+    {
+        if (wrappedRequest.getParameter(key) == null || wrappedRequest.getParameter(key).equalsIgnoreCase(""))
             wrappedRequest.getParameterMap().put(key, new String[] { value });
     }
 

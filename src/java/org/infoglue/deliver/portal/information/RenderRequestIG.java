@@ -27,6 +27,7 @@ import java.util.Vector;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,23 +46,23 @@ import org.apache.pluto.services.log.Logger;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class RenderRequestIG extends PortletRequestImpl implements RenderRequest {
+public class RenderRequestIG extends PortletRequestImpl implements RenderRequest 
+{
     private static final Log LOG = LogFactory.getLog(RenderRequestIG.class);
 
     /**
      * Holds the portlet preferences
      */
+    
     private PortletPreferences portletPreferences = null;
     private Logger log = null;
 
     private HttpServletRequest origRequest;
 
-    public RenderRequestIG(
-        PortletWindow portletWindow,
-        javax.servlet.http.HttpServletRequest servletRequest) {
+    public RenderRequestIG(PortletWindow portletWindow, HttpServletRequest servletRequest) 
+    {
         super(portletWindow, servletRequest);
-        this.log =
-            ((LogService) PortletContainerServices.get(LogService.class)).getLogger(getClass());
+        this.log = ((LogService) PortletContainerServices.get(LogService.class)).getLogger(getClass());
 
         log.debug("Original servletRequest of type [" + servletRequest.getClass().getName() + "]");
         origRequest = servletRequest;
@@ -71,25 +72,30 @@ public class RenderRequestIG extends PortletRequestImpl implements RenderRequest
     /**
      * @see javax.servlet.ServletRequest#getReader()
      */
-    public BufferedReader getReader() throws IOException {
+    
+    public BufferedReader getReader() throws IOException 
+    {
         return super.getReader();
     }
 
-    public PortletPreferences getPreferences() {
-        if (log.isDebugEnabled()) {
+    public PortletPreferences getPreferences() 
+    {
+        if (log.isDebugEnabled()) 
+        {
             log.debug("Getting Preferences: " + portletPreferences);
         }
 
-        if (portletPreferences == null) {
-            portletPreferences =
-                PortletObjectAccess.getPortletPreferences(
-                    org.apache.pluto.Constants.METHOD_RENDER,
-                    super.getInternalPortletWindow().getPortletEntity());
+        if (portletPreferences == null) 
+        {
+            portletPreferences = PortletObjectAccess.getPortletPreferences(org.apache.pluto.Constants.METHOD_RENDER, super.getInternalPortletWindow().getPortletEntity());
         }
-        if (log.isDebugEnabled()) {
+        
+        if (log.isDebugEnabled()) 
+        {
             log.debug("Returning Preferences: " + portletPreferences);
             Enumeration e = portletPreferences.getNames();
-            while (e.hasMoreElements()) {
+            while (e.hasMoreElements()) 
+            {
                 String name = (String) e.nextElement();
                 log.debug(" - Preference: name = " + name);
             }
@@ -102,7 +108,8 @@ public class RenderRequestIG extends PortletRequestImpl implements RenderRequest
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#getAttribute(java.lang.String)
      */
-    public Object getAttribute(String name) {
+    public Object getAttribute(String name) 
+    {
         Object o = super.getAttribute(name);
         if (o == null) {
             o = super.getRequest().getAttribute(name);
@@ -113,7 +120,8 @@ public class RenderRequestIG extends PortletRequestImpl implements RenderRequest
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#getAttributeNames()
      */
-    public Enumeration getAttributeNames() {
+    public Enumeration getAttributeNames() 
+    {
         Vector v = new Vector();
 
         for (Enumeration enumeration = super.getAttributeNames(); enumeration.hasMoreElements();) {

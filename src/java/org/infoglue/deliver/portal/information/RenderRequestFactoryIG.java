@@ -35,8 +35,8 @@ public class RenderRequestFactoryIG implements RenderRequestFactory {
                                           javax.servlet.http.HttpServletRequest servletRequest,
                                           javax.servlet.http.HttpServletResponse servletResponse)
     {
-        RenderRequest renderRequest = new RenderRequestIG( portletWindow,
-                                                             servletRequest);
+        RenderRequest renderRequest = new RenderRequestIG(portletWindow, servletRequest);
+        
         return renderRequest;
     }
     // --------------------------------------------------------------------------------------------
