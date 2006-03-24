@@ -105,7 +105,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
 		if(siteNodeVersionVO.getStateId().intValue() != SiteNodeVersionVO.WORKING_STATE.intValue())
 		{
-			try{throw new Exception("WHAT");}catch(Exception e){e.printStackTrace();}
 	    	List events = new ArrayList();
 			SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Edit on sight editing", true, this.getInfoGluePrincipal(), this.siteNodeId, events);
 		}

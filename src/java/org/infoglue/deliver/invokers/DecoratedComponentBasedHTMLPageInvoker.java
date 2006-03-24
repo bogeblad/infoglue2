@@ -1171,16 +1171,19 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	private String getComponentPaletteDiv(Integer siteNodeId, Integer languageId, TemplateController templateController) throws Exception
 	{		
-	    InfoGluePrincipal principal = templateController.getPrincipal();
+		InfoGluePrincipal principal = templateController.getPrincipal();
 
-	    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
-	    if(cmsUserName != null)
-		    principal = templateController.getPrincipal(cmsUserName);
-	    	    
-	    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", "");
-	    
-	    if(!hasAccess || templateController.getRequestParameter("skipToolbar") != null && templateController.getRequestParameter("skipToolbar").equalsIgnoreCase("true"))
-	        return "";
+		if(!templateController.getDeliveryContext().getShowSimple())
+	    {
+		    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
+		    if(cmsUserName != null)
+			    principal = templateController.getPrincipal(cmsUserName);
+		    	    
+		    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", "");
+		    
+		    if(!hasAccess || templateController.getRequestParameter("skipToolbar") != null && templateController.getRequestParameter("skipToolbar").equalsIgnoreCase("true"))
+		        return "";
+	    }
 	    
 		ContentVO contentVO = templateController.getBoundContent(BasicTemplateController.META_INFO_BINDING_NAME);
 

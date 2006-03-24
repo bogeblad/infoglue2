@@ -111,7 +111,6 @@
 			return str;
 		}
 
-		
 	-->
 	</script>
 	
@@ -232,7 +231,7 @@
 	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td class="actionheader"><div class="leftmarginalized">$ui.getString($title)</div></td>
+	<td class="actionheader"><div class="leftmarginalized">$ui.getString($title) $!stateDescription</div></td>
 </tr>
 <tr class="lightgreen">
 	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>

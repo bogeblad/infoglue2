@@ -286,7 +286,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 			{	
 	        	this.initialize(getSiteNodeId(), db);
 
-	            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVO.getSiteNodeTypeDefinitionId() != null && this.siteNodeVersionVO.getStateId().intValue() == SiteNodeVersionVO.WORKING_STATE.intValue() && getShowComponentsFirst().equalsIgnoreCase("true"))
+	            //if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVO.getSiteNodeTypeDefinitionId() != null && this.siteNodeVersionVO.getStateId().intValue() == SiteNodeVersionVO.WORKING_STATE.intValue() && getShowComponentsFirst().equalsIgnoreCase("true"))
+	            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVO.getSiteNodeTypeDefinitionId() != null && getShowComponentsFirst().equalsIgnoreCase("true"))
 		        {
 	                boolean isMetaInfoInWorkingState = false;
 	    			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId, db);
@@ -329,9 +330,10 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    				metaInfoContentVersionVO = ContentStateController.changeState(metaInfoContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Automatic", true, this.getInfoGluePrincipal(), null, db, new ArrayList()).getValueObject();
 	    				isMetaInfoInWorkingState = true;
 	    			}
-	    			
-	    			if(isMetaInfoInWorkingState)
-	    			{
+	    				    			
+	    			//if(isMetaInfoInWorkingState)
+	    			if(true)
+	    		    {
 	    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8");
 	    			    url = this.getResponse().encodeURL(url);
 	    				this.getResponse().sendRedirect(url);
@@ -350,7 +352,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		        {
 		            this.initializeSiteNodeCover(getSiteNodeId(), db);
 		            
-		            result = "success";
+	            	result = "success";
 		        }
 			}
 			else

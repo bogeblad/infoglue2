@@ -498,6 +498,25 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", "UTF-8"), "UTF-8");
 		return new ImageButton(this.getCMSBaseUrl() + "/ViewAccessRights.action?interceptionPointCategory=SiteNodeVersion&extraParameters=" + this.siteNodeVersionId +"&colorScheme=StructureTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeAccessRights"), "Site Node Access Rights");
 	}
+	
+	public String getStateDescription()
+	{
+		String state = "";
+		
+		if(this.siteNodeVersionVO != null)
+		{
+			if(this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE))
+				state = "<span style=\"color:#333333; font-weight: strong;\">(" + getLocalizedString(getSession().getLocale(), "tool.contenttool.state.working") + ")</span>";
+			else if(this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.FINAL_STATE))
+				state = "<span style=\"color:#AAAAAA; font-weight: strong;\">(" + getLocalizedString(getSession().getLocale(), "tool.contenttool.state.final") + ")</span>";
+			else if(this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.PUBLISH_STATE))
+				state = "<span style=\"color:#888888; font-weight: normal;\">(" + getLocalizedString(getSession().getLocale(), "tool.contenttool.state.publish") + ")</span>";
+			else if(this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.PUBLISHED_STATE))
+				state = "<span style=\"color:#666666; font-weight: normal;\">(" + getLocalizedString(getSession().getLocale(), "tool.contenttool.state.published") + ")</span>";
+		}
+		
+		return state;
+	}
 /*
 	public Integer getServiceBindingId()
 	{
