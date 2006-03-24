@@ -632,6 +632,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 				if(isAuthorized)
 				{	
+				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+
 					principal = anonymousPrincipal;
 				}
 			}
@@ -672,7 +675,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						{
 						    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-
+							
 							boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 							if(!isAuthorized)
 							{	

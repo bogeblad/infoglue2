@@ -92,9 +92,12 @@ class PortletWindowIGImpl implements PortletWindowIG
             ServletResponseImpl wrappedResponse = (ServletResponseImpl) ServletObjectAccess.getStoredServletResponse(response, pw);
             
     		InfoGluePrincipal infogluePrincipal = (InfoGluePrincipal)wrappedRequest.getSession().getAttribute("infogluePrincipal");
-            wrappedRequest.setAttribute("infogluePrincipal", wrappedRequest.getSession().getAttribute("infogluePrincipal"));
-            wrappedRequest.setAttribute("infoglueRemoteUser", infogluePrincipal.getName());
-
+            if(infogluePrincipal != null)
+    		{
+            	wrappedRequest.setAttribute("infogluePrincipal", infogluePrincipal);
+            	wrappedRequest.setAttribute("infoglueRemoteUser", infogluePrincipal.getName());
+            }
+            
             // -- Ask portlet container to render the portlet (into buffer)
             portletContainer.renderPortlet(renderWindow, wrappedRequest, wrappedResponse);
             log.debug("Rendering OK!");
@@ -112,6 +115,7 @@ class PortletWindowIGImpl implements PortletWindowIG
         } 
         catch (Throwable t) 
         {
+        	t.printStackTrace();
             throw new PortalException(t);
         }
     }
