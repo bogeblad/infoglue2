@@ -3658,6 +3658,23 @@ public class BasicTemplateController implements TemplateController
 		return pageUrl;
 	}
 
+	/**
+	 * This method returns the exact full url from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalFullURL()
+	{
+    	String originalRequestURL = this.getHttpServletRequest().getParameter("originalRequestURL");
+    	if(originalRequestURL == null || originalRequestURL.length() == 0)
+    		originalRequestURL = this.getHttpServletRequest().getRequestURL().toString();
+
+    	String originalQueryString = this.getHttpServletRequest().getParameter("originalQueryString");
+    	if(originalQueryString == null || originalQueryString.length() == 0)
+    		originalQueryString = this.getHttpServletRequest().getQueryString();
+
+    	return originalRequestURL + "?" + originalQueryString;
+	}
 
 	/**
 	 * This method deliveres a new url pointing to the same address as now but with new parameters.

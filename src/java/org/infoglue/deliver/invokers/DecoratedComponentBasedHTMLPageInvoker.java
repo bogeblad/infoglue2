@@ -254,6 +254,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorBody.vm"));
 			
 		    Locale locale = templateController.getLocale();
+			String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		    String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
 			String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
 			String accessRightsHTML = getLocalizedString(locale, "deliver.editOnSight.accessRightsHTML");
@@ -265,6 +266,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 			String saveTemplateUrl = "" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + templateController.getSiteNode(deliveryContext.getSiteNodeId()).getMetaInfoContentId();
 			
+			extraBody = extraBody.replaceAll("\\$siteNodeId", "" + templateController.getSiteNodeId());
+			extraBody = extraBody.replaceAll("\\$repositoryId", "" + templateController.getSiteNode().getRepositoryId());
+			extraBody = extraBody.replaceAll("\\$originalFullURL", URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8"));
+			
+			extraBody = extraBody.replaceAll("\\$submitToPublishHTML", submitToPublishHTML);
 			extraBody = extraBody.replaceAll("\\$addComponentHTML", addComponentHTML);
 			extraBody = extraBody.replaceAll("\\$deleteComponentHTML", deleteComponentHTML);
 		    extraBody = extraBody.replaceAll("\\$accessRightsHTML", accessRightsHTML);
@@ -978,6 +984,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		Locale locale = templateController.getLocale();
 		String editHTML = getLocalizedString(locale, "deliver.editOnSight.editHTML");
+		String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
 		String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
 		String propertiesHTML = getLocalizedString(locale, "deliver.editOnSight.propertiesHTML");
@@ -987,6 +994,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String savePageTemplateHTML = getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
 		
 		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">" + editHTML + "</div>");
+		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');\">" + submitToPublishHTML + "</div>");
 		if(hasAccessToAddComponent)
 			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">" + addComponentHTML + "</div>");
 		if(hasAccessToDeleteComponent)

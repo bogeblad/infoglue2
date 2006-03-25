@@ -52,8 +52,8 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	private Integer siteNodeVersionId;
 	private Integer siteNodeId;
 	private Integer repositoryId;
-	
-	
+	private String returnAddress;
+
 
 	protected String doExecute() throws Exception 
 	{
@@ -128,4 +128,14 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
     {
         return siteNodeVersionVOList;
     }
+
+
+	public String getReturnAddress() {
+		return returnAddress;
+	}
+
+
+	public void setReturnAddress(String returnAddress) {
+		this.returnAddress = returnAddress;
+	}
 }

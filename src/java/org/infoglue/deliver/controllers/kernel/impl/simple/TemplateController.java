@@ -812,6 +812,13 @@ public interface TemplateController
      */
     public abstract String getCurrentPageUrl();
 
+	/**
+	 * This method returns the exact full url from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalFullURL();
+
     /**
      * This method deliveres a new url pointing to the same address as now but with new parameters.
      */

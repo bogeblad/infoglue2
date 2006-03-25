@@ -870,6 +870,15 @@ function edit()
 	}
 }
 
+//--------------------------------------------
+// Function submitting the page to publishing
+//--------------------------------------------
+
+function submitToPublish(siteNodeId, repositoryId, returnAddress) 
+{
+	document.location.href = componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&returnAddress=" + returnAddress;	
+}
+
 function executeTask(url) 
 {
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));

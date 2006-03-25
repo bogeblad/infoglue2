@@ -262,22 +262,25 @@ function setCMSContext(context)
 
 function refreshStructureToolBar(title, toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
 {
-	//alert('toolbarKey:' + toolbarKey);
-	//toolbarKey 	= escape(toolbarKey);	
-	toolbarKey 	= hexcode(toolbarKey);	
-	if(parent.frames["toolbar"].document.getElementById("lockLayer"))
-		parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
-	
-	if(cmsContext != "")
-		parent.frames["toolbar"].location.href = cmsContext + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
-	else
-		parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
-	
-	//alert("unrefreshedNodeId:" + unrefreshedNodeId);
-	if(unrefreshedNodeId > 0)
+	if(parent.frames["toolbar"].document)
 	{
-		//alert("About to call refresh on applet...");
-		parent.frames["menu"].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
+		//alert('toolbarKey:' + toolbarKey);
+		//toolbarKey 	= escape(toolbarKey);	
+		toolbarKey 	= hexcode(toolbarKey);	
+		if(parent.frames["toolbar"].document.getElementById("lockLayer"))
+			parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
+		
+		if(cmsContext != "")
+			parent.frames["toolbar"].location.href = cmsContext + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+		else
+			parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+		
+		//alert("unrefreshedNodeId:" + unrefreshedNodeId);
+		if(unrefreshedNodeId > 0)
+		{
+			//alert("About to call refresh on applet...");
+			parent.frames["menu"].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
+		}
 	}
 }
 

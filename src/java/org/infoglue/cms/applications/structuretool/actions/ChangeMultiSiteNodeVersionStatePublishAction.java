@@ -53,7 +53,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 	private boolean overrideVersionModifyer = false;
 	private Integer repositoryId;
 	private String attemptDirectPublishing = "false";
-
+	private String returnAddress;
 			    
 	/**
 	 * This method gets called when calling this action. 
@@ -93,7 +93,17 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, overrideVersionModifyer, this.getInfoGluePrincipal());
 		}
 
-       	return "success";
+		if(this.returnAddress != null && !this.returnAddress.equals(""))
+		{
+			this.returnAddress = this.getResponse().encodeURL(returnAddress);
+			this.getResponse().sendRedirect(returnAddress);
+	
+			return NONE;
+		}
+		else
+		{
+	       	return "success";
+		}
     }
         
     public java.lang.Integer getSiteNodeId()
@@ -173,4 +183,12 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
     {
         this.overrideVersionModifyer = overrideVersionModifyer;
     }
+
+	public String getReturnAddress() {
+		return returnAddress;
+	}
+
+	public void setReturnAddress(String returnAddress) {
+		this.returnAddress = returnAddress;
+	}
 }
