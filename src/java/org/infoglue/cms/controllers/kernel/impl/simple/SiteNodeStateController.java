@@ -222,15 +222,116 @@ public class SiteNodeStateController extends BaseController
      */
     public void changeStateOnMetaInfo(Database db, SiteNodeVersion siteNodeVersion, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, List events) throws ConstraintException, SystemException, Exception
     {
+    	getLogger().info("start changeStateOnMetaInfo");
+    	
         List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
 		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
-		
+
+    	getLogger().info("after languages");
+
+    	ContentVO contentVO = null;
+    	if(siteNodeVersion.getOwningSiteNode().getMetaInfoContentId() != null)
+    	{
+    		contentVO = ContentController.getContentController().getContentVOWithId(siteNodeVersion.getOwningSiteNode().getMetaInfoContentId(), db);
+    	}
+    	else
+    	{
+        	getLogger().warn("There was no metaInfoContentId on the siteNode... run validation to improve performance..");
+
+        	Integer metaInfoAvailableServiceBindingId = null;
+    		Integer serviceBindingId = null;
+    		AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
+    		if(availableServiceBinding != null)
+    			metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
+
+        	getLogger().info("after loading service binding for meta info");
+
+    		Collection serviceBindings = siteNodeVersion.getServiceBindings();
+    		Iterator serviceBindingIterator = serviceBindings.iterator();
+    		while(serviceBindingIterator.hasNext())
+    		{
+    			ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+    			if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+    			{
+    				serviceBindingId = serviceBinding.getId();
+    				break;
+    			}
+    		}
+
+    		if(serviceBindingId != null)
+    		{
+    			List boundContents = ContentController.getBoundContents(db, serviceBindingId); 
+    			getLogger().info("boundContents:" + boundContents.size());
+    			if(boundContents.size() > 0)
+    			{
+    				contentVO = (ContentVO)boundContents.get(0);
+    				getLogger().info("contentVO:" + contentVO.getId());
+    			}
+    		}
+    	}
+    	
+    	if(contentVO != null)
+    	{				
+			Iterator languageIterator = languages.iterator();
+			while(languageIterator.hasNext())
+			{
+				Language language = (Language)languageIterator.next();
+				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
+				
+				getLogger().info("language:" + language.getId());
+				
+				//if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
+				//	throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
+
+				if(contentVersion != null)
+				{
+				    getLogger().info("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getStateId());
+				    getLogger().info("State wanted:" + stateId);
+				}
+				
+				//if(contentVersion != null && contentVersion.getStateId().intValue() == siteNodeVersion.getStateId().intValue())
+				if(contentVersion != null && contentVersion.getStateId().intValue() != stateId.intValue())
+				{
+				    getLogger().info("State on current:" + contentVersion.getStateId());
+				    getLogger().info("changing state on contentVersion:" + contentVersion.getId());
+				    contentVersion = ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, contentVO.getId(), db, events);
+				}
+				
+				if(language.getId().equals(masterLanguage.getId()) && contentVersion != null)
+				{
+				    //TODO - lets keep the ref to meta info alive...
+				    //RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+				    RegistryController.getController().updateContentVersion(contentVersion, siteNodeVersion, db);
+				}	
+			}
+		}
+    }
+
+    /**
+     * This method checks if the siteNodes latest metainfo is working - if so - it get published with the sitenode.
+     * @param db
+     * @throws ConstraintException
+     * @throws SystemException
+     * @throws Exception
+     */
+    /*
+    public void changeStateOnMetaInfo(Database db, SiteNodeVersion siteNodeVersion, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, List events) throws ConstraintException, SystemException, Exception
+    {
+    	getLogger().info("start changeStateOnMetaInfo");
+    	
+        List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
+		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
+
+    	getLogger().info("after languages");
+
 		Integer metaInfoAvailableServiceBindingId = null;
 		Integer serviceBindingId = null;
 		AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
 		if(availableServiceBinding != null)
 			metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
-		
+
+    	getLogger().info("after loading service binding for meta info");
+
 		Collection serviceBindings = siteNodeVersion.getServiceBindings();
 		Iterator serviceBindingIterator = serviceBindings.iterator();
 		while(serviceBindingIterator.hasNext())
@@ -288,7 +389,8 @@ public class SiteNodeStateController extends BaseController
 			}
 		}
     }
-
+    */
+    
 	/**
 	 * This method copies all serviceBindings a siteNodeVersion has to the new siteNodeVersion.
 	 */
