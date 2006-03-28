@@ -402,12 +402,13 @@
 		<td>#editField("ServerNode.property.casLogoutUrl" "deliver_casLogoutUrl" "$this.getPropertyValue('deliver', 'casLogoutUrl')" "51")</td>
 	</tr>
 
-	
+	#set($shortcuts = $this.getDataPropertyValue("shortcuts"))
+	#set($shortcuts = $shortcuts.replaceAll("&amp;", "&amp;amp;"))
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.cmsGUI.label")</td>
 	</tr>	
 	<tr>
-		<td>#editTextArea("ServerNode.property.shortcuts" "shortcuts" "$this.getDataPropertyValue('shortcuts')" "50" "10" "normaltextarea")</td>
+		<td>#editTextArea("ServerNode.property.shortcuts" "shortcuts" "$shortcuts" "50" "10" "normaltextarea")</td>
 	</tr>
 
 	<tr>
