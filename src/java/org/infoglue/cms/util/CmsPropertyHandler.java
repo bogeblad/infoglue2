@@ -312,6 +312,101 @@ public class CmsPropertyHandler
 	    return value;
 	}
 
+	
+	/**
+	 * This method gets the serverNodeDataProperty.
+	 * 
+	 * @param key
+	 * @param inherit
+	 * @return
+	 */
+	
+	public static String getServerNodeDataProperty(String prefix, String key, boolean inherit, String defaultValue)
+	{
+	    String value = null;
+	    
+        String cacheKey = "" + prefix + "_" + key + "_" + inherit;
+        String cacheName = "serverNodePropertiesCache";
+		logger.info("cacheKey:" + cacheKey);
+		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		if(value != null)
+		{
+			return value;
+		}
+	    
+		Timer timer = new Timer();
+		
+	    if(localSettingsServerNodeId != null)
+	    {
+	    	if(prefix != null)
+	    	{
+		        value = getDataPropertyValue("serverNode_" + localSettingsServerNodeId + "_" + prefix + "_" + key);
+		        //System.out.println("Local value: " + value);
+		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+		        {
+		            value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
+			        //System.out.println("Global value: " + value);
+			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+			        {
+			            value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + key);
+				        //System.out.println("Global value: " + value);
+			        }
+
+		        }
+	    	}
+	    	else
+	    	{
+		        value = getDataPropertyValue("serverNode_" + localSettingsServerNodeId + "_" + key);
+		        //System.out.println("Local value: " + value);
+		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+		        {
+		            value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + key);
+			        //System.out.println("Global value: " + value);
+		        }	    		
+	    	}
+	    }
+		else
+		{
+			if(prefix != null)
+	    	{
+				value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
+				//System.out.println("Global value immediately: " + value);
+	    	}
+			else
+			{
+				value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + key);
+				//System.out.println("Global value immediately: " + value);				
+			}
+	    }
+	    
+	    if(value == null && defaultValue != null)
+	    	value = defaultValue;
+	    
+	    CacheController.cacheObject(cacheName, cacheKey, value);
+	    
+	    logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
+	    
+	    return value;
+	}
+	
+	public static String getDataPropertyValue(String fullKey)
+	{
+		String result = null;
+		
+		try
+		{
+			byte[] valueBytes = propertySet.getData(fullKey);
+	    
+			result = (valueBytes != null ? new String(valueBytes, "utf-8") : "");
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
 	public static String getContextRootPath()
 	{
 	    return getProperty("contextRootPath");

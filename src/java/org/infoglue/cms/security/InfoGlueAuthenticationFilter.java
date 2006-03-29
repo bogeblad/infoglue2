@@ -23,7 +23,9 @@
 
 package org.infoglue.cms.security;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -100,6 +102,15 @@ public class InfoGlueAuthenticationFilter implements Filter
 				logger.error("Error loading properties from file " + "/" + extraParametersFile + ". Reason:" + e.getMessage());
 				e.printStackTrace();
 			}
+		}
+
+		try
+		{
+			initializeCMSProperties();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 
@@ -281,6 +292,9 @@ public class InfoGlueAuthenticationFilter implements Filter
   	{
   		String authenticatedUserName = null;
   		
+  		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
+  		
+  		/*
   		AuthenticationModule authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
 		authenticationModule.setAuthenticatorClass(authenticatorClass);
 		authenticationModule.setAuthorizerClass(authorizerClass);
@@ -292,7 +306,8 @@ public class InfoGlueAuthenticationFilter implements Filter
 		authenticationModule.setCasRenew(casRenew);
 		authenticationModule.setCasServiceUrl(casServiceUrl);
 		authenticationModule.setCasValidateUrl(casValidateUrl);
-		
+		*/
+  		
 		authenticatedUserName = authenticationModule.authenticateUser(request, response, fc);
 		
 		return authenticatedUserName;
@@ -423,24 +438,26 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    	InfoGlueAuthenticationFilter.casValidateUrl = casValidateUrl;
 		    if(casLogoutUrl != null)
 		    	InfoGlueAuthenticationFilter.casLogoutUrl = casLogoutUrl;
-		    /*
+
+			/*
 		    System.out.println("loginUrl:" + loginUrl);
 		    System.out.println("authenticatorClass:" + authenticatorClass);
 		    System.out.println("authorizerClass:" + authorizerClass);
 		    */
 		    
-		    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraParametersFile");
-		    
-		    if(extraPropertiesFile != null)
+		    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
+		    //System.out.println("extraPropertiesString:" + extraPropertiesString);
+		    if(extraPropertiesString != null)
 			{
-				try
+		    	try
 				{
-					extraProperties = new Properties();
-					extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraPropertiesFile));	
+		    		extraProperties = new Properties();
+					extraProperties.load(new ByteArrayInputStream(extraPropertiesString.getBytes("UTF-8")));
+					//extraProperties.list(System.out);
 				}	
 				catch(Exception e)
 				{
-				    logger.error("Error loading properties from file " + "/" + extraPropertiesFile + ". Reason:" + e.getMessage());
+				    logger.error("Error loading properties from string. Reason:" + e.getMessage());
 					e.printStackTrace();
 				}
 			}
