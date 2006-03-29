@@ -232,9 +232,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				SearchResult sr = (SearchResult)answer.next();
 				logger.info("Person:" + sr.toString() + "\n");
 				Attributes attributes = sr.getAttributes();
+				logger.info("attributes:" + attributes + "\n");
 				
 				for(int i=0; i<attrID.length; i++)
 				{
+					logger.info("attrID[i]:" + attrID[i]);
 					Attribute attribute = attributes.get(attrID[i]);
 					logger.info("attribute:" + attribute.toString());
 					NamingEnumeration allEnum = attribute.getAll();
