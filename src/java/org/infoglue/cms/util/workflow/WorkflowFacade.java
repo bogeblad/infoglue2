@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.AbstractWorkflow;
@@ -51,7 +52,9 @@ import com.opensymphony.workflow.basic.BasicWorkflow;
 import com.opensymphony.workflow.loader.ActionDescriptor;
 import com.opensymphony.workflow.loader.StepDescriptor;
 import com.opensymphony.workflow.loader.WorkflowDescriptor;
+import com.opensymphony.workflow.query.Expression;
 import com.opensymphony.workflow.query.FieldExpression;
+import com.opensymphony.workflow.query.NestedExpression;
 import com.opensymphony.workflow.query.WorkflowExpressionQuery;
 import com.opensymphony.workflow.spi.Step;
 import com.opensymphony.workflow.spi.WorkflowEntry;
@@ -62,7 +65,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.25 $ $Date: 2005/10/16 12:01:08 $
+ * @version $Revision: 1.26 $ $Date: 2006/04/02 16:21:19 $
  */
 public class WorkflowFacade
 {
@@ -113,7 +116,8 @@ public class WorkflowFacade
 	 */
 	public WorkflowFacade(final Owner owner)
 	{
-		workflow = new BasicWorkflow(owner.getIdentifier());
+		workflow = new InfoGlueBasicWorkflow(owner.getIdentifier());
+		//workflow = new BasicWorkflow(owner.getIdentifier());
 		workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
 	}
 	
@@ -172,7 +176,15 @@ public class WorkflowFacade
 	private void setWorkflowIdAndDescriptor(long workflowId)
 	{
 		this.workflowId = workflowId;
-		workflowDescriptor = workflow.getWorkflowDescriptor(workflow.getWorkflowName(workflowId));
+		String key = "workflowName_" + workflowId;
+		String workflowName = (String)CacheController.getCachedObject("workflowNameCache", key);
+		if(workflowName == null)
+		{
+			workflowName = workflow.getWorkflowName(workflowId);
+			CacheController.cacheObject("workflowNameCache", key, workflowName);
+		}
+			
+		workflowDescriptor = workflow.getWorkflowDescriptor(workflowName);
 	}
 
 	/**
@@ -402,19 +414,48 @@ public class WorkflowFacade
 	 * @param principal the principal.
 	 * @return the workflows owned by the specified principal.
 	 */
+	
 	public List getMyActiveWorkflows(final InfoGluePrincipal principal) throws SystemException
-	{
-		if(principal.getIsAdministrator())
+	{		
+		String key = "myWorkflows_" + principal.getName();
+		List workflows = (List)CacheController.getCachedObject("myActiveWorkflows", key);
+		if(workflows == null)
 		{
-			return getActiveWorkflows();
+			if(principal.getIsAdministrator())
+			{
+				workflows = getActiveWorkflows();
+			}
+			
+			Collection owners = OwnerFactory.createAll(principal);
+			Expression[] expressions = new Expression[owners.size()];
+			
+			Iterator ownersIterator = owners.iterator();
+			int i = 0;
+			while(ownersIterator.hasNext())
+			{
+				Owner owner = (Owner)ownersIterator.next();
+				Expression expression = new FieldExpression(FieldExpression.OWNER, FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier());
+				expressions[i] = expression;
+				i++;
+			}				
+			
+			final Set workflowVOs = new HashSet();
+			workflowVOs.addAll(createWorkflowsForOwner(expressions));
+
+			/*
+			final Set workflowVOs = new HashSet();
+			for(final Iterator owners = OwnerFactory.createAll(principal).iterator(); owners.hasNext(); )
+			{
+				final Owner owner = (Owner) owners.next();
+				workflowVOs.addAll(createWorkflowsForOwner(owner));
+			}
+			*/
+			
+			workflows = new ArrayList(workflowVOs);
+			CacheController.cacheObject("myActiveWorkflows", key, workflows);
 		}
-		final Set workflowVOs = new HashSet();
-		for(final Iterator owners = OwnerFactory.createAll(principal).iterator(); owners.hasNext(); )
-		{
-			final Owner owner = (Owner) owners.next();
-			workflowVOs.addAll(createWorkflowsForOwner(owner));
-		}
-		return new ArrayList(workflowVOs);
+		
+		return workflows;
 	}
 	
 	/**
@@ -427,14 +468,36 @@ public class WorkflowFacade
 	private final Set createWorkflowsForOwner(final Owner owner) throws SystemException
 	{
 		final Set workflowVOs = new HashSet(); 
-		for (Iterator workflows = findWorkflows(owner).iterator(); workflows.hasNext();)
+		List workflows = findWorkflows(owner);
+		Iterator workflowsIterator = workflows.iterator();
+		while (workflowsIterator.hasNext())
 		{
-			setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
+			setWorkflowIdAndDescriptor(((Long)workflowsIterator.next()).longValue());
 			workflowVOs.add(createWorkflowVO());
 		}
 		return workflowVOs;
 	}
-	
+
+	/**
+	 * Creates value object for all workflows having the specified owner.
+	 * 
+	 * @param owner the owner.
+	 * @return the value objects.
+	 * @throws SystemException if an error occurs when creating the value objects.
+	 */
+	private final Set createWorkflowsForOwner(final Expression[] expressions) throws SystemException
+	{
+		final Set workflowVOs = new HashSet(); 
+		List workflows = findWorkflows(expressions);
+		Iterator workflowsIterator = workflows.iterator();
+		while (workflowsIterator.hasNext())
+		{
+			setWorkflowIdAndDescriptor(((Long)workflowsIterator.next()).longValue());
+			workflowVOs.add(createWorkflowVO());
+		}
+		return workflowVOs;
+	}
+
 	/**
 	 * Finds all active workflows
 	 * @return A list of workflowIds representing workflows that match the hard-wored query expression.
@@ -464,15 +527,39 @@ public class WorkflowFacade
 	{
 		try
 		{
-			return workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.OWNER,
-						FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier())));
+			List workflows = workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.OWNER,
+					FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier())));
+
+			return workflows;
 		}
 		catch (WorkflowException e)
 		{
 			throw new SystemException(e);
 		}
 	}
-	
+
+	/**
+	 * Finds all workflows for the specified owner.
+	 * 
+	 * @param owner the owner.
+	 * @return The active workflows owned by the specified owner. 
+	 * @throws SystemException
+	 */
+	private List findWorkflows(final Expression[] expressions) throws SystemException
+	{
+		try
+		{
+			List workflows = workflow.query(new WorkflowExpressionQuery(new NestedExpression(expressions, NestedExpression.OR)));
+
+			//List workflows = workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.OWNER, FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier())));
+			return workflows;
+		}
+		catch (WorkflowException e)
+		{
+			throw new SystemException(e);
+		}
+	}
+
 	/**
 	 * Returns all current steps for the workflow, i.e., steps that could be performed in the workflow's current state
 	 * Steps are filtered according to ownership; if a step has an owner, it is only included if the ownser matches
