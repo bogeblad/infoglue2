@@ -324,6 +324,50 @@
 #end
 
 ##**************************************************
+## This is the header for all list-pages in the    *
+## management tool                                 *
+##**************************************************
+
+#macro(lvHeadSlimmed $headers $header $yesDestination $noDestination $message)
+
+#if ($lvBorder == 1)
+	<table tableborder=0 border=0 bgcolor=666666 width="100%" cellpadding="1" cellspacing="0"><tr><td>
+#end
+
+#set($lvChkBoxName = "sel")
+
+<div class="listmarginalized">
+	#set( $span = $headers.size() * 2 )
+	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+		<tr>
+			#foreach( $x in [0..$span] )
+			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			#end
+		</tr>
+		<tr class="dark$lvColor" valign="center">
+			<td id='lleft' class="white" width=1><img src="images/trans.gif" width="1" height="1"></td>
+			#set( $hcnt=0 )
+			#foreach( $header in $headers )
+				#set( $hcnt=$hcnt + 1 )
+				<td class="listheader">
+					<div class="minormarginalized">$header</div>
+				</td>
+				#if ($velocityCount != $headers.size())
+					#set( $hcnt=$hcnt + 1 )
+					<td class="dark$lvColor" width=2><img src="images/listsplit.gif" width="2" /></td>
+				#end
+			#end
+			<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			#foreach( $x in [0..$span] )
+			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			#end
+		</tr>
+#end
+
+
+##**************************************************
 ## COPY This is the header for all list-pages in the    *
 ## management tool                                 *
 ##**************************************************
