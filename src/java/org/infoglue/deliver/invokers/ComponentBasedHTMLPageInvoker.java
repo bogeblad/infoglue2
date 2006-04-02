@@ -167,7 +167,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		String pageComponentsString = null;
    					
 		//logger.info("contentVO in getPageComponentsString: " + contentVO.getContentId());
-		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
+		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getId();
 	    pageComponentsString = templateController.getContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);
 		
 		if(pageComponentsString == null)
