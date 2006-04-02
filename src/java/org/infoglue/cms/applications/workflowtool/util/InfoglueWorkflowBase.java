@@ -30,8 +30,10 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.util.workflow.DatabaseSession;
 
 import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.provider.BeanProvider;
+import com.opensymphony.provider.bean.DefaultBeanProvider;
 import com.opensymphony.workflow.WorkflowException;
-import com.opensymphony.workflow.util.ScriptVariableParser;
+//import com.opensymphony.workflow.util.ScriptVariableParser;
 
 /**
  * Base class containing logic used by both <code>InfoglueFunction</code> and <code>InfoglueCondition</code>.
@@ -355,9 +357,10 @@ public abstract class InfoglueWorkflowBase
 	/**
 	 * 
 	 */
+	
 	protected final String translate(final String s) 
 	{
-		final Object o = ScriptVariableParser.translateVariables(s, parameters, propertySet);
+		final Object o = translateVariables(s, parameters, propertySet);
 		return (o == null) ? null : o.toString();
 	}
 	
@@ -391,4 +394,89 @@ public abstract class InfoglueWorkflowBase
 	{
 		return workflowDatabase.getDB();
 	}
+	
+    /**
+     * Parses a string for instances of "${foo}" and returns a string with all instances replaced
+     * with the string value of the foo object (<b>foo.toString()</b>). If the string being passed
+     * in only refers to a single variable and contains no other characters (for example: ${foo}),
+     * then the actual object is returned instead of converting it to a string.
+     */
+  public static Object translateVariables(String s, Map transientVars, PropertySet ps) 
+  {
+	  Object result = null;
+	  
+      String temp = s.trim();
+
+      if (temp.startsWith("${") && temp.endsWith("}") && (temp.indexOf('$', 1) == -1)) 
+      {
+          // the string is just a variable reference, don't convert it to a string
+          String var = temp.substring(2, temp.length() - 1);
+
+          result = getVariableFromMaps(var, transientVars, ps);
+      } 
+      else 
+      {
+          // the string passed in contains multiple variables (or none!) and should be treated as a string
+          while (true) 
+          {
+              int x = s.indexOf("${");
+              int y = s.indexOf("}", x);
+
+              if ((x != -1) && (y != -1)) 
+              {
+                  String var = s.substring(x + 2, y);
+                  String t = null;
+                  Object o = getVariableFromMaps(var, transientVars, ps);
+
+                  if (o != null) 
+                  {
+                      t = o.toString();
+                  }
+
+                  if (t != null) 
+                  {
+                      s = s.substring(0, x) + t + s.substring(y + 1);
+                  } 
+                  else 
+                  {
+                      // the variable doesn't exist, so don't display anything
+                      s = s.substring(0, x) + s.substring(y + 1);
+                  }
+              } 
+              else 
+              {
+                  break;
+              }
+          }
+
+          result = s;
+      }
+      
+      return result;
+  } 
+  
+  private static BeanProvider beanProvider = new DefaultBeanProvider();
+
+  //~ Methods ////////////////////////////////////////////////////////////////
+
+  public static Object getVariableFromMaps(String var, Map transientVars, PropertySet ps) {
+      int firstDot = var.indexOf('.');
+      String actualVar = var;
+
+      if (firstDot != -1) {
+          actualVar = var.substring(0, firstDot);
+      }
+
+      Object o = transientVars.get(actualVar);
+
+      if (o == null) {
+          o = ps.getAsActualType(actualVar);
+      }
+
+      if (firstDot != -1) {
+          o = beanProvider.getProperty(o, var.substring(firstDot + 1));
+      }
+
+      return o;
+  } 
 }
