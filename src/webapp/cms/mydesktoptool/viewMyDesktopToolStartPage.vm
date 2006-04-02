@@ -53,18 +53,7 @@
 		</table>
 	</div>
 </div>
-
-<script type="text/javascript">
-	var theHandle = document.getElementById("activeWorkflow${workflowVO.workflowId}DetailsPropertiesHandle");
-	var theRoot   = document.getElementById("activeWorkflow${workflowVO.workflowId}DetailsProperties");
-	Drag.init(theHandle, theRoot);
-	//alert("width:" + getWindowWidth());
-	//alert("height" + getWindowHeight());
- 	theRoot.style.left = (getWindowWidth() / 2 - 400) + "px";
- 	theRoot.style.top = "100px";
-</script>
 #end
-
 
 #foreach($workflowVO in $availableWorkflows)
 <div id="availableWorkflow${workflowVO.name}DetailsProperties" class="propertiesDiv" style="left:50px; top:100px; visibility:hidden; z-index:10">
@@ -93,16 +82,6 @@
 		</table>
 	</div>
 </div>
-
-<script type="text/javascript">
-	var theHandle = document.getElementById("availableWorkflow${workflowVO.name}DetailsPropertiesHandle");
-	var theRoot   = document.getElementById("availableWorkflow${workflowVO.name}DetailsProperties");
-	Drag.init(theHandle, theRoot);
-	//alert("width:" + getWindowWidth());
-	//alert("height" + getWindowHeight());
- 	theRoot.style.left = (getWindowWidth() / 2 - 400) + "px";
- 	theRoot.style.top = "100px";
-</script>
 #end
 
 
@@ -112,7 +91,7 @@
 		<td>
 			#set($lvConstraint = 0)
 			#set($ongoingWorkflowLabel = $ui.getString("tool.mydesktoptool.ongoingWorkflows"))
-			#lvHead(["", $ongoingWorkflowLabel, "Action"] "" "" "" "")
+			#lvHeadSlimmed(["", $ongoingWorkflowLabel, "Action"] "" "" "" "")
 			#set($cnt = 0)
 			#set($quote = '"')
 			#foreach ($workflowVO in $currentWorkflowVOList)
@@ -164,7 +143,7 @@
 		<td>
 			#set($lvConstraint = 0)
 			#set($availableWorkflowsLabel = $ui.getString("tool.mydesktoptool.availableWorkflows"))
-			#lvHead(["", $availableWorkflowsLabel, "Action"] "" "" "" "")
+			#lvHeadSlimmed(["", $availableWorkflowsLabel, "Action"] "" "" "" "")
 			#set($cnt = 0)
 			#set($quote = '"')
 			#foreach ($availableWorkflowVO in $availableWorkflows)
@@ -198,7 +177,7 @@
 		<td>
 			#set($lvConstraint = 0)
 			#set($availableShortcutsLabel = $ui.getString("tool.mydesktoptool.availableShortcuts"))
-			#lvHead(["", $availableShortcutsLabel, "Action"] "" "" "" "")
+			#lvHeadSlimmed(["", $availableShortcutsLabel, "Action"] "" "" "" "")
 			#set($cnt = 0)
 			#set($quote = '"')
 			#foreach ($availableShortcutVO in $availableShortcutVOList)
@@ -237,7 +216,7 @@
 			#set($stepNameLabel = $ui.getString("tool.mydesktoptool.stepNameLabel"))
 			#set($actionNameLabel = $ui.getString("tool.mydesktoptool.actionNameLabel"))
 			
-			#lvHead([$workflowNameLabel, $stepNameLabel, $actionNameLabel] "" "" "" "")
+			#lvHeadSlimmed([$workflowNameLabel, $stepNameLabel, $actionNameLabel] "" "" "" "")
 			#set($cnt = 0)
 			#set($quote = '"')
 			#foreach ($workflowActionVO in $this.getWorkflowActionVOList($webwork.bean('org.infoglue.cms.util.workflow.OwnerStepFilter')))
