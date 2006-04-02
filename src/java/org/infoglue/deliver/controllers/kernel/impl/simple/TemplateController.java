@@ -893,6 +893,11 @@ public interface TemplateController
      */
     public abstract boolean getIsEditOnSightDisabled();
 
+	/**
+	 * This method returns true if the user is in component editor mode.
+	 */
+	public boolean getIsInPageComponentMode();
+
     /**
      * This method returns a list of all languages available on the current site/repository.
      */

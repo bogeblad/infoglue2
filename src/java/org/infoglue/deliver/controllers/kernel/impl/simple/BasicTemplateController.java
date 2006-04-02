@@ -3949,7 +3949,28 @@ public class BasicTemplateController implements TemplateController
 				
 		return isPageProtected;
 	}
+
+	/**
+	 * This method returns true if the user is in component editor mode.
+	 */
 	
+	public boolean getIsInPageComponentMode()
+	{
+		boolean isInPageComponentMode = false;
+		
+		try
+		{
+			if(this instanceof EditOnSiteBasicTemplateController)
+				isInPageComponentMode = true;
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get if the user was is editing mode:" + e.getMessage(), e);
+		}
+				
+		return isInPageComponentMode;
+	}
+
 	/**
 	 * This method returns true if the page in question (ie sitenode) has page-caching disabled.
 	 * This is essential to turn off when you have a dynamic page like an external application or searchresult.
