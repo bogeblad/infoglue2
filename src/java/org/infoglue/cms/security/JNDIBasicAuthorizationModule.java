@@ -238,6 +238,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				{
 					logger.info("attrID[i]:" + attrID[i]);
 					Attribute attribute = attributes.get(attrID[i]);
+					if(attribute == null)
+					{
+						throw new Exception("The attribute " + attrID[i] + " was not found among the user attributes. [" + attributes + "]");
+					}
+					
 					logger.info("attribute:" + attribute.toString());
 					NamingEnumeration allEnum = attribute.getAll();
 					while(allEnum.hasMore())
@@ -269,7 +274,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			logger.info("Could not find attributes for user: " + userName + e);
+			logger.info(e);
 			throw e;
 		}
 
