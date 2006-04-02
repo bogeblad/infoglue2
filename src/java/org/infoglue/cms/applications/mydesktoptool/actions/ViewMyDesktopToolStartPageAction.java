@@ -67,6 +67,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 
 	private WorkflowVO workflow = new WorkflowVO();
 	private int actionId;
+	private String finalReturnAddress = "";
 
 	public List getWorkflowVOList()
 	{
@@ -220,6 +221,9 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 				return redirect(url);
 		}
 
+	    if(this.finalReturnAddress != null && !this.finalReturnAddress.equals(""))
+			return redirect(finalReturnAddress);
+			
 		getLogger().info("No action view, coming back to mydesktop...");
 		return doExecute();
 	}
@@ -277,7 +281,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 			buffer.append('?');
 
 		return buffer.append("workflowId=").append(getWorkflowId()).append("&actionId=").append(action.getId())
-				.append("&returnAddress=").append(getReturnAddress()).append('&')
+				.append("&returnAddress=").append(getReturnAddress()).append("&finalReturnAddress=").append(getFinalReturnAddress()).append('&')
 				.append(getRequest().getQueryString()).toString();
 	}
 
@@ -315,5 +319,28 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		{
 			throw new SystemException(e);
 		}
+	}
+
+	/**
+	 * Returns the final return address
+	 * @return the final return address
+	 * @throws SystemException if an error occurs while encoding the URL
+	 */
+	private String getFinalReturnAddress() throws SystemException
+	{
+		try
+		{
+			return URLEncoder.encode(this.finalReturnAddress, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			throw new SystemException(e);
+		}
+	}
+
+	public void setFinalReturnAddress(String finalReturnAddress)
+	{
+		if(finalReturnAddress != null && !finalReturnAddress.equals("null"))
+			this.finalReturnAddress = finalReturnAddress;
 	}
 }

@@ -45,6 +45,11 @@ public class FormTag extends WorkflowTag
 	private static final String ACTION_ADDRESS_PARAMETER = "returnAddress";
 
 	/**
+	 * The key used for finding the form action in the request.
+	 */
+	private static final String FINISHED_ADDRESS_PARAMETER = "finalReturnAddress";
+
+	/**
 	 * The template for the start tag of the form element.
 	 */
 	private static final String FORM_START = "<form name=\"form\" id=\"form\" method=\"post\" action=\"{0}\">";
@@ -78,6 +83,7 @@ public class FormTag extends WorkflowTag
 	{
 		write(MessageFormat.format(FORM_START, new Object[] { getActionAddress() }));
 		write(MessageFormat.format(HIDDEN, new Object[] { ACTION_ID_PARAMETER, getActionID() }));
+		write(MessageFormat.format(HIDDEN, new Object[] { FINISHED_ADDRESS_PARAMETER, getFinalReturnAddress() }));
 		write(MessageFormat.format(HIDDEN, new Object[] { WORKFLOW_ID_PARAMETER,  getWorkflowID() }));
 		return EVAL_BODY_INCLUDE;
 	}
@@ -103,4 +109,15 @@ public class FormTag extends WorkflowTag
 	{
 		return pageContext.getRequest().getParameter(ACTION_ADDRESS_PARAMETER);
 	}
+
+	/**
+	 * Returns the action to use in the form.
+	 * 
+	 * @return the action to use in the form.
+	 */
+	private String getFinalReturnAddress() 
+	{
+		return pageContext.getRequest().getParameter(FINISHED_ADDRESS_PARAMETER);
+	}
+
 }
