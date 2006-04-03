@@ -217,10 +217,13 @@ public class CacheController extends Thread
 	    */
 	    
 		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
-		if(useGroups)
-		    cacheAdministrator.putInCache(key.toString(), value, groups);
-		else
-		    cacheAdministrator.putInCache(key.toString(), value);
+		synchronized(cacheAdministrator)
+		{
+			if(useGroups)
+			    cacheAdministrator.putInCache(key.toString(), value, groups);
+			else
+			    cacheAdministrator.putInCache(key.toString(), value);
+		}
 		
 		logger.info("Done cacheObjectInAdvancedCache");
 	}	
@@ -234,14 +237,17 @@ public class CacheController extends Thread
 	    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 	    if(cacheAdministrator != null)
 	    {
-		    try 
-		    {
-		        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key.toString(), CacheEntry.INDEFINITE_EXPIRY);
-			} 
-		    catch (NeedsRefreshException nre) 
-		    {
-		    	cacheAdministrator.cancelUpdate(key.toString());
-			}
+	        synchronized(cacheAdministrator)
+	        {
+			    try 
+			    {
+			        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key.toString(), CacheEntry.INDEFINITE_EXPIRY);
+				} 
+			    catch (NeedsRefreshException nre) 
+			    {
+			    	cacheAdministrator.cancelUpdate(key.toString());
+				}
+	        }
 	    }
 	    
 	    //logger.info("getCachedObjectFromAdvancedCache stop...");
@@ -260,15 +266,20 @@ public class CacheController extends Thread
 	    Object value = null;
 	    
 	    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
-	    try 
+	    if(cacheAdministrator != null)
 	    {
-	        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key.toString(), updateInterval);
-		} 
-	    catch (NeedsRefreshException nre) 
-	    {
-	        cacheAdministrator.cancelUpdate(key.toString());
-		}
-
+	        synchronized(cacheAdministrator)
+	        {
+			    try 
+			    {
+			        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key.toString(), updateInterval);
+				} 
+			    catch (NeedsRefreshException nre) 
+			    {
+			        cacheAdministrator.cancelUpdate(key.toString());
+				}
+	        }
+	    }
 	    //logger.info("getCachedObjectFromAdvancedCache stop...");
 
 		return value;
@@ -288,7 +299,10 @@ public class CacheController extends Thread
 			else
 			{
 			    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
-		    	cacheInstance.flushAll();
+				synchronized(cacheInstance)
+				{
+					cacheInstance.flushAll();
+				}
 			}
 	    	caches.remove(cacheName);
 		    eventListeners.remove(cacheName + "_cacheEntryEventListener");
@@ -332,7 +346,10 @@ public class CacheController extends Thread
 					else
 					{
 					    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
-				    	cacheInstance.flushAll();
+						synchronized(cacheInstance)
+						{
+					    	cacheInstance.flushAll();
+						}
 				        eventListeners.clear();
 					}
 					logger.info("Cleared cache:" + e.getKey());
@@ -538,54 +555,56 @@ public class CacheController extends Thread
 					        useSelectivePageCacheUpdate = true;
 					        
 					    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
-
-				    	if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
+					    synchronized(cacheInstance)
 					    {
-					    	cacheInstance.flushAll();
-					    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
-						    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
-					    	logger.info("clearing:" + e.getKey());
-					    }
-					    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
-					    {
-					        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
-				    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
-				    		 
-				    		cacheInstance.flushGroup("contentVersion_" + entityId);
-				    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-					    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
-					    	//System.out.println("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
-
-					    	try
-					    	{
-						    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
-					    		if(contentVersionVO != null)
-					    		{
-					    			cacheInstance.flushGroup("content_" + contentVersionVO.getContentId());
-					    			//System.out.println("also clearing " + e.getKey() + " with group " + "content_" + contentVersionVO.getContentId());
-					    		}
-					    	}
-					    	catch(SystemException se)
-					    	{
-					    		logger.info("Missing content version: " + se.getMessage());
-					    	}
-					    }
-					    else if(selectiveCacheUpdate && entity.indexOf("Content") > 0 && useSelectivePageCacheUpdate)
-					    {
-					    	cacheInstance.flushGroup("content_" + entityId);
-					    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-					    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);
-					    	//System.out.println("clearing " + e.getKey() + " with group " + "content_" + entityId);
+					    	if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
+						    {
+						    	cacheInstance.flushAll();
+						    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
+							    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
+						    	logger.info("clearing:" + e.getKey());
+						    }
+						    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
+						    {
+						        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
+					    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
+					    		 
+					    		cacheInstance.flushGroup("contentVersion_" + entityId);
+					    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+						    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
+						    	//System.out.println("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
+	
+						    	try
+						    	{
+							    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
+						    		if(contentVersionVO != null)
+						    		{
+						    			cacheInstance.flushGroup("content_" + contentVersionVO.getContentId());
+						    			//System.out.println("also clearing " + e.getKey() + " with group " + "content_" + contentVersionVO.getContentId());
+						    		}
+						    	}
+						    	catch(SystemException se)
+						    	{
+						    		logger.info("Missing content version: " + se.getMessage());
+						    	}
+						    }
+						    else if(selectiveCacheUpdate && entity.indexOf("Content") > 0 && useSelectivePageCacheUpdate)
+						    {
+						    	cacheInstance.flushGroup("content_" + entityId);
+						    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+						    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);
+						    	//System.out.println("clearing " + e.getKey() + " with group " + "content_" + entityId);
+							}
+						    else
+						    {
+						    	cacheInstance.flushAll();
+						    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
+							    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
+								logger.info("clearing:" + e.getKey());
+						    }
 						}
-					    else
-					    {
-					    	cacheInstance.flushAll();
-					    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
-						    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
-							logger.info("clearing:" + e.getKey());
-					    }
 					}
-
+					
 					logger.info("Cleared cache:" + e.getKey());
 
 					if(!selectiveCacheUpdate)
@@ -839,11 +858,6 @@ public class CacheController extends Thread
 		    closeDatabase(db);
 		}
 	}
-
-
-	
-	
-	
 	
 	
 	public void stopThread()

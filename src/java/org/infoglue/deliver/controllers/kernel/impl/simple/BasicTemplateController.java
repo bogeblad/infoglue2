@@ -2202,6 +2202,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
+			System.out.println("contentId " + this.contentId + " with relationName " + attributeName);
 		    String qualifyerXML = this.getContentAttribute(contentId, attributeName, true);
 		    
 			relatedContentVOList = getRelatedContentsFromXML(qualifyerXML);
@@ -3949,10 +3950,6 @@ public class BasicTemplateController implements TemplateController
 				
 		return isPageProtected;
 	}
-
-	/**
-	 * This method returns true if the user is in component editor mode.
-	 */
 	
 	public boolean getIsInPageComponentMode()
 	{

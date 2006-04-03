@@ -632,10 +632,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 				if(isAuthorized)
 				{	
-				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
-					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-
 					principal = anonymousPrincipal;
+					if(principal != null)
+					{
+					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+					    this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+					}
 				}
 			}
 			
