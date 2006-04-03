@@ -2202,7 +2202,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			System.out.println("contentId " + this.contentId + " with relationName " + attributeName);
+			logger.info("contentId " + this.contentId + " with relationName " + attributeName);
 		    String qualifyerXML = this.getContentAttribute(contentId, attributeName, true);
 		    
 			relatedContentVOList = getRelatedContentsFromXML(qualifyerXML);
