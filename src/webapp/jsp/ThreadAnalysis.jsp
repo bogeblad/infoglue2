@@ -1,19 +1,29 @@
 <%@ page import="java.lang.management.*" %>
 <%@ page import="java.util.*" %>
-<html>
-<head>
-  <title>JVM Thread Monitor</title>
-</head>
+<%@ page import="org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController" %>
 
 <%
+    if(!ServerNodeController.getController().getIsIPAllowed(request))
+    {
+        response.setContentType("text/plain");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        out.println("You have no access to this view - talk to your administrator if you should.");
+    }
+	else
+	{
         ThreadMXBean t = ManagementFactory.getThreadMXBean();
-%>
+		%>
+		<html>
+		<head>
+		  <title>JVM Thread Monitor</title>
+		</head>
+		<body>
         <table border="0" width="100%">
         <tr><td align="center"><h3>Thread MXBean</h3></td></tr>
 
         <tr><td align="center"><h4>Deadlocks</h4></td></tr>
 
-<%
+		<%
         try
         {
                 long ids[] = t.findMonitorDeadlockedThreads();
@@ -35,9 +45,11 @@
         {
                 out.println("[call to findMonitorDeadlockedThreads failed: " + e + "]");
         }
-%>
+		%>
+		
         <tr><td align="center"><h4>All Threads</h4></td></tr>
-<%
+		
+		<%
         long threads[] = t.getAllThreadIds();
         ThreadInfo[] tinfo = t.getThreadInfo(threads, 15);
 
@@ -55,7 +67,7 @@
                 {
                         out.print("&nbsp;&nbsp;&nbsp;&nbsp;no stack trace available");
                         return;
-               }
+               	}
 
                 for (int n = 0; n < el.length; n++)
                 {
@@ -76,7 +88,12 @@
                 </td></tr>
                 <%
         }
-%>
+	%>
+	</table>
+	</body>
+	</html>
+	<%
+	}
+	%>
 
-</table>
                         
