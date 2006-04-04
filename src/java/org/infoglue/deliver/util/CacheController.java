@@ -59,6 +59,7 @@ import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
+import org.infoglue.cms.entities.management.impl.simple.PropertiesCategoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RedirectImpl;
 import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
@@ -683,6 +684,8 @@ public class CacheController extends Thread
 			clearCache(db, UserContentTypeDefinitionImpl.class);
 			clearCache(db, RoleContentTypeDefinitionImpl.class);
 			clearCache(db, GroupContentTypeDefinitionImpl.class);			
+
+			clearCache(db, PropertiesCategoryImpl.class);
 			
 			clearCache(db, ServerNodeImpl.class);			
 			
