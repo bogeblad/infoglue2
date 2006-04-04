@@ -962,6 +962,33 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 
 #end
 
+#macro(editPropertyField3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $serverNodeId)
+  $fieldNameLabel
+  	#if($rule.required)
+  		&nbsp;<font color="red">* </font>
+  	#end
+
+  #if($errors.hasErrors($errorKey))
+  	#set( $MIN=$rule.getValidRange().getLowerLimit() )
+  	#set( $MAX=$rule.getValidRange().getUpperLimit() )
+
+	#foreach($errorMessage in $errors.getErrors($errorKey))
+      <font color="red"> - $errorMessage </font>
+    #end
+  #end
+  <br/>
+  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"></a>
+#end
+
+#macro(editPropertyField $fieldNameKey $fieldName $fieldValue $length $serverNodeId)
+
+  #set($rule=$this.getRule("$fieldNameKey"))
+  ## $rule
+  #editPropertyField3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $serverNodeId)
+
+#end
+
+
 #macro(editReadOnlyField $fieldNameKey $fieldName $fieldValue $length $readonly)
   $ui.getString("entity.${fieldNameKey}.label")
   <br/>

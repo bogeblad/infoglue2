@@ -320,7 +320,17 @@ public class InfoGlueAuthenticationFilter implements Filter
   	
 	private InfoGluePrincipal getAuthenticatedUser(String userName) throws ServletException, Exception 
 	{
-		AuthorizationModule authorizationModule = (AuthorizationModule)Class.forName(authorizerClass).newInstance();
+		AuthorizationModule authorizationModule = null;
+		try
+		{
+			authorizationModule = (AuthorizationModule)Class.forName(authorizerClass).newInstance();
+		}
+		catch(Exception e)
+		{
+			logger.error("The authorizationModule-class was wrong:" + e.getMessage() + ": defaulting to infoglue:s own", e);
+			authorizationModule = (AuthorizationModule)Class.forName(InfoGlueBasicAuthorizationModule.class.getName()).newInstance();
+		}
+		
 		authorizationModule.setExtraProperties(extraProperties);
 		logger.info("authorizerClass:" + authorizerClass + ":" + authorizationModule.getClass().getName());
 		
@@ -403,43 +413,43 @@ public class InfoGlueAuthenticationFilter implements Filter
 	{
 	    try
 		{
-		    String authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true, null);
-		    String authorizerClass		= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true, null);
-		    String invalidLoginUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true, null);
-		    String successLoginBaseUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true, null);
-		    String loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true, null);
-		    String logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true, null);
-		    String serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true, null);
-		    String casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true, null);
-		    String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true, null);
-		    String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
-		    String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
-		    String authConstraint		= CmsPropertyHandler.getServerNodeProperty("deliver", "authConstraint", true, null);
+		    String authenticatorClass 	= CmsPropertyHandler.getServerNodeProperty("authenticatorClass", true, "org.infoglue.cms.security.InfoGlueBasicAuthenticationModule");
+		    String authorizerClass		= CmsPropertyHandler.getServerNodeProperty("authorizerClass", true, "org.infoglue.cms.security.InfoGlueBasicAuthorizationModule");
+		    String invalidLoginUrl 		= CmsPropertyHandler.getServerNodeProperty("invalidLoginUrl", true, "Login!invalidLogin.action");
+		    String successLoginBaseUrl 	= CmsPropertyHandler.getServerNodeProperty("successLoginBaseUrl", true, null);
+		    String loginUrl 			= CmsPropertyHandler.getServerNodeProperty("loginUrl", true, "Login.action");
+		    String logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("logoutUrl", true, "Login!logout.action");
+		    String serverName 			= CmsPropertyHandler.getServerNodeProperty("serverName", true, null);
+		    String casRenew 			= CmsPropertyHandler.getServerNodeProperty("casRenew", true, null);
+		    String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("casServiceUrl", true, null);
+		    String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("casValidateUrl", true, null);
+		    String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("casLogoutUrl", true, null);
+		    String authConstraint		= CmsPropertyHandler.getServerNodeProperty("authConstraint", true, "cmsUser");
 		    
-		    if(authenticatorClass != null)
+		    //if(authenticatorClass != null)
 		    	InfoGlueAuthenticationFilter.authenticatorClass = authenticatorClass;
-		    if(authorizerClass != null)
+		    //if(authorizerClass != null)
 		    	InfoGlueAuthenticationFilter.authorizerClass = authorizerClass;
-		    if(invalidLoginUrl != null)
+		    //if(invalidLoginUrl != null)
 		    	InfoGlueAuthenticationFilter.invalidLoginUrl = invalidLoginUrl;
-		    if(successLoginBaseUrl != null)
+		    //if(successLoginBaseUrl != null)
 		    	InfoGlueAuthenticationFilter.successLoginBaseUrl = successLoginBaseUrl;
-		    if(loginUrl != null)
+		    //if(loginUrl != null)
 		    	InfoGlueAuthenticationFilter.loginUrl = loginUrl;
-		    if(logoutUrl != null)
+		    //if(logoutUrl != null)
 		    	InfoGlueAuthenticationFilter.logoutUrl = logoutUrl;
-		    if(serverName != null)
+		    //if(serverName != null)
 		    	InfoGlueAuthenticationFilter.serverName = serverName;
-		    if(casRenew != null)
+		    //if(casRenew != null)
 		    	InfoGlueAuthenticationFilter.casRenew = casRenew;
-		    if(authConstraint != null)
+		    //if(authConstraint != null)
 		    	InfoGlueAuthenticationFilter.authConstraint = authConstraint;
 		    
-		    if(casServiceUrl != null)
+		    //if(casServiceUrl != null)
 		    	InfoGlueAuthenticationFilter.casServiceUrl = casServiceUrl;
-		    if(casValidateUrl != null)
+		    //if(casValidateUrl != null)
 		    	InfoGlueAuthenticationFilter.casValidateUrl = casValidateUrl;
-		    if(casLogoutUrl != null)
+		    //if(casLogoutUrl != null)
 		    	InfoGlueAuthenticationFilter.casLogoutUrl = casLogoutUrl;
 
 			/*

@@ -23,10 +23,10 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.expireCacheAutomatically" "expireCacheAutomatically" "$!expireCacheAutomatically")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.cacheExpireInterval" "cacheExpireInterval" "$this.getPropertyValue('cacheExpireInterval')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.cacheExpireInterval" "cacheExpireInterval" "$this.getPropertyValue('cacheExpireInterval')" "51" "$!serverNodeId" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.session.timeout" "session.timeout" "$this.getPropertyValue('session.timeout')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.session.timeout" "session.timeout" "$this.getPropertyValue('session.timeout')" "51" "$!serverNodeId" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.compressPageCache" "compressPageCache" "$this.getPropertyValue('compressPageCache')")</td>
@@ -35,42 +35,42 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.compressPageResponse" "compressPageResponse" "$this.getPropertyValue('compressPageResponse')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.siteNodesToRecacheOnPublishing" "siteNodesToRecacheOnPublishing" "$this.getPropertyValue('siteNodesToRecacheOnPublishing')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.siteNodesToRecacheOnPublishing" "siteNodesToRecacheOnPublishing" "$this.getPropertyValue('siteNodesToRecacheOnPublishing')" "51" "$!serverNodeId" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.recachePublishingMethod" "recachePublishingMethod" "$this.getPropertyValue('recachePublishingMethod')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.recachePublishingMethod" "recachePublishingMethod" "$this.getPropertyValue('recachePublishingMethod')" "51" "$!serverNodeId" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.recacheUrl" "recacheUrl" "$this.getPropertyValue('recacheUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.recacheUrl" "recacheUrl" "$this.getPropertyValue('recacheUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.useUpdateSecurity" "useUpdateSecurity" "$this.getPropertyValue('useUpdateSecurity')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.allowedAdminIP" "allowedAdminIP" "$this.getPropertyValue('allowedAdminIP')" "51")</td>
+		<td>#editPropertyField("ServerNode.allowedAdminIP" "allowedAdminIP" "$this.getPropertyValue('allowedAdminIP')" "51" "$!serverNodeId")</td>
 	</tr>
 	
 	<tr>
-		<td>#editField("ServerNode.property.pageKey" "pageKey" "$this.getPropertyValue('pageKey')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.pageKey" "pageKey" "$this.getPropertyValue('pageKey')" "51" "$!serverNodeId")</td>
 	</tr>
 	
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.cmsConnection.label")</td>
 	</tr>	
 	<tr>
-		<td>#editField("ServerNode.property.cmsBaseUrl" "cmsBaseUrl" "$this.getPropertyValue('cmsBaseUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.cmsBaseUrl" "cmsBaseUrl" "$this.getPropertyValue('cmsBaseUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.componentEditorUrl" "componentEditorUrl" "$this.getPropertyValue('componentEditorUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.componentEditorUrl" "componentEditorUrl" "$this.getPropertyValue('componentEditorUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.componentRendererUrl" "componentRendererUrl" "$this.getPropertyValue('componentRendererUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.componentRendererUrl" "componentRendererUrl" "$this.getPropertyValue('componentRendererUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.componentRendererAction" "componentRendererAction" "$this.getPropertyValue('componentRendererAction')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.componentRendererAction" "componentRendererAction" "$this.getPropertyValue('componentRendererAction')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.editOnSiteUrl" "editOnSiteUrl" "$this.getPropertyValue('editOnSiteUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.editOnSiteUrl" "editOnSiteUrl" "$this.getPropertyValue('editOnSiteUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>
@@ -84,19 +84,19 @@
 		<td>#subTitle("entity.ServerNode.property.webSpecifics.label")</td>
 	</tr>		
 	<tr>
-		<td>#editField("ServerNode.property.webServerAddress" "webServerAddress" "$this.getPropertyValue('webServerAddress')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.webServerAddress" "webServerAddress" "$this.getPropertyValue('webServerAddress')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.applicationBaseAction" "applicationBaseAction" "$this.getPropertyValue('applicationBaseAction')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.applicationBaseAction" "applicationBaseAction" "$this.getPropertyValue('applicationBaseAction')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.digitalAssetBaseUrl" "digitalAssetBaseUrl" "$this.getPropertyValue('digitalAssetBaseUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.digitalAssetBaseUrl" "digitalAssetBaseUrl" "$this.getPropertyValue('digitalAssetBaseUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.imagesBaseUrl" "imagesBaseUrl" "$this.getPropertyValue('imagesBaseUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.imagesBaseUrl" "imagesBaseUrl" "$this.getPropertyValue('imagesBaseUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.digitalAssetPath" "digitalAssetPath" "$this.getPropertyValue('digitalAssetPath')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.digitalAssetPath" "digitalAssetPath" "$this.getPropertyValue('digitalAssetPath')" "51" "$!serverNodeId")</td>
 	</tr>
 	
 	<tr>
@@ -106,46 +106,46 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.enableNiceURI" "enableNiceURI" "$this.getPropertyValue('enableNiceURI')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.niceURIEncoding" "niceURIEncoding" "$this.getPropertyValue('niceURIEncoding')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.niceURIEncoding" "niceURIEncoding" "$this.getPropertyValue('niceURIEncoding')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.niceURIAttributeName" "niceURIAttributeName" "$this.getPropertyValue('niceURIAttributeName')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.niceURIAttributeName" "niceURIAttributeName" "$this.getPropertyValue('niceURIAttributeName')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.requestArgumentDelimiter" "requestArgumentDelimiter" "$this.getPropertyValue('requestArgumentDelimiter')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.requestArgumentDelimiter" "requestArgumentDelimiter" "$this.getPropertyValue('requestArgumentDelimiter')" "51" "$!serverNodeId")</td>
 	</tr>
 	
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.errorHandling.label")</td>
 	</tr>		
 	<tr>
-		<td>#editField("ServerNode.property.errorUrl" "errorUrl" "$this.getPropertyValue('errorUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.errorUrl" "errorUrl" "$this.getPropertyValue('errorUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.errorBusyUrl" "errorBusyUrl" "$this.getPropertyValue('errorBusyUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.errorBusyUrl" "errorBusyUrl" "$this.getPropertyValue('errorBusyUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.thumbnailGeneration.label")</td>
 	</tr>		
 	<tr>
-		<td>#editField("ServerNode.property.externalThumbnailGeneration" "externalThumbnailGeneration" "$this.getPropertyValue('externalThumbnailGeneration')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.externalThumbnailGeneration" "externalThumbnailGeneration" "$this.getPropertyValue('externalThumbnailGeneration')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.urlEncoding.label")</td>
 	</tr>		
 	<tr>
-		<td>#editField("ServerNode.property.inputCharacterEncoding" "inputCharacterEncoding" "$this.getPropertyValue('inputCharacterEncoding')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.inputCharacterEncoding" "inputCharacterEncoding" "$this.getPropertyValue('inputCharacterEncoding')" "51" "$!serverNodeId")</td>
 	</tr>	
 	<tr>
-		<td>#editField("ServerNode.property.URIEncoding" "URIEncoding" "$this.getPropertyValue('URIEncoding')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.URIEncoding" "URIEncoding" "$this.getPropertyValue('URIEncoding')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.workflowEncoding" "workflowEncoding" "$this.getPropertyValue('workflowEncoding')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.workflowEncoding" "workflowEncoding" "$this.getPropertyValue('workflowEncoding')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.formsEncoding" "formsEncoding" "$this.getPropertyValue('formsEncoding')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.formsEncoding" "formsEncoding" "$this.getPropertyValue('formsEncoding')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>
@@ -165,13 +165,13 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.statistics.enabled" "statistics.enabled" "$this.getPropertyValue('statistics.enabled')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.statisticsLogPath" "statisticsLogPath" "$this.getPropertyValue('statisticsLogPath')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.statisticsLogPath" "statisticsLogPath" "$this.getPropertyValue('statisticsLogPath')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.statisticsLogOneFilePerDay" "statisticsLogOneFilePerDay" "$this.getPropertyValue('statisticsLogOneFilePerDay')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.statisticsLogger" "statisticsLogger" "$this.getPropertyValue('statisticsLogger')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.statisticsLogger" "statisticsLogger" "$this.getPropertyValue('statisticsLogger')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>
@@ -181,26 +181,26 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.enablePortal" "enablePortal" "$this.getPropertyValue('enablePortal')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.portletBase" "portletBase" "$this.getPropertyValue('portletBase')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.portletBase" "portletBase" "$this.getPropertyValue('portletBase')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.mailSettings.label")</td>
 	</tr>		
 	<tr>
-		<td>#editField("ServerNode.property.mail.smtp.host" "mail.smtp.host" "$this.getPropertyValue('mail.smtp.host')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.mail.smtp.host" "mail.smtp.host" "$this.getPropertyValue('mail.smtp.host')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.mail.smtp.auth" "mail.smtp.auth" "$this.getPropertyValue('mail.smtp.auth')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.mail.smtp.user" "mail.smtp.user" "$this.getPropertyValue('mail.smtp.user')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.mail.smtp.user" "mail.smtp.user" "$this.getPropertyValue('mail.smtp.user')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.mail.smtp.password" "mail.smtp.password" "$this.getPropertyValue('mail.smtp.password')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.mail.smtp.password" "mail.smtp.password" "$this.getPropertyValue('mail.smtp.password')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.systemEmailSender" "systemEmailSender" "$this.getPropertyValue('systemEmailSender')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.systemEmailSender" "systemEmailSender" "$this.getPropertyValue('systemEmailSender')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>
@@ -217,16 +217,16 @@
 	</tr>
 	
 	<tr>
-		<td>#editField("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.showContentVersionFirst" "showContentVersionFirst" "$this.getPropertyValue('showContentVersionFirst')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.tree" "tree" "$this.getPropertyValue('tree')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.tree" "tree" "$this.getPropertyValue('tree')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.showComponentsFirst" "showComponentsFirst" "$this.getPropertyValue('showComponentsFirst')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.showComponentsFirst" "showComponentsFirst" "$this.getPropertyValue('showComponentsFirst')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.showAllWorkflows" "showAllWorkflows" "$this.getPropertyValue('showAllWorkflows')")</td>
@@ -235,28 +235,28 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.editOnSight" "editOnSight" "$this.getPropertyValue('editOnSight')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.previewDeliveryUrl" "previewDeliveryUrl" "$this.getPropertyValue('previewDeliveryUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.previewDeliveryUrl" "previewDeliveryUrl" "$this.getPropertyValue('previewDeliveryUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.stagingDeliveryUrl" "stagingDeliveryUrl" "$this.getPropertyValue('stagingDeliveryUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.stagingDeliveryUrl" "stagingDeliveryUrl" "$this.getPropertyValue('stagingDeliveryUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.edition.pageSize" "edition.pageSize" "$this.getPropertyValue('edition.pageSize')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.edition.pageSize" "edition.pageSize" "$this.getPropertyValue('edition.pageSize')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.content.tree.sort" "content.tree.sort" "$this.getPropertyValue('content.tree.sort')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.content.tree.sort" "content.tree.sort" "$this.getPropertyValue('content.tree.sort')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.structure.tree.sort" "structure.tree.sort" "$this.getPropertyValue('structure.tree.sort')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.structure.tree.sort" "structure.tree.sort" "$this.getPropertyValue('structure.tree.sort')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.disableEmptyUrls" "disableEmptyUrls" "$this.getPropertyValue('disableEmptyUrls')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.cacheUpdateAction" "cacheUpdateAction" "$this.getPropertyValue('cacheUpdateAction')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.cacheUpdateAction" "cacheUpdateAction" "$this.getPropertyValue('cacheUpdateAction')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.logPath" "logPath" "$this.getPropertyValue('logPath')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.logPath" "logPath" "$this.getPropertyValue('logPath')" "51" "$!serverNodeId")</td>
 	</tr>	
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.logTransactions" "logTransactions" "$this.getPropertyValue('logTransactions')")</td>
@@ -275,131 +275,131 @@
 	</tr>
 
 	<tr>
-		<td>#editField("ServerNode.property.extranetCookieTimeout" "extranetCookieTimeout" "$this.getPropertyValue('extranetCookieTimeout')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.extranetCookieTimeout" "extranetCookieTimeout" "$this.getPropertyValue('extranetCookieTimeout')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.webServicesBaseUrl" "webServicesBaseUrl" "$this.getPropertyValue('webServicesBaseUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.webServicesBaseUrl" "webServicesBaseUrl" "$this.getPropertyValue('webServicesBaseUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.publicationThreadDelay" "publicationThreadDelay" "$this.getPropertyValue('publicationThreadDelay')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.publicationThreadDelay" "publicationThreadDelay" "$this.getPropertyValue('publicationThreadDelay')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.pathsToRecacheOnPublishing" "pathsToRecacheOnPublishing" "$this.getPropertyValue('pathsToRecacheOnPublishing')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.pathsToRecacheOnPublishing" "pathsToRecacheOnPublishing" "$this.getPropertyValue('pathsToRecacheOnPublishing')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.disableTemplateDebug" "disableTemplateDebug" "$this.getPropertyValue('disableTemplateDebug')")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.dbRelease" "dbRelease" "$this.getPropertyValue('dbRelease')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.dbRelease" "dbRelease" "$this.getPropertyValue('dbRelease')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.dbUser" "dbUser" "$this.getPropertyValue('dbUser')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.dbUser" "dbUser" "$this.getPropertyValue('dbUser')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.dbPassword" "dbPassword" "$this.getPropertyValue('dbPassword')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.dbPassword" "dbPassword" "$this.getPropertyValue('dbPassword')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.masterServer" "masterServer" "$this.getPropertyValue('masterServer')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.masterServer" "masterServer" "$this.getPropertyValue('masterServer')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.slaveServer" "slaveServer" "$this.getPropertyValue('slaveServer')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.slaveServer" "slaveServer" "$this.getPropertyValue('slaveServer')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.buildName" "buildName" "$this.getPropertyValue('buildName')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.buildName" "buildName" "$this.getPropertyValue('buildName')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.adminToolsPath" "adminToolsPath" "$this.getPropertyValue('adminToolsPath')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.adminToolsPath" "adminToolsPath" "$this.getPropertyValue('adminToolsPath')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.dbScriptPath" "dbScriptPath" "$this.getPropertyValue('dbScriptPath')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.dbScriptPath" "dbScriptPath" "$this.getPropertyValue('dbScriptPath')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.digitalAssetUploadPath" "digitalAssetUploadPath" "$this.getPropertyValue('digitalAssetUploadPath')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.digitalAssetUploadPath" "digitalAssetUploadPath" "$this.getPropertyValue('digitalAssetUploadPath')" "51" "$!serverNodeId")</td>
 	</tr>	
 	
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.securitySettings.label")</td>
 	</tr>		
 	<tr>
-		<td>#editField("ServerNode.property.loginUrl" "loginUrl" "$this.getPropertyValue('loginUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.loginUrl" "loginUrl" "$this.getPropertyValue('loginUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.logoutUrl" "logoutUrl" "$this.getPropertyValue('logoutUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.logoutUrl" "logoutUrl" "$this.getPropertyValue('logoutUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.invalidLoginUrl" "invalidLoginUrl" "$this.getPropertyValue('invalidLoginUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.invalidLoginUrl" "invalidLoginUrl" "$this.getPropertyValue('invalidLoginUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.successLoginBaseUrl" "successLoginBaseUrl" "$this.getPropertyValue('successLoginBaseUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.successLoginBaseUrl" "successLoginBaseUrl" "$this.getPropertyValue('successLoginBaseUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.authenticatorClass" "authenticatorClass" "$this.getPropertyValue('authenticatorClass')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.authenticatorClass" "authenticatorClass" "$this.getPropertyValue('authenticatorClass')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.authorizerClass" "authorizerClass" "$this.getPropertyValue('authorizerClass')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.authorizerClass" "authorizerClass" "$this.getPropertyValue('authorizerClass')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.serverName" "serverName" "$this.getPropertyValue('serverName')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.serverName" "serverName" "$this.getPropertyValue('serverName')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.authConstraint" "authConstraint" "$this.getPropertyValue('authConstraint')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.authConstraint" "authConstraint" "$this.getPropertyValue('authConstraint')" "51" "$!serverNodeId")</td>
 	</tr>
 	<!--
 	<tr>
-		<td>#editField("ServerNode.property.extraParametersFile" "extraParametersFile" "$this.getPropertyValue('extraParametersFile')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.extraParametersFile" "extraParametersFile" "$this.getPropertyValue('extraParametersFile')" "51" "$!serverNodeId")</td>
 	</tr>
 	-->
 	<tr>
 		<td>#editTextArea("ServerNode.property.extraSecurityParameters" "extraSecurityParameters" "$this.getDataPropertyValue('extraSecurityParameters')" "50" "10" "normaltextarea")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.casValidateUrl" "casValidateUrl" "$this.getPropertyValue('casValidateUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.casValidateUrl" "casValidateUrl" "$this.getPropertyValue('casValidateUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.casServiceUrl" "casServiceUrl" "$this.getPropertyValue('casServiceUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.casServiceUrl" "casServiceUrl" "$this.getPropertyValue('casServiceUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.casLogoutUrl" "casLogoutUrl" "$this.getPropertyValue('casLogoutUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.casLogoutUrl" "casLogoutUrl" "$this.getPropertyValue('casLogoutUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.deliverSecuritySettings.label")</td>
 	</tr>		
 	<tr>
-		<td>#editField("ServerNode.property.loginUrl" "deliver_loginUrl" "$this.getPropertyValue('deliver', 'loginUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.loginUrl" "deliver_loginUrl" "$this.getPropertyValue('deliver', 'loginUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.logoutUrl" "deliver_logoutUrl" "$this.getPropertyValue('deliver', 'logoutUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.logoutUrl" "deliver_logoutUrl" "$this.getPropertyValue('deliver', 'logoutUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.invalidLoginUrl" "deliver_invalidLoginUrl" "$this.getPropertyValue('deliver', 'invalidLoginUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.invalidLoginUrl" "deliver_invalidLoginUrl" "$this.getPropertyValue('deliver', 'invalidLoginUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.successLoginBaseUrl" "deliver_successLoginBaseUrl" "$this.getPropertyValue('deliver', 'successLoginBaseUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.successLoginBaseUrl" "deliver_successLoginBaseUrl" "$this.getPropertyValue('deliver', 'successLoginBaseUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.authenticatorClass" "deliver_authenticatorClass" "$this.getPropertyValue('deliver', 'authenticatorClass')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.authenticatorClass" "deliver_authenticatorClass" "$this.getPropertyValue('deliver', 'authenticatorClass')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.authorizerClass" "deliver_authorizerClass" "$this.getPropertyValue('deliver', 'authorizerClass')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.authorizerClass" "deliver_authorizerClass" "$this.getPropertyValue('deliver', 'authorizerClass')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.serverName" "deliver_serverName" "$this.getPropertyValue('deliver', 'serverName')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.serverName" "deliver_serverName" "$this.getPropertyValue('deliver', 'serverName')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.authConstraint" "deliver_authConstraint" "$this.getPropertyValue('deliver', 'authConstraint')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.authConstraint" "deliver_authConstraint" "$this.getPropertyValue('deliver', 'authConstraint')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#editTextArea("ServerNode.property.extraSecurityParameters" "deliver_extraSecurityParameters" "$this.getDataPropertyValue('deliver', 'extraSecurityParameters')" "50" "10" "normaltextarea")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.casValidateUrl" "deliver_casValidateUrl" "$this.getPropertyValue('deliver', 'casValidateUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.casValidateUrl" "deliver_casValidateUrl" "$this.getPropertyValue('deliver', 'casValidateUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.casServiceUrl" "deliver_casServiceUrl" "$this.getPropertyValue('deliver', 'casServiceUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.casServiceUrl" "deliver_casServiceUrl" "$this.getPropertyValue('deliver', 'casServiceUrl')" "51" "$!serverNodeId" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editField("ServerNode.property.casLogoutUrl" "deliver_casLogoutUrl" "$this.getPropertyValue('deliver', 'casLogoutUrl')" "51")</td>
+		<td>#editPropertyField("ServerNode.property.casLogoutUrl" "deliver_casLogoutUrl" "$this.getPropertyValue('deliver', 'casLogoutUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 
 	#set($shortcuts = $this.getDataPropertyValue("shortcuts"))

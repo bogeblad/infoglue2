@@ -286,6 +286,11 @@ public class CmsPropertyHandler
 	    	{
 				value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
 				//System.out.println("Global value immediately: " + value);
+		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+		        {
+		            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+			        //System.out.println("Global value: " + value);
+		        }	    		
 	    	}
 			else
 			{

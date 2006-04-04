@@ -54,7 +54,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	private ServerNodeVO serverNodeVO 			= new ServerNodeVO();
 	private PropertySet propertySet				= null; 
 	private List serverNodeVOList				= null;
-	
+	private String key 							= null;
 	
     public ViewServerNodePropertiesAction()
     {
@@ -254,6 +254,35 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
      * The main method that fetches the Value-objects for this use-case
      */
     
+    public String doDeleteProperty() throws Exception
+    {
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+        ps.remove("serverNode_" + this.getServerNodeId() + "_" + key);
+
+		try 
+		{
+			CacheController.clearServerNodeProperty();
+			InfoGlueAuthenticationFilter.initializeCMSProperties();
+		} 
+		catch (SystemException e) 
+		{
+			e.printStackTrace();
+		}
+
+		NotificationMessage notificationMessage = new NotificationMessage("ViewServerNodePropertiesAction.doSave():", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
+		//ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+		RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
+
+    	return "save";
+    }
+
+    /**
+     * The main method that fetches the Value-objects for this use-case
+     */
+    
     public String doSaveAndExit() throws Exception
     {
         return "saveAndExit";
@@ -311,4 +340,14 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
     {
         return serverNodeVOList;
     }
+
+	public String getKey() 
+	{
+		return key;
+	}
+
+	public void setKey(String key) 
+	{
+		this.key = key;
+	}
 }
