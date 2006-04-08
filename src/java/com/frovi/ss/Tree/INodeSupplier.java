@@ -2,6 +2,8 @@ package com.frovi.ss.Tree;
 
 import java.util.Collection;
 
+import org.infoglue.cms.exception.SystemException;
+
 /**
  * INodeSupplier.java
  * Created on 2002-sep-27 
@@ -13,7 +15,7 @@ public interface INodeSupplier
 	/**
 	 * return true if this node (nodeId) has childnodes
 	 */
-	public boolean hasChildren(Integer nodeId);
+	public boolean hasChildren(Integer nodeId) throws SystemException, Exception;
 	
 	/** 
 	 * return true if you will answer the question above
@@ -27,7 +29,7 @@ public interface INodeSupplier
 	 *	Set the attributes on each node, and if possible
 	 *	also determine if each node itself has children.
 	 */
-	public Collection getChildContainerNodes(Integer parentNode);
+	public Collection getChildContainerNodes(Integer parentNode) throws SystemException, Exception;
 	
 	/** 	
 	 * LeafNodes (documentNodes)

@@ -72,17 +72,24 @@ public class MakeTree
 
 	private void FillTree(Integer parent, int level, String expkey, String makekey)
 	{
-		Collection leafs;
-		Collection roots;
+		Collection leafs = new ArrayList();
+		Collection roots = new ArrayList();;
 
 		// Every time this method is called, we are one step
 		// deeper in the tree.
 		level++;
 
 		// Get all the children to this node
-		roots = nodeSupplier.getChildContainerNodes(parent);
-		leafs = nodeSupplier.getChildLeafNodes(parent);
-
+		try
+		{
+			roots = nodeSupplier.getChildContainerNodes(parent);
+			leafs = nodeSupplier.getChildLeafNodes(parent);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 		boolean blnHasDocs = leafs.size() > 0;
 
 		// Create expansion key to this node
@@ -202,13 +209,19 @@ public class MakeTree
 			thisNode.setLevel(level);
 			thisNode.setContainer(isContainer);
 			
-			
-			// has children check (may belong here??)
-			if (isContainer && nodeSupplier.hasChildren())
+			try
 			{
-				thisNode.setChildren(nodeSupplier.hasChildren(thisNode.getId()));
+				// has children check (may belong here??)
+				if (isContainer && nodeSupplier.hasChildren())
+				{
+					thisNode.setChildren(nodeSupplier.hasChildren(thisNode.getId()));
+				}
 			}
-			
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+				
 			ret.add(thisNode);
 	}
 
