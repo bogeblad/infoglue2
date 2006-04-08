@@ -24,6 +24,8 @@
 package org.infoglue.cms.entities.structure;
 
 import java.util.Calendar;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -45,6 +47,9 @@ public class SiteNodeVO implements BaseEntityVO
   	
   	private String creatorName;
 	private Integer metaInfoContentId 	= null;
+
+  	//Used if an application wants to add more properties to this item... used for performance reasons.
+  	private Map extraProperties = new Hashtable();
 
 	public SiteNodeVO()
   	{
@@ -193,6 +198,10 @@ public class SiteNodeVO implements BaseEntityVO
 		this.creatorName = creatorName;
 	}
 
+    public Map getExtraProperties()
+    {
+        return extraProperties;
+    }
 
 }
         

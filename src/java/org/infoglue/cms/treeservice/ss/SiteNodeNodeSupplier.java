@@ -30,14 +30,30 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCCFactory;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.cms.util.sorters.SiteNodeComparator;
+import org.infoglue.deliver.util.Timer;
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.BaseNodeSupplier;
@@ -89,53 +105,115 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 	/**
 	 * @see com.frovi.ss.Tree.INodeSupplier#getChildContainerNodes(Integer)
 	 */
-	public Collection getChildContainerNodes(Integer parentNode)
+	public Collection getChildContainerNodes(Integer parentNode) throws SystemException, Exception
 	{
+		Timer timer = new Timer();
+		
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
 		ArrayList ret = new ArrayList();
 		cacheLeafs = new ArrayList();
-		
-		List children = null;
-		try
-		{
-			children = ucc.getSiteNodeChildren(parentNode);
-		}
-		catch (ConstraintException e)
-		{
-			logger.warn("Error getting SiteNode Children", e);
-		}
-		catch (SystemException e)
-		{
-			logger.warn("Error getting SiteNode Children", e);
-		}
-		
-		//Sort the tree nodes if setup to do so
-		String sortProperty = CmsPropertyHandler.getStructureTreeSort();
-		if(sortProperty != null)
-			Collections.sort(children, new ReflectionComparator(sortProperty));
-		
-		Iterator i = children.iterator();
-		while(i.hasNext())
-		{
-			SiteNodeVO vo = (SiteNodeVO) i.next();
-			
-			BaseNode node =  new SiteNodeNodeImpl();
-			node.setId(vo.getId());
-			node.setTitle(vo.getName());
-			
-			if (vo.getIsBranch().booleanValue())
+		//List children = null;
+
+        beginTransaction(db);
+
+        try
+        {
+            SiteNode parentSiteNode = SiteNodeController.getSiteNodeWithId(parentNode, db, true);
+	        Collection children = parentSiteNode.getChildSiteNodes();
+	    	List childrenVOList = SiteNodeController.toVOList(children);
+	        
+			Iterator childrenVOListIterator = childrenVOList.iterator();
+			while(childrenVOListIterator.hasNext())
 			{
-				node.setContainer(true);
-				node.setChildren((vo.getChildCount().intValue() > 0)); // 
-				ret.add(node);
+				SiteNodeVO siteNodeVO = (SiteNodeVO)childrenVOListIterator.next();
+			    Content content = ContentController.getContentController().getContentWithId(siteNodeVO.getMetaInfoContentId(), db);
+	
+			    Language masterLanguage = LanguageController.getController().getMasterLanguage(db, content.getValueObject().getRepositoryId());
+				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), masterLanguage.getId(), db);
+				
+				String sortProperty = CmsPropertyHandler.getStructureTreeSort();
+				if(sortProperty != null)
+				{
+					String[] sortOrders = sortProperty.split(",");
+					for(int i=sortOrders.length - 1; i > -1; i--)
+					{
+						String sortOrderProperty = sortOrders[i].trim();
+						//System.out.println("sortOrderProperty:" + sortOrderProperty);
+						
+						if(contentVersion != null && sortOrderProperty.startsWith("extra:"))
+						{
+							sortOrderProperty = sortOrderProperty.substring(6);
+						    String propertyValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), sortOrderProperty, false);
+						    //if(propertyValue != null && !propertyValue.equals(""))
+						    //{
+							    siteNodeVO.getExtraProperties().put(sortOrderProperty, propertyValue);
+							    //System.out.println("Added " + sortOrderProperty + "=" + propertyValue + ":" + content.getName());
+						    //}
+						}
+					}
+				}
 			}
-			else
+	
+			//Sort the tree nodes if setup to do so
+			String sortProperty = CmsPropertyHandler.getStructureTreeSort();
+			if(sortProperty != null)
 			{
-				node.setContainer(false);
-				cacheLeafs.add(node);				
+				String[] sortOrders = sortProperty.split(",");
+				for(int i=sortOrders.length - 1; i > -1; i--)
+				{
+					String sortOrderProperty = sortOrders[i].trim();
+					//System.out.println("sortOrderProperty:" + sortOrderProperty);
+					if(sortOrderProperty.startsWith("extra:"))
+						sortOrderProperty = sortOrderProperty.substring(6);
+						
+					Collections.sort(childrenVOList, new SiteNodeComparator(sortOrderProperty, "asc", null));
+					//Collections.sort(childrenVOList, new ReflectionComparator(sortOrderProperty));
+	
+					Iterator siteNodeChildrenIterator = childrenVOList.iterator();
+					while(siteNodeChildrenIterator.hasNext())
+					{
+						SiteNodeVO vo = (SiteNodeVO) siteNodeChildrenIterator.next();
+						//System.out.println("vo:" + vo.getName());
+					}
+				}
 			}
 			
-		}
-		
+			Iterator i = childrenVOList.iterator();
+			while(i.hasNext())
+			{
+				SiteNodeVO vo = (SiteNodeVO) i.next();
+				
+				BaseNode node =  new SiteNodeNodeImpl();
+				node.setId(vo.getId());
+				node.setTitle(vo.getName());
+				
+				if (vo.getIsBranch().booleanValue())
+				{
+					node.setContainer(true);
+					node.setChildren((vo.getChildCount().intValue() > 0)); // 
+					ret.add(node);
+				}
+				else
+				{
+					node.setContainer(false);
+					cacheLeafs.add(node);				
+				}
+				
+			}
+			
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+        timer.printElapsedTime("ChildNodes took...");
+        
 		return ret;
 	}
 
