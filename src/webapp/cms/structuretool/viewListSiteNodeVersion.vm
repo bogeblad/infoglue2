@@ -175,7 +175,7 @@
 
 #set($lvBorder = 0) 
 #set($lvConstraint = -1) 
-#lvHead(["Name", "Owner"] "Publish items" "" "" "")
+#lvHead(["Name", "Changed"] "Publish items" "" "" "")
 
 #hiddenField("siteNodeId" $siteNodeId)
 #hiddenField("siteNodeVersionId" $siteNodeVersionId)
@@ -190,7 +190,7 @@
 #set($cnt = 0)
 #foreach($snv in $siteNodeVersionVOList)
 
-	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", ""] )
+	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd') - $snv.versionModifier"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $snv.getId())
@@ -203,7 +203,7 @@
 ##set($cnt = 0)
 #foreach($cv in $contentVersionVOList)
 
-	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() ($cv.getId())", ""] )
+	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() ($cv.getId())", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd') - $cv.versionModifier"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())
