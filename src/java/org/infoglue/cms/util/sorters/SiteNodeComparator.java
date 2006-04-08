@@ -4,6 +4,7 @@ import java.util.Comparator;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
@@ -29,14 +30,22 @@ public class SiteNodeComparator implements Comparator
 
 	public int compare(Object o1, Object o2)
 	{
-	    Comparable valueOne = getProperty(o1, sortProperty);
-		Comparable valueTwo = getProperty(o2, sortProperty);
+		SiteNodeVO siteNodeVO1 = (SiteNodeVO)o1;
+		SiteNodeVO siteNodeVO2 = (SiteNodeVO)o2;
+
+		Comparable valueOne = (String)siteNodeVO1.getExtraProperties().get(sortProperty);
+		Comparable valueTwo = (String)siteNodeVO2.getExtraProperties().get(sortProperty);
 		
+        long previousTime = System.currentTimeMillis();
+
 		if(valueOne == null)
 		{
-			SiteNodeVO siteNodeVO1 = (SiteNodeVO)o1;
-		    SiteNodeVO siteNodeVO2 = (SiteNodeVO)o2;
-		    
+	        valueOne = getProperty(o1, sortProperty);
+			valueTwo = getProperty(o2, sortProperty);
+		}
+
+		if(valueOne == null && this.templateController != null)
+		{
 		    Integer meta1Id = this.templateController.getMetaInformationContentId(siteNodeVO1.getId());
 		    Integer meta2Id = this.templateController.getMetaInformationContentId(siteNodeVO2.getId());
 		    

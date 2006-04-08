@@ -105,6 +105,64 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 	/**
 	 * @see com.frovi.ss.Tree.INodeSupplier#getChildContainerNodes(Integer)
 	 */
+	/*
+	public Collection getChildContainerNodes(Integer parentNode) throws SystemException, Exception
+	{
+		Timer timer = new Timer();
+
+		ArrayList ret = new ArrayList();
+		cacheLeafs = new ArrayList();
+		
+		List children = null;
+		try
+		{
+			children = ucc.getSiteNodeChildren(parentNode);
+		}
+		catch (ConstraintException e)
+		{
+			logger.warn("Error getting SiteNode Children", e);
+		}
+		catch (SystemException e)
+		{
+			logger.warn("Error getting SiteNode Children", e);
+		}
+		
+		//Sort the tree nodes if setup to do so
+		String sortProperty = CmsPropertyHandler.getStructureTreeSort();
+		if(sortProperty != null)
+			Collections.sort(children, new ReflectionComparator(sortProperty));
+		
+		Iterator i = children.iterator();
+		while(i.hasNext())
+		{
+			SiteNodeVO vo = (SiteNodeVO) i.next();
+			
+			BaseNode node =  new SiteNodeNodeImpl();
+			node.setId(vo.getId());
+			node.setTitle(vo.getName());
+			
+			if (vo.getIsBranch().booleanValue())
+			{
+				node.setContainer(true);
+				node.setChildren((vo.getChildCount().intValue() > 0)); // 
+				ret.add(node);
+			}
+			else
+			{
+				node.setContainer(false);
+				cacheLeafs.add(node);				
+			}
+			
+		}
+		
+        timer.printElapsedTime("ChildNodes took...");
+
+		return ret;
+	}
+*/
+	/**
+	 * @see com.frovi.ss.Tree.INodeSupplier#getChildContainerNodes(Integer)
+	 */
 	public Collection getChildContainerNodes(Integer parentNode) throws SystemException, Exception
 	{
 		Timer timer = new Timer();
@@ -123,15 +181,15 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
             SiteNode parentSiteNode = SiteNodeController.getSiteNodeWithId(parentNode, db, true);
 	        Collection children = parentSiteNode.getChildSiteNodes();
 	    	List childrenVOList = SiteNodeController.toVOList(children);
-	        
+
 			Iterator childrenVOListIterator = childrenVOList.iterator();
 			while(childrenVOListIterator.hasNext())
 			{
 				SiteNodeVO siteNodeVO = (SiteNodeVO)childrenVOListIterator.next();
 			    Content content = ContentController.getContentController().getContentWithId(siteNodeVO.getMetaInfoContentId(), db);
 	
-			    Language masterLanguage = LanguageController.getController().getMasterLanguage(db, content.getValueObject().getRepositoryId());
-				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), masterLanguage.getId(), db);
+			    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(content.getValueObject().getRepositoryId(), db);
+			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), masterLanguage.getId(), db);
 				
 				String sortProperty = CmsPropertyHandler.getStructureTreeSort();
 				if(sortProperty != null)
@@ -155,7 +213,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 					}
 				}
 			}
-	
+
 			//Sort the tree nodes if setup to do so
 			String sortProperty = CmsPropertyHandler.getStructureTreeSort();
 			if(sortProperty != null)
@@ -212,11 +270,12 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
             throw new SystemException(e.getMessage());
         }
 
-        timer.printElapsedTime("ChildNodes took...");
+        logger.error("Getting the sitenodes for the tree took " + timer.getElapsedTime() + "ms");
         
 		return ret;
 	}
 
+	
 	/**
 	 * @see com.frovi.ss.Tree.INodeSupplier#getChildLeafNodes(Integer)
 	 */
