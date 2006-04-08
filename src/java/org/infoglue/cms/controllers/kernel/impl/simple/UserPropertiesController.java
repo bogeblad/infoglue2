@@ -47,6 +47,7 @@ import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -138,14 +139,24 @@ public class UserPropertiesController extends BaseController
 	 * This method updates an extranet role properties.
 	 */
 
-	public UserPropertiesVO update(Integer languageId, Integer contentTypeDefinitionId, UserPropertiesVO userPropertiesVO) throws ConstraintException, SystemException
+	public UserPropertiesVO update(Integer languageId, Integer contentTypeDefinitionId, UserPropertiesVO userPropertiesVO) throws ConstraintException, SystemException, Exception
 	{
 		UserPropertiesVO realUserPropertiesVO = userPropertiesVO;
     	
 		if(userPropertiesVO.getId() == null)
 		{
-			getLogger().info("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
-			realUserPropertiesVO = create(languageId, contentTypeDefinitionId, userPropertiesVO);
+			InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController().getUser(userPropertiesVO.getUserName());
+			List userPropertiesVOList = UserPropertiesController.getController().getUserPropertiesVOList(infoGluePrincipal.getName(), languageId);
+			if(userPropertiesVOList != null && userPropertiesVOList.size() > 0)
+			{
+				realUserPropertiesVO = (UserPropertiesVO)userPropertiesVOList.get(0);
+				realUserPropertiesVO.setValue(userPropertiesVO.getValue());	
+			}
+			else
+			{
+				getLogger().info("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
+				realUserPropertiesVO = create(languageId, contentTypeDefinitionId, userPropertiesVO);
+			}
 		}
 
 		return (UserPropertiesVO) updateEntity(UserPropertiesImpl.class, (BaseEntityVO) realUserPropertiesVO);
