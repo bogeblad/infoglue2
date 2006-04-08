@@ -76,7 +76,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 {
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.15 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.16 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -360,6 +360,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 	        	.addAttribute("repositoryId", "" + repositoryId)
 	        	.addAttribute("text", encode(text))
 	        	.addAttribute("src", src)
+   	        	.addAttribute("isHidden", (String)node.getParameters().get("isHidden"))
    	        	.addAttribute("hasChildren", "true")
 	        	.addAttribute("type", type);
 			
@@ -399,6 +400,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		        	.addAttribute("repositoryId", "" + repositoryId)
 		        	.addAttribute("text", encode(theNode.getTitle()))
 		        	.addAttribute("src", src)
+		        	.addAttribute("isHidden", (String)theNode.getParameters().get("isHidden"))
 		        	.addAttribute("type", TYPE_FOLDER)
 		        	.addAttribute("hasChildren", "" + theNode.hasChildren());
 		        

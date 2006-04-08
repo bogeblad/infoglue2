@@ -554,6 +554,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("structure.tree.sort", true, "name");
 	}
 
+	public static String getStructureTreeIsHiddenProperty()
+	{
+		return getServerNodeProperty("structure.tree.isHidden", true);
+	}
+
 	public static String getDisableEmptyUrls()
 	{
 		return getServerNodeProperty("disableEmptyUrls", true, "yes");

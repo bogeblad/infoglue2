@@ -174,6 +174,9 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 		cacheLeafs = new ArrayList();
 		//List children = null;
 
+		String sortProperty = CmsPropertyHandler.getStructureTreeSort();
+		String isHiddenProperty = CmsPropertyHandler.getStructureTreeIsHiddenProperty();
+
         beginTransaction(db);
 
         try
@@ -191,7 +194,6 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 			    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(content.getValueObject().getRepositoryId(), db);
 			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), masterLanguage.getId(), db);
 				
-				String sortProperty = CmsPropertyHandler.getStructureTreeSort();
 				if(sortProperty != null)
 				{
 					String[] sortOrders = sortProperty.split(",");
@@ -204,18 +206,22 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 						{
 							sortOrderProperty = sortOrderProperty.substring(6);
 						    String propertyValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), sortOrderProperty, false);
-						    //if(propertyValue != null && !propertyValue.equals(""))
-						    //{
-							    siteNodeVO.getExtraProperties().put(sortOrderProperty, propertyValue);
-							    //System.out.println("Added " + sortOrderProperty + "=" + propertyValue + ":" + content.getName());
-						    //}
+						    siteNodeVO.getExtraProperties().put(sortOrderProperty, propertyValue);
+
+							if(isHiddenProperty != null && !isHiddenProperty.equals(""))
+							{
+							    String hiddenProperty = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), isHiddenProperty, false);
+							    if(hiddenProperty == null || hiddenProperty.equals(""))
+							    	hiddenProperty = "false";
+							    
+							    siteNodeVO.getExtraProperties().put("isHidden", hiddenProperty);
+							}
 						}
 					}
 				}
 			}
 
 			//Sort the tree nodes if setup to do so
-			String sortProperty = CmsPropertyHandler.getStructureTreeSort();
 			if(sortProperty != null)
 			{
 				String[] sortOrders = sortProperty.split(",");
@@ -246,6 +252,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 				BaseNode node =  new SiteNodeNodeImpl();
 				node.setId(vo.getId());
 				node.setTitle(vo.getName());
+				node.getParameters().put("isHidden", vo.getExtraProperties().get("isHidden"));
 				
 				if (vo.getIsBranch().booleanValue())
 				{

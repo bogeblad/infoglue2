@@ -201,6 +201,8 @@ var webFXTreeConfig = {
 	openRootIcon    : 'images/openfoldericon.png',
 	folderIcon      : 'images/foldericon.png',
 	openFolderIcon  : 'images/openfoldericon.png',
+	hiddenFolderIcon      : 'images/hiddenFoldericon.png',
+	hiddenOpenFolderIcon  : 'images/hiddenOpenfoldericon.png',
 	fileIcon        : 'images/file.png',
 	iIcon           : 'images/I.png',
 	lIcon           : 'images/L.png',

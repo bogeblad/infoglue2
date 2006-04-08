@@ -196,15 +196,24 @@ function _xmlTreeToJsTree(oNode) {
 	var icon = oNode.getAttribute("icon");
 	var openIcon = oNode.getAttribute("openIcon");
 	var src = oNode.getAttribute("src");
-	//alert("src:" + src);
+	var isHidden = oNode.getAttribute("isHidden");
+	//alert("isHidden:" + isHidden);
+	//alert("src:" + src + ":" + hidden);
 	var hasChildren = oNode.getAttribute("hasChildren");
 	
 	// Stefan Sik addition 20041120
 	var type = oNode.getAttribute("type");
 	if(type.indexOf("Folder") > -1)
 	{
-		icon = webFXTreeConfig.folderIcon;
-		openIcon = webFXTreeConfig.openFolderIcon;
+		if(isHidden == "true")
+			icon = webFXTreeConfig.hiddenFolderIcon;
+		else
+			icon = webFXTreeConfig.folderIcon;
+	
+		if(isHidden == "true")
+			openIcon = webFXTreeConfig.hiddenOpenFolderIcon;
+		else
+			openIcon = webFXTreeConfig.openFolderIcon;
 	}
 	// Addition end
 	

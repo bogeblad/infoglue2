@@ -250,6 +250,9 @@
 		<td>#editPropertyField("ServerNode.property.structure.tree.sort" "structure.tree.sort" "$this.getPropertyValue('structure.tree.sort')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
+		<td>#editPropertyField("ServerNode.property.structure.tree.isHidden" "structure.tree.isHidden" "$this.getPropertyValue('structure.tree.isHidden')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.disableEmptyUrls" "disableEmptyUrls" "$this.getPropertyValue('disableEmptyUrls')")</td>
 	</tr>
 	<tr>
