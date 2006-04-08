@@ -1,0 +1,14 @@
+1. Run the changesAll.bat in a dir where cvs.exe is located.
+2. Run these regexp replacements on the file - removing all unneeded comments. 
+
+^Working file.*?\r\nhead.*?\r\nbranch.*?\r\nlocks.*?\r\naccess list.*?\r\nsymbolic names.*?\r\n
+^\t.*?\r\n
+^keyword sub.*?\r\n
+^total rev.*?\r\n
+^revision.*?\r\n
+^date.*?\r\n
+^description.*?\r\n^------.*?\r\n^Removed unnessessairy.*?\r\n^=======.*?\r\n
+^description.*?\r\n^=====.*?\r\n\r\n
+^RCS file.*?\r\n^\r\n
+
+3. Edit the file to contain new features, improvements, changes and bugs.
