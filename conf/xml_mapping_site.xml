@@ -188,6 +188,9 @@
     <field name="disableEditOnSight" type="java.lang.Integer">
       <bind-xml name="disableEditOnSight" node="element"/>
     </field>
+    <field name="disableLanguages" type="java.lang.Integer">
+      <bind-xml name="disableLanguages" node="element"/>
+    </field>    
     <field name="contentType" type="java.lang.String">
       <bind-xml name="contentType" node="element"/>
     </field>
