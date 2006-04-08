@@ -185,6 +185,7 @@
 #hiddenField("overrideVersionModifyer" $!overrideVersionModifyer)
 #hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
 #hiddenField("repositoryId" $!repositoryId)
+#hiddenField("returnAddress" $!returnAddress)
 
 #set($lvChkBoxName = "selContentVersions")
 #set($cnt = 0)

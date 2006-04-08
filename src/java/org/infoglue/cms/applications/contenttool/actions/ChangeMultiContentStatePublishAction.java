@@ -51,7 +51,7 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 	private boolean overrideVersionModifyer = false;
 	private Integer repositoryId;
 	private String attemptDirectPublishing = "false";
-
+	private String returnAddress = null;
 		    
 	/**
 	 * This method gets called when calling this action. 
@@ -89,6 +89,13 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 		    publicationVO.setDescription(getVersionComment());
 		    publicationVO.setRepositoryId(repositoryId);
 		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.overrideVersionModifyer, this.getInfoGluePrincipal());
+		}
+		
+		if(returnAddress != null && !returnAddress.equals(""))
+		{
+			this.getResponse().sendRedirect(returnAddress);
+	    
+			return NONE;
 		}
 		
        	return "success";
@@ -195,4 +202,9 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
     {
         this.overrideVersionModifyer = overrideVersionModifyer;
     }
+
+	public void setReturnAddress(String returnAddress) 
+	{
+		this.returnAddress = returnAddress;
+	}
 }

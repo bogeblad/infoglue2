@@ -64,7 +64,7 @@
 #end
 
 
-<body class="contenttooledit" #if($closeOnLoad == "true")onload="javascript:refreshCaller();"#end onkeypress="hotKeys(event);">
+<body class="contenttooledit" #if($closeOnLoad == "true")onload="javascript:refreshCaller();"#end #if($publishOnLoad == "true")onload="javascript:submitToPublish();"#end onkeypress="hotKeys(event);">
 
 <script language="javascript" src="script/jsrsClient.js"></script>
 
@@ -151,6 +151,23 @@
 		window.close();
 	}
 
+	//*******************************************
+	//This method submits the content to publishing dialog
+	//*******************************************
+
+	function submitToPublish()
+	{
+		//if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
+		//	window.opener.parent.frames['main'].location.reload();
+		//else
+		//	window.opener.location.reload();	
+
+		//window.close();
+		//var returnAddress = document.location.href;
+		var returnAddress = "$formatter.encodeURI("ViewContentVersion!standalone.action?contentId=$contentId&languageId=$languageId&closeOnLoad=true", 'UTF-8')";
+		//alert("returnAddress:" + returnAddress + "$formatter");
+		document.location.href = "ViewListContentVersion.action?contentId=$contentId&returnAddress=" + returnAddress;
+	}
 
 	//*******************************************
 	// This is a timer that warns the user about saving his work once in a while so he does not
@@ -195,15 +212,15 @@
 		#end
 		
 		#if($readonly == "disabled")
-			#if($contentTypeDefinitionVO.name == "Meta info")
-				alert("$ui.getString("tool.contenttool.readOnlyFollowingSiteNodeVersionLabel")");
-			#else
-				alert("$ui.getString("tool.contenttool.readOnlyLabel")");
+			#if($contentTypeDefinitionVO.name == "Meta info" && $closeOnLoad != true)
+				alert("$ui.getString("tool.contenttool.readOnlyFollowingSiteNodeVersionLabel") A $closeOnLoad ");
+			#else if($closeOnLoad != true)
+				alert("$ui.getString("tool.contenttool.readOnlyLabel") B $closeOnLoad");
 			#end
 		#end
 		
-		#if($concurrentModification)
-			alert("$ui.getString("tool.contenttool.concurrentModificationLabel")");
+		#if($concurrentModification && $closeOnLoad != true)
+			alert("$ui.getString("tool.contenttool.concurrentModificationLabel") C $closeOnLoad");
 		#end
 		
 	}	
@@ -257,7 +274,6 @@
 	
 	doTimer();
 	setTimeout("warnForTimeout()", timeout);
-		
 -->
 </script>
 	
@@ -397,6 +413,7 @@
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<td colspan="3">
 			#if($readonly == "")
+			<a href="javascript:validateAndSubmitContentFormThenSubmitToPublish();"><img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0"></a>
 			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
 			<a href="javascript:validateAndSubmitContentFormThenClose();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
 			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
@@ -949,6 +966,14 @@
 			//document.editForm.action = "UpdateContentVersion!saveAndExitStandalone.action";
 			validateAndSubmitContentForm();		
 		}
+
+		function validateAndSubmitContentFormThenSubmitToPublish()
+		{
+			//alert("Action:" + document.editForm.action);
+			document.editForm.publishOnLoad.value = "true";
+			//document.editForm.action = "UpdateContentVersion!saveAndExitStandalone.action";
+			validateAndSubmitContentForm();
+		}
 	
 		
 		function buildVersionValue()
@@ -1026,6 +1051,7 @@
 		<input type="hidden" id="currentEditorId" name="currentEditorId" value=""/>
 		<input type="hidden" id="attributeName" name="attributeName" value="$attributeName"/>
 		<input type="hidden" name="closeOnLoad" value="false">
+		<input type="hidden" name="publishOnLoad" value="false">
 		</td>
 	</tr>
 	
@@ -1048,6 +1074,7 @@
 		
 		<td colspan="3">
 			#if($readonly == "")
+			<a href="javascript:validateAndSubmitContentFormThenSubmitToPublish();"><img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0"></a>
 			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
 			<a href="javascript:validateAndSubmitContentFormThenClose();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
 			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>

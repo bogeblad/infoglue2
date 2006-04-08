@@ -54,6 +54,7 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 	private List siteNodeVersionVOList = new ArrayList();
 	private Integer contentId;
 	private Integer repositoryId;
+	private String returnAddress = null;
 
 	protected String doExecute() throws Exception 
 	{
@@ -118,4 +119,14 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
     {
         return siteNodeVersionVOList;
     }
+
+	public String getReturnAddress() 
+	{
+		return returnAddress;
+	}
+
+	public void setReturnAddress(String returnAddress) 
+	{
+		this.returnAddress = returnAddress;
+	}
 }

@@ -105,6 +105,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private Map WYSIWYGProperties = null;
 	
 	private String closeOnLoad;
+	private String publishOnLoad;
 
 	private boolean concurrentModification = false;
 	private long oldModifiedDateTime = -1;
@@ -1145,4 +1146,12 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     {
         this.forceWorkingChange = forceWorkingChange;
     }
+
+	public String getPublishOnLoad() {
+		return publishOnLoad;
+	}
+
+	public void setPublishOnLoad(String publishOnLoad) {
+		this.publishOnLoad = publishOnLoad;
+	}
 }
