@@ -98,6 +98,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		
 		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
 		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
+		//String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
+		//String administratorEmail 	 = CmsPropertyHandler.getProperty("administratorEmail");
 		
 		final boolean isAdministrator = userName.equalsIgnoreCase(administratorUserName) ? true : false;
 		if(isAdministrator)
@@ -746,90 +748,96 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		
 			while (answer.hasMore()) 
 			{
-				SearchResult sr = (SearchResult)answer.next();
-				logger.info("Person:" + sr.toString() + "\n");
-				
-				Attributes attributes = sr.getAttributes();
-				logger.info("attributes:" + attributes.toString());
-				Attribute userNameAttribute = attributes.get(userNameAttributeFilter);
-				Attribute userFirstNameAttribute = attributes.get(userFirstNameAttributeFilter);
-				Attribute userLastNameAttribute = attributes.get(userLastNameAttributeFilter);
-				Attribute userMailAttribute = attributes.get(userMailAttributeFilter);
-				Attribute memberOfAttribute = attributes.get(memberOfAttributeFilter);
-				Attribute memberOfGroupsAttribute = attributes.get(memberOfAttributeFilter);
-				
-				if(userFirstNameAttribute == null || userLastNameAttribute == null || userMailAttribute == null)
-				    throw new SystemException("The user " + userNameAttribute + " did not have firstName, lastName or email attribute which InfoGlue requires");
-				    
-				logger.info("userNameAttribute:" + userNameAttribute.toString());
-				logger.info("userFirstNameAttribute:" + userFirstNameAttribute.toString());
-				logger.info("userLastNameAttribute:" + userLastNameAttribute.toString());
-				logger.info("userMailAttribute:" + userMailAttribute.toString());
-				logger.info("memberOfAttribute:" + memberOfAttribute.toString());
-				logger.info("memberOfAttribute:" + memberOfAttribute.toString());
-				
-				
-				List roles = new ArrayList();
-				NamingEnumeration allEnum = memberOfAttribute.getAll();
-				while(allEnum.hasMore())
+				try
 				{
-					String groupName = (String)allEnum.next();
-					logger.info("groupName:" + groupName);
-					logger.info("roleBase:" + roleBase);
-					if(roleBase != null && groupName.indexOf(roleBase) > -1)
-					{
-					    groupName = groupName.substring(0, groupName.indexOf(roleBase));
-					    groupName = groupName.substring(0, groupName.lastIndexOf(","));
-					}
+					SearchResult sr = (SearchResult)answer.next();
+					logger.info("Person:" + sr.toString() + "\n");
 					
-					logger.info("groupName:" + groupName);
-					if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
+					Attributes attributes = sr.getAttributes();
+					logger.info("attributes:" + attributes.toString());
+					Attribute userNameAttribute = attributes.get(userNameAttributeFilter);
+					Attribute userFirstNameAttribute = attributes.get(userFirstNameAttributeFilter);
+					Attribute userLastNameAttribute = attributes.get(userLastNameAttributeFilter);
+					Attribute userMailAttribute = attributes.get(userMailAttributeFilter);
+					Attribute memberOfAttribute = attributes.get(memberOfAttributeFilter);
+					Attribute memberOfGroupsAttribute = attributes.get(memberOfAttributeFilter);
+					
+					if(userFirstNameAttribute == null || userLastNameAttribute == null || userMailAttribute == null)
+					    throw new SystemException("The user " + userNameAttribute + " did not have firstName, lastName or email attribute which InfoGlue requires");
+					    
+					logger.info("userNameAttribute:" + userNameAttribute.toString());
+					logger.info("userFirstNameAttribute:" + userFirstNameAttribute.toString());
+					logger.info("userLastNameAttribute:" + userLastNameAttribute.toString());
+					logger.info("userMailAttribute:" + userMailAttribute.toString());
+					logger.info("memberOfAttribute:" + memberOfAttribute.toString());
+					logger.info("memberOfAttribute:" + memberOfAttribute.toString());
+					
+					
+					List roles = new ArrayList();
+					NamingEnumeration allEnum = memberOfAttribute.getAll();
+					while(allEnum.hasMore())
 					{
-					    logger.info("roleNameAttribute:" + roleNameAttribute);
+						String groupName = (String)allEnum.next();
 						logger.info("groupName:" + groupName);
-						logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
-						if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
+						logger.info("roleBase:" + roleBase);
+						if(roleBase != null && groupName.indexOf(roleBase) > -1)
 						{
-						    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
+						    groupName = groupName.substring(0, groupName.indexOf(roleBase));
+						    groupName = groupName.substring(0, groupName.lastIndexOf(","));
 						}
 						
-					    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
-					    roles.add(infoGlueRole);
-					}
-				}
-				
-				List groups = new ArrayList();
-				NamingEnumeration allGroupsEnum = memberOfGroupsAttribute.getAll();
-				while(allEnum.hasMore())
-				{
-					String groupName = (String)allEnum.next();
-					logger.info("groupName:" + groupName);
-					logger.info("roleBase:" + roleBase);
-					if(roleBase != null && groupName.indexOf(roleBase) > -1)
-					{
-					    groupName = groupName.substring(0, groupName.indexOf(roleBase));
-					    groupName = groupName.substring(0, groupName.lastIndexOf(","));
+						logger.info("groupName:" + groupName);
+						if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
+						{
+						    logger.info("roleNameAttribute:" + roleNameAttribute);
+							logger.info("groupName:" + groupName);
+							logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
+							if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
+							{
+							    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
+							}
+							
+						    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
+						    roles.add(infoGlueRole);
+						}
 					}
 					
-					logger.info("groupName:" + groupName);
-					if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
+					List groups = new ArrayList();
+					NamingEnumeration allGroupsEnum = memberOfGroupsAttribute.getAll();
+					while(allEnum.hasMore())
 					{
-					    logger.info("roleNameAttribute:" + roleNameAttribute);
+						String groupName = (String)allEnum.next();
 						logger.info("groupName:" + groupName);
-						logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
-						if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
+						logger.info("roleBase:" + roleBase);
+						if(roleBase != null && groupName.indexOf(roleBase) > -1)
 						{
-						    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
+						    groupName = groupName.substring(0, groupName.indexOf(roleBase));
+						    groupName = groupName.substring(0, groupName.lastIndexOf(","));
 						}
 						
-						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
-					    groups.add(infoGlueGroup);
+						logger.info("groupName:" + groupName);
+						if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
+						{
+						    logger.info("roleNameAttribute:" + roleNameAttribute);
+							logger.info("groupName:" + groupName);
+							logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
+							if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
+							{
+							    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
+							}
+							
+							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
+						    groups.add(infoGlueGroup);
+						}
 					}
+					
+					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, groups, false);
+					users.add(infoGluePrincipal);
 				}
-				
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, groups, false);
-				users.add(infoGluePrincipal);
-				
+				catch(Exception e)
+				{
+					logger.info("An error occurred when we tried to read user: " + e.getMessage(), e);
+				}
 			} 
 			ctx.close();
 		}
