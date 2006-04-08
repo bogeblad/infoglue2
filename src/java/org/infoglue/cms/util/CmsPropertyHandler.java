@@ -23,9 +23,11 @@
 
 package org.infoglue.cms.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -899,6 +901,90 @@ public class CmsPropertyHandler
 	    return propertySet.getString("principal_" + userName + "_defaultToolId");
 	}
 
+	public static List getInternalDeliveryUrls()
+	{
+		List urls = new ArrayList();
+		
+	    String publicDeliverUrlsString = CmsPropertyHandler.getServerNodeDataProperty(null, "publicDeliveryUrls", true, null);
+	    //System.out.println("publicDeliverUrlsString:" + publicDeliverUrlsString);
+	    if(publicDeliverUrlsString != null && !publicDeliverUrlsString.equals(""))
+		{
+	    	try
+			{
+	    		Properties properties = new Properties();
+				properties.load(new ByteArrayInputStream(publicDeliverUrlsString.getBytes("UTF-8")));
+
+				int i = 0;
+				String deliverUrl = null;
+				while((deliverUrl = properties.getProperty("" + i)) != null)
+				{ 
+					urls.add(deliverUrl);
+					i++;
+				}	
+
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	    else
+	    {
+			int i = 0;
+			String deliverUrl = null;
+			while((deliverUrl = CmsPropertyHandler.getProperty("internalDeliverUrl." + i)) != null)
+			{ 
+				urls.add(deliverUrl);
+				i++;
+			}	
+	    }
+
+	    return urls;
+	}
+
+	public static List getPublicDeliveryUrls()
+	{
+		List urls = new ArrayList();
+		
+	    String publicDeliverUrlString = CmsPropertyHandler.getServerNodeDataProperty(null, "publicDeliveryUrls", true, null);
+	    //System.out.println("publicDeliverUrlString:" + publicDeliverUrlString);
+	    if(publicDeliverUrlString != null && !publicDeliverUrlString.equals(""))
+		{
+	    	try
+			{
+	    		Properties properties = new Properties();
+				properties.load(new ByteArrayInputStream(publicDeliverUrlString.getBytes("UTF-8")));
+
+				int i = 0;
+				String deliverUrl = null;
+				while((deliverUrl = properties.getProperty("" + i)) != null)
+				{ 
+					urls.add(deliverUrl);
+					i++;
+				}	
+
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	    else
+	    {
+			int i = 0;
+			String deliverUrl = null;
+			while((deliverUrl = CmsPropertyHandler.getProperty("publicDeliverUrl." + i)) != null)
+			{ 
+				urls.add(deliverUrl);
+				i++;
+			}	
+	    }
+	    
+	    return urls;
+	}
+	
 	public static String getPropertySetValue(String key)
 	{
 	    String value = null;

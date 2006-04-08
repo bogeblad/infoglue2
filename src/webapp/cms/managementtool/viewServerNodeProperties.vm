@@ -241,6 +241,13 @@
 		<td>#editPropertyField("ServerNode.property.stagingDeliveryUrl" "stagingDeliveryUrl" "$this.getPropertyValue('stagingDeliveryUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
+		<td>#editTextArea("ServerNode.property.internalDeliveryUrls" "internalDeliveryUrls" "$this.getDataPropertyValue('internalDeliveryUrls')" "50" "5" "normaltextarea")</td>
+	</tr>
+	<tr>
+		<td>#editTextArea("ServerNode.property.publicDeliveryUrls" "publicDeliveryUrls" "$this.getDataPropertyValue('publicDeliveryUrls')" "50" "5" "normaltextarea")</td>
+	</tr>
+	
+	<tr>
 		<td>#editPropertyField("ServerNode.property.edition.pageSize" "edition.pageSize" "$this.getPropertyValue('edition.pageSize')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>

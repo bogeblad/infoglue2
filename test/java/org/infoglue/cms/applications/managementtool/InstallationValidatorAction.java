@@ -51,6 +51,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 
 import webwork.action.Action;
@@ -177,6 +178,29 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 
         try
         {
+    		List internalDeliveryUrls = CmsPropertyHandler.getInternalDeliveryUrls();
+    		Iterator internalDeliveryUrlsIterator = internalDeliveryUrls.iterator();
+    		while(internalDeliveryUrlsIterator.hasNext())
+    		{
+    			String address = "" + internalDeliveryUrlsIterator.next() + "/UpdateCache!test.action";
+    			
+    			try
+    			{
+	    		    HttpHelper httpHelper = new HttpHelper();
+	    			String response = httpHelper.getUrlContent(address);
+	    			if(response.indexOf("test ok") == -1)
+	    			    throw new Exception("Got wrong answer");
+	    			
+	    			addValidationItem(name, description, true, "Test succeeded on " + address + ": " + response);
+    			}
+    			catch(Exception e)
+    			{
+    				e.printStackTrace();
+    			    addValidationItem(name, description, false, "Test failed on " + address + ":" + e.getMessage());
+    			}
+    		}
+    		
+    		/*	
     		String appPrefix = "internalDeliverUrl";
     		
     		int i = 0;
@@ -200,7 +224,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
     			}
     			i++;
     		}
-
+    		
     		appPrefix = "publicDeliverUrl";
     		
     		i = 0;
@@ -224,6 +248,28 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
     			}
     			i++;
     		}
+    		*/
+
+    		List publicDeliveryUrls = CmsPropertyHandler.getPublicDeliveryUrls();
+    		Iterator publicDeliveryUrlsIterator = publicDeliveryUrls.iterator();
+    		while(publicDeliveryUrlsIterator.hasNext())
+    		{
+	    		String address = "" + publicDeliveryUrlsIterator.next() + "/UpdateCache!test.action";
+				
+				try
+				{
+	    		    HttpHelper httpHelper = new HttpHelper();
+	    			String response = httpHelper.getUrlContent(address);
+	    			if(response.indexOf("test ok") == -1)
+	    			    throw new Exception("Got wrong answer");
+	    			
+				    addValidationItem(name, description, true, "Test succeeded on " + address + ": " + response);
+				}
+				catch(Exception e)
+				{
+				    addValidationItem(name, description, false, "Test failed on " + address + ":" + e.getMessage());
+				}
+    		}    		
         }
         catch(Exception e)
         {

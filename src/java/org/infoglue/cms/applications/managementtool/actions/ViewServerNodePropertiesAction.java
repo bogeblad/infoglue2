@@ -204,6 +204,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "editOnSight");
 	    populate(ps, "previewDeliveryUrl");
 	    populate(ps, "stagingDeliveryUrl");
+	    populateData(ps, "internalDeliveryUrls");
+	    populateData(ps, "publicDeliveryUrls");
 	    populate(ps, "edition.pageSize");
 	    populate(ps, "content.tree.sort");
 	    populate(ps, "structure.tree.sort");

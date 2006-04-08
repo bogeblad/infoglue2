@@ -118,6 +118,7 @@ public class RemoteCacheUpdater implements NotificationListener
 		
 		if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING || notificationMessage.getType() == NotificationMessage.SYSTEM)
 		{
+			/*
 			String appPrefix = "publicDeliverUrl";
 		
 			int i = 0;
@@ -140,18 +141,18 @@ public class RemoteCacheUpdater implements NotificationListener
 					i++;
 				}	
 			}
+			*/
+			urls.addAll(CmsPropertyHandler.getPublicDeliveryUrls());
+
+			if(notificationMessage.getType() == NotificationMessage.SYSTEM)
+			{
+				urls.addAll(CmsPropertyHandler.getInternalDeliveryUrls());
+			}
+
 		}
 		else
 		{
-			String appPrefix = "internalDeliverUrl";
-
-			int i = 0;
-			String deliverUrl = null;
-			while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
-			{ 
-				urls.add(deliverUrl);
-				i++;
-			}	
+			urls.addAll(CmsPropertyHandler.getInternalDeliveryUrls());
 		}
 		
 		Iterator urlsIterator = urls.iterator();
