@@ -482,7 +482,7 @@ a:hover {
     text-decoration	 : underline;
 }
 a:active {
-	font			 : bold;
+	font-weight	     : bold;
     text-decoration	 : none;
 }
 
@@ -526,10 +526,6 @@ a:active {
 	position 			: absolute;
 	display				: none;
 	background-color 	: #333333;
-	abackground-image	: url('../images/grid.gif');
-	abackground-repeat	: repeat;
-	acolor 				: black;
-	aborder 				: 1px solid blue;
 	top 				: 0px;
 	left 				: 0px;
 	bottom				: 0px;
@@ -544,9 +540,6 @@ a:active {
 #systemMessagesDialog {
 	position 			: absolute;
 	display				: none;
-	abackground-color 	: white;
-	abackground-image	: url('../images/grid.gif');
-	abackground-repeat	: repeat;
 	color 				: black;
 	border 				: 1px solid #666666;
 	top 				: 0px;
@@ -555,8 +548,6 @@ a:active {
 	right				: 0px;
 	width 				: 100%;
 	height				: 100%;
-	aopacity			: .85;
-    afilter				: alpha(opacity=85);
     z-index				: 20;
 }
 
@@ -566,15 +557,12 @@ a:active {
 	background-color 	: white;
 	color 				: black;
 	border 				: 1px solid black;
-	atop 				: 0px;
-	aleft 				: 0px;
 	width 				: 410px;
 	height				: 370px;
 	margin				: 10%;
 }
 
 .systemMessagesDivHandle {
-	amargin:2px;
 	padding-top:2px;
 	padding-bottom:2px;
 	width:100%;
