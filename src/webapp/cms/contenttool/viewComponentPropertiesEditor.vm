@@ -41,7 +41,7 @@
 				propertyMultiple= property.getMultiple();
 				propertyDescription= property.getDescription();
 				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
-				if(propertyType == "selectfield")
+				if(propertyType == "select")
 				{
 					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' description='" + propertyDescription + "'>";
 
@@ -607,7 +607,7 @@
 				document.getElementById("multipleParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 			}
-			else if(selectBox.value == "selectfield")
+			else if(selectBox.value == "select")
 			{
 				document.getElementById("optionsParagraph").style.display = "block";
 				document.getElementById("entityParagraph").style.display = "none";
@@ -683,7 +683,7 @@
 		<option value="binding">binding</option>
 		<option value="textfield">textfield</option>
 		<option value="textarea">textarea</option>
-		<option value="selectfield">selectfield</option>
+		<option value="select">select</option>
 	</select>
 </p>
 <p id="optionsParagraph" style="display: block;">
