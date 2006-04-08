@@ -413,10 +413,12 @@
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<td colspan="3">
 			#if($readonly == "")
-			<a href="javascript:validateAndSubmitContentFormThenSubmitToPublish();"><img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentFormThenClose();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
+				#if($contentTypeDefinitionVO.name != "Meta info")
+				<a href="javascript:validateAndSubmitContentFormThenSubmitToPublish();"><img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0"></a>
+				#end
+				<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+				<a href="javascript:validateAndSubmitContentFormThenClose();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+				<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
 			#end
 			<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a></td>
 		</td>
@@ -1074,10 +1076,12 @@
 		
 		<td colspan="3">
 			#if($readonly == "")
-			<a href="javascript:validateAndSubmitContentFormThenSubmitToPublish();"><img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentFormThenClose();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
+				#if($contentTypeDefinitionVO.name != "Meta info")
+				<a href="javascript:validateAndSubmitContentFormThenSubmitToPublish();"><img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0"></a>
+				#end
+				<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+				<a href="javascript:validateAndSubmitContentFormThenClose();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+				<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
 			#end
 			<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a></td>
 		</td>
