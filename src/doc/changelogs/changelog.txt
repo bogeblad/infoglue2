@@ -15,10 +15,11 @@ Thanx to all involved!!
 The InfoGlue Team
 
 
-Abbreviated Changelog from 2.0 Final 
+Abbreviated Changelog from 2.1 Final 
 ---------------------------------------
 
 New features
+- Fixed so structure tree can represent if a page is hidden
 - Added new taglib parameters to hide protected childpages
 - Added new taglibs which lets you have visible links to content wizard and assgn content
 - Enabled a new feature called "content wizard" which lets you crate contents from a component property or from a link on the page.
