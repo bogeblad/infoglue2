@@ -122,6 +122,7 @@ Changes:
 - Added scripts for upgrade to 2.5
 
 Bug fixes
+- Fixed bug in content type definition cache not being updated in deliver
 - Fixed a bug in security parameter handling
 - Fixed bugs with disableEditOnSight and also made languageId a parameter to contentAttribute-tag
 - Fixed visualization bug if long comments contains breaks

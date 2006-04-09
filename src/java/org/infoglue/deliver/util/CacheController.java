@@ -533,6 +533,10 @@ public class CacheController extends Thread
 				{
 					clear = true;
 				}
+				if(cacheName.equalsIgnoreCase("contentTypeDefinitionCache") && entity.indexOf("ContentTypeDefinition") > 0)
+				{
+					clear = true;
+				}
 				if(cacheName.equalsIgnoreCase("ServerNodeProperties"))
 				{
 					clear = true;
