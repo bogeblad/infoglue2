@@ -26,16 +26,18 @@ package org.infoglue.deliver.taglib.management;
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
-public class PrincipalTag extends TemplateControllerTag 
+public class PrincipalPropertyTag extends TemplateControllerTag 
 {
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private String userName;
-	private ContentVersionVO contentVersion;
+	private InfoGluePrincipal principal;
+	private String attributeName;
 	
-    public PrincipalTag()
+    public PrincipalPropertyTag()
     {
         super();
     }
@@ -43,18 +45,18 @@ public class PrincipalTag extends TemplateControllerTag
 	public int doEndTag() throws JspException
     {
 	    if(userName != null && !userName.equals(""))
-	        setResultAttribute(getController().getPrincipal(userName));
-	    else if(contentVersion != null)
 	    {
-	        String versionUserName = contentVersion.getVersionModifier();
-	        if(versionUserName != null && !versionUserName.equals(""))
-	            setResultAttribute(getController().getPrincipal(versionUserName));
-		    else
-		        throw new JspException("ContentVersion had no valid user:" + versionUserName);
+	        setResultAttribute(this.getController().getPrincipalPropertyValue(getController().getPrincipal(userName), attributeName));
+	    }
+	    else if(principal != null)
+	    {
+            setResultAttribute(getController().getPrincipalPropertyValue(principal, attributeName));
 	    }
 	    else
-	        throw new JspException("Must state either userName or contentVersion");
-	    
+	    {
+	    	setResultAttribute(getController().getPrincipalPropertyValue(attributeName));
+	    }
+	    	
 	    return EVAL_PAGE;
     }
 
@@ -62,9 +64,15 @@ public class PrincipalTag extends TemplateControllerTag
     {
         this.userName = evaluateString("principal", "userName", userName);
     }
-    
-    public void setContentVersion(String contentVersionExp) throws JspException
+
+    public void setPrincipal(final String principalString) throws JspException
     {
-        this.contentVersion = (ContentVersionVO)evaluate("principal", "contentVersion", contentVersionExp, ContentVersionVO.class);
+        this.principal = (InfoGluePrincipal)evaluate("principal", "principal", principalString, InfoGluePrincipal.class);
     }
+
+    public void setAttributeName(final String attributeName) throws JspException
+    {
+        this.attributeName = evaluateString("principal", "attributeName", attributeName);
+    }
+
 }

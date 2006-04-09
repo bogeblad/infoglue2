@@ -19,6 +19,7 @@ Abbreviated Changelog from 2.1 Final
 ---------------------------------------
 
 New features
+- Added taglib to get principal properties
 - Fixed so structure tree can represent if a page is hidden
 - Added new taglib parameters to hide protected childpages
 - Added new taglibs which lets you have visible links to content wizard and assgn content
