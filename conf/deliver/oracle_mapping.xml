@@ -80,7 +80,7 @@
       <sql name="value" type="clob" dirty="ignore" />
     </field>
     <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
-      <sql many-key="userPropId" many-table="cmUserPropDigAsset"/>
+      <sql many-key="userPropertiesId" many-table="cmUserPropDigAsset"/>
     </field>
     
   </class>
@@ -154,7 +154,7 @@
       <sql name="value" type="clob" dirty="ignore" />
     </field>
     <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
-      <sql many-key="rolePropId" many-table="cmRolePropDigAsset"/>
+      <sql many-key="rolePropertiesId" many-table="cmRolePropDigAsset"/>
     </field>
     
   </class>
