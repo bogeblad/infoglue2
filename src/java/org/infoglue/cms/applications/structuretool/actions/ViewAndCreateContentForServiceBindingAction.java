@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
@@ -41,6 +44,8 @@ import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
@@ -68,6 +73,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 	private ContentVO contentVO = new ContentVO();
 	private Integer languageId = null;
 	private Integer metaInfoContentTypeDefinitionId = null;
+	private String changeStateToWorking = null;
 	
    	//private ServiceBindingVO serviceBindingVO = null;
    
@@ -194,6 +200,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 
         try
         {
+        	System.out.println("changeStateToWorking:" + changeStateToWorking);
             Language masterLanguage = LanguageController.getController().getMasterLanguage(db, this.repositoryId);
     		this.languageId = masterLanguage.getLanguageId();
 
@@ -201,7 +208,17 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
     		this.metaInfoContentTypeDefinitionId = contentTypeDefinition.getId();
     		
     		SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(this.siteNodeId, db);
-            
+
+    		if(this.changeStateToWorking != null && this.changeStateToWorking.equalsIgnoreCase("true"))
+    		{
+    			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, this.siteNodeId);
+    			if(!siteNodeVersion.getStateId().equals(SiteNodeVersionVO.WORKING_STATE))
+    			{
+	    			List events = new ArrayList();
+		    		SiteNodeStateController.getController().changeState(siteNodeVersion.getId(), SiteNodeVersionVO.WORKING_STATE, "Auto", true, this.getInfoGluePrincipal(), this.siteNodeId, db, events);
+    			}
+    		}
+    		
     		Content metaInfoContent = null;
     		if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().intValue() > -1)
     		    metaInfoContent = ContentController.getContentController().getContentWithId(siteNode.getMetaInfoContentId(), db);
@@ -314,5 +331,15 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 	public Integer getLanguageId()
 	{
 		return this.languageId;
+	}
+
+	public String getChangeStateToWorking()
+	{
+		return changeStateToWorking;
+	}
+
+	public void setChangeStateToWorking(String changeStateToWorking)
+	{
+		this.changeStateToWorking = changeStateToWorking;
 	}
 }

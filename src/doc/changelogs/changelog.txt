@@ -85,6 +85,8 @@ Improvements
 - Made the update site node logic only reindex the latest meta info version
 - Added new kind of notification type
 - Fixed so edit on sight is allways shown no matter what state the page is in. Also made simple view allways have the toolbar.
+  This also demanded a new feature which let's a user choose when he presses "Edit Node Properties" if the page should be set to working
+  so the user can edit the meta info or not.
 - Fixed issues with case sensitivity on linux / mysql and also fixed so the getMatchingContents only returns valid contents
 - Made CAS throw better exception if user was SSO-logged in but not found in the authorization system after that
 - Made it possible to remove properties and also made deliver and cms ACL seperated

@@ -104,8 +104,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	
 	private Map WYSIWYGProperties = null;
 	
-	private String closeOnLoad;
-	private String publishOnLoad;
+	private String closeOnLoad 		= "false";
+	private String publishOnLoad	= "false";
 
 	private boolean concurrentModification = false;
 	private long oldModifiedDateTime = -1;
