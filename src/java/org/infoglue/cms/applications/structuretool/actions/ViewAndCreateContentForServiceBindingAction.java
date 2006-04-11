@@ -200,7 +200,6 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 
         try
         {
-        	System.out.println("changeStateToWorking:" + changeStateToWorking);
             Language masterLanguage = LanguageController.getController().getMasterLanguage(db, this.repositoryId);
     		this.languageId = masterLanguage.getLanguageId();
 

@@ -145,9 +145,10 @@
 	{
 		if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
 			window.opener.parent.frames['main'].location.reload();
-		else
-			window.opener.location.reload();	
-
+		//else
+		//alert("window.opener.location:" + window.opener.location.href);
+		window.opener.location.reload();	
+		
 		window.close();
 	}
 
@@ -213,14 +214,14 @@
 		
 		#if($readonly == "disabled")
 			#if($contentTypeDefinitionVO.name == "Meta info" && $closeOnLoad != true)
-				alert("$ui.getString("tool.contenttool.readOnlyFollowingSiteNodeVersionLabel") A $closeOnLoad ");
+				alert("$ui.getString("tool.contenttool.readOnlyFollowingSiteNodeVersionLabel")");
 			#else if($closeOnLoad != true)
-				alert("$ui.getString("tool.contenttool.readOnlyLabel") B $closeOnLoad");
+				alert("$ui.getString("tool.contenttool.readOnlyLabel")");
 			#end
 		#end
 		
 		#if($concurrentModification && $closeOnLoad != true)
-			alert("$ui.getString("tool.contenttool.concurrentModificationLabel") C $closeOnLoad");
+			alert("$ui.getString("tool.contenttool.concurrentModificationLabel")");
 		#end
 		
 	}	
@@ -241,19 +242,6 @@
 		window.location.href = url;
 	}
 	
-	//*******************************************
-	//This method refreshes the caller
-	//*******************************************
-
-	function refreshCaller()
-	{
-		if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
-			window.opener.parent.frames['main'].location.reload();
-		else
-			window.opener.location.reload();	
-
-		window.close();
-	}
 	
 	//*******************************************
 	// This is a timer that keeps track of the number of minutes the user has been on the page without saving.

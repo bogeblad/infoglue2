@@ -374,6 +374,21 @@ function openPopup(url, name, details)
 // This function opens up a new location in a 
 // restriced popup 
 //-----------------------------------------------
+function openPopupWithOptionalParameter(url, name, details, question, parameter)
+{
+	if(confirm(question))
+		newWin=window.open(url + "&" + parameter, name, details);
+	else
+		newWin=window.open(url, name, details);
+	
+	newWin.focus();
+}
+
+
+//-----------------------------------------------
+// This function opens up a new location in a 
+// restriced popup 
+//-----------------------------------------------
 function openDatePopup(event, url, name)
 {
 	setDirty(); // TODO: Assume that change will be made, improve later
