@@ -110,6 +110,7 @@ Improvements
 - Fixed so the edit on sight scripts are referenced fully
 - Added disable languages to export/import
 - Fixed so one can see when and by who when in submit to publish screen 
+- Added modifyer to list of items up for publication
 
 Changes:
 - Success url not needed default in web.xml under the cms-application - removed it.

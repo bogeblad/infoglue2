@@ -75,7 +75,7 @@ function ruSure(txt, url)
 #set($lvBorder = 0)
 #set($lvConstraint = -1)
 ##lvHead(["Name (comment)","Modified", "&nbsp;"] "Publish items" "" "" "")
-#lvHead(["Name (comment)","Modified"] "Publish items" "" "" "")
+#lvHead(["Name (comment)","Modified", "User"] "Publish items" "" "" "")
 
 #hiddenField("repositoryId" $repositoryId)
 
@@ -119,7 +119,7 @@ function ruSure(txt, url)
 	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
 	##set( $row = ["$icon $publicationEvent.name ($description)","$modifiedDate", "$denyUrlStart$deny$denyUrlEnd"] )
 	#set($span = "<span onmouseover='return overlib(${fnutt}${formatter.cleanForJavascriptStrings($publicationEvent.description)}${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'>($description)</span>")
-	#set( $row = ["$icon $publicationEvent.name $span","$modifiedDate"] )
+	#set( $row = ["$icon $publicationEvent.name $span", "$modifiedDate", "$publicationEvent.creator"] )
 	#set($cnt = $cnt + 1)
 
 	#lvAddRow($row $cnt $cId)
