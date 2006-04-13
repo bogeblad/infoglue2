@@ -123,6 +123,7 @@ Changes:
 - Changed language derivation so a browser language is not choosen if the meta info is not there for that page
 - Made it default so the working version of a deliver instance returns any error message as text in the site - for debug puposes. Can be turned off with the paratmeter disableTemplateDebug=true
 - Added scripts for upgrade to 2.5
+- Added FAQ entry of questios around oracle 10.2 XE
 
 Bug fixes
 - Fixed mapping bug on user/role properties mapping in deliver on oracle
