@@ -189,32 +189,35 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 			while(childrenVOListIterator.hasNext())
 			{
 				SiteNodeVO siteNodeVO = (SiteNodeVO)childrenVOListIterator.next();
-			    Content content = ContentController.getContentController().getContentWithId(siteNodeVO.getMetaInfoContentId(), db);
-	
-			    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(content.getValueObject().getRepositoryId(), db);
-			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), masterLanguage.getId(), db);
-				
-				if(sortProperty != null)
+				if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().intValue() > -1)
 				{
-					String[] sortOrders = sortProperty.split(",");
-					for(int i=sortOrders.length - 1; i > -1; i--)
+					Content content = ContentController.getContentController().getContentWithId(siteNodeVO.getMetaInfoContentId(), db);
+		
+				    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(content.getValueObject().getRepositoryId(), db);
+				    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), masterLanguage.getId(), db);
+					
+					if(sortProperty != null)
 					{
-						String sortOrderProperty = sortOrders[i].trim();
-						//System.out.println("sortOrderProperty:" + sortOrderProperty);
-						
-						if(contentVersion != null && sortOrderProperty.startsWith("extra:"))
+						String[] sortOrders = sortProperty.split(",");
+						for(int i=sortOrders.length - 1; i > -1; i--)
 						{
-							sortOrderProperty = sortOrderProperty.substring(6);
-						    String propertyValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), sortOrderProperty, false);
-						    siteNodeVO.getExtraProperties().put(sortOrderProperty, propertyValue);
-
-							if(isHiddenProperty != null && !isHiddenProperty.equals(""))
+							String sortOrderProperty = sortOrders[i].trim();
+							//System.out.println("sortOrderProperty:" + sortOrderProperty);
+							
+							if(contentVersion != null && sortOrderProperty.startsWith("extra:"))
 							{
-							    String hiddenProperty = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), isHiddenProperty, false);
-							    if(hiddenProperty == null || hiddenProperty.equals(""))
-							    	hiddenProperty = "false";
-							    
-							    siteNodeVO.getExtraProperties().put("isHidden", hiddenProperty);
+								sortOrderProperty = sortOrderProperty.substring(6);
+							    String propertyValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), sortOrderProperty, false);
+							    siteNodeVO.getExtraProperties().put(sortOrderProperty, propertyValue);
+	
+								if(isHiddenProperty != null && !isHiddenProperty.equals(""))
+								{
+								    String hiddenProperty = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), isHiddenProperty, false);
+								    if(hiddenProperty == null || hiddenProperty.equals(""))
+								    	hiddenProperty = "false";
+								    
+								    siteNodeVO.getExtraProperties().put("isHidden", hiddenProperty);
+								}
 							}
 						}
 					}
