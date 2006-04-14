@@ -689,6 +689,7 @@ public class ContentController extends BaseController
 	/**
 	 * Returns all Contents having the specified ContentTypeDefintion.
 	 */
+	
 	public List getContentVOWithContentTypeDefinition(String contentTypeDefinitionName) throws SystemException
 	{
         Database db = CastorDatabaseService.getDatabase();
@@ -706,7 +707,7 @@ public class ContentController extends BaseController
             throw new SystemException(e.getMessage());
         }
 	}
-
+	
 	/**
 	 * Returns all Contents having the specified ContentTypeDefintion.
 	 */
@@ -717,7 +718,7 @@ public class ContentController extends BaseController
 
 		List argumentList = new ArrayList();
 		HashMap argument = new HashMap();
-		argument.put("contentTypeDefinitionName", "HTMLTemplate");
+		argument.put("contentTypeDefinitionName", contentTypeDefinitionName);
 		argumentList.add(argument);
 		arguments.put("arguments", argumentList);
         try 
@@ -733,7 +734,6 @@ public class ContentController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 	}
-	
 	
 	/**
 	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
