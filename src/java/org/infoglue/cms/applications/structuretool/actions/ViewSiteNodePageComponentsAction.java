@@ -416,7 +416,14 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			if(this.direction.intValue() == 0) //Up
 			{
 			    Node previousNode = component.getPreviousSibling();
-				Element element = ((Element)previousNode);
+		        
+			    while(previousNode != null && previousNode.getNodeType() != Node.ELEMENT_NODE)
+		        {
+				    previousNode = previousNode.getPreviousSibling();
+		        	break;
+		        }
+			    
+			    Element element = ((Element)previousNode);
 				while(element != null && !element.getAttribute("name").equalsIgnoreCase(name))
 			    {
 			        previousNode = previousNode.getPreviousSibling();
@@ -433,6 +440,13 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			else if(this.direction.intValue() == 1) //Down
 			{
 			    Node nextNode = component.getNextSibling();
+			    
+		        while(nextNode != null && nextNode.getNodeType() != Node.ELEMENT_NODE)
+		        {
+		        	nextNode = nextNode.getNextSibling();
+		        	break;
+		        }
+			    
 			    Element element = ((Element)nextNode);
 				while(element != null && !element.getAttribute("name").equalsIgnoreCase(name))
 			    {

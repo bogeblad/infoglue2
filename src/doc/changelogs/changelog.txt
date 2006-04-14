@@ -163,7 +163,7 @@ Bug fixes
 - Fixed so &amp; is not destoyed in shortcut xml
 - Fixed bug in user filtering feature
 - Fixed so getContentVOWithContentTypeDefinition really uses the inparameter - before it was hardcoded to HTMLTemplate content type
-
+- Fixed bug with formatted xml and moving of components
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.1 Final
