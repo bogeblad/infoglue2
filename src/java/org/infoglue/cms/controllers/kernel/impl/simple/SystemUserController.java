@@ -249,7 +249,7 @@ public class SystemUserController extends BaseController
 		{
 			beginTransaction(db);
 								
-			List users = getFilteredSystemUserList(firstName, lastName, userName, email, roleNames, db);
+			filteredList = getFilteredSystemUserList(firstName, lastName, userName, email, roleNames, db);
 			
 			commitTransaction(db);
 		} 
