@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.HashMap;
@@ -52,6 +53,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 /**
  * Renders images and saves them.
  * @author Per Jonsson - per.jonsson@it-huset.se
+ * 
+ * @version 1.1 fixed reading properties from file, some optimizations and added a imageFileFormat,
  */
 public class AdvancedImageRenderer
 {
@@ -59,41 +62,62 @@ public class AdvancedImageRenderer
 
     private final static Logger logger = Logger.getLogger( AdvancedImageRenderer.class.getName() );
 
+    // type of image, colordepth etc.
     private int imageType = BufferedImage.TYPE_4BYTE_ABGR;
 
-    private BufferedImage templateImage = null;
+    // An template image to get the right rendering attributes for the font renderer
+    // don't change this in runtime. 
+    private static BufferedImage templateImage = null;
 
-    private BufferedImage renderedImage;
+    // the rendered image
+    private BufferedImage renderedImage = null;
 
-    private String fontName = "Dialog"; // "Onsans Light";
+    // Fontname
+    private String fontName = "Dialog";
 
+    // style of font
     private int fontStyle = Font.PLAIN;
 
+    // size of font
     private int fontSize = 18;
 
+    // font to render
     private Font font = null;
 
+    // font color
     private Color fgColor = new Color( 0, 0, 0, 255 ); // black
 
+    //background color
     private Color bgColor = new Color( 255, 255, 255, 255 ); // white
 
+    // width of the rendered image, maxwidth if used with trimedges
     private int renderWidth = 200;
 
+    // the textalign
     private int align = 0; // 0 = left, 1 = right , 2 = center
 
+    // top padding in pixels
     private int padTop = 4;
 
+    // bottom padding in pixels
     private int padBottom = 4;
 
+    // left padding in pixels
     private int padLeft = 4;
 
+    // right padding in pixels
     private int padRight = 4;
 
+    // maximum number of textrows 
     private int maxRows = 20;
+    
+    // default imageFormatName
+    private String imageFormatName = "png";
 
     // 0 = notrim, 1 = left, 2 = right, 3 = left and right
     private int trimEdges = 0;
 
+    // an url to for the background
     private String backgroundImageUrl = null;
 
     // just for caching
@@ -102,9 +126,14 @@ public class AdvancedImageRenderer
     // 0 = no, 1 = horizontal, 2 = vertical, 3 = both
     private int tileBackgroundImage = 0;
 
-    private Map renderHints = new HashMap();
+    
+    private static Map renderHints = null;
 
-    private Map methodMap = new HashMap();
+    // cached map of the methods
+    private static Map methodMap = null;
+    
+    // if config is read from propertyfile these are stored here. 
+    private static Map defaultConfigMap = new HashMap();
 
     /**
      * Creates a new instance of tne NewImageRenderer and reads in properties
@@ -114,53 +143,52 @@ public class AdvancedImageRenderer
     public AdvancedImageRenderer()
     {
         // precalc some setters for faster seach
-        Method[] methods = this.getClass().getDeclaredMethods();
-        String name = null;
-        for ( int i = 0; i < methods.length; i++ )
+    	if ( methodMap == null )
+    	{
+    		methodMap = new HashMap();
+	        Method[] methods = this.getClass().getDeclaredMethods();
+	        String name = null;
+	        for ( int i = 0; i < methods.length; i++ )
+	        {
+	            name = methods[ i ].getName().toLowerCase();
+	            if ( name.startsWith( "set" ) && methods[ i ].getParameterTypes().length == 1 )
+	            {
+	            	name = name.substring( "set".length() );
+	                methodMap.put( name , methods[ i ] );
+	                // Add the default config from properties to the defaultConfig map if exists.
+	                String propVal = CmsPropertyHandler.getProperty( "rendertext." + name );
+	                if ( propVal != null && propVal.trim().length() > 0 )
+	                {
+	                    //this.setAttribute( name, propVal.toLowerCase() );
+	                	defaultConfigMap.put( name, propVal.toLowerCase() );
+	                }
+	            }
+	        }
+	        logger.debug( defaultConfigMap );
+    	}
+        if ( renderHints == null )
         {
-            name = methods[ i ].getName().toLowerCase();
-            if ( name.startsWith( "set" ) && methods[ i ].getParameterTypes().length == 1 )
-            {
-                methodMap.put( name.substring( "set".length() ), methods[ i ] );
-                // don't know if properties should be here?
-                String propVal = CmsPropertyHandler.getProperty( "rendertext." + name );
-                if ( propVal != null && propVal.trim().length() > 0 )
-                {
-                    this.setAttribute( name, propVal.toLowerCase() );
-                }
-            }
+        	renderHints = new HashMap();
+	        renderHints.put( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
+	        renderHints.put( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY );
+	        renderHints.put( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+	        renderHints.put( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
+	        renderHints.put( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY );
+	        renderHints.put( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
         }
-        logger.debug( methodMap );
-        renderHints.put( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-        renderHints.put( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY );
-        renderHints.put( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        renderHints.put( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
-        renderHints.put( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY );
-        renderHints.put( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
     }
 
-    /*
-     * public static void main( String[] args ) throws Exception {
-     * NewImageRenderer ir = new NewImageRenderer(); ir.setAttribute(
-     * "fOntName", "Monospaced" ); ir.setAttribute( "align", "3" );
-     * System.out.println( ir.getFontName() ); ir.backgroundImageURL =
-     * "http://forums.fedoraforum.org/image.php?u=4602&dateline=1102192269"; //
-     * "http://www.laetus.se/images/C64_z600.png"; ir.setSize( 400, 400 );
-     * JFrame jf = new JFrame( "Test" ); jf.setSize( 400, 400 );
-     * jf.getContentPane().add( ir ); jf.validate(); jf.setEnabled( true );
-     * jf.setVisible( true ); // ir.renderImage("Tjena hej, hur ser detta ut?",
-     * 300, font, fg, bg); } @Override public void paint( Graphics g ) {
-     * super.paint( g ); BufferedImage image = renderImage( "Tjena hej, hur ser
-     * detta ut? Jag klistrar in lite mer text här och ser hur resultatet blir
-     * ,Inte vet jag men jag skulle vilja att det wrappa!" ); g.drawImage(
-     * horizontalTrim(), 2, 2, this ); }
+    /**
+     * Write the rendered image to a file. 
+     * @param file the file of the image to create.
+     * @return true if success, false if error
      */
     public boolean writeImage( File file )
     {
         boolean success = false;
         try
         {
-            success = ImageIO.write( renderedImage, "PNG", file );
+            success = ImageIO.write( this.renderedImage, this.imageFormatName , file );
         }
         catch ( Exception e )
         {
@@ -188,6 +216,13 @@ public class AdvancedImageRenderer
      */
     public BufferedImage renderImage( AttributedString attributedString, Map renderAttributes )
     {
+    	// Copy the defaultconfig and merge with the supplied render attributes. 
+    	Map tempMap = new HashMap( defaultConfigMap );
+    	if ( renderAttributes != null )
+    	{
+    		tempMap.putAll( renderAttributes );
+    	}
+    	renderAttributes = tempMap;
         if ( renderAttributes != null && renderAttributes.size() > 0 )
         {
             Iterator keyIter = renderAttributes.entrySet().iterator();
@@ -281,6 +316,9 @@ public class AdvancedImageRenderer
         return renderedImage;
     }
 
+    /**
+     * Checks the attributes and set the correct background.
+     */
     private void checkAndSetBackground()
     {
         Graphics2D img2d = renderedImage.createGraphics();
@@ -293,7 +331,11 @@ public class AdvancedImageRenderer
             {
                 if ( backgroundImage == null )
                 {
-                    InputStream is = new URL( backgroundImageUrl ).openStream();
+                    URLConnection connection = new URL( backgroundImageUrl ).openConnection();
+                    // Hmm... Only 1.5 these below. 
+                    //connection.setConnectTimeout( 1000 * 5 ); // set the timeout to 5 seconds.
+                    //connection.setReadTimeout( 1000 * 5 );	// set the timeout to 5 seconds.
+                    InputStream is = connection.getInputStream();
                     backgroundImage = ImageIO.read( is );
                     is.close();
                 }
@@ -322,9 +364,7 @@ public class AdvancedImageRenderer
                         int xnum = (int)( renderedImage.getWidth() / backgroundImage.getWidth() + 0.5 ) + 1;
                         while ( xnum-- >= 0 )
                         {
-                            img2d.drawImage( backgroundImage, backgroundImage.getWidth() * xnum, backgroundImage
-                                    .getHeight()
-                                    * ynum, null );
+                            img2d.drawImage( backgroundImage, backgroundImage.getWidth() * xnum, backgroundImage.getHeight() * ynum, null );
                         }
                     }
                 }
@@ -341,15 +381,20 @@ public class AdvancedImageRenderer
         }
     }
 
+    /**
+     * Trims the edges of the image.
+     * @return a new trimmed image from the original. 
+     */
     private BufferedImage horizontalTrim()
     {
         if ( trimEdges == 0 )
         {
-            // do nothing
             return renderedImage;
         }
+
         int imgHeight = renderedImage.getHeight();
         int imgWidth = renderedImage.getWidth();
+        
         int bgRGB = bgColor.getRGB(); // get the background color
 
         // check and trim left side
@@ -417,14 +462,15 @@ public class AdvancedImageRenderer
 
     /**
      * Using reflection to set the fields corresponing to the attribute. tries
-     * to convert to the right object. The attroibute is caseinsesitive. <br>
+     * to convert to the right object. The attribute is caseinsesitive. <br>
      * If it's a color value it has to be a string in the format
-     * "252,123,133,255" where they are "R,G,B,A" values from 0-255.
+     * "252:123:133:255" where they are "R:G:B:A" values from 0-255.
      * @param attribute the field/property to set
      * @param value the value to set.
      */
     public void setAttribute( CharSequence attribute, CharSequence value )
     {
+    	logger.debug("set attribute: " + attribute + " = " + value );
         Method method = (Method)methodMap.get( attribute );
         if ( method != null )
         {
@@ -471,6 +517,10 @@ public class AdvancedImageRenderer
             {
                 logger.warn( "Error in setting properties: " + attribute + " = " + value, e );
             }
+        }
+        else
+        {
+        	logger.warn( "No attribut, named: " + attribute + " found, value =" + value );
         }
     }
 
@@ -644,5 +694,22 @@ public class AdvancedImageRenderer
     public void setTrimEdges( int trimEdges )
     {
         this.trimEdges = trimEdges;
+    }
+
+    /**
+     * @param imageFormatName the format of the image. ie ( PNG, GIF);
+     */
+    public void setImageFormatName( String imageFormatName )
+    {
+        this.imageFormatName = imageFormatName;
+    }
+    
+    /**
+     * Get the image format name, default is "png" if none is set. 
+     * @return a string with the image format name used by the renderer.
+     */
+    public String getImageFormatName()
+    {
+    	return this.imageFormatName;
     }
 }
