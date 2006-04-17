@@ -1923,7 +1923,7 @@ public class ComponentLogic
      * taken from the bound component content of the property. The content is
      * iterated and extract all matching properties. ie. fontName, fontsize etc.
      * @param fontConfigPropertyName name of the bound component with font render
-     *            properties.
+     *            properties. If null property is ignored.
      * @param text the text to render.
      * @return an asseturl to the rendered text or an empty string if something
      *         went wrong
@@ -1939,7 +1939,7 @@ public class ComponentLogic
      * taken from the bound component content of the property. The content is
      * iterated and extract all matching properties. ie. fontName, fontsize etc.
      * @param propertyName name of the bound component with font render
-     *            properties.
+     *            properties. If null property is ignored.
      * @param text the text to render
      * @param renderAttributes render attributes in a commaseparated string ie.
      *            "fontname=Arial,fontsize=12" to override the bound content
@@ -1958,7 +1958,7 @@ public class ComponentLogic
      * taken from the bound component content of the property. The content is
      * iterated and extract all matching properties. ie. fontName, fontsize etc.
      * @param propertyName name of the bound component with font render
-     *            properties.
+     *            properties. If null property is ignored.
      * @param text the text to render
      * @param renderAttributes render attributes in a commaseparated string ie.
      *            "fontname=Arial,fontsize=12" to override the bound content
@@ -1982,6 +1982,10 @@ public class ComponentLogic
                     assetUrl = templateController.getRenderedTextUrl( contentId, text, renderAttributes );
                 }
             }
+            else
+            {
+            	assetUrl = templateController.getRenderedTextUrl( text, renderAttributes );
+            }
 
         }
         catch ( Exception e )
@@ -1991,5 +1995,4 @@ public class ComponentLogic
 
         return assetUrl;
     }
-    
 }

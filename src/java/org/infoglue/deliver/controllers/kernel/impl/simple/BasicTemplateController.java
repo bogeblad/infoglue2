@@ -2801,8 +2801,6 @@ public class BasicTemplateController implements TemplateController
             uniqueId.append( "_" + Math.abs(contentTypeDefinitionVO.getSchemaValue().hashCode() ) );
             uniqueId.append( "_" + ( renderAttributes != null ? Math.abs( renderAttributes.hashCode() ) : 4711 ) );
 
-            String fileName = uniqueId + ".png";
-
             AdvancedImageRenderer imageRenderer = new AdvancedImageRenderer();
             // set up the renderer
             while ( attrIterator.hasNext() )
@@ -2817,12 +2815,14 @@ public class BasicTemplateController implements TemplateController
             }
             // render the image
             imageRenderer.renderImage( text, renderAttributes );
+            
+            String fileName = uniqueId + "." + imageRenderer.getImageFormatName();	// default is png
             // write the result
             assetUrl = writeRenderedImage( imageRenderer, fileName );
         }
         catch ( Exception e )
         {
-            logger.error( "An error occurred trying to getRenderedTextUrl some text:" + e.getMessage(), e );
+            logger.error( "An error occurred trying to getRenderedTextUrl(), text = " + text + ", on siteNodeId = " + this.siteNodeId + " :" + e.getMessage(), e );
         }
 
         return assetUrl;
@@ -2853,17 +2853,18 @@ public class BasicTemplateController implements TemplateController
             uniqueId.append( "_" + Math.abs( text.hashCode() ) );
             uniqueId.append( "_" + ( renderAttributes != null ? Math.abs( renderAttributes.hashCode() ) : 4711 ) );
 
-            String fileName = uniqueId + ".png";
-
             AdvancedImageRenderer imageRenderer = new AdvancedImageRenderer();
             // render the image
             imageRenderer.renderImage( text, renderAttributes );
+
+            String fileName = uniqueId + "." + imageRenderer.getImageFormatName();	// default is png
+
             // write the result
             assetUrl = writeRenderedImage( imageRenderer, fileName );
         }
         catch ( Exception e )
         {
-            logger.error( "An error occurred trying to getRenderedTextUrl some text:" + e.getMessage(), e );
+            logger.error( "An error occurred trying to getRenderedTextUrl(), text = " + text + ", on siteNodeId = " + this.siteNodeId + " :" + e.getMessage(), e );
         }
 
         return assetUrl;
