@@ -671,7 +671,6 @@ public class AccessRightController extends BaseController
 		        db.remove(accessRightUser);
 		    }
 		    
-		    
 			int interceptionPointIndex = 0;
 			String interceptionPointIdString = request.getParameter(interceptionPointIndex + "_InterceptionPointId");
 			while(interceptionPointIdString != null)
@@ -682,7 +681,7 @@ public class AccessRightController extends BaseController
 			     
 				if(hasAccess != null)
 				{
-				    List accessRights = getAccessRightListForEntity(new Integer(interceptionPointIdString), parameters, db);
+					List accessRights = getAccessRightListForEntity(new Integer(interceptionPointIdString), parameters, db);
 				    if(accessRights == null || accessRights.size() == 0)
 				    {
 						AccessRightVO accessRightVO = new AccessRightVO();
@@ -696,6 +695,8 @@ public class AccessRightController extends BaseController
 				        accessRight = (AccessRight)accessRights.get(0);
 				    }
 				    
+					System.out.println("FFFFFF");
+
 					if(userName != null && accessRight != null)
 					{
 					    AccessRightUserVO accessRightUserVO = new AccessRightUserVO();
@@ -1357,7 +1358,7 @@ public class AccessRightController extends BaseController
 			
 			if(parameters == null || parameters.length() == 0)
 			{
-				oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND (is_undefined(aru.accessRight.parameters) OR aru.accessRight.parameters = $3) AND aru.userName = $4");
+				oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND (is_undefined(aru.accessRight.parameters) OR aru.accessRight.parameters = $2) AND aru.userName = $3");
 				oql.bind(interceptionPointCategory);
 				oql.bind(parameters);
 				oql.bind(userName);
@@ -1369,7 +1370,7 @@ public class AccessRightController extends BaseController
 				oql.bind(parameters);
 				oql.bind(userName);
 			}
-			
+
 			QueryResults results = oql.execute();
 
 			while (results.hasMore()) 
@@ -1380,6 +1381,7 @@ public class AccessRightController extends BaseController
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
 		}
 		

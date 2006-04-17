@@ -267,10 +267,10 @@
 			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
 				<td align="center" nowrap>
 					#set($checked = "")
-					#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
-						#set($checked = "checked")
-						#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
-					#end 
+					##if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
+						##set($checked = "checked")
+						##set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
+					##end 
 					
 					<input type="hidden" name="${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
 					<input type="hidden" name="interceptionPointId" value="$interceptionPointVO.id">
