@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <project name="infoglue" default="clean-deploy" basedir=".">
-
+	<!-- Use local.build.properties to set your own path to override the build.properties -->
+	<property file="local.build.properties" />
 	<property file="build.properties"/>
 	<property name="project.fullname" value="InfoGlue content management system"/>
 
