@@ -3,8 +3,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head> 
-	<meta HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1980 1:00:00 GMT">
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+
 	<title>Menus</title>
 
 	<script type="text/javascript" language="JavaScript">

@@ -38,7 +38,7 @@ a.branch, a.branch:hover, a.branch:active {
 }
 
 .tree-item a:hover {
-	ccolor: green;
+	/* ccolor: green; */
 	text-decoration: underline;
 }
 

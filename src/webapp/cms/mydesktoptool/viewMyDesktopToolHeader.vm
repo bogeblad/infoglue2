@@ -5,7 +5,10 @@
 <html>
 <head>
 	<title>Header</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
 	
 	<script type="text/javascript" language="Javascript">
 
@@ -17,7 +20,7 @@
 		}
 		function reloadMenu(selectBox)
 		{
-			repositoryId = selectBox.value;
+			var repositoryId = selectBox.value;
 			if(repositoryId != "")
 			{
 				showWorking();
@@ -33,21 +36,19 @@
 </head>
 
 <body class="mydesktoptool">
-
+<form name="selectbox" method="post" action="">
 <table border="0" class="mydesktoptool" cellspacing="0" cellpadding="0" width="100%" height="100%">
-<form name="selectbox" method="POST" action="">
 <tr>
-	<td colspan="9"><img src="images/trans.gif" width="1" height="10"></td>
+	<td colspan="9"><img src="images/trans.gif" width="1" height="10"/></td>
 </tr>
 <tr>
-	<td class="toolheader" colspan="9" bgcolor="#DFDA5E"><img src="images/trans.gif" width="1" height="19"></a>
+	<td class="toolheader" colspan="9" bgcolor="#DFDA5E"><img src="images/trans.gif" width="1" height="19"/></a>
 </tr>
-
 <tr>
-	<td colspan="9"><img src="images/trans.gif" width="1" height="10"></td>
+	<td colspan="9"><img src="images/trans.gif" width="1" height="10"/></td>
 </tr>
-</form>
 </table>
+</form>
 
 </body>
 </html>

@@ -17,16 +17,16 @@ td {
 <!-- ************* -->
 <!-- Links -->
 <!-- ************* -->
-A 
+a 
 {
   text-decoration:none;
-  COLOR: 0022AA;
+  color: #0022AA;
 }
-A:hover
+a:hover
 {
     text-decoration:underline;
 }
-A:active
+a:active
 {
 	font: bold;
 }
