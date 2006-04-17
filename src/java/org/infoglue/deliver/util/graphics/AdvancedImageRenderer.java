@@ -247,6 +247,12 @@ public class AdvancedImageRenderer
         // renderWidth = getSize().width; // temp when testing
 
         float wrappingWidth = renderWidth - ( padLeft + padRight );
+        
+        if ( wrappingWidth < 0 )
+        {
+        	throw new IllegalArgumentException( "The renderwidth (" + renderWidth + ") is lesser than the total padding ("
+        			+ ( padLeft + padRight ) + "), modify your settings.");
+        }
 
         Graphics2D g2d = templateImage.createGraphics();
         g2d.setRenderingHints( renderHints );
