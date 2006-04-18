@@ -144,4 +144,12 @@ public class ContentVersionParameterTag extends AbstractTag implements ContentVe
 	    this.contentVersion.put("languageId", evaluateInteger("remoteContentService", "languageId", languageId));
 	}
 
+	/**
+	 * 
+	 */
+	public void setStateId(final String stateId) throws JspException
+	{
+	    this.contentVersion.put("stateId", evaluateInteger("remoteContentService", "stateId", stateId));
+	}
+
 }

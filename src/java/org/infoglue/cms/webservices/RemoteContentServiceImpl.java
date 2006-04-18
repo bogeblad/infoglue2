@@ -36,13 +36,16 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -185,8 +188,10 @@ public class RemoteContentServiceImpl
 	                Map contentVersion = (Map)contentVersionIterator.next();
 	                
 	                Integer languageId = (Integer)contentVersion.get("languageId");
+	                Integer stateId = (Integer)contentVersion.get("stateId");
 	                
 	    	        logger.info("languageId:" + languageId);
+	    	        logger.info("stateId:" + stateId);
 
 	                ContentVersionVO contentVersionVO = new ContentVersionVO();
 	                contentVersionVO.setLanguageId(languageId);
@@ -240,6 +245,23 @@ public class RemoteContentServiceImpl
 		
 			    	        DigitalAssetController.create(newAsset, is, newContentVersionId);
 			    	    }	 
+	    	        }
+	    	        
+	    	        //Should we also change state on newly created content version?
+	    	        if(stateId != null && !stateId.equals(ContentVersionVO.WORKING_STATE))
+	    	        {
+	    	        	List events = new ArrayList();
+	    	    		ContentStateController.changeState(newContentVersionId, stateId, "Remote update from deliver", false, this.principal, newContentVO.getId(), events);
+	    	        
+	    	    		if(stateId.equals(ContentVersionVO.PUBLISHED_STATE))
+	    	    		{
+	    	    		    PublicationVO publicationVO = new PublicationVO();
+	    	    		    publicationVO.setName("Direct publication by " + this.principal.getName());
+	    	    		    publicationVO.setDescription("Direct publication from deliver");
+	    	    		    publicationVO.setRepositoryId(repositoryId);
+	    	    		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, false, this.principal);
+	    	    		}
+
 	    	        }
 	            }
 	            
