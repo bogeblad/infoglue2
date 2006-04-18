@@ -436,6 +436,24 @@ public class RemoteContentServiceImpl
 	    	    }
             }
             
+	        //Should we also change state on newly created content version?
+	        if(stateId != null && !stateId.equals(ContentVersionVO.WORKING_STATE))
+	        {
+	        	List events = new ArrayList();
+	    		ContentStateController.changeState(contentVersionVO.getId(), stateId, "Remote update from deliver", false, this.principal, contentVersionVO.getContentId(), events);
+	        
+	    		if(stateId.equals(ContentVersionVO.PUBLISHED_STATE))
+	    		{
+	    		    PublicationVO publicationVO = new PublicationVO();
+	    		    publicationVO.setName("Direct publication by " + this.principal.getName());
+	    		    publicationVO.setDescription("Direct publication from deliver");
+	    		    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId());
+	    		    publicationVO.setRepositoryId(contentVO.getRepositoryId());
+	    		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, false, this.principal);
+	    		}
+
+	        }
+            
 	        logger.info("Done with contentVersion..");
 
         }
