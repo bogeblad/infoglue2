@@ -447,6 +447,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	                contentVersionValue = contentVersionValue.replaceAll("contentId=\"" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>" + oldContentId + "</id>", "entity='Content'><id>" + newContentId + "</id>");
+	                contentVersionValue = contentVersionValue.replaceAll("<id>" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
 	            }
 	            
 	            Iterator siteNodeIdMapIterator = siteNodeIdMap.keySet().iterator();
