@@ -298,8 +298,8 @@
 		<tr>
 			<td>
 				<a href="javascript:addQualifyer();"><img src="images/addButtonBlue.gif" border="0"></a>
-				<a href="javascript:window.close();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
 				<a href="javascript:submitBinding();"><img src="$ui.getString("images.structuretool.buttons.save")" border="0"></a>
+				<a href="javascript:window.close();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
 			</td>
 		</tr>		
 		<tr>

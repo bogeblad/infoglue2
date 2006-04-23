@@ -351,8 +351,8 @@
 		<tr>
 			<td>
 				<a href="javascript:addQualifyer();"><img src="images/addButtonBlue.gif" border="0"></a>
-				<a href="javascript:window.opener.location.reload();window.close();"><img src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" border="0"></a>
 				<a href="javascript:submitQualifyer();"><img src="$ui.getString("images.contenttool.buttons.save")" border="0"></a>
+				<a href="javascript:window.opener.location.reload();window.close();"><img src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" border="0"></a>
 			</td>
 		</tr>		
 		<tr>
