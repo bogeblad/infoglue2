@@ -1393,8 +1393,8 @@ public class ContentDeliveryController extends BaseDeliveryController
         	Content content = (Content)results.next();
     
         	if(searchRecursive && currentLevel < maximumNumberOfLevels)
-	        	getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db, includeFolders, deliveryContext);
-    
+        		getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, maximumNumberOfLevels, db, includeFolders, deliveryContext);
+
     		if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
     		{
    				contents.add(content);
@@ -1422,11 +1422,15 @@ public class ContentDeliveryController extends BaseDeliveryController
     
 			if(searchRecursive && currentLevel < maximumNumberOfLevels)
 				getChildContents(infoGluePrincipal, contents, content.getContentId(), languageId, useLanguageFallback, currentLevel + 1, searchRecursive, includeFolders, maximumNumberOfLevels, db, deliveryContext);
-    
+
     		if(content.getIsBranch().booleanValue() && includeFolders && isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
+    		{
 				contents.add(content);
-    		else if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
+    		}
+			else if(isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
+			{
 				contents.add(content);
+			}
 		}
 	}
 	
@@ -1499,7 +1503,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		    return false;
 		}
 			    
-		if(!includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
+		if(includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
 		{
 			isValidContent = true; 
 		}
@@ -1658,8 +1662,22 @@ public class ContentDeliveryController extends BaseDeliveryController
 					{
 						Content sortedContent = (Content)sortedListIterator.next();
 						
+						//Here we sort on name if the name on a container is wanted 
+						if(sortAttributeName.equalsIgnoreCase("name"))
+						{
+							String name       = content.getName();
+							String sortedName = sortedContent.getName();
+							if(name != null && sortedName != null && sortOrder.equalsIgnoreCase("asc") && name.compareTo(sortedName) < 0)
+					    	{
+					    		break;
+					    	}
+					    	else if(name != null && sortedName != null && sortOrder.equalsIgnoreCase("desc") && name.compareTo(sortedName) > 0)
+					    	{
+					    		break;
+					    	}
+						}
 						//Here we sort on date if the dates on a container is wanted 
-						if(sortAttributeName.equalsIgnoreCase("publishDateTime"))
+						else if(sortAttributeName.equalsIgnoreCase("publishDateTime"))
 						{
 							Date date       = content.getPublishDateTime();
 							Date sortedDate = sortedContent.getPublishDateTime();
@@ -1671,7 +1689,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 					    	{
 					    		break;
 					    	}
-					    	
 						}
 						else if(sortAttributeName.equalsIgnoreCase("expireDateTime"))
 						{
@@ -1685,7 +1702,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 					    	{
 					    		break;
 					    	}
-					    	
 						}
 						else
 						{
