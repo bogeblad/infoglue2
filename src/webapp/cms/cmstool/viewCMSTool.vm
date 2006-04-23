@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 
 <html>
 <head>
 	<title>InfoGlue Administrative utilities</title>
-	<link rel="icon" href="images/icons/ig-16.png" type="image/png">
-	<LINK REL="SHORTCUT ICON" HREF="images/icons/ig-16.png">
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
+	<link rel="icon" href="images/icons/ig-16.png" type="image/png" />
+	<link rel="SHORTCUT ICON" href="images/icons/ig-16.png" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<script language="JavaScript"> 
+<script language="JavaScript" type="text/javascript"> 
 	
 	if(window.name.indexOf("CMS") == -1)
 	{
@@ -24,16 +22,17 @@
 	}
 	
 </script> 
+</head>
 
-<frameset rows="58,*,30" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
-  <frame name="header" marginwidth="0" marginheight="0" scrolling="no" noresize target="header" src="ViewCMSToolHeader.action">
+<frameset rows="58,*,30" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0" >
+  <frame name="header" marginwidth="0" marginheight="0" scrolling="no" noresize target="header" src="ViewCMSToolHeader.action"/>
   
 	<frameset cols="4,*,4" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
-	  <frame name="leftmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="leftmargin" src="cmsToolBackground.html">
-	  <frame name="toolarea" marginwidth="0" marginheight="0" scrolling="no" noresize src="loading.html">
-	  <frame name="rightmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="rightmargin" src="cmsToolBackground.html">
+	  <frame name="leftmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="leftmargin" src="cmsToolBackground.html" />
+	  <frame name="toolarea" marginwidth="0" marginheight="0" scrolling="no" noresize src="loading.html" />
+	  <frame name="rightmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="rightmargin" src="cmsToolBackground.html" />
 	</frameset>
-  <frame name="footer" marginwidth="0" marginheight="0" scrolling="no" noresize target="footer" src="ViewCMSToolFooter.action">
+  <frame name="footer" marginwidth="0" marginheight="0" scrolling="no" noresize target="footer" src="ViewCMSToolFooter.action" />
 </frameset>
 
 </html>
