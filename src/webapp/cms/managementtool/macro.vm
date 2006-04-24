@@ -3,12 +3,12 @@
 ####################################
 
 #macro(workingDiv)
-<div id="working" style="border: 1px solid black; left: 30%; top: 30%; z-index: 10; visibility: hidden; position:absolute; width:300px; height:115px; z-index:1; padding:10px; BACKGROUND-COLOR: buttonface;">
-	<div style="LEFT: 0px; WIDTH: 100%; text-align: center;">
-		<FONT face="Verdana" size="-1" color="#006699"><STRONG>System is working</STRONG></FONT>
+<div id="working" style="border: 1px solid black; left: 30%; top: 30%; z-index: 10; visibility: hidden; position:absolute; width:300px; height:115px; z-index:1; padding:10px; background-color: buttonface;">
+	<div style="left: 0px; width: 100%; text-align: center;">
+		<font face="Verdana" size="-1" color="#006699"><strong>System is working</strong></font>
 		<hr width="80%" SIZE="2">
 	</div>
-	<div style="width: 100%; text-align: center;"><IMG alt="" src="images/workinganim.gif"></DIV>
+	<div style="width: 100%; text-align: center;"><img alt="" src="images/workinganim.gif" /></div>
 </div>
 #end
 
@@ -24,13 +24,15 @@
 	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
-	<script language="JavaScript" src="script/listview.js"></script>
-	<script type="text/javascript">
+	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
+	<script language="JavaScript" type="text/javascript" >
 		refreshManagementToolBar('$toolbarKey', '$arguments');
 	</script>
-	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 
 <body class="managementtooledit" aonload="refreshManagementToolBar('$toolbarKey', '$arguments');">
@@ -66,10 +68,11 @@
 	<script type="text/javascript" src="script/editor.js"></script>
 	##<script type="text/javascript" src="applications/HTMLArea/InfoGlueHTMLArea.js"></script>
 	##<script type="text/javascript" src="applications/HTMLArea/htmlarea.js"></script>
-	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 
 <body class="contenttooledit" onload="javascript:refreshContentToolBar('$titleKey', '$toolbarKey', '$arguments', $unrefreshedContentId, $changeTypeId, $addedContentId);">
@@ -87,10 +90,11 @@
 	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />	
-	<script language="JavaScript" src="script/listview.js"></script>
-	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 
 <body class="structuretooledit" onload="javascript:refreshStructureToolBar('$titleKey', '$toolbarKey', '$arguments', '$unrefreshedNodeId', '$changeTypeId', '$addedNodeId');">
@@ -108,10 +112,11 @@
 	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />	
-	<script language="JavaScript" src="script/listview.js"></script>
-	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 
 <body class="publishingtooledit" onload="javascript:refreshPublishingToolBar('$titleKey', '$toolbarKey', '$arguments');">
@@ -132,12 +137,13 @@
 	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
-	<script language="JavaScript" src="script/listview.js"></script>
-	<script language="JavaScript" src="script/infogluecommons.js"></script>
-	<script language="JavaScript" src="script/dom-drag.js"></script>
-	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
+	<script language="JavaScript" type="text/javascript" src="script/infogluecommons.js"></script>
+	<script language="JavaScript" type="text/javascript" src="script/dom-drag.js"></script>
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 
 <body class="mydesktoptooledit" onload="javascript:refreshMyDesktopToolBar('$titleKey', '$toolbarKey', '$arguments');">
@@ -209,7 +215,7 @@
 #set($lvChkBoxName = "sel")
 
 <div class="listmarginalized">
-	<script Language=JavaScript>
+	<script language="JavaScript" type="text/javascript">
 		function downHeader(id)
 		{
 			return; // No functionallity in release 1.0
@@ -279,7 +285,7 @@
 	#set( $span = $headers.size() * 2 )
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 
-	## Inget formulär om inget kan selectas
+	## Inget formulï¿½r om inget kan selectas
 	#if($lvConstraint != 0)
 		<form name="listForm" action="Confirm.action" method="POST">
 			<input type="hidden" name="header" value="$header"/>
@@ -291,7 +297,7 @@
 
 		<tr>
 			#foreach( $x in [0..$span] )
-			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
 			#end
 		</tr>
 
@@ -301,7 +307,7 @@
 			#set( $hcnt=0 )
 			#foreach( $header in $headers )
 				#set( $hcnt=$hcnt + 1 )
-				<td class="listheader" ASTYLE="cursor:hand;" onMouseDown="downHeader($hcnt);" onMouseUp="upHeader($hcnt);" onMouseOut="upHeader($hcnt);">
+				<td class="listheader" onmousedown="downHeader($hcnt);" onmouseup="upHeader($hcnt);" onmouseout="upHeader($hcnt);">
 					<!--img id="a$hcnt" align=right valign=middle src='images/listarrowdown.gif'/--><!-- No sorting in release 1.0 -->
 					<div class="minormarginalized">$header</div>
 				</td>
@@ -311,13 +317,13 @@
 				#end
 			#end
 
-			<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1"></td>
+			<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1" /></td>
 
 		</tr>
 
 		<tr>
 			#foreach( $x in [0..$span] )
-			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
 			#end
 		</tr>
 
@@ -341,11 +347,11 @@
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 		<tr>
 			#foreach( $x in [0..$span] )
-			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
 			#end
 		</tr>
 		<tr class="dark$lvColor" valign="center">
-			<td id='lleft' class="white" width=1><img src="images/trans.gif" width="1" height="1"></td>
+			<td id='lleft' class="white" width=1><img src="images/trans.gif" width="1" height="1" /></td>
 			#set( $hcnt=0 )
 			#foreach( $header in $headers )
 				#set( $hcnt=$hcnt + 1 )
@@ -357,11 +363,11 @@
 					<td class="dark$lvColor" width=2><img src="images/listsplit.gif" width="2" /></td>
 				#end
 			#end
-			<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1"></td>
+			<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1" /></td>
 		</tr>
 		<tr>
 			#foreach( $x in [0..$span] )
-			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
 			#end
 		</tr>
 #end
@@ -376,7 +382,7 @@
 	#set( $span = $headers.size() * 2 - 1 )
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 
-	## Inget formulär om inget kan selectas
+	## Inget formulï¿½r om inget kan selectas
 	#if($lvConstraint != 0)
 		<form name="listForm" action="Confirm.action" method="POST">
 			<input type="hidden" name="header" value="$header"/>
@@ -389,15 +395,15 @@
 			#foreach( $header in $headers )
 				<td class="smalllabel"><div class="minormarginalized">$header</div></td>
 				#if ($velocityCount != $headers.size())
-					<td class="lightblue"><img src="images/trans.gif" width="1" height="1"></td>
+					<td class="lightblue"><img src="images/trans.gif" width="1" height="1" /></td>
 				#end
 			#end
 		</tr>
 		<tr class="light$lvColor">
-			<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
 		</tr>
 		<tr class="dark$lvColor">
-			<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
 		</tr>
 #end
 
@@ -432,15 +438,15 @@
 	#end
 
 
-	<tr id="r$cnt" $class  onMouseOver='listRowHiLight(this);' onMouseOut='listRowUnHiLight(this);'>
+	<tr id="r$cnt" $class  onmouseover='listRowHiLight(this);' onmouseout='listRowUnHiLight(this);'>
 
 		<td></td>
 
 		#foreach( $item in $row )
 			<td valign='middle'>
-				<div class="minormarginalized">
+				<div class="minormarginalized" style="white-space:nowrap" >
 					#if($loccnt==0)
-						<nobr>
+						<!--  nobr -->
 						#if($lvConstraint==-1)
 							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" rowId="r$cnt" onClick="CheckUncheck('r$cnt',this);"/>
 						#end
@@ -448,7 +454,7 @@
 							<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" rowId="r$cnt" onClick="CheckUncheckSingle('r$cnt',this);"/>
 						#end
 						 $item
-						</nobr>
+						<!--  /nobr -->
 						#set( $loccnt = 1 )
 					#else
 						$item
@@ -598,7 +604,7 @@
     #end
   #end
   <br/>
-  <input type="text" $readOnly class="$className" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar" onclick="javascript:openDatePopup(event, '$url', 'Calendar');"><img src="images/calendar.gif" border="0"></a>
+  <input type="text" $readOnly class="$className" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar" onclick="javascript:openDatePopup(event, '$url', 'Calendar');"><img src="images/calendar.gif" border="0" /></a>
 #end
 
 
@@ -847,8 +853,8 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	#set($vLink ="| <a style='color: #666666' target='header' href='View${tooltarget}ToolHeader.action?showVersions=yes&tree=html&repositoryId=${repositoryId}&exp=${exp}'>show cv</a>")
 #end
 
-<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:14px; visibility:visble; z-index:0">
-<hr size="1" noshade>
+<div style="right:10px; left:10px; position:absolute; bottom:14px; visibility:visble; z-index:0">
+<hr size="1" noshade="noshade" />
 <small><font color="#666666">treeStyle: <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=applet&repositoryId=${repositoryId}">applet</a> | <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=html&repositoryId=${repositoryId}">html</a> $vLink </small></font>
 </div>
 
@@ -856,8 +862,8 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 
 #macro(treeSelector $tooltarget)
 
-<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:14px; visibility:visble; z-index:0">
-<hr size="1" noshade>
+<div style="right:10px; left:10px; position:absolute; bottom:14px; visibility:visble; z-index:0">
+<hr size="1" noshade="noshade">
 <small><font color="#666666" face="Verdana">$ui.getString("tool.common.treestyleLabel"): <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=applet&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleApplet")</a> | <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=html&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleHTML")</a></font></small>
 </div>
 
@@ -867,16 +873,16 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 	<td align="left" colspan="3">
-		<hr size="1" noshade>
+		<hr size="1" noshade="noshade">
 	</td>
 </tr>
 <tr>
-	<td><img src="images/trans.gif" width="10" height="1"></td>
+	<td><img src="images/trans.gif" width="10" height="1" /></td>
 	<td align="left">
 		<small><font color="#666666" face="Verdana">$ui.getString("tool.common.treestyleLabel"): <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=applet&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleApplet")</a> | <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=html&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleHTML")</a></font></small>
-		<br><br>
+		<br/><br/>
 	</td>
-	<td><img src="images/trans.gif" width="10" height="1"></td>
+	<td><img src="images/trans.gif" width="10" height="1"/></td>
 </tr>
 </table>
 #end
@@ -977,7 +983,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
     #end
   #end
   <br/>
-  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"></a>
+  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
 #end
 
 #macro(editPropertyField $fieldNameKey $fieldName $fieldValue $length $serverNodeId)
