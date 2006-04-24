@@ -21,7 +21,7 @@
 
 #set($lvBorder = 0) 
 #set($lvConstraint = -1) 
-#lvHead(["Name", "Language", "State", "Date", "Comment"] "Compare versions" "" "" "")
+#lvHead(["Name", "Language", "State", "Date", "Modifier", "Comment" ] "Compare versions" "" "" "")
 
 #hiddenField("contentId" $contentId)
 #hiddenField("versionComment" $!versionComment)
@@ -29,12 +29,16 @@
 #hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
 #hiddenField("repositoryId" $!repositoryId)
 
+## $stateStrings Must match the order of state in ContentVersionVO.java
+#set ( $stateStrings = ["tool.contenttool.state.working","tool.contenttool.state.final","tool.contenttool.state.publish","tool.contenttool.state.published","tool.contenttool.state.markedForUnpublish","tool.contenttool.state.unpublished" ] )
+
 ##set($lvChkBoxName = "selContentVersions")
 #set($cnt = 0)
 #foreach($cv in $contentVersionVOList)
 	
 	#set($nameLink = "<a href='javascript:openVersion($cv.id, $cv.languageId);'>$cv.getContentName()</a>")
-	#set($row = ["<input type='hidden' name='rowtitle' value='$cv.getLanguageName() ($cv.getId())'/> <img src='images/tree/contentRoot.gif'> $nameLink", "$cv.getLanguageName() ($cv.getId())", "$cv.stateId", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd HH:mm:ss')", "$cv.versionComment"] )
+	#set($state = $ui.getString( $stateStrings.get( $cv.stateId ) ) )
+	#set($row = ["<input type='hidden' name='rowtitle' value='$cv.getLanguageName() ($cv.getId())'/> <img src='images/tree/contentRoot.gif'/> $nameLink", "$cv.getLanguageName() ($cv.getId())", "$state", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd HH:mm:ss')","$cv.versionModifier", "$cv.versionComment"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())
