@@ -57,6 +57,7 @@ import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.util.ChangeNotificationController;
@@ -413,7 +414,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			    RegistryController.getController().clearRegistryForReferencedEntity(SiteNode.class.getName(), getObjectIdentity(object).toString());
 				RegistryController.getController().clearRegistryForReferencingEntityCompletingName(SiteNode.class.getName(), getObjectIdentity(object).toString());
 			}
-			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
+			else if(object.getClass().getName().equals(SiteNodeVersionImpl.class.getName()))
 			{
 				RegistryController.getController().clearRegistryForReferencingEntityName(SiteNodeVersion.class.getName(), getObjectIdentity(object).toString());
 			}
