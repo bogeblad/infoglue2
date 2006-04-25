@@ -52,15 +52,15 @@ public class SortContentVersionAttributeTag extends AbstractSortArgumentTag {
 	 */
     public int doEndTag() throws JspException
     {
-		getContentSortParent().addContentVersionAttribute(getName(), className, getAscending());
+		getContentSortParent().addContentVersionAttribute(getName(), className, getAscending(), getCaseSensitive());
         return EVAL_PAGE;
     }
 	
 	/**
 	 * 
 	 */
-	public void setClassName(final String className)
+	public void setClassName(final String className) throws JspException
 	{
-		this.className = className;
+        this.className = evaluateString("SortContentVersionAttributeTag", "className", className);
 	}
 }

@@ -22,6 +22,7 @@
 */
 package org.infoglue.deliver.taglib.content;
 
+import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.deliver.taglib.AbstractTag;
@@ -29,7 +30,8 @@ import org.infoglue.deliver.taglib.AbstractTag;
 /**
  * 
  */
-abstract public class AbstractSortArgumentTag extends AbstractTag {
+abstract public class AbstractSortArgumentTag extends AbstractTag 
+{
 	/**
 	 * 
 	 */
@@ -38,8 +40,12 @@ abstract public class AbstractSortArgumentTag extends AbstractTag {
 	/**
 	 * 
 	 */
-	private boolean ascending;
+	private Boolean ascending;
 	
+	/**
+	 * 
+	 */
+	private Boolean caseSensitive = new Boolean(false);
 	
 	/**
 	 * 
@@ -55,8 +61,10 @@ abstract public class AbstractSortArgumentTag extends AbstractTag {
 	protected ContentSortTag getContentSortParent() throws JspTagException
 	{
 		final ContentSortTag parent = (ContentSortTag) findAncestorWithClass(this, ContentSortTag.class);
+		
 		if(parent == null)
 			throw new JspTagException("SortContentVersionPropertyTag must be used inside a ContentSortTag");
+
 		return parent;
 	}
 	
@@ -73,22 +81,39 @@ abstract public class AbstractSortArgumentTag extends AbstractTag {
 	 */
 	protected boolean getAscending()
 	{
-		return ascending;
+		return ascending.booleanValue();
 	}
-	
+
+	/**
+	 * 
+	 */
+	protected boolean getCaseSensitive()
+	{
+		return caseSensitive.booleanValue();
+	}
+
     /**
 	 * 
 	 */
-	public void setName(final String name) 
+	public void setName(final String name) throws JspException
 	{
-		this.name = name;
+        this.name = evaluateString("AbstractSortArgumentTag", "name", name);
 	}
 	
 	/**
 	 * 
 	 */
-	public void setAscending(final boolean ascending) 
+	public void setAscending(final String ascending) throws JspException
 	{
-		this.ascending = ascending;
+        this.ascending = (Boolean)evaluate("AbstractSortArgumentTag", "ascending", ascending, Boolean.class);
 	}
+
+	/**
+	 * 
+	 */
+	public void setCaseSensitive(final String caseSensitive) throws JspException
+	{
+        this.caseSensitive = (Boolean)evaluate("AbstractSortArgumentTag", "caseSensitive", caseSensitive, Boolean.class);
+	}
+
 }

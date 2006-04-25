@@ -197,10 +197,12 @@ class SortElement implements Comparable
 	 * @param clazz indicates the <code>Comparable</code> to use when sorting on the attribute.
 	 * @param ascending indicates the sort order to use when sorting on the specified attribute.
 	 */
-	public void addContentVersionAttribute(final String name, final Class clazz, final boolean ascending) 
+	public void addContentVersionAttribute(final String name, final Class clazz, final boolean ascending, final boolean caseSensitive) 
 	{
 		final Integer contentId  = getContentId();
-		final String stringValue = controller.getContentAttribute(contentId, controller.getLanguageId(), name); 
+		String stringValue = controller.getContentAttribute(contentId, controller.getLanguageId(), name);
+		if(!caseSensitive)
+			stringValue = stringValue.toLowerCase();
 		
 		comparable.add(castAttribute(name, clazz, stringValue), ascending);
 	}
@@ -455,9 +457,9 @@ public class ContentSort
 	 * @paran name the name of the content version attribute.
 	 * @param ascending indicates the sort order to use when sorting on the specified attribute.
 	 */
-	public void addContentVersionAttribute(final String name, final boolean ascending) 
+	public void addContentVersionAttribute(final String name, final boolean ascending, final boolean caseSensitive) 
 	{
-		addContentVersionAttribute(name, String.class, ascending);
+		addContentVersionAttribute(name, String.class, ascending, caseSensitive);
 	}
 	
 	/**
@@ -468,11 +470,11 @@ public class ContentSort
 	 * @param className indicates the name of the <code>Comparable</code> to use when sorting on the attribute.
 	 * @param ascending indicates the sort order to use when sorting on the specified attribute.
 	 */
-	public void addContentVersionAttribute(final String name, final String className, final boolean ascending) 
+	public void addContentVersionAttribute(final String name, final String className, final boolean ascending, final boolean caseSensitive) 
 	{
 		try 
 		{
-			addContentVersionAttribute(name, Class.forName(className), ascending);
+			addContentVersionAttribute(name, Class.forName(className), ascending, caseSensitive);
 		} 
 		catch(ClassNotFoundException e) 
 		{
@@ -489,11 +491,11 @@ public class ContentSort
 	 * @param clazz indicates the <code>Comparable</code> to use when sorting on the attribute.
 	 * @param ascending indicates the sort order to use when sorting on the specified attribute.
 	 */
-	public void addContentVersionAttribute(final String name, final Class clazz, final boolean ascending) 
+	public void addContentVersionAttribute(final String name, final Class clazz, final boolean ascending, final boolean caseSensitive) 
 	{
 		for(final Iterator i=elements.iterator(); i.hasNext(); )
 		{
-			((SortElement) i.next()).addContentVersionAttribute(name, clazz, ascending);
+			((SortElement) i.next()).addContentVersionAttribute(name, clazz, ascending, caseSensitive);
 		}
 	}
 

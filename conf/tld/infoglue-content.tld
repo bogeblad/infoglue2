@@ -404,6 +404,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+    	    <name>caseSensitive</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>	 
 	
 	<tag>

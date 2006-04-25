@@ -84,9 +84,9 @@ public class ContentSortTag extends TemplateControllerTag {
 	/**
 	 * 
 	 */
-	public void addContentVersionAttribute(final String name, final String className, final boolean ascending) 
+	public void addContentVersionAttribute(final String name, final String className, final boolean ascending, final boolean caseSensitive) 
 	{
-		sorter.addContentVersionAttribute(name, className, ascending);
+		sorter.addContentVersionAttribute(name, className, ascending, caseSensitive);
 	}
 	
 	/**
