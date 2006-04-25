@@ -66,9 +66,7 @@ public class ViewComponentPropertiesEditorAction extends InfoGlueAbstractAction
     {
         ContentVersionController.getContentVersionController().updateAttributeValue(this.contentVersionId, this.attributeName, this.propertiesXML, this.getInfoGluePrincipal());
         
-        initialize();
-        
-        return SUCCESS;
+        return "update";
     }
 
 
