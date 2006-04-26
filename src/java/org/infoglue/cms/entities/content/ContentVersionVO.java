@@ -44,7 +44,7 @@ public class ContentVersionVO implements BaseEntityVO
 	private Integer contentVersionId;
     private Integer stateId						= new Integer(0);
     private Date modifiedDateTime				= DateHelper.getSecondPreciseDate();
-    private String versionComment				= "Saved";
+    private String versionComment				= "No comment";
     private Boolean isCheckedOut				= new Boolean(false);
    	private Boolean isActive					= new Boolean(true);
 	
@@ -123,7 +123,8 @@ public class ContentVersionVO implements BaseEntityVO
                 
     public void setVersionComment(String versionComment)
     {
-        this.versionComment = versionComment;
+    	if(versionComment != null && !versionComment.equals(""))
+    		this.versionComment = versionComment;
     }
     
     public Boolean getIsCheckedOut()

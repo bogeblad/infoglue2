@@ -47,7 +47,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
     private Integer stateId       		= WORKING_STATE;
     private Integer versionNumber 		= new Integer(1);
     private Date modifiedDateTime 		= DateHelper.getSecondPreciseDate();
-    private String versionComment 		= "";
+    private String versionComment 		= "No comment";;
     private String versionModifier		= null;
     private Boolean isCheckedOut  		= new Boolean(false);
   	private Boolean isActive      		= new Boolean(true);
@@ -119,7 +119,8 @@ public class SiteNodeVersionVO implements BaseEntityVO
                 
     public void setVersionComment(java.lang.String versionComment)
     {
-        this.versionComment = versionComment;
+    	if(versionComment != null && !versionComment.equals(""))
+    		this.versionComment = versionComment;
     }
     
     public java.lang.Boolean getIsCheckedOut()
