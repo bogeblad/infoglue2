@@ -280,7 +280,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
             throw new SystemException(e.getMessage());
         }
 
-        logger.error("Getting the sitenodes for the tree took " + timer.getElapsedTime() + "ms");
+        logger.info("Getting the sitenodes for the tree took " + timer.getElapsedTime() + "ms");
         
 		return ret;
 	}
