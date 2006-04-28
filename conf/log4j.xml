@@ -31,6 +31,27 @@
 	</appender>
 	-->
 
+	<!--                          -->
+    <!-- Declare the SMTPAppender -->
+    <!--                          -->
+    <!--
+    <appender name="EMAIL"  class="org.apache.log4j.net.SMTPAppender">
+        <param name="BufferSize" value="512" />
+        <param name="SMTPHost" value="smtp.foobar.com" />
+        <param name="From" value="log4j@server5" />
+        <param name="To" value="neo@foobar.com" />
+        <param name="Subject" value="[SMTPAppender] Application message" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+              value="[%d{ISO8601}]%n%n%-5p%n%n%c%n%n%m%n%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="ERROR"/>
+            <param name="LevelMax" value="FATAL"/>
+        </filter>
+    </appender>
+    -->
+    
 	<!-- ==================================	-->
 	<!-- Use categories to control logging  -->
 	<!-- down to the package or class level	-->
@@ -42,23 +63,64 @@
 
 	<category name="de.nava.informa">
 		<priority value="ERROR"/>
-	</category>
+	</category>	
 
 <!--
+	<category name="org.infoglue.cms.security">
+		<priority value="DEBUG"/>
+	</category>
+
+	<category name="com.opensymphony">
+		<priority value="DEBUG"/>
+	</category>
+	
+	<category name="org.infoglue.cms.applications.workflowtool.function.defaultvalue">
+		<priority value="DEBUG"/>
+	</category>
+
+	<category name="org.infoglue.deliver.portal">
+		<priority value="DEBUG"/>
+	</category>
+
+	<category name="org.infoglue.deliver.applications.actions.ViewPageAction">
+		<priority value="DEBUG"/>
+	</category>
+	
+	<category name="org.infoglue.deliver.applications.filters.PortalServletRequest">
+		<priority value="DEBUG"/>
+	</category>
+	
+	<category name="org.infoglue.deliver.portal.PathParser">
+		<priority value="DEBUG"/>
+	</category>
 	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter">
 		<priority value="DEBUG"/>
 	</category>
-
 	<category name="org.infoglue.cms.applications.common.actions.VelocityServlet">
 		<priority value="DEBUG"/>
 	</category>
--->
-	<category name="org.infoglue.cms.controllers.kernel.impl.simple.RegistryController">
-		<priority value="WARN"/>
+	<category name="org.infoglue.cms.controllers.kernel.impl.simple.RedirectController">
+		<priority value="DEBUG"/>
 	</category>
 	<category name="org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController">
 		<priority value="WARN"/>
 	</category>
+	<category name="org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController">
+		<priority value="DEBUG"/>
+	</category>
+	<category name="org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController">
+		<priority value="DEBUG"/>
+	</category>
+	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter">
+		<priority value="DEBUG"/>
+	</category>
+	<category name="org.infoglue.cms.controllers.kernel.impl.simple.RedirectController">
+		<priority value="DEBUG"/>
+	</category>
+	<category name="org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic">
+		<priority value="DEBUG"/>
+	</category>
+-->
 
 	<category name="org.apache.commons.fileupload">
 		<priority value="WARN"/>
@@ -77,7 +139,7 @@
 	</category>
 	
 	<category name="org.exolab.castor">
-		<priority value="ERROR"/>
+		<priority value="WARN"/>
 	</category>
 
 	<category name="org.exolab.castor.jdo">
@@ -128,11 +190,11 @@
 	<category name="org.apache.axis.utils">
 		<priority value="WARN"/>
 	</category>
-	-->
 
 	<category name="org.apache.pluto">
-		<priority value="WARN"/>
+		<priority value="DEBUG"/>
 	</category>
+	-->
 
 	<category name="org.apache.catalina">
 		<priority value="WARN"/>
@@ -153,8 +215,9 @@
 
 	<!-- Anyhing not caught by the above categories will be caught here -->
 	<root>
-		<priority value="WARNING"/>
+		<priority value="ERROR"/>
 		<appender-ref ref="CONSOLE"/>
+		<!--<appender-ref ref="EMAIL" />-->
 	</root>
 
 </log4j:configuration>
