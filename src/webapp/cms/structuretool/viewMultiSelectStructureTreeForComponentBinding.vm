@@ -61,17 +61,24 @@
 		{
 		    //alert("Here we add the choosen siteNode to the qualifyer...");
 			entityId = document.inputForm.entityId.value;
-			bindingTypeId = 1; //0 = Content, 1 = SiteNode
-			
-			qualifyerString = "";
-			#foreach($qualifyer in $qualifyers)
-				qualifyerString += "$qualifyer.value,";
-			#end 
-						 		    
-		    // var url = 'ViewMultiSelectStructureTreeForServiceBinding!addQualifyer.action?serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&entityId=' + entityId + "&entityName=SiteNode&qualifyerString=" + qualifyerString;
-		    var url = 'ViewMultiSelectStructureTreeForServiceBinding!addQualifyer.action?exp=' + exp + '&serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&entityId=' + entityId + "&entityName=SiteNode&qualifyerString=" + qualifyerString;
-		    //alert('Calling:' + url);
-		    self.location.href = url;
+			if(entityId == '' || entityId == '${select}')
+			{
+				alert("You must choose a page to add");
+			}
+			else
+			{
+				bindingTypeId = 1; //0 = Content, 1 = SiteNode
+				
+				qualifyerString = "";
+				#foreach($qualifyer in $qualifyers)
+					qualifyerString += "$qualifyer.value,";
+				#end 
+							 		    
+			    // var url = 'ViewMultiSelectStructureTreeForServiceBinding!addQualifyer.action?serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&entityId=' + entityId + "&entityName=SiteNode&qualifyerString=" + qualifyerString;
+			    var url = 'ViewMultiSelectStructureTreeForServiceBinding!addQualifyer.action?exp=' + exp + '&serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&entityId=' + entityId + "&entityName=SiteNode&qualifyerString=" + qualifyerString;
+			    //alert('Calling:' + url);
+			    self.location.href = url;
+			}
 		}
 	    function addQualifyerAtPosition(position)
 		{

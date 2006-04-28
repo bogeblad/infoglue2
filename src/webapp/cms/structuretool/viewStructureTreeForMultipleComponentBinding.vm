@@ -57,12 +57,19 @@
 		{
 		    //alert("Here we add the choosen siteNode to the qualifyer...");
 			entityId = document.inputForm.entityId.value;
-			path     = document.inputForm.path.value;
-			bindingTypeId = 1; //0 = Content, 1 = SiteNode
-			
-		    var binding = new Binding("SiteNode", entityId, path);
-			siteNodesVector.addElement(binding);
-			drawList();
+			if(entityId == '' || entityId == '${select}')
+			{
+				alert("You must choose a page to add");
+			}
+			else
+			{
+				path     = document.inputForm.path.value;
+				bindingTypeId = 1; //0 = Content, 1 = SiteNode
+				
+			    var binding = new Binding("SiteNode", entityId, path);
+				siteNodesVector.addElement(binding);
+				drawList();
+			}
 		}
 		
 		

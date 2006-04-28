@@ -57,12 +57,19 @@
 		{
 		    //alert("Here we add the choosen siteNode to the qualifyer...");
 			entityId = document.inputForm.entityId.value;
-			path     = document.inputForm.path.value;
-			bindingTypeId = 1; //0 = Content, 1 = SiteNode
-			
-		    var binding = new Binding("Content", entityId, path);
-			siteNodesVector.addElement(binding);
-			drawList();
+			if(entityId == '' || entityId == '${select}')
+			{
+				alert("You must choose a content to add");
+			}
+			else
+			{
+				path     = document.inputForm.path.value;
+				bindingTypeId = 1; //0 = Content, 1 = SiteNode
+				
+			    var binding = new Binding("Content", entityId, path);
+				siteNodesVector.addElement(binding);
+				drawList();
+			}
 		}
 		
 		
@@ -83,11 +90,6 @@
 			}
 		   	qualifyerXML += "</qualifyer>";
 			
-			//var url = "ViewSiteNodePageComponents!addComponentPropertyBindingWithQualifyer.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&qualifyerXML=" + escape(qualifyerXML) + "&path=" + escape(path) + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple";
-		    //alert('Calling:' + url);
-			//self.opener.location.href = url;
-		    //window.close();
-		    //alert("Opener name: " + self.opener.name);
 			document.submitForm.target = self.opener.name;
 		    document.submitForm.path.value = path;
 		    document.submitForm.qualifyerXML.value = qualifyerXML;

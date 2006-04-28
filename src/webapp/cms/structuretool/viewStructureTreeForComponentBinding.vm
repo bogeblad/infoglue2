@@ -41,20 +41,27 @@
 		{
 		    //alert("Here we commit the binding and close the window...");
 			entityId = document.inputForm.entityId.value;
-			path = document.inputForm.path.value;
-		    var repositoryId = document.inputForm.repositoryId.value;
-			bindingTypeId = 1; //0 = Content, 1 = SiteNode
-			
-			qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?>";
-			qualifyerXML += "<qualifyer>";
-			qualifyerXML += 	"<siteNodeId>" + entityId + "</siteNodeId>";
-			qualifyerXML += "</qualifyer>";
-			 		    
-		    var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=SiteNode&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&path=" + escape(path);
-		    //alert('Calling:' + url);
-		    self.opener.location.href = url;
-		    window.close();
-		    //document.inputForm.submit();
+			if(entityId == '' || entityId == '${select}')
+			{
+				alert("You must choose a page to add");
+			}
+			else
+			{
+				path = document.inputForm.path.value;
+			    var repositoryId = document.inputForm.repositoryId.value;
+				bindingTypeId = 1; //0 = Content, 1 = SiteNode
+				
+				qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?>";
+				qualifyerXML += "<qualifyer>";
+				qualifyerXML += 	"<siteNodeId>" + entityId + "</siteNodeId>";
+				qualifyerXML += "</qualifyer>";
+				 		    
+			    var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=SiteNode&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&path=" + escape(path);
+			    //alert('Calling:' + url);
+			    self.opener.location.href = url;
+			    window.close();
+			    //document.inputForm.submit();
+			}
 		}
 	-->
 	</script>

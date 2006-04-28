@@ -39,23 +39,31 @@
 	    
 	    function submitBindning()
 		{
-		    //alert("Here we commit the binding and close the window...");
+			//alert("Here we commit the binding and close the window...");
 			entityId = document.inputForm.entityId.value;
-			path = document.inputForm.path.value;
-		    var repositoryId = document.inputForm.repositoryId.value;
-			bindingTypeId = 0; //0 = Content, 1 = SiteNode
 			
-			qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?>";
-			qualifyerXML += "<qualifyer>";
-			qualifyerXML += 	"<contentId>" + entityId + "</contentId>";
-			qualifyerXML += "</qualifyer>";
-
-			var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&path=" + escape(path);
-			//alert('Calling:' + url);
-		    //alert('qualifyerXML:' + qualifyerXML);
-		    self.opener.location.href = url;
-		    window.close();
-		    //document.inputForm.submit();
+			if(entityId == '' || entityId == '${select}')
+			{
+				alert("You must choose a content before you can save");
+			}
+			else
+			{
+			    path = document.inputForm.path.value;
+			    var repositoryId = document.inputForm.repositoryId.value;
+				bindingTypeId = 0; //0 = Content, 1 = SiteNode
+				
+				qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?>";
+				qualifyerXML += "<qualifyer>";
+				qualifyerXML += 	"<contentId>" + entityId + "</contentId>";
+				qualifyerXML += "</qualifyer>";
+	
+				var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&path=" + escape(path);
+				//alert('Calling:' + url);
+			    //alert('qualifyerXML:' + qualifyerXML);
+			    self.opener.location.href = url;
+			    window.close();
+			    //document.inputForm.submit();
+			}
 		}
 	-->
 	</script>
