@@ -114,6 +114,7 @@ Improvements
 - Removed unneccesairy html/css and made it more strict / validated. Added more defeat browser cache tags as well in tools.
 - Upgraded jtds till 1.2 and added new versions of db2 and oracle jdbc-drivers as well.
 - Made it possible to state direct publication when creating contents through webservice from deliver.
+- Added checks in all binding dialogs actually demands the user to select a page / content before saving. 
 
 Changes:
 - Success url not needed default in web.xml under the cms-application - removed it.
