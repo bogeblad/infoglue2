@@ -129,6 +129,9 @@ Changes:
 - Added scripts for upgrade to 2.5
 - Added FAQ entry of questions around oracle 10.2 XE
 - Added FAQ entry of questions around oracle RAC
+- Fixed so portlets with .(dot) in the warfile/context name also can be used. 
+  Instead it is not possible to have individual Portlets with .(dot) in their names. Use other separator if needed - like _ or -. 
+
 
 Bug fixes
 - Fixed mapping bug on user/role properties mapping in deliver on oracle

@@ -103,7 +103,7 @@ public class PortletEntityRegistryServiceDBImpl extends PortletEntityRegistrySer
         }
 
         String oid = id.toString();
-        int dot = oid.indexOf(".");
+        int dot = oid.lastIndexOf(".");
         if (dot < 0) {
             LOG.warn("ID does not contain '.' to separate application- and portlet-id: " + id);
             return null;
