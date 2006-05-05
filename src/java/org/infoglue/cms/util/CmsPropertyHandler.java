@@ -905,14 +905,14 @@ public class CmsPropertyHandler
 	{
 		List urls = new ArrayList();
 		
-	    String publicDeliverUrlsString = CmsPropertyHandler.getServerNodeDataProperty(null, "publicDeliveryUrls", true, null);
-	    //System.out.println("publicDeliverUrlsString:" + publicDeliverUrlsString);
-	    if(publicDeliverUrlsString != null && !publicDeliverUrlsString.equals(""))
+	    String internalDeliverUrlsString = CmsPropertyHandler.getServerNodeDataProperty(null, "internalDeliveryUrls", true, null);
+	    //System.out.println("internalDeliverUrlsString:" + internalDeliverUrlsString);
+	    if(internalDeliverUrlsString != null && !internalDeliverUrlsString.equals(""))
 		{
 	    	try
 			{
 	    		Properties properties = new Properties();
-				properties.load(new ByteArrayInputStream(publicDeliverUrlsString.getBytes("UTF-8")));
+				properties.load(new ByteArrayInputStream(internalDeliverUrlsString.getBytes("UTF-8")));
 
 				int i = 0;
 				String deliverUrl = null;
@@ -1009,9 +1009,12 @@ public class CmsPropertyHandler
 	public static String getAnonymousPassword()
 	{
 		String password = "anonymous";
-		String specifiedPassword = getProperty("security.anonymous.password");
+		//String specifiedPassword = getProperty("security.anonymous.password");
+		String specifiedPassword = getServerNodeProperty("deliver", "security.anonymous.password", true, "anonymous");
 		if(specifiedPassword != null && !specifiedPassword.equalsIgnoreCase("") && specifiedPassword.indexOf("security.anonymous.password") == -1)
 			password = specifiedPassword;
+		
+		//System.out.println("password:" + password);
 		
 		return password;
 	}
@@ -1019,9 +1022,12 @@ public class CmsPropertyHandler
 	public static String getAnonymousUser()
 	{
 		String userName = "anonymous";
-		String specifiedUserName = getProperty("security.anonymous.username");
+		//String specifiedUserName = getProperty("security.anonymous.username");
+		String specifiedUserName = getServerNodeProperty("deliver", "security.anonymous.username", true, "anonymous");
 		if(specifiedUserName != null && !specifiedUserName.equalsIgnoreCase("") && specifiedUserName.indexOf("security.anonymous.username") == -1)
 			userName = specifiedUserName;
+		
+		//System.out.println("userName:" + userName);
 		
 		return userName;
 	}

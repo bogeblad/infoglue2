@@ -371,21 +371,42 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    System.out.println("authorizerClass:" + authorizerClass);
 		    */
 		    
-		    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraParametersFile");
-		    
-		    if(extraPropertiesFile != null)
+		    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
+		    //System.out.println("extraPropertiesString:" + extraPropertiesString);
+		    if(extraPropertiesString != null)
 			{
-				try
+			    logger.info("Loading extra properties from propertyset. extraPropertiesString:" + extraPropertiesString);
+		    	try
 				{
-					extraProperties = new Properties();
-					extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraPropertiesFile));	
+		    		extraProperties = new Properties();
+					extraProperties.load(new ByteArrayInputStream(extraPropertiesString.getBytes("UTF-8")));
+					//extraProperties.list(System.out);
 				}	
 				catch(Exception e)
 				{
-				    logger.error("Error loading properties from file " + "/" + extraPropertiesFile + ". Reason:" + e.getMessage());
+				    logger.error("Error loading properties from string. Reason:" + e.getMessage());
 					e.printStackTrace();
 				}
 			}
+		    else
+		    {
+			    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraParametersFile");
+			    logger.info("Trying to load extra properties from file. extraPropertiesFile:" + extraPropertiesFile);
+			    if(extraPropertiesFile != null)
+				{
+					try
+					{
+						extraProperties = new Properties();
+						extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraPropertiesFile));	
+					}	
+					catch(Exception e)
+					{
+					    logger.error("Error loading properties from file " + "/" + extraPropertiesFile + ". Reason:" + e.getMessage());
+						e.printStackTrace();
+					}
+				}
+
+		    }
 			    
 		    logger.info("authenticatorClass:" + authenticatorClass);
 		    logger.info("authorizerClass:" + authorizerClass);
@@ -398,6 +419,13 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    logger.info("casServiceUrl:" + casServiceUrl);
 		    logger.info("casValidateUrl:" + casValidateUrl);
 		    logger.info("casLogoutUrl:" + casLogoutUrl);
+		    if(logger.isDebugEnabled())
+		    {
+		    	if(extraProperties != null)
+			    	extraProperties.list(System.out);
+		    	else
+		    		logger.info("extraProperties:" + extraProperties);		
+		    }
 		}
 		catch(Exception e)
 		{
@@ -462,6 +490,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    //System.out.println("extraPropertiesString:" + extraPropertiesString);
 		    if(extraPropertiesString != null)
 			{
+			    logger.info("Loading extra properties from propertyset. extraPropertiesString:" + extraPropertiesString);
 		    	try
 				{
 		    		extraProperties = new Properties();
@@ -474,6 +503,25 @@ public class InfoGlueAuthenticationFilter implements Filter
 					e.printStackTrace();
 				}
 			}
+		    else
+		    {
+			    String extraPropertiesFile = CmsPropertyHandler.getProperty("extraParametersFile");
+			    logger.info("Trying to load extra properties from file. extraPropertiesFile:" + extraPropertiesFile);
+			    if(extraPropertiesFile != null)
+				{
+					try
+					{
+						extraProperties = new Properties();
+						extraProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + extraPropertiesFile));	
+					}	
+					catch(Exception e)
+					{
+					    logger.error("Error loading properties from file " + "/" + extraPropertiesFile + ". Reason:" + e.getMessage());
+						e.printStackTrace();
+					}
+				}
+
+		    }
 			    
 		    logger.info("authenticatorClass:" + authenticatorClass);
 		    logger.info("authorizerClass:" + authorizerClass);
@@ -487,6 +535,13 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    logger.info("casServiceUrl:" + casServiceUrl);
 		    logger.info("casValidateUrl:" + casValidateUrl);
 		    logger.info("casLogoutUrl:" + casLogoutUrl);
+		    if(logger.isDebugEnabled())
+		    {
+		    	if(extraProperties != null)
+			    	extraProperties.list(System.out);
+		    	else
+		    		logger.info("extraProperties:" + extraProperties);		
+		    }
 		}
 		catch(Exception e)
 		{
