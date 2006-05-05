@@ -92,7 +92,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), allowedContentTypeNames, description);
 
 				    
-					NodeList optionsNodeList = propertiesElement.getElementsByTagName("option");
+					NodeList optionsNodeList = propertyElement.getElementsByTagName("option");
 					for(int k=0; k<optionsNodeList.getLength(); k++)
 					{
 					    Node optionNode = optionsNodeList.item(k);
