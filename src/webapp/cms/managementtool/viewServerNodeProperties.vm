@@ -111,8 +111,12 @@
 	<tr>
 		<td>#editPropertyField("ServerNode.property.niceURIAttributeName" "niceURIAttributeName" "$this.getPropertyValue('niceURIAttributeName')" "51" "$!serverNodeId")</td>
 	</tr>
+	
+	#set($requestArgumentDelimiter = $this.getPropertyValue('requestArgumentDelimiter'))
+	#set($requestArgumentDelimiter = $requestArgumentDelimiter.replaceAll("&amp;", "&amp;amp;"))
+	
 	<tr>
-		<td>#editPropertyField("ServerNode.property.requestArgumentDelimiter" "requestArgumentDelimiter" "$this.getPropertyValue('requestArgumentDelimiter')" "51" "$!serverNodeId")</td>
+		<td>#editPropertyField("ServerNode.property.requestArgumentDelimiter" "requestArgumentDelimiter" "$requestArgumentDelimiter" "51" "$!serverNodeId")</td>
 	</tr>
 	
 	<tr>
@@ -241,10 +245,10 @@
 		<td>#editPropertyField("ServerNode.property.stagingDeliveryUrl" "stagingDeliveryUrl" "$this.getPropertyValue('stagingDeliveryUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editTextArea("ServerNode.property.internalDeliveryUrls" "internalDeliveryUrls" "$this.getDataPropertyValue('internalDeliveryUrls')" "50" "5" "normaltextarea")</td>
+		<td>#editPropertyTextArea("ServerNode.property.internalDeliveryUrls" "internalDeliveryUrls" "$this.getDataPropertyValue('internalDeliveryUrls')" "50" "5" "normaltextarea" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editTextArea("ServerNode.property.publicDeliveryUrls" "publicDeliveryUrls" "$this.getDataPropertyValue('publicDeliveryUrls')" "50" "5" "normaltextarea")</td>
+		<td>#editPropertyTextArea("ServerNode.property.publicDeliveryUrls" "publicDeliveryUrls" "$this.getDataPropertyValue('publicDeliveryUrls')" "50" "5" "normaltextarea" "$!serverNodeId")</td>
 	</tr>
 	
 	<tr>
@@ -360,7 +364,7 @@
 	</tr>
 	-->
 	<tr>
-		<td>#editTextArea("ServerNode.property.extraSecurityParameters" "extraSecurityParameters" "$this.getDataPropertyValue('extraSecurityParameters')" "50" "10" "normaltextarea")</td>
+		<td>#editPropertyTextArea("ServerNode.property.extraSecurityParameters" "extraSecurityParameters" "$this.getDataPropertyValue('extraSecurityParameters')" "50" "10" "normaltextarea" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.casValidateUrl" "casValidateUrl" "$this.getPropertyValue('casValidateUrl')" "51" "$!serverNodeId")</td>
@@ -400,7 +404,13 @@
 		<td>#editPropertyField("ServerNode.property.authConstraint" "deliver_authConstraint" "$this.getPropertyValue('deliver', 'authConstraint')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editTextArea("ServerNode.property.extraSecurityParameters" "deliver_extraSecurityParameters" "$this.getDataPropertyValue('deliver', 'extraSecurityParameters')" "50" "10" "normaltextarea")</td>
+		<td>#editPropertyField("ServerNode.property.security.anonymous.username" "deliver_security.anonymous.username" "$this.getPropertyValue('deliver', 'security.anonymous.username')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#editPropertyField("ServerNode.property.security.anonymous.password" "deliver_security.anonymous.password" "$this.getPropertyValue('deliver', 'security.anonymous.password')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#editPropertyTextArea("ServerNode.property.extraSecurityParameters" "deliver_extraSecurityParameters" "$this.getDataPropertyValue('deliver', 'extraSecurityParameters')" "50" "10" "normaltextarea" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.casValidateUrl" "deliver_casValidateUrl" "$this.getPropertyValue('deliver', 'casValidateUrl')" "51" "$!serverNodeId")</td>
@@ -418,7 +428,7 @@
 		<td>#subTitle("entity.ServerNode.property.cmsGUI.label")</td>
 	</tr>	
 	<tr>
-		<td>#editTextArea("ServerNode.property.shortcuts" "shortcuts" "$shortcuts" "50" "10" "normaltextarea")</td>
+		<td>#editPropertyTextArea("ServerNode.property.shortcuts" "shortcuts" "$shortcuts" "50" "10" "normaltextarea" "$!serverNodeId")</td>
 	</tr>
 
 	<tr>

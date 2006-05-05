@@ -186,6 +186,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliver_authConstraint");
 	    populate(ps, "deliver_extraParametersFile");
 	    populateData(ps, "deliver_extraSecurityParameters");
+	    populate(ps, "deliver_security.anonymous.username");
+	    populate(ps, "deliver_security.anonymous.password");
 	    populate(ps, "deliver_casValidateUrl");
 	    populate(ps, "deliver_casServiceUrl");
 	    populate(ps, "deliver_casLogoutUrl");

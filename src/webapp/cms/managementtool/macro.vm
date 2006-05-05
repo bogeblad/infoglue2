@@ -568,6 +568,21 @@
   <textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea>
 #end
 
+#macro(editPropertyTextArea $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
+  #editPropertyTextArea3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
+#end
+
+#macro(editPropertyTextArea3 $fieldNameLabel $errorKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
+  $fieldNameLabel
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font>
+    #end
+  #end
+  <br/>
+  <textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
+#end
+
 ##**************************************************************
 ## Returns true if value is equal							   *
 ##**************************************************************
