@@ -43,12 +43,14 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -502,9 +504,21 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    
 		}
 		
+		try
+		{
+			if(getSiteNodeId() != null)
+				SiteNodeController.getSiteNodeVOWithId(getSiteNodeId(), db);
+	    }
+	    catch(Exception e)
+	    {
+			throw new SystemException("There was no page with the current specification. SiteNodeId:" + getSiteNodeId());
+	    }
+
+		
 		if(getLanguageId() == null)
 		{
 		    LanguageVO browserLanguageVO = null;
+
 		    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getUseAlternativeBrowserLanguageCheck();
 		    if(useAlternativeBrowserLanguageCheck == null || !useAlternativeBrowserLanguageCheck.equalsIgnoreCase("true"))
 		        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId(), (InfoGluePrincipal)this.principal);
@@ -518,17 +532,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			else
 			{
-			    /*
-				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
-				if(masterLanguageVO == null)
-					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
-	
-				System.out.println("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
-				logger.info("The system had no browserLanguageVO available - using master language instead:" + masterLanguageVO.getName());
-
-				setLanguageId(masterLanguageVO.getLanguageId());		
-				*/
-			    
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
 				if(masterLanguageVO == null)
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
