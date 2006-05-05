@@ -1348,6 +1348,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        logger.info("Continued with siteNode: " + siteNodeVO.getName());
 	        //System.out.println("Continued with siteNode: " + siteNodeVO.getName());
 	        
+	        if(siteNodeVO.getMetaInfoContentId() == null)
+	        	throw new SystemException("The site node " + siteNodeVO.getName() + "(" + siteNodeVO.getId() + ") had no meta info. Fix this by editing the site node. Should never happen.");
+	        	 
 	        ContentVO content = ContentDeliveryController.getContentDeliveryController().getContentVO(db, siteNodeVO.getMetaInfoContentId(), deliveryContext);
 	        if(content != null) 
 	        {

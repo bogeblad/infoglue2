@@ -466,8 +466,9 @@ public class ViewPageFilter implements Filter
             //System.out.println("originalRequestURL:" + originalRequestURL);
             requestParameters.put("originalServletPath", new String[] { originalServletPath });
     		requestParameters.put("originalRequestURL", new String[] { originalRequestURL });
-    		requestParameters.put("originalQueryString", new String[] { originalQueryString });
-
+    		if(originalQueryString != null && originalQueryString.length() > 0)
+    			requestParameters.put("originalQueryString", new String[] { originalQueryString });
+    			
             //logger.info("siteNodeId:" + siteNodeId);
             //logger.info("languageId:" + languageId);
             //logger.info("contentId:" + requestParameters.get("contentId"));
