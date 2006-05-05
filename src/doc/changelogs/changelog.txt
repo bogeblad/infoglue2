@@ -115,6 +115,9 @@ Improvements
 - Upgraded jtds till 1.2 and added new versions of db2 and oracle jdbc-drivers as well.
 - Made it possible to state direct publication when creating contents through webservice from deliver.
 - Added checks in all binding dialogs actually demands the user to select a page / content before saving. 
+- Added anonymous account in application settings
+- Made textareas in application settings deletable as are textfields now.
+- Made deliver app recognise application settings from property set and made Filter initialize extra properties correct. Anonymous account is fetched correct also.
 
 Changes:
 - Success url not needed default in web.xml under the cms-application - removed it.
