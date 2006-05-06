@@ -848,7 +848,10 @@ function saveComponentStructure(url)
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
 	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 	newWin=window.open(url, "Save", details);
-	newWin.focus();
+	if(newWin)
+		newWin.focus();
+	else
+		alert("Could not save - if you have a popup blocker this is most likely the cause.");
 }
 	
 //--------------------------------------------
@@ -863,10 +866,13 @@ function edit()
 	}
 	else
 	{
-		//alert("editUrl in edit:" + editUrl.substring(0, 50) + '\n' + editUrl.substring(50));
+		//alert("editUrl in edit:" + editUrl);
 		details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 		newWin=window.open(editUrl, "Edit", details);
-		newWin.focus();
+		if(newWin)
+			newWin.focus();
+		else
+			alert("Could not open new window - if you have a popup blocker this is most likely the cause.");
 	}
 }
 
@@ -884,7 +890,10 @@ function executeTask(url)
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
 	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 	newWin=window.open(url, "Edit", details);
-	newWin.focus();
+	if(newWin)
+		newWin.focus();
+	else
+		alert("Could not start task - if you have a popup blocker this is most likely the cause.");
 }
 
 function insertComponent() 
@@ -892,7 +901,10 @@ function insertComponent()
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
 	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 	newWin=window.open(insertUrl, "Edit", details);
-	newWin.focus();	
+	if(newWin)
+		newWin.focus();
+	else
+		alert("Could not open component list - if you have a popup blocker this is most likely the cause.");
 }
 
 function setAccessRights(slotId, slotContentId) 
