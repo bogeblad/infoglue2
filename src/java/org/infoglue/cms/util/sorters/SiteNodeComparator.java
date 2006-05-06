@@ -48,15 +48,20 @@ public class SiteNodeComparator implements Comparator
 		{
 		    Integer meta1Id = this.templateController.getMetaInformationContentId(siteNodeVO1.getId());
 		    Integer meta2Id = this.templateController.getMetaInformationContentId(siteNodeVO2.getId());
-		    
+		
 		    valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
 			valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);
 		}
 
-	    if(sortOrder.equalsIgnoreCase("desc"))
-		    return valueTwo.compareTo(valueOne);
+		if(valueOne != null && valueTwo != null)
+		{
+			if(sortOrder.equalsIgnoreCase("desc"))
+			    return valueTwo.compareTo(valueOne);
+			else
+			    return valueOne.compareTo(valueTwo);
+		}
 		else
-		    return valueOne.compareTo(valueTwo);
+			return 0;
 	}
 
 	private Comparable getProperty(Object o, String property)
