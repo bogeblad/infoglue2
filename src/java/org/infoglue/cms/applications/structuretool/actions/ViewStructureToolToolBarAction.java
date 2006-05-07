@@ -429,10 +429,12 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			}
 			*/
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
-			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
-			if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-				isMetaInfoInWorkingState = true;
-	
+			if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().intValue() != -1)
+			{
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
+				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+					isMetaInfoInWorkingState = true;
+			}	
 			
 			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
@@ -470,10 +472,12 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			*/
 			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
-			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
-			if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-				isMetaInfoInWorkingState = true;
-
+			if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().intValue() != -1)
+			{
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
+				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+					isMetaInfoInWorkingState = true;
+			}
 
 			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
