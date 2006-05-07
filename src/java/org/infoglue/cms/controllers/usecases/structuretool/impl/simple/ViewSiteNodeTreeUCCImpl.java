@@ -78,6 +78,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
 				Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
 				rootSiteNodeVO.setName(repository.getName());
 				rootSiteNodeVO.setIsBranch(new Boolean(true));
+				rootSiteNodeVO.setMetaInfoContentId(new Integer(-1));
 				SiteNode siteNode = SiteNodeController.getController().create(db, null, null, infoGluePrincipal, repositoryId, rootSiteNodeVO);
 				//siteNodeVO = SiteNodeController.getController().create(null, null, infoGluePrincipal, repositoryId, siteNodeVO);
 				//siteNodeVO = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(infoGluePrincipal, null, null, repositoryId, rootSiteNodeVO);
