@@ -220,10 +220,14 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		
 		siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)siteNodeTypeDefinition);
 		
-		String mappedMetaInfoContentId = (String)contentIdMap.get(siteNode.getMetaInfoContentId().toString());
-		//System.out.println("siteNode meta info content id was:" + siteNode.getMetaInfoContentId() + " and is now " + mappedMetaInfoContentId);
+		String mappedMetaInfoContentId = "-1";
+		if(siteNode.getMetaInfoContentId() != null)
+		{
+			mappedMetaInfoContentId = (String)contentIdMap.get(siteNode.getMetaInfoContentId().toString());
+			//System.out.println("siteNode meta info content id was:" + siteNode.getMetaInfoContentId() + " and is now " + mappedMetaInfoContentId);
+		}
 		siteNode.setMetaInfoContentId(new Integer(mappedMetaInfoContentId));
-
+		
 		db.create(siteNode);
 		
 		allSiteNodes.add(siteNode);
