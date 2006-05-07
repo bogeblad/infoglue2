@@ -129,6 +129,9 @@
     <field name="isBranch" type="java.lang.Boolean">
       <bind-xml name="isBranch" node="element"/>
     </field>
+    <field name="metaInfoContentId" type="java.lang.Integer">
+      <bind-xml name="metaInfoContentId" node="element"/>
+    </field>
     <!--
     <field name="parentSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       <sql name="parentSiteNodeId"/>
