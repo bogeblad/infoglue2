@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -59,6 +60,9 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.services.BaseService;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * @author Mattias Bogeblad
@@ -263,6 +267,7 @@ public class ContentController extends BaseController
 	    	delete(contentVO, db, false, false, false);
 	    	
 	    	commitTransaction(db);
+            
         }
         catch(ConstraintException ce)
         {
@@ -348,6 +353,14 @@ public class ContentController extends BaseController
 			    parentIterator.remove();
 	    	
 	    	db.remove(content);
+            
+            Map args = new HashMap();
+            args.put("globalKey", "infoglue");
+            PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+            ps.remove( "content_" + content.getContentId() + "_allowedContentTypeNames");
+            ps.remove( "content_" + content.getContentId() + "_defaultContentTypeName");
+            ps.remove( "content_" + content.getContentId() + "_initialLanguageId");
+
 	    }
 	    else
     	{

@@ -71,7 +71,10 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
-	    this.allowedContentTypeNames 	= ps.getString("content_" + this.getContentId() + "_allowedContentTypeNames");
+        if ( ps.exists("content_" + this.getContentId() + "_allowedContentTypeNames" ) )
+	    {
+            this.allowedContentTypeNames    = ps.getString("content_" + this.getContentId() + "_allowedContentTypeNames");
+        }
 	    this.defaultContentTypeName		= ps.getString("content_" + this.getContentId() + "_defaultContentTypeName");
 	    this.initialLanguageId			= ps.getString("content_" + this.getContentId() + "_initialLanguageId");
 	    getLogger().info("allowedContentTypeNames:" + allowedContentTypeNames);
@@ -101,6 +104,7 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
         if(allowedContentTypeNameArray != null)
         {
 	        getLogger().info("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
+            allowedContentTypeNames = "";
 	        for(int i=0; i<allowedContentTypeNameArray.length; i++)
 	        {
 	            allowedContentTypeNames += allowedContentTypeNameArray[i] + ","; 
@@ -111,7 +115,7 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
-	    if(allowedContentTypeNames != null)
+	    if(allowedContentTypeNames != null )
 	        ps.setString("content_" + this.getContentId() + "_allowedContentTypeNames", allowedContentTypeNames);
 	    if(defaultContentTypeName != null)
 	        ps.setString("content_" + this.getContentId() + "_defaultContentTypeName", defaultContentTypeName);

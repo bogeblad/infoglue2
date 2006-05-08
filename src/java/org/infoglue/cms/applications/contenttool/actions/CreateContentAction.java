@@ -192,6 +192,29 @@ public class CreateContentAction extends InfoGlueAbstractAction
     	newContentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), parentContentId, contentTypeDefinitionId, repositoryId, contentVO);
 		//newContentVO = ContentController.create(parentContentId, contentTypeDefinitionId, repositoryId, contentVO);
     	
+        if ( newContentVO.getIsBranch().booleanValue() )
+        {
+            Map args = new HashMap();
+            args.put("globalKey", "infoglue");
+            PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+    
+            String allowedContentTypeNames  = ps.getString("content_" + this.getParentContentId() + "_allowedContentTypeNames");
+            String defaultContentTypeName = ps.getString("content_" + this.getParentContentId() + "_defaultContentTypeName");
+            String initialLanguageId  = ps.getString("content_" + this.getParentContentId() + "_initialLanguageId");
+            
+            if ( allowedContentTypeNames != null )
+            {
+                ps.setString("content_" + this.getContentId() + "_allowedContentTypeNames", allowedContentTypeNames );
+            }
+            if ( defaultContentTypeName != null )
+            {
+            ps.setString("content_" + this.getContentId() + "_defaultContentTypeName", defaultContentTypeName );
+            }
+            if ( initialLanguageId != null )
+            {
+                ps.setString("content_" + this.getContentId() + "_initialLanguageId", initialLanguageId );
+            }
+        }        
     	return "success";
     }
     
@@ -225,10 +248,12 @@ public class CreateContentAction extends InfoGlueAbstractAction
 		}
 		else
 		{
-		    this.allowedContentTypeNames = ps.getString("content_" + this.parentContentId + "_allowedContentTypeNames");
 		    this.defaultContentTypeName = ps.getString("content_" + this.parentContentId + "_defaultContentTypeName");
 		}
-		
+        if ( ps.exists( "content_" + this.parentContentId + "_allowedContentTypeNames" ) )
+        {
+            this.allowedContentTypeNames = ps.getString("content_" + this.parentContentId + "_allowedContentTypeNames");
+        }
 		ceb.throwIfNotEmpty();
 		
 		return "input";
