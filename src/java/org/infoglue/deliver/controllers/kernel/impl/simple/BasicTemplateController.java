@@ -3552,15 +3552,13 @@ public class BasicTemplateController implements TemplateController
 			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
 			final Set set = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase());
 			
-			commitDatabase();
-			
 			int commitSize = 0;
 			
 			final List result = new ArrayList();
 			for(Iterator i = set.iterator(); i.hasNext(); ) 
 			{
 				final Content content = (Content) i.next();
-				System.out.println("content: " + content.getName());
+				//System.out.println("content: " + content.getName());
 				if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 					result.add(content.getValueObject());
 				
