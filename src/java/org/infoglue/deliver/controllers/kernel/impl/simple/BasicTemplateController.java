@@ -3554,6 +3554,8 @@ public class BasicTemplateController implements TemplateController
 			
 			commitDatabase();
 			
+			int commitSize = 0;
+			
 			final List result = new ArrayList();
 			for(Iterator i = set.iterator(); i.hasNext(); ) 
 			{
@@ -3561,6 +3563,13 @@ public class BasicTemplateController implements TemplateController
 				System.out.println("content: " + content.getName());
 				if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 					result.add(content.getValueObject());
+				
+				commitSize++;
+				if(commitSize > 100)
+				{
+					commitDatabase();
+					commitSize = 0;
+				}	
 			}
 			return result;
 		}
