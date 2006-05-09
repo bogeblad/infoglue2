@@ -151,7 +151,6 @@ class SortElement implements Comparable
 	 */
 	SortElement(final TemplateController controller, final ContentVO contentVO) 
 	{
-		System.out.println("Adding content:" + contentVO.getName());
 		this.controller = controller;
 		this.contentVO  = contentVO;
 	}
@@ -164,7 +163,6 @@ class SortElement implements Comparable
 	 */
 	SortElement(final TemplateController controller, final ContentVersionVO contentVersionVO) 
 	{
-		System.out.println("Adding contentVersion:" + contentVersionVO.getContentName());
 		this.controller       = controller;
 		this.contentVersionVO = contentVersionVO;
 	}
