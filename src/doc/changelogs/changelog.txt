@@ -1,4 +1,18 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.4 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+
+Abbreviated Changelog from 2.3 Final 
+---------------------------------------
+- Made infoglue divide the transaction into smaller ones when using the getMatchingContents. It often throws Maximum cursors reached in oracle otherwise.
+- Fixed so save and exit actually saves in application settings
+- Made deletion of server node also clean up in the database propertyset 
+
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
 -------------------------------------------------------------------------------------
 
