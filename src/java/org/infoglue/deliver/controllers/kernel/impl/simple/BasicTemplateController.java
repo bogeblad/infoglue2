@@ -202,7 +202,7 @@ public class BasicTemplateController implements TemplateController
     	logger.debug("Committing database in the middle of the run....");
     	try
 		{
-		    this.databaseWrapper.getDatabase().commit();
+    		this.databaseWrapper.getDatabase().commit();
 		    this.databaseWrapper.getDatabase().close();
 		    logger.info("Closed transaction...");
 		    this.databaseWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
