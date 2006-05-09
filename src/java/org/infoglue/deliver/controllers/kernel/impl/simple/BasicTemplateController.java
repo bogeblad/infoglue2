@@ -205,7 +205,8 @@ public class BasicTemplateController implements TemplateController
     		this.databaseWrapper.getDatabase().commit();
 		    this.databaseWrapper.getDatabase().close();
 		    logger.info("Closed transaction...");
-		    this.databaseWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
+		    this.databaseWrapper.setDatabase(CastorDatabaseService.getDatabase());
+		    //this.databaseWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
 		    beginTransaction();
 		    logger.info("Begun a new transaction...");
 		}

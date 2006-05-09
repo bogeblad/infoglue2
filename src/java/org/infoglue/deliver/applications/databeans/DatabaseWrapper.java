@@ -44,4 +44,9 @@ public class DatabaseWrapper
     {
         return database;
     }
+    
+    public void setDatabase(Database database)
+    {
+        this.database = database;
+    }
 }
