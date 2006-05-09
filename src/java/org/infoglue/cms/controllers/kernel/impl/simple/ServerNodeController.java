@@ -25,6 +25,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +43,12 @@ import org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
+import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -193,9 +199,38 @@ public class ServerNodeController extends BaseController
     }
 	
 
-    public void delete(ServerNodeVO serverNodeVO) throws ConstraintException, SystemException
+    public void delete(ServerNodeVO serverNodeVO, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
     {
+    	Integer serverNodeId = serverNodeVO.getId();
+    	
     	deleteEntity(ServerNodeImpl.class, serverNodeVO.getId());
+
+    	Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    Collection keys = ps.getKeys();
+	    Iterator keysIterator = keys.iterator();
+	    while(keysIterator.hasNext())
+	    {
+	    	String key = (String)keysIterator.next();
+	    	//System.out.println("key:" + key);
+	    	if(key.indexOf("serverNode_" + serverNodeId + "_") > -1)
+	    		ps.remove(key);
+	    }
+	    
+		try 
+		{
+			CacheController.clearServerNodeProperty();
+			InfoGlueAuthenticationFilter.initializeCMSProperties();
+		} 
+		catch (SystemException e) 
+		{
+			e.printStackTrace();
+		}
+
+		NotificationMessage notificationMessage = new NotificationMessage("ViewServerNodePropertiesAction.doSave():", "ServerNodeProperties", infoGluePrincipal.getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
+		RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
     }
 	
 	
