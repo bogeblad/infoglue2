@@ -10,7 +10,7 @@ Abbreviated Changelog from 2.3 Final
 - Made infoglue divide the transaction into smaller ones when using the getMatchingContents. It often throws Maximum cursors reached in oracle otherwise.
 - Fixed so save and exit actually saves in application settings
 - Made deletion of server node also clean up in the database propertyset 
-
+- Added functionality so the folder properties is inherited when creating new folder, also made so the properties is removed when content is deleted.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
@@ -431,7 +431,7 @@ Abbreviated Changelog from 1.3.2
 
 New features
 - Better support for Java 5. Xalan is now included by default.
-- We now have support for JSR 168 thanx to the guys at "Myndigheten för skolutveckling" (Jan, Robert, Göran). Apache Pluto is incorporated nicely.
+- We now have support for JSR 168 thanx to the guys at "Myndigheten fï¿½r skolutveckling" (Jan, Robert, Gï¿½ran). Apache Pluto is incorporated nicely.
 - Categorization is implemented nicely. Brings a lot of possibilities to how to build a site and personalize it.
 - Added a new concept called "Groups" to complement users and roles in the security model. 
 - The component editor and edit on sight is now somewhat the same.
