@@ -61,6 +61,7 @@ import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
@@ -190,6 +191,29 @@ public class BasicTemplateController implements TemplateController
         }
 
         return this.databaseWrapper.getDatabase();
+    }
+
+	/**
+     * Commits and reopens a database object so we don't have to long transaction. 
+     */
+	
+    public void commitDatabase() throws SystemException
+    {
+    	logger.debug("Committing database in the middle of the run....");
+    	try
+		{
+		    this.databaseWrapper.getDatabase().commit();
+		    this.databaseWrapper.getDatabase().close();
+		    logger.info("Closed transaction...");
+		    this.databaseWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
+		    beginTransaction();
+		    logger.info("Begun a new transaction...");
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+		}
     }
 
     /**

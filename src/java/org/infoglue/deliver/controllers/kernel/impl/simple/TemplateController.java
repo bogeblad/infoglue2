@@ -68,6 +68,12 @@ public interface TemplateController
      */
     public abstract Database getDatabase() throws SystemException;
     
+	/**
+     * Commits and reopens a database object so we don't have to long transaction. 
+     */
+	
+    public void commitDatabase() throws SystemException;
+
     /** 
      * Add objects to be used in subsequent parsing
      * like getParsedContentAttribute, include, etc 
