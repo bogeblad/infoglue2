@@ -193,6 +193,11 @@ public class BasicTemplateController implements TemplateController
         return this.databaseWrapper.getDatabase();
     }
 
+	public DatabaseWrapper getDatabaseWrapper()
+	{
+		return databaseWrapper;
+	}
+
 	/**
      * Commits and reopens a database object so we don't have to long transaction. 
      */
@@ -5839,4 +5844,6 @@ public class BasicTemplateController implements TemplateController
     {
         this.threatFoldersAsContents = threatFoldersAsContents;
     }
+
+
 }

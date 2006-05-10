@@ -157,7 +157,7 @@ public class RequestAndMetaInfoCentricCachePopulator
 		SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
 		SiteNodeVO rootSiteNodeVO = templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
 		
-		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController, principal, dbWrapper);
+		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController, principal/*, dbWrapper*/);
 
 		List templates = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate", dbWrapper.getDatabase());
 		Iterator templatesIterator = templates.iterator();
@@ -175,8 +175,8 @@ public class RequestAndMetaInfoCentricCachePopulator
 	}
 	
 	
-	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId, TemplateController templateController, Principal principal, DatabaseWrapper dbWrapper) throws Exception
-	{
+	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId, TemplateController templateController, Principal principal/*, DatabaseWrapper dbWrapper*/) throws Exception
+	{		
 	    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, templateController.getDatabase(), true);
 	    SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
 
@@ -197,16 +197,16 @@ public class RequestAndMetaInfoCentricCachePopulator
 	    while(childSiteNodesIterator.hasNext())
         {
 	        SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
-	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId, templateController, principal, dbWrapper);
+	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId, templateController, principal);
         }
 	 
-		Repository repository = RepositoryController.getController().getRepositoryWithId(siteNodeVO.getRepositoryId(), dbWrapper.getDatabase());
+		Repository repository = RepositoryController.getController().getRepositoryWithId(siteNodeVO.getRepositoryId(), templateController.getDatabase());
 		Collection languages = repository.getRepositoryLanguages();
 		Iterator languagesIterator = languages.iterator();
 		while(languagesIterator.hasNext())
 		{
 		    RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languagesIterator.next();
-		    LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(dbWrapper.getDatabase(), repositoryLanguage.getLanguage().getId(), siteNodeId);
+		    LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(templateController.getDatabase(), repositoryLanguage.getLanguage().getId(), siteNodeId);
 		}
    
 	    
@@ -231,8 +231,8 @@ public class RequestAndMetaInfoCentricCachePopulator
 	    
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		IntegrationDeliveryController integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
-		TemplateController subTemplateController = getTemplateController(dbWrapper, siteNodeId, languageId, contentId, new FakeHttpServletRequest(), (InfoGluePrincipal)principal, false, browserBean, nodeDeliveryController, integrationDeliveryController);
-		
+		TemplateController subTemplateController = getTemplateController(templateController.getDatabaseWrapper(), siteNodeId, languageId, contentId, new FakeHttpServletRequest(), (InfoGluePrincipal)principal, false, browserBean, nodeDeliveryController, integrationDeliveryController);
+
 		DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*(InfoGluePrincipal)this.principal*/);
 		//deliveryContext.setRepositoryName(repositoryName);
 		deliveryContext.setSiteNodeId(siteNodeId);
@@ -253,8 +253,9 @@ public class RequestAndMetaInfoCentricCachePopulator
 
 		String pagePath = subTemplateController.getCurrentPagePath();
 		
+		subTemplateController.commitDatabase();
+		
 		CacheController.cacheObject("newPagePathCache", deliveryContext.getPageKey(), pagePath);
-
 	}
 	
    	/**

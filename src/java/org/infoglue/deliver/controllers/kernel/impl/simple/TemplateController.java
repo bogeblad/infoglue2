@@ -44,6 +44,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.DesEncryptionHelper;
+import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.BrowserBean;
@@ -68,11 +69,13 @@ public interface TemplateController
      */
     public abstract Database getDatabase() throws SystemException;
     
+	public abstract DatabaseWrapper getDatabaseWrapper();
+
 	/**
      * Commits and reopens a database object so we don't have to long transaction. 
      */
 	
-    public void commitDatabase() throws SystemException;
+    public abstract void commitDatabase() throws SystemException;
 
     /** 
      * Add objects to be used in subsequent parsing
