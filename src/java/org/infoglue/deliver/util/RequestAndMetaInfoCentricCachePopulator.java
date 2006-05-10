@@ -158,7 +158,7 @@ public class RequestAndMetaInfoCentricCachePopulator
 		SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
 		SiteNodeVO rootSiteNodeVO = templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
 		
-		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController, principal/*, dbWrapper*/, 2, 0);
+		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController, principal/*, dbWrapper*/, 1, 0);
 
 		List templates = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate", dbWrapper.getDatabase());
 		Iterator templatesIterator = templates.iterator();
