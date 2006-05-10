@@ -158,7 +158,7 @@ public class RequestAndMetaInfoCentricCachePopulator
 		SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
 		SiteNodeVO rootSiteNodeVO = templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
 		
-		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController, principal/*, dbWrapper*/);
+		recurseSiteNodeTree(rootSiteNodeVO.getId(), languageId, templateController, principal/*, dbWrapper*/, 2, 0);
 
 		List templates = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate", dbWrapper.getDatabase());
 		Iterator templatesIterator = templates.iterator();
@@ -176,7 +176,7 @@ public class RequestAndMetaInfoCentricCachePopulator
 	}
 	
 	
-	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId, TemplateController templateController, Principal principal/*, DatabaseWrapper dbWrapper*/) throws Exception
+	private void recurseSiteNodeTree(Integer siteNodeId, Integer languageId, TemplateController templateController, Principal principal/*, DatabaseWrapper dbWrapper*/, int maxLevel, int currentLevel) throws Exception
 	{		
 	    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, templateController.getDatabase(), true);
 	    SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
@@ -194,6 +194,7 @@ public class RequestAndMetaInfoCentricCachePopulator
         
         Collection childSiteNodes = siteNode.getChildSiteNodes();
 	    
+        /*
         List childSiteNodeIds = new ArrayList();
         Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
@@ -210,6 +211,17 @@ public class RequestAndMetaInfoCentricCachePopulator
 	        Integer childSiteNodeId = (Integer)childSiteNodeIdsIterator.next();
 	        recurseSiteNodeTree(childSiteNodeId, languageId, templateController, principal);
         }
+
+        */
+
+        Iterator childSiteNodesIterator = childSiteNodes.iterator();
+	    while(childSiteNodesIterator.hasNext())
+        {
+	        SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
+	        if(maxLevel > currentLevel)
+	        	recurseSiteNodeTree(childSiteNode.getId(), languageId, templateController, principal, maxLevel, currentLevel + 1);
+        }
+
 	 
 		Repository repository = RepositoryController.getController().getRepositoryWithId(siteNodeVO.getRepositoryId(), templateController.getDatabase());
 		Collection languages = repository.getRepositoryLanguages();
