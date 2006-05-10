@@ -186,6 +186,8 @@ public class RequestAndMetaInfoCentricCachePopulator
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Description", true); 
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "ComponentStructure", true); 
 
+        templateController.commitDatabase();
+
         List childPages = templateController.getChildPages(siteNodeId);
         
         templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
@@ -252,9 +254,7 @@ public class RequestAndMetaInfoCentricCachePopulator
 		SiteNodeVO rootSiteNodeVO = templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
 
 		String pagePath = subTemplateController.getCurrentPagePath();
-		
-		subTemplateController.commitDatabase();
-		
+				
 		CacheController.cacheObject("newPagePathCache", deliveryContext.getPageKey(), pagePath);
 	}
 	
