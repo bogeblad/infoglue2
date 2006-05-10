@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -186,8 +187,6 @@ public class RequestAndMetaInfoCentricCachePopulator
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "Description", true); 
         templateController.getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, "ComponentStructure", true); 
 
-        templateController.commitDatabase();
-
         List childPages = templateController.getChildPages(siteNodeId);
         
         templateController.getRepositoryRootSiteNode(siteNodeVO.getRepositoryId());
@@ -195,11 +194,21 @@ public class RequestAndMetaInfoCentricCachePopulator
         
         Collection childSiteNodes = siteNode.getChildSiteNodes();
 	    
-	    Iterator childSiteNodesIterator = childSiteNodes.iterator();
+        List childSiteNodeIds = new ArrayList();
+        Iterator childSiteNodesIterator = childSiteNodes.iterator();
 	    while(childSiteNodesIterator.hasNext())
         {
 	        SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
-	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId, templateController, principal);
+	        childSiteNodeIds.add(childSiteNode.getSiteNodeId());
+        }
+
+        templateController.commitDatabase();
+
+	    Iterator childSiteNodeIdsIterator = childSiteNodeIds.iterator();
+	    while(childSiteNodeIdsIterator.hasNext())
+        {
+	        Integer childSiteNodeId = (Integer)childSiteNodeIdsIterator.next();
+	        recurseSiteNodeTree(childSiteNodeId, languageId, templateController, principal);
         }
 	 
 		Repository repository = RepositoryController.getController().getRepositoryWithId(siteNodeVO.getRepositoryId(), templateController.getDatabase());
