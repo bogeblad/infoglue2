@@ -23,7 +23,6 @@
  
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +37,6 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
@@ -89,8 +87,14 @@ public class ComponentLogic
 	 * The method is great for collection-pages on any site where you want to bind to a folder containing all contents to list.
 	 * You can also state if the method should recurse into subfolders and how the contents should be sorted.
 	 * The recursion only deals with three levels at the moment for performance-reasons. 
+	 *
+	 * @param propertyName the name of the content binding property
+	 * @param searchRecursive if true the search is made recursive
+	 * @param sortAttribute the attribute to sort the resulting List
+	 * @param sortOrder if desc sorting is descendend otherwise ascending.
+	 * @return a List of ContentVO objects, 
+	 * @throws Exception if an error occures
 	 */
-	
 	public List getBoundFolderContents(String propertyName, boolean searchRecursive, String sortAttribute, String sortOrder) throws Exception
 	{
 	    return getBoundFolderContents(propertyName, searchRecursive, sortAttribute, sortOrder, false);
@@ -101,8 +105,15 @@ public class ComponentLogic
 	 * The method is great for collection-pages on any site where you want to bind to a folder containing all contents to list.
 	 * You can also state if the method should recurse into subfolders and how the contents should be sorted.
 	 * The recursion only deals with three levels at the moment for performance-reasons. 
+     *
+	 * @param propertyName the name of the content binding property
+	 * @param searchRecursive if true the search is made recursive
+	 * @param sortAttribute the attribute to sort the rsulting List
+	 * @param sortOrder  if desc sorting is descendend otherwise ascending.
+	 * @param includeFolders true if the folders should be added to the List
+	 * @return a List of ContentVO objects,
+	 * @throws Exception if an error occures
 	 */
-	
 	public List getBoundFolderContents(String propertyName, boolean searchRecursive, String sortAttribute, String sortOrder, boolean includeFolders) throws Exception
 	{
 		List childContents = new ArrayList();
@@ -1868,6 +1879,10 @@ public class ComponentLogic
         this.templateController.setThreatFoldersAsContents(threatFoldersAsContents);
     }
     
+    /**
+     * Returns ComponentDeliveryContext
+     * @return the ComponentDeliveryContext
+     */
     public ComponentDeliveryContext getComponentDeliveryContext()
     {
         return componentDeliveryContext;
