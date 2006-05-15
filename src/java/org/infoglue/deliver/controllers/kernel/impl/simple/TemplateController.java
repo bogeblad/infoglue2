@@ -299,20 +299,30 @@ public interface TemplateController
     /**
      * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
      * value if OnSiteEdit is on.
-     */
-    public abstract String getContentAttribute(String contentBindningName,
-            String attributeName, boolean clean);
+     *      */
+    public abstract String getContentAttribute(String contentBindningName, String attributeName, boolean clean);
 
     /**
-     * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
-     * value if OnSiteEdit is on.
+     * This method is just a dummy method used to ensure that we can ensure to
+     * not get a decorated attribute value if OnSiteEdit is on.
      */
     public abstract String getContentAttribute(String attributeName,
             boolean clean);
 
     /**
-     * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
-     * value if OnSiteEdit is on.
+     * This method deliveres a String with the content-attribute asked for a
+     * specific content and ensure not to get decorated attributes if EditOnSite is
+     * turned on.
+     * 
+     * @param contentId
+     *            the contentId of a content
+     * @param attributeName
+     *            the attribute name in the content. (ie. Title, Leadin etc)
+     * @param clean
+     *            true if the content should be decorated in the editonsite
+     *            working mode. No decoration is made if content-attribute is
+     *            empty.
+     * @return the contentAttribute or empty string if none found.
      */
     public abstract String getContentAttribute(Integer contentId,
             String attributeName, boolean clean);
@@ -321,6 +331,7 @@ public interface TemplateController
      * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
      * value if OnSiteEdit is on.
      */
+    
     public abstract String getContentAttribute(Integer contentId,
             Integer langaugeId, String attributeName, boolean clean);
 
@@ -1288,5 +1299,14 @@ public interface TemplateController
      * @author Per Jonsson - per.jonsson@it-huset.se
      */
     public String getRenderedTextUrl( String text, Map renderAttributes );
+    
+    /**
+     * A method to check if the current pagenode is decorated with EditOnSight
+     * or not. Checks if it's the BasicTemplateController or the
+     * EditOnSiteBasicTemplateController which is used as a render.
+     * 
+     * @return true if the pagenode is rendered with EditOnSight decoration.
+     */
+    public boolean getIsDecorated();
 
 }

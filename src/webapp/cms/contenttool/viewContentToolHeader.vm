@@ -68,7 +68,7 @@
 	<td class="toolheader"><img src="images/$ui.getString("images.contenttool.repositoryLabel")" width="70" height="19" /></td> 
 	<td>
 		<form name="selectbox" method="post" action="">
-		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:reloadMenu(this);" class="contenttool">
+		<select size="1" name="repositoryId" class="sitedropbox" onchange="javascript:reloadMenu(this);" >
 		    #if ($repositories.size() > 1)
 		    	<option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
 		    #end
@@ -88,11 +88,11 @@
 			<input type="hidden" name="repositoryId" value="$!repositoryId" />	
 			<input type="text" class="searchfield" name="searchString" value="" style="vertical-align:top"  />
 			<img src="images/trans.gif" width="5" height="19" />
-			<input type="image" src="$ui.getString("images.contenttool.ok")" width="31" heigth="19"/>
+			<input type="image" src="$ui.getString("images.contenttool.ok")" style="width: 31px; height: 19px;" />
 			<img src="images/trans.gif" width="5" height="19"/>
 			<a href="javascript:openSearchForm();">
-				<img src="$ui.getString("images.contenttool.advanced")" width="62" heigth="19" border="0"/>
-			</a>
+				<img src="$ui.getString("images.contenttool.advanced")" width="62" height="19" border="0"/>
+			</a> 
 		</form>
 	</td>
 	<td class="toolheader" width="70%"><img src="images/trans.gif" width="1" height="1" /></td>
@@ -108,7 +108,7 @@
 
 
 <div style="left:0px; position:absolute; top:39px; visibility:visible; z-index:0">
-<table cellpadding="0" cellspacing="0" border="0" width="100%" height="1">
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="height: 1px">
 <tr>
 	<td bgcolor="#999999" width="100%"><img src="images/trans.gif" width="1" height="1" /></td>
 </tr>

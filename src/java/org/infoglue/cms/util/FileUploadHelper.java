@@ -49,7 +49,12 @@ public class FileUploadHelper
 {
     private final static Logger logger = Logger.getLogger(FileUploadHelper.class.getName());
 
-	public File getUploadedFile(MultiPartRequestWrapper mpr)
+    private FileUploadHelper()
+    {
+        // don't instanciate, use static methods
+    }
+    
+	public static File getUploadedFile(MultiPartRequestWrapper mpr)
 	{
 		File renamedFile = null;
 		
@@ -65,7 +70,7 @@ public class FileUploadHelper
 					File file = mpr.getFile(name);
 					if(file != null)
 					{
-						String contentType    = mpr.getContentType(name);
+						//String contentType    = mpr.getContentType(name);
 						String fileSystemName = mpr.getFilesystemName(name);
 						
 						String fileName = "Import_" + System.currentTimeMillis() + fileSystemName;

@@ -1244,21 +1244,30 @@ public class BasicTemplateController implements TemplateController
 	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
 	 * value if OnSiteEdit is on.
 	 */
-	 
 	public String getContentAttribute(String attributeName, boolean clean) 
 	{				
 		return getContentAttribute(attributeName);
 	}
 
-	/**
-	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
-	 * value if OnSiteEdit is on.
-	 */
- 
-	public String getContentAttribute(Integer contentId, String attributeName, boolean clean) 
-	{				
-		return getContentAttribute(contentId, attributeName);
-	}
+    /**
+     * This method deliveres a String with the content-attribute asked for a
+     * specific content and ensure not to get decorated attributes if EditOnSite is
+     * turned on.
+     * 
+     * @param contentId
+     *            the contentId of a content
+     * @param attributeName
+     *            the attribute name in the content. (ie. Title, Leadin etc)
+     * @param clean
+     *            has no effect in this class.
+     * @return the contentAttribute or empty string if none found.
+     * @see org.infoglue.deliver.controllers.kernel.impl.simple.EditOnSiteTemplateController#getContentAttribute(java.lang.String,
+     *      boolean)
+     */
+    public String getContentAttribute(Integer contentId, String attributeName, boolean clean)
+    {
+        return getContentAttribute(contentId, attributeName);
+    }
 	
 	/**
 	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
@@ -5845,5 +5854,15 @@ public class BasicTemplateController implements TemplateController
         this.threatFoldersAsContents = threatFoldersAsContents;
     }
 
-
+    /**
+     * A method to check if the current pagenode is decorated with EditOnSight
+     * or not. Checks if it's the BasicTemplateController or the
+     * EditOnSiteBasicTemplateController which is used as a render.
+     * 
+     * @return true if the pagenode is rendered with EditOnSight decoration.
+     */
+    public boolean getIsDecorated()
+    {
+        return ( this instanceof EditOnSiteBasicTemplateController );
+    }
 }

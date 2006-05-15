@@ -112,8 +112,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			db.begin();
 			
 			//now restore the value and list what we get
-			FileUploadHelper fileUploadHelper = new FileUploadHelper();
-			File file = fileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
+			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
 			
 			String encoding = "UTF-8";
 			//String encoding = "ISO-8859-1";

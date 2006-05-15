@@ -5,7 +5,11 @@
 <html>
 <head>
 	<title>Toolbar</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+
 	
 	<script language="JavaScript" src="script/listview.js"></script>
 	<script type="text/javascript" language="JavaScript">
@@ -207,21 +211,21 @@
 <body class="contenttool">
 
 <!-- This is the toolbar --->
-<div style="LEFT:1px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:1px; visibility:visble; z-index:1">
+<div style="left:1px; right:2px; position:absolute; top:1px; bottom:1px; visibility:visble; z-index:1">
 <table class="contenttool" cellpadding="0" cellspacing="0" border="0">
 <tr>
-	<td colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"/></td>
 </tr>
 <tr>
-	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="28"></td>
+	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="28"/></td>
 	<td valign="middle" width="100%" height="100%">
 		#*
 		#foreach($button in $buttons)
 			#if($button.isSelfContained)
-				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a><img src="images/splitter.gif">						 
+				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a><img src="images/splitter.gif"/>						 
 			#else
-				<a href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0"class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>
-				<img src="images/splitter.gif">		
+				<a href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0"class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
+				<img src="images/splitter.gif"/>		
 			#end
 		#end
 		*#
@@ -232,59 +236,59 @@
 			
 			#if($button.isSelfContained)
 			<div class="menuItem" #if($button.subButtons.size() > 0)onmouseover="this.className='selectedMenuItem';" onmouseout="this.className='menuItem';"#end style="left: ${left}px; width: ${width}px;">
-				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>
+				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
 			#else
 				<div class="menuItem" #if($button.subButtons.size() > 0)onmouseover="this.className='selectedMenuItem';" onmouseout="this.className='menuItem';"#end style="left: ${left}px; width: ${width}px;">
-					<a id="$button.getTitle()" $style href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>
+					<a id="$button.getTitle()" $style href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
 			#end
 			
 		    #foreach($subButton in $button.subButtons)
 				#set($width = $subButton.width + 2)
 				#if($subButton.isSelfContained)
-					<a href="$subButton.getActionUrl()"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>						 
+					<a href="$subButton.getActionUrl()"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>						 
 				#else
-					<a id="$subButton.getTitle()" $style href="javascript:openMainArea('$subButton.getActionUrl()', '$subButton.getTitle()');"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"></a>
+					<a id="$subButton.getTitle()" $style href="javascript:openMainArea('$subButton.getActionUrl()', '$subButton.getTitle()');"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
 				#end
 			#end
 			  				
 			#if($button.subButtons.size() > 0)
 				<div style="position: absolute; right: 0px; bottom: 2px; width: 3px; height: 3px;">
-					<img src="images/expandMenu.gif">
+					<img src="images/expandMenu.gif"/>
 				</div>
 			#end
 	 		  </div>
 
 			#set($left = $left + $button.width + 5)
 				<div style="position: absolute; left: ${left}px; top: 5px; width: 2px; height: 20px;">
-					<img src="images/splitter.gif">
+					<img src="images/splitter.gif"/>
 				</div>
 			#set($left = $left + 3)
 			
 		#end
  		
 	</td>
-	<td bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"></td>
+	<td bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"/></td>
 </tr>
 <tr>
-	<td colspan="3" bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="3" bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"/></td>
 </tr>
 </table>
 </div>
 
 <!-- This is the headline --->
-<div style="LEFT:1px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:1px; visibility:visble; z-index:0">
+<div style="left:1px; right:0px; position:absolute; top:32px; bottom:1px; visibility:visble; z-index:0">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
-	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"/></td>
 </tr>
 <tr>
-	<td class="actionheader"><img src="images/trans.gif" width="15" height="1">$ui.getString($title)</td>
+	<td class="actionheader"><img src="images/trans.gif" width="15" height="1"/>$ui.getString($title)</td>
 </tr>
 <tr class="lightgreen">
-	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"/></td>
 </tr>
 <tr>
-	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"/></td>
 </tr>
 </table>
 

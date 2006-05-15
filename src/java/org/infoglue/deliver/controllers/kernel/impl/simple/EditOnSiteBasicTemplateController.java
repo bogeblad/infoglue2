@@ -62,8 +62,17 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	    if(attributeValue != null && !attributeValue.trim().equals(""))
 	    {
 			String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
-			String decoratedAttributeValue = "<span oncontextmenu=\"setContentItemParameters(" + contentId + "," + languageId + ",'" + attributeName + "'); setEditUrl('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "&forceWorkingChange=true');\">" + attributeValue + "</span>";
-			return decoratedAttributeValue;
+            StringBuffer requestDelim = new StringBuffer( CmsPropertyHandler.getRequestArgumentDelimiter() );
+			StringBuffer decoratedAttributeValue = new StringBuffer();
+            decoratedAttributeValue.append("<span oncontextmenu=\"setContentItemParameters(" );
+            decoratedAttributeValue.append( contentId ).append( "," ).append( languageId );
+            decoratedAttributeValue.append( ",'").append( attributeName ).append( "'); setEditUrl('");
+            decoratedAttributeValue.append( editOnSiteUrl ).append( "?contentId=" ).append( contentId );
+            decoratedAttributeValue.append( requestDelim).append("languageId=").append( languageId );
+            decoratedAttributeValue.append( requestDelim).append("attributeName=" ).append( attributeName );
+            decoratedAttributeValue.append( requestDelim ).append( "forceWorkingChange=true');\">" );
+            decoratedAttributeValue.append( attributeValue + "</span>");
+			return decoratedAttributeValue.toString();
 	    }
 	    else
 	    {
@@ -182,14 +191,13 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	}
 
 
-	/**
-	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
-	 * value if OnSiteEdit is on.
-	 */
-	 
+    /**
+     * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+     * value if OnSiteEdit is on.
+     */
 	public String getContentAttribute(String contentBindningName, String attributeName, boolean clean) 
 	{				
-		return super.getContentAttribute(contentBindningName, attributeName);
+       return  super.getContentAttribute(contentBindningName, attributeName);
 	}
 
 	/**
@@ -202,19 +210,31 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		return super.getContentAttribute(attributeName);
 	}
 
-
-	/**
-	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
-	 * value if OnSiteEdit is on.
-	 */
  
+    /**
+     * This method deliveres a String with the content-attribute asked for a
+     * specific content and ensure not to get decorated attributes if EditOnSite is
+     * turned on.
+     * 
+     * @param contentId
+     *            the contentId of a content
+     * @param attributeName
+     *            the attribute name in the content. (ie. Title, Leadin etc)
+     * @param clean
+     *            true if the content should be decorated in the editonsite
+     *            working mode. No decoration is made if content-attribute is
+     *            empty.
+     * @return the contentAttribute or empty string if none found.
+     */
 	public String getContentAttribute(Integer contentId, String attributeName, boolean clean)
 	{
-	    String attributeValue = "";
-
-		attributeValue = super.getContentAttribute(contentId, attributeName);
-				
-		return attributeValue;
+	    String attributeValue = super.getContentAttribute(contentId, attributeName); 
+    
+        if( clean == false )
+        {
+            attributeValue = this.decorateTag( contentId, this.languageId, attributeName, attributeValue );
+        }
+        return attributeValue;
 	}
 
 	/**
