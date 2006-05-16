@@ -11,8 +11,7 @@ Abbreviated Changelog from 2.3 Final
 - Fixed so save and exit actually saves in application settings
 - Made deletion of server node also clean up in the database propertyset 
 - Added functionality so the folder properties is inherited when creating new folder, also made so the properties is removed when content is deleted.
-- Added a getIsDecorated() method in the TemplateController to check if the pagenode is render with editonsight-
-- Made FileUploadHelper a static class.
+- Added a getIsDecorated() method in the TemplateController to check if the pagenode is render with editonsight.
 - Made the decorated tags in editonsight use the setting of the cms property getRequestArgumentDelimiter.
 - Fixed the getContentAttribute(Integer contentId, String attributeName, boolean clean) in EditOnSiteBasicTemplateController.
 - Fixed html compiance in some files in cms/contenttool/

@@ -49,7 +49,7 @@ public class FileUploadHelper
 {
     private final static Logger logger = Logger.getLogger(FileUploadHelper.class.getName());
 
-    private FileUploadHelper()
+    public FileUploadHelper()
     {
         // don't instanciate, use static methods
     }
