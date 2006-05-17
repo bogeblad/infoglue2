@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
+import java.util.List;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.mapping.Mapping;
@@ -35,6 +36,7 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.Content;
@@ -81,15 +83,26 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 		try 
 		{
 			Mapping map = new Mapping();
-			getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
-			map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+			String exportFormat = CmsPropertyHandler.getExportFormat();
 
+			if(exportFormat.equalsIgnoreCase("2"))
+			{
+				getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
+				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
+			}
+			else
+			{
+				getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+			}
+			
 			// All ODMG database access requires a transaction
 			db.begin();
 
 			Repository repository 	= RepositoryController.getController().getRepositoryWithId(this.repositoryId, db);
 			SiteNode siteNode 		= SiteNodeController.getController().getRootSiteNode(this.repositoryId, db);
 			Content content 		= ContentController.getContentController().getRootContent(this.repositoryId, db);
+			List contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionList(db);
 			
 			InfoGlueExportImpl infoGlueExportImpl = new InfoGlueExportImpl();
 			
@@ -111,6 +124,8 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
             
 			infoGlueExportImpl.setRootContent((ContentImpl)content);
 			infoGlueExportImpl.setRootSiteNode((SiteNodeImpl)siteNode);
+			infoGlueExportImpl.setContentTypeDefinitions(contentTypeDefinitions);
+			
 			marshaller.marshal(infoGlueExportImpl);
 			
 			osw.flush();

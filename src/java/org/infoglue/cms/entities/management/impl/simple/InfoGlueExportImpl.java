@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.entities.management.impl.simple;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 
@@ -31,7 +34,8 @@ public class InfoGlueExportImpl
 	private Integer infoGlueExportId;
 	private ContentImpl rootContent;
 	private SiteNodeImpl rootSiteNode;
-	  
+	private Collection contentTypeDefinitions = new ArrayList();
+	
 	public Integer getInfoGlueExportId()
 	{
 		return infoGlueExportId;
@@ -60,6 +64,16 @@ public class InfoGlueExportImpl
 	public void setRootSiteNode(SiteNodeImpl impl)
 	{
 		rootSiteNode = impl;
+	}
+
+	public Collection getContentTypeDefinitions()
+	{
+		return contentTypeDefinitions;
+	}
+
+	public void setContentTypeDefinitions(Collection contentTypeDefinitions)
+	{
+		this.contentTypeDefinitions = contentTypeDefinitions;
 	}
 
 }        

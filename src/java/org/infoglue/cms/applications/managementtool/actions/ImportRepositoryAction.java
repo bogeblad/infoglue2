@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -104,17 +105,51 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		
 		try 
 		{
-			Mapping map = new Mapping();
-			getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
-			map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+			//now restore the value and list what we get
+			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
+			String encoding = "UTF-8";
+			int version = 1;
+			
+			//Looking up what kind of dialect this is.
+	        
+			FileInputStream fisTemp = new FileInputStream(file);
+            InputStreamReader readerTemp = new InputStreamReader(fisTemp, encoding);
+            BufferedReader bufferedReaderTemp = new BufferedReader(readerTemp);
+            String line = bufferedReaderTemp.readLine();
+            int index = 0;
+            while(line != null && index < 50)
+            {
+            	getLogger().info("line:" + line + '\n');
+            	if(line.indexOf("contentTypeDefinitionId") > -1)
+            	{
+            		getLogger().info("This was a new export...");
+            		version = 2;
+            		break;
+            	}
+            	line = bufferedReaderTemp.readLine();
+            	index++;
+            }
+            
+            bufferedReaderTemp.close();
+            readerTemp.close();
+            fisTemp.close();
+
+            Mapping map = new Mapping();
+			if(version == 1)
+			{
+	            getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+			}
+			else if(version == 2)
+			{
+			    getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
+				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());	
+			}
 
 			// All ODMG database access requires a transaction
 			db.begin();
 			
-			//now restore the value and list what we get
-			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
-			
-			String encoding = "UTF-8";
+
 			//String encoding = "ISO-8859-1";
 	        FileInputStream fis = new FileInputStream(file);
             InputStreamReader reader = new InputStreamReader(fis, encoding);
@@ -123,6 +158,9 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			Unmarshaller unmarshaller = new Unmarshaller(map);
 			unmarshaller.setWhitespacePreserve(true);
 			InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
+			Collection contentTypeDefinitions = infoGlueExportImplRead.getContentTypeDefinitions();
+			getLogger().info("Found " + contentTypeDefinitions.size() + " content type definitions");
+			
 			SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
 			getLogger().info(readSiteNode.getName());
 			Content readContent = infoGlueExportImplRead.getRootContent();
@@ -164,7 +202,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			Map siteNodeIdMap = new HashMap();
 			
 			List allContents = new ArrayList();
-			createContents(readContent, contentIdMap, allContents, db);
+			createContents(readContent, contentIdMap, allContents, contentTypeDefinitions, version, db);
 			List allSiteNodes = new ArrayList();
 			createStructure(readSiteNode, contentIdMap, siteNodeIdMap, allSiteNodes, db);
 			
@@ -346,23 +384,56 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	 * @throws Exception
 	 */
 	
-	private List createContents(Content content, Map idMap, List allContents, Database db) throws Exception
+	private List createContents(Content content, Map idMap, List allContents, Collection contentTypeDefinitions, int version, Database db) throws Exception
 	{
 	    Integer originalContentId = content.getContentId();
 		
-		ContentTypeDefinition originalContentTypeDefinition = content.getContentTypeDefinition();
-		if(originalContentTypeDefinition != null)
-		{
-		    ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
-			if(contentTypeDefinition == null)
+	    if(version == 2)
+	    {
+		    Integer contentTypeDefinitionId = ((ContentImpl)content).getContentTypeDefinitionId();
+		    if(contentTypeDefinitionId != null)
 			{
-			    db.create(originalContentTypeDefinition);
-			    contentTypeDefinition = originalContentTypeDefinition;
+		    	ContentTypeDefinition originalContentTypeDefinition = null;
+		    	Iterator contentTypeDefinitionsIterator = contentTypeDefinitions.iterator();
+		    	while(contentTypeDefinitionsIterator.hasNext())
+		    	{
+		    		ContentTypeDefinition contentTypeDefinitionCandidate = (ContentTypeDefinition)contentTypeDefinitionsIterator.next();
+		    		if(contentTypeDefinitionCandidate.getId().intValue() == contentTypeDefinitionId.intValue())
+		    		{
+		    			originalContentTypeDefinition = contentTypeDefinitionCandidate;
+		    			break;
+		    		}
+		    	}
+		    	
+		    	if(originalContentTypeDefinition != null)
+		    	{
+			    	ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
+					if(contentTypeDefinition == null)
+					{
+					    db.create(originalContentTypeDefinition);
+					    contentTypeDefinition = originalContentTypeDefinition;
+					}
+				
+					content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+		    	}
 			}
-			
-			content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
-		}
-		
+	    }
+	    else if(version == 2)
+	    {
+			ContentTypeDefinition originalContentTypeDefinition = content.getContentTypeDefinition();
+			if(originalContentTypeDefinition != null)
+			{
+			    ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
+				if(contentTypeDefinition == null)
+				{
+				    db.create(originalContentTypeDefinition);
+				    contentTypeDefinition = originalContentTypeDefinition;
+				}
+				
+				content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+			}
+	    }
+	    
 		db.create(content);
 		
 		allContents.add(content);
@@ -414,7 +485,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				Content childContent = (Content)childContentsIterator.next();
 				childContent.setRepository(content.getRepository());
 				childContent.setParentContent((ContentImpl)content);
-				createContents(childContent, idMap, allContents, db);
+				createContents(childContent, idMap, allContents, contentTypeDefinitions, version, db);
 			}
 		}
 		

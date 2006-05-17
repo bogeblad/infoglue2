@@ -15,6 +15,8 @@ Abbreviated Changelog from 2.3 Final
 - Made the decorated tags in editonsight use the setting of the cms property getRequestArgumentDelimiter.
 - Fixed the getContentAttribute(Integer contentId, String attributeName, boolean clean) in EditOnSiteBasicTemplateController.
 - Fixed html compiance in some files in cms/contenttool/
+- Fixed bug in import if repository references another existing repository.
+- Made an option to specify exportFormat in cms.properties and this results in much more compact xml-files. Can only be imported by a version later than 2.3 however.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
