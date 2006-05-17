@@ -219,8 +219,9 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			try
             {
                 db.rollback();
+                db.close();
             } 
-			catch (TransactionNotInProgressException e1)
+			catch (Exception e1)
             {
                 getLogger().error("An error occurred when importing a repository: " + e.getMessage(), e);
     			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
@@ -260,7 +261,8 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		String mappedMetaInfoContentId = "-1";
 		if(siteNode.getMetaInfoContentId() != null)
 		{
-			mappedMetaInfoContentId = (String)contentIdMap.get(siteNode.getMetaInfoContentId().toString());
+			if(contentIdMap.containsKey(siteNode.getMetaInfoContentId().toString()))
+				mappedMetaInfoContentId = (String)contentIdMap.get(siteNode.getMetaInfoContentId().toString());
 			//System.out.println("siteNode meta info content id was:" + siteNode.getMetaInfoContentId() + " and is now " + mappedMetaInfoContentId);
 		}
 		siteNode.setMetaInfoContentId(new Integer(mappedMetaInfoContentId));
