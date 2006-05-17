@@ -494,6 +494,9 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	            }
 	            
 	            getLogger().info("contentVersionValue after:" + contentVersionValue);
+	            
+	            //Now replace all occurrances of old as they should never be there.
+                contentVersionValue = contentVersionValue.replaceAll("old_", "");
 
 	            getLogger().info("new contentVersionValue:" + contentVersionValue);
 	            contentVersion.setVersionValue(contentVersionValue);
