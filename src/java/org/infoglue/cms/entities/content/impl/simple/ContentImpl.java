@@ -145,7 +145,15 @@ public class ContentImpl implements Content
         if(contentTypeDefinition != null)
             this.valueObject.setContentTypeDefinitionId(contentTypeDefinition.getId());
     }
-      
+     
+    public Integer getContentTypeDefinitionId()
+    {
+    	if(this.contentTypeDefinition != null)
+    		return this.contentTypeDefinition.getId();
+    	else
+    		return null;
+    }
+
     public java.util.Collection getChildren()
     {
         return this.children;
@@ -258,6 +266,7 @@ public class ContentImpl implements Content
 	{
 		return this.valueObject.getIsProtected();
 	}
+	
 	
 	/*
 	public String toString()

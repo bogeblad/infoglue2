@@ -127,6 +127,11 @@ public class ContentTypeDefinitionController extends BaseController
 		return getAllVOObjects(ContentTypeDefinitionImpl.class, "contentTypeDefinitionId", db);
 	}
 
+	public List getContentTypeDefinitionList(Database db) throws SystemException, Bug
+	{
+		return getAllObjects(ContentTypeDefinitionImpl.class, "contentTypeDefinitionId", db);
+	}
+
 	/**
 	 * This method can be used by actions and use-case-controllers that only need to have simple access to the
 	 * functionality. They don't get the transaction-safety but probably just wants to show the info.

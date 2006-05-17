@@ -849,7 +849,38 @@ public abstract class BaseController
 
 		return resultList;
 	}
-	
+
+	/**
+	 * This method fetches all object in read only mode and returns a list of objects.
+	 */
+
+	public List getAllObjects(Class arg, String primaryKey, Database db) throws SystemException, Bug
+	{
+		ArrayList resultList = new ArrayList();
+		OQLQuery	oql;
+		try
+		{
+			oql = db.getOQLQuery( "SELECT u FROM " + arg.getName() + " u ORDER BY u." + primaryKey);
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while (results.hasMore()) 
+			{
+				IBaseEntity baseEntity = (IBaseEntity)results.next();
+				resultList.add(baseEntity);
+			}
+		}
+		catch(ClassCastException e)
+		{
+			throw new Bug("The object [" + arg.getName() + "] is of the wrong type. This should never happen.", e);
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch " + arg.getName() + " Reason:" + e.getMessage(), e);    
+		}    
+
+		return resultList;
+	}
+
 	//---------------------------------------------------------------------
 	// Dynamic Query specific operations
 	//---------------------------------------------------------------------
