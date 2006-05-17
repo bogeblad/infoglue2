@@ -342,10 +342,37 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 			if(protectedSiteNodeVersionId != null)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
-		
-			getLogger().info("handled extranet users");
-	
+			
 			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
+
+			getLogger().info("handled extranet users");
+
+			// ----
+			// -- portlet
+			// ----
+			
+			// -- check if the portal is active
+	        String portalEnabled = CmsPropertyHandler.getEnablePortal();
+	        boolean portalActive = ((portalEnabled != null) && portalEnabled.equals("true"));
+			
+	        if (portalActive && !isRecacheCall) 
+	        {
+	            getLogger().info("---> Checking for portlet action");
+	            PortalService service = new PortalService();
+	            //TODO: catch PortalException?
+	            boolean actionExecuted = service.service(getRequest(), getResponse());
+	            
+	            // -- if an action was executed return NONE as a redirect is issued
+	            if (actionExecuted) 
+	            {
+	                getLogger().info("---> PortletAction was executed, returning NONE as a redirect has been issued");
+	                getLogger().warn("No statistics have been run for this request");
+	                isUserRedirected = true;
+	                return NONE;
+	            }
+	        }
+	
+	        getLogger().info("handled portal action");
 
 			if(!isUserRedirected)
 			{	
