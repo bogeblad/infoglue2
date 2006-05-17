@@ -359,12 +359,12 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 					if(entityName.equalsIgnoreCase("contentId"))
 					{
 						String mappedContentId = (String)contentIdMap.get(entityId);
-						qualifyer.setValue(mappedContentId);
+						qualifyer.setValue((mappedContentId == null) ? entityId : mappedContentId);
 					}
 					else if(entityName.equalsIgnoreCase("siteNodeId"))
 					{
 						String mappedSiteNodeId = (String)siteNodeIdMap.get(entityId);
-						qualifyer.setValue(mappedSiteNodeId);						
+						qualifyer.setValue((mappedSiteNodeId == null) ? entityId : mappedSiteNodeId);						
 					}
 				}
 
