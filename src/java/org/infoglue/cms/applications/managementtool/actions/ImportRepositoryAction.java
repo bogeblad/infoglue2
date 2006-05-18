@@ -420,7 +420,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		    	}
 			}
 	    }
-	    else if(version == 2)
+	    else if(version == 1)
 	    {
 			ContentTypeDefinition originalContentTypeDefinition = content.getContentTypeDefinition();
 			if(originalContentTypeDefinition != null)
