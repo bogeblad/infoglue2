@@ -17,6 +17,8 @@ Abbreviated Changelog from 2.3 Final
 - Fixed html compiance in some files in cms/contenttool/
 - Fixed bug in import if repository references another existing repository.
 - Made an option to specify exportFormat in cms.properties and this results in much more compact xml-files. Can only be imported by a version later than 2.3 however.
+- Fixed bug in import when pages had no siteNodeTypeDefinition
+- Added new tag and methods for getting all available languages for a site node, the old one did not regard disabled languages.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
