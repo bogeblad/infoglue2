@@ -593,6 +593,52 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		return (language == null) ? null : language.getValueObject();	
 	}
 
+	/**
+	 * This method returns all languages available for a site node. 
+	 */
+	
+	public List getLanguagesForSiteNode(Database db, Integer siteNodeId, InfoGluePrincipal principal) throws SystemException, Exception
+	{
+		String key = "" + siteNodeId;		
+		List languageVOList = (List)CacheController.getCachedObject("siteNodeLanguageCache", key);
+		if(languageVOList != null)
+			return languageVOList;
+		
+		getLogger().info("Coming in with siteNodeId:" + siteNodeId);
+		
+        languageVOList = new ArrayList();
+
+    	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+		    	
+    	Repository repository = siteNode.getRepository();
+		if(repository != null)
+		{
+			Collection languages = repository.getRepositoryLanguages();
+			Iterator languageIterator = languages.iterator();
+			while(languageIterator.hasNext())
+			{
+				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
+				Language currentLanguage = repositoryLanguage.getLanguage();
+				getLogger().info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
+				
+				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1));
+				
+				if(getIsValidLanguage(db, ndc, siteNode, currentLanguage.getId()))
+				{
+					getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
+					languageVOList.add(currentLanguage.getValueObject());
+				}
+			}
+		}
+
+		if(languageVOList != null)
+			CacheController.cacheObject("siteNodeLanguageCache", key, languageVOList);
+
+		getLogger().info("Returning languageVOList: " + languageVOList.size());
+		
+		return languageVOList;	
+	}
+
 	
 	public boolean getIsValidLanguage(Database db, NodeDeliveryController ndc, SiteNode siteNode, Integer languageId) throws Exception
 	{

@@ -4066,6 +4066,7 @@ public class BasicTemplateController implements TemplateController
 	/**
 	 * This method returns a list of all languages available on the current sitenode. The logic is that 
 	 * we check which languages are found in the meta-content in the current mode.
+	 * @deprecated - Use the new getPageLanguages instead
 	 */
 	
 	public List getNodeAvailableLanguages()
@@ -4073,6 +4074,12 @@ public class BasicTemplateController implements TemplateController
 		return getNodeAvailableLanguages(this.siteNodeId);
 	}
 
+	/**
+	 * This method returns a list of all languages available on the current sitenode. The logic is that 
+	 * we check which languages are found in the meta-content in the current mode.
+	 * @deprecated - Use the new getPageLanguages instead
+	 */
+	
 	public List getNodeAvailableLanguages(Integer siteNodeId)
 	{
 		List availableLanguages = new ArrayList();
@@ -4106,7 +4113,38 @@ public class BasicTemplateController implements TemplateController
 		return availableLanguages;
 	}
 	
+	/**
+	 * This method returns a list of all languages available on the current sitenode. This method will return all languages enabled for this repository minus 
+	 * any disabled languages for the siteNode.
+	 */
+	
+	public List getPageLanguages()
+	{
+		return getPageLanguages(this.siteNodeId);
+	}
 
+	/**
+	 * This method returns a list of all languages available on the current sitenode. This method will return all languages enabled for this repository minus 
+	 * any disabled languages for the siteNode.
+	 */
+
+	public List getPageLanguages(Integer siteNodeId)
+	{
+		List availableLanguages = new ArrayList();
+		
+		try
+		{
+			availableLanguages = LanguageDeliveryController.getLanguageDeliveryController().getLanguagesForSiteNode(getDatabase(), siteNodeId, this.getPrincipal());
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get all available languages:" + e.getMessage(), e);
+		}
+				
+		return availableLanguages;
+	}
+
+	
 	/**
 	 * The method returns a list of WebPage-objects that is the children of the current 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 

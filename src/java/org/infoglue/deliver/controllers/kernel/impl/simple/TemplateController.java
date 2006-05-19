@@ -926,12 +926,30 @@ public interface TemplateController
     /**
      * This method returns a list of all languages available on the current sitenode. The logic is that 
      * we check which languages are found in the meta-content in the current mode.
+     * @deprecated - use getPageLanguages() instead
      */
     public abstract List getNodeAvailableLanguages();
 
+    /**
+     * This method returns a list of all languages available on the current sitenode. The logic is that 
+     * we check which languages are found in the meta-content in the current mode.
+     * @deprecated - use getPageLanguages(Integer siteNodeId) instead
+     */
     public abstract List getNodeAvailableLanguages(Integer siteNodeId);
 
-    /**
+	/**
+	 * This method returns a list of all languages available on the current sitenode. This method will return all languages enabled for this repository minus 
+	 * any disabled languages for the siteNode.
+	 */
+	public List getPageLanguages();
+
+	/**
+	 * This method returns a list of all languages available on the current sitenode. This method will return all languages enabled for this repository minus 
+	 * any disabled languages for the siteNode.
+	 */
+	public List getPageLanguages(Integer siteNodeId);
+
+	/**
      * The method returns a list of WebPage-objects that is the children of the current 
      * siteNode. The method is great for navigation-purposes on a structured site. 
      */
