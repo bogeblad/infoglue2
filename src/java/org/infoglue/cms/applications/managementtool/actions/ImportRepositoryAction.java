@@ -247,16 +247,24 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		getLogger().info("siteNode:" + siteNode.getName());
 
 		Integer originalSiteNodeId = siteNode.getSiteNodeId();
-		
+
+		getLogger().info("originalSiteNodeId:" + originalSiteNodeId);
+
 		SiteNodeTypeDefinition originalSiteNodeTypeDefinition = siteNode.getSiteNodeTypeDefinition();
-		SiteNodeTypeDefinition siteNodeTypeDefinition = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithName(siteNode.getSiteNodeTypeDefinition().getName(), db, false);
-		if(siteNodeTypeDefinition == null)
+		SiteNodeTypeDefinition siteNodeTypeDefinition = null;
+		if(originalSiteNodeTypeDefinition != null)
 		{
-		    db.create(originalSiteNodeTypeDefinition);
-		    siteNodeTypeDefinition = originalSiteNodeTypeDefinition;
+			getLogger().info("originalSiteNodeTypeDefinition:" + originalSiteNodeTypeDefinition);
+			siteNodeTypeDefinition = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithName(siteNode.getSiteNodeTypeDefinition().getName(), db, false);
+			getLogger().info("siteNodeTypeDefinition:" + siteNodeTypeDefinition);
+			if(siteNodeTypeDefinition == null)
+			{
+			    db.create(originalSiteNodeTypeDefinition);
+			    siteNodeTypeDefinition = originalSiteNodeTypeDefinition;
+			}
+			
+			siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)siteNodeTypeDefinition);
 		}
-		
-		siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)siteNodeTypeDefinition);
 		
 		String mappedMetaInfoContentId = "-1";
 		if(siteNode.getMetaInfoContentId() != null)
@@ -329,14 +337,17 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				    db.create(originalAvailableServiceBinding);
 				    availableServiceBinding = originalAvailableServiceBinding;
 				    getLogger().info("Notifying:" + siteNodeTypeDefinition.getName() + " about the new availableServiceBinding " + availableServiceBinding.getName());
-				    siteNodeTypeDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
-				    serviceDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
-				    availableServiceBinding.getSiteNodeTypeDefinitions().add((SiteNodeTypeDefinitionImpl)siteNodeTypeDefinition);
-				    availableServiceBinding.getServiceDefinitions().add((ServiceDefinitionImpl)serviceDefinition);
+				    if(siteNodeTypeDefinition != null)
+				    {
+					    siteNodeTypeDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
+					    serviceDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
+					    availableServiceBinding.getSiteNodeTypeDefinitions().add((SiteNodeTypeDefinitionImpl)siteNodeTypeDefinition);
+					    availableServiceBinding.getServiceDefinitions().add((ServiceDefinitionImpl)serviceDefinition);
+				    }
 				}
 				else
 				{
-					if(!siteNodeTypeDefinition.getAvailableServiceBindings().contains(availableServiceBinding))
+					if(siteNodeTypeDefinition != null && !siteNodeTypeDefinition.getAvailableServiceBindings().contains(availableServiceBinding))
 					{
 						siteNodeTypeDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
 						availableServiceBinding.getSiteNodeTypeDefinitions().add(siteNodeTypeDefinition);
