@@ -240,7 +240,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	    sb.append("siteNodeVersionId:" + siteNodeVersionId + '\n');
 	    sb.append("stateId:" + stateId + '\n');
 	    sb.append("versionNumber:" + versionNumber + '\n');
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:ss");
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	    sb.append("modifiedDateTime:" + sdf.format(modifiedDateTime) + ":" + modifiedDateTime.getClass().getName() + '\n');
 	    sb.append("versionComment:" + versionComment + '\n');
 	    sb.append("versionModifier:" + versionModifier + '\n');
