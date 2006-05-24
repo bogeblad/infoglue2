@@ -19,6 +19,7 @@ Abbreviated Changelog from 2.3 Final
 - Made an option to specify exportFormat in cms.properties and this results in much more compact xml-files. Can only be imported by a version later than 2.3 however.
 - Fixed bug in import when pages had no siteNodeTypeDefinition
 - Added new tag and methods for getting all available languages for a site node, the old one did not regard disabled languages.
+- Fixed bug in installers sqlserver scripts - identity column on cmInterceptionPointInterceptor where it should not be
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
