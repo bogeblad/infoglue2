@@ -20,7 +20,12 @@ Abbreviated Changelog from 2.3 Final
 - Fixed bug in import when pages had no siteNodeTypeDefinition
 - Added new tag and methods for getting all available languages for a site node, the old one did not regard disabled languages.
 - Fixed bug in installers sqlserver scripts - identity column on cmInterceptionPointInterceptor where it should not be
-
+- Made entire cache update less thread sensitive.
+  * Now all updates during a transaction is packaged into one update call.
+  * More syncronization on cache-objects
+  * ViewPage now waits for caches to clear if in working/preview mode to ensure no colissions.
+  * Made pushed system publications work
+ 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
 -------------------------------------------------------------------------------------
