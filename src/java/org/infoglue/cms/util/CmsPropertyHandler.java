@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,13 +72,25 @@ public class CmsPropertyHandler
 	private static String localSettingsServerNodeId	= null;
 	
 	private static String applicationName 			= null;
+	private static String contextRootPath 			= null;
+	private static String operatingMode				= null;
 	private static File propertyFile 				= null;
 	
 	public static void setApplicationName(String theApplicationName)
 	{
-		applicationName = theApplicationName;
+		CmsPropertyHandler.applicationName = theApplicationName;
 	}
-	
+
+	public static void setContextRootPath(String contextRootPath)
+	{
+		CmsPropertyHandler.contextRootPath = contextRootPath;
+	}
+
+	public static void setOperatingMode(String operatingMode)
+	{
+		CmsPropertyHandler.operatingMode = operatingMode;
+	}
+
 	public static String getApplicationName()
 	{
 		return applicationName;
@@ -252,7 +266,7 @@ public class CmsPropertyHandler
 		}
 	    
 		Timer timer = new Timer();
-		
+		logger.info("Getting jdbc-property:" + cacheKey);
 	    if(localSettingsServerNodeId != null)
 	    {
 	    	if(prefix != null)
@@ -342,7 +356,8 @@ public class CmsPropertyHandler
 		}
 	    
 		Timer timer = new Timer();
-		
+
+		logger.info("Getting jdbc-property:" + cacheKey);
 	    if(localSettingsServerNodeId != null)
 	    {
 	    	if(prefix != null)
@@ -416,12 +431,29 @@ public class CmsPropertyHandler
 	
 	public static String getContextRootPath()
 	{
-	    return getProperty("contextRootPath");
+	    return contextRootPath; //getProperty("contextRootPath"); Concurrency issues...
 	}
 
 	public static String getOperatingMode()
 	{
-	    return getProperty("operatingMode");
+	    return operatingMode; //getProperty("operatingMode"); Concurrency issues...
+	}
+	
+	//TODO - refresh if changed....
+	//private static String inputCharacterEncoding = null;
+	public static String getInputCharacterEncoding(String defaultEncoding)
+	{
+		//if(inputCharacterEncoding == null)
+		//{
+			String applicationName = CmsPropertyHandler.getApplicationName();
+			String newInputCharacterEncoding = CmsPropertyHandler.getServerNodeProperty("inputCharacterEncoding", true, defaultEncoding);
+			if(!applicationName.equalsIgnoreCase("cms"))
+				newInputCharacterEncoding = CmsPropertyHandler.getServerNodeProperty("deliver", "inputCharacterEncoding", true, defaultEncoding);
+
+			//inputCharacterEncoding = newInputCharacterEncoding;
+			//}
+			return newInputCharacterEncoding;
+		//return inputCharacterEncoding;
 	}
 	
 	public static String getUp2dateUrl()
@@ -1000,6 +1032,7 @@ public class CmsPropertyHandler
 		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
 		if(value != null)
 		{
+		    logger.info("Returning property " + cacheKey + " value " + value);
 			return value;
 		}
 	    
