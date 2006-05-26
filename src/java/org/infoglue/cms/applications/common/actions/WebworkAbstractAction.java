@@ -39,6 +39,7 @@ import org.infoglue.cms.exception.ConfigurationError;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
 import org.infoglue.deliver.util.BrowserBean;
@@ -101,52 +102,65 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
    */
     public String execute() throws Exception 
     {
+    	String result = "";
+    	
         try 
         {
-            return isCommand() ? invokeCommand() : doExecute();
+        	result = isCommand() ? invokeCommand() : doExecute();
         } 
         catch(ResultException e) 
         {
         	logger.error("ResultException " + e, e);
-            return e.getResult();
+        	result = e.getResult();
         } 
 		catch(AccessConstraintException e) 
 		{
 			logger.info("AccessConstraintException " + e, e);
 			setErrors(e);
-			return ACCESS_DENIED;
+			result = ACCESS_DENIED;
 		} 
         catch(ConstraintException e) 
         {
         	logger.info("ConstraintException " + e, e);
             setErrors(e);
-            return INPUT;
+            result = INPUT;
         } 
         catch(Bug e) 
         {
         	logger.error("Bug " + e);
             setError(e, e.getCause());
-            return ERROR;
+            result = ERROR;
         } 
         catch(ConfigurationError e) 
         {
          	logger.error("ConfigurationError " + e);
              setError(e, e.getCause());
-            return ERROR;
+             result = ERROR;
         } 
         catch(SystemException e) 
         {
             logger.error("SystemException " + e, e);
             setError(e, e.getCause());
-            return ERROR;
+            result = ERROR;
         } 
         catch(Throwable e) 
         {
             logger.error("Throwable " + e, new Exception(e));
             final Bug bug = new Bug("Uncaught exception!", e);
             setError(bug, bug.getCause());
-            return ERROR;
+            result = ERROR;
         }
+        
+        try
+        {
+        	ChangeNotificationController.notifyListeners();
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+        }
+        
+        return result;
     }
 
 	/**
@@ -257,10 +271,12 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
     	final StringBuffer methodName = new StringBuffer("do" + this.commandName);
     	methodName.setCharAt(2, Character.toUpperCase(methodName.charAt(2)));
 
+    	String result = "";
+    	
     	try 
     	{
       		final Method method = getClass().getMethod(methodName.toString(), new Class[0]);
-      		return (String) method.invoke(this, new Object[0]);
+      		result = (String) method.invoke(this, new Object[0]);
     	} 
     	catch(Exception ie) 
     	{
@@ -275,42 +291,42 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			{
 				//e.printStackTrace();
 				logger.error("ResultException " + e, e);
-				return e.getResult();
+				result = e.getResult();
 			} 
 			catch(AccessConstraintException e) 
 			{
 				//e.printStackTrace();
 				logger.warn("AccessConstraintException " + e, e);
 				setErrors(e);
-				return ACCESS_DENIED;
+				result = ACCESS_DENIED;
 			} 
 			catch(ConstraintException e) 
 			{
 				//e.printStackTrace();
 				logger.warn("ConstraintException " + e, e);
 				setErrors(e);
-				return INPUT;
+				result = INPUT;
 			} 
 			catch(Bug e) 
 			{
 				//e.printStackTrace();
 				logger.error("Bug " + e);
 				setError(e, e.getCause());
-				return ERROR;
+				result = ERROR;
 			} 
 			catch(ConfigurationError e) 
 			{
 				//e.printStackTrace();
 				logger.error("ConfigurationError " + e);
 				setError(e, e.getCause());
-				return ERROR;
+				result = ERROR;
 			} 
 			catch(SystemException e) 
 			{
 				//e.printStackTrace();
 				logger.error("SystemException " + e, e);
 				setError(e, e.getCause());
-				return ERROR;
+				result = ERROR;
 			} 
 			catch(Throwable e) 
 			{
@@ -318,9 +334,22 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 				logger.error("Throwable " + e);
 				final Bug bug = new Bug("Uncaught exception!", e);
 				setError(bug, bug.getCause());
-				return ERROR;
+				result = ERROR;
 			}
+	        
     	}
+
+    	try
+        {
+        	ChangeNotificationController.notifyListeners();
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+        }
+        
+        return result;
+    	
   	}
 
     public final String getRoot() 

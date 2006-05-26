@@ -24,6 +24,9 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -43,11 +46,13 @@ import org.infoglue.deliver.util.CacheController;
 
 public class UpdateCacheAction extends InfoGlueAbstractAction 
 {
+	/*
 	private String className = null;
 	private String objectId = null;
 	private String objectName = null;
 	private String typeId = null;
-
+	*/
+	
 	private String repositoryName = null;
 	private Integer languageId    = null;
 	private Integer siteNodeId    = null;
@@ -97,6 +102,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+    	getLogger().info("Update Cache starts..");
         String operatingMode = CmsPropertyHandler.getOperatingMode();
 		
         if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
@@ -115,133 +121,63 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         
 		try
 		{  
-		    getLogger().info("className:" + className);
-			getLogger().info("objectId:" + objectId);
-		    	
-		    //boolean isDependsClass = false;
-			//if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
-			//    isDependsClass = true;
-
 			//Iterate through all registered listeners and call them... dont place logic here... have specialized handlers.			
 
-			if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
-			{
-			    getLogger().info("className:" + className);
-			    getLogger().info("objectId:" + objectId);
-
-		        synchronized(CacheController.getNotifications())
-		        {
-				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(this.className, this.typeId, this.objectId, this.objectName);
-				    CacheController.getNotifications().add(cacheEvictionBean);
-				    getLogger().info("Added a cacheEvictionBean....");
-		        }
-
-			    //Hardcoded some stuff to clear.... not nice. Instead have some register which 
-				//different caches can register to.
-				/*
-		        CacheController.clearCaches(null, null);
-				getLogger().info("Updating all caches as this was a publishing-update");
-				CacheController.clearCastorCaches();
-				*/
-				
-				//If it's an contentVersion we should delete all images it might have generated from attributes.
-				/*
-				if(className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
-				{
-				    PublicationDetailVO publicationDetailVO = PublicationController.getController().getPublicationDetailVOWithId(new Integer(objectId));
-					String innerClassName = publicationDetailVO.getEntityClass();
-					Integer innerObjectId  = publicationDetailVO.getEntityId();
-					System.out.println("innerClassName:" + innerClassName);
-				    System.out.println("innerObjectId:" + innerObjectId);
-				    	
-				    if(Class.forName(innerClassName).getName().equals(ContentVersionImpl.class.getName()))
-					{
-						getLogger().info("We should delete all images with contentVersionId " + objectId);
-						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
-					}
-				}
-				*/	
-				/*
-				else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
-				{
-					getLogger().info("We should delete all images with digitalAssetId " + objectId);
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
-				}
-				*/
-			}			
-			else
-			{			
-				//Hardcoded some stuff to clear.... not nice. Instead have some register which 
-				//different caches can register to.
-		        synchronized(CacheController.getNotifications())
-		        {
-				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(this.className, this.typeId, this.objectId, this.objectName);
-				    CacheController.getNotifications().add(cacheEvictionBean);
-				    getLogger().info("Added a cacheEvictionBean....");
-		        }
-			    /*
-			    CacheController.clearCaches(className, objectId);
-
-			    getLogger().info("Updating className with id:" + className + ":" + objectId);
-				if(className != null)
-				{
-				    //Class[] types = {Class.forName(className)};
-				    Class type = Class.forName(className);
-				    
-				    if(!isDependsClass && className.equalsIgnoreCase(SystemUserImpl.class.getName()) || className.equalsIgnoreCase(RoleImpl.class.getName()) || className.equalsIgnoreCase(GroupImpl.class.getName()))
-				    {
-				        Object[] ids = {objectId};
-				        CacheController.clearCache(type, ids);
-					}
-				    else if(!isDependsClass)
-				    {
-				        Object[] ids = {new Integer(objectId)};
-					    CacheController.clearCache(type, ids);
-				    }
-				    
-					//If it's an contentVersion we should delete all images it might have generated from attributes.
-					/*
-					if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
-					{
-					    getLogger().info("We should delete all images with contentVersionId " + objectId);
-						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
-					}
-					else */
-			    
-			    	/*
-			    	if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
-					{
-					    getLogger().info("We clear all small contents as well " + objectId);
-						Class typesExtra = SmallContentImpl.class;
-						Object[] idsExtra = {new Integer(objectId)};
-						CacheController.clearCache(typesExtra, idsExtra);
-
-						getLogger().info("We clear all medium contents as well " + objectId);
-						Class typesExtraMedium = MediumContentImpl.class;
-						Object[] idsExtraMedium = {new Integer(objectId)};
-						CacheController.clearCache(typesExtraMedium, idsExtraMedium);
-					}
-					else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
-					{
-					    Class typesExtra = SmallAvailableServiceBindingImpl.class;
-						Object[] idsExtra = {new Integer(objectId)};
-						CacheController.clearCache(typesExtra, idsExtra);
-					}
-					else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
-					{
-					    Class typesExtra = SmallSiteNodeImpl.class;
-						Object[] idsExtra = {new Integer(objectId)};
-						CacheController.clearCache(typesExtra, idsExtra);
-					}
-					else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
-					{
-					    getLogger().info("We should delete all images with digitalAssetId " + objectId);
-						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
-					}
-				}
-				*/
-			}		
+			//getLogger().info("className:" + className);
+			//getLogger().info("objectId:" + objectId);
+			List newNotificationList = new ArrayList();
 			
+		    int i = 0;
+		    
+		    String className 	= this.getRequest().getParameter(i + ".className");
+		    String typeId 	 	= this.getRequest().getParameter(i + ".typeId");
+		    String objectId  	= this.getRequest().getParameter(i + ".objectId");
+		    String objectName 	= this.getRequest().getParameter(i + ".objectName");
+		    while(className != null && !className.equals(""))
+		    {
+		    	getLogger().info("className:" + className);
+			    getLogger().info("objectId:" + objectId);
+			    
+		    	CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(className, typeId, objectId, objectName);
+		    	newNotificationList.add(cacheEvictionBean);
+		    	/*
+		    	synchronized(CacheController.notifications)
+		        {
+				    CacheController.notifications.add(cacheEvictionBean);
+		        }
+		        */
+			    getLogger().info("Added a cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
+			    
+			    i++;
+			    className 	= this.getRequest().getParameter(i + ".className");
+			    typeId 	 	= this.getRequest().getParameter(i + ".typeId");
+			    objectId  	= this.getRequest().getParameter(i + ".objectId");
+			    objectName 	= this.getRequest().getParameter(i + ".objectName");
+		    }
+		    
+		    if(i == 0)
+		    {
+		    	className 	= this.getRequest().getParameter("className");
+			    typeId 	 	= this.getRequest().getParameter("typeId");
+			    objectId  	= this.getRequest().getParameter("objectId");
+			    objectName 	= this.getRequest().getParameter("objectName");
+			    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(className, typeId, objectId, objectName);
+			    newNotificationList.add(cacheEvictionBean);
+			    /*
+			    synchronized(CacheController.notifications)
+		        {
+			    	CacheController.notifications.add(cacheEvictionBean);
+		        }
+			    getLogger().warn("Added an oldSchool cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
+		        */
+			    
+		    }
+		    
+		    synchronized(CacheController.notifications)
+	        {
+		    	CacheController.notifications.addAll(newNotificationList);
+	        }
+		    
 			getLogger().info("UpdateCache finished...");
 		}
 		catch(Exception e)
@@ -256,7 +192,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		}
                 
 		//this.getHttpSession().invalidate();
-		
+    	getLogger().info("Update Cache stops..");
+
         return NONE;
     }
     
@@ -264,7 +201,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	/**
 	 * Setters and getters for all things sent to the page in the request
 	 */
-	        
+	/*        
     public void setClassName(String className)
     {
 	    this.className = className;
@@ -284,5 +221,5 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
     {
 	    this.typeId = typeId;
     }
-    
+    */
 }

@@ -39,7 +39,7 @@ public class PublicationThread extends Thread
 	public synchronized void run() 
 	{
         logger.info("setting block");
-	    RequestAnalyser.setBlockRequests(true);
+        RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
 
 		try
 		{
@@ -75,8 +75,8 @@ public class PublicationThread extends Thread
 		    logger.error("An error occurred in the PublicationThread:" + e.getMessage(), e);
 		}
 
-		logger.info("released block");
-		RequestAnalyser.setBlockRequests(false);
+		logger.info("released block \n\n DONE---");
+		RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 
 	}
 }

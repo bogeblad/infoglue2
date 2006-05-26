@@ -89,7 +89,7 @@ public class RemoteCacheUpdater implements NotificationListener
 	 * This method gets called when a new NotificationMessage is available.
 	 * The writer just calls the transactionHistoryController which stores it.
 	 */
-
+	
 	public void notify(NotificationMessage notificationMessage)
 	{
 		try
@@ -103,45 +103,24 @@ public class RemoteCacheUpdater implements NotificationListener
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	/**
 	 * This method serializes the notificationMessage and calls the remote actions.
 	 * As a content-tool can have several preview instances we iterate through the instances that have 
 	 * been indexed in the propertyfile starting with 0.
 	 */
+	
 	public void updateRemoteCaches(NotificationMessage notificationMessage) throws Exception
 	{
+		throw new Exception("Wrong - this message handler should not be called...");
+		/*
 		Hashtable hashedMessage = notificationMessageToHashtable(notificationMessage);
 		
 	    List urls = new ArrayList();
 		
 		if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING || notificationMessage.getType() == NotificationMessage.SYSTEM)
 		{
-			/*
-			String appPrefix = "publicDeliverUrl";
-		
-			int i = 0;
-			String deliverUrl = null;
-			while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
-			{ 
-				urls.add(deliverUrl);
-				i++;
-			}	
-			
-			if(notificationMessage.getType() == NotificationMessage.SYSTEM)
-			{
-			    appPrefix = "internalDeliverUrl";
-			
-				i = 0;
-				deliverUrl = null;
-				while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
-				{ 
-					urls.add(deliverUrl);
-					i++;
-				}	
-			}
-			*/
 			urls.addAll(CmsPropertyHandler.getPublicDeliveryUrls());
 
 			if(notificationMessage.getType() == NotificationMessage.SYSTEM)
@@ -170,27 +149,60 @@ public class RemoteCacheUpdater implements NotificationListener
 				logger.warn("Error updating cache at " + address + ":" + e.getMessage(), e);
 			}
 		}
-
-/*
-		String appPrefix = "internalDeliverUrl";
-		if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING)
-		{
-			appPrefix = "publicDeliverUrl";
-		}
-		
-		int i = 0;
-		String deliverUrl = null;
-		while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
-		{ 
-			String address = deliverUrl + "/" + CmsPropertyHandler.getCacheUpdateAction();
-			logger.info("Updating cache at " + address);
-			String response = postToUrl(address, hashedMessage);
-			i++;
-		}
-*/
+		*/
 	}
+	
 
+	/**
+	 * This method serializes the notificationMessage and calls the remote actions.
+	 * As a content-tool can have several preview instances we iterate through the instances that have 
+	 * been indexed in the propertyfile starting with 0.
+	 */
+	public void updateRemoteCaches(Hashtable internalMessage, Hashtable publicMessage) throws Exception
+	{		
+	    List internalUrls = CmsPropertyHandler.getInternalDeliveryUrls();
+		
+	    if(internalMessage != null)
+	    {
+			Iterator urlsIterator = internalUrls.iterator();
+			while(urlsIterator.hasNext())
+			{
+			    String deliverUrl = (String)urlsIterator.next();
+				String address = deliverUrl + "/" + CmsPropertyHandler.getCacheUpdateAction();
+				logger.info("Updating cache at " + address);
+				try
+				{
+					String response = postToUrl(address, internalMessage);
+				}
+				catch(Exception e)
+				{
+					logger.warn("Error updating cache at " + address + ":" + e.getMessage(), e);
+				}
+			}
+	    }
 
+	    List publicUrls = CmsPropertyHandler.getPublicDeliveryUrls();
+
+	    if(publicMessage != null)
+	    {
+			Iterator urlsIterator = publicUrls.iterator();
+			while(urlsIterator.hasNext())
+			{
+			    String deliverUrl = (String)urlsIterator.next();
+				String address = deliverUrl + "/" + CmsPropertyHandler.getCacheUpdateAction();
+				logger.info("Updating cache at " + address);
+				try
+				{
+					String response = postToUrl(address, publicMessage);
+				}
+				catch(Exception e)
+				{
+					logger.warn("Error updating cache at " + address + ":" + e.getMessage(), e);
+				}
+			}
+	    }
+
+	}
 
 	private Hashtable notificationMessageToHashtable(NotificationMessage notificationMessage)
 	{

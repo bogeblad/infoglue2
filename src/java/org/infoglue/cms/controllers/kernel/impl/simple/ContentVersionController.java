@@ -81,6 +81,35 @@ public class ContentVersionController extends BaseController
 	{
 		return new ContentVersionController();
 	}
+	
+	private static Map contentMap = Collections.synchronizedMap(new HashMap());
+
+    public Integer getContentIdForContentVersion(Integer contentVersionId) throws SystemException, Bug
+    {
+    	Integer contentId = (Integer)contentMap.get(contentVersionId);
+    	if(contentId == null)
+    	{
+    		ContentVersionVO ContentVersionVO = (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId);
+    		contentId = ContentVersionVO.getContentId();
+    		contentMap.put(contentVersionId, contentId);
+    	}
+    	
+    	return contentId;
+    }
+
+    public Integer getContentIdForContentVersion(Integer contentVersionId, Database db) throws SystemException, Bug
+    {
+    	Integer contentId = (Integer)contentMap.get(contentVersionId);
+    	if(contentId == null)
+    	{
+    		System.out.println("Not cached the first time:" + contentVersionId);
+    		ContentVersionVO ContentVersionVO = (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId, db);
+    		contentId = ContentVersionVO.getContentId();
+    		contentMap.put(contentVersionId, contentId);
+    	}
+    	
+    	return contentId;
+    }
 
     public ContentVersionVO getContentVersionVOWithId(Integer contentVersionId) throws SystemException, Bug
     {

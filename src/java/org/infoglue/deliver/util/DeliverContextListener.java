@@ -74,7 +74,10 @@ public final class DeliverContextListener implements ServletContextListener
 							
 			CmsPropertyHandler.setApplicationName("deliver");
 			
-			CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
+			//CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
+			CmsPropertyHandler.setContextRootPath(contextRootPath); 
+			CmsPropertyHandler.setOperatingMode(CmsPropertyHandler.getProperty("operatingMode"));
+			
 			
 			String logPath = CmsPropertyHandler.getLogPath();
 			if(logPath == null || logPath.equals(""))

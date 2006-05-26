@@ -157,10 +157,7 @@ public class SetCharacterEncodingFilter implements Filter
      */
     protected String selectEncoding(ServletRequest request) 
     {
-    	String applicationName = CmsPropertyHandler.getApplicationName();
-    	String inputCharacterEncoding = CmsPropertyHandler.getServerNodeProperty("inputCharacterEncoding", true, this.encoding);
-    	if(!applicationName.equalsIgnoreCase("cms"))
-    		inputCharacterEncoding = CmsPropertyHandler.getServerNodeProperty("deliver", "inputCharacterEncoding", true, this.encoding);
+    	String inputCharacterEncoding = CmsPropertyHandler.getInputCharacterEncoding(this.encoding);
     	
     	if(inputCharacterEncoding != null && !inputCharacterEncoding.equals("") && !inputCharacterEncoding.equalsIgnoreCase("@inputCharacterEncoding@"))
     		return inputCharacterEncoding;

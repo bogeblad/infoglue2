@@ -159,6 +159,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
             Thread.sleep(10);
         }
         */
+        //TODO - Can this be removed perhaps
+        while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
+        {
+        	//System.out.println("Queing up requests as cache eviction are taking place..");
+        	Thread.sleep(10);
+        }
+        
         
         HttpServletRequest request = getRequest();
                 
@@ -311,6 +318,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
 	public String doRenderDecoratedPage() throws Exception
 	{
+        while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
+        {
+        	//System.out.println("Queing up requests as cache eviction are taking place..");
+        	Thread.sleep(10);
+        }
+
+    	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests();
+
 		long start			= new Date().getTime();
 		long elapsedTime 	= 0;
     	
@@ -427,9 +442,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		finally
 		{
 		    closeTransaction(dbWrapper.getDatabase());
+
+		    elapsedTime = System.currentTimeMillis() - start;
+
+			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests();
 		}
 		
-		elapsedTime = new Date().getTime() - start;
 		getLogger().info("The page delivery took " + elapsedTime + "ms");
 		//System.out.println("The page delivery took " + elapsedTime + "ms");
 		

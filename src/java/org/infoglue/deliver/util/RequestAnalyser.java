@@ -176,16 +176,31 @@ public class RequestAnalyser
     }
     */
     
+    /*
     public static boolean getBlockRequests()
     {
         return blockRequests;
     }
+    */
     
+    public boolean getBlockRequests()
+    {
+        return Blocker.getIsBlocking();
+    }
+
+    public void setBlockRequests(boolean blockRequests)
+    {
+    	//try { throw new Exception("Apa"); }catch(Exception e) {e.printStackTrace(); }
+    	Blocker.setBlocking(blockRequests);
+    }
+
+/*
     public static void setBlockRequests(boolean blockRequests)
     {
+    	//try { throw new Exception("Apa"); }catch(Exception e) {e.printStackTrace(); }
         RequestAnalyser.blockRequests = blockRequests;
     }
-    
+*/    
     public static HttpServletRequest getLastRequest()
     {
         return lastRequest;

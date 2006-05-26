@@ -42,7 +42,7 @@ public class ExpireCacheJob implements Job
 {
     private final static Logger logger = Logger.getLogger(ExpireCacheJob.class.getName());
 
-    public void execute(JobExecutionContext context) throws JobExecutionException
+    public synchronized void execute(JobExecutionContext context) throws JobExecutionException
     {
         try
         {
@@ -54,7 +54,7 @@ public class ExpireCacheJob implements Job
         }
 
         logger.info("---" + context.getJobDetail().getFullName() + " executing.[" + new Date() + "]");
-        
+
         try
         {
             Date firstExpireDateTime = CacheController.expireDateTime;
@@ -64,7 +64,16 @@ public class ExpireCacheJob implements Job
             if(firstExpireDateTime != null && now.after(firstExpireDateTime))
             {
                 logger.info("setting block");
-                RequestAnalyser.setBlockRequests(true);
+                synchronized(RequestAnalyser.getRequestAnalyser()) 
+        	    {
+        	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
+        		    {
+        			    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+        		        return;
+        		    }
+
+        	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+        		}
 
 				try
                 {
@@ -98,7 +107,7 @@ public class ExpireCacheJob implements Job
                 }
     		    
     		    logger.info("releasing block");
-                RequestAnalyser.setBlockRequests(false);
+    		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
             }
 
             Date firstPublishDateTime = CacheController.publishDateTime;
@@ -107,7 +116,16 @@ public class ExpireCacheJob implements Job
             if(firstPublishDateTime != null && now.after(firstPublishDateTime))
             {
                 logger.info("setting block");
-                RequestAnalyser.setBlockRequests(true);
+                synchronized(RequestAnalyser.getRequestAnalyser()) 
+        	    {
+        	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
+        		    {
+        			    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+        		        return;
+        		    }
+
+        	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+        		}
                 
                 try
                 {
@@ -141,7 +159,7 @@ public class ExpireCacheJob implements Job
                 }
 
                 logger.info("releasing block");
-                RequestAnalyser.setBlockRequests(false);
+                RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
             }
 
         }

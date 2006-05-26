@@ -69,6 +69,7 @@ public final class CmsContextListener implements ServletContextListener
 			
 			System.out.println("contextRootPath:" + contextRootPath);
 			CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
+			CmsPropertyHandler.setContextRootPath(contextRootPath); 
 			
 			String logPath = CmsPropertyHandler.getLogPath();
 			if(logPath == null || logPath.equals(""))

@@ -62,6 +62,7 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
         
         if(notificationMessage != null)
         {
+    		notificationMessage = new NotificationMessage("ViewPublishingToolStartPageAction.doPushSystemNotificationMessages():", "" + notificationMessage.getClassName(), this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, notificationMessage.getObjectId(), notificationMessage.getObjectName());
             ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
             RemoteCacheUpdater.clearSystemNotificationMessages();
         }
