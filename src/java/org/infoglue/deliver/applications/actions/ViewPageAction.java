@@ -160,12 +160,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
         }
         */
         //TODO - Can this be removed perhaps
+        /*
         while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
         }
-        
+        */
         
         HttpServletRequest request = getRequest();
                 
@@ -318,11 +319,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
 	public String doRenderDecoratedPage() throws Exception
 	{
+		/*
         while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
         }
+        */
 
     	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests();
 
