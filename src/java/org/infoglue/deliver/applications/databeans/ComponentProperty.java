@@ -27,9 +27,11 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * 
@@ -37,6 +39,8 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 
 public class ComponentProperty
 {
+    public final static Logger logger = Logger.getLogger(ComponentProperty.class.getName());
+    
 	public static final String BINDING 		= "binding";
 	public static final String TEXTFIELD 	= "textfield";
 	public static final String TEXTAREA 	= "textarea";
@@ -204,32 +208,42 @@ public class ComponentProperty
     public String getAllowedContentTypeNamesAsUrlEncodedString() throws Exception
     {
         StringBuffer sb = new StringBuffer();
-        
-        for(int i=0; i<allowedContentTypeNamesArray.length; i++)
+        for (int i = 0; i < allowedContentTypeNamesArray.length; i++)
         {
-            if(i > 0)
+            if (i > 0)
+            {
                 sb.append("&");
-            
+            }
+
             sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNamesArray[i], "UTF-8"));
         }
-        
+
         return sb.toString();
     }
 
     public String getAllowedContentTypeIdAsUrlEncodedString(Database db) throws Exception
     {
         StringBuffer sb = new StringBuffer();
-        
-        for(int i=0; i<allowedContentTypeNamesArray.length; i++)
+        String allowedContentTypeName = null;
+        for (int i = 0; i < allowedContentTypeNamesArray.length; i++)
         {
-            if(i > 0)
+            if (i > 0)
+            {
                 sb.append("&");
-            
-            String allowedContentTypeName = allowedContentTypeNamesArray[i];
-            ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(allowedContentTypeName, db);
-            sb.append("allowedContentTypeIds=" + contentTypeDefinitionVO.getId());
+            }
+
+            allowedContentTypeName = allowedContentTypeNamesArray[i];
+            ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController()
+                    .getContentTypeDefinitionVOWithName(allowedContentTypeName, db);
+            if ( contentTypeDefinitionVO != null )
+            {
+                sb.append("allowedContentTypeIds=" + contentTypeDefinitionVO.getId());
+            }
+            else
+            {
+                logger.error("Cant find the ContentTypeDefinition for: " + allowedContentTypeName );
+            }
         }
-        
         return sb.toString();
     }
 

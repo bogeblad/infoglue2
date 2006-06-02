@@ -25,6 +25,7 @@ Abbreviated Changelog from 2.3 Final
   * More syncronization on cache-objects
   * ViewPage now waits for caches to clear if in working/preview mode to ensure no colissions.
   * Made pushed system publications work
+- Made NullPointer check on allowedComponents in the properties and added a logger warning if the contenttypedefinition is not found.
  
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
