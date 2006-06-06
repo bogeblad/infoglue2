@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 //import org.exolab.castor.jdo.CacheManager;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -36,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.apache.pluto.portalImpl.services.ServiceManager;
+import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -96,6 +99,7 @@ import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.portal.ServletConfigContainer;
 
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
@@ -326,10 +330,19 @@ public class CacheController extends Thread
 	
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip) throws Exception
 	{	
-	    while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+		//long wait = 0;
+		while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        Thread.sleep(10);
+			//if(wait == 1000)
+			//{
+			//	logger.warn("The clearCache method waited 100 iterations but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+				//printThreads();
+				//break;
+			//}
+			
+			Thread.sleep(10);
+			//wait++;
 	    }
 
 	    logger.info("clearCaches start in " + CmsPropertyHandler.getContextRootPath());
@@ -675,6 +688,41 @@ public class CacheController extends Thread
 		logger.info("clearCaches stop");
 	}
 	
+	private static void printThreads()
+	{
+    	ThreadGroup tg = Thread.currentThread().getThreadGroup();
+	    int n = tg.activeCount();
+        logger.warn("Number of active threads: " + n);
+	    Thread[] threadArray = new Thread[n];
+        n = tg.enumerate(threadArray, false);
+        for (int i=0; i<n; i++) 
+        {
+           	String currentThreadId = "" + threadArray[i].getId();
+        	Thread t = threadArray[i];
+        	Map stacks = t.getAllStackTraces();
+	        
+        	Iterator stacksIterator = stacks.values().iterator();
+        	while(stacksIterator.hasNext())
+        	{
+	        	StackTraceElement[] el = (StackTraceElement[])stacksIterator.next();
+		        
+		        String stackString = "";
+		        if (el != null && el.length != 0)
+		        {
+		            for (int j = 0; j < el.length; j++)
+		            {
+		            	StackTraceElement frame = el[j];
+		            	if (frame == null)
+		            		stackString += "    null stack frame" + "<br/>";
+		            	else	
+		                	stackString += "    null stack frame" + frame.toString() + "<br/>";
+					}                    
+		            logger.warn("\n\nThreads:\n\n " + stackString);
+		       	}
+        	}
+        }  
+	}
+
 	public static synchronized void clearCastorCaches() throws Exception
 	{
 	    logger.info("Emptying the Castor Caches");
@@ -1024,6 +1072,14 @@ public class CacheController extends Thread
 						}
 				    }
 
+				    if(CmsPropertyHandler.getOperatingMode() != null && !CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3") && className != null && className.equalsIgnoreCase("PortletRegistry"))
+				    {
+						logger.info("clearing portletRegistry");
+						clearPortlets();
+						logger.info("cleared portletRegistry");
+				    }
+
+				    
 				    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
 					if(CmsPropertyHandler.getOperatingMode() != null && CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 					{
@@ -1062,6 +1118,55 @@ public class CacheController extends Thread
         logger.info("evictWaitingCache stop");
     }
 
+	private static void clearPortlets()
+	{
+ 		//run registry services to load new portlet info from the registry files
+		String[] svcs = 
+		{
+ 			"org.apache.pluto.portalImpl.services.portletdefinitionregistry.PortletDefinitionRegistryService",
+ 			"org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistryService"
+ 		};
+ 	 		
+ 		int len = svcs.length;
+ 		for (int i = 0; i < len; i++) 
+ 		{				
+ 			try 
+ 			{
+				ServiceManager.hotInit(ServletConfigContainer.getContainer().getServletConfig(), svcs[i]);
+ 			} 
+ 			catch (Throwable e) 
+ 			{
+ 				String svc = svcs[i].substring(svcs[i].lastIndexOf('.') + 1);
+ 				String msg = "Initialization of " + svc + " service for hot deployment failed!"; 
+ 				System.out.println(msg);
+ 				break;
+ 			}
+ 	
+ 			try 
+ 			{
+				ServiceManager.postHotInit(ServletConfigContainer.getContainer().getServletConfig(), svcs[i]);
+ 			} 
+ 			catch (Throwable e) 
+ 			{
+ 				String svc = svcs[i].substring(svcs[i].lastIndexOf('.') + 1);
+ 				String msg = "Post initialization of " + svc + " service for hot deployment failed!"; 
+ 				System.out.println(msg);
+ 				break;
+ 			}
+		}		
+ 		
+        try
+		{
+			PortletEntityRegistry.load();
+		} 
+        catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	
     /**
      * Composer of the pageCacheKey.
      * 
