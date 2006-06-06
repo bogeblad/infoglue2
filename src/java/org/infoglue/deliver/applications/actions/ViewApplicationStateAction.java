@@ -240,8 +240,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         try 
         {
         	
-        	PortletEntityRegistryServiceDBImpl.setNeedRefresh(true);
-        	
      		//run registry services to load new portlet info from the registry files
         	String[] svcs = {
      				"org.apache.pluto.portalImpl.services.portletdefinitionregistry.PortletDefinitionRegistryService",

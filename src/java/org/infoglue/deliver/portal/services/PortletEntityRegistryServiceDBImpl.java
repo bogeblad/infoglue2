@@ -58,7 +58,8 @@ import org.infoglue.deliver.portal.om.PortletApplicationEntityListImpl;
  * 
  * @author jand
  */
-public class PortletEntityRegistryServiceDBImpl extends PortletEntityRegistryService {
+public class PortletEntityRegistryServiceDBImpl extends PortletEntityRegistryService 
+{
     private static final Log LOG = LogFactory.getLog(PortletEntityRegistryServiceDBImpl.class);
 
     public static final String PORTLET_REGISTRY_CONTENT_NAME = "portletentityregistry.xml";
@@ -209,7 +210,6 @@ public class PortletEntityRegistryServiceDBImpl extends PortletEntityRegistrySer
      */
     public void refresh(PortletEntity entity) {
         // TODO Auto-generated method stub
-
     }
 
     public String toString() {
