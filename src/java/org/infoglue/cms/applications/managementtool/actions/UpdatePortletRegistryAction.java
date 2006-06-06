@@ -36,6 +36,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
 
 /**
@@ -96,6 +98,9 @@ public class UpdatePortletRegistryAction extends InfoGlueAbstractAction
             is.close();
 
             PortletEntityRegistry.load();
+
+    		NotificationMessage notificationMessage = new NotificationMessage("UpdatePortletRegistryAction.store():", "PortletRegistry", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "PortletRegistry");
+    		RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
 
             db.commit();
             db.close();
