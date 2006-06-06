@@ -26,7 +26,8 @@ Abbreviated Changelog from 2.3 Final
   * ViewPage now waits for caches to clear if in working/preview mode to ensure no colissions.
   * Made pushed system publications work
 - Made NullPointer check on allowedComponents in the properties and added a logger warning if the contenttypedefinition is not found.
- 
+- Changed a lot of details in the portlet driver making hot deploy work as well as supporting portlets in JBoss 4. 
+
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
 -------------------------------------------------------------------------------------
