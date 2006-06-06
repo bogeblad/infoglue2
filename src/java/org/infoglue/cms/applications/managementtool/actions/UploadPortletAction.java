@@ -197,7 +197,47 @@ public class UploadPortletAction extends InfoGlueAbstractAction {
      * @param contentId
      *            contentId of portlet
      */
-    private void updateDeliverEngines(Integer digitalAssetId) {
+    private void updateDeliverEngines(Integer digitalAssetId) 
+    {
+    	List allUrls = CmsPropertyHandler.getInternalDeliveryUrls();
+    	allUrls.addAll(CmsPropertyHandler.getPublicDeliveryUrls());
+    	
+    	Iterator urlIterator = allUrls.iterator();
+    	while(urlIterator.hasNext())
+    	{
+    		String url = (String)urlIterator.next() + "/DeployPortlet.action";
+    		
+	        try 
+	        {
+	            HttpClient client = new HttpClient();
+	
+	            //establish a connection within 5 seconds
+	            client.setConnectionTimeout(5000);
+	
+	            //set the default credentials
+	            HttpMethod method = new GetMethod(url);
+	            method.setQueryString("digitalAssetId=" + digitalAssetId);
+	            method.setFollowRedirects(true);
+	
+	            //execute the method
+	            client.executeMethod(method);
+	            StatusLine status = method.getStatusLine();
+	            if (status != null && status.getStatusCode() == 200) {
+	                log.info("Successfully deployed portlet at " + url);
+	            } else {
+	                log.warn("Failed to deploy portlet at " + url + ": " + status);
+	            }
+	
+	            //clean up the connection resources
+	            method.releaseConnection();
+	        }
+	        catch(Exception e)
+	        {
+	        	e.printStackTrace();
+	        }
+    	}
+    	
+    	/*
         Properties props = CmsPropertyHandler.getProperties();
         for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
             String key = (String) keys.nextElement();
@@ -210,11 +250,6 @@ public class UploadPortletAction extends InfoGlueAbstractAction {
                     client.setConnectionTimeout(5000);
 
                     //set the default credentials
-                    /*
-                     * if (creds != null) { creds = new
-                     * UsernamePasswordCredentials(args[1], args[2]);
-                     * client.getState().setCredentials(null, null, creds); }
-                     */
                     HttpMethod method = new GetMethod(url);
                     method.setQueryString("digitalAssetId=" + digitalAssetId);
                     method.setFollowRedirects(true);
@@ -235,6 +270,7 @@ public class UploadPortletAction extends InfoGlueAbstractAction {
                 }
             }
         }
+        */
 
     }
 
