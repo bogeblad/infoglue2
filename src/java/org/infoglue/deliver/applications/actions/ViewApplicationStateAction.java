@@ -34,11 +34,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.pluto.PortletContainerServices;
+import org.apache.pluto.portalImpl.services.ServiceManager;
+import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
+import org.infoglue.deliver.portal.ServletConfigContainer;
+import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
 
@@ -226,6 +231,58 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return "cleared";
     }
 
+    /**
+     * This action allows recaching of some parts of the caches manually.
+     */
+    public String doClearPortlets() throws Exception
+    {
+        System.out.println("Updating pluto service manager: infoglueAVote");
+        try 
+        {
+        	
+        	PortletEntityRegistryServiceDBImpl.setNeedRefresh(true);
+        	
+     		//run registry services to load new portlet info from the registry files
+        	String[] svcs = {
+     				"org.apache.pluto.portalImpl.services.portletdefinitionregistry.PortletDefinitionRegistryService",
+     				"org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistryService"};
+     		int len = svcs.length;
+     		for (int i = 0; i < len; i++) {				
+	 			try {
+					ServiceManager.hotInit(ServletConfigContainer.getContainer().getServletConfig(), svcs[i]);
+	 			} catch (Throwable e) {
+	 				String svc = svcs[i].substring(svcs[i].lastIndexOf('.') + 1);
+	 				String msg = "Initialization of " + svc + " service for hot deployment failed!"; 
+	 				System.out.println(msg);
+	 				break;
+	 			}
+	 	
+	 			try {
+	 				System.out.println("ServletConfigContainer.getContainer().getServletConfig():" + ServletConfigContainer.getContainer().getServletConfig());
+	 				System.out.println("ServletConfigContainer.getContainer().getServletConfig().getServletContext():" + ServletConfigContainer.getContainer().getServletConfig().getServletContext());
+	 				System.out.println("svcs[i]:" + svcs[i]);
+					ServiceManager.postHotInit(ServletConfigContainer.getContainer().getServletConfig(), svcs[i]);
+	 			} catch (Throwable e) {
+	 				String svc = svcs[i].substring(svcs[i].lastIndexOf('.') + 1);
+	 				String msg = "Post initialization of " + svc + " service for hot deployment failed!"; 
+	 				System.out.println(msg);
+	 				break;
+	 			}
+			}
+
+        	
+            PortletContainerServices.prepare("infoglueAVote");
+            ServiceManager.init(ServletConfigContainer.getContainer().getServletConfig());
+        
+            PortletEntityRegistry.load();
+
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        
+        return "cleared";
+    }
+    
     /**
      * This action allows recaching of some parts of the caches manually.
      */
