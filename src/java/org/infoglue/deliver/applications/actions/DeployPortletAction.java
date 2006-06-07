@@ -28,6 +28,9 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.PersistenceException;
+import org.exolab.castor.jdo.TransactionAbortedException;
+import org.exolab.castor.jdo.TransactionNotInProgressException;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
@@ -35,6 +38,7 @@ import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.portal.deploy.Deploy;
 import org.infoglue.deliver.portal.dispatcher.PortalServletDispatcher;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * Deploy a portlet in the servlet container. Requires that the 'portletBase'
@@ -57,46 +61,72 @@ public class DeployPortletAction extends InfoGlueAbstractAction {
      * 
      * @see org.infoglue.cms.applications.common.actions.WebworkAbstractAction#doExecute()
      */
-    protected String doExecute() throws Exception {
+    protected String doExecute() throws Exception 
+    {
         log.debug("Deploying portlet, digitalAssetId=" + digitalAssetId);
 
         Database db = CastorDatabaseService.getDatabase();
-        // TODO transaction?
-        db.begin();
 
-        DigitalAsset da = PortletAssetController.getDigitalAssetWithId(digitalAssetId, db);
-        if (da == null) {
-            return "error";
+        try
+		{
+			db.begin();
+
+			DigitalAsset da = PortletAssetController.getDigitalAssetWithId(digitalAssetId, db);
+			if (da == null)
+			{
+				return "error";
+			}
+
+			String webappsDir = PORTLET_BASE;
+			if (webappsDir == null || webappsDir.length() == 0)
+			{
+				String tomcat_home = System.getProperty("CATALINA_HOME");
+				if (tomcat_home == null)
+				{
+					tomcat_home = System.getProperty("TOMCAT_HOME");
+				}
+				if (tomcat_home != null)
+				{
+					webappsDir = new File(tomcat_home, "webapps").getAbsolutePath();
+				}
+			}
+
+			String containerName = (String) getRequest().getAttribute(PortalServletDispatcher.PORTLET_CONTAINER_NAME);
+
+			// Deploy portlet
+			String warName = da.getAssetFileName();
+			log.info("Deploying portlet " + warName + " at " + webappsDir);
+			InputStream is = da.getAssetBlob();
+			boolean deployed = Deploy.deployArchive(webappsDir, warName, is, containerName);
+			is.close();
+			if (deployed)
+			{
+				log.debug("Successful portlet deployment!");
+			} 
+			else
+			{
+				log.debug("Portlet already deployed!");
+			}
+			
+			CacheController.clearPortlets();
+		}
+        catch(Exception e)
+        {
+        	log.error("An error occurred when deployin portlet:" + e.getMessage(), e);
         }
-
-        String webappsDir = PORTLET_BASE;
-        if (webappsDir == null || webappsDir.length() == 0) {
-            String tomcat_home = System.getProperty("CATALINA_HOME");
-            if (tomcat_home == null) {
-                tomcat_home = System.getProperty("TOMCAT_HOME");
-            }
-            if (tomcat_home != null) {
-                webappsDir = new File(tomcat_home, "webapps").getAbsolutePath();
-            }
+        finally
+        {
+	        try
+			{
+				db.commit();
+				db.close();
+			} 
+	        catch (Exception e)
+			{
+				e.printStackTrace();
+			} 
         }
-
-        String containerName = (String) getRequest().getAttribute(
-                PortalServletDispatcher.PORTLET_CONTAINER_NAME);
-
-        // Deploy portlet
-        String warName = da.getAssetFileName();
-        log.info("Deploying portlet " + warName + " at " + webappsDir);
-        InputStream is = da.getAssetBlob();
-        boolean deployed = Deploy.deployArchive(webappsDir, warName, is, containerName);
-        is.close();
-        if (deployed) {
-            log.debug("Successful portlet deployment!");
-        } else {
-            log.debug("Portlet already deployed!");
-        }
-        db.commit();
-        db.close();
-
+        
         return "success";
     }
 

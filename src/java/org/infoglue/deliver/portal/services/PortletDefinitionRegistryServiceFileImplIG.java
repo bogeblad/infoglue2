@@ -119,8 +119,6 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
             // END PATCH for IBM WebSphere 
             
             this.baseWMDir = this.baseWMDir.substring(0, this.baseWMDir.lastIndexOf(fileSeparator))+fileSeparator;
-            System.out.println("servletContext.getRealPath('') =" + this.servletContext.getRealPath(""));
-            System.out.println("baseWMDir = " + this.baseWMDir);
             if (log.isDebugEnabled()) 
             {
                 log.debug("servletContext.getRealPath('') =" + this.servletContext.getRealPath(""));
@@ -130,7 +128,7 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
 
         // get portlet xml mapping file
         String _mapping = properties.getString(CONFIG_MAPPING_PORTLETXML, DEFAULT_MAPPING_PORTLETXML);
-        System.out.println("_mapping = " + _mapping);
+        log.debug("_mapping = " + _mapping);
         File f = new File(_mapping);
         if (!f.isAbsolute()) _mapping = servletContext.getRealPath(_mapping);
         this.mappingPortletXml = new Mapping();
@@ -170,34 +168,33 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
 
     public PortletDefinition getPortletDefinition(ObjectID id)
     {
-    	System.out.println("Trying to get portlet from portletsKeyObjectId [" + portletsKeyObjectId.hashCode() + "] by " + id);
+    	log.debug("Trying to get portlet from portletsKeyObjectId [" + portletsKeyObjectId.hashCode() + "] by " + id);
     	PortletDefinition portletDefinition = (PortletDefinition)portletsKeyObjectId.get(id);
-    	System.out.println("portletDefinition: " + portletDefinition);
+    	log.debug("portletDefinition: " + portletDefinition);
     	if(portletDefinition == null)
     	{
-        	System.out.println("\n\nList contains:\n\n");
+    		log.debug("\n\nList contains:\n\n");
     		Iterator portletsKeyObjectIdIterator = portletsKeyObjectId.keySet().iterator();
     		while(portletsKeyObjectIdIterator.hasNext())
     		{
     			ObjectID key = (ObjectID)portletsKeyObjectIdIterator.next();
     			PortletDefinition listPortletDefinition = (PortletDefinition)portletsKeyObjectId.get(key);
-    	    	System.out.println("" + key + "=" + listPortletDefinition);		
+    			log.debug("" + key + "=" + listPortletDefinition);		
     		}
-        	System.out.println("\n\n-------------------:\n\n");
+    		log.debug("\n\n-------------------:\n\n");
     	}
     	return portletDefinition;
     }
 
     private void load() throws Exception
     {
-    	System.out.println("baseWMDir in load(): " + baseWMDir);
+    	log.debug("baseWMDir in load(): " + baseWMDir);
     	
         File f = new File(baseWMDir);
         String[] entries = f.list();
         for (int i=0; i<entries.length; i++)
         {
             File entry = new File(baseWMDir+entries[i]);
-            System.out.println("entry: " + entry);
             if (entry.isDirectory())
             {
                 if (log.isDebugEnabled()) 
@@ -243,9 +240,6 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
         File portletXml = new File(directory+"portlet.xml");
         File webXml = new File(directory+"web.xml");
 
-        System.out.println("portletXml: " + portletXml);
-        System.out.println("portletXml: " + webXml);
-        
         // check for the porlet.xml. If there is no portlet.xml this is not a
         // portlet application web module
         if (portletXml.exists()) // && (webXml.exists()))
@@ -313,12 +307,6 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
             log.debug("Before:" + registry.size());
             registry.add( portletApp );
             log.debug("After:" + registry.size());
-
-        	//System.out.println("Dumping content of web.xml...");
-            //System.out.println(webApp.toString());
-
-        	//System.out.println("Dumping content of portlet.xml...");
-        	//System.out.println(portletApp.toString());
 
             if (log.isDebugEnabled())
             {

@@ -49,6 +49,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.infoglue.deliver.portal.deploy.Deploy;
 import org.infoglue.deliver.portal.om.PortletApplicationEntityImpl;
 import org.infoglue.deliver.portal.om.PortletApplicationEntityListImpl;
@@ -65,7 +67,8 @@ import webwork.multipart.MultiPartRequestWrapper;
  * @author jand
  *  
  */
-public class UploadPortletAction extends InfoGlueAbstractAction {
+public class UploadPortletAction extends InfoGlueAbstractAction 
+{
     private static final Log log = LogFactory.getLog(UploadPortletAction.class);
 
     private static final String PORTLET_DEPLOY_PREFIX = "portlet.deploy";
@@ -74,129 +77,139 @@ public class UploadPortletAction extends InfoGlueAbstractAction {
 
     public String doExecute() //throws Exception
     {
-        try {
-            MultiPartRequestWrapper mpr = ActionContext.getMultiPartRequest();
-            if (mpr == null) {
-                return "input";
-            }
+        try
+		{
+			MultiPartRequestWrapper mpr = ActionContext.getMultiPartRequest();
+			if (mpr == null)
+			{
+				return "input";
+			}
 
-            log.debug("Handling upload...");
-            Enumeration names = mpr.getFileNames();
-            if (names.hasMoreElements()) {
-                String name = (String) names.nextElement();
-                File uploadedFile = mpr.getFile(name);
-                if (uploadedFile == null || uploadedFile.length() == 0) {
-                    log.info("No file found in multipart request");
-                    return "input";
-                }
-                String contentType = mpr.getContentType(name);
-                String fileName = mpr.getFilesystemName(name);
-                String filePath = CmsPropertyHandler.getDigitalAssetPath();
+			log.debug("Handling upload...");
+			Enumeration names = mpr.getFileNames();
+			if (names.hasMoreElements())
+			{
+				String name = (String) names.nextElement();
+				File uploadedFile = mpr.getFile(name);
+				if (uploadedFile == null || uploadedFile.length() == 0)
+				{
+					log.info("No file found in multipart request");
+					return "input";
+				}
+				String contentType = mpr.getContentType(name);
+				String fileName = mpr.getFilesystemName(name);
+				String filePath = CmsPropertyHandler.getDigitalAssetPath();
 
-                // Pluto prepare portlet-war
-                String appName = fileName;
-                int dot = appName.lastIndexOf(".");
-                if (dot > 0) {
-                    appName = appName.substring(0, dot);
-                }
+				// Pluto prepare portlet-war
+				String appName = fileName;
+				int dot = appName.lastIndexOf(".");
+				if (dot > 0)
+				{
+					appName = appName.substring(0, dot);
+				}
 
-                // Create file where Deployer will write updated
-                // (pluto-prepared) .war
-                File file = new File(uploadedFile.getParentFile(), "tmp"
-                        + System.currentTimeMillis());
-                PortletApplicationDefinition pad = Deploy.prepareArchive(uploadedFile, file,
-                        appName);
+				// Create file where Deployer will write updated
+				// (pluto-prepared) .war
+				File file = new File(uploadedFile.getParentFile(), "tmp" + System.currentTimeMillis());
+				PortletApplicationDefinition pad = Deploy.prepareArchive(uploadedFile, file, appName);
 
-                // Extract portlet application information to be added to
-                // portlet entity registry
-                log.info("Adding portlet application to registry: " + appName);
-                PortletApplicationEntityImpl pae = new PortletApplicationEntityImpl();
-                pae.setId(appName);
+				// Extract portlet application information to be added to
+				// portlet entity registry
+				log.info("Adding portlet application to registry: " + appName);
+				PortletApplicationEntityImpl pae = new PortletApplicationEntityImpl();
+				pae.setId(appName);
 
-                PortletDefinitionList pdl = pad.getPortletDefinitionList();
-                for (Iterator it = pdl.iterator(); it.hasNext();) {
-                    PortletDefinition pd = (PortletDefinition) it.next();
-                    log.debug("Adding portlet: " + pd.getName());
-                    PortletEntityImpl pe = new PortletEntityImpl();
-                    pe.setId(pd.getName());
+				PortletDefinitionList pdl = pad.getPortletDefinitionList();
+				for (Iterator it = pdl.iterator(); it.hasNext();)
+				{
+					PortletDefinition pd = (PortletDefinition) it.next();
+					log.debug("Adding portlet: " + pd.getName());
+					PortletEntityImpl pe = new PortletEntityImpl();
+					pe.setId(pd.getName());
 
-                    // Copy preferences
-                    ArrayList destPrefs = new ArrayList();
-                    PreferenceSet prefSet = pd.getPreferenceSet();
-                    for (Iterator prefs = prefSet.iterator(); prefs.hasNext();) {
-                        Preference src = (Preference) prefs.next();
-                        ArrayList destValues = new ArrayList();
-                        for (Iterator values = src.getValues(); values.hasNext();) {
-                            destValues.add(values.next());
-                        }
-                        destPrefs.add(new PreferenceImpl(src.getName(), destValues));
-                    }
-                    pe.setPreferenceSet(new PreferenceSetImpl(destPrefs));
-                    pae.addPortletEntity(pe);
-                }
+					// Copy preferences
+					ArrayList destPrefs = new ArrayList();
+					PreferenceSet prefSet = pd.getPreferenceSet();
+					for (Iterator prefs = prefSet.iterator(); prefs.hasNext();)
+					{
+						Preference src = (Preference) prefs.next();
+						ArrayList destValues = new ArrayList();
+						for (Iterator values = src.getValues(); values.hasNext();)
+						{
+							destValues.add(values.next());
+						}
+						destPrefs.add(new PreferenceImpl(src.getName(), destValues));
+					}
+					pe.setPreferenceSet(new PreferenceSetImpl(destPrefs));
+					pae.addPortletEntity(pe);
+				}
 
-                // Create Digital Asset
-                log.debug("Creating Digital Asset...");
-                DigitalAssetVO newAsset = new DigitalAssetVO();
-                newAsset.setAssetContentType(contentType);
-                newAsset.setAssetKey(fileName);
-                newAsset.setAssetFileName(fileName);
-                newAsset.setAssetFilePath(filePath);
-                newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
+				// Create Digital Asset
+				log.debug("Creating Digital Asset...");
+				DigitalAssetVO newAsset = new DigitalAssetVO();
+				newAsset.setAssetContentType(contentType);
+				newAsset.setAssetKey(fileName);
+				newAsset.setAssetFileName(fileName);
+				newAsset.setAssetFilePath(filePath);
+				newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
 
-                // Check existance of portlet and remove old ones
-                List assets = PortletAssetController.getDigitalAssetByName(fileName);
-                if (assets != null && assets.size() > 0) {
-                    log.info("Removing old instance of " + fileName);
-                    for (Iterator it = assets.iterator(); it.hasNext();) {
-                        DigitalAsset oldAsset = (DigitalAsset) it.next();
-                        PortletAssetController.delete(oldAsset.getId());
-                    }
-                }
+				// Check existance of portlet and remove old ones
+				List assets = PortletAssetController.getDigitalAssetByName(fileName);
+				if (assets != null && assets.size() > 0)
+				{
+					log.info("Removing old instance of " + fileName);
+					for (Iterator it = assets.iterator(); it.hasNext();)
+					{
+						DigitalAsset oldAsset = (DigitalAsset) it.next();
+						PortletAssetController.delete(oldAsset.getId());
+					}
+				}
 
-                log.info("Storing Digital Asset (portlet) " + fileName);
-                InputStream is = new FileInputStream(file);
-                digitalAsset = PortletAssetController.create(newAsset, is);
-                is.close();
-                log.debug("Digital Asset stored as id=" + digitalAsset.getId());
+				log.info("Storing Digital Asset (portlet) " + fileName);
+				InputStream is = new FileInputStream(file);
+				digitalAsset = PortletAssetController.create(newAsset, is);
+				is.close();
+				log.debug("Digital Asset stored as id=" + digitalAsset.getId());
 
-                // Cleanup
-                uploadedFile.delete();
-                file.delete();
+				// Cleanup
+				uploadedFile.delete();
+				file.delete();
 
-                // Add the new application to portlet registry
-                // Update persisted portlet registry
-                // TODO check existance first?
-                PortletApplicationEntityList pael = PortletEntityRegistry
-                        .getPortletApplicationEntityList();
-                if (pael instanceof PortletApplicationEntityListImpl) {
-                    ((PortletApplicationEntityListImpl) pael).add(pae);
-                    log.debug("Portlet application successfully added to registry");
-                } else {
-                    log.error("Unknown implementation of PortletApplicationEntityList, "
-                            + "cannot add portlet application!");
-                    return "error";
-                }
-                PortletEntityRegistry.store();
+				// Add the new application to portlet registry
+				// Update persisted portlet registry
+				// TODO check existance first?
+				PortletApplicationEntityList pael = PortletEntityRegistry.getPortletApplicationEntityList();
+				if (pael instanceof PortletApplicationEntityListImpl)
+				{
+					((PortletApplicationEntityListImpl) pael).add(pae);
+					log.debug("Portlet application successfully added to registry");
+				} else
+				{
+					log.error("Unknown implementation of PortletApplicationEntityList, "
+							+ "cannot add portlet application!");
+					return "error";
+				}
+				PortletEntityRegistry.store();
 
-                // Refresh deliver-engines
-                updateDeliverEngines(digitalAsset.getId());
-            }
+				// Refresh deliver-engines
+				updateDeliverEngines(digitalAsset.getId());
+			}
 
-        } catch (Throwable e) {
-            log.error("ERROR", e);
-            return "error";
-        }
+		} catch (Throwable e)
+		{
+			log.error("ERROR", e);
+			return "error";
+		}
 
         return "success";
     }
 
     /**
-     * Report to deliver engines that a portlet has been uploaded
-     * 
-     * @param contentId
-     *            contentId of portlet
-     */
+	 * Report to deliver engines that a portlet has been uploaded
+	 * 
+	 * @param contentId
+	 *            contentId of portlet
+	 */
     private void updateDeliverEngines(Integer digitalAssetId) 
     {
     	List allUrls = CmsPropertyHandler.getInternalDeliveryUrls();
@@ -211,15 +224,15 @@ public class UploadPortletAction extends InfoGlueAbstractAction {
 	        {
 	            HttpClient client = new HttpClient();
 	
-	            //establish a connection within 5 seconds
+	            // establish a connection within 5 seconds
 	            client.setConnectionTimeout(5000);
 	
-	            //set the default credentials
+	            // set the default credentials
 	            HttpMethod method = new GetMethod(url);
 	            method.setQueryString("digitalAssetId=" + digitalAssetId);
 	            method.setFollowRedirects(true);
 	
-	            //execute the method
+	            // execute the method
 	            client.executeMethod(method);
 	            StatusLine status = method.getStatusLine();
 	            if (status != null && status.getStatusCode() == 200) {

@@ -1118,7 +1118,7 @@ public class CacheController extends Thread
         logger.info("evictWaitingCache stop");
     }
 
-	private static void clearPortlets()
+	public static void clearPortlets()
 	{
  		//run registry services to load new portlet info from the registry files
 		String[] svcs = 

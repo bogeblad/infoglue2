@@ -48,12 +48,14 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @author joran
  *  
  */
-public class OmBuilderXStreamImpl implements OmBuilder {
+public class OmBuilderXStreamImpl implements OmBuilder 
+{
     private static final Log log = LogFactory.getLog(OmBuilderXStreamImpl.class);
 
     private XStream xstream;
 
-    public OmBuilderXStreamImpl() {
+    public OmBuilderXStreamImpl() 
+    {
         xstream = new XStream(new DomDriver());
         xstream.alias("applications", ArrayList.class);
         xstream.alias("application", PortletApplicationEntityImpl.class);
@@ -78,9 +80,19 @@ public class OmBuilderXStreamImpl implements OmBuilder {
      * 
      * @see org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistryService#getPortletApplicationEntityList()
      */
-    public PortletApplicationEntityListImpl getPortletApplicationEntityList(InputStream is) {
-        ArrayList apps = (ArrayList) xstream.fromXML(new InputStreamReader(is));
-        PortletApplicationEntityListImpl applications = new PortletApplicationEntityListImpl(apps);
+    public PortletApplicationEntityListImpl getPortletApplicationEntityList(InputStream is) 
+    {
+    	ArrayList apps = new ArrayList();
+    	try
+    	{
+    		apps = (ArrayList) xstream.fromXML(new InputStreamReader(is));
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+
+    	PortletApplicationEntityListImpl applications = new PortletApplicationEntityListImpl(apps);
 
         // This is here to set back-references
         for (Iterator iter = applications.iterator(); iter.hasNext();) {
