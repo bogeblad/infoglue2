@@ -330,19 +330,19 @@ public class CacheController extends Thread
 	
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip) throws Exception
 	{	
-		//long wait = 0;
+		long wait = 0;
 		while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-			//if(wait == 1000)
-			//{
-			//	logger.warn("The clearCache method waited 100 iterations but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+			if(wait == 100)
+			{
+				logger.warn("The clearCache method waited 100 iterations but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
-				//break;
-			//}
+				break;
+			}
 			
 			Thread.sleep(10);
-			//wait++;
+			wait++;
 	    }
 
 	    logger.info("clearCaches start in " + CmsPropertyHandler.getContextRootPath());
