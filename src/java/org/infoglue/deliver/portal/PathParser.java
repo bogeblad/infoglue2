@@ -223,12 +223,12 @@ public class PathParser
                 // Multi-value
                 while (tok.hasMoreTokens() && entry.startsWith(MULTI_VALUE)) {
                     buffer.add(entry.substring(MULTI_VALUE.length()));
-                    entry = tok.nextToken();
+                    entry = tok.nextToken().replaceAll("%2F", "/");
                 }
                 return entry;
             } else {
                 // Single-value
-                buffer.add(entry);
+                buffer.add(entry.replaceAll("%2F", "/"));
                 return (tok.hasMoreElements() ? tok.nextToken() : null);
             }
         }
@@ -244,11 +244,11 @@ public class PathParser
     public static String encodeValues(String[] values) {
         StringBuffer result = new StringBuffer();
         if (values.length == 1) {
-            result.append(values[0]);
+            result.append(values[0].replaceAll("/", "%2F"));
         } else {
             for (int i = 0; i < values.length; i++) {
                 result.append(MULTI_VALUE);
-                result.append(values[i]);
+                result.append(values[i].replaceAll("/", "%2F"));
                 if (i < values.length - 1)
                     result.append("/");
             }
