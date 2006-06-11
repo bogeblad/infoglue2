@@ -98,7 +98,7 @@ public class CmsJDOCallback implements CallbackInterceptor
         // ( (Persistent) object ).jdoStore( modified );
    		
    		//getLogger().info("Should we store -------------->" + object + ":" + modified);
-    	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && modified)
+    	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && modified)
 	    {
 	        //System.out.println("Actually stored it:" + object + ":" + modified);
 	    	logger.info("Actually stored it:" + object + ":" + modified);
@@ -241,7 +241,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 		//	CmsSystem.transactionLogEntry("CMSJDOCallback:" + object.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(object), object.toString());        
 		//System.out.println("created...:" + object);
     	logger.info("created..........................." + object);
-    	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
+    	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
     	    String userName = "SYSTEM";
     	    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_CREATE, getObjectIdentity(object), object.toString());
@@ -351,7 +351,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 		//System.out.println("removed...:" + object);
         // ( (Persistent) object ).jdoAfterRemove();
         
-       	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
+       	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
        	    String userName = "SYSTEM";
 		    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_DELETE, getObjectIdentity(object), object.toString());
