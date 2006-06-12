@@ -334,9 +334,9 @@ public class CacheController extends Thread
 		while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-			if(wait == 100)
+	        if(wait == 3000)
 			{
-				logger.warn("The clearCache method waited 100 iterations but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
 				break;
 			}
@@ -811,10 +811,19 @@ public class CacheController extends Thread
 
 	public static synchronized void clearCache(Class type, Object[] ids) throws Exception
 	{
+		long wait = 0;
 		while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    {
-	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        Thread.sleep(10);
+	        logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
+	        if(wait == 3000)
+			{
+				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+				//printThreads();
+				break;
+			}
+			
+			Thread.sleep(10);
+			wait++;
 	    }
 	    
 	    Database db = CastorDatabaseService.getDatabase();
@@ -849,10 +858,18 @@ public class CacheController extends Thread
 	
 	public static void clearCache(Class type, Object[] ids, Database db) throws Exception
 	{
+		long wait = 0;
 	    while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    {
-	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
+	        if(wait == 3000)
+			{
+				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+				//printThreads();
+				break;
+			}
+
 	        Thread.sleep(10);
+	        wait++;
 	    }
 
 	    CacheManager manager = db.getCacheManager();
@@ -1038,79 +1055,84 @@ public class CacheController extends Thread
 
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
 
+    	List localNotifications = new ArrayList();
+    	
     	boolean startedThread = false;
     	logger.info("before notifications");
 	    synchronized(notifications)
         {
-	    	Iterator i = notifications.iterator();
-			while(i.hasNext())
-			{
-			    CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)i.next();
-			    String className = cacheEvictionBean.getClassName();
-			    String objectId = cacheEvictionBean.getObjectId();
-			    String objectName = cacheEvictionBean.getObjectName();
-				String typeId = cacheEvictionBean.getTypeId();
-				
-			    wpt.getCacheEvictionBeans().add(cacheEvictionBean);
-			    
-				try
-			    {
-					//Here we do what we need to if the server properties has changed.
-				    if(className != null && className.equalsIgnoreCase("ServerNodeProperties"))
-				    {
-						try 
-						{
-							logger.info("clearing InfoGlueAuthenticationFilter");
-							clearServerNodeProperty();
-							logger.info("cleared InfoGlueAuthenticationFilter");
-							InfoGlueAuthenticationFilter.initializeProperties();
-							logger.info("initialized InfoGlueAuthenticationFilter");
-						} 
-						catch (SystemException e1) 
-						{
-							logger.warn("Could not refresh authentication filter:" + e1.getMessage(), e1);
-						}
-				    }
-
-				    if(CmsPropertyHandler.getOperatingMode() != null && !CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3") && className != null && className.equalsIgnoreCase("PortletRegistry"))
-				    {
-						logger.info("clearing portletRegistry");
-						clearPortlets();
-						logger.info("cleared portletRegistry");
-				    }
-
-				    
-				    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
-					if(CmsPropertyHandler.getOperatingMode() != null && CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
-					{
-			            logger.info("Starting publication thread...");
-		            	PublicationThread pt = new PublicationThread();
-		            	pt.setPriority(Thread.MIN_PRIORITY);
-		            	pt.start();
-		            	startedThread = true;
-		            	logger.info("Done starting publication thread...");
-		            }
-			    }
-			    catch(Exception e)
-			    {
-			        logger.error("Cache eviction reported an error:" + e.getMessage(), e);
-			    }
-
-		        logger.info("Cache evicted..");
-
-				i.remove();
-			}
-			
-			if(CmsPropertyHandler.getOperatingMode() != null && !CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3"))
-			{
-				logger.info("Starting the work method");
-				//wpt.setPriority(Thread.MAX_PRIORITY);
-				//wpt.start();
-        		wpt.work();
-        		startedThread = true;
-	        	logger.info("Done starting working publication thread...");
-			}
+	    	localNotifications.addAll(notifications);
+	    	notifications.clear();
         }
+	    
+    	Iterator i = localNotifications.iterator();
+		while(i.hasNext())
+		{
+		    CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)i.next();
+		    String className = cacheEvictionBean.getClassName();
+		    String objectId = cacheEvictionBean.getObjectId();
+		    String objectName = cacheEvictionBean.getObjectName();
+			String typeId = cacheEvictionBean.getTypeId();
+			
+		    wpt.getCacheEvictionBeans().add(cacheEvictionBean);
+		    
+			try
+		    {
+				//Here we do what we need to if the server properties has changed.
+			    if(className != null && className.equalsIgnoreCase("ServerNodeProperties"))
+			    {
+					try 
+					{
+						logger.info("clearing InfoGlueAuthenticationFilter");
+						clearServerNodeProperty();
+						logger.info("cleared InfoGlueAuthenticationFilter");
+						InfoGlueAuthenticationFilter.initializeProperties();
+						logger.info("initialized InfoGlueAuthenticationFilter");
+					} 
+					catch (SystemException e1) 
+					{
+						logger.warn("Could not refresh authentication filter:" + e1.getMessage(), e1);
+					}
+			    }
+
+			    if(CmsPropertyHandler.getOperatingMode() != null && !CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3") && className != null && className.equalsIgnoreCase("PortletRegistry"))
+			    {
+					logger.info("clearing portletRegistry");
+					clearPortlets();
+					logger.info("cleared portletRegistry");
+			    }
+
+			    
+			    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
+				if(CmsPropertyHandler.getOperatingMode() != null && CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+				{
+		            logger.info("Starting publication thread...");
+	            	PublicationThread pt = new PublicationThread();
+	            	pt.setPriority(Thread.MIN_PRIORITY);
+	            	pt.start();
+	            	startedThread = true;
+	            	logger.info("Done starting publication thread...");
+	            }
+		    }
+		    catch(Exception e)
+		    {
+		        logger.error("Cache eviction reported an error:" + e.getMessage(), e);
+		    }
+
+	        logger.info("Cache evicted..");
+
+			i.remove();
+		}
+		
+		if(CmsPropertyHandler.getOperatingMode() != null && !CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3"))
+		{
+			logger.info("Starting the work method");
+			//wpt.setPriority(Thread.MAX_PRIORITY);
+			//wpt.start();
+    		wpt.work();
+    		startedThread = true;
+        	logger.info("Done starting working publication thread...");
+		}
 
 	    if(!startedThread)
 	    	RequestAnalyser.getRequestAnalyser().setBlockRequests(false);

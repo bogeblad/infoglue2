@@ -80,13 +80,16 @@
 	        long blockedTime = e.getBlockedTime();
 	        long waitedTime = e.getWaitedTime();
 			
+			long lockOwnerId = e.getLockOwnerId();
+			String lockOwnerName = e.getLockOwnerName();
+			
 			//Only list infoglue threads except redirect filter.			
-			if(stackString.indexOf("org.infoglue") > -1 && stackString.indexOf("RedirectFilter.java") == -1)
+			if(stackString.indexOf("org.infoglue") > -1 && !e.getThreadState().equals(Thread.State.RUNNABLE))
 			{
 	        %>
 	        <tr><td align="center">
 	        <%
-	        out.print("<br/>" + e.getThreadName() + "<br/>" + " " + " Thread id = " + e.getThreadId() + " " + e.getThreadState() + "(" + cpuTime + ":" + userTime + ":" + blockedTime + ":" + waitedTime + ")");
+	        out.print("<br/>" + e.getThreadName() + "<br/>" + " " + " Thread id = " + e.getThreadId() + " " + e.getThreadState() + "(" + cpuTime + ":" + userTime + ":" + blockedTime + ":" + waitedTime + ") - lock ownerId:" + lockOwnerId + ":" + lockOwnerName);
 	        out.print("<br/><a href=\"BlockedThread.jsp?action=kill&threadId=" + threadId + "\">Kill thread</a><br/>");
 	        out.print(stackString);
 	        %>

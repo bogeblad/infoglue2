@@ -34,6 +34,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.ThreadMonitor;
 
 
 /**
@@ -59,6 +61,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	
 	private static boolean cachingInProgress = false;
 	
+	private ThreadMonitor tk = null;
+
 	/**
 	 * The constructor for this action - contains nothing right now.
 	 */
@@ -102,6 +106,9 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
+    		tk = new ThreadMonitor(2000, this.getRequest(), "Update cache took to long", false);
+
     	getLogger().info("Update Cache starts..");
         String operatingMode = CmsPropertyHandler.getOperatingMode();
 		
@@ -173,10 +180,27 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    
 		    }
 		    
-		    synchronized(CacheController.notifications)
-	        {
-		    	CacheController.notifications.addAll(newNotificationList);
-	        }
+		    /*
+            //TODO - place check here maybe??
+            synchronized(RequestAnalyser.getRequestAnalyser()) 
+    	    {
+    	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
+    		    {
+    			    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+    		        return;
+    		    }
+
+    	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+    		}
+    		*/
+		    
+		    //synchronized(this)
+		    //{
+			    synchronized(CacheController.notifications)
+		        {
+			    	CacheController.notifications.addAll(newNotificationList);
+		        }
+			//}
 		    
 			getLogger().info("UpdateCache finished...");
 		}
@@ -193,6 +217,9 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
                 
 		//this.getHttpSession().invalidate();
     	getLogger().info("Update Cache stops..");
+
+    	if(tk != null)
+    		tk.done();
 
         return NONE;
     }
