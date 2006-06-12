@@ -182,7 +182,8 @@ public class MailService
 		   
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
-		    email.setBcc(createInternetAddressesList(bcc));
+		    if(bcc != null)
+		    	email.setBcc(createInternetAddressesList(bcc));
 		    email.setSubject(subject);
 		    
 		    email.setHtmlMsg(content);
