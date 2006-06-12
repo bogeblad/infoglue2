@@ -179,13 +179,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	getLogger().info("************************************************");
     	
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
-    		tk = new ThreadMonitor(60000, request, "Page view took to long!", true);
+    		tk = new ThreadMonitor(10000, request, "Page view took to long!", true);
 
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
-		
+    	
 		beginTransaction(dbWrapper.getDatabase());
 
-		try
+   		try
 		{
 			//if(request.getParameter("sleep") != null && request.getParameter("sleep").equals("true"))
 			//	Thread.sleep(60000);
@@ -569,11 +569,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			setSiteNodeId(rootSiteNodeVO.getSiteNodeId());
 		} 
-		else
-		{
-		    
-		}
-		
+
 		try
 		{
 			if(getSiteNodeId() != null)
@@ -583,7 +579,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    {
 			throw new SystemException("There was no page with the current specification. SiteNodeId:" + getSiteNodeId());
 	    }
-
 		
 		if(getLanguageId() == null)
 		{
@@ -594,6 +589,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId(), (InfoGluePrincipal)this.principal);
 		    else
 		        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfRepositorySupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId());
+
+			logger.debug("Checking browser language...");
 
 		    if(browserLanguageVO != null)
 			{
@@ -648,7 +645,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
 				if(masterLanguageVO == null)
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
-
 				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId());
