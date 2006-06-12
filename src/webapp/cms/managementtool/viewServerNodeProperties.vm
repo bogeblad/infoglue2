@@ -206,6 +206,9 @@
 	<tr>
 		<td>#editPropertyField("ServerNode.property.systemEmailSender" "systemEmailSender" "$this.getPropertyValue('systemEmailSender')" "51" "$!serverNodeId")</td>
 	</tr>
+	<tr>
+		<td>#editPropertyField("ServerNode.property.warningEmailReceiver" "warningEmailReceiver" "$this.getPropertyValue('warningEmailReceiver')" "51" "$!serverNodeId")</td>
+	</tr>
 
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.protectionSettings.label")</td>

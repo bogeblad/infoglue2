@@ -918,6 +918,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("systemEmailSender", true);
 	}
 
+	public static String getWarningEmailReceiver()
+	{
+	    return getServerNodeProperty("warningEmailReceiver", true);
+	}
+
 	public static String getExportFormat()
 	{
 	    return getServerNodeProperty("exportFormat", true, "1");

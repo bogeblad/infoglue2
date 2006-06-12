@@ -162,6 +162,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "mail.smtp.password");
 	    populate(ps, "mail.contentType");
 	    populate(ps, "systemEmailSender");
+	    populate(ps, "warningEmailReceiver");
 	    populate(ps, "loginUrl");
 	    populate(ps, "logoutUrl");
 	    populate(ps, "invalidLoginUrl");
