@@ -97,7 +97,7 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
     public void init (ServletConfig config, Properties properties) throws Exception
     {
         log = Log.getService().getLogger(getClass());
-        System.out.println("Initializing portlet registry....:" + config);
+        log.debug("Initializing portlet registry....:" + config);
         servletContext = config.getServletContext();
 
         if (properties.getBoolean("non-servlet")==Boolean.TRUE)
@@ -244,8 +244,7 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
         // portlet application web module
         if (portletXml.exists()) // && (webXml.exists()))
         {
-        	System.out.println("Loading the following Portlet Applications XML files..."+portletXml+", "+webXml);
-            if (log.isDebugEnabled())
+        	if (log.isDebugEnabled())
             {
                 log.debug("Loading the following Portlet Applications XML files..."+portletXml+", "+webXml);
             }
@@ -322,7 +321,6 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
         else
         {
         	log.debug("Could not find " + portletXml);
-        	System.out.println("Could not find " + portletXml);
         }
 
     }
