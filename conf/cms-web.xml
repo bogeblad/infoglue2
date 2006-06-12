@@ -10,11 +10,16 @@
             <param-name>FilterURIs</param-name>
             <param-value>
                 /UpdateCache.action,
+                /UpdateCache!test.action,
+				/ViewApplicationState.action,
+                /ErrorPage.action,
                 /digitalAssets/*,
                 /scripts/*,
                 /script/*,
                 /css/*,
-                /images/*
+                /images/*,
+                /img/*,
+                /jsp/*
             </param-value>
         </init-param>
     </filter> 
