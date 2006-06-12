@@ -73,6 +73,7 @@ import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.ThreadMonitor;
 
 
 /**
@@ -128,7 +129,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	public static long rollbackTime = 0;
 	public static long closeTime = 0;
 	
-
+	private ThreadMonitor tk = null;
 	
 	/**
 	 * The constructor for this action - contains nothing right now.
@@ -160,16 +161,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
         }
         */
         //TODO - Can this be removed perhaps
-        /*
         while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
         }
-        */
         
         HttpServletRequest request = getRequest();
-                
+        
     	long start = System.currentTimeMillis();
     	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests();
 
@@ -179,12 +178,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	getLogger().info("* ViewPageAction was called....                *");
     	getLogger().info("************************************************");
     	
+    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
+    		tk = new ThreadMonitor(60000, request, "Page view took to long!", true);
+
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
 		
 		beginTransaction(dbWrapper.getDatabase());
 
 		try
 		{
+			//if(request.getParameter("sleep") != null && request.getParameter("sleep").equals("true"))
+			//	Thread.sleep(60000);
+			
 			validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
@@ -293,17 +298,20 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			elapsedTime = System.currentTimeMillis() - start;
 			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests();
-		}
 
-		if(elapsedTime > 10000)
-		{
-		    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
-		    getLogger().warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
-		}
-		else
-		{
-		    getLogger().info("The page delivery took " + elapsedTime + "ms");			
-		    getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			if(elapsedTime > 10000)
+			{
+			    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
+			    getLogger().warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			}
+			else
+			{
+			    getLogger().info("The page delivery took " + elapsedTime + "ms");			
+			    getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			}
+
+	    	if(tk != null)
+	    		tk.done();
 		}
 		
 		//System.out.println("The page delivery took " + elapsedTime + "ms");
@@ -319,23 +327,26 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
 	public String doRenderDecoratedPage() throws Exception
 	{
-		/*
         while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
         }
-        */
+		
+        HttpServletRequest request = getRequest();
 
     	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests();
 
-		long start			= new Date().getTime();
+   		long start			= new Date().getTime();
 		long elapsedTime 	= 0;
     	
 		getLogger().info("************************************************");
 		getLogger().info("* ViewPageAction was called....                *");
 		getLogger().info("************************************************");
 		
+    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
+    		tk = new ThreadMonitor(60000, request, "Page view took to long!", true);
+
 		DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
 		
@@ -449,10 +460,21 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    elapsedTime = System.currentTimeMillis() - start;
 
 			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests();
+
+			if(elapsedTime > 20000)
+			{
+			    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
+			    getLogger().warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			}
+			else
+			{
+			    getLogger().info("The page delivery took " + elapsedTime + "ms");			
+			    getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			}
+
+			if(tk != null)
+	    		tk.done();
 		}
-		
-		getLogger().info("The page delivery took " + elapsedTime + "ms");
-		//System.out.println("The page delivery took " + elapsedTime + "ms");
 		
 		return NONE;
 	}
