@@ -68,6 +68,7 @@ public class ThreadMonitor implements Runnable
 		watcherThread.start();
 		
 		// Hack - pause a bit to let the watcher thread get started.
+		/*
 		try
 		{
 			Thread.sleep(100);
@@ -75,6 +76,7 @@ public class ThreadMonitor implements Runnable
 		catch (InterruptedException e)
 		{
 		}
+		*/
 	}
 
 	/// Constructor, current thread.
@@ -157,7 +159,7 @@ public class ThreadMonitor implements Runnable
        	}
         logger.warn(stackString);
         
-        String warningEmailReceiver = CmsPropertyHandler.getProperty("warningEmailReceiver");
+        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
         if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
         {
 			try
