@@ -158,6 +158,7 @@
 	    </form>
     </td>
   </tr>
+  <!--
   <tr>
     <td colspan="4" class="text" align="left">
 	    <a href="ViewApplicationState!setLogInfo.action">Set loglevel to info</a>
@@ -165,7 +166,8 @@
 	    <a href="ViewApplicationState!setLogError.action">Set loglevel to error</a>
     </td>
   </tr>
-
+  -->
+  
   <tr>
     <td colspan="4"><hr/></td>
   </tr>
@@ -173,10 +175,13 @@
     <td class="label" bgcolor="gray" colspan="4">Analysis tools</td>
   </tr>
   <tr>
-    <td colspan="4" class="text" align="left"><a href="jsp/PermGen.jsp">Click here for detailed memory info (On Java 5-setups only).</a></td>
-  </tr>
-  <tr>
-    <td colspan="4" class="text" align="left"><a href="jsp/ThreadAnalysis.jsp">Click here for thread analysis (On Java 5-setups only).</a></td>
+    <td colspan="4" class="text" align="left">
+    <ul>
+    	<li><a href="jsp/BlockedThread.jsp">Suspected thread locks (On Java 5-setups only).</a></li>
+		<li><a href="jsp/ThreadAnalysis.jsp">List of all active threads (On Java 5-setups only).</a></li>
+		<li><a href="jsp/PermGen.jsp">Detailed memory info (On Java 5-setups only).</a></li>
+	</ul>
+	</td>
   </tr>
 <!--
   <tr>

@@ -8,9 +8,27 @@
 
 <div class="fullymarginalized" style="color: black;">
 
-
-	<h3>$ui.getString("tool.managementtool.messages.header"):</h3>
-	<div id="outputList" style="width:80%; height: 300px; overflow: auto; border: 1px solid #333333; background-color: white;"></div>
+	<div style="width:100%">
+		<div style="float: left; width:65%;"><h3>$ui.getString("tool.managementtool.messages.header"):</h3></div>
+		<div style="float: right; width:30%;"><h3>$ui.getString("tool.managementtool.loggedInUsers.header"):</h3></div>
+	</div>
+	<div style="width:100%">
+		<div id="outputList" style="float: left; width:65%; height: 300px; overflow: auto; border: 1px solid #333333; background-color: white;"></div>
+		<div id="outputList" style="float: right; width:30%; height: 300px; overflow: auto; border: 1px solid #333333; background-color: white;">
+		  <table width="100%" border="0">
+		  <tr style="background-color: #CCCCCC;">
+		  	<td>UserName</td><td>Last action</td>
+		  </tr>
+		  #foreach($sessionInfoBean in $sessionInfoBeanList)
+		  <tr>
+		  	<td><span title="$sessionInfoBean.principal.name">$sessionInfoBean.principal.firstName $sessionInfoBean.principal.lastName</span></td>
+		  	<td>$formatter.formatDate($sessionInfoBean.lastAccessedDate, "HH:ss")</td>
+		  </tr>
+		  #end
+		  </table>
+		</div>
+	</div>
+	<div style="clear:both"/>	
 	<p>
 		$ui.getString("tool.managementtool.yourMessage.label"):
 		<form id="chatForm" name="chatForm" onsubmit="return false;" action=""> 

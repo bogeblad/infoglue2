@@ -25,8 +25,12 @@ Abbreviated Changelog from 2.3 Final
   * More syncronization on cache-objects
   * ViewPage now waits for caches to clear if in working/preview mode to ensure no colissions.
   * Made pushed system publications work
+  * Made deliver end threads which takes to long and also send a warning email to the admin. Only in working/preview mode.
 - Made NullPointer check on allowedComponents in the properties and added a logger warning if the contenttypedefinition is not found.
 - Changed a lot of details in the portlet driver making hot deploy work as well as supporting portlets in JBoss 4. 
+- Made a new section in management which links in all diagnostic tools / screens making debuggingf easier.
+- Made cms-user visible in message center - later chat between users should be easy.
+- Fixed bug in getMatching contents which was not regarding language when selecting max from content version. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final

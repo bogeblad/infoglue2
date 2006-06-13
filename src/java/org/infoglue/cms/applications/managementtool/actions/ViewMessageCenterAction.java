@@ -29,6 +29,7 @@ import java.util.List;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.entities.management.Chat;
 import org.infoglue.cms.entities.management.Message;
+import org.infoglue.cms.util.CmsSessionContextListener;
 
 /**
  * This class represents the message center where you can chat with users
@@ -99,6 +100,11 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
         return "successMessageSent";
     }
 
+    public List getSessionInfoBeanList()
+    {
+    	return CmsSessionContextListener.getSessionInfoBeanList();
+    }
+    
 	public String getMessage() 
 	{
 		return message;
