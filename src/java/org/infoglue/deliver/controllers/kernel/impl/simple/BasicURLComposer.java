@@ -33,6 +33,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.filters.FilterConstants;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.invokers.PageInvoker;
 
 import webwork.action.ActionContext;
 
@@ -102,7 +103,42 @@ public class BasicURLComposer extends URLComposer
         }
         else
         {
-            assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + filename;
+        	String operatingMode = CmsPropertyHandler.getOperatingMode();
+		    String keyword = "";
+		    if(operatingMode.equalsIgnoreCase("0"))
+		        keyword = "working=";
+		    else if(operatingMode.equalsIgnoreCase("2"))
+		        keyword = "preview=";
+		    if(operatingMode.equalsIgnoreCase("3"))
+		        keyword = "live=";
+		    
+		    if(dnsName != null)
+		    {
+    		    int startIndex = dnsName.indexOf(keyword);
+    		    if(startIndex != -1)
+    		    {
+    		        int endIndex = dnsName.indexOf(",", startIndex);
+        		    if(endIndex > -1)
+    		            dnsName = dnsName.substring(startIndex, endIndex);
+    		        else
+    		            dnsName = dnsName.substring(startIndex);
+    		        
+    		        dnsName = dnsName.split("=")[1];
+    		    }
+    		    else
+    		    {
+    		        int endIndex = dnsName.indexOf(",");
+    		        if(endIndex > -1)
+    		            dnsName = dnsName.substring(0, endIndex);
+    		        else
+    		            dnsName = dnsName.substring(0);
+    		        
+    		    }
+		    }
+
+            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+
+            assetUrl = dnsName + context + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + filename;
         }
         
         return assetUrl;
@@ -237,7 +273,42 @@ public class BasicURLComposer extends URLComposer
 	    		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 	    			dnsName = siteNode.getRepository().getDnsName();
 
-	            String url = dnsName + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments;
+	        	String operatingMode = CmsPropertyHandler.getOperatingMode();
+			    String keyword = "";
+			    if(operatingMode.equalsIgnoreCase("0"))
+			        keyword = "working=";
+			    else if(operatingMode.equalsIgnoreCase("2"))
+			        keyword = "preview=";
+			    if(operatingMode.equalsIgnoreCase("3"))
+			        keyword = "live=";
+			    
+			    if(dnsName != null)
+			    {
+	    		    int startIndex = dnsName.indexOf(keyword);
+	    		    if(startIndex != -1)
+	    		    {
+	    		        int endIndex = dnsName.indexOf(",", startIndex);
+	        		    if(endIndex > -1)
+	    		            dnsName = dnsName.substring(startIndex, endIndex);
+	    		        else
+	    		            dnsName = dnsName.substring(startIndex);
+	    		        
+	    		        dnsName = dnsName.split("=")[1];
+	    		    }
+	    		    else
+	    		    {
+	    		        int endIndex = dnsName.indexOf(",");
+	    		        if(endIndex > -1)
+	    		            dnsName = dnsName.substring(0, endIndex);
+	    		        else
+	    		            dnsName = dnsName.substring(0);
+	    		        
+	    		    }
+			    }
+
+	            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+
+	            String url = dnsName + context + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments;
 
 				if(deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
 				{
@@ -308,7 +379,8 @@ public class BasicURLComposer extends URLComposer
 	        } 
 	        else 
 	        {
-	            pageUrl += getRequestArgumentDelimiter() + "languageId=" + String.valueOf(languageId);
+	        	if(pageUrl.indexOf("languageId=") == -1)
+	        		pageUrl += getRequestArgumentDelimiter() + "languageId=" + String.valueOf(languageId);
 	        }
         }
         
@@ -332,7 +404,42 @@ public class BasicURLComposer extends URLComposer
 
         if(!useDNSNameInUrls.equalsIgnoreCase("false"))
         {
-            return dnsName + "/" + CmsPropertyHandler.getApplicationBaseAction();
+        	String operatingMode = CmsPropertyHandler.getOperatingMode();
+		    String keyword = "";
+		    if(operatingMode.equalsIgnoreCase("0"))
+		        keyword = "working=";
+		    else if(operatingMode.equalsIgnoreCase("2"))
+		        keyword = "preview=";
+		    if(operatingMode.equalsIgnoreCase("3"))
+		        keyword = "live=";
+		    
+		    if(dnsName != null)
+		    {
+    		    int startIndex = dnsName.indexOf(keyword);
+    		    if(startIndex != -1)
+    		    {
+    		        int endIndex = dnsName.indexOf(",", startIndex);
+        		    if(endIndex > -1)
+    		            dnsName = dnsName.substring(startIndex, endIndex);
+    		        else
+    		            dnsName = dnsName.substring(startIndex);
+    		        
+    		        dnsName = dnsName.split("=")[1];
+    		    }
+    		    else
+    		    {
+    		        int endIndex = dnsName.indexOf(",");
+    		        if(endIndex > -1)
+    		            dnsName = dnsName.substring(0, endIndex);
+    		        else
+    		            dnsName = dnsName.substring(0);
+    		        
+    		    }
+		    }
+
+            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+        	
+            return dnsName + context + "/" + CmsPropertyHandler.getApplicationBaseAction();
         }
         
         if(ActionContext.getRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
