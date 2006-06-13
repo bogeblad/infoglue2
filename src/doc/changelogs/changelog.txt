@@ -31,6 +31,9 @@ Abbreviated Changelog from 2.3 Final
 - Made a new section in management which links in all diagnostic tools / screens making debuggingf easier.
 - Made cms-user visible in message center - later chat between users should be easy.
 - Fixed bug in getMatching contents which was not regarding language when selecting max from content version. 
+- Fixed issue with url:s becoming messed up if dnsNames are filled in and some special settings are made. 
+- Also fixed language change url 
+- Cleaned up the message center look and feel
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
