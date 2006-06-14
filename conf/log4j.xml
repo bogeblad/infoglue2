@@ -57,75 +57,6 @@
 	<!-- down to the package or class level	-->
 	<!-- ==================================	-->
 
-	<category name="java.lang.Class">
-		<priority value="ERROR"/>
-	</category>
-
-	<category name="de.nava.informa">
-		<priority value="ERROR"/>
-	</category>	
-
-<!--
-	<category name="org.infoglue.cms.security">
-		<priority value="DEBUG"/>
-	</category>
-
-	<category name="com.opensymphony">
-		<priority value="DEBUG"/>
-	</category>
-	
-	<category name="org.infoglue.cms.applications.workflowtool.function.defaultvalue">
-		<priority value="DEBUG"/>
-	</category>
-
-	<category name="org.infoglue.deliver.portal">
-		<priority value="DEBUG"/>
-	</category>
-
-	<category name="org.infoglue.deliver.applications.actions.ViewPageAction">
-		<priority value="DEBUG"/>
-	</category>
-	
-	<category name="org.infoglue.deliver.applications.filters.PortalServletRequest">
-		<priority value="DEBUG"/>
-	</category>
-	
-	<category name="org.infoglue.deliver.portal.PathParser">
-		<priority value="DEBUG"/>
-	</category>
-	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter">
-		<priority value="DEBUG"/>
-	</category>
-	<category name="org.infoglue.cms.applications.common.actions.VelocityServlet">
-		<priority value="DEBUG"/>
-	</category>
-	<category name="org.infoglue.cms.controllers.kernel.impl.simple.RedirectController">
-		<priority value="DEBUG"/>
-	</category>
-	<category name="org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController">
-		<priority value="WARN"/>
-	</category>
-	<category name="org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController">
-		<priority value="DEBUG"/>
-	</category>
-	<category name="org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController">
-		<priority value="DEBUG"/>
-	</category>
-	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter">
-		<priority value="DEBUG"/>
-	</category>
-	<category name="org.infoglue.cms.controllers.kernel.impl.simple.RedirectController">
-		<priority value="DEBUG"/>
-	</category>
-	<category name="org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic">
-		<priority value="DEBUG"/>
-	</category>
--->
-
-	<category name="org.apache.commons.fileupload">
-		<priority value="WARN"/>
-	</category>
-
 	<category name="org.infoglue.cms">
 		<priority value="WARN"/>
 	</category>
@@ -134,10 +65,6 @@
 		<priority value="WARN"/>
 	</category>
 
-	<category name="com.frovi.vmi">
-		<priority value="WARN"/>
-	</category>
-	
 	<category name="org.exolab.castor">
 		<priority value="WARN"/>
 	</category>
@@ -150,67 +77,12 @@
 		<priority value="WARN"/>
 	</category>
 
-	<category name="webwork.util.BeanUtil">
-		<priority value="ERROR"/>
-	</category>
-
-	<category name="com.opensymphony.oscache">
-		<priority value="WARN"/>
-	</category>
-
-	<category name="org.apache.jasper">
-		<priority value="WARN"/>
-	</category>
-
-	<category name="org.apache.commons">
-		<priority value="WARN"/>
-	</category>
-
-	<category name="org.apache.axis">
-		<priority value="WARN"/>
-	</category>
-	
-	<!--
-	<category name="org.apache.axis.encoding">
-		<priority value="WARN"/>
-	</category>
-
-	<category name="org.apache.axis.message.MessageElement">
-		<priority value="WARN"/>
-	</category>
-
-	<category name="org.apache.axis.message.BodyBuilder">
-		<priority value="WARN"/>
-	</category>
-
-	<category name="org.apache.axis.message.SAXOutputter">
-		<priority value="WARN"/>
-	</category>
-
-	<category name="org.apache.axis.utils">
-		<priority value="WARN"/>
-	</category>
-
-	<category name="org.apache.pluto">
-		<priority value="DEBUG"/>
-	</category>
-	-->
-
-	<category name="org.apache.catalina">
-		<priority value="WARN"/>
-	</category>
-
 	<category name="org.quartz.xml">
 		<priority value="WARN"/>
 	</category>
 
 	<category name="net.sf.hibernate">
 		<priority value="WARN"/>
-	</category>
-
-	<!-- For builds xdoclet is noisy and I'm not interested -->
-	<category name="xdoclet">
-		<priority value="FATAL"/>
 	</category>
 
 	<!-- Anyhing not caught by the above categories will be caught here -->
