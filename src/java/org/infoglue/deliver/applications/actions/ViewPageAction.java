@@ -179,7 +179,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	getLogger().info("************************************************");
     	
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
-    		tk = new ThreadMonitor(10000, request, "Page view took to long!", true);
+    		tk = new ThreadMonitor(60000, request, "Page view took to long!", true);
 
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	
