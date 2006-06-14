@@ -252,6 +252,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setInfoGlueAbstractAction(this);
 				deliveryContext.setHttpServletRequest(this.getRequest());
 				deliveryContext.setHttpServletResponse(this.getResponse());
+				deliveryContext.setUseFullUrl(Boolean.parseBoolean(CmsPropertyHandler.getUseDNSNameInURI()));
 				
 				SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = getSiteNodeTypeDefinition(this.siteNodeId, dbWrapper.getDatabase());
 								
@@ -418,7 +419,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setInfoGlueAbstractAction(this);
 				deliveryContext.setHttpServletRequest(this.getRequest());
 				deliveryContext.setHttpServletResponse(this.getResponse());
-	
+				deliveryContext.setUseFullUrl(Boolean.parseBoolean(CmsPropertyHandler.getUseDNSNameInURI()));
+
 				SiteNode siteNode = nodeDeliveryController.getSiteNode(dbWrapper.getDatabase(), this.siteNodeId);
 				if(siteNode == null)
 				    throw new SystemException("There was no page with this id.");
