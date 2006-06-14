@@ -94,6 +94,7 @@ import org.infoglue.deliver.applications.databeans.ComponentProperty;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
+import org.infoglue.deliver.applications.filters.FilterConstants;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.util.BrowserBean;
@@ -3234,12 +3235,60 @@ public class BasicTemplateController implements TemplateController
 	public String getRepositoryBaseUrl() throws Exception
 	{
 		String url = "";
-		
+	
+        String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+
 		SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 		String dnsName = CmsPropertyHandler.getWebServerAddress();
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+		{
 			dnsName = siteNode.getRepository().getDnsName();
 
+	        String useDNSNameInUrls = CmsPropertyHandler.getUseDNSNameInURI();
+	 
+	        if(!useDNSNameInUrls.equalsIgnoreCase("false"))
+	        {
+	        	String operatingMode = CmsPropertyHandler.getOperatingMode();
+			    String keyword = "";
+			    if(operatingMode.equalsIgnoreCase("0"))
+			        keyword = "working=";
+			    else if(operatingMode.equalsIgnoreCase("2"))
+			        keyword = "preview=";
+			    if(operatingMode.equalsIgnoreCase("3"))
+			        keyword = "live=";
+			    
+			    if(dnsName != null)
+			    {
+	    		    int startIndex = dnsName.indexOf(keyword);
+	    		    if(startIndex != -1)
+	    		    {
+	    		        int endIndex = dnsName.indexOf(",", startIndex);
+	        		    if(endIndex > -1)
+	    		            dnsName = dnsName.substring(startIndex, endIndex);
+	    		        else
+	    		            dnsName = dnsName.substring(startIndex);
+	    		        
+	    		        dnsName = dnsName.split("=")[1];
+	    		    }
+	    		    else
+	    		    {
+	    		        int endIndex = dnsName.indexOf(",");
+	    		        if(endIndex > -1)
+	    		            dnsName = dnsName.substring(0, endIndex);
+	    		        else
+	    		            dnsName = dnsName.substring(0);
+	    		        
+	    		    }
+			    }
+		            
+	            dnsName = dnsName + context;
+	        }
+	        else
+	        {
+	        	dnsName = context;
+	        }
+		}
+		
 		url = dnsName;
 		
 		return url;
