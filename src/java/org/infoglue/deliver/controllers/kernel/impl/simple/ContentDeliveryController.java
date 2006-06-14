@@ -194,7 +194,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				getLogger().info("Did not find it in requested languge... lets check the masterlanguage....");
 				
 				Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
-				if(!languageId.equals(masterLanguageId))
+				if(languageId != null && !languageId.equals(masterLanguageId))
 				{
 					contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode(), deliveryContext, db);
 				}

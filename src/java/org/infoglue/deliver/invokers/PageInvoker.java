@@ -153,6 +153,8 @@ public abstract class PageInvoker
 		
 		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.getTemplateController().getLanguageId());
 		logger.info("languageVO:" + languageVO);
+		if(languageVO == null)
+			throw new SystemException("There was no such active language for the page with languageId:" + this.getTemplateController().getLanguageId());
 		
 		String isPageCacheOn = CmsPropertyHandler.getIsPageCacheOn();
 		logger.info("isPageCacheOn:" + isPageCacheOn);
