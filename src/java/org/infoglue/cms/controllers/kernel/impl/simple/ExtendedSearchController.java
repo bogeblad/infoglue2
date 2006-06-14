@@ -394,7 +394,7 @@ class SqlBuilder
 		final List clauses = new ArrayList();
 
 		clauses.add(CV_ACTIVE_CLAUSE);
-		clauses.add(MessageFormat.format(getCV_LATEST_VERSION_CLAUSE(), new Object[] { criterias.getLanguage().getId() }));
+		clauses.add(MessageFormat.format(getCV_LATEST_VERSION_CLAUSE(), new Object[] { criterias.getLanguage().getId().toString() }));
 		clauses.add(getCV_CONTENT_JOIN());
 		clauses.add(MessageFormat.format(CV_STATE_CLAUSE, new Object[] { getBindingVariable() }));
 		bindings.add(criterias.getStateId());
