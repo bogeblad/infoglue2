@@ -323,7 +323,7 @@ public class CmsPropertyHandler
 
 	    //try{throw new Exception("APA");}catch(Exception e){e.printStackTrace();}
 
-	    if(value == null && defaultValue != null)
+	    if((value == null || value.indexOf(key) > -1) && defaultValue != null)
 	    	value = defaultValue;
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
