@@ -78,6 +78,9 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	
 	public LanguageVO getLanguageVO(Database db, Integer languageId) throws SystemException, Exception
 	{
+		if(languageId == null || languageId.intValue() == 0)
+			return null;
+			
 		String key = "" + languageId;
 		getLogger().info("key:" + key);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("languageCache", key);
