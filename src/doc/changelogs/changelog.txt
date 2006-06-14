@@ -34,6 +34,9 @@ Abbreviated Changelog from 2.3 Final
 - Fixed issue with url:s becoming messed up if dnsNames are filled in and some special settings are made. 
 - Also fixed language change url 
 - Cleaned up the message center look and feel
+- Fixed so properties are properly defaulted if not parsed and still in @varName@ format
+- Made it possible to turn full url:s globally on or off by setting the useDnsNameInUrl property. Van naturally still be set locally in pages as before.
+- Made getDigitalAssetBaseUrl work properly by also fixing getRepositoryBaseUrl
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
