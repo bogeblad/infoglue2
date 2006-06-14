@@ -3637,7 +3637,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;
