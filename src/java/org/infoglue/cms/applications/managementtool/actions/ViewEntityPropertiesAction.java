@@ -39,10 +39,14 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.QualifyerVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -208,18 +212,35 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 
 	public String getQualifyerPath(String entity, String entityId)
 	{	
+		StringBuffer sb = new StringBuffer("");
 		try
 		{	
 			if(entity.equalsIgnoreCase("Content"))
-				return ContentController.getContentController().getContentVOWithId(new Integer(entityId)).getName();
+			{
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
+				sb.insert(0, contentVO.getName() + "/");
+				while(contentVO.getParentContentId() != null)
+				{
+					contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
+					sb.insert(0, contentVO.getName() + "/");
+				}
+			}
 			else if(entity.equalsIgnoreCase("SiteNode"))
-				return SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId)).getName();
+			{
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId));
+				sb.insert(0, siteNodeVO.getName() + "/");
+				while(siteNodeVO.getParentSiteNodeId() != null)
+				{
+					siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId());
+					sb.insert(0, siteNodeVO.getName() + "/");
+				}
+			}
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		return "";
+		return sb.toString();
 	}
 	
 	/**
