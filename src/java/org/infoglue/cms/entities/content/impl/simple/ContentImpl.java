@@ -180,6 +180,9 @@ public class ContentImpl implements Content
     public void setParentContent (org.infoglue.cms.entities.content.impl.simple.ContentImpl parentContent)
     {
         this.parentContent = parentContent;
+        
+        if(parentContent != null)
+        	this.valueObject.setParentContentId(parentContent.getId());
     }
       
     public java.util.Collection getContentVersions()

@@ -47,6 +47,8 @@ public class SiteNodeVO implements BaseEntityVO
   	
   	private String creatorName;
 	private Integer metaInfoContentId 	= null;
+	
+	private Integer parentSiteNodeId 	= null;
 
   	//Used if an application wants to add more properties to this item... used for performance reasons.
   	private Map extraProperties = new Hashtable();
@@ -202,6 +204,16 @@ public class SiteNodeVO implements BaseEntityVO
     {
         return extraProperties;
     }
+
+	public Integer getParentSiteNodeId()
+	{
+		return parentSiteNodeId;
+	}
+
+	public void setParentSiteNodeId(Integer parentSiteNodeId)
+	{
+		this.parentSiteNodeId = parentSiteNodeId;
+	}
 
 }
         

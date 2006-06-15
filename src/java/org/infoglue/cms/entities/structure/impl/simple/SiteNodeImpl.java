@@ -148,6 +148,9 @@ public class SiteNodeImpl implements SiteNode
     public void setParentSiteNode (org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl parentSiteNode)
     {
         this.parentSiteNode = parentSiteNode;
+
+        if(parentSiteNode != null)
+        	this.valueObject.setParentSiteNodeId(parentSiteNode.getId());
     }
       
     public java.util.Collection getChildSiteNodes()
