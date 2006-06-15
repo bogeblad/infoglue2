@@ -41,6 +41,8 @@ Abbreviated Changelog from 2.3 Final
 - Fixed bug where group list was not cleared when new was added
 - Made relation editors show full path to the content / sitenode
 - Made SiteNodeVO contain parentSiteNodeId
+- Made default expiration date 50 year ahead
+- Changed page icon in structure tree - made more sense - the old one was the same as for content folder.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
