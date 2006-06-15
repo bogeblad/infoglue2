@@ -38,6 +38,9 @@ Abbreviated Changelog from 2.3 Final
 - Made it possible to turn full url:s globally on or off by setting the useDnsNameInUrl property. Van naturally still be set locally in pages as before.
 - Made getDigitalAssetBaseUrl work properly by also fixing getRepositoryBaseUrl
 - Added failcheck a bit if no languages was active at all for a page.
+- Fixed bug where group list was not cleared when new was added
+- Made relation editors show full path to the content / sitenode
+- Made SiteNodeVO contain parentSiteNodeId
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
