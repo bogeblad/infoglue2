@@ -39,7 +39,7 @@ public class ExpireDatePopulator extends DatePopulator
 	/**
 	 * 
 	 */
-	private static final int DEFAULT_YEARS_AHEAD = 10;
+	private static final int DEFAULT_YEARS_AHEAD = 50;
 	
 	/**
 	 * 

@@ -59,7 +59,7 @@ public class ContentVO implements BaseEntityVO
   	{
   		//Initilizing the expireDateTime... 
   		Calendar calendar = Calendar.getInstance();
-  		calendar.add(Calendar.YEAR, 10);
+  		calendar.add(Calendar.YEAR, 50);
   		expireDateTime = calendar.getTime();
   	}
   	
