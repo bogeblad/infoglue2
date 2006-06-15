@@ -167,10 +167,12 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
 				CacheController.clearCache("groupListCache");
+				CacheController.clearCache("groupVOListCache");
 			}
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
 				CacheController.clearCache("roleListCache");
+				CacheController.clearCache("roleVOListCache");
 			}
 			else if(object.getClass().getName().equals(UserPropertiesImpl.class.getName()))
 			{
