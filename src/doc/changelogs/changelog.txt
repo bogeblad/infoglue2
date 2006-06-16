@@ -14,7 +14,7 @@ Abbreviated Changelog from 2.3 Final
 - Added a getIsDecorated() method in the TemplateController to check if the pagenode is render with editonsight.
 - Made the decorated tags in editonsight use the setting of the cms property getRequestArgumentDelimiter.
 - Fixed the getContentAttribute(Integer contentId, String attributeName, boolean clean) in EditOnSiteBasicTemplateController.
-- Fixed html compiance in some files in cms/contenttool/
+- Fixed html compliance in some files in cms/contenttool/
 - Fixed bug in import if repository references another existing repository.
 - Made an option to specify exportFormat in cms.properties and this results in much more compact xml-files. Can only be imported by a version later than 2.3 however.
 - Fixed bug in import when pages had no siteNodeTypeDefinition
@@ -27,6 +27,7 @@ Abbreviated Changelog from 2.3 Final
   * Made pushed system publications work
   * Made deliver end threads which takes to long and also send a warning email to the admin. Only in working/preview mode.
 - Made NullPointer check on allowedComponents in the properties and added a logger warning if the contenttypedefinition is not found.
+- Made installer support JBoss 4
 - Changed a lot of details in the portlet driver making hot deploy work as well as supporting portlets in JBoss 4. 
 - Made a new section in management which links in all diagnostic tools / screens making debuggingf easier.
 - Made cms-user visible in message center - later chat between users should be easy.
