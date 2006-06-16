@@ -254,8 +254,8 @@ class SqlBuilder
 
 	private static final String CV_CONTENT_JOIN_SHORT         = CONTENT_ALIAS + ".ContId=" + CONTENT_VERSION_ALIAS + ".ContId";
 	private static final String CV_CONTENT_JOIN               = CONTENT_ALIAS + ".contentId=" + CONTENT_VERSION_ALIAS + ".contentId";
-	private static final String CV_LATEST_VERSION_CLAUSE_SHORT= CONTENT_VERSION_ALIAS + ".ContVerId in (select max(ContVerId) from " + CONTENT_VERSION_TABLE_SHORT + " cv2 where cv2.ContId=" + CONTENT_VERSION_ALIAS + ".ContId AND cv2.languageId={0})";
-	private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".contentVersionId in (select max(contentVersionId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.contentId=" + CONTENT_VERSION_ALIAS + ".contentId AND cv2.languageId={0})";
+	private static final String CV_LATEST_VERSION_CLAUSE_SHORT= CONTENT_VERSION_ALIAS + ".ContVerId in (select max(ContVerId) from " + CONTENT_VERSION_TABLE_SHORT + " cv2 where cv2.ContId=" + CONTENT_VERSION_ALIAS + ".ContId AND cv2.languageId={0} AND cv2.stateId>={1} AND cv2.isActive=1)";
+	private static final String CV_LATEST_VERSION_CLAUSE      = CONTENT_VERSION_ALIAS + ".contentVersionId in (select max(contentVersionId) from " + CONTENT_VERSION_TABLE + " cv2 where cv2.contentId=" + CONTENT_VERSION_ALIAS + ".contentId AND cv2.languageId={0} AND cv2.stateId>={1} AND cv2.isActive=1)";
 	
 	private static final String C_CONTENT_TYPE_CLAUSE_SHORT   = CONTENT_ALIAS + ".contentTypeDefId={0}";
 	private static final String C_CONTENT_TYPE_CLAUSE         = CONTENT_ALIAS + ".contentTypeDefinitionId={0}";
@@ -394,7 +394,7 @@ class SqlBuilder
 		final List clauses = new ArrayList();
 
 		clauses.add(CV_ACTIVE_CLAUSE);
-		clauses.add(MessageFormat.format(getCV_LATEST_VERSION_CLAUSE(), new Object[] { criterias.getLanguage().getId().toString() }));
+		clauses.add(MessageFormat.format(getCV_LATEST_VERSION_CLAUSE(), new Object[] { criterias.getLanguage().getId().toString(), CmsPropertyHandler.getOperatingMode() }));
 		clauses.add(getCV_CONTENT_JOIN());
 		clauses.add(MessageFormat.format(CV_STATE_CLAUSE, new Object[] { getBindingVariable() }));
 		bindings.add(criterias.getStateId());
