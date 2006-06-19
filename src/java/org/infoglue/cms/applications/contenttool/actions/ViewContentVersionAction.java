@@ -265,7 +265,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
     		//this.contentVersionVO = ContentVersionController.getContentVersionVOWithId(contentVersionId);    		 	
 
-		if(this.forceWorkingChange && !contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+		if(this.forceWorkingChange && contentVersionVO != null && !contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 		{
 		    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, this.getInfoGluePrincipal(), this.getContentId(), new ArrayList());
 		    contentVersionId = contentVersion.getContentVersionId();
