@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.25 2006/06/13 15:15:16 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.26 2006/06/21 07:12:12 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -852,7 +852,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewComponentPropertiesEditorAction" alias="ViewComponentPropertiesEditor">
 		<view name="success">/cms/contenttool/viewComponentPropertiesEditor.vm</view>
-		<view name="update">ExtendedRedirect.action?url=ViewComponentPropertiesEditor.action#contentVersionId#attributeName</view>
+		<view name="update">ExtendedRedirect.action?url=ViewComponentPropertiesEditor.action#contentVersionId#attributeName#closeOnLoad</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 

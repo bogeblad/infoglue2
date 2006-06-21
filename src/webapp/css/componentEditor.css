@@ -329,9 +329,9 @@ Properties classes
 	padding:2px;
 	width:440px;
 	color:white;
-	background-color:navy;
-	font-family:verdana, sans-serif;
-	font-size:10px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	background-image: url('../images/handleBackground.gif');
 	}
 
 #componentPropertiesBody {

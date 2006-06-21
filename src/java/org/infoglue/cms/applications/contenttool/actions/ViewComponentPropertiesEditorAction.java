@@ -46,6 +46,8 @@ public class ViewComponentPropertiesEditorAction extends InfoGlueAbstractAction
     private String propertiesXML;
     private List componentPropertyDefinitions;
     private List contentTypeDefinitions;
+
+	private String closeOnLoad = "false";
     
     private void initialize() throws Exception
     {
@@ -114,4 +116,15 @@ public class ViewComponentPropertiesEditorAction extends InfoGlueAbstractAction
     {
         this.contentId = contentId;
     }
+    
+    public String getCloseOnLoad()
+    {
+        return closeOnLoad;
+    }
+    
+    public void setCloseOnLoad(String closeOnLoad)
+    {
+        this.closeOnLoad = closeOnLoad;
+    }
+
 }
