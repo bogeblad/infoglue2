@@ -94,7 +94,7 @@ public class RssHelper
      * @throws FeedException
      */
     
-    public SyndFeed getFeed(String feedType, String title, String link, String description) throws IOException,FeedException 
+    public SyndFeed getFeed(String feedType, String title, String link, String description, String encoding) throws IOException,FeedException 
     {
         
         SyndFeed feed = new SyndFeedImpl();
@@ -105,6 +105,7 @@ public class RssHelper
         feed.setTitle(title);
         feed.setLink(link);
         feed.setDescription(description);
+        feed.setEncoding(encoding);
 
         List entries = new ArrayList();
         

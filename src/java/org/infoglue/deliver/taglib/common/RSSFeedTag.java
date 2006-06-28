@@ -51,6 +51,7 @@ public class RSSFeedTag extends TemplateControllerTag
 	private String title 		= null;
 	private String link 		= null;
 	private String description 	= null;
+	private String encoding 	= "UTF-8";
 	
 	private List entries 		= new ArrayList(); 
 	
@@ -84,8 +85,8 @@ public class RSSFeedTag extends TemplateControllerTag
 	    try
 	    {
 		    RssHelper rssHelper = new RssHelper();
-		    SyndFeed feed = rssHelper.getFeed(this.feedType, this.title, this.link, this.description);
-		    
+		    SyndFeed feed = rssHelper.getFeed(this.feedType, this.title, this.link, this.description, this.encoding);
+
 		    feed.setEntries(entries);
 		    
 		    String rss = rssHelper.render(feed);
@@ -129,5 +130,10 @@ public class RSSFeedTag extends TemplateControllerTag
 	public void addFeedEntry(final SyndEntry entry) 
 	{
 	    this.entries.add(entry);
+	}
+
+	public void setEncoding(String encoding)
+	{
+		this.encoding = encoding;
 	}
 }

@@ -87,11 +87,11 @@ public class RSSFeedEntryTag extends TemplateControllerTag
 	        entry.setTitle(title);
 	        entry.setLink(link);
 	        entry.setPublishedDate(publishedDate);
-	        
+
 	        SyndContent syndContent = new SyndContentImpl();
 	        syndContent.setType(descriptionContentType);
 	        syndContent.setValue(description);
-	        
+	     
 	        entry.setDescription(syndContent);
 		    
 		    addEntry(entry);
