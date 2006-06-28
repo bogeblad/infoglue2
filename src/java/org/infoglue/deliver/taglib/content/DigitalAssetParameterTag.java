@@ -52,6 +52,16 @@ public class DigitalAssetParameterTag extends AbstractTag
 	private String assetKey;
 
 	/**
+	 * The fileName of the parameter.
+	 */
+	private String fileName;
+
+	/**
+	 * The filePath of the parameter.
+	 */
+	private String filePath;
+
+	/**
 	 * The contentType of the parameter.
 	 */
 	private String contentType;
@@ -135,7 +145,7 @@ public class DigitalAssetParameterTag extends AbstractTag
 		    throw new JspException("Must state either bytes, a file or a fileItem");
 		}
 		
-		RemoteAttachment attachment = new RemoteAttachment(this.assetKey, this.contentType, this.bytes);
+		RemoteAttachment attachment = new RemoteAttachment(this.assetKey, this.fileName, this.filePath, this.contentType, this.bytes);
 		
 		((ContentVersionParameterInterface) parent).addDigitalAsset(attachment);
 	}
@@ -149,6 +159,28 @@ public class DigitalAssetParameterTag extends AbstractTag
 	public void setAssetKey(final String assetKey) throws JspException
 	{
 		this.assetKey = evaluateString("parameter", "assetKey", assetKey);
+	}
+
+	/**
+	 * Sets the fileName attribute.
+	 * 
+	 * @param fileName the fileName to use.
+	 * @throws JspException if an error occurs while evaluating name parameter.
+	 */
+	public void setFileName(final String fileName) throws JspException
+	{
+		this.fileName = evaluateString("parameter", "fileName", fileName);
+	}
+
+	/**
+	 * Sets the filePath attribute.
+	 * 
+	 * @param filePath the filePath to use.
+	 * @throws JspException if an error occurs while evaluating name parameter.
+	 */
+	public void setFilePath(final String filePath) throws JspException
+	{
+		this.filePath = evaluateString("parameter", "filePath", filePath);
 	}
 
 	/**

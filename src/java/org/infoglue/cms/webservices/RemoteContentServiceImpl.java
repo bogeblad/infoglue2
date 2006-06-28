@@ -237,8 +237,8 @@ public class RemoteContentServiceImpl
 			            	DigitalAssetVO newAsset = new DigitalAssetVO();
 							newAsset.setAssetContentType(remoteAttachment.getContentType());
 							newAsset.setAssetKey(remoteAttachment.getName());
-							newAsset.setAssetFileName("Unknown");
-							newAsset.setAssetFilePath("Unknown");
+							newAsset.setAssetFileName(remoteAttachment.getFileName());
+							newAsset.setAssetFilePath(remoteAttachment.getFilePath());
 							newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
 							//is = new FileInputStream(renamedFile);
 							InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
@@ -427,8 +427,8 @@ public class RemoteContentServiceImpl
 	            	DigitalAssetVO newAsset = new DigitalAssetVO();
 					newAsset.setAssetContentType(remoteAttachment.getContentType());
 					newAsset.setAssetKey(remoteAttachment.getName());
-					newAsset.setAssetFileName("Unknown");
-					newAsset.setAssetFilePath("Unknown");
+					newAsset.setAssetFileName(remoteAttachment.getFileName());
+					newAsset.setAssetFilePath(remoteAttachment.getFilePath());
 					newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
 					InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
 	

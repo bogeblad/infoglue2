@@ -33,6 +33,14 @@ public abstract class AbstractAttachment implements Attachment
 	 * 
 	 */
 	private String name;
+	/**
+	 * 
+	 */
+	private String fileName;
+	/**
+	 * 
+	 */
+	private String filePath;
 
 	/**
 	 * 
@@ -49,10 +57,21 @@ public abstract class AbstractAttachment implements Attachment
 	/**
 	 * 
 	 */
-	protected AbstractAttachment(final String name, final String contentType, final byte[] bytes)
+	protected AbstractAttachment(final String name, final String fileName, final String filePath, final String contentType, final byte[] bytes)
 	{
 		super();
 		this.name        = name;
+		
+		if(fileName != null && !fileName.equals(""))
+			this.fileName 	 = fileName;
+		else
+			this.fileName 	 = "Unknown";
+		
+		if(filePath != null && !filePath.equals(""))
+			this.filePath 	 = filePath;
+		else
+			this.filePath 	 = "Unknown";
+		
 		this.contentType = contentType;
 		this.bytes       = bytes;
 	}
@@ -119,5 +138,25 @@ public abstract class AbstractAttachment implements Attachment
 	public String toString()
 	{
 		return "<" + getSize() + "," + getName() + "," + getContentType() + ">";
+	}
+
+	public String getFileName()
+	{
+		return fileName;
+	}
+
+	public void setFileName(String fileName)
+	{
+		this.fileName = fileName;
+	}
+
+	public String getFilePath()
+	{
+		return filePath;
+	}
+
+	public void setFilePath(String filePath)
+	{
+		this.filePath = filePath;
 	}
 }

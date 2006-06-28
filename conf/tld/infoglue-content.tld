@@ -587,6 +587,16 @@
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	    <attribute>
+		    <name>fileName</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>filePath</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
 		    <name>contentType</name>
 	    	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>

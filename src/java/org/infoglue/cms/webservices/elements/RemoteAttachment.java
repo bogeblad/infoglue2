@@ -43,9 +43,9 @@ public final class RemoteAttachment extends AbstractAttachment implements Dynami
 	/**
 	 * 
 	 */
-	public RemoteAttachment(final String name, final String contentType, final byte[] bytes)
+	public RemoteAttachment(final String name, final String fileName, final String filePath, final String contentType, final byte[] bytes)
 	{
-		super(name, contentType, bytes);
+		super(name, fileName, filePath, contentType, bytes);
 	}
 	
 	/**
@@ -55,6 +55,8 @@ public final class RemoteAttachment extends AbstractAttachment implements Dynami
 	{
 		final List list = new ArrayList();
 		list.add(getName());
+		list.add(getFileName());
+		list.add(getFilePath());
 		list.add(getContentType());
 		list.add(Base64.encode(getBytes()));
 		return list;
@@ -65,12 +67,14 @@ public final class RemoteAttachment extends AbstractAttachment implements Dynami
 	 */
 	public void deserialize(final List list) 
 	{
-		if(list.size() != 3)
+		if(list.size() != 5)
 		{
 			throw new IllegalArgumentException("Illegal size");
 		}
 		setName(list.get(0).toString());
-		setContentType(list.get(1).toString());
-		setBytes(Base64.decode(list.get(2).toString()));
+		setFileName(list.get(1).toString());
+		setFilePath(list.get(2).toString());
+		setContentType(list.get(3).toString());
+		setBytes(Base64.decode(list.get(4).toString()));
 	}
 }
