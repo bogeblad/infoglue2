@@ -46,6 +46,8 @@ Abbreviated Changelog from 2.3 Final
 - Changed page icon in structure tree - made more sense - the old one was the same as for content folder.
 - Added nullcheck in ViewContentVersion - problem could otherwise arise when clicking on a text to edit in a language not yet existing
 - Fixed some issues with property editors buttons and also made property window nicer
+- Fixed bug and issues with remote digital assets through webservice. File were named Unknown before.
+- Added encoding possibility to rss-feeds (taglib and helper)
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
