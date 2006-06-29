@@ -48,6 +48,9 @@ Abbreviated Changelog from 2.3 Final
 - Fixed some issues with property editors buttons and also made property window nicer
 - Fixed bug and issues with remote digital assets through webservice. File were named Unknown before.
 - Added encoding possibility to rss-feeds (taglib and helper)
+- Changed the Support-class used in certain circumstances by the content attrribute tag when mapKey is specified 
+  to use iso-8859-1 as the getBytes-encoding as java.util.Property-class expects that encoding in the load-method. 
+  We should perhaps write a new class for this later but as it is seldom used we will wait a bit.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final

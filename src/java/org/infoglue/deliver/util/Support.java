@@ -89,14 +89,15 @@ public class Support
         Properties properties = new Properties();
         try
         {
-            ByteArrayInputStream is = new ByteArrayInputStream( text.getBytes( "UTF-8" ) );
+        	ByteArrayInputStream is = new ByteArrayInputStream( text.getBytes("ISO-8859-1") );
             properties.load( is );
+            is.close();
         }
         catch ( Exception ignore )
         {
             // ignore
         }
-
+        
         return properties;
     }
 
