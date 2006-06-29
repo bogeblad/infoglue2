@@ -51,6 +51,8 @@ Abbreviated Changelog from 2.3 Final
 - Changed the Support-class used in certain circumstances by the content attrribute tag when mapKey is specified 
   to use iso-8859-1 as the getBytes-encoding as java.util.Property-class expects that encoding in the load-method. 
   We should perhaps write a new class for this later but as it is seldom used we will wait a bit.
+- Fixed issue with empty passwords in LDAP-authentication resulting in anonymous binds
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
