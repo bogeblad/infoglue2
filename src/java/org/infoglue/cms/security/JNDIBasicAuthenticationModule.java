@@ -313,11 +313,14 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
     
     private boolean bindUserUsingJNDI(String userName, String password)
     {
-    	String allowAnonymousBind = this.extraProperties.getProperty("allowAnonymousBind");
-    	if(password == null || password.equals("") || allowAnonymousBind == null || !allowAnonymousBind.equalsIgnoreCase("true"))
+    	if(password == null || password.equals(""))
     	{
-    		logger.info("Anonymous bind attemped by not giving any password. Not allowed - now using password '--No password given but anonymous binds not allowed--'");
-    		password = "--No password given but anonymous binds not allowed--";
+        	String allowAnonymousBind = this.extraProperties.getProperty("allowAnonymousBind");
+    		if(allowAnonymousBind == null || !allowAnonymousBind.equalsIgnoreCase("true"))
+    		{
+    			logger.warn("Anonymous bind attemped by not giving any password. Not allowed - now using password '--No password given but anonymous binds not allowed--'");
+        		password = "--No password given but anonymous binds not allowed--";
+    		}
     	}
     	
         boolean result = false;
