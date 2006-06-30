@@ -97,7 +97,7 @@ public class ContentVersionParameterTag extends AbstractTag implements ContentVe
 		final ContentParameterTag parent = (ContentParameterTag) findAncestorWithClass(this, ContentParameterTag.class);
 		if(parent == null)
 		{
-			throw new JspTagException("URLParameterTag must have a URLTag ancestor.");
+			throw new JspTagException("ContentVersionParameterTag must have a ContentParameterTag ancestor.");
 		}
 		((ContentParameterTag) parent).addContentVersion(contentVersion);
 	}
