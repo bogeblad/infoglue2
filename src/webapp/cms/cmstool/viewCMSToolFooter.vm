@@ -23,7 +23,7 @@
 </tr>
 <tr>
 	<td><img src="images/trans.gif" width="4" height="1"/></td>
-	<td class="whitelabel" style="padding-top: 5px; font-size: 11px;" width="90%" valign="top"><b>$ui.getString("footer.application.name") Version build:</b> 2.3.5 RC2 (2006-06-14)</td>
+	<td class="whitelabel" style="padding-top: 5px; font-size: 11px;" width="90%" valign="top"><b>$ui.getString("footer.application.name") Version build:</b> 2.3.5 Final (2006-06-30)</td>
 	<td class="whitelabel" style="padding-top: 5px;" align="right" valign="top"><img src="images/$ui.getString("images.header.loggedInAsLabel")" width="119" height="13"/><img src="images/trans.gif" width="5" height="13"/></td>
 	<td class="whitelabel" style="padding-top: 5px; font-size: 12px; font-family: Arial, Verdana;" valign="top">&nbsp;$userName</td>
 	<td><img src="images/trans.gif" width="4" height="1"/></td>
