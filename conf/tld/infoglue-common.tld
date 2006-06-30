@@ -185,6 +185,11 @@
 		    <name>disableNiceURI</name>
 	    	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+		    <name>allowMultipleArguments</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
 		</attribute>		
 	</tag>
 	<tag>

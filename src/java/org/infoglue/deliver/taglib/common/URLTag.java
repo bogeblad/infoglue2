@@ -93,6 +93,11 @@ public class URLTag extends TemplateControllerTag
 	private boolean disableNiceURI = false;
 	
 	/**
+	 * Tells if parameter should be allowed even though there are parameters with that name
+	 */
+	private boolean allowMultipleArguments = false;
+	
+	/**
 	 * Default constructor.
 	 */
 	public URLTag()
@@ -251,7 +256,7 @@ public class URLTag extends TemplateControllerTag
 				}
 				final String name  = parameter.nextToken();
 				final String value = parameter.hasMoreTokens() ? parameter.nextToken() : "";
-				if(!getParameterNames().containsKey(name))
+				if(allowMultipleArguments || !getParameterNames().containsKey(name))
 				{
 				    if(excludedQueryStringParameters == null || excludedQueryStringParameters.indexOf(name) == -1)
 				        addParameter(name, value);
@@ -318,5 +323,10 @@ public class URLTag extends TemplateControllerTag
     public void setDisableNiceURI(boolean disableNiceURI)
     {
         this.disableNiceURI = disableNiceURI;
+    }
+
+    public void setAllowMultipleArguments(boolean allowMultipleArguments)
+    {
+        this.allowMultipleArguments = allowMultipleArguments;
     }
 }

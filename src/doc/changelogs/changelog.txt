@@ -52,7 +52,7 @@ Abbreviated Changelog from 2.3 Final
   to use iso-8859-1 as the getBytes-encoding as java.util.Property-class expects that encoding in the load-method. 
   We should perhaps write a new class for this later but as it is seldom used we will wait a bit.
 - Fixed issue with empty passwords in LDAP-authentication resulting in anonymous binds
-
+- Added possibility to set if multiple arguments should be parsed in URL-tag.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
