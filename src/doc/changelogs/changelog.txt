@@ -53,6 +53,7 @@ Abbreviated Changelog from 2.3 Final
   We should perhaps write a new class for this later but as it is seldom used we will wait a bit.
 - Fixed issue with empty passwords in LDAP-authentication resulting in anonymous binds
 - Added possibility to set if multiple arguments should be parsed in URL-tag.
+- Fixed cache-update bug which led to changes in user/role/group relations did not immediate effect deliver engines in working mode.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3 Final
