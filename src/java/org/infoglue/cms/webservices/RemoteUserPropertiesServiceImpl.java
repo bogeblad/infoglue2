@@ -59,7 +59,7 @@ import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
  * @author Mattias Bogeblad
  */
 
-public class RemoteUserPropertiesServiceImpl 
+public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
 {
     private final static Logger logger = Logger.getLogger(RemoteUserPropertiesServiceImpl.class.getName());
 
@@ -94,6 +94,8 @@ public class RemoteUserPropertiesServiceImpl
             logger.error("En error occurred when we tried to create a new userProperty:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return newUserPropertiesId;
     }
 
@@ -154,6 +156,8 @@ public class RemoteUserPropertiesServiceImpl
             logger.error("En error occurred when we tried to create a new userProperty:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return new Boolean(true);
     }
 
@@ -202,6 +206,8 @@ public class RemoteUserPropertiesServiceImpl
             logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return new Boolean(true);
     }
 

@@ -60,7 +60,7 @@ import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
  * @author Mattias Bogeblad
  */
 
-public class RemoteContentServiceImpl 
+public class RemoteContentServiceImpl extends RemoteInfoGlueService
 {
     private final static Logger logger = Logger.getLogger(RemoteContentServiceImpl.class.getName());
 
@@ -99,6 +99,8 @@ public class RemoteContentServiceImpl
             logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
+        updateCaches();
+        
         return newContentId;
     }
     
@@ -125,6 +127,8 @@ public class RemoteContentServiceImpl
             logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return newContentVersionId;
     }
     
@@ -276,6 +280,8 @@ public class RemoteContentServiceImpl
             logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return new Boolean(true);
     }
 
@@ -335,6 +341,8 @@ public class RemoteContentServiceImpl
             logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return new Boolean(true);
     }
 
@@ -462,6 +470,8 @@ public class RemoteContentServiceImpl
             logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return new Boolean(true);
     }
 
@@ -511,6 +521,8 @@ public class RemoteContentServiceImpl
             logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return new Boolean(true);
     }
 
@@ -555,6 +567,8 @@ public class RemoteContentServiceImpl
             logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return new Boolean(true);
     }
 
@@ -598,6 +612,8 @@ public class RemoteContentServiceImpl
             logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
+        updateCaches();
+
         return new Boolean(true);
     }
 

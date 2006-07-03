@@ -16,7 +16,9 @@ import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 /**
  * This service is used for creating workflows from an external application.
  */
-public class RemoteWorkflowServiceImpl {
+
+public class RemoteWorkflowServiceImpl extends RemoteInfoGlueService
+{
 	/**
 	 * The class logger.
 	 */
@@ -74,6 +76,9 @@ public class RemoteWorkflowServiceImpl {
 			System.out.println(t);
 			return Boolean.FALSE;
 		}
+		
+        updateCaches();
+
 		return Boolean.TRUE;
 	}
 
