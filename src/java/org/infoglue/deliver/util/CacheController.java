@@ -495,7 +495,7 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 					}
-					if(cacheName.equalsIgnoreCase("authorizationCache") && (entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
+					if(cacheName.equalsIgnoreCase("authorizationCache") && (entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0 || entity.indexOf("Intercept") > 0))
 					{
 						clear = true;
 					}
