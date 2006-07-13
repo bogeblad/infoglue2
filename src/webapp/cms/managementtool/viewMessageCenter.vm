@@ -22,7 +22,7 @@
 		  #foreach($sessionInfoBean in $sessionInfoBeanList)
 		  <tr>
 		  	<td><span title="$sessionInfoBean.principal.name">$sessionInfoBean.principal.firstName $sessionInfoBean.principal.lastName</span></td>
-		  	<td>$formatter.formatDate($sessionInfoBean.lastAccessedDate, "HH:ss")</td>
+		  	<td>$formatter.formatDate($sessionInfoBean.lastAccessedDate, "HH:mm:ss")</td>
 		  </tr>
 		  #end
 		  </table>
