@@ -1,9 +1,17 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.4 Final
+- InfoGlue 2.3.5 Final
 -------------------------------------------------------------------------------------
 
 Release notes
 ---------------------------------------
+The InfoGlue Team will not rest for the summer just yet. InfoGlue 2.3.5 is available now.
+This release contains better portlet support, JBoss 4 experimental support and a whole lot of work 
+concerning caching and threading. Check out the long list of improvements below.
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
 
 Abbreviated Changelog from 2.3 Final 
 ---------------------------------------
