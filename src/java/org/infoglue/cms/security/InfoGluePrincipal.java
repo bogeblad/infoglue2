@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.security;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.List;
 
@@ -33,8 +34,10 @@ import java.util.List;
  * @author Mattias Bogeblad
  */
 
-public class InfoGluePrincipal implements Principal 
+public class InfoGluePrincipal implements Principal, Serializable
 {
+	private static final long serialVersionUID = 7252014421006767620L;
+	
 	private final String name;
 	private final String firstName;
 	private final String lastName;
@@ -42,6 +45,7 @@ public class InfoGluePrincipal implements Principal
 	private final List roles;
 	private final List groups;
 	private final boolean isAdministrator;
+	
 	
 	public InfoGluePrincipal(String name, String firstName, String lastName, String email, List roles, List groups, boolean isAdministrator)
 	{

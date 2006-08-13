@@ -1,4 +1,22 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.4 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX TOBE DONE **********.
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.3.5 Final 
+---------------------------------------
+- Made InfoGlueGroup, InfoGlueRole and InfoGluePrincipal implement serializable so context can share them within a tomcat or in a cluster.
+
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
 -------------------------------------------------------------------------------------
 

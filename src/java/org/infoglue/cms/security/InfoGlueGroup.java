@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.security;
 
+import java.io.Serializable;
+
 
 /**
  * This class represents an generic Group in InfoGlue. It is used to identify a group no matter what source it was defined in.
@@ -30,8 +32,10 @@ package org.infoglue.cms.security;
  * @author Mattias Bogeblad
  */
 
-public class InfoGlueGroup 
+public class InfoGlueGroup implements Serializable
 {
+	private static final long serialVersionUID = -968607054134915601L;
+
 	private final String name;
 	private final String description;
 	

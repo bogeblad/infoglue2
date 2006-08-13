@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.security;
 
+import java.io.Serializable;
+
 
 /**
  * This class represents an generic Role in InfoGlue. It is used to identify a role no matter what source it was defined in.
@@ -30,8 +32,10 @@ package org.infoglue.cms.security;
  * @author Mattias Bogeblad
  */
 
-public class InfoGlueRole 
+public class InfoGlueRole implements Serializable
 {
+	private static final long serialVersionUID = 812195937936895191L;
+
 	private final String name;
 	private final String description;
 	
