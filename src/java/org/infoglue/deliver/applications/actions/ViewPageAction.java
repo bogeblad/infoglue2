@@ -697,6 +697,32 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			getLogger().info("principal:" + principal);
 
+			//First we check if the user is logged in to the container context
+			if(principal == null)
+			{
+			    if(this.getRequest().getUserPrincipal() != null && !(this.getRequest().getUserPrincipal() instanceof InfoGluePrincipal))
+			    {
+					Map status = new HashMap();
+					status.put("redirected", new Boolean(false));
+					principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL()).loginUser(getRequest(), getResponse(), status);
+					Boolean redirected = (Boolean)status.get("redirected");
+					if(redirected != null && redirected.booleanValue())
+					{
+					    this.getHttpSession().removeAttribute("infogluePrincipal");
+					    this.principal = null;
+					    return true;
+					}
+					else if(principal != null)
+					{
+					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+	
+					    this.principal = principal;
+					}
+			    }
+			}
+		
+			
 			if(principal == null)
 			{
 				Principal anonymousPrincipal = getAnonymousPrincipal();
@@ -970,7 +996,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    
 	    return principal;
 	}
-	
+
+
 	/**
 	 * Gets the SiteNodeType definition of this given node
 	 * @return

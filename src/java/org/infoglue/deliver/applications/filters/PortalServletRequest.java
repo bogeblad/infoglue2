@@ -22,10 +22,13 @@
 */
 package org.infoglue.deliver.applications.filters;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +36,8 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.deliver.portal.PathParser;
 import org.infoglue.deliver.portal.PortalControlURL;
 
@@ -43,7 +48,8 @@ public class PortalServletRequest extends HttpServletRequestWrapper
     public static final String MULTI_VALUE = PathParser.MULTI_VALUE;
 
     private Map paramMap;
-
+    private Principal principal = null;
+    
     /**
      * @param req
      */
@@ -71,6 +77,10 @@ public class PortalServletRequest extends HttpServletRequestWrapper
             }
             log.debug("Available params: " + str);
         }
+        
+		this.principal = (InfoGluePrincipal)req.getSession().getAttribute("infogluePrincipal");
+		if(req.getUserPrincipal() != null)
+			this.principal = req.getUserPrincipal();
     }
     
 
@@ -115,5 +125,45 @@ public class PortalServletRequest extends HttpServletRequestWrapper
     public String[] getParameterValues(String name) 
     {
         return (String[]) paramMap.get(name);
+    }
+    
+    public String getRemoteUser()
+    {
+    	return this.principal.getName();
+    }
+    
+    public boolean isUserInRole(String role)
+    {
+    	boolean isUserInRole = false;
+    	
+    	if(this.principal != null)
+    	{
+    		if(this.principal instanceof InfoGluePrincipal)
+    		{	
+		    	List roles = ((InfoGluePrincipal)this.principal).getRoles();
+		    	Iterator i = roles.iterator();
+		    	
+		    	while(i.hasNext())
+		    	{
+		    		InfoGlueRole currentRole = (InfoGlueRole)i.next();
+		    		if(currentRole.getName().equals(role))
+		    		{
+		    			isUserInRole = true;
+		    			break;
+		    		}
+		    	}
+    		}
+    		else
+    		{
+    			isUserInRole = super.isUserInRole(role);
+    		}
+    	}
+    	
+    	return isUserInRole;
+    }
+    
+    public Principal getUserPrincipal()
+    {
+    	return this.principal;
     }
 }
