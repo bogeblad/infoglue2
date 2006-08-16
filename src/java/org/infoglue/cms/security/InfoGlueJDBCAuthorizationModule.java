@@ -541,6 +541,8 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 					groups = new ArrayList();
 					
 					System.out.println("User read:" + infoGluePrincipal.getName());
+					
+					oldUserName = userName;
 				}
 			}
 		} 
