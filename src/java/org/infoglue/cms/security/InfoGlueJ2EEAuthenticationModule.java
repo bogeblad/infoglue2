@@ -73,17 +73,15 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 	
 	public String authenticateUser(HttpServletRequest request, HttpServletResponse response, FilterChain fc) throws Exception
 	{
-		System.out.println("real authenticateUser...");
-
 		String authenticatedUserName = null;
 
 		if(request.getUserPrincipal() != null)
 		{
-			System.out.println("The container had the user logged in:" + request.getUserPrincipal());
+			logger.info("The container had the user logged in:" + request.getUserPrincipal());
 			return request.getUserPrincipal().getName();
 		}
 		else
-			System.out.println("No container user logged in:" + request.getUserPrincipal());
+			logger.info("No container user logged in:" + request.getUserPrincipal());
 		
 		HttpSession session = ((HttpServletRequest)request).getSession();
 
@@ -115,10 +113,12 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 			String redirectUrl = "";			    
 			    
 			if(requestURI.indexOf("?") > 0)
-				redirectUrl = loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+				redirectUrl = request.getContextPath() + "/" + loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
 			else
-				redirectUrl = loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+				redirectUrl = request.getContextPath() + "/" + loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
 	
+			logger.info("Directing user to [" + request.getContextPath() + "/" + loginUrl + "]");
+
 			logger.info("redirectUrl:" + redirectUrl);
 			response.sendRedirect(redirectUrl);
 
@@ -167,7 +167,6 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 	
 	public String authenticateUser(Map request) throws Exception
 	{
-		System.out.println("authenticateUser...");
 		String authenticatedUserName = null;
 
 		//otherwise, we need to authenticate somehow
@@ -219,6 +218,8 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 		}
 		
 		logger.info("returnAddress:" + returnAddress);
+		logger.info("Directing user to [" + request.getContextPath() + "/" + loginUrl + "]");
+		
 		return request.getContextPath() + "/" + loginUrl + "?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
 	}
 	
@@ -254,8 +255,6 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 
 	public Principal loginUser(HttpServletRequest request, HttpServletResponse response, Map status) throws Exception 
 	{
-		System.out.println("Login USER....");
-		
 		Principal principal = null;
 
 		if(request.getUserPrincipal() != null)

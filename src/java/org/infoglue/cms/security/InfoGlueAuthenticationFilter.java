@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.Filter;
@@ -123,9 +125,9 @@ public class InfoGlueAuthenticationFilter implements Filter
 		String URI = httpServletRequest.getRequestURI();
 		String URL = httpServletRequest.getRequestURL().toString();
 
-		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1)
+		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1)
 		{
-    	    fc.doFilter(request, response); 
+			fc.doFilter(request, response); 
 			return;
    	 	}
 						
@@ -172,12 +174,26 @@ public class InfoGlueAuthenticationFilter implements Filter
 				isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
 			}
 			
+			//First we check if the user is logged in to the container context
+			if(!isAdministrator)
+			{
+				logger.info("Principal:" + httpServletRequest.getUserPrincipal());
+			    if(httpServletRequest.getUserPrincipal() != null && !(httpServletRequest.getUserPrincipal() instanceof InfoGluePrincipal))
+			    {
+			    	userName = httpServletRequest.getUserPrincipal().getName();
+			    	logger.info("Now trusting the container logged in identity...");
+			    }
+			}
+
 			String authenticatedUserName = userName;
+			
 			if(!isAdministrator)
 				authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
 			
 			if(authenticatedUserName != null)
 			{	
+				logger.info("Getting the principal from user name:" + authenticatedUserName);
+				
 				InfoGluePrincipal user = getAuthenticatedUser(authenticatedUserName);
 				if(user == null || (!user.getIsAdministrator() && !hasAuthorizedRole(user)))
 				{	
@@ -269,7 +285,7 @@ public class InfoGlueAuthenticationFilter implements Filter
   	    boolean isAuthorized = false;
 
         logger.info("authConstraint:" + authConstraint);
-
+       
   	    if(authConstraint == null || authConstraint.equalsIgnoreCase(""))
   	        return true;
   	    

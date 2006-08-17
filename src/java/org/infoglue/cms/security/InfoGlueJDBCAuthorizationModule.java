@@ -64,12 +64,11 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 	private Properties extraProperties = null;
 	private Database transactionObject 	= null;
 
-    protected String connectionName = "cds";
-    protected String connectionPassword = "cds";
-    protected String connectionURL = "jdbc:jtds:sqlserver://localhost:1433;DatabaseName=cds;SelectMethod=Cursor";
-    //protected Connection connection = null;
+    protected String connectionName = null; //"cds";
+    protected String connectionPassword = null; //"cds";
+    protected String connectionURL = null; //"jdbc:jtds:sqlserver://localhost:1433;DatabaseName=cds;SelectMethod=Cursor";
     protected Driver driver = null;
-    protected String driverName = "net.sourceforge.jtds.jdbc.Driver";
+    protected String driverName = null; // "net.sourceforge.jtds.jdbc.Driver";
 
 	/**
 	 * Gets is the implementing class can update as well as read 
@@ -106,6 +105,18 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
      */
     protected Connection getConnection() throws SQLException 
     {
+		if(connectionURL == null)
+			connectionURL = this.extraProperties.getProperty("jdbc.connectionURL");
+		
+		if(connectionName == null)
+			connectionName = this.extraProperties.getProperty("jdbc.connectionName");
+		
+		if(connectionPassword == null)
+			connectionPassword = this.extraProperties.getProperty("jdbc.connectionPassword");
+
+		if(driverName == null)
+			driverName = this.extraProperties.getProperty("jdbc.driverName");
+    	
     	Connection conn = null;
     	
         // Instantiate our database driver if necessary
@@ -126,6 +137,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
         Properties props = new Properties();
         if (connectionName != null)
             props.put("user", connectionName);
+        
         if (connectionPassword != null)
             props.put("password", connectionPassword);
         
@@ -143,7 +155,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 	
 	public InfoGluePrincipal getAuthorizedInfoGluePrincipal(String userName) throws Exception
 	{
-		System.out.println("getAuthorizedInfoGluePrincipal with userName:" + userName);
+		logger.info("getAuthorizedInfoGluePrincipal with userName:" + userName);
 		
 	    if(userName == null || userName.equals(""))
 	    {
@@ -172,7 +184,29 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			
 			try 
 			{
-				String sql = "SELECT * from CDS_USER, CDS_ROLE_USER, CDS_ROLE where CDS_ROLE_USER.CDS_USER = CDS_USER.ID AND CDS_ROLE_USER.CDS_ROLE = CDS_ROLE.ID AND CDS_USER.USER_NAME = ?";
+				String userFirstNameColumn = this.extraProperties.getProperty("jdbc.userFirstNameColumn");
+				if(userFirstNameColumn == null || userFirstNameColumn.equals(""))
+					userFirstNameColumn = "USER_FIRSTNAME";
+
+				String userLastNameColumn = this.extraProperties.getProperty("jdbc.userLastNameColumn");
+				if(userLastNameColumn == null || userLastNameColumn.equals(""))
+					userLastNameColumn = "USER_LASTNAME";
+
+				String userEmailColumn = this.extraProperties.getProperty("jdbc.userEmailColumn");
+				if(userEmailColumn == null || userEmailColumn.equals(""))
+					userEmailColumn = "USER_EMAIL";
+
+				String roleNameColumn = this.extraProperties.getProperty("jdbc.roleNameColumn");
+				if(roleNameColumn == null || roleNameColumn.equals(""))
+					roleNameColumn = "ROLE_NAME";
+				
+				String roleDescriptionColumn = this.extraProperties.getProperty("jdbc.roleDescriptionColumn");
+				if(roleDescriptionColumn == null || roleDescriptionColumn.equals(""))
+					roleDescriptionColumn = "ROLE_DESCRIPTION";
+				
+				String sql = this.extraProperties.getProperty("jdbc.userRolesSQL");
+				if(sql == null || sql.equals(""))
+					sql = "SELECT * from CDS_USER, CDS_ROLE_USER, CDS_ROLE where CDS_ROLE_USER.CDS_USER = CDS_USER.ID AND CDS_ROLE_USER.CDS_ROLE = CDS_ROLE.ID AND CDS_USER.USER_NAME = ?";
 				
 				conn = getConnection();
 				
@@ -182,19 +216,48 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 				rs = ps.executeQuery();
 				while(rs.next())
 				{
-					String roleName = rs.getString("ROLE_NAME");
-					String description = rs.getString("ROLE_DESCRIPTION");
+					logger.info("infoGluePrincipal:" + infogluePrincipal);
+					if(infogluePrincipal != null)
+					{
+						String roleName = rs.getString(roleNameColumn);
+						String description = rs.getString(roleDescriptionColumn);
 					
-					InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description);
-					System.out.println("Adding infoGlueRole:" + infoGlueRole.getName());
-					roles.add(infoGlueRole);
+						InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description);
+						infogluePrincipal.getRoles().add(infoGlueRole);
+						logger.info("Added role:" + infoGlueRole.getName());
+					}
+					else
+					{
+						String userFirstName = rs.getString(userFirstNameColumn);
+						String userLastName = rs.getString(userLastNameColumn);
+						String userEmail = rs.getString(userEmailColumn);
+
+						if(userFirstName == null)
+							userFirstName = userName;
+
+						if(userLastName == null)
+							userLastName = userName;
+
+						if(userEmail == null)
+							userEmail = userName;
+						
+						String roleName = rs.getString(roleNameColumn);
+						String description = rs.getString(roleDescriptionColumn);
+
+						InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description);
+						
+						infogluePrincipal = new InfoGluePrincipal(userName, userFirstName, userLastName, userEmail, new ArrayList(), groups, false);
+						infogluePrincipal.getRoles().add(infoGlueRole);
+											
+						logger.info("User read:" + infogluePrincipal.getName());
+					}
+					
 				}
-				
-				infogluePrincipal = new InfoGluePrincipal(userName, userName, userName, "undefined", roles, groups, isAdministrator);
-				System.out.println("infogluePrincipal created:" + infogluePrincipal.getName());
+
 			} 
 			catch (Exception e) 
 			{
+				e.printStackTrace();
 				getLogger().info("An error occurred trying to get jdbc user for " + userName + ":" + e);
 				throw new SystemException(e.getMessage());
 			}
@@ -226,52 +289,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 				}
 			}
 
-			System.out.println("returning from getAuthorizedInfoGluePrincipal with userName:" + userName);
-			
-			/*
-			
-			Database db = CastorDatabaseService.getDatabase();
-
-			try 
-			{
-				beginTransaction(db);
-				
-				SystemUser systemUser = SystemUserController.getController().getReadOnlySystemUserWithName(userName, db);
-				if(systemUser != null)
-				{
-					Iterator roleListIterator = systemUser.getRoles().iterator();
-					while(roleListIterator.hasNext())
-					{
-						Role role = (Role)roleListIterator.next();
-						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
-						roles.add(infoGlueRole);
-					}
-	
-					Iterator groupListIterator = systemUser.getGroups().iterator();
-					while(groupListIterator.hasNext())
-					{
-					    Group group = (Group)groupListIterator.next();
-						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
-						groups.add(infoGlueGroup);
-					}
-	
-					infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator);
-				}
-				else
-				{
-				    logger.warn("Could not find user with userName '" + userName + "' - fix your template logic.");
-				    infogluePrincipal = null;
-				}
-				
-				commitTransaction(db);
-			} 
-			catch (Exception e) 
-			{
-				getLogger().info("An error occurred trying to get SystemUser for " + userName + ":" + e);
-				rollbackTransaction(db);
-				throw new SystemException(e.getMessage());
-			}
-			*/
+			logger.info("returning from getAuthorizedInfoGluePrincipal with userName:" + userName);
 		}
 
 		return infogluePrincipal;
@@ -291,7 +309,13 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		
 		try 
 		{
-			String sql = "SELECT * from CDS_ROLE where CDS_ROLE.ROLE_NAME = ?";
+			String roleDescriptionColumn = this.extraProperties.getProperty("jdbc.roleDescriptionColumn");
+			if(roleDescriptionColumn == null || roleDescriptionColumn.equals(""))
+				roleDescriptionColumn = "ROLE_DESCRIPTION";
+
+			String sql = this.extraProperties.getProperty("jdbc.roleSQL");
+			if(sql == null || sql.equals(""))
+				sql = "SELECT * from CDS_ROLE where CDS_ROLE.ROLE_NAME = ?";
 
 			conn = getConnection();
 			
@@ -301,12 +325,12 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			rs = ps.executeQuery();
 			while(rs.next())
 			{
-				String description = rs.getString("ROLE_DESCRIPTION");
+				String description = rs.getString(roleDescriptionColumn);
 				
 				infoglueRole = new InfoGlueRole(roleName, description);
 			}
 			
-			System.out.println("Role created:" + infoglueRole.getName());
+			logger.info("Role created:" + infoglueRole.getName());
 		} 
 		catch (Exception e) 
 		{
@@ -429,7 +453,17 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		
 		try 
 		{
-			String sql = "SELECT * from CDS_ROLE ORDER BY ROLE_NAME";
+			String roleNameColumn = this.extraProperties.getProperty("jdbc.roleNameColumn");
+			if(roleNameColumn == null || roleNameColumn.equals(""))
+				roleNameColumn = "ROLE_NAME";
+
+			String roleDescriptionColumn = this.extraProperties.getProperty("jdbc.roleDescriptionColumn");
+			if(roleDescriptionColumn == null || roleDescriptionColumn.equals(""))
+				roleDescriptionColumn = "ROLE_DESCRIPTION";
+
+			String sql = this.extraProperties.getProperty("jdbc.rolesSQL");
+			if(sql == null || sql.equals(""))
+				sql = "SELECT * from CDS_ROLE ORDER BY ROLE_NAME";
 
 			conn = getConnection();
 			
@@ -438,13 +472,13 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			rs = ps.executeQuery();
 			while(rs.next())
 			{
-				String roleName = rs.getString("ROLE_NAME");
-				String description = rs.getString("ROLE_DESCRIPTION");
+				String roleName = rs.getString(roleNameColumn);
+				String description = rs.getString(roleDescriptionColumn);
 				
 				InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description);
 				roles.add(infoGlueRole);
 				
-				System.out.println("Role created:" + infoGlueRole.getName());
+				logger.info("Role created:" + infoGlueRole.getName());
 			}
 		} 
 		catch (Exception e) 
@@ -505,46 +539,97 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		
 		try 
 		{
-			String sql = "SELECT * from CDS_USER, CDS_ROLE_USER, CDS_ROLE where CDS_ROLE_USER.CDS_USER = CDS_USER.ID AND CDS_ROLE_USER.CDS_ROLE = CDS_ROLE.ID ORDER BY CDS_USER.USER_NAME";
-			//String sql = "SELECT * from CDS_USER ORDER BY USER_NAME";
+			String userNameColumn = this.extraProperties.getProperty("jdbc.userNameColumn");
+			if(userNameColumn == null || userNameColumn.equals(""))
+				userNameColumn = "USER_NAME";
+
+			String userFirstNameColumn = this.extraProperties.getProperty("jdbc.userFirstNameColumn");
+			if(userFirstNameColumn == null || userFirstNameColumn.equals(""))
+				userFirstNameColumn = "USER_FIRSTNAME";
+
+			String userLastNameColumn = this.extraProperties.getProperty("jdbc.userLastNameColumn");
+			if(userLastNameColumn == null || userLastNameColumn.equals(""))
+				userLastNameColumn = "USER_LASTNAME";
+
+			String userEmailColumn = this.extraProperties.getProperty("jdbc.userEmailColumn");
+			if(userEmailColumn == null || userEmailColumn.equals(""))
+				userEmailColumn = "USER_EMAIL";
+
+			String roleNameColumn = this.extraProperties.getProperty("jdbc.roleNameColumn");
+			if(roleNameColumn == null || roleNameColumn.equals(""))
+				roleNameColumn = "ROLE_NAME";
+
+			String roleDescriptionColumn = this.extraProperties.getProperty("jdbc.roleDescriptionColumn");
+			if(roleDescriptionColumn == null || roleDescriptionColumn.equals(""))
+				roleDescriptionColumn = "ROLE_DESCRIPTION";
+
+			String sql = this.extraProperties.getProperty("jdbc.usersRolesSQL");
+			if(sql == null || sql.equals(""))
+				sql = "SELECT * from CDS_USER, CDS_ROLE_USER, CDS_ROLE where CDS_ROLE_USER.CDS_USER = CDS_USER.ID AND CDS_ROLE_USER.CDS_ROLE = CDS_ROLE.ID ORDER BY CDS_USER.USER_NAME";
 
 			conn = getConnection();
 			
 			ps = conn.prepareStatement(sql);
 			
-			String oldUserName = null;
+			String oldUserName = "";
 			
 			List roles = new ArrayList();
 			List groups = new ArrayList();
 			
+			String userFirstName = null;
+			String userLastName = null;
+			String userEmail = null;
+
+			InfoGluePrincipal infoGluePrincipal = null;
+			
 			rs = ps.executeQuery();
 			while(rs.next())
 			{
-				String userName = rs.getString("USER_NAME");
+				String userName = rs.getString(userNameColumn);
 
-				if(oldUserName != null && userName.equals(oldUserName))
+				logger.info("userName:" + userName);
+				logger.info("oldUserName:" + oldUserName);
+				if(userName.equals(oldUserName))
 				{
-					String roleName = rs.getString("ROLE_NAME");
-					String description = rs.getString("ROLE_DESCRIPTION");
+					String roleName = rs.getString(roleNameColumn);
+					String description = rs.getString(roleDescriptionColumn);
 				
 					InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description);
-					roles.add(infoGlueRole);
+					infoGluePrincipal.getRoles().add(infoGlueRole);
 				}
 				else
 				{
-					if(oldUserName == null)
-						oldUserName = userName;
+					userFirstName = rs.getString(userFirstNameColumn);
+					userLastName = rs.getString(userLastNameColumn);
+					userEmail = rs.getString(userEmailColumn);
+
+					//if(oldUserName == null)
+					//	oldUserName = userName;
+
+					if(userFirstName == null)
+						userFirstName = userName;
+
+					if(userLastName == null)
+						userLastName = userName;
+
+					if(userEmail == null)
+						userEmail = userName;
 					
-					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(oldUserName, oldUserName, oldUserName, "Undefined", roles, groups, false);
+					String roleName = rs.getString(roleNameColumn);
+					String description = rs.getString(roleDescriptionColumn);
+
+					InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description);
+					
+					infoGluePrincipal = new InfoGluePrincipal(userName, userFirstName, userLastName, userEmail, new ArrayList(), groups, false);
+					infoGluePrincipal.getRoles().add(infoGlueRole);
 					users.add(infoGluePrincipal);
-					roles = new ArrayList();
-					groups = new ArrayList();
-					
-					System.out.println("User read:" + infoGluePrincipal.getName());
-					
-					oldUserName = userName;
+										
+					logger.info("User read:" + infoGluePrincipal.getName());
 				}
+				
+				oldUserName = userName;				
 			}
+
 		} 
 		catch (Exception e) 
 		{
@@ -596,30 +681,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
     {
         getLogger().info("roleName:" + roleName);
 		List users = new ArrayList();
-		
-		if(transactionObject == null)
-		{
-			List systemUserVOList = RoleController.getController().getRoleSystemUserVOList(roleName);
-			Iterator systemUserVOListIterator = systemUserVOList.iterator();
-			while(systemUserVOListIterator.hasNext())
-			{
-				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false);
-				users.add(infoGluePrincipal);
-			}
-		}
-		else
-		{
-			List systemUserVOList = RoleController.getController().getRoleSystemUserVOList(roleName, transactionObject);
-			Iterator systemUserVOListIterator = systemUserVOList.iterator();
-			while(systemUserVOListIterator.hasNext())
-			{
-				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false);
-				users.add(infoGluePrincipal);
-			}
-		}
-		
+				
 		return users;
 	}
 
@@ -628,29 +690,6 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
         getLogger().info("groupName:" + groupName);
 		List users = new ArrayList();
 		
-		if(transactionObject == null)
-		{
-			List systemUserVOList = GroupController.getController().getGroupSystemUserVOList(groupName);
-			Iterator systemUserVOListIterator = systemUserVOList.iterator();
-			while(systemUserVOListIterator.hasNext())
-			{
-				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false);
-				users.add(infoGluePrincipal);
-			}
-		}
-		else
-		{
-			List systemUserVOList = GroupController.getController().getGroupSystemUserVOList(groupName, transactionObject);
-			Iterator systemUserVOListIterator = systemUserVOList.iterator();
-			while(systemUserVOListIterator.hasNext())
-			{
-				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false);
-				users.add(infoGluePrincipal);
-			}
-		}
-
 		return users;
     }
 
