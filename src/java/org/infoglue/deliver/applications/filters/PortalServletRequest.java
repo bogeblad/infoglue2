@@ -129,7 +129,7 @@ public class PortalServletRequest extends HttpServletRequestWrapper
     
     public String getRemoteUser()
     {
-    	return this.principal.getName();
+    	return (this.principal == null ? null : this.principal.getName());
     }
     
     public boolean isUserInRole(String role)
