@@ -14,7 +14,12 @@ The InfoGlue Team
 Abbreviated Changelog from 2.3.5 Final 
 ---------------------------------------
 - Made InfoGlueGroup, InfoGlueRole and InfoGluePrincipal implement serializable so context can share them within a tomcat or in a cluster.
-
+- Added new J2EE-authentication module. It allows one to let the container handle login and infoglue deliver accepts it's principal.
+- Added new JDBC Authorization module (experimental so far).
+- Changed PortalServletRequest so portlets get the principal object propagated in a better way.
+- Changed ViewPage.action so if the user is authenticated by the container it at least asks the authentication module if it's ok.
+- Added a protectedRediect which may be used later for container managed auth.
+- 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
