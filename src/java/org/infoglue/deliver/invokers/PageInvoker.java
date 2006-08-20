@@ -314,6 +314,9 @@ public abstract class PageInvoker
 
 	public void setPageString(String string)
 	{
+	    if(string != null && this.deliveryContext.getTrimResponse())
+	    	string = string.trim();
+
 		pageString = string;
 	}
 

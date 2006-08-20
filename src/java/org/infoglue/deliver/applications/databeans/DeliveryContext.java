@@ -98,7 +98,10 @@ public class DeliveryContext implements UsageListener
 	
 	//The variable sets if url generation should skip niceUris
 	private boolean disableNiceUri = false;
-	
+
+	//The variable sets if the response string should be trimmed to avoid problems with xml-responses etc.
+	private boolean trimResponse = false;
+
 	public static DeliveryContext getDeliveryContext()
 	{
 		return new DeliveryContext();
@@ -356,4 +359,14 @@ public class DeliveryContext implements UsageListener
     {
         this.disableNiceUri = disableNiceUri;
     }
+
+    public boolean getTrimResponse()
+    {
+        return this.trimResponse;
+    }
+
+    public void setTrimResponse(boolean trimResponse) 
+	{
+		this.trimResponse = trimResponse;
+	}
 }

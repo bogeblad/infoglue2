@@ -60,4 +60,9 @@ public class DeliveryContextTag extends TemplateControllerTag
 	{
 	    getController().getDeliveryContext().setDisableNiceUri(disableNiceUri);
 	}
+
+	public void setTrimResponse(boolean trimResponse) throws JspException
+	{
+	    getController().getDeliveryContext().setTrimResponse(trimResponse);
+	}
 }

@@ -19,7 +19,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Changed PortalServletRequest so portlets get the principal object propagated in a better way.
 - Changed ViewPage.action so if the user is authenticated by the container it at least asks the authentication module if it's ok.
 - Added a protectedRediect which may be used later for container managed auth.
-- 
+- Made it possible to dictate for the delivery engine from a component that a page should be trimmed before sent to the client. This means components returning xml as a result don't have to be written on one line to avoid invalid xml any more. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

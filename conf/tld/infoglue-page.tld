@@ -43,6 +43,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+    	    <name>trimResponse</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
     </tag>
 
 </taglib>
