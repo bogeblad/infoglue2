@@ -41,6 +41,9 @@ public class WorkflowVO implements BaseEntityVO
 {
 	private static final long serialVersionUID = 1L;
 
+	public static final int STATUS_OK = 0;
+	public static final int STATUS_NOT_OK = 1;
+	
 	private Long workflowId;
 	private String name;  // the name of the workflow
 	private String title; // the name of the workflow instance
@@ -49,6 +52,9 @@ public class WorkflowVO implements BaseEntityVO
 	private List historySteps = new ArrayList();
 	private List initialActions = new ArrayList();
 	private List globalActions = new ArrayList();
+
+	private int status = STATUS_OK;
+	private String statusMessage = "";
 
 	public WorkflowVO() {}
 
@@ -246,5 +252,25 @@ public class WorkflowVO implements BaseEntityVO
 	public ConstraintExceptionBuffer validate()
 	{
 		return new ConstraintExceptionBuffer();
+	}
+
+	public String getStatusMessage()
+	{
+		return statusMessage;
+	}
+
+	public void setStatusMessage(String statusMessage)
+	{
+		this.statusMessage = statusMessage;
+	}
+
+	public int getStatus()
+	{
+		return status;
+	}
+
+	public void setStatus(int status)
+	{
+		this.status = status;
 	}
 }

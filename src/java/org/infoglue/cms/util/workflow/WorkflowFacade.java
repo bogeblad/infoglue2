@@ -65,7 +65,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.26 $ $Date: 2006/04/02 16:21:19 $
+ * @version $Revision: 1.27 $ $Date: 2006/08/21 13:36:58 $
  */
 public class WorkflowFacade
 {
@@ -382,8 +382,17 @@ public class WorkflowFacade
 		List availableWorkflows = new ArrayList();
 
 		for (int i = 0; i < workflowNames.length; i++)
-			availableWorkflows.add(createWorkflowVO(workflowNames[i]));
-
+		{
+			try
+			{
+				availableWorkflows.add(createWorkflowVO(workflowNames[i]));
+			}
+			catch(Exception e)
+			{
+				logger.error("The workflow " + workflowNames[i] + " could not be instantiated:" + e.getMessage(), e);
+			}
+		}
+		
 		return availableWorkflows;
 	}
 
@@ -706,7 +715,18 @@ public class WorkflowFacade
 	private WorkflowVO createWorkflowVO(String name)
 	{
 		WorkflowVO workflowVO = new WorkflowVO(null, name);
-		workflowVO.setDeclaredSteps(getDeclaredSteps(workflow.getWorkflowDescriptor(name)));
+		try
+		{
+			workflowVO.setDeclaredSteps(getDeclaredSteps(workflow.getWorkflowDescriptor(name)));
+		}
+		catch(Exception e)
+		{
+			workflowVO.setStatus(WorkflowVO.STATUS_NOT_OK);
+			workflowVO.setStatusMessage("Error in workflow:" + e.getMessage());
+			
+			logger.error("Could not read workflow:" + e.getMessage(), e);
+		}
+		
 		return workflowVO;
 	}
 
