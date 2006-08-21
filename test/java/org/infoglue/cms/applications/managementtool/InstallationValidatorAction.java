@@ -401,34 +401,41 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 		    			
 		    			boolean hasMetaInfo = false;
 		    			
-		    			Collection serviceBindings = siteNodeVersion.getServiceBindings();
-		    			Iterator serviceBindingIterator = serviceBindings.iterator();
-		    			while(serviceBindingIterator.hasNext())
+		    			if(siteNodeVersion == null)
 		    			{
-		    				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-		    				if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
-		    				{
-		    					List boundContents = ContentController.getInTransactionBoundContents(db, serviceBinding.getServiceBindingId()); 			
-		    					if(boundContents.size() > 0)
-		    	    			{
-		    	    				ContentVO content = (ContentVO)boundContents.get(0);
-		    	    				metaInfoContentId = content.getId();
-
-		    	    				hasMetaInfo = true;
-		    	    				
-		    	    				break;
-		     	    			}                					
-		    				}
+		    				System.out.println("Error:" + siteNode.getName() + "(" + siteNode.getId() + ") had no siteNodeVersions");
 		    			}
-	    			
-		    			if(!hasMetaInfo)
+		    			else
 		    			{
-		        		    //System.out.println("Creating a new meta info for " + siteNode.getName());
-		        		    ContentVO contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, siteNode.getRepository().getId(), this.getInfoGluePrincipal(), null).getValueObject();
-		        		    metaInfoContentId = contentVO.getId(); 
+			    			Collection serviceBindings = siteNodeVersion.getServiceBindings();
+			    			Iterator serviceBindingIterator = serviceBindings.iterator();
+			    			while(serviceBindingIterator.hasNext())
+			    			{
+			    				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+			    				if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+			    				{
+			    					List boundContents = ContentController.getInTransactionBoundContents(db, serviceBinding.getServiceBindingId()); 			
+			    					if(boundContents.size() > 0)
+			    	    			{
+			    	    				ContentVO content = (ContentVO)boundContents.get(0);
+			    	    				metaInfoContentId = content.getId();
+	
+			    	    				hasMetaInfo = true;
+			    	    				
+			    	    				break;
+			     	    			}                					
+			    				}
+			    			}
+		    			
+			    			if(!hasMetaInfo)
+			    			{
+			        		    //System.out.println("Creating a new meta info for " + siteNode.getName());
+			        		    ContentVO contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, siteNode.getRepository().getId(), this.getInfoGluePrincipal(), null).getValueObject();
+			        		    metaInfoContentId = contentVO.getId(); 
+			    			}
+			    			    
+		    			    siteNode.setMetaInfoContentId(metaInfoContentId);
 		    			}
-		    			    
-	    			    siteNode.setMetaInfoContentId(metaInfoContentId);
 	                }
 	            }
 	            
@@ -436,6 +443,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	        }
 	        catch(Exception e)
 	        {
+	        	e.printStackTrace();
 	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
 	        }
 	        
