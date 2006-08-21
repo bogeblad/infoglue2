@@ -86,6 +86,9 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
             {
                 getLogger().info("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
             }
+			
+			results.close();
+			oql.close();
 		
 			//try{ throw new Exception("Hepp1"); }catch(Exception e){e.printStackTrace();}
 
@@ -112,7 +115,10 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
     		availableServiceBinding = (AvailableServiceBinding)results.next();
 			getLogger().info("Found availableServiceBinding:" + availableServiceBinding.getName());
     	}
-            
+         
+		results.close();
+		oql.close();
+
         return availableServiceBinding;	
 	}
 	

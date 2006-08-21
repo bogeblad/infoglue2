@@ -164,6 +164,9 @@ public class ServerNodeController extends BaseController
 			{
 				serverNode = (ServerNode)results.next();
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{

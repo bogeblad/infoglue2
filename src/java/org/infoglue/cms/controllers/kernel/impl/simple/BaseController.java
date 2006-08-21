@@ -949,9 +949,16 @@ public abstract class BaseController
 	{
 	    try
 		{
-			List results = new ArrayList();
-			results = Collections.list(createQuery(db, query, params).execute());
-			return results;
+			List resultList = new ArrayList();
+			
+			OQLQuery oql = createQuery(db, query, params);
+			QueryResults results = oql.execute();
+			resultList = Collections.list(results);
+
+			results.close();
+			oql.close();
+
+			return resultList;
 		}
 		catch (Exception e)
 		{

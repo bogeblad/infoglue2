@@ -135,7 +135,10 @@ public class PublicationController extends BaseController
             	res.add(publication.getValueObject());
             }
 
-            commitTransaction(db);
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
         }
         catch(Exception e)
         {
@@ -163,6 +166,7 @@ public class PublicationController extends BaseController
         	QueryResults results = oql.execute(Database.ReadOnly);
 
 			List allEditions = Collections.list(results);
+			
 			List page = allEditions.subList(startIndex, Math.min(startIndex+pageSize, allEditions.size()));
 
 			EditionBrowser browser = new EditionBrowser(allEditions.size(), pageSize, startIndex);
@@ -177,6 +181,9 @@ public class PublicationController extends BaseController
 			}
 
 			browser.setEditions(editionVOs);
+
+			results.close();
+			oql.close();
 
             commitTransaction(db);
 

@@ -3616,8 +3616,6 @@ public class BasicTemplateController implements TemplateController
 			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
 			final Set set = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase());
 			
-			int commitSize = 0;
-			
 			final List result = new ArrayList();
 			for(Iterator i = set.iterator(); i.hasNext(); ) 
 			{
@@ -3625,13 +3623,6 @@ public class BasicTemplateController implements TemplateController
 				//System.out.println("content: " + content.getName());
 				if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 					result.add(content.getValueObject());
-				
-				commitSize++;
-				if(commitSize > 100)
-				{
-					commitDatabase();
-					commitSize = 0;
-				}	
 			}
 			return result;
 		}

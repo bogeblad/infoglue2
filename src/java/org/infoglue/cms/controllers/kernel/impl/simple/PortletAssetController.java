@@ -124,7 +124,10 @@ public class PortletAssetController extends DigitalAssetController
             contents.add(results.next());
         }
 
-        return contents;
+		results.close();
+		oql.close();
+
+		return contents;
     }
 
 	public DigitalAsset getPortletRegistryAsset() throws Exception 

@@ -103,6 +103,10 @@ public class TransactionHistoryController extends BaseController
 				TransactionHistory transactionHistory = (TransactionHistory)results.next();
 				transactionHistoryVO = transactionHistory.getValueObject();
 			}
+			
+			results.close();
+			oql.close();
+
 			commitTransaction(db);
 		}
 		catch(Exception e)

@@ -314,8 +314,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, new NullObject(), new String[]{"content_" + content.getId()}, true);
 			}
 
-			//if(content.getId().intValue() == 33 || content.getId().intValue() == 7 || content.getId().intValue() == 8 || content.getId().intValue() == 9)
-			//	try{throw new Exception("APA");}catch(Exception e){e.printStackTrace();}
+			results.close();
+			oql.close();
 		}
 		
 		if(contentVersion != null)
@@ -1400,6 +1400,9 @@ public class ContentDeliveryController extends BaseDeliveryController
    				contents.add(content);
     		}
         }
+		
+		results.close();
+		oql.close();
 	}
 
 	
@@ -1432,6 +1435,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 				contents.add(content);
 			}
 		}
+		
+		results.close();
+		oql.close();
 	}
 	
 	/**

@@ -611,6 +611,9 @@ public class SiteNodeController extends BaseController
 			siteNode = (SiteNode)results.next();
 		}
 
+		results.close();
+		oql.close();
+
 		return siteNode;
 	}
 
@@ -746,6 +749,9 @@ public class SiteNodeController extends BaseController
         	siteNodes.add(siteNode);
         }
 		
+		results.close();
+		oql.close();
+
 		return siteNodes;    	
     }
 	
@@ -972,6 +978,9 @@ public class SiteNodeController extends BaseController
         	SiteNode siteNode = (SiteNodeImpl)results.next();
         	siteNodes.add(siteNode);
         }
+
+		results.close();
+		oql.close();
 
 		return siteNodes;
     }       

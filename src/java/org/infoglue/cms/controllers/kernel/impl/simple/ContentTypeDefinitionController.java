@@ -237,11 +237,15 @@ public class ContentTypeDefinitionController extends BaseController
 			oql.bind(name);
 
 	    	this.getLogger().info("Fetching entity in read/write mode" + name);
-			QueryResults results = oql.execute();
+			
+	    	QueryResults results = oql.execute();
 			if (results.hasMore())
 			{
 				contentTypeDefinition = (ContentTypeDefinition)results.next();
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -287,6 +291,9 @@ public class ContentTypeDefinitionController extends BaseController
 
 				    CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVO);
 				}
+				
+				results.close();
+				oql.close();
 			}
 			catch(Exception e)
 			{
@@ -334,6 +341,9 @@ public class ContentTypeDefinitionController extends BaseController
 				ContentTypeDefinition contentTypeDefinition = (ContentTypeDefinition)results.next();
 				contentTypeDefinitionVOList.add(contentTypeDefinition.getValueObject());
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{

@@ -851,6 +851,9 @@ public class ContentController extends BaseController
 	            	MediumContentImpl content = (MediumContentImpl)results.next();
 					contents.add(content.getValueObject());
 	            }
+				
+				results.close();
+				oql.close();
 		   	}
             
             commitTransaction(db);
@@ -891,6 +894,9 @@ public class ContentController extends BaseController
             	MediumContentImpl content = (MediumContentImpl)results.next();
 				contents.add(content.getValueObject());
             }
+			
+			results.close();
+			oql.close();
 	   	}
     	
 		return contents;    	
@@ -981,6 +987,9 @@ public class ContentController extends BaseController
             	content = create(db, null, null, repositoryId, rootContentVO);
             }
             
+			results.close();
+			oql.close();
+
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();
             commitTransaction(db);
@@ -1077,6 +1086,9 @@ public class ContentController extends BaseController
 			}
 		}
 		
+		results.close();
+		oql.close();
+		
 		return content;
 	}
 
@@ -1100,6 +1112,9 @@ public class ContentController extends BaseController
 		{
 			content = (Content)results.next();
 		}
+
+		results.close();
+		oql.close();
 
 		return content;
 	}
@@ -1422,7 +1437,10 @@ public class ContentController extends BaseController
         	MediumContentImpl content = (MediumContentImpl)results.next();
 			contents.add(content);
         }
-		
+
+		results.close();
+		oql.close();
+
 		return contents;    	
 	}
 	

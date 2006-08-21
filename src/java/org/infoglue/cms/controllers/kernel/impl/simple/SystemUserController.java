@@ -205,6 +205,9 @@ public class SystemUserController extends BaseController
 			getLogger().info("found one:" + systemUserVO.getFirstName());
 		}
 
+		results.close();
+		oql.close();
+
 		return systemUserVO;		
 	}	
     
@@ -224,6 +227,9 @@ public class SystemUserController extends BaseController
 			systemUser = (SystemUser)results.next();
 			getLogger().info("found one:" + systemUser.getFirstName());
 		}
+
+		results.close();
+		oql.close();
 
 		return systemUser;		
 	}	
@@ -322,6 +328,9 @@ public class SystemUserController extends BaseController
 				filteredList.add(extranetUser);
 		}
 		
+		results.close();
+		oql.close();
+
 		return filteredList;
 	}
 

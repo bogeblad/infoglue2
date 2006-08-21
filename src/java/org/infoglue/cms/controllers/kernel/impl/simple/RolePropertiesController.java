@@ -262,6 +262,9 @@ public class RolePropertiesController extends BaseController
 			rolePropertiesList.add(roleProperties);
 		}
 
+		results.close();
+		oql.close();
+
 		return rolePropertiesList;
 	}
 	
@@ -380,6 +383,9 @@ public class RolePropertiesController extends BaseController
 			RoleContentTypeDefinition roleContentTypeDefinition = (RoleContentTypeDefinition)results.next();
 			roleContentTypeDefinitionList.add(roleContentTypeDefinition);
 		}
+
+		results.close();
+		oql.close();
 
 		return roleContentTypeDefinitionList;
 	}

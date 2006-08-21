@@ -286,6 +286,9 @@ public class UserPropertiesController extends BaseController
 			userPropertiesList.add(userProperties);
 		}
 
+		results.close();
+		oql.close();
+
 		return userPropertiesList;
 	}
 	
@@ -352,6 +355,9 @@ public class UserPropertiesController extends BaseController
 			UserContentTypeDefinition userContentTypeDefinition = (UserContentTypeDefinition)results.next();
 			userContentTypeDefinitionList.add(userContentTypeDefinition);
 		}
+
+		results.close();
+		oql.close();
 
 		return userContentTypeDefinitionList;
 	}

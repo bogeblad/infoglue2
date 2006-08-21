@@ -205,6 +205,9 @@ public class EventController extends BaseController
 				events.add(event.getValueObject());
 			}
 
+			results.close();
+			oql.close();
+
 			commitTransaction(db);
 		}
 		catch (Exception e)
@@ -284,6 +287,9 @@ public class EventController extends BaseController
 				    delete(event, db);
             }
             
+			results.close();
+			oql.close();
+
             commitTransaction(db);
         }
         catch(Exception e)

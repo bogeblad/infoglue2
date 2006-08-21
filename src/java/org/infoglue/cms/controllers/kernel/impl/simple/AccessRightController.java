@@ -249,6 +249,9 @@ public class AccessRightController extends BaseController
 				AccessRight accessRight = (AccessRight)results.next();
 				accessRightList.add(accessRight);
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -288,6 +291,9 @@ public class AccessRightController extends BaseController
 				AccessRight accessRight = (AccessRight)results.next();
 				accessRightList.add(accessRight);
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -327,6 +333,9 @@ public class AccessRightController extends BaseController
 				AccessRight accessRight = (AccessRight)results.next();
 				accessRightList.add(accessRight);
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -371,6 +380,9 @@ public class AccessRightController extends BaseController
 				//getLogger().info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -402,6 +414,9 @@ public class AccessRightController extends BaseController
 				getLogger().info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -432,6 +447,9 @@ public class AccessRightController extends BaseController
 				getLogger().info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
+
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -465,6 +483,9 @@ public class AccessRightController extends BaseController
 				getLogger().info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
+
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -1339,6 +1360,9 @@ public class AccessRightController extends BaseController
 				AccessRightUser accessRightUser = (AccessRightUser)results.next();
 				accessRightsUsers.add(accessRightUser);
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -1378,6 +1402,9 @@ public class AccessRightController extends BaseController
 				AccessRightUser accessRightUser = (AccessRightUser)results.next();
 				accessRightsUsers.add(accessRightUser);
 			}
+
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{

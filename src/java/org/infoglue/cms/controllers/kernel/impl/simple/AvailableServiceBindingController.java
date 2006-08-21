@@ -239,7 +239,9 @@ public class AvailableServiceBindingController extends BaseController
 			{
 				availableServiceBinding = (AvailableServiceBinding)results.next();
 			}
-
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{

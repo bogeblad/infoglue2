@@ -272,6 +272,9 @@ public class SiteNodeVersionController extends BaseController
 	    	siteNodeVersion = (SiteNodeVersion)results.next();
         }
 
+		results.close();
+		oql.close();
+
 		return siteNodeVersion;
     }
 
@@ -311,7 +314,10 @@ public class SiteNodeVersionController extends BaseController
             	siteNodeVersionVO = siteNodeVersion.getValueObject();
             }
             
-            commitTransaction(db);
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
         }
         catch(Exception e)
         {
@@ -340,6 +346,9 @@ public class SiteNodeVersionController extends BaseController
         	siteNodeVersionVO = siteNodeVersion.getValueObject();
         }
     	
+		results.close();
+		oql.close();
+
 		return siteNodeVersionVO;
     }
 
@@ -371,6 +380,9 @@ public class SiteNodeVersionController extends BaseController
 			{
 				siteNodeVersion = (SiteNodeVersion)results.next();
 			}
+
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -453,7 +465,10 @@ public class SiteNodeVersionController extends BaseController
 				siteNodeVersions.add(siteNodeVersion.getValueObject());
             }
             
-            commitTransaction(db);
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
         }
         catch(Exception e)
         {
@@ -641,6 +656,9 @@ public class SiteNodeVersionController extends BaseController
         	siteNodeVersion = (SiteNodeVersion)results.next();
         }
             
+		results.close();
+		oql.close();
+
 		return siteNodeVersion;
     }
 
@@ -673,7 +691,10 @@ public class SiteNodeVersionController extends BaseController
             	siteNodeVersionVO = siteNodeVersion.getValueObject();
             }
             
-            commitTransaction(db);
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
         }
         catch(Exception e)
         {
@@ -708,6 +729,9 @@ public class SiteNodeVersionController extends BaseController
         	siteNodeVersionVO = siteNodeVersion.getValueObject();
         }
     	
+		results.close();
+		oql.close();
+
 		return siteNodeVersionVO;
     }
 
@@ -732,6 +756,9 @@ public class SiteNodeVersionController extends BaseController
         	logger.info("found one:" + siteNodeVersion.getValueObject());
         }
     	
+		results.close();
+		oql.close();
+
 		return siteNodeVersion;
     }
 
@@ -1124,6 +1151,9 @@ public class SiteNodeVersionController extends BaseController
         	siteNodeVersionList.add(siteNodeVersion);
         }
             
+		results.close();
+		oql.close();
+
 		return siteNodeVersionList;
     }
 

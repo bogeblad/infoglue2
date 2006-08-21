@@ -244,6 +244,9 @@ public class RepositoryController extends BaseController
 			{
 				repository = (Repository)results.next();
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -326,6 +329,9 @@ public class RepositoryController extends BaseController
                 repositoryVO = repository.getValueObject();
             }
             
+			results.close();
+			oql.close();
+
 			commitTransaction(db);
 		}
 		catch ( Exception e)		

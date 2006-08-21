@@ -182,6 +182,9 @@ public class SearchController extends BaseController
 				}
 			}
 
+			results.close();
+			oql.close();
+
 			commitTransaction(db);
 		}
 		catch ( Exception e )

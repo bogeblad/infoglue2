@@ -263,6 +263,9 @@ public class InterceptionPointController extends BaseController
 				{	
 				    CacheController.cacheObject("interceptionPointCache", key, new NullObject());
 				}
+				
+				results.close();
+				oql.close();
 			}
 			catch(Exception e)
 			{
@@ -289,6 +292,9 @@ public class InterceptionPointController extends BaseController
 			{
 				interceptorPoint = (InterceptionPoint)results.next();
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -341,6 +347,9 @@ public class InterceptionPointController extends BaseController
 				InterceptionPoint interceptionPoint = (InterceptionPoint)results.next();
 				interceptionPoints.add(interceptionPoint);
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{

@@ -343,6 +343,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 		    	object2 = new NullObject();
 			}
 			
+			results.close();
+			oql.close();
 
 			CacheController.cacheObject("serviceDefinitionCache", key, object);
 			CacheController.cacheObject("qualifyerListCache", key, object2);
@@ -542,6 +544,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			    CacheController.cacheObject("latestSiteNodeVersionCache", versionKey, siteNodeVersion.getId());
 	        }	
 		
+			results.close();
+			oql.close();
 		}
 		
 		//if(contentVersion != null)
@@ -1624,6 +1628,9 @@ public class NodeDeliveryController extends BaseDeliveryController
         	logger.info("The root node was found:" + siteNode.getName());
         }
         
+		results.close();
+		oql.close();
+
 		logger.info("siteNode:" + siteNode);
 		
         return (siteNode == null) ? null : siteNode.getValueObject();	
@@ -1665,6 +1672,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        	siteNodeVO = ((SiteNode)results.next()).getValueObject();
 				getLogger().info("The root node was found:" + siteNodeVO.getName());
 	        }
+
+	    	results.close();
+			oql.close();
 
 			getLogger().info("siteNodeVO:" + siteNodeVO);
 
@@ -1713,6 +1723,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        	    siteNodeVOList.add(siteNode.getValueObject());
 			}
 
+			results.close();
+			oql.close();
+
 			CacheController.cacheObject("childSiteNodesCache", key, siteNodeVOList);
 		}
 
@@ -1740,6 +1753,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 			qualifyers.add(qualifyer);
 		}
 		
+		results.close();
+		oql.close();
+
 		return qualifyers;
 	}
 	

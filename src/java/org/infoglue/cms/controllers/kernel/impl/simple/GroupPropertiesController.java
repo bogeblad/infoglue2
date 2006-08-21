@@ -286,6 +286,9 @@ public class GroupPropertiesController extends BaseController
 			groupPropertiesList.add(groupProperties);
 		}
 
+		results.close();
+		oql.close();
+
 		return groupPropertiesList;
 	}
 
@@ -404,6 +407,9 @@ public class GroupPropertiesController extends BaseController
 			GroupContentTypeDefinition groupContentTypeDefinition = (GroupContentTypeDefinition)results.next();
 			groupContentTypeDefinitionList.add(groupContentTypeDefinition);
 		}
+
+		results.close();
+		oql.close();
 
 		return groupContentTypeDefinitionList;
 	}

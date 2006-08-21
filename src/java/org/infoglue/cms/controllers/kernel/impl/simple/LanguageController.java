@@ -190,6 +190,9 @@ public class LanguageController extends BaseController
 			{
 				language = (Language)results.next();
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -280,6 +283,9 @@ public class LanguageController extends BaseController
 			{
 				language = (Language)results.next();
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
@@ -603,6 +609,9 @@ public class LanguageController extends BaseController
 			language = (Language)results.next();
 		}
         
+		results.close();
+		oql.close();
+
 		return language;	
 	}
 

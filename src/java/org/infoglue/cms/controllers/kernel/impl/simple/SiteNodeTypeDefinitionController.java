@@ -122,6 +122,9 @@ public class SiteNodeTypeDefinitionController extends BaseController
 			{
 				siteNodeTypeDefinition = (SiteNodeTypeDefinition)results.next();
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{

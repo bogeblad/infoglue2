@@ -88,7 +88,9 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
             	//Also creates an initial meta info for the sitenode.
 				SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, repositoryId, infoGluePrincipal, null);
 			}
-           	getLogger().info("Did we find anything?");
+			
+			results.close();
+			oql.close();
             
             //If any of the validations or setMethods reported an error, we throw them up now before create. 
             ceb.throwIfNotEmpty();

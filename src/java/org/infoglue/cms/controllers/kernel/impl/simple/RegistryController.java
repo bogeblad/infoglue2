@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.29 2006/03/06 18:11:08 mattias Exp $
+ * $Id: RegistryController.java,v 1.30 2006/08/21 13:33:57 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -1235,6 +1235,9 @@ public class RegistryController extends BaseController
             matchingRegistryVOList.add(registryVO);
         }            
 		
+		results.close();
+		oql.close();
+
 		return matchingRegistryVOList;		
 	}
 	
@@ -1361,6 +1364,9 @@ public class RegistryController extends BaseController
             matchingRegistryVOList.add(registryVO);
         }       
 		
+		results.close();
+		oql.close();
+
 		return matchingRegistryVOList;		
 	}
 	
@@ -1384,6 +1390,9 @@ public class RegistryController extends BaseController
             db.remove(registry);
         }
 		
+		results.close();
+		oql.close();
+
 		return matchingRegistryVOList;		
 	}
 	
@@ -1412,6 +1421,9 @@ public class RegistryController extends BaseController
 	            db.remove(registry);
 	        }
 		    
+			results.close();
+			oql.close();
+
 	        commitTransaction(db);
 		}
 		catch (Exception e)		
@@ -1445,6 +1457,9 @@ public class RegistryController extends BaseController
 	            db.remove(registry);
 	        }
 		    
+			results.close();
+			oql.close();
+
 	        commitTransaction(db);
 		}
 		catch (Exception e)		
@@ -1477,7 +1492,10 @@ public class RegistryController extends BaseController
 	            Registry registry = (Registry)results.next();
 	            db.remove(registry);
 	        }
-		    
+
+			results.close();
+			oql.close();
+
 	        commitTransaction(db);
 		}
 		catch (Exception e)		
@@ -1537,6 +1555,9 @@ public class RegistryController extends BaseController
 		    //getLogger().info("siteNodeVersion:" + siteNodeVersion.getId());
         }
     	
+		results.close();
+		oql.close();
+
 		return siteNodeVersions;		
 	}
 
@@ -1562,6 +1583,9 @@ public class RegistryController extends BaseController
 		    siteNodeVersion = (SiteNodeVersion)results.next();
         }
     	
+		results.close();
+		oql.close();
+
 		return siteNodeVersion;		
 	}
 

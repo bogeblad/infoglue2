@@ -131,6 +131,9 @@ public abstract class BaseDeliveryController
 				// Om metoden getValueObject saknas, kastas ett undantag.            	
 				resultList.add(o.getClass().getDeclaredMethod("getValueObject", new Class[0]).invoke(o, new Object[0]));
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(NoSuchMethodException e)
 		{
@@ -166,6 +169,9 @@ public abstract class BaseDeliveryController
 				// Om metoden getValueObject saknas, kastas ett undantag.            	
 				resultList.add(o.getClass().getDeclaredMethod("getValueObject", new Class[0]).invoke(o, new Object[0]));
 			}
+			
+			results.close();
+			oql.close();
 		}
 		catch(NoSuchMethodException e)
 		{
@@ -205,9 +211,16 @@ public abstract class BaseDeliveryController
 	 */
 	protected static List executeQuery(Database db, String query, List params) throws Exception
 	{
-		List results = new ArrayList();
-		results = Collections.list(createQuery(db, query, params).execute(Database.ReadOnly));
-		return results;
+		List resultList = new ArrayList();
+		
+		OQLQuery oql = createQuery(db, query, params);
+		QueryResults results = oql.execute(Database.ReadOnly);
+		resultList = Collections.list(results);
+		
+		results.close();
+		oql.close();
+
+		return resultList;
 	}
          
 	/**

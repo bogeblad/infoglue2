@@ -203,7 +203,10 @@ public class LanguageDeliveryController extends BaseDeliveryController
         {
         	language = (Language)results.next();
         }
-            
+          
+		results.close();
+		oql.close();
+
         return (language == null) ? null : language.getValueObject();	
 	}
 	
@@ -235,6 +238,9 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				languageVO = language.getValueObject();
 			}
 			
+			results.close();
+			oql.close();
+
 			CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
 		}
 
@@ -270,6 +276,9 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				languageVO = language.getValueObject();
 			}
 			
+			results.close();
+			oql.close();
+
 			CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
 		}
 
@@ -307,6 +316,9 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				languageVO = language.getValueObject();
             }
 			
+			results.close();
+			oql.close();
+
 			CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
 		}
 		
@@ -414,6 +426,9 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				languageVO = language.getValueObject();
 	        }
             
+			results.close();
+			oql.close();
+
 			CacheController.cacheObject("languageCache", key, languageVO);
 		}
 		

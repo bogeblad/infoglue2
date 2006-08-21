@@ -283,6 +283,9 @@ public class ContentVersionController extends BaseController
         	resultList.add(contentVersion);
         }
     	
+		results.close();
+		oql.close();
+
 		return resultList;
     }
 	
@@ -361,6 +364,9 @@ public class ContentVersionController extends BaseController
 			}
 		}
     	
+		results.close();
+		oql.close();
+
 		getLogger().info("getLatestContentVersionWithParent done...");
 		
 		return resultList;
@@ -540,7 +546,10 @@ public class ContentVersionController extends BaseController
             	contentVersionVO = contentVersion.getValueObject();
             }
             
-            commitTransaction(db);
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
         }
         catch(Exception e)
         {
@@ -592,7 +601,10 @@ public class ContentVersionController extends BaseController
         {
         	contentVersion = (ContentVersion)results.next();
         }
-            
+		
+		results.close();
+		oql.close();
+		
 		return contentVersion;
     }
 
@@ -873,6 +885,9 @@ public class ContentVersionController extends BaseController
 	        	contentVersionVOList.add(contentVersion.getValueObject());
 	        }
 			
+			results.close();
+			oql.close();
+
             commitTransaction(db);            
         }
         catch(Exception e)
@@ -905,7 +920,10 @@ public class ContentVersionController extends BaseController
 	        {
 	        	contentVersion = (ContentVersion)results.next();
 	        }
-			
+
+			results.close();
+			oql.close();
+
             commitTransaction(db);            
         }
         catch(Exception e)
@@ -940,7 +958,10 @@ public class ContentVersionController extends BaseController
 	        	contentVersion = (ContentVersion)results.next();
 	        }
 			
-            commitTransaction(db);            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);            
         }
         catch(Exception e)
         {
@@ -971,6 +992,9 @@ public class ContentVersionController extends BaseController
         	contentVersion = (ContentVersion)results.next();
         }
             
+		results.close();
+		oql.close();
+
 		return contentVersion;
     }
 
@@ -1002,7 +1026,10 @@ public class ContentVersionController extends BaseController
             	contentVersionVO = contentVersion.getValueObject();
             }
             
-            commitTransaction(db);
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
         }
         catch(Exception e)
         {
@@ -1038,6 +1065,9 @@ public class ContentVersionController extends BaseController
         	contentVersionVO = contentVersion.getValueObject();
         }
     	
+		results.close();
+		oql.close();
+
 		return contentVersionVO;
     }
 

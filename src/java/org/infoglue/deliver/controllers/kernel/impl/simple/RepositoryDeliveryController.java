@@ -83,6 +83,9 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         	repositoryVO = repository.getValueObject();
         }
 
+		results.close();
+		oql.close();
+
 		if(repositoryVO != null)
 			CacheController.cacheObject("masterRepository", "masterRepository", repositoryVO);
 		
@@ -107,6 +110,9 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            cachedRepositories.add(repository.getValueObject());
 	        }
 	        
+	        results.close();
+			oql.close();
+
 			if(cachedRepositories.size() > 0)
 				CacheController.cacheObject("masterRepository", "allDNSRepositories", cachedRepositories);
 		}
@@ -221,6 +227,9 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 			RepositoryVO repositoryVO = repository.getValueObject();
 			repositoryVOList.add(repositoryVO);
 		}
+
+		results.close();
+		oql.close();
 
 		return repositoryVOList;	
 	}

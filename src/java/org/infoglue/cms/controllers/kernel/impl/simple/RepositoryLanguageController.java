@@ -124,6 +124,9 @@ public class RepositoryLanguageController extends BaseController
                 repositoryLanguageList.add(repositoryLanguage.getValueObject());
             }
 
+			results.close();
+			oql.close();
+
             ceb.throwIfNotEmpty();
             commitTransaction(db);
         }
@@ -197,6 +200,9 @@ public class RepositoryLanguageController extends BaseController
             repositoryLanguageList.add(repositoryLanguage);
         }
    
+		results.close();
+		oql.close();
+
         return repositoryLanguageList;
     }
 	
@@ -263,6 +269,9 @@ public class RepositoryLanguageController extends BaseController
             repositoryLanguageList.add(repositoryLanguage);
         }
    
+		results.close();
+		oql.close();
+
         return repositoryLanguageList;
     }
     

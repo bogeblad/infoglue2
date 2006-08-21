@@ -231,6 +231,8 @@ public class ServiceDefinitionController extends BaseController
 				serviceDefinition = (ServiceDefinition)results.next();
 			}
 
+			results.close();
+			oql.close();
 		}
 		catch(Exception e)
 		{
