@@ -436,7 +436,10 @@ public class CmsPropertyHandler
 
 	public static String getOperatingMode()
 	{
-	    return operatingMode; //getProperty("operatingMode"); Concurrency issues...
+		if(operatingMode == null)
+			return getProperty("operatingMode");
+		else
+			return operatingMode; //getProperty("operatingMode"); Concurrency issues...
 	}
 	
 	//TODO - refresh if changed....
