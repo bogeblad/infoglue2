@@ -23,10 +23,13 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.expireCacheAutomatically" "expireCacheAutomatically" "$!expireCacheAutomatically")</td>
 	</tr>
 	<tr>
-		<td>#editPropertyField("ServerNode.property.cacheExpireInterval" "cacheExpireInterval" "$this.getPropertyValue('cacheExpireInterval')" "51" "$!serverNodeId" "$!serverNodeId")</td>
+		<td>#editPropertyField("ServerNode.property.cacheExpireInterval" "cacheExpireInterval" "$this.getPropertyValue('cacheExpireInterval')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editPropertyField("ServerNode.property.session.timeout" "session.timeout" "$this.getPropertyValue('session.timeout')" "51" "$!serverNodeId" "$!serverNodeId")</td>
+		<td>#editPropertyField("ServerNode.property.deliverRequestTimeout" "deliverRequestTimeout" "$this.getPropertyValue('deliverRequestTimeout')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#editPropertyField("ServerNode.property.session.timeout" "session.timeout" "$this.getPropertyValue('session.timeout')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.compressPageCache" "compressPageCache" "$this.getPropertyValue('compressPageCache')")</td>
@@ -35,10 +38,10 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.compressPageResponse" "compressPageResponse" "$this.getPropertyValue('compressPageResponse')")</td>
 	</tr>
 	<tr>
-		<td>#editPropertyField("ServerNode.property.siteNodesToRecacheOnPublishing" "siteNodesToRecacheOnPublishing" "$this.getPropertyValue('siteNodesToRecacheOnPublishing')" "51" "$!serverNodeId" "$!serverNodeId")</td>
+		<td>#editPropertyField("ServerNode.property.siteNodesToRecacheOnPublishing" "siteNodesToRecacheOnPublishing" "$this.getPropertyValue('siteNodesToRecacheOnPublishing')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editPropertyField("ServerNode.property.recachePublishingMethod" "recachePublishingMethod" "$this.getPropertyValue('recachePublishingMethod')" "51" "$!serverNodeId" "$!serverNodeId")</td>
+		<td>#editPropertyField("ServerNode.property.recachePublishingMethod" "recachePublishingMethod" "$this.getPropertyValue('recachePublishingMethod')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.recacheUrl" "recacheUrl" "$this.getPropertyValue('recacheUrl')" "51" "$!serverNodeId")</td>
@@ -419,7 +422,7 @@
 		<td>#editPropertyField("ServerNode.property.casValidateUrl" "deliver_casValidateUrl" "$this.getPropertyValue('deliver', 'casValidateUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
-		<td>#editPropertyField("ServerNode.property.casServiceUrl" "deliver_casServiceUrl" "$this.getPropertyValue('deliver', 'casServiceUrl')" "51" "$!serverNodeId" "$!serverNodeId")</td>
+		<td>#editPropertyField("ServerNode.property.casServiceUrl" "deliver_casServiceUrl" "$this.getPropertyValue('deliver', 'casServiceUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.casLogoutUrl" "deliver_casLogoutUrl" "$this.getPropertyValue('deliver', 'casLogoutUrl')" "51" "$!serverNodeId")</td>

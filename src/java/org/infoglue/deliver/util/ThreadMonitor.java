@@ -65,8 +65,9 @@ public class ThreadMonitor implements Runnable
 		this.message = message;
 		this.kill = kill;
 		
-		watcherThread.start();
-		
+		if(millis > 0)
+			watcherThread.start();
+
 		// Hack - pause a bit to let the watcher thread get started.
 		/*
 		try

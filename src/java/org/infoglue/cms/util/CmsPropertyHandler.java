@@ -262,7 +262,7 @@ public class CmsPropertyHandler
 		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
 		if(value != null)
 		{
-			return value;
+			return value.trim();
 		}
 	    
 		Timer timer = new Timer();
@@ -321,10 +321,11 @@ public class CmsPropertyHandler
 	        //System.out.println("Property value: " + value);
 	    }
 
-	    //try{throw new Exception("APA");}catch(Exception e){e.printStackTrace();}
-
 	    if((value == null || value.indexOf(key) > -1) && defaultValue != null)
 	    	value = defaultValue;
+	    
+	    if(value != null)
+	    	value = value.trim();
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
 	    
@@ -701,6 +702,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("cacheExpireInterval", true, "1800");
 	}
 
+	public static String getDeliverRequestTimeout()
+	{
+	    return getServerNodeProperty("deliverRequestTimeout", true, "60000");
+	}
+	
 	public static String getSessionTimeout()
 	{
 	    return getServerNodeProperty("session.timeout", true, "1800");

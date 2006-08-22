@@ -179,8 +179,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	getLogger().info("************************************************");
     	
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
-    		tk = new ThreadMonitor(60000, request, "Page view took to long!", true);
-
+    		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
+    	
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	
 		beginTransaction(dbWrapper.getDatabase());
@@ -346,7 +346,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		getLogger().info("************************************************");
 		
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
-    		tk = new ThreadMonitor(60000, request, "Page view took to long!", true);
+    		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
 
 		DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
