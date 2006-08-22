@@ -20,6 +20,10 @@ Abbreviated Changelog from 2.3.5 Final
 - Changed ViewPage.action so if the user is authenticated by the container it at least asks the authentication module if it's ok.
 - Added a protectedRediect which may be used later for container managed auth.
 - Made it possible to dictate for the delivery engine from a component that a page should be trimmed before sent to the client. This means components returning xml as a result don't have to be written on one line to avoid invalid xml any more. 
+- Completed all classes which uses OQLQuery with closing of OQL and QueryResults object. Fixes issues with max cursors in Oracle and releases resources better.
+- Improved mydesktop so any workflows with faulty definitions are not loaded and an warning message are shown next to them.
+- Added failcheck for very old version of InfoGlue Databases in validation code
+- Enabled user to set new property controlling requests timeout in deliverWorking and preview. Also made system properties come back trimmed so extra spaces are removed. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
