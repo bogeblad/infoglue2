@@ -69,6 +69,11 @@
 	##<script type="text/javascript" src="applications/HTMLArea/InfoGlueHTMLArea.js"></script>
 	##<script type="text/javascript" src="applications/HTMLArea/htmlarea.js"></script>
 
+	<link rel="stylesheet" type="text/css" media="all" href="applications/jscalendar/skins/aqua/theme.css" title="aqua" />
+	<script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/lang/calendar-en.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/calendar-setup.js"></script>
+
 	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
@@ -91,6 +96,12 @@
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />	
 	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
+	
+	<link rel="stylesheet" type="text/css" media="all" href="applications/jscalendar/skins/aqua/theme.css" title="aqua" />
+	<script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/lang/calendar-en.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/calendar-setup.js"></script>
+	
 	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
@@ -619,7 +630,19 @@
     #end
   #end
   <br/>
-  <input type="text" $readOnly class="$className" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar" onclick="javascript:openDatePopup(event, '$url', 'Calendar');"><img src="images/calendar.gif" border="0" /></a>
+  <input type="text" $readOnly class="$className" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar_$fieldName" id="calendar_$fieldName" aonclick="javascript:openDatePopup(event, '$url', 'Calendar');"><img src="images/calendar.gif" border="0" /></a>
+  <script type="text/javascript">
+    Calendar.setup({
+	        inputField     :    "$fieldName",     		// id of the input field
+	        ifFormat       :    "%Y-%m-%d %H:%M",      	// format of the input field
+	        button         :    "calendar_$fieldName",  // trigger for the calendar (button ID)
+	        align          :    "BR",           		// alignment (defaults to "Bl")
+	        singleClick    :    true,
+	        firstDay  	   : 	1,
+	        showsTime	   :    true,
+	        timeFormat     :    "24"
+	});
+  </script>
 #end
 
 
