@@ -24,6 +24,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Improved mydesktop so any workflows with faulty definitions are not loaded and an warning message are shown next to them.
 - Added failcheck for very old version of InfoGlue Databases in validation code
 - Enabled user to set new property controlling requests timeout in deliverWorking and preview. Also made system properties come back trimmed so extra spaces are removed. 
+- Updated admin tools with a new date picker (jscalendar from dynarch). Much smoother handling and skinnable.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
