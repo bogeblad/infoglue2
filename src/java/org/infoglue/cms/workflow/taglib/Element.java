@@ -126,10 +126,14 @@ class Element
 	 * @param condition the condition to check.
 	 * @return the current element.
 	 */
-	public Element addAttribute(final String name, final String value, final boolean condition)
+	public Element addAttribute(final String name, String value, final boolean condition)
 	{
 		if(condition && value != null)
 		{
+			Object o = (Object)attributes.get(name);
+			if(o != null && o instanceof String)
+				value = o + " " + value;
+			
 			attributes.put(name, value);
 		}
 		return this;

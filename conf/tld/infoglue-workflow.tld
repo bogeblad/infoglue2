@@ -71,6 +71,11 @@
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
+			<name>onclick</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
 			<name>idAttr</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>

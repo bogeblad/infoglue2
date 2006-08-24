@@ -70,4 +70,9 @@ public class SubmitTag extends ElementTag
 	{
 		getElement().addAttribute("value", value);
     }
+	
+	public void setOnclick(final String onclick)
+	{
+		getElement().addAttribute("onclick", onclick);
+	}
 }

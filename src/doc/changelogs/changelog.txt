@@ -25,6 +25,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added failcheck for very old version of InfoGlue Databases in validation code
 - Enabled user to set new property controlling requests timeout in deliverWorking and preview. Also made system properties come back trimmed so extra spaces are removed. 
 - Updated admin tools with a new date picker (jscalendar from dynarch). Much smoother handling and skinnable.
+- Made it possible to set onclick on submit buttons used in workflows.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
