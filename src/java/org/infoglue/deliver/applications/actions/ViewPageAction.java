@@ -231,7 +231,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            if (actionExecuted) 
 	            {
 	                getLogger().info("---> PortletAction was executed, returning NONE as a redirect has been issued");
-	                getLogger().warn("No statistics have been run for this request");
+	                getLogger().info("No statistics have been run for this request");
 	                isUserRedirected = true;
 	                return NONE;
 	            }
@@ -396,7 +396,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            if (actionExecuted) 
 	            {
 	                getLogger().info("---> PortletAction was executed, returning NONE as a redirect has been issued");
-	                getLogger().warn("No statistics have been run for this request");
+	                getLogger().info("No statistics have been run for this request");
 	                isUserRedirected = true;
 	                return NONE;
 	            }
