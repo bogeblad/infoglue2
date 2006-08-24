@@ -148,7 +148,10 @@ public class CategorySelector extends ElementTag
 		try 
 		{
 			final CategoryVO categoryVO = CategoryController.getController().findByPath(path);
-			return CategoryController.getController().findWithChildren(categoryVO.getId());
+			if(categoryVO != null)
+				return CategoryController.getController().findWithChildren(categoryVO.getId());
+			else
+				throw new Exception("No category with path " + path + " was found.");
 		} 
 		catch(Exception e) 
 		{
