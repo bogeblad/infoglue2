@@ -107,7 +107,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	
 	public String getCurrentURL()
 	{
-		return this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString();
+		return this.getRequest().getRequestURL() + (this.getRequest().getQueryString() == null ? "" : "?" + this.getRequest().getQueryString());
 	}
 
 	public String getOriginalFullURL()
@@ -120,7 +120,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     	if(originalQueryString == null || originalQueryString.length() == 0)
     		originalQueryString = this.getRequest().getQueryString();
 
-    	return originalRequestURL + "?" + originalQueryString;
+    	return originalRequestURL + (originalQueryString == null ? "" : "?" + originalQueryString);
 	}
 
 	/**
