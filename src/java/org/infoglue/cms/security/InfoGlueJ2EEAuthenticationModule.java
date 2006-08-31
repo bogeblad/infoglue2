@@ -218,9 +218,9 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 		}
 		
 		logger.info("returnAddress:" + returnAddress);
-		logger.info("Directing user to [" + request.getContextPath() + "/" + loginUrl + "]");
+		logger.info("Directing user to [" + request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "/" : "") + loginUrl + "]");
 		
-		return request.getContextPath() + "/" + loginUrl + "?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
+		return request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "/" : "") + loginUrl + "?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
 	}
 	
 	/**
