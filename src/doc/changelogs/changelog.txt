@@ -29,6 +29,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added mailer-taglib in web.xml i deliver
 - Made fix to avoid ?null after login when no request parameters are available.
 - Made module a bit better to avoid dubble / in context
+- Made it possible to control what link-classes are available in the FCKEditor from the javascript-init. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
