@@ -90,6 +90,53 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	}
 	
 	/**
+	 * This method gets a Context - either by an anonymous bind or a real bind
+	 */
+	
+	public DirContext getContext() throws Exception
+	{
+		//DirContext ctx = null;
+		
+		//try
+		//{
+		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
+		String ldapVersion			= this.extraProperties.getProperty("ldapVersion");
+		String socketFactory		= this.extraProperties.getProperty("socketFactory");
+		String authenticationMethod	= this.extraProperties.getProperty("authenticationMethod");
+		String connectionName		= this.extraProperties.getProperty("connectionName");
+		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
+
+		// Create a Hashtable object.
+		Hashtable env = new Hashtable();
+		
+		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+
+		env.put(Context.PROVIDER_URL, connectionURL);
+		if(ldapVersion != null && !ldapVersion.equals("3"))
+			env.put("java.naming.ldap.version", ldapVersion); 		
+		else
+			env.put("java.naming.ldap.version", "3"); 
+		
+		if(socketFactory != null && !socketFactory.equals(""))
+			env.put("java.naming.ldap.factory.socket", "org.infoglue.cms.security.DummySSLSocketFactory");
+		
+		if(authenticationMethod != null && authenticationMethod.equals("none"))
+		{
+			env.put(Context.SECURITY_AUTHENTICATION, "none");
+		}
+		else
+		{
+			env.put(Context.SECURITY_AUTHENTICATION, "simple");
+			env.put(Context.SECURITY_PRINCIPAL, connectionName);
+			env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
+		}
+				
+		DirContext ctx = new InitialDirContext(env); 
+		
+		return ctx;
+	}
+	
+	/**
 	 * Gets an authorized InfoGluePrincipal 
 	 */
 	public InfoGluePrincipal getAuthorizedInfoGluePrincipal(String userName) throws Exception
@@ -582,32 +629,19 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	{
 	    logger.info("getRoles start....");
 		List roles = new ArrayList();
-		
-		DirContext ctx 		= null;
-		
-		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
-		String connectionName		= this.extraProperties.getProperty("connectionName");
-		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
+
 		String roleBase 			= this.extraProperties.getProperty("roleBase");
 		String rolesFilter 			= this.extraProperties.getProperty("rolesFilter");
 		String rolesAttributeFilter = this.extraProperties.getProperty("rolesAttributesFilter");
 		String roleNameAttribute 	= this.extraProperties.getProperty("roleNameAttribute");
 		String roleSearchScope 		= this.extraProperties.getProperty("roleSearchScope");
-		
-		// Create a Hashtable object.
-		Hashtable env = new Hashtable();
-		
-		env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, connectionURL);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, connectionName);
-		env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
-		
 
 		try 
 		{
-			ctx = new InitialDirContext(env); 
-		
+			DirContext ctx = getContext();
+			
+			logger.info("Connected...");
+
 			String baseDN = roleBase;
 			String searchFilter = "(cn=InfoGlue*)";
 			if(rolesFilter != null && rolesFilter.length() > 0)
@@ -684,11 +718,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	    
 		List users = new ArrayList();
 		
-		DirContext ctx 		= null;
-		
-		String connectionURL 			= this.extraProperties.getProperty("connectionURL");
-		String connectionName			= this.extraProperties.getProperty("connectionName");
-		String connectionPassword		= this.extraProperties.getProperty("connectionPassword");
 		String roleBase 				= this.extraProperties.getProperty("roleBase");
 		String userBase					= this.extraProperties.getProperty("userBase");
 		String userListSearch			= this.extraProperties.getProperty("userListSearch");
@@ -702,18 +731,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		String roleNameAttribute 		= this.extraProperties.getProperty("roleNameAttribute");
 		String userSearchScope 			= this.extraProperties.getProperty("userSearchScope");
 
-		// Create a Hashtable object.
-		Hashtable env = new Hashtable();
-		
-		env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, connectionURL);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, connectionName);
-		env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
-
 		try 
 		{
-			ctx = new InitialDirContext(env); 
+			DirContext ctx = getContext();
 		
 			String baseDN = userBase;
 			String searchFilter = "(CN=*)";
@@ -861,12 +881,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	{
 	    logger.info("--------getUsers(String roleName) start---------------");
 		List users = new ArrayList();
-
-		DirContext ctx 		= null;
 		
-		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
-		String connectionName		= this.extraProperties.getProperty("connectionName");
-		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
 		String roleBase 			= this.extraProperties.getProperty("roleBase");
 		String rolesFilter 			= this.extraProperties.getProperty("rolesFilter");
 		String rolesAttributeFilter = this.extraProperties.getProperty("rolesAttributesFilter");
@@ -875,20 +890,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		String userNameAttribute	= this.extraProperties.getProperty("userNameAttributeFilter");
 		String userBase 			= this.extraProperties.getProperty("userBase");
 		
-		// Create a Hashtable object.
-		Hashtable env = new Hashtable();
-		
-		env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, connectionURL);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, connectionName);
-		env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
-		
-
 		try 
 		{
-			ctx = new InitialDirContext(env); 
-		
+			DirContext ctx = getContext();
+
 			String baseDN = roleBase;
 			String searchFilter = "(cn=InfoGlue*)";
 			if(rolesFilter != null && rolesFilter.length() > 0)
@@ -1050,31 +1055,16 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	    logger.info("getGroups start....");
 		List groups = new ArrayList();
 		
-		DirContext ctx 		= null;
-		
-		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
-		String connectionName		= this.extraProperties.getProperty("connectionName");
-		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
 		String groupBase 			= this.extraProperties.getProperty("groupBase");
 		String groupsFilter 		= this.extraProperties.getProperty("groupsFilter");
 		String groupsAttributeFilter= this.extraProperties.getProperty("groupsAttributesFilter");
 		String groupNameAttribute 	= this.extraProperties.getProperty("groupNameAttribute");
 		String groupSearchScope 	= this.extraProperties.getProperty("groupSearchScope");
 		
-		// Create a Hashtable object.
-		Hashtable env = new Hashtable();
-		
-		env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, connectionURL);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, connectionName);
-		env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
-		
-
 		try 
 		{
-			ctx = new InitialDirContext(env); 
-		
+			DirContext ctx = getContext();
+
 			String baseDN = groupBase;
 			String searchFilter = "(cn=InfoGlue*)";
 			if(groupsFilter != null && groupsFilter.length() > 0)
@@ -1158,11 +1148,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	    logger.info("--------getGroupUsers(String groupName) start---------------");
 		List users = new ArrayList();
 
-		DirContext ctx 		= null;
-		
-		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
-		String connectionName		= this.extraProperties.getProperty("connectionName");
-		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
 		String groupBase 			= this.extraProperties.getProperty("groupBase");
 		String groupsFilter 			= this.extraProperties.getProperty("groupsFilter");
 		String groupsAttributeFilter = this.extraProperties.getProperty("groupsAttributesFilter");
@@ -1171,20 +1156,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		String userNameAttribute	= this.extraProperties.getProperty("userNameAttributeFilter");
 		String userBase 			= this.extraProperties.getProperty("userBase");
 		
-		// Create a Hashtable object.
-		Hashtable env = new Hashtable();
-		
-		env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, connectionURL);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, connectionName);
-		env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
-		
-
 		try 
 		{
-			ctx = new InitialDirContext(env); 
-		
+			DirContext ctx = getContext();
+
 			String baseDN = groupBase;
 			String searchFilter = "(cn=InfoGlue*)";
 			if(groupsFilter != null && groupsFilter.length() > 0)
