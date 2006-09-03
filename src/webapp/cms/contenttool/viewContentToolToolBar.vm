@@ -211,7 +211,7 @@
 <body class="contenttool">
 
 <!-- This is the toolbar --->
-<div style="left:1px; right:2px; position:absolute; top:1px; bottom:1px; visibility:visble; z-index:1">
+<div style="left:1px; right:2px; position:absolute; top:1px; bottom:1px; visibility:visible; z-index:1">
 <table class="contenttool" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"/></td>
@@ -276,7 +276,7 @@
 </div>
 
 <!-- This is the headline --->
-<div style="left:1px; right:0px; position:absolute; top:32px; bottom:1px; visibility:visble; z-index:0">
+<div style="left:1px; right:0px; position:absolute; top:32px; bottom:1px; visibility:visible; z-index:0">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"/></td>

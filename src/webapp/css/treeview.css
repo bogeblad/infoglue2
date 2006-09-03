@@ -33,7 +33,7 @@ a.branch, a.branch:hover, a.branch:active {
 
 .tree-item a.selected {
 	background: black;
-	font: bold;
+	font-weight: bold;
 	color: white;
 }
 
@@ -56,7 +56,7 @@ a.branch, a.branch:hover, a.branch:active {
 	border: 0px;
 	margin:	0;
 	width:	19px;
-	height	16px;
+	height:	16px;
 }
 
 .tree-item .tree-icon {

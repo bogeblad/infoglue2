@@ -174,7 +174,7 @@
 <body class="managementtool">
 
 <!-- This is the toolbar --->
-<div style="border-right: 1px solid white; LEFT:1px; RIGHT:0px; position:absolute; TOP:0px; BOTTOM:1px; visibility:visble; z-index:0">
+<div style="border-right: 1px solid white; LEFT:1px; RIGHT:0px; position:absolute; TOP:0px; BOTTOM:1px; visibility:visible; z-index:0">
 <table class="managementtool" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
@@ -209,7 +209,7 @@
 </div>
 
 <!-- This is the headline --->
-<div style="border-right: 1px solid white; LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:0px; visibility:visble; z-index:0">
+<div style="border-right: 1px solid white; LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:0px; visibility:visible; z-index:0">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr class="darkblue">
 	<td class="titleField">$ui.getString($title)</td>

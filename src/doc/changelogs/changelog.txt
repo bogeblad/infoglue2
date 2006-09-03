@@ -30,6 +30,8 @@ Abbreviated Changelog from 2.3.5 Final
 - Made fix to avoid ?null after login when no request parameters are available.
 - Made module a bit better to avoid dubble / in context
 - Made it possible to control what link-classes are available in the FCKEditor from the javascript-init. 
+- Changed so the JNDIAuthorizationModule supports SSL and also anonymous bind etc.
+- Fixed some css-mistakes
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

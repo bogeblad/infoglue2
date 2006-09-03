@@ -149,7 +149,7 @@
 <body class="structuretool">
 
 <!-- This is a layer making it impossible to click on the buttons while it is reloading --->
-<div id="lockLayer" style="LEFT:1px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:1px; visibility:visble; display: none; z-index:10" onclick="alert('You cannot perform actions now as the toolbar is reloading.');"> 
+<div id="lockLayer" style="LEFT:1px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:1px; visibility:visible; display: none; z-index:10" onclick="alert('You cannot perform actions now as the toolbar is reloading.');"> 
 <table class="structuretool" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
@@ -159,7 +159,7 @@
 
 
 <!-- This is the toolbar --->
-<div style="LEFT:1px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:1px; visibility:visble; z-index:1">
+<div style="LEFT:1px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:1px; visibility:visible; z-index:1">
 <table class="structuretool" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
@@ -225,7 +225,7 @@
 </div>
 
 <!-- This is the headline --->
-<div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:1px; visibility:visble; z-index:0">
+<div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:1px; visibility:visible; z-index:0">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>

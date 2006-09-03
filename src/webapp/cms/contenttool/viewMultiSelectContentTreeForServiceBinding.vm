@@ -377,7 +377,7 @@
 </tr>
 </table>
 
-<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:5px; visibility:visble; z-index:0">
+<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:5px; visibility:visible; z-index:0">
 <hr size=1 noshade>
 <small><font color="#666666">$ui.getString("tool.common.treestyleLabel"): <a style="color: #666666" href="javascript:changeTree('applet');">$ui.getString("tool.common.treestyleApplet")</a> | <a style="color: #666666" href="javascript:changeTree('html');">$ui.getString("tool.common.treestyleHTML")</a> </small></font>
 </div>

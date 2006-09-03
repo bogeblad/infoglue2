@@ -234,7 +234,7 @@
 #treeSelector("Content")
 
 #*
-<div style="right:10px; left:10px; position:absolute; bottom:2px; visibility:visble; z-index:0">
+<div style="right:10px; left:10px; position:absolute; bottom:2px; visibility:visible; z-index:0">
 <small>
 	<font color="#666666" face="Verdana">Versions: 
 	#if ($showVersions == "yes")
