@@ -32,6 +32,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Made it possible to control what link-classes are available in the FCKEditor from the javascript-init. 
 - Changed so the JNDIAuthorizationModule supports SSL and also anonymous bind etc.
 - Fixed some css-mistakes
+- Improved JNDIAuthorizationModule with several aspects including reuse of bind-operations, case insensitivity and some failover
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

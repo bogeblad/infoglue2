@@ -95,10 +95,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	public DirContext getContext() throws Exception
 	{
-		//DirContext ctx = null;
-		
-		//try
-		//{
 		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
 		String ldapVersion			= this.extraProperties.getProperty("ldapVersion");
 		String socketFactory		= this.extraProperties.getProperty("socketFactory");
@@ -139,6 +135,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	/**
 	 * Gets an authorized InfoGluePrincipal 
 	 */
+	
 	public InfoGluePrincipal getAuthorizedInfoGluePrincipal(String userName) throws Exception
 	{
 		InfoGluePrincipal infogluePrincipal = null;
@@ -155,36 +152,116 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		else
 		{	
-			Map userAttributes = getUserAttributes(userName);
-			List roles = getRoles(userName);
-			List groups = getGroups(userName);
+			DirContext ctx = getContext();
+			
+			Map userAttributes = getUserAttributes(userName, ctx);
+			List roles = getRoles(userName, ctx);
+			List groups = getGroups(userName, ctx);
 			
 			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator);
+			
+			ctx.close();
 		}
 		
 		return infogluePrincipal;
 	}
-	
+
 	/**
 	 * Gets an authorized InfoGlueRole.
 	 */
 	
 	public InfoGlueRole getAuthorizedInfoGlueRole(String roleName) throws Exception
 	{
+		InfoGlueRole role = null;
+		
+		DirContext ctx = getContext();
+		
+		role = getAuthorizedInfoGlueRole(roleName, ctx);
+		
+		ctx.close();
+		
+		return role;
+	}
+	
+	/**
+	 * Gets an authorized InfoGlueRole.
+	 */
+	
+	public InfoGlueRole getAuthorizedInfoGlueRole(String roleName, DirContext ctx) throws Exception
+	{
+		logger.info("\n\n\n ---------- getAuthorizedInfoGlueRole starting ---------\n\n\n");
+		
 		InfoGlueRole infoglueRole = null;
 
-		Collection roles = getRoles();
-		Iterator rolesIterator = roles.iterator();
-		while(rolesIterator.hasNext())
+		String roleBase 			= this.extraProperties.getProperty("roleBase").toLowerCase().trim();
+		String rolesFilter 			= this.extraProperties.getProperty("rolesFilter");
+		String rolesAttributeFilter = this.extraProperties.getProperty("rolesAttributesFilter");
+		String roleNameAttribute 	= this.extraProperties.getProperty("roleNameAttribute");
+		String roleSearchScope 		= this.extraProperties.getProperty("roleSearchScope");
+
+		try 
 		{
-			InfoGlueRole candidate = (InfoGlueRole)rolesIterator.next();
-			if(candidate.getName().equals(roleName))
-			{
-				infoglueRole = candidate;
-				break;
-			}
-		}
+			logger.info("Connected...");
+
+			String baseDN = roleBase;
+			String searchFilter = "(cn=" + roleName + ")";
+			if(roleName.indexOf("cn=") > -1)
+				searchFilter = "(" + roleName + ")";
 				
+			logger.info("searchFilter:" + searchFilter);
+			logger.info("roleSearchScope:" + roleSearchScope);
+			
+			String rolesAttribute = "distinguishedName";
+			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
+				rolesAttribute = rolesAttributeFilter;
+	
+			String[] attrID = rolesAttribute.split(",");
+			logger.info("attrID:" + attrID);
+			
+			SearchControls ctls = new SearchControls(); 
+
+			int roleSearchScopeInt = SearchControls.SUBTREE_SCOPE;
+			if(roleSearchScope != null && roleSearchScope.equalsIgnoreCase("ONELEVEL_SCOPE"))
+			    roleSearchScopeInt = SearchControls.ONELEVEL_SCOPE;
+			else if(roleSearchScope != null && roleSearchScope.equalsIgnoreCase("OBJECT_SCOPE"))
+			    roleSearchScopeInt = SearchControls.OBJECT_SCOPE;
+			    
+		    ctls.setSearchScope(roleSearchScopeInt);
+			ctls.setReturningAttributes(attrID);
+	
+			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
+
+			if(!answer.hasMore())
+				throw new Exception("The was no groups found in the JNDI Data Source.");
+		
+			logger.info("-----------------------\n");
+			while (answer.hasMore()) 
+			{
+				SearchResult sr = (SearchResult)answer.next();
+				logger.info("Role:" + sr.toString() + "\n");
+				
+				Attributes attributes = sr.getAttributes();
+				logger.info("attributes:" + attributes.toString());
+				logger.info("roleNameAttribute:" + roleNameAttribute);
+				Attribute attribute = attributes.get(roleNameAttribute);
+				logger.info("attribute:" + attribute.toString());
+				NamingEnumeration allEnum = attribute.getAll();
+				while(allEnum.hasMore())
+				{
+					String groupName = (String)allEnum.next();
+					logger.info("roleName:" + groupName);
+					
+					infoglueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
+				}
+				
+			} 
+			logger.info("-----------------------\n");
+		}
+		catch (Exception e) 
+		{
+			logger.info("Could not find Role: " + e.getMessage());
+		}
+
 		return infoglueRole;
 	}
 	
@@ -197,7 +274,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		return getRoles(userName);
 	}
 
-	
+
 	/**
 	 * Returns an attribute set which this user has. 
 	 *
@@ -209,13 +286,29 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	protected Map getUserAttributes(String userName) throws NamingException, Exception
 	{
+		Map attributes = null;
+		
+		DirContext ctx = getContext();
+		attributes = getUserAttributes(userName, getContext());
+		
+		ctx.close();
+		
+		return attributes;
+	}
+	
+	/**
+	 * Returns an attribute set which this user has. 
+	 *
+	 * @param context The directory context we are searching
+	 * @param user The User to be checked
+	 *
+	 * @exception NamingException if a directory server error occurs
+	 */
+	
+	protected Map getUserAttributes(String userName, DirContext ctx) throws NamingException, Exception
+	{
 		Map userAttributes = new HashMap();
 		
-		DirContext ctx 		= null;
-		
-		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
-		String connectionName		= this.extraProperties.getProperty("connectionName");
-		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
 		String roleBase 			= this.extraProperties.getProperty("roleBase");
 		String userBase				= this.extraProperties.getProperty("userBase");
 		String userSearch			= this.extraProperties.getProperty("userSearch");
@@ -227,24 +320,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		String userMailAttributeFilter	= this.extraProperties.getProperty("userMailAttributeFilter", "mail");
 		String memberOfAttributeFilter	= this.extraProperties.getProperty("memberOfAttributeFilter", "memberOf");
 		String roleFilter				= this.extraProperties.getProperty("roleFilter", "InfoGlue");
-
-		//this.extraProperties.list(System.out);
-		logger.info("connectionURL:" + connectionURL);
-		logger.info("connectionName:" + connectionName);
-		logger.info("connectionPassword:" + connectionPassword);
-		
-		// Create a Hashtable object.
-		Hashtable env = new Hashtable();
-		
-		env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, connectionURL);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, connectionName);
-		env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
-		
+				
 		try 
 		{
-			ctx = new InitialDirContext(env); 
+			//DirContext ctx = getContext(); 
 
 			String baseDN = userBase;
 			
@@ -319,7 +398,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				//logger.info("memberOfAttribute:" + memberOfAttribute.toString());
 
 			} 
-			ctx.close();
 		}
 		catch (Exception e) 
 		{
@@ -329,7 +407,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 
 		return userAttributes;
 	}
-	
+
 	/**
 	 * Return a List of roles associated with the given User. Any
 	 * roles present in the user's directory entry are supplemented by
@@ -344,6 +422,31 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	protected List getRoles(String userName) throws NamingException, Exception 
 	{
+		List roles = null;
+		
+		DirContext ctx = getContext();
+		
+		roles = getRoles(userName, ctx);
+	
+		ctx.close();
+		
+		return roles;
+	}
+	
+	/**
+	 * Return a List of roles associated with the given User. Any
+	 * roles present in the user's directory entry are supplemented by
+	 * a directory search. If no roles are associated with this user,
+	 * a zero-length List is returned.
+	 *
+	 * @param context The directory context we are searching
+	 * @param user The User to be checked
+	 *
+	 * @exception NamingException if a directory server error occurs
+	 */
+	
+	protected List getRoles(String userName, DirContext ctx) throws NamingException, Exception 
+	{
 		logger.info("**************************************************");
 		logger.info("*In JNDI version								 *");
 		logger.info("**************************************************");
@@ -351,38 +454,16 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		
 		List roles = new ArrayList();
 		
-		DirContext ctx 		= null;
-		
-		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
-		String connectionName		= this.extraProperties.getProperty("connectionName");
-		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
-		String roleBase 			= this.extraProperties.getProperty("roleBase");
-		String userBase				= this.extraProperties.getProperty("userBase");
+		String roleBase 			= this.extraProperties.getProperty("roleBase").toLowerCase().trim();
+		String userBase				= this.extraProperties.getProperty("userBase").toLowerCase().trim();
 		String userSearch			= this.extraProperties.getProperty("userSearch");
 		String memberOfAttribute	= this.extraProperties.getProperty("memberOfAttributeFilter");
 		String rolesAttributeFilter = this.extraProperties.getProperty("rolesAttributesFilter");
 		String roleNameAttribute 	= this.extraProperties.getProperty("roleNameAttribute");
 		String roleFilter			= this.extraProperties.getProperty("roleFilter", "InfoGlue");
-
-		logger.info("connectionURL:" + connectionURL);
-		logger.info("connectionName:" + connectionName);
-		logger.info("connectionPassword:" + connectionPassword);
-		logger.info("roleBase:" + roleBase);
-		logger.info("userBase:" + userBase);
-		
-		// Create a Hashtable object.
-		Hashtable env = new Hashtable();
-		
-		env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, connectionURL);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, connectionName);
-		env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
 		
 		try 
 		{
-			ctx = new InitialDirContext(env); 
-
 			String baseDN = userBase;
 			
 			String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
@@ -394,21 +475,25 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			String searchFilter = "(CN=" + userName +")";
 			if(userSearch != null && userSearch.length() > 0)
 				searchFilter = userSearch.replaceAll("\\{1\\}", userName);
+			searchFilter = searchFilter.toLowerCase().trim();
 			
 			String memberOfAttributeFilter = "memberOf";
 			if(memberOfAttribute != null && memberOfAttribute.length() > 0)
 			    memberOfAttributeFilter = memberOfAttribute;
+			memberOfAttributeFilter = memberOfAttributeFilter.toLowerCase().trim();
 			
 			String[] attrID = memberOfAttributeFilter.split(",");
 			
 			String rolesAttribute = "distinguishedName";
 			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
 				rolesAttribute = rolesAttributeFilter;
-			
+			rolesAttribute = rolesAttribute.toLowerCase().trim();
+
 			logger.info("baseDN:" + baseDN);
 			logger.info("searchFilter:" + searchFilter);
 			logger.info("attrID" + attrID);
-			
+			logger.info("roleBase:" + roleBase);
+
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 			ctls.setReturningAttributes(attrID);
@@ -416,7 +501,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
 			if(!answer.hasMore())
 				throw new Exception("The user with userName=" + userName + " was not found in the JNDI Data Source.");
-				
+			
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
@@ -430,12 +515,12 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				{
 					Object roleNameObject = allEnum.next();
 					
-					String roleName = roleNameObject.toString();
-					logger.info("roleName:" + roleName);
-					logger.info("roleBase:" + roleBase);
+					String fullRoleName = roleNameObject.toString().toLowerCase().trim();
+					String roleName = fullRoleName;
+					logger.info("roleName:" + fullRoleName);
 					
-					logger.info("indexOf:" + roleName.indexOf(roleBase));
-					if(roleBase != null && roleName.indexOf(roleBase) > -1)
+					logger.info("indexOf:" + fullRoleName.indexOf(roleBase));
+					if(roleBase != null && fullRoleName.indexOf(roleBase) > -1)
 					{
 					    roleName = roleName.substring(0, roleName.indexOf(roleBase));
 					    roleName = roleName.substring(0, roleName.lastIndexOf(","));
@@ -448,6 +533,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					logger.info("roleNameAttribute:" + roleNameAttribute);
 					logger.info("roleName:" + roleName);
 					logger.info("indexOf:" + roleName.indexOf(roleNameAttribute));
+					
 					if(roleNameAttribute != null && roleName.indexOf(roleNameAttribute) > -1)
 					{
 					    roleName = roleName.substring(roleName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
@@ -457,16 +543,17 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					logger.info("roleName:" + roleName);
 					logger.info("roleBase:" + roleBase);
 					logger.info("*****************************");
+					
 					if(roleFilter.equalsIgnoreCase("*") || roleName.indexOf(roleFilter) > -1)
 					{
-					    InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source");
-						logger.info("Adding role.................:" + roleName);
+						InfoGlueRole infoGlueRole = getAuthorizedInfoGlueRole(roleName);
+					    //InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source");
+						logger.info("Adding role.................:" + fullRoleName);
 						roles.add(infoGlueRole);
 					}
 				}
 				
 			} 
-			ctx.close();
 		}
 		catch (Exception e) 
 		{
@@ -477,6 +564,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		return roles;
 	}
 
+	
 	/**
 	 * Return a List of roles associated with the given User. Any
 	 * roles present in the user's directory entry are supplemented by
@@ -491,18 +579,38 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	protected List getGroups(String userName) throws NamingException, Exception 
 	{
+		List groups = null;
+		
+		DirContext ctx = getContext();
+		
+		groups = getGroups(userName, ctx);
+		
+		ctx.close();
+		
+		return groups;
+	}
+	
+	/**
+	 * Return a List of roles associated with the given User. Any
+	 * roles present in the user's directory entry are supplemented by
+	 * a directory search. If no roles are associated with this user,
+	 * a zero-length List is returned.
+	 *
+	 * @param context The directory context we are searching
+	 * @param user The User to be checked
+	 *
+	 * @exception NamingException if a directory server error occurs
+	 */
+	
+	protected List getGroups(String userName, DirContext ctx) throws NamingException, Exception 
+	{
 		logger.info("**************************************************");
-		logger.info("*In JNDI version								 *");
+		logger.info("*In JNDI version								  *");
 		logger.info("**************************************************");
 		logger.info("userName:" + userName);
 		
 		List groups = new ArrayList();
 		
-		DirContext ctx 		= null;
-		
-		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
-		String connectionName		= this.extraProperties.getProperty("connectionName");
-		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
 		String groupBase 			= this.extraProperties.getProperty("groupBase");
 		String userBase				= this.extraProperties.getProperty("userBase");
 		String userSearch			= this.extraProperties.getProperty("userSearch");
@@ -511,25 +619,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		String groupNameAttribute 	= this.extraProperties.getProperty("groupNameAttribute");
 		String groupFilter			= this.extraProperties.getProperty("groupFilter", "InfoGlue");
 
-		logger.info("connectionURL:" + connectionURL);
-		logger.info("connectionName:" + connectionName);
-		logger.info("connectionPassword:" + connectionPassword);
 		logger.info("groupBase:" + groupBase);
 		logger.info("userBase:" + userBase);
 		
-		// Create a Hashtable object.
-		Hashtable env = new Hashtable();
-		
-		env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, connectionURL);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, connectionName);
-		env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
-		
 		try 
 		{
-			ctx = new InitialDirContext(env); 
-
 			String baseDN = userBase;
 			
 			String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
@@ -701,7 +795,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			logger.info("Could not find Groups: " + e.getMessage());
+			logger.info("Could not find Roles: " + e.getMessage());
 		}
 	    logger.info("getRoles end....");
 
@@ -745,10 +839,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				attributesFilter = userAttributesFilter;
 						
 			String[] attrID = attributesFilter.split(",");
-			
+
+			logger.info("attributesFilter" + attributesFilter);
 			logger.info("baseDN:" + baseDN);
 			logger.info("searchFilter:" + searchFilter);
-			logger.info("attrID" + attrID);
+			//logger.info("attrID" + attrID);
 						
 			SearchControls ctls = new SearchControls(); 
 
@@ -789,68 +884,82 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					logger.info("userFirstNameAttribute:" + userFirstNameAttribute.toString());
 					logger.info("userLastNameAttribute:" + userLastNameAttribute.toString());
 					logger.info("userMailAttribute:" + userMailAttribute.toString());
-					logger.info("memberOfAttribute:" + memberOfAttribute.toString());
-					logger.info("memberOfAttribute:" + memberOfAttribute.toString());
-					
 					
 					List roles = new ArrayList();
-					NamingEnumeration allEnum = memberOfAttribute.getAll();
-					while(allEnum.hasMore())
-					{
-						String groupName = (String)allEnum.next();
-						logger.info("groupName:" + groupName);
-						logger.info("roleBase:" + roleBase);
-						if(roleBase != null && groupName.indexOf(roleBase) > -1)
-						{
-						    groupName = groupName.substring(0, groupName.indexOf(roleBase));
-						    groupName = groupName.substring(0, groupName.lastIndexOf(","));
-						}
-						
-						logger.info("groupName:" + groupName);
-						if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
-						{
-						    logger.info("roleNameAttribute:" + roleNameAttribute);
-							logger.info("groupName:" + groupName);
-							logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
-							if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
-							{
-							    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
-							}
-							
-						    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
-						    roles.add(infoGlueRole);
-						}
-					}
-					
 					List groups = new ArrayList();
-					NamingEnumeration allGroupsEnum = memberOfGroupsAttribute.getAll();
-					while(allEnum.hasMore())
+
+					if(memberOfAttribute != null)
 					{
-						String groupName = (String)allEnum.next();
-						logger.info("groupName:" + groupName);
-						logger.info("roleBase:" + roleBase);
-						if(roleBase != null && groupName.indexOf(roleBase) > -1)
+						logger.info("memberOfAttribute:" + memberOfAttribute.toString());
+					
+						NamingEnumeration allEnum = memberOfAttribute.getAll();
+						while(allEnum.hasMore())
 						{
-						    groupName = groupName.substring(0, groupName.indexOf(roleBase));
-						    groupName = groupName.substring(0, groupName.lastIndexOf(","));
-						}
-						
-						logger.info("groupName:" + groupName);
-						if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
-						{
-						    logger.info("roleNameAttribute:" + roleNameAttribute);
+							String groupName = (String)allEnum.next();
 							logger.info("groupName:" + groupName);
-							logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
-							if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
+							logger.info("roleBase:" + roleBase);
+							if(roleBase != null && groupName.indexOf(roleBase) > -1)
 							{
-							    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
+							    groupName = groupName.substring(0, groupName.indexOf(roleBase));
+							    groupName = groupName.substring(0, groupName.lastIndexOf(","));
 							}
 							
-							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
-						    groups.add(infoGlueGroup);
+							logger.info("groupName:" + groupName);
+							if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
+							{
+							    logger.info("roleNameAttribute:" + roleNameAttribute);
+								logger.info("groupName:" + groupName);
+								logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
+								if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
+								{
+								    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
+								}
+								
+							    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
+							    roles.add(infoGlueRole);
+							}
 						}
 					}
-					
+					else
+					{
+						logger.info("No memberOfAttribute named :" + memberOfAttributeFilter + " was found.");
+					}
+
+					if(memberOfGroupsAttribute != null)
+					{
+						NamingEnumeration allGroupsEnum = memberOfGroupsAttribute.getAll();
+						while(allGroupsEnum.hasMore())
+						{
+							String groupName = (String)allGroupsEnum.next();
+							logger.info("groupName:" + groupName);
+							logger.info("roleBase:" + roleBase);
+							if(roleBase != null && groupName.indexOf(roleBase) > -1)
+							{
+							    groupName = groupName.substring(0, groupName.indexOf(roleBase));
+							    groupName = groupName.substring(0, groupName.lastIndexOf(","));
+							}
+							
+							logger.info("groupName:" + groupName);
+							if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
+							{
+							    logger.info("roleNameAttribute:" + roleNameAttribute);
+								logger.info("groupName:" + groupName);
+								logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
+								if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
+								{
+								    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
+								}
+								
+								InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
+							    groups.add(infoGlueGroup);
+							}
+						}
+					}
+					else
+					{
+						logger.info("No memberOfGroupsAttribute named :" + memberOfAttributeFilter + " was found.");
+					}
+
 					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, groups, false);
 					users.add(infoGluePrincipal);
 				}
@@ -877,47 +986,67 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		return users;
 	}
 
+	
 	public List getUsers(String roleName) throws Exception
 	{
-	    logger.info("--------getUsers(String roleName) start---------------");
+		List users = null;
+		
+		DirContext ctx = getContext();
+		
+		users = getUsers(roleName, ctx);
+		
+		ctx.close();
+		
+		return users;
+	}
+	
+	public List getUsers(String roleName, DirContext ctx) throws Exception
+	{
 		List users = new ArrayList();
 		
-		String roleBase 			= this.extraProperties.getProperty("roleBase");
+		String roleBase 			= this.extraProperties.getProperty("roleBase").toLowerCase().trim();
 		String rolesFilter 			= this.extraProperties.getProperty("rolesFilter");
 		String rolesAttributeFilter = this.extraProperties.getProperty("rolesAttributesFilter");
 		String roleNameAttribute	= this.extraProperties.getProperty("roleNameAttribute");
 		String usersAttributeFilter = this.extraProperties.getProperty("usersAttributesFilter");
 		String userNameAttribute	= this.extraProperties.getProperty("userNameAttributeFilter");
-		String userBase 			= this.extraProperties.getProperty("userBase");
+		String userBase 			= this.extraProperties.getProperty("userBase").toLowerCase().trim();
 		
 		try 
 		{
-			DirContext ctx = getContext();
+		    logger.info("roleName:" + roleName);
 
 			String baseDN = roleBase;
-			String searchFilter = "(cn=InfoGlue*)";
-			if(rolesFilter != null && rolesFilter.length() > 0)
-				searchFilter = rolesFilter;
+			String searchFilter = "(cn=" + roleName + ")";
+			if(roleName.indexOf("cn=") > -1)
+				searchFilter = "(" + roleName + ")";
+
+		    logger.info("searchFilter:" + searchFilter);
+		    logger.info("baseDN:" + baseDN);
 			
 			String rolesAttribute = "distinguishedName";
 			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
 				rolesAttribute = rolesAttributeFilter;
 	
 			String[] attrID = rolesAttribute.split(",");
-			
+
+		    logger.info("Before search...");
+
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 			ctls.setReturningAttributes(attrID);
 	
 			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
 
+		    logger.info("After search...");
+
 			if(!answer.hasMore())
-				throw new Exception("The was no groups found in the JNDI Data Source.");
+				throw new Exception("The was no roles found in the JNDI Data Source.");
 		
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				logger.info("Group:" + sr.toString() + "\n");
+				logger.info("Role:" + sr.toString() + "\n");
 				
 				Attributes attributes = sr.getAttributes();
 				logger.info("attributes:" + attributes.toString());
@@ -927,10 +1056,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
-					String groupName = (String)allEnum.next();
-					logger.info("groupName:" + groupName);
+					String roleNameCandidate = (String)allEnum.next();
+					logger.info("roleNameCandidate:" + roleNameCandidate);
 					
-					if(groupName.equals(roleName))
+					if(roleNameCandidate.equals(roleName))
 					{
 					    Attribute usersAttribute = attributes.get(usersAttributeFilter);
 						logger.info("usersAttribute:" + usersAttribute.toString());
@@ -950,28 +1079,29 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 							}
 							
 							logger.info("userNameAttribute:" + userNameAttribute);
-							logger.info("groupName:" + userName);
+							logger.info("userName:" + userName);
 							logger.info("indexOf:" + userName.indexOf(userNameAttribute));
+
 							if(roleNameAttribute != null && userName.indexOf(userNameAttribute) > -1)
 							{
 							    userName = userName.substring(userName.indexOf(userNameAttribute) + userNameAttribute.length() + 1);
 							}
 							
+							if(userName.indexOf("cn=") > -1)
+								userName = userName.substring(userName.indexOf("cn=") + 3);
+							
+							//InfoGluePrincipal infoGluePrincipal = this.getAuthorizedInfoGluePrincipal(userName, false, ctx):
 							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false);
 						    users.add(infoGluePrincipal);
 						}
-						
-					    //InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
-						//users.add(infoGluePrincipal);
 					}
 				}
 				
 			} 
-			ctx.close();
 		}
 		catch (Exception e) 
 		{
-			logger.info("Could not find Groups: " + e.getMessage());
+			logger.info("Could not find users for role: " + e.getMessage());
 		}
 	    logger.info("--------------------END---------------------");
 
@@ -1052,6 +1182,22 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
      */
     public List getGroups() throws Exception
     {
+    	List groups = null;
+    	
+		DirContext ctx = getContext();
+		
+		groups = getGroups(ctx);
+		
+		ctx.close();
+
+		return groups;
+    }
+    
+    /**
+     * This method returns a list of all groups available to InfoGlue.
+     */
+    public List getGroups(DirContext ctx) throws Exception
+    {
 	    logger.info("getGroups start....");
 		List groups = new ArrayList();
 		
@@ -1063,8 +1209,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		
 		try 
 		{
-			DirContext ctx = getContext();
-
 			String baseDN = groupBase;
 			String searchFilter = "(cn=InfoGlue*)";
 			if(groupsFilter != null && groupsFilter.length() > 0)
@@ -1119,8 +1263,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				
 			} 
 			logger.info("-----------------------\n");
-
-			ctx.close();
 		}
 		catch (Exception e) 
 		{
@@ -1145,6 +1287,22 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
      */
     public List getGroupUsers(String groupName) throws Exception
     {
+		List users = null;
+		
+		DirContext ctx = getContext();
+		
+		users = getGroupUsers(groupName, ctx);
+		
+		ctx.close();
+	
+		return users;
+    }
+
+    /** 
+     * Gets a list of users which is memebers of the given group
+     */
+    public List getGroupUsers(String groupName, DirContext ctx) throws Exception
+    {
 	    logger.info("--------getGroupUsers(String groupName) start---------------");
 		List users = new ArrayList();
 
@@ -1158,8 +1316,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		
 		try 
 		{
-			DirContext ctx = getContext();
-
 			String baseDN = groupBase;
 			String searchFilter = "(cn=InfoGlue*)";
 			if(groupsFilter != null && groupsFilter.length() > 0)
@@ -1234,7 +1390,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				}
 				
 			} 
-			ctx.close();
+
 		}
 		catch (Exception e) 
 		{
