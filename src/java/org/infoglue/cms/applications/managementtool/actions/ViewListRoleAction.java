@@ -23,10 +23,12 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 
 /**
@@ -44,7 +46,7 @@ public class ViewListRoleAction extends InfoGlueAbstractAction
 		
 	protected String doExecute() throws Exception 
 	{
-	    this.roles = RoleControllerProxy.getController().getAllRoles();
+		this.roles = RoleControllerProxy.getController().getAllRoles();
 	    
 	    return "success";
 	}
