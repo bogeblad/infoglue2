@@ -33,6 +33,9 @@ Abbreviated Changelog from 2.3.5 Final
 - Changed so the JNDIAuthorizationModule supports SSL and also anonymous bind etc.
 - Fixed some css-mistakes
 - Improved JNDIAuthorizationModule with several aspects including reuse of bind-operations, case insensitivity and some failover
+- Made listings of users, roles and groups sorted on user names
+- Added authorization converter and test case. 
+- Fixed bug in group handling in LDAP Authorization Module
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
