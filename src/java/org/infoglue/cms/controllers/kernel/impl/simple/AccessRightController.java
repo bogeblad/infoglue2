@@ -81,7 +81,7 @@ public class AccessRightController extends BaseController
 	{
 		return (AccessRight) getObjectWithId(AccessRightImpl.class, accessRightId, db);
 	}
-    
+
 	public AccessRightVO getAccessRightVOWithId(Integer accessRightId) throws SystemException, Bug
 	{
 		return (AccessRightVO) getVOWithId(AccessRightImpl.class, accessRightId);
@@ -95,6 +95,21 @@ public class AccessRightController extends BaseController
 	public List getAccessRightVOList(Database db) throws SystemException, Bug
 	{
 		return this.getAllVOObjects(AccessRightImpl.class, "accessRightId", db);
+	}
+
+	public List getAccessRightUserVOList(Database db) throws SystemException, Bug
+	{
+		return this.getAllVOObjects(AccessRightUserImpl.class, "accessRightUserId", db);
+	}
+
+	public List getAccessRightRoleVOList(Database db) throws SystemException, Bug
+	{
+		return this.getAllVOObjects(AccessRightRoleImpl.class, "accessRightRoleId", db);
+	}
+
+	public List getAccessRightGroupVOList(Database db) throws SystemException, Bug
+	{
+		return this.getAllVOObjects(AccessRightGroupImpl.class, "accessRightGroupId", db);
 	}
 
 	public List getAccessRightGroupVOList(Integer accessRightId) throws SystemException, Bug
@@ -217,7 +232,7 @@ public class AccessRightController extends BaseController
 		
 		return accessRightList;		
 	}
-
+	
 	public List getAccessRightList(Integer interceptionPointId, String parameters, String roleName, Database db) throws SystemException, Bug
 	{
 		List accessRightList = new ArrayList();
@@ -1418,7 +1433,99 @@ public class AccessRightController extends BaseController
 	//TEST
 	
 	
-	
+	public List getAccessRightUserList(String userName, Database db) throws SystemException, Bug
+	{
+		List accessRightUserList = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+			
+	    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl f WHERE f.userName = $1");
+			oql.bind(userName);
+
+			QueryResults results = oql.execute();
+
+			while (results.hasMore()) 
+			{
+				AccessRightUser accessRightUser = (AccessRightUser)results.next();
+				accessRightUserList.add(accessRightUser);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights users. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightUserList;		
+	}
+
+	public List getAccessRightRoleList(String roleName, Database db) throws SystemException, Bug
+	{
+		List accessRightRoleList = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+			
+	    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl f WHERE f.roleName = $1");
+			oql.bind(roleName);
+
+			QueryResults results = oql.execute();
+
+			while (results.hasMore()) 
+			{
+				AccessRightRole accessRightRole = (AccessRightRole)results.next();
+				accessRightRoleList.add(accessRightRole);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights users. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightRoleList;		
+	}
+
+	public List getAccessRightGroupList(String groupName, Database db) throws SystemException, Bug
+	{
+		List accessRightGroupList = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+			
+	    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl f WHERE f.groupName = $1");
+			oql.bind(groupName);
+
+			QueryResults results = oql.execute();
+
+			while (results.hasMore()) 
+			{
+				AccessRightGroup accessRightGroup = (AccessRightGroup)results.next();
+				accessRightGroupList.add(accessRightGroup);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights users. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightGroupList;		
+	}
+
 	
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller

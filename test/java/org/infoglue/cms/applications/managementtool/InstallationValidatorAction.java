@@ -33,15 +33,22 @@ import java.util.List;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.AccessRightGroupVO;
+import org.infoglue.cms.entities.management.AccessRightRoleVO;
+import org.infoglue.cms.entities.management.AccessRightUserVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -50,6 +57,9 @@ import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueGroup;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
@@ -122,6 +132,9 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         try
         {
             validateSiteNodes();
+            validateAccessRightsUser();
+            validateAccessRightsRole();
+            validateAccessRightsGroup();
         }
         catch(Exception e)
         {
@@ -200,56 +213,6 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
     			}
     		}
     		
-    		/*	
-    		String appPrefix = "internalDeliverUrl";
-    		
-    		int i = 0;
-    		String deliverUrl = null;
-    		while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
-    		{ 
-    		    String address = deliverUrl + "/UpdateCache!test.action";
-    			
-    			try
-    			{
-	    		    HttpHelper httpHelper = new HttpHelper();
-	    			String response = httpHelper.getUrlContent(address);
-	    			if(response.indexOf("test ok") == -1)
-	    			    throw new Exception("Got wrong answer");
-	    			
-	    			addValidationItem(name, description, true, "Test succeeded on " + address + ": " + response);
-    			}
-    			catch(Exception e)
-    			{
-    			    addValidationItem(name, description, false, "Test failed on " + address + ":" + e.getMessage());
-    			}
-    			i++;
-    		}
-    		
-    		appPrefix = "publicDeliverUrl";
-    		
-    		i = 0;
-    		deliverUrl = null;
-    		while((deliverUrl = CmsPropertyHandler.getProperty(appPrefix + "." + i)) != null)
-    		{ 
-    		    String address = deliverUrl + "/UpdateCache!test.action";
-    			
-    			try
-    			{
-	    		    HttpHelper httpHelper = new HttpHelper();
-	    			String response = httpHelper.getUrlContent(address);
-	    			if(response.indexOf("test ok") == -1)
-	    			    throw new Exception("Got wrong answer");
-	    			
-    			    addValidationItem(name, description, true, "Test succeeded on " + address + ": " + response);
-    			}
-    			catch(Exception e)
-    			{
-    			    addValidationItem(name, description, false, "Test failed on " + address + ":" + e.getMessage());
-    			}
-    			i++;
-    		}
-    		*/
-
     		List publicDeliveryUrls = CmsPropertyHandler.getPublicDeliveryUrls();
     		Iterator publicDeliveryUrlsIterator = publicDeliveryUrls.iterator();
     		while(publicDeliveryUrlsIterator.hasNext())
@@ -462,6 +425,206 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 
     }
 
+    
+    private void validateAccessRightsUser() throws Exception
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        
+        db.begin();
+
+        try
+        {
+	
+	        String name = "AccessRightUser names";
+	        String description = "Checks if the user names given exists in the current authorizationModule.";
+	
+	        try
+	        {
+	        	List invalidUsers = new ArrayList();
+	        	
+	        	List users = UserControllerProxy.getController(db).getAllUsers();
+	            List systemUserVOList = AccessRightController.getController().getAccessRightUserVOList(db);
+	            
+	            Iterator i = systemUserVOList.iterator();
+	            
+	        	while(i.hasNext())
+	            {
+	                AccessRightUserVO accessRightUserVO = (AccessRightUserVO)i.next(); 
+	                
+	                boolean isValid = false;
+	                
+	                Iterator userIterator = users.iterator();
+		            
+		        	while(userIterator.hasNext())
+		            {
+		                InfoGluePrincipal principal = (InfoGluePrincipal)userIterator.next();
+		                if(principal.getName().equalsIgnoreCase(accessRightUserVO.getUserName()))
+		                {
+		                	isValid = true;
+		                	break;
+		                }
+		            }
+	                
+		        	if(!isValid)
+		        		invalidUsers.add(accessRightUserVO.getUserName());
+	            }
+	            
+	            addValidationItem(name, description, true, "Faulty " + invalidUsers.size() + " usernames.");
+	        }
+	        catch(Exception e)
+	        {
+	        	e.printStackTrace();
+	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
+	        }
+	        
+	        db.commit();
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            db.rollback();
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+            db.close();
+        }
+
+    }
+
+    private void validateAccessRightsRole() throws Exception
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        
+        db.begin();
+
+        try
+        {
+	
+	        String name = "AccessRightRole names";
+	        String description = "Checks if the Role names given exists in the current authorizationModule.";
+	
+	        try
+	        {
+	        	List invalidRoles = new ArrayList();
+	        	
+	        	List users = RoleControllerProxy.getController(db).getAllRoles();
+	            List systemRoleVOList = AccessRightController.getController().getAccessRightRoleVOList(db);
+	            
+	            Iterator i = systemRoleVOList.iterator();
+	            
+	        	while(i.hasNext())
+	            {
+	                AccessRightRoleVO accessRightRoleVO = (AccessRightRoleVO)i.next(); 
+	                
+	                boolean isValid = false;
+	                
+	                Iterator userIterator = users.iterator();
+		            
+		        	while(userIterator.hasNext())
+		            {
+		        		InfoGlueRole role = (InfoGlueRole)userIterator.next();
+		                if(role.getName().equalsIgnoreCase(accessRightRoleVO.getRoleName()))
+		                {
+		                	isValid = true;
+		                	break;
+		                }
+		            }
+	                
+		        	if(!isValid)
+		        		invalidRoles.add(accessRightRoleVO.getRoleName());
+	            }
+	            
+	            addValidationItem(name, description, true, "Faulty " + invalidRoles.size() + " rolenames.");
+	        }
+	        catch(Exception e)
+	        {
+	        	e.printStackTrace();
+	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
+	        }
+	        
+	        db.commit();
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            db.rollback();
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+            db.close();
+        }
+
+    }
+
+    private void validateAccessRightsGroup() throws Exception
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        
+        db.begin();
+
+        try
+        {
+	
+	        String name = "AccessRightGroup names";
+	        String description = "Checks if the user names given exists in the current authorizationModule.";
+	
+	        try
+	        {
+	        	List invalidGroups = new ArrayList();
+	        	
+	        	List users = GroupControllerProxy.getController(db).getAllGroups();
+	            List systemGroupVOList = AccessRightController.getController().getAccessRightGroupVOList(db);
+	            
+	            Iterator i = systemGroupVOList.iterator();
+	            
+	        	while(i.hasNext())
+	            {
+	                AccessRightGroupVO accessRightGroupVO = (AccessRightGroupVO)i.next(); 
+	                
+	                boolean isValid = false;
+	                
+	                Iterator userIterator = users.iterator();
+		            
+		        	while(userIterator.hasNext())
+		            {
+		                InfoGlueGroup group = (InfoGlueGroup)userIterator.next();
+		                if(group.getName().equalsIgnoreCase(accessRightGroupVO.getGroupName()))
+		                {
+		                	isValid = true;
+		                	break;
+		                }
+		            }
+	                
+		        	if(!isValid)
+		        		invalidGroups.add(accessRightGroupVO.getGroupName());
+	            }
+	            
+	            addValidationItem(name, description, true, "Faulty " + invalidGroups.size() + " groupnames.");
+	        }
+	        catch(Exception e)
+	        {
+	        	e.printStackTrace();
+	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
+	        }
+	        
+	        db.commit();
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            db.rollback();
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+            db.close();
+        }
+
+    }
+
+    
     /**
      * This method just adds an validation item to the list.
      * @param name

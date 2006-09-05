@@ -697,9 +697,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					logger.info("groupName:" + groupName);
 					if(groupFilter.equalsIgnoreCase("*") || groupName.indexOf(groupFilter) > -1)
 					{
-					    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
+					    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
 						logger.info("Adding group.................:" + groupName);
-						groups.add(infoGlueRole);
+						groups.add(infoGlueGroup);
 					}
 				}
 				
@@ -1257,8 +1257,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					String groupName = (String)allEnum.next();
 					logger.info("groupName:" + groupName);
 					
-					InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
-					groups.add(infoGlueRole);
+					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
+					groups.add(infoGlueGroup);
 				}
 				
 			} 

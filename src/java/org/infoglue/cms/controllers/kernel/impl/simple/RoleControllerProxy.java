@@ -25,6 +25,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.exolab.castor.jdo.Database;
@@ -35,6 +36,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGlueRole;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 /**
  * @author Mattias Bogeblad
@@ -121,7 +123,8 @@ public class RoleControllerProxy extends BaseController
     	List roles = new ArrayList();
     	
 		roles = getAuthorizationModule().getRoles();
-    	
+		Collections.sort(roles, new ReflectionComparator("name"));
+		
     	return roles;
     }
 
@@ -147,6 +150,7 @@ public class RoleControllerProxy extends BaseController
 		List infoGluePrincipals = new ArrayList();
     	
 		infoGluePrincipals = getAuthorizationModule().getUsers(roleName);
+		Collections.sort(infoGluePrincipals, new ReflectionComparator("name"));
     	
 		return infoGluePrincipals;
 	}

@@ -32,8 +32,8 @@
     	#set($status = "Failed")
     #end
     	
-	#set( $rowUrl = "")
-	#set( $row = ["$validatedItem.name","$validatedItem.description","$status","$validatedItem.reason"] )
+	#set( $rowUrl = "AuthorizationSwitchManagement.action")
+	#set( $row = ["$validatedItem.name","$validatedItem.description","$status","$validatedItem.reason <a href=$rowUrl>Resolve issues</a>"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $validatedItem.name)

@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.26 2006/06/21 07:12:12 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.27 2006/09/05 14:28:57 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1390,6 +1390,15 @@
 
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewDiagnosticCenterAction" alias="ViewDiagnosticCenter">
 		<view name="success">/cms/managementtool/viewDiagnosticCenter.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- Authorization Switch Management -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.AuthorizationSwitchManagementAction" alias="AuthorizationSwitchManagement">
+		<view name="inputUser">/cms/managementtool/viewAuthorizationSwitchManagementUser.vm</view>
+		<view name="inputRole">/cms/managementtool/viewAuthorizationSwitchManagementRole.vm</view>
+		<view name="inputGroup">/cms/managementtool/viewAuthorizationSwitchManagementGroup.vm</view>
+		<view name="success">/cms/managementtool/viewListInvalidAuthorization.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
