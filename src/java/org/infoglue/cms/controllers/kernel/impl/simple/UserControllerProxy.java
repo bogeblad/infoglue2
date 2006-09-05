@@ -68,7 +68,7 @@ public class UserControllerProxy extends BaseController
 	 * This method instantiates the AuthorizationModule.
 	 */
 	
-	public AuthorizationModule getAuthorizationModule() throws SystemException
+	private AuthorizationModule getAuthorizationModule() throws SystemException
 	{
 		//if(authorizationModule == null)
 	    //{

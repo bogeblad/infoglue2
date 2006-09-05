@@ -47,8 +47,9 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	
     protected void initialize(String groupName) throws Exception
     {
-		this.supportsUpdate				= GroupControllerProxy.getController().getSupportUpdate();
+		//this.supportsUpdate				= GroupControllerProxy.getController().getSupportUpdate();
 		this.infoGlueGroup				= GroupControllerProxy.getController().getGroup(groupName);
+		this.supportsUpdate 			= this.infoGlueGroup.getIsUpdateable();
 		this.assignedInfoGluePrincipals	= GroupControllerProxy.getController().getInfoGluePrincipals(groupName);
 		this.infoGluePrincipals			= UserControllerProxy.getController().getAllUsers();
 		

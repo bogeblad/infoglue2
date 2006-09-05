@@ -36,6 +36,9 @@ Abbreviated Changelog from 2.3.5 Final
 - Made listings of users, roles and groups sorted on user names
 - Added authorization converter and test case. 
 - Fixed bug in group handling in LDAP Authorization Module
+- Improved authentication mechanism so users, roles and groups can be tagged to be update:able and delete:able individually so several sources can be used.
+- Added a new AuthorizationModule which combines a JNDI and InfoGlue's own auth module into one source.
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

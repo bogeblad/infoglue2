@@ -148,7 +148,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		final boolean isAdministrator = userName.equalsIgnoreCase(administratorUserName) ? true : false;
 		if(isAdministrator)
 		{
-			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator);
+			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator, getSupportUpdate(), getSupportDelete());
 		}
 		else
 		{	
@@ -158,7 +158,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			List roles = getRoles(userName, ctx);
 			List groups = getGroups(userName, ctx);
 			
-			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator);
+			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, getSupportUpdate(), getSupportDelete());
 			
 			ctx.close();
 		}
@@ -251,7 +251,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					String groupName = (String)allEnum.next();
 					logger.info("roleName:" + groupName);
 					
-					infoglueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
+					infoglueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
 				}
 				
 			} 
@@ -323,8 +323,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				
 		try 
 		{
-			//DirContext ctx = getContext(); 
-
 			String baseDN = userBase;
 			
 	        String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
@@ -697,7 +695,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					logger.info("groupName:" + groupName);
 					if(groupFilter.equalsIgnoreCase("*") || groupName.indexOf(groupFilter) > -1)
 					{
-					    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
+					    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
 						logger.info("Adding group.................:" + groupName);
 						groups.add(infoGlueGroup);
 					}
@@ -784,7 +782,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					String groupName = (String)allEnum.next();
 					logger.info("groupName:" + groupName);
 					
-					InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
+					InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
 					roles.add(infoGlueRole);
 				}
 				
@@ -915,7 +913,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 								    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
 								}
 								
-							    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source");
+							    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
 							    roles.add(infoGlueRole);
 							}
 						}
@@ -950,7 +948,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 								    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
 								}
 								
-								InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
+								InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
 							    groups.add(infoGlueGroup);
 							}
 						}
@@ -960,7 +958,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 						logger.info("No memberOfGroupsAttribute named :" + memberOfAttributeFilter + " was found.");
 					}
 
-					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, groups, false);
+					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, groups, false, getSupportUpdate(), getSupportDelete());
 					users.add(infoGluePrincipal);
 				}
 				catch(Exception e)
@@ -1091,7 +1089,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 								userName = userName.substring(userName.indexOf("cn=") + 3);
 							
 							//InfoGluePrincipal infoGluePrincipal = this.getAuthorizedInfoGluePrincipal(userName, false, ctx):
-							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false);
+							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, getSupportUpdate(), getSupportDelete());
 						    users.add(infoGluePrincipal);
 						}
 					}
@@ -1257,7 +1255,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					String groupName = (String)allEnum.next();
 					logger.info("groupName:" + groupName);
 					
-					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source");
+					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
 					groups.add(infoGlueGroup);
 				}
 				
@@ -1380,7 +1378,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 							    userName = userName.substring(userName.indexOf(userNameAttribute) + userNameAttribute.length() + 1);
 							}
 							
-							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false);
+							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, getSupportUpdate(), getSupportDelete());
 						    users.add(infoGluePrincipal);
 						}
 						

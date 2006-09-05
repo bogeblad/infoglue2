@@ -47,8 +47,9 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	
     protected void initialize(String roleName) throws Exception
     {
-		this.supportsUpdate				= RoleControllerProxy.getController().getSupportUpdate();
+		//this.supportsUpdate				= RoleControllerProxy.getController().getSupportUpdate();
 		this.infoGlueRole				= RoleControllerProxy.getController().getRole(roleName);
+		this.supportsUpdate				= this.infoGlueRole.getIsUpdateable();
 		this.assignedInfoGluePrincipals	= RoleControllerProxy.getController().getInfoGluePrincipals(roleName);
 		this.infoGluePrincipals			= UserControllerProxy.getController().getAllUsers();
 		

@@ -68,7 +68,7 @@ public class GroupControllerProxy extends BaseController
 	 * This method instantiates the AuthorizationModule.
 	 */
 	
-	public AuthorizationModule getAuthorizationModule()
+	private AuthorizationModule getAuthorizationModule()
 	{
 		//if(authorizationModule == null)
 	    //{

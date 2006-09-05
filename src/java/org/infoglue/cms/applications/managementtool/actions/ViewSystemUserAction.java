@@ -50,8 +50,9 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
 	
     protected void initialize(String userName) throws Exception
     {
-		this.supportsUpdate					= UserControllerProxy.getController().getSupportUpdate();
+		//this.supportsUpdate					= UserControllerProxy.getController().getSupportUpdate();
 		this.infoGluePrincipal				= UserControllerProxy.getController().getUser(userName);
+		this.supportsUpdate					= this.infoGluePrincipal.getIsUpdateable();
 		this.assignedRoleVOList 			= infoGluePrincipal.getRoles();
 		this.roles 							= RoleControllerProxy.getController().getAllRoles();
 		this.assignedGroupVOList 			= infoGluePrincipal.getGroups();

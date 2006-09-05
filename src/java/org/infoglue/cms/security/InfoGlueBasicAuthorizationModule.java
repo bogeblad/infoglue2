@@ -107,7 +107,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		final boolean isAdministrator = (userName != null && userName.equalsIgnoreCase(administratorUserName)) ? true : false;
 		if(isAdministrator)
 		{
-			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator);
+			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator, getSupportUpdate(), getSupportDelete());
 		}
 		else
 		{	
@@ -129,7 +129,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						while(roleListIterator.hasNext())
 						{
 							Role role = (Role)roleListIterator.next();
-							InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
+							InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), getSupportUpdate(), getSupportDelete());
 							roles.add(infoGlueRole);
 						}
 		
@@ -137,11 +137,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						while(groupListIterator.hasNext())
 						{
 						    Group group = (Group)groupListIterator.next();
-							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
+							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), getSupportUpdate(), getSupportDelete());
 							groups.add(infoGlueGroup);
 						}
 		
-						infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator);
+						infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator, getSupportUpdate(), getSupportDelete());
 					}
 					else
 					{
@@ -168,7 +168,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					while(roleListIterator.hasNext())
 					{
 						Role role = (Role)roleListIterator.next();
-						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
+						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), getSupportUpdate(), getSupportDelete());
 						roles.add(infoGlueRole);
 					}
 	
@@ -176,11 +176,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					while(groupListIterator.hasNext())
 					{
 					    Group group = (Group)groupListIterator.next();
-						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
+						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), getSupportUpdate(), getSupportDelete());
 						groups.add(infoGlueGroup);
 					}
 	
-					infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator);
+					infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator, getSupportUpdate(), getSupportDelete());
 			    }
 				else
 				{
@@ -212,7 +212,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		    roleVO = RoleController.getController().getRoleWithName(roleName, transactionObject).getValueObject();
 		}
 		
-		infoglueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription());
+		infoglueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), getSupportUpdate(), getSupportDelete());
 				
 		return infoglueRole;
 	}
@@ -235,7 +235,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		    groupVO = GroupController.getController().getGroupWithName(groupName, transactionObject).getValueObject();
 		}
 
-	    infoglueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription());
+	    infoglueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), getSupportUpdate(), getSupportDelete());
 				
 		return infoglueGroup;
 	}
@@ -263,7 +263,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(roleVOListIterator.hasNext())
 			{
 				RoleVO roleVO = (RoleVO)roleVOListIterator.next();
-				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription());
+				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), getSupportUpdate(), getSupportDelete());
 				roles.add(infoGlueRole);
 			}
 	
@@ -272,7 +272,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(groupVOListIterator.hasNext())
 			{
 			    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription());
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), getSupportUpdate(), getSupportDelete());
 				groups.add(infoGlueGroup);
 			}
 		}
@@ -283,7 +283,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(roleListIterator.hasNext())
 			{
 				Role role = (Role)roleListIterator.next();
-				InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
+				InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), getSupportUpdate(), getSupportDelete());
 				roles.add(infoGlueRole);
 			}
 	
@@ -292,7 +292,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(groupListIterator.hasNext())
 			{
 			    Group group = (Group)groupListIterator.next();
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), getSupportUpdate(), getSupportDelete());
 				groups.add(infoGlueGroup);
 			}
 		}
@@ -315,7 +315,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(roleVOListIterator.hasNext())
 			{
 				RoleVO roleVO = (RoleVO)roleVOListIterator.next();
-				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription());
+				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), getSupportUpdate(), getSupportDelete());
 				roles.add(infoGlueRole);
 			}
 		}
@@ -326,7 +326,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(roleVOListIterator.hasNext())
 			{
 				RoleVO roleVO = (RoleVO)roleVOListIterator.next();
-				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription());
+				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), getSupportUpdate(), getSupportDelete());
 				roles.add(infoGlueRole);
 			}
 		}
@@ -345,7 +345,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(groupVOListIterator.hasNext())
 			{
 			    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription());
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), getSupportUpdate(), getSupportDelete());
 				groups.add(infoGlueGroup);
 			}
 		}
@@ -356,7 +356,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(groupVOListIterator.hasNext())
 			{
 			    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription());
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), getSupportUpdate(), getSupportDelete());
 				groups.add(infoGlueGroup);
 			}		    
 		}
@@ -387,7 +387,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				while(roleVOListIterator.hasNext())
 				{
 					RoleVO roleVO = (RoleVO)roleVOListIterator.next();
-					InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription());
+					InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), getSupportUpdate(), getSupportDelete());
 					roles.add(infoGlueRole);
 				}
 				
@@ -397,11 +397,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				while(groupVOListIterator.hasNext())
 				{
 				    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
-					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription());
+					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), getSupportUpdate(), getSupportDelete());
 					roles.add(infoGlueGroup);
 				}
 				
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false, getSupportUpdate(), getSupportDelete());
 				
 				users.add(infoGluePrincipal);
 			}
@@ -420,7 +420,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				while(roleListIterator.hasNext())
 				{
 					Role role = (Role)roleListIterator.next();
-					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
+					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), getSupportUpdate(), getSupportDelete());
 					roles.add(infoGlueRole);
 				}
 				
@@ -430,11 +430,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				while(groupListIterator.hasNext())
 				{
 				    Group group = (Group)groupListIterator.next();
-					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
+					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), getSupportUpdate(), getSupportDelete());
 					roles.add(infoGlueGroup);
 				}
 				
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false, getSupportUpdate(), getSupportDelete());
 				
 				users.add(infoGluePrincipal);
 			}
@@ -461,7 +461,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				while(roleVOListIterator.hasNext())
 				{
 					RoleVO roleVO = (RoleVO)roleVOListIterator.next();
-					InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription());
+					InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), getSupportUpdate(), getSupportDelete());
 					roles.add(infoGlueRole);
 				}
 				
@@ -471,11 +471,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				while(groupVOListIterator.hasNext())
 				{
 				    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
-					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription());
+					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), getSupportUpdate(), getSupportDelete());
 					groups.add(infoGlueGroup);
 				}
 				
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false, getSupportUpdate(), getSupportDelete());
 				users.add(infoGluePrincipal);
 			}
 		}
@@ -493,7 +493,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				while(roleListIterator.hasNext())
 				{
 					Role role = (Role)roleListIterator.next();
-					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription());
+					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), getSupportUpdate(), getSupportDelete());
 					roles.add(infoGlueRole);
 				}
 				
@@ -503,11 +503,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				while(groupListIterator.hasNext())
 				{
 				    Group group = (Group)groupListIterator.next();
-					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription());
+					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), getSupportUpdate(), getSupportDelete());
 					groups.add(infoGlueGroup);
 				}
 				
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUser.getUserName(), systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUser.getUserName(), systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, false, getSupportUpdate(), getSupportDelete());
 				users.add(infoGluePrincipal);
 			}
 		}
@@ -532,7 +532,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(systemUserVOListIterator.hasNext())
 			{
 				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false, getSupportUpdate(), getSupportDelete());
 				users.add(infoGluePrincipal);
 			}
 		}
@@ -543,7 +543,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(systemUserVOListIterator.hasNext())
 			{
 				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false, getSupportUpdate(), getSupportDelete());
 				users.add(infoGluePrincipal);
 			}
 		}
@@ -563,7 +563,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(systemUserVOListIterator.hasNext())
 			{
 				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false, getSupportUpdate(), getSupportDelete());
 				users.add(infoGluePrincipal);
 			}
 		}
@@ -574,7 +574,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(systemUserVOListIterator.hasNext())
 			{
 				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), new ArrayList(), new ArrayList(), false, getSupportUpdate(), getSupportDelete());
 				users.add(infoGluePrincipal);
 			}
 		}
