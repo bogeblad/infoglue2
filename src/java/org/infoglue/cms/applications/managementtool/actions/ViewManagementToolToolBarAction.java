@@ -32,11 +32,13 @@ import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
@@ -45,6 +47,9 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
+import org.infoglue.cms.security.InfoGlueGroup;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -435,8 +440,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		List buttons = new ArrayList();
 		if(UserControllerProxy.getController().getSupportCreate())
 			buttons.add(new ImageButton("CreateSystemUser!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newSystemUser"), "New System User"));	
-		if(UserControllerProxy.getController().getSupportDelete())
-			buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('systemUser', 'userName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUsers.header"));
+		//if(UserControllerProxy.getController().getSupportDelete())
+		//	buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('systemUser', 'userName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUsers.header"));
 		buttons.add(new ImageButton(true, "javascript:toggleSearchForm();", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.searchButton"), "Search Form"));
 		return buttons;
 	}
@@ -446,9 +451,11 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		List buttons = new ArrayList();
 		if(!this.userName.equals(CmsPropertyHandler.getAnonymousUser()))
 		{
-			if(UserControllerProxy.getController().getSupportDelete())
+			InfoGluePrincipal user = UserControllerProxy.getController().getUser(this.userName);
+			if(user.getAutorizationModule().getSupportDelete())
 				buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(this.userName, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(this.userName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
-			if(UserControllerProxy.getController().getSupportUpdate())
+		
+			if(user.getAutorizationModule().getSupportUpdate())
 				buttons.add(new ImageButton("UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(this.userName, URIEncoding), URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
 		}
 		
@@ -464,8 +471,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		List buttons = new ArrayList();
 		if(UserControllerProxy.getController().getSupportCreate())
 			buttons.add(new ImageButton("CreateRole!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newRole"), "New Role"));	
-		if(UserControllerProxy.getController().getSupportDelete())
-			buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('role', 'roleName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "tool.managementtool.deleteRoles.header"));
+		//if(UserControllerProxy.getController().getSupportDelete())
+		//	buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('role', 'roleName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "tool.managementtool.deleteRoles.header"));
 		
 		return buttons;
 	}
@@ -478,7 +485,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		String noDestination  	= URLEncoder.encode("ViewListRole.action?title=Roles", URIEncoding);
 		String message 		 	= URLEncoder.encode("Do you really want to delete the role " + URLEncoder.encode(this.roleName, URIEncoding), URIEncoding);
 		
-		if(UserControllerProxy.getController().getSupportDelete())
+		InfoGlueRole role = RoleControllerProxy.getController().getRole(this.roleName);
+		if(role.getAutorizationModule().getSupportDelete())
 			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteRole.text&extraParameters=" + URLEncoder.encode(this.roleName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "tool.managementtool.deleteRole.header"));
 		
 		List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(this.roleName);
@@ -493,8 +501,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		List buttons = new ArrayList();
 		if(UserControllerProxy.getController().getSupportCreate())
 			buttons.add(new ImageButton("CreateGroup!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newGroup"), "New Group"));	
-		if(UserControllerProxy.getController().getSupportDelete())
-			buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('group', 'groupName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteGroup"), "tool.managementtool.deleteGroups.header"));
+		//if(UserControllerProxy.getController().getSupportDelete())
+		//	buttons.add(new ImageButton(true, "javascript:submitListFormWithPrimaryKey('group', 'groupName');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteGroup"), "tool.managementtool.deleteGroups.header"));
 		
 		return buttons;
 	}
@@ -507,7 +515,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		String noDestination  	= URLEncoder.encode("ViewListGroup.action?title=Groups", URIEncoding);
 		String message 		 	= URLEncoder.encode("Do you really want to delete the group " + URLEncoder.encode(this.groupName, URIEncoding), URIEncoding);
 		
-		if(UserControllerProxy.getController().getSupportDelete())
+		InfoGlueGroup group = GroupControllerProxy.getController().getGroup(this.groupName);
+		if(group.getAutorizationModule().getSupportDelete())
 			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteGroup.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + URLEncoder.encode(this.groupName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteGroup"), "tool.managementtool.deleteGroup.header"));
 		
 		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(this.groupName);

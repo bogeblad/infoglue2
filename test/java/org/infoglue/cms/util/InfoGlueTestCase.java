@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: InfoGlueTestCase.java,v 1.8 2006/09/05 20:20:36 mattias Exp $
+ * $Id: InfoGlueTestCase.java,v 1.9 2006/09/06 14:37:39 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -53,12 +53,9 @@ import org.infoglue.cms.security.InfoGlueRole;
  */
 public abstract class InfoGlueTestCase extends TestCase
 {
-	private static final InfoGluePrincipal adminPrincipal = new InfoGluePrincipal("test-admin", "first", "last",
-																				  "email", createRole("administrators"), new ArrayList(), true, false, false);
-	private static final InfoGluePrincipal cmsUserPrincipal = new InfoGluePrincipal("test-user", "first", "last",
-																					"email", createRole("cmsUser"), new ArrayList(), false, false, false);
-	private static final InfoGluePrincipal anonPrincipal = new InfoGluePrincipal(CmsPropertyHandler.getAnonymousUser(), "first", "last",
-																				 "email", createRole("anonymous"), new ArrayList(), false, false, false);
+	private static final InfoGluePrincipal adminPrincipal = new InfoGluePrincipal("test-admin", "first", "last", "email", createRole("administrators"), new ArrayList(), true, null);
+	private static final InfoGluePrincipal cmsUserPrincipal = new InfoGluePrincipal("test-user", "first", "last", "email", createRole("cmsUser"), new ArrayList(), false, null);
+	private static final InfoGluePrincipal anonPrincipal = new InfoGluePrincipal(CmsPropertyHandler.getAnonymousUser(), "first", "last", "email", createRole("anonymous"), new ArrayList(), false, null);
 
 	private static boolean initialized = false;
 
@@ -117,7 +114,7 @@ public abstract class InfoGlueTestCase extends TestCase
 	 */
 	protected static List createRole(String name)
 	{
-		return Collections.singletonList(new InfoGlueRole(name, "test description", false, false));
+		return Collections.singletonList(new InfoGlueRole(name, "test description", null));
 	}
 
 	/**

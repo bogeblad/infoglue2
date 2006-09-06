@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -41,9 +42,9 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
 	private String userName;
 	private boolean supportsUpdate = true;
 	private InfoGluePrincipal infoGluePrincipal;
-	private List roles;
+	private List roles = new ArrayList();
 	private List assignedRoleVOList;
-	private List groups;
+	private List groups = new ArrayList();
 	private List assignedGroupVOList;
 	private List contentTypeDefinitionVOList;   
 	private List assignedContentTypeDefinitionVOList; 	
@@ -52,11 +53,15 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
     {
 		//this.supportsUpdate					= UserControllerProxy.getController().getSupportUpdate();
 		this.infoGluePrincipal				= UserControllerProxy.getController().getUser(userName);
-		this.supportsUpdate					= this.infoGluePrincipal.getIsUpdateable();
+		this.supportsUpdate					= this.infoGluePrincipal.getAutorizationModule().getSupportUpdate();
+		
 		this.assignedRoleVOList 			= infoGluePrincipal.getRoles();
-		this.roles 							= RoleControllerProxy.getController().getAllRoles();
+		if(this.supportsUpdate) //Only fetch if the user can edit.
+			this.roles 						= this.infoGluePrincipal.getAutorizationModule().getRoles();
+		
 		this.assignedGroupVOList 			= infoGluePrincipal.getGroups();
-		this.groups 						= GroupControllerProxy.getController().getAllGroups();
+		if(this.supportsUpdate) //Only fetch if the user can edit.
+			this.groups 					= this.infoGluePrincipal.getAutorizationModule().getGroups();
 		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_USER_PROPERTIES);
 		this.assignedContentTypeDefinitionVOList 	= UserPropertiesController.getController().getContentTypeDefinitionVOList(userName);  

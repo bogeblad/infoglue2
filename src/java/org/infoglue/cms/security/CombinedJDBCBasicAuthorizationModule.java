@@ -61,12 +61,12 @@ import org.infoglue.cms.util.sorters.ReflectionComparator;
 /**
  * @author Mattias Bogeblad
  *
- * This authorization module works firstly against an JNDI source and second against the ordinary infoglue database.
+ * This authorization module works firstly against an JDBC source and second against the ordinary infoglue database.
  */
 
-public class CombinedJNDIBasicAuthorizationModule implements AuthorizationModule
+public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule
 {
-    private final static Logger logger = Logger.getLogger(CombinedJNDIBasicAuthorizationModule.class.getName());
+    private final static Logger logger = Logger.getLogger(CombinedJDBCBasicAuthorizationModule.class.getName());
 
 	protected Properties extraProperties = null;
 	private Database transactionObject 	= null;
@@ -78,8 +78,8 @@ public class CombinedJNDIBasicAuthorizationModule implements AuthorizationModule
 	{
 		try
     	{
-			logger.info("InfoGlueAuthenticationFilter.authorizerClass:" + JNDIBasicAuthorizationModule.class.getName());
-			authorizationModule = (AuthorizationModule)Class.forName(JNDIBasicAuthorizationModule.class.getName()).newInstance();
+			logger.info("InfoGlueAuthenticationFilter.authorizerClass:" + InfoGlueJDBCAuthorizationModule.class.getName());
+			authorizationModule = (AuthorizationModule)Class.forName(InfoGlueJDBCAuthorizationModule.class.getName()).newInstance();
 			logger.info("authorizationModule:" + authorizationModule);
 			authorizationModule.setExtraProperties(this.extraProperties);
 			authorizationModule.setTransactionObject(this.getTransactionObject());

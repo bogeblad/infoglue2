@@ -45,10 +45,9 @@ public class InfoGluePrincipal implements Principal, Serializable
 	private final List roles;
 	private final List groups;
 	private final boolean isAdministrator;
-	private final boolean isUpdateable;
-	private final boolean isDeleteable;
+	private final AuthorizationModule autorizationModule;
 	
-	public InfoGluePrincipal(String name, String firstName, String lastName, String email, List roles, List groups, boolean isAdministrator, boolean isUpdateable, boolean isDeleteable)
+	public InfoGluePrincipal(String name, String firstName, String lastName, String email, List roles, List groups, boolean isAdministrator, AuthorizationModule autorizationModule)
 	{
 		this.name = name;
 		this.firstName = firstName;
@@ -57,8 +56,7 @@ public class InfoGluePrincipal implements Principal, Serializable
 		this.roles = roles;
 		this.groups = groups;
 		this.isAdministrator = isAdministrator;
-		this.isUpdateable = isUpdateable;
-		this.isDeleteable = isDeleteable;
+		this.autorizationModule = autorizationModule;
 	}
 
 	public String getName()
@@ -130,15 +128,9 @@ public class InfoGluePrincipal implements Principal, Serializable
 		return name.hashCode();
 	}
 
-	public boolean getIsDeleteable() 
+	public AuthorizationModule getAutorizationModule()
 	{
-		return isDeleteable;
+		return autorizationModule;
 	}
-
-	public boolean getIsUpdateable() 
-	{
-		return isUpdateable;
-	}
-
 }
 

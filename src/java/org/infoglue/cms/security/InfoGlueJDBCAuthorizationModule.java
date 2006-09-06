@@ -171,7 +171,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		final boolean isAdministrator = (userName != null && userName.equalsIgnoreCase(administratorUserName)) ? true : false;
 		if(isAdministrator)
 		{
-			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator, getSupportUpdate(), getSupportDelete());
+			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator, this);
 		}
 		else
 		{	
@@ -222,7 +222,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 						String roleName = rs.getString(roleNameColumn);
 						String description = rs.getString(roleDescriptionColumn);
 					
-						InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, getSupportUpdate(), getSupportDelete());
+						InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, this);
 						infogluePrincipal.getRoles().add(infoGlueRole);
 						logger.info("Added role:" + infoGlueRole.getName());
 					}
@@ -244,9 +244,9 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 						String roleName = rs.getString(roleNameColumn);
 						String description = rs.getString(roleDescriptionColumn);
 
-						InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, getSupportUpdate(), getSupportDelete());
+						InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, this);
 						
-						infogluePrincipal = new InfoGluePrincipal(userName, userFirstName, userLastName, userEmail, new ArrayList(), groups, false, getSupportUpdate(), getSupportDelete());
+						infogluePrincipal = new InfoGluePrincipal(userName, userFirstName, userLastName, userEmail, new ArrayList(), groups, false, this);
 						infogluePrincipal.getRoles().add(infoGlueRole);
 											
 						logger.info("User read:" + infogluePrincipal.getName());
@@ -327,7 +327,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			{
 				String description = rs.getString(roleDescriptionColumn);
 				
-				infoglueRole = new InfoGlueRole(roleName, description, getSupportUpdate(), getSupportDelete());
+				infoglueRole = new InfoGlueRole(roleName, description, this);
 			}
 			
 			logger.info("Role created:" + infoglueRole.getName());
@@ -402,7 +402,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			while(roleVOListIterator.hasNext())
 			{
 				RoleVO roleVO = (RoleVO)roleVOListIterator.next();
-				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), getSupportUpdate(), getSupportDelete());
+				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), this);
 				roles.add(infoGlueRole);
 			}
 	
@@ -411,7 +411,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			while(groupVOListIterator.hasNext())
 			{
 			    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), getSupportUpdate(), getSupportDelete());
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
 				groups.add(infoGlueGroup);
 			}
 		}
@@ -422,7 +422,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			while(roleListIterator.hasNext())
 			{
 				Role role = (Role)roleListIterator.next();
-				InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), getSupportUpdate(), getSupportDelete());
+				InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 				roles.add(infoGlueRole);
 			}
 	
@@ -431,7 +431,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			while(groupListIterator.hasNext())
 			{
 			    Group group = (Group)groupListIterator.next();
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), getSupportUpdate(), getSupportDelete());
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 				groups.add(infoGlueGroup);
 			}
 		}
@@ -475,7 +475,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 				String roleName = rs.getString(roleNameColumn);
 				String description = rs.getString(roleDescriptionColumn);
 				
-				InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, getSupportUpdate(), getSupportDelete());
+				InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, this);
 				roles.add(infoGlueRole);
 				
 				logger.info("Role created:" + infoGlueRole.getName());
@@ -594,7 +594,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 					String roleName = rs.getString(roleNameColumn);
 					String description = rs.getString(roleDescriptionColumn);
 				
-					InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, getSupportUpdate(), getSupportDelete());
+					InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, this);
 					infoGluePrincipal.getRoles().add(infoGlueRole);
 				}
 				else
@@ -618,9 +618,9 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 					String roleName = rs.getString(roleNameColumn);
 					String description = rs.getString(roleDescriptionColumn);
 
-					InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, getSupportUpdate(), getSupportDelete());
+					InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, description, this);
 					
-					infoGluePrincipal = new InfoGluePrincipal(userName, userFirstName, userLastName, userEmail, new ArrayList(), groups, false, getSupportUpdate(), getSupportDelete());
+					infoGluePrincipal = new InfoGluePrincipal(userName, userFirstName, userLastName, userEmail, new ArrayList(), groups, false, this);
 					infoGluePrincipal.getRoles().add(infoGlueRole);
 					users.add(infoGluePrincipal);
 										

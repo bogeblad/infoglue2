@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -40,7 +41,7 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	private String groupName;
 	private boolean supportsUpdate = true;
 	private InfoGlueGroup infoGlueGroup;
-	private List infoGluePrincipals;
+	private List infoGluePrincipals = new ArrayList();
 	private List assignedInfoGluePrincipals;
 	private List contentTypeDefinitionVOList;
 	private List assignedContentTypeDefinitionVOList;    
@@ -49,9 +50,10 @@ public class ViewGroupAction extends InfoGlueAbstractAction
     {
 		//this.supportsUpdate				= GroupControllerProxy.getController().getSupportUpdate();
 		this.infoGlueGroup				= GroupControllerProxy.getController().getGroup(groupName);
-		this.supportsUpdate 			= this.infoGlueGroup.getIsUpdateable();
-		this.assignedInfoGluePrincipals	= GroupControllerProxy.getController().getInfoGluePrincipals(groupName);
-		this.infoGluePrincipals			= UserControllerProxy.getController().getAllUsers();
+		this.supportsUpdate 			= this.infoGlueGroup.getAutorizationModule().getSupportUpdate();
+		this.assignedInfoGluePrincipals	= this.infoGlueGroup.getAutorizationModule().getGroupUsers(groupName);
+		if(this.supportsUpdate) //Only fetch if the user can edit.
+			this.infoGluePrincipals			= this.infoGlueGroup.getAutorizationModule().getUsers();
 		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_GROUP_PROPERTIES);
 		this.assignedContentTypeDefinitionVOList 	= GroupPropertiesController.getController().getContentTypeDefinitionVOList(groupName);  

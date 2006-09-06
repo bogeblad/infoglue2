@@ -79,7 +79,7 @@
 	</tr>	
 		
 	<tr>
-		<td width="400">#editTextArea("Role.description" "description" $!description "50" "5" "normaltextarea")</td>
+		<td width="400">#editReadOnlyTextArea("Role.description" "description" $!description "50" "5" "normaltextarea" $readonly)</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -93,7 +93,7 @@
 		<table width="100%" border="0">
 		  <tr>
 		    <td>State a name or choose from list:<br>
-		        <input type="text" id="searchField" name="searchField" style="font-size: 10px; width:200px;"/ onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();">
+		        <input type="text" id="searchField" name="searchField" style="font-size: 10px; width:200px;"/ onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();" $readonly>
 		      </td>
 		    <td>&nbsp;</td>
 		    <td valign="bottom">Current Members</td>
@@ -101,17 +101,21 @@
 		  <tr>
 		    <td>
 		    	<SELECT $readonly id="unassignedUserNameList" NAME="unassignedUserNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="font-size: 10px; width:200px;">
-		          	#foreach ($infoGluePrincipal in $allInfoGluePrincipals)
-						#set($checked = "")
-						#foreach ($assignedInfoGluePrincipal in $assignedInfoGluePrincipals)
-							#if($assignedInfoGluePrincipal.getName() == $infoGluePrincipal.getName())
-								#set($checked = "checked")
-							#end 
+					#if($supportsUpdate)
+			          	#foreach ($infoGluePrincipal in $allInfoGluePrincipals)
+							#set($checked = "")
+							#foreach ($assignedInfoGluePrincipal in $assignedInfoGluePrincipals)
+								#if($assignedInfoGluePrincipal.getName() == $infoGluePrincipal.getName())
+									#set($checked = "checked")
+								#end 
+							#end
+							
+							#if($checked == "")
+								<option value="$infoGluePrincipal.name">$infoGluePrincipal.name</option>
+							#end
 						#end
-						
-						#if($checked == "")
-							<option value="$infoGluePrincipal.name">$infoGluePrincipal.name</option>
-						#end
+					#else
+						<option value="">No need to show users</option>
 					#end
 		        </select>
 		    </td>
@@ -142,19 +146,19 @@
 		<td>	
 			<select name="contentTypeDefinitionId">
 				<option value="">Choose type</option>
-			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
-				#set($selected = "")
-				#foreach ($assignedContentTypeDefinitionVO in $assignedContentTypeDefinitionVOList)
-					#if($assignedContentTypeDefinitionVO.id == $contentTypeDefinitionVO.id)
-						#set($selected = "selected")
-					#end 
+				#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+					#set($selected = "")
+					#foreach ($assignedContentTypeDefinitionVO in $assignedContentTypeDefinitionVOList)
+						#if($assignedContentTypeDefinitionVO.id == $contentTypeDefinitionVO.id)
+							#set($selected = "selected")
+						#end 
+					#end
+					<option value="$contentTypeDefinitionVO.id" $selected>$contentTypeDefinitionVO.getName()</option>
 				#end
-				<option value="$contentTypeDefinitionVO.id" $selected>$contentTypeDefinitionVO.getName()</option>
-			#end
 			</select>
 		</td>
 	</tr>
-	#if($supportsUpdate)
+	##if($supportsUpdate)
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
@@ -165,7 +169,7 @@
 			<a href="ViewListRole.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>
-	#end
+	##end
 </table>
 
 </form>

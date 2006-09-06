@@ -122,6 +122,7 @@
 		  <tr>
 		    <td>
 		    	<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
+		        #if($supportsUpdate)
 		          	#foreach ($roleVO in $allRoles)
 						#set($checked = "")
 						#foreach ($assignedRoleVO in $assignedRoles)
@@ -134,6 +135,9 @@
 							<option value="$roleVO.name">$roleVO.name</option>
 						#end
 					#end
+				#else
+					<option value="">No need to show roles</option>
+				#end	
 		        </select>
 		    </td>
 		    <td align="center">
@@ -173,6 +177,7 @@
 		  <tr>
 		    <td>
 		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt2.transferRight()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
+		        #if($supportsUpdate)
 		          	#foreach ($groupVO in $allGroups)
 						#set($checked = "")
 						#foreach ($assignedGroupVO in $assignedGroups)
@@ -185,6 +190,9 @@
 							<option value="$groupVO.name">$groupVO.name</option>
 						#end
 					#end
+				#else
+					<option value="">No need to show groups</option>
+				#end						
 		        </select>
 		    </td>
 		    <td align="center">
@@ -209,7 +217,7 @@
 	</tr>
 
 	<tr>
-		<td class="biglabel">Base role properties on content type definition</td>
+		<td class="biglabel">Base user properties on content type definition</td>
 	</tr>
 	<tr>
 		<td>	
@@ -228,7 +236,7 @@
 		</td>
 	</tr>
 	
-	#if($supportsUpdate)
+	##if($supportsUpdate)
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
@@ -240,7 +248,7 @@
 			<a href="ViewListSystemUser.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>
-	#end
+	##end
 </table>
 </form>
 </div>

@@ -25,6 +25,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.exolab.castor.jdo.Database;
@@ -35,6 +36,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
 
 
@@ -128,7 +130,9 @@ public class UserControllerProxy extends BaseController
     	List users = new ArrayList();
     	
 		users = getAuthorizationModule().getUsers();
-    	
+		
+		Collections.sort(users, new ReflectionComparator("name"));
+
     	return users;
     }
 

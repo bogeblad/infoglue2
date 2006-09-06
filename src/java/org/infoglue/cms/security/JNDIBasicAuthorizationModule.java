@@ -44,11 +44,13 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.management.GroupVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * @author Mattias Bogeblad
@@ -148,7 +150,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		final boolean isAdministrator = userName.equalsIgnoreCase(administratorUserName) ? true : false;
 		if(isAdministrator)
 		{
-			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator, getSupportUpdate(), getSupportDelete());
+			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator, this);
 		}
 		else
 		{	
@@ -158,7 +160,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			List roles = getRoles(userName, ctx);
 			List groups = getGroups(userName, ctx);
 			
-			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, getSupportUpdate(), getSupportDelete());
+			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
 			
 			ctx.close();
 		}
@@ -248,10 +250,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
-					String groupName = (String)allEnum.next();
-					logger.info("roleName:" + groupName);
+					String roleNameCandidate = (String)allEnum.next();
+					logger.info("roleNameCandidate:" + roleNameCandidate);
 					
-					infoglueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
+					infoglueRole = new InfoGlueRole(roleNameCandidate, "Not available from JNDI-source", this);
 				}
 				
 			} 
@@ -264,7 +266,106 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 
 		return infoglueRole;
 	}
+
+	/**
+	 * Gets an authorized InfoGlueGroup.
+	 */
 	
+	public InfoGlueGroup getAuthorizedInfoGlueGroup(String groupName) throws Exception
+	{
+		InfoGlueGroup group = null;
+		
+		DirContext ctx = getContext();
+		
+		group = getAuthorizedInfoGlueGroup(groupName, ctx);
+		
+		ctx.close();
+		
+		return group;
+	}
+	
+	/**
+	 * Gets an authorized InfoGlueGroup.
+	 */
+	
+	public InfoGlueGroup getAuthorizedInfoGlueGroup(String groupName, DirContext ctx) throws Exception
+	{
+		logger.info("\n\n\n ---------- getAuthorizedInfoGlueGroup starting ---------\n\n\n");
+		
+		InfoGlueGroup infoglueGroup = null;
+
+		String groupBase 			= this.extraProperties.getProperty("groupBase").toLowerCase().trim();
+		String groupsFilter 			= this.extraProperties.getProperty("groupsFilter");
+		String groupsAttributeFilter = this.extraProperties.getProperty("groupsAttributesFilter");
+		String groupNameAttribute 	= this.extraProperties.getProperty("groupNameAttribute");
+		String groupSearchScope 		= this.extraProperties.getProperty("groupSearchScope");
+
+		try 
+		{
+			logger.info("Connected...");
+
+			String baseDN = groupBase;
+			String searchFilter = "(cn=" + groupName + ")";
+			if(groupName.indexOf("cn=") > -1)
+				searchFilter = "(" + groupName + ")";
+				
+			logger.info("searchFilter:" + searchFilter);
+			logger.info("groupSearchScope:" + groupSearchScope);
+			
+			String groupsAttribute = "distinguishedName";
+			if(groupsAttributeFilter != null && groupsAttributeFilter.length() > 0)
+				groupsAttribute = groupsAttributeFilter;
+	
+			String[] attrID = groupsAttribute.split(",");
+			logger.info("attrID:" + attrID);
+			
+			SearchControls ctls = new SearchControls(); 
+
+			int groupSearchScopeInt = SearchControls.SUBTREE_SCOPE;
+			if(groupSearchScope != null && groupSearchScope.equalsIgnoreCase("ONELEVEL_SCOPE"))
+			    groupSearchScopeInt = SearchControls.ONELEVEL_SCOPE;
+			else if(groupSearchScope != null && groupSearchScope.equalsIgnoreCase("OBJECT_SCOPE"))
+			    groupSearchScopeInt = SearchControls.OBJECT_SCOPE;
+			    
+		    ctls.setSearchScope(groupSearchScopeInt);
+			ctls.setReturningAttributes(attrID);
+	
+			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
+
+			if(!answer.hasMore())
+				throw new Exception("The was no groups found in the JNDI Data Source.");
+		
+			logger.info("-----------------------\n");
+			while (answer.hasMore()) 
+			{
+				SearchResult sr = (SearchResult)answer.next();
+				logger.info("Group:" + sr.toString() + "\n");
+				
+				Attributes attributes = sr.getAttributes();
+				logger.info("attributes:" + attributes.toString());
+				logger.info("groupNameAttribute:" + groupNameAttribute);
+				Attribute attribute = attributes.get(groupNameAttribute);
+				logger.info("attribute:" + attribute.toString());
+				NamingEnumeration allEnum = attribute.getAll();
+				while(allEnum.hasMore())
+				{
+					String groupNameCandidate = (String)allEnum.next();
+					logger.info("groupNameCandidate:" + groupNameCandidate);
+					
+					infoglueGroup = new InfoGlueGroup(groupNameCandidate, "Not available from JNDI-source", this);
+				}
+				
+			} 
+			logger.info("-----------------------\n");
+		}
+		catch (Exception e) 
+		{
+			logger.info("Could not find Group: " + e.getMessage());
+		}
+
+		return infoglueGroup;
+	}
+
 	/**
 	 * This method gets a users roles
 	 */
@@ -695,7 +796,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					logger.info("groupName:" + groupName);
 					if(groupFilter.equalsIgnoreCase("*") || groupName.indexOf(groupFilter) > -1)
 					{
-					    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
+					    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", this);
 						logger.info("Adding group.................:" + groupName);
 						groups.add(infoGlueGroup);
 					}
@@ -782,7 +883,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					String groupName = (String)allEnum.next();
 					logger.info("groupName:" + groupName);
 					
-					InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
+					InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", this);
 					roles.add(infoGlueRole);
 				}
 				
@@ -808,7 +909,12 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	{
 	    logger.info("getUsers start...");
 	    
-		List users = new ArrayList();
+		String key = "allUsers";
+		List users = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, 500000);
+		if(users != null)
+			return users;
+		
+		users = new ArrayList();
 		
 		String roleBase 				= this.extraProperties.getProperty("roleBase");
 		String userBase					= this.extraProperties.getProperty("userBase");
@@ -913,7 +1019,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 								    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
 								}
 								
-							    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
+							    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", this);
 							    roles.add(infoGlueRole);
 							}
 						}
@@ -948,7 +1054,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 								    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
 								}
 								
-								InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
+								InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", this);
 							    groups.add(infoGlueGroup);
 							}
 						}
@@ -958,7 +1064,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 						logger.info("No memberOfGroupsAttribute named :" + memberOfAttributeFilter + " was found.");
 					}
 
-					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, groups, false, getSupportUpdate(), getSupportDelete());
+					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userNameAttribute.get().toString(), userFirstNameAttribute.get().toString(), userLastNameAttribute.get().toString(), userMailAttribute.get().toString(), roles, groups, false, this);
 					users.add(infoGluePrincipal);
 				}
 				catch(Exception e)
@@ -974,6 +1080,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 	    logger.info("getUsers end...");
 
+	    if(users != null)
+	    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, users, null, false);
+	    
 		return users;
 	}
 	
@@ -984,21 +1093,29 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		return users;
 	}
 
+    /* (non-Javadoc)
+     * @see org.infoglue.cms.security.AuthorizationModule#getRoleUsers(java.lang.String)
+     */
+    public List getUsers(String roleName) throws Exception
+    {
+        return getRoleUsers(roleName);
+    }
+
 	
-	public List getUsers(String roleName) throws Exception
+	public List getRoleUsers(String roleName) throws Exception
 	{
 		List users = null;
 		
 		DirContext ctx = getContext();
 		
-		users = getUsers(roleName, ctx);
+		users = getRoleUsers(roleName, ctx);
 		
 		ctx.close();
 		
 		return users;
 	}
 	
-	public List getUsers(String roleName, DirContext ctx) throws Exception
+	public List getRoleUsers(String roleName, DirContext ctx) throws Exception
 	{
 		List users = new ArrayList();
 		
@@ -1012,15 +1129,15 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		
 		try 
 		{
-		    logger.info("roleName:" + roleName);
+		    logger.warn("roleName:" + roleName);
 
 			String baseDN = roleBase;
 			String searchFilter = "(cn=" + roleName + ")";
 			if(roleName.indexOf("cn=") > -1)
 				searchFilter = "(" + roleName + ")";
 
-		    logger.info("searchFilter:" + searchFilter);
-		    logger.info("baseDN:" + baseDN);
+		    logger.warn("searchFilter:" + searchFilter);
+		    logger.warn("baseDN:" + baseDN);
 			
 			String rolesAttribute = "distinguishedName";
 			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
@@ -1028,7 +1145,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 			String[] attrID = rolesAttribute.split(",");
 
-		    logger.info("Before search...");
+		    logger.warn("Before search...");
 
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -1036,7 +1153,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
 
-		    logger.info("After search...");
+		    logger.warn("After search...");
 
 			if(!answer.hasMore())
 				throw new Exception("The was no roles found in the JNDI Data Source.");
@@ -1044,30 +1161,29 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				logger.info("Role:" + sr.toString() + "\n");
+				logger.warn("Role:" + sr.toString() + "\n");
 				
 				Attributes attributes = sr.getAttributes();
-				logger.info("attributes:" + attributes.toString());
-				logger.info("roleNameAttribute:" + roleNameAttribute);
+				logger.warn("attributes:" + attributes.toString());
+				logger.warn("roleNameAttribute:" + roleNameAttribute);
 				Attribute attribute = attributes.get(roleNameAttribute);
 				logger.info("attribute:" + attribute.toString());
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
 					String roleNameCandidate = (String)allEnum.next();
-					logger.info("roleNameCandidate:" + roleNameCandidate);
+					logger.warn("roleNameCandidate:" + roleNameCandidate);
 					
 					if(roleNameCandidate.equals(roleName))
 					{
 					    Attribute usersAttribute = attributes.get(usersAttributeFilter);
-						logger.info("usersAttribute:" + usersAttribute.toString());
+						logger.warn("usersAttribute:" + usersAttribute.toString());
 						
-						List roles = new ArrayList();
 						NamingEnumeration allUsersEnum = usersAttribute.getAll();
 						while(allUsersEnum.hasMore())
 						{
 							String userName = (String)allUsersEnum.next();
-							logger.info("userName:" + userName);
+							logger.warn("userName:" + userName);
 							logger.info("userBase:" + userBase);
 							
 							if(roleBase != null && userName.indexOf(userBase) > -1)
@@ -1076,7 +1192,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 							    userName = userName.substring(0, userName.lastIndexOf(","));
 							}
 							
-							logger.info("userNameAttribute:" + userNameAttribute);
+							logger.warn("userNameAttribute:" + userNameAttribute);
 							logger.info("userName:" + userName);
 							logger.info("indexOf:" + userName.indexOf(userNameAttribute));
 
@@ -1089,7 +1205,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 								userName = userName.substring(userName.indexOf("cn=") + 3);
 							
 							//InfoGluePrincipal infoGluePrincipal = this.getAuthorizedInfoGluePrincipal(userName, false, ctx):
-							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, getSupportUpdate(), getSupportDelete());
+							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, this);
 						    users.add(infoGluePrincipal);
 						}
 					}
@@ -1106,45 +1222,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		return users;
 	}
 
-	public void createInfoGluePrincipal(SystemUserVO systemUserVO) throws Exception
-	{
-		throw new SystemException("The JNDI BASIC Authorization module does not support creation of users yet...");
-	}
-
-	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String[] roleNames) throws Exception
-	{
-		throw new SystemException("The JNDI BASIC Authorization module does not support updating of users yet...");
-	}
-
-	public void updateInfoGluePrincipalPassword(String userName) throws Exception 
-	{
-		throw new SystemException("The JNDI BASIC Authorization module does not support updates of users yet...");
-	}
-
-	public void updateInfoGluePrincipalPassword(String userName, String oldPassword, String newPassword) throws Exception
-	{
-		throw new SystemException("The JNDI BASIC Authorization module does not support updates of user password yet...");
-	}
-	
-	public void deleteInfoGluePrincipal(String userName) throws Exception
-	{
-		throw new SystemException("The JNDI BASIC Authorization module does not support deletion of users yet...");
-	}
-	
-	public void createInfoGlueRole(RoleVO roleVO) throws Exception
-	{
-		throw new SystemException("The JNDI BASIC Authorization module does not support creation of users yet...");
-	}
-
-	public void updateInfoGlueRole(RoleVO roleVO, String[] userNames) throws Exception
-	{
-		throw new SystemException("The JNDI BASIC Authorization module does not support updates of users yet...");
-	}
-
-	public void deleteInfoGlueRole(String roleName) throws Exception
-	{
-		throw new SystemException("The JNDI BASIC Authorization module does not support deletion of roles yet...");
-	}
 	
 	public Properties getExtraProperties()
 	{
@@ -1166,15 +1243,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
     }
 
     
-    /* (non-Javadoc)
-     * @see org.infoglue.cms.security.AuthorizationModule#getAuthorizedInfoGlueGroup(java.lang.String)
-     */
-    public InfoGlueGroup getAuthorizedInfoGlueGroup(String groupName) throws Exception
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     /**
      * This method returns a list of all groups available to InfoGlue.
      */
@@ -1255,7 +1323,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					String groupName = (String)allEnum.next();
 					logger.info("groupName:" + groupName);
 					
-					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", getSupportUpdate(), getSupportDelete());
+					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", this);
 					groups.add(infoGlueGroup);
 				}
 				
@@ -1271,14 +1339,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		return groups;
     }
 
-    /* (non-Javadoc)
-     * @see org.infoglue.cms.security.AuthorizationModule#getRoleUsers(java.lang.String)
-     */
-    public List getRoleUsers(String roleName) throws Exception
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     /** 
      * Gets a list of users which is memebers of the given group
@@ -1378,7 +1438,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 							    userName = userName.substring(userName.indexOf(userNameAttribute) + userNameAttribute.length() + 1);
 							}
 							
-							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, getSupportUpdate(), getSupportDelete());
+							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, this);
 						    users.add(infoGluePrincipal);
 						}
 						
@@ -1399,40 +1459,57 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		return users;
 	}
 
-    /* (non-Javadoc)
-     * @see org.infoglue.cms.security.AuthorizationModule#updateInfoGluePrincipal(org.infoglue.cms.entities.management.SystemUserVO, java.lang.String[], java.lang.String[])
-     */
+    
+	public void createInfoGluePrincipal(SystemUserVO systemUserVO) throws Exception
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support creation of users yet...");
+	}
+
+	public void updateInfoGluePrincipalPassword(String userName) throws Exception 
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support updates of users yet...");
+	}
+
+	public void updateInfoGluePrincipalPassword(String userName, String oldPassword, String newPassword) throws Exception
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support updates of user password yet...");
+	}
+	
+	public void deleteInfoGluePrincipal(String userName) throws Exception
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support deletion of users yet...");
+	}
+	
+	public void createInfoGlueRole(RoleVO roleVO) throws Exception
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support creation of users yet...");
+	}
+
+	public void updateInfoGlueRole(RoleVO roleVO, String[] userNames) throws Exception
+	{
+	}
+
+	public void deleteInfoGlueRole(String roleName) throws Exception
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support deletion of roles yet...");
+	}
+
     public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws Exception
     {
-        // TODO Auto-generated method stub
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.infoglue.cms.security.AuthorizationModule#createInfoGlueGroup(org.infoglue.cms.entities.management.GroupVO)
-     */
     public void createInfoGlueGroup(GroupVO groupVO) throws Exception
     {
-        // TODO Auto-generated method stub
-        
+		throw new SystemException("The JNDI BASIC Authorization module does not support creation of groups yet...");        
     }
 
-    /* (non-Javadoc)
-     * @see org.infoglue.cms.security.AuthorizationModule#updateInfoGlueGroup(org.infoglue.cms.entities.management.GroupVO, java.lang.String[])
-     */
     public void updateInfoGlueGroup(GroupVO roleVO, String[] userNames) throws Exception
     {
-        // TODO Auto-generated method stub
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.infoglue.cms.security.AuthorizationModule#deleteInfoGlueGroup(java.lang.String)
-     */
     public void deleteInfoGlueGroup(String groupName) throws Exception
     {
-        // TODO Auto-generated method stub
-        
+		throw new SystemException("The JNDI BASIC Authorization module does not support deletion of groups yet...");        
     }
 
 

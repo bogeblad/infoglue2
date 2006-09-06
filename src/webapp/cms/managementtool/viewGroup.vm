@@ -79,7 +79,7 @@
 	</tr>	
 		
 	<tr>
-		<td width="400">#editTextArea("Group.description" "description" $!description "50" "5" "normaltextarea")</td>
+		<td width="400">#editReadOnlyTextArea("Group.description" "description" $!description "50" "5" "normaltextarea" $readonly)</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -101,6 +101,7 @@
 		  <tr>
 		    <td>
 		    	<SELECT $readonly id="unassignedUserNameList" NAME="unassignedUserNameList" MULTIPLE SIZE="10" onDblClick="opt.transferRight()" style="font-size: 10px; width:200px;">
+		        #if($supportsUpdate)
 		          	#foreach ($infoGluePrincipal in $allInfoGluePrincipals)
 						#set($checked = "")
 						#foreach ($assignedInfoGluePrincipal in $assignedInfoGluePrincipals)
@@ -113,6 +114,9 @@
 							<option value="$infoGluePrincipal.name">$infoGluePrincipal.name</option>
 						#end
 					#end
+				#else
+					<option value="">No need to show users</option>
+				#end	
 		        </select>
 		    </td>
 		    <td align="center">
@@ -156,7 +160,7 @@
 		</td>
 	</tr>
 
-	#if($supportsUpdate)
+	##if($supportsUpdate)
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
@@ -167,7 +171,7 @@
 			<a href="ViewListGroup.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>
-	#end
+	##end
 </table>
 
 </form>

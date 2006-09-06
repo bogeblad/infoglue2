@@ -579,6 +579,21 @@
   <textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea>
 #end
 
+#macro(editReadOnlyTextArea $fieldNameKey $fieldName $fieldValue $cols $rows $className $readonly)
+  #editReadOnlyTextArea3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $cols $rows $className $readonly)
+#end
+
+#macro(editReadOnlyTextArea3 $fieldNameLabel $errorKey $fieldName $fieldValue $cols $rows $className $readonly)
+  $fieldNameLabel
+  #if($errors.hasErrors($errorKey))
+    #foreach($errorMessage in $errors.getErrors($errorKey))
+    <font color="red"> - $errorMessage</font>
+    #end
+  #end
+  <br/>
+  <textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols" $readonly>$!fieldValue</textarea>
+#end
+
 #macro(editPropertyTextArea $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
   #editPropertyTextArea3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
 #end

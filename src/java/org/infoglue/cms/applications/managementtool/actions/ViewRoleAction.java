@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -40,7 +41,7 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	private String roleName;
 	private boolean supportsUpdate = true;
 	private InfoGlueRole infoGlueRole;
-	private List infoGluePrincipals;
+	private List infoGluePrincipals = new ArrayList();
 	private List assignedInfoGluePrincipals;
 	private List contentTypeDefinitionVOList;
 	private List assignedContentTypeDefinitionVOList;    
@@ -49,10 +50,11 @@ public class ViewRoleAction extends InfoGlueAbstractAction
     {
 		//this.supportsUpdate				= RoleControllerProxy.getController().getSupportUpdate();
 		this.infoGlueRole				= RoleControllerProxy.getController().getRole(roleName);
-		this.supportsUpdate				= this.infoGlueRole.getIsUpdateable();
-		this.assignedInfoGluePrincipals	= RoleControllerProxy.getController().getInfoGluePrincipals(roleName);
-		this.infoGluePrincipals			= UserControllerProxy.getController().getAllUsers();
-		
+		this.supportsUpdate				= this.infoGlueRole.getAutorizationModule().getSupportUpdate();
+		this.assignedInfoGluePrincipals	= this.infoGlueRole.getAutorizationModule().getRoleUsers(roleName);
+		if(this.supportsUpdate) //Only fetch if the user can edit.
+			this.infoGluePrincipals		= this.infoGlueRole.getAutorizationModule().getUsers();
+			
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES);
 		this.assignedContentTypeDefinitionVOList 	= RolePropertiesController.getController().getContentTypeDefinitionVOList(roleName);  
     } 

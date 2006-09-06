@@ -38,15 +38,13 @@ public class InfoGlueRole implements Serializable
 
 	private final String name;
 	private final String description;
-	private final boolean isUpdateable;
-	private final boolean isDeleteable;
+	private final AuthorizationModule autorizationModule;
 
-	public InfoGlueRole(String name, String description, boolean isUpdateable, boolean isDeleteable)
+	public InfoGlueRole(String name, String description, AuthorizationModule autorizationModule)
 	{
 		this.name = name;
 		this.description = description;
-		this.isUpdateable = isUpdateable;
-		this.isDeleteable = isDeleteable;
+		this.autorizationModule = autorizationModule;
 	}
 
 	public String getName()
@@ -82,15 +80,9 @@ public class InfoGlueRole implements Serializable
 		return name.hashCode();
 	}
 
-	public boolean getIsDeleteable() 
+	public AuthorizationModule getAutorizationModule()
 	{
-		return isDeleteable;
+		return autorizationModule;
 	}
-
-	public boolean getIsUpdateable() 
-	{
-		return isUpdateable;
-	}
-
 }
 
