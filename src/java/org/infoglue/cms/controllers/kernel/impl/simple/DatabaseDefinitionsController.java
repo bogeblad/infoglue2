@@ -176,6 +176,15 @@ public class DatabaseDefinitionsController
     	
     	url = url.replaceAll("&", "&amp;");
     	
+    	/*
+    	 <jdo-conf>
+	     <database name="INFOGLUE_CMS" engine="\"" + engine + "\"">
+	        <jndi name="java:comp/env/jdbc/mydb" />
+	     </database>
+			<transaction-demarcation mode=\"local\"/>
+	  </jdo-conf>
+    	 */
+    	
     	StringBuffer sb = new StringBuffer();
 		sb.append("<jdo-conf>");
 		sb.append("	<database name=\"INFOGLUE_CMS\" engine=\"" + engine + "\">");
