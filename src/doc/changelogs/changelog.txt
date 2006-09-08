@@ -40,7 +40,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added a new AuthorizationModule which combines a JNDI and InfoGlue's own auth module into one source.
 - Improved Authorization system so any number of sources can be combined and each user/role/group can be edited etc if that source it came from supports it.
 - Added new JDBC/Infoglue authorization module which can combine those two sources.
-- Worked on a solution of having database connection defined in one place for all frameworks
+- Worked more on having a single source for database definitions for all frameworks which are also manageable through a interface. This is to be able to drop the infoglue wars in the app server and then just set up the database connection and go from there.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
