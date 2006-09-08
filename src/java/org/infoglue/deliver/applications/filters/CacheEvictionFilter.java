@@ -26,6 +26,7 @@ package org.infoglue.deliver.applications.filters;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -71,7 +72,18 @@ public class CacheEvictionFilter implements Filter
         try
         {
             String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
-
+            /*
+            System.out.println("Address " + httpRequest.getRemoteAddr());
+            System.out.println("Address " + httpRequest.getRemoteHost());
+            
+            Enumeration enumeration = httpRequest.getHeaderNames();
+            while(enumeration.hasMoreElements())
+            {
+            	String headerName = (String)enumeration.nextElement();
+            	System.out.println(headerName + "=" + httpRequest.getHeader(headerName));
+            }
+            */
+            
             if (!uriMatcher.matches(requestURI)) 
             {
                 CacheController.evictWaitingCache();
