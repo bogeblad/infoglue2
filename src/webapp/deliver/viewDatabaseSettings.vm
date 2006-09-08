@@ -69,9 +69,9 @@
   </tr>
   <tr>
     <td colspan="4">
-    	<form action="ViewDatabaseSettings!update.action" >
+    	<form action="ViewDatabaseSettings!update.action" method="POST">
 			<label for="databasesXML">Databases:</label>
-			<textarea id="databasesXML" name="databasesXML" style="width: 400px; height: 300px;">$!databasesXML</textarea>
+			<textarea id="databasesXML" name="databasesXML" style="width: 600px; height: 500px;">$!databasesXML</textarea>
 			<input type="submit" value="Save"/>
 		</form>
     </td>

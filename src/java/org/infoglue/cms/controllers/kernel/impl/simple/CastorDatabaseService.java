@@ -23,10 +23,16 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.File;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.JDO;
+import org.exolab.castor.jdo.conf.JdoConf;
+import org.exolab.castor.util.JdoConfFactory;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class CastorDatabaseService //extends DatabaseService
 {
@@ -42,9 +48,12 @@ public class CastorDatabaseService //extends DatabaseService
         
         try
         {
-            jdo = new JDO();
+        	jdo = new JDO();
             //jdo.setLogWriter(new Logger( System.out ).setPrefix( "INFOGLUE_CMS" ));
             jdo.setDatabaseName("INFOGLUE_CMS"); 
+            
+            //DatabaseDefinitionsController.getController().getCastorDatabaseDefinitionFile("default");
+            //jdo.setConfiguration(CastorDatabaseService.class.getResource("/currentDatabase.xml").toString());
             jdo.setConfiguration(CastorDatabaseService.class.getResource("/database.xml").toString());
             jdo.setClassLoader(CastorDatabaseService.class.getClassLoader());
             jdo.setCallbackInterceptor(new CmsJDOCallback());

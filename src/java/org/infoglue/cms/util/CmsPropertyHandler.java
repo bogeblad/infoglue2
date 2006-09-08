@@ -131,7 +131,16 @@ public class CmsPropertyHandler
 			
 	        Map args = new HashMap();
 		    args.put("globalKey", "infoglue");
-		    propertySet = PropertySetManager.getInstance("jdbc", args);
+		    try
+		    {
+		    	propertySet = PropertySetManager.getInstance("jdbc", args);
+		    	logger.info("propertySet: " + propertySet);
+		    }
+		    catch(Exception e)
+		    {
+		    	propertySet = null;
+		    	logger.error("Could not get property set: " + e.getMessage(), e);
+		    }
 		    
 		    serverNodeName = cachedProperties.getProperty("serverNodeName");
 		    
@@ -267,54 +276,57 @@ public class CmsPropertyHandler
 	    
 		Timer timer = new Timer();
 		logger.info("Getting jdbc-property:" + cacheKey);
-	    if(localSettingsServerNodeId != null)
-	    {
-	    	if(prefix != null)
-	    	{
-		        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + prefix + "_" + key);
-		        //System.out.println("Local value: " + value);
-		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
-		        {
-		            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
-			        //System.out.println("Global value: " + value);
+		if(propertySet != null)
+		{
+			if(localSettingsServerNodeId != null)
+		    {
+		    	if(prefix != null)
+		    	{
+			        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + prefix + "_" + key);
+			        //System.out.println("Local value: " + value);
+			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+			        {
+			            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
+				        //System.out.println("Global value: " + value);
+				        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+				        {
+				            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+					        //System.out.println("Global value: " + value);
+				        }
+	
+			        }
+		    	}
+		    	else
+		    	{
+			        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + key);
+			        //System.out.println("Local value: " + value);
 			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 			        {
 			            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
 				        //System.out.println("Global value: " + value);
-			        }
-
-		        }
-	    	}
-	    	else
-	    	{
-		        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + key);
-		        //System.out.println("Local value: " + value);
-		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
-		        {
-		            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-			        //System.out.println("Global value: " + value);
-		        }	    		
-	    	}
-	    }
-		else
-		{
-			if(prefix != null)
-	    	{
-				value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
-				//System.out.println("Global value immediately: " + value);
-		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
-		        {
-		            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-			        //System.out.println("Global value: " + value);
-		        }	    		
-	    	}
+			        }	    		
+		    	}
+		    }
 			else
 			{
-				value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-				//System.out.println("Global value immediately: " + value);				
-			}
-	    }
-	    
+				if(prefix != null)
+		    	{
+					value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
+					//System.out.println("Global value immediately: " + value);
+			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+			        {
+			            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+				        //System.out.println("Global value: " + value);
+			        }	    		
+		    	}
+				else
+				{
+					value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
+					//System.out.println("Global value immediately: " + value);				
+				}
+		    }
+		}
+		
 	    if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 	    {
 	        value = getProperty(key);

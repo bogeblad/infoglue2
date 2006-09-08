@@ -25,6 +25,7 @@ package org.infoglue.deliver.applications.actions;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.DatabaseDefinitionsController;
@@ -44,13 +45,14 @@ public class ViewDatabaseSettingsAction extends InfoGlueAbstractAction
 {
 	private String databasesXML = null;
 	
-	private List databases = null;
+	private Map databases = null;
 	
 	public String doExecute() throws Exception
 	{
 		String databaseDefinitions = CmsPropertyHandler.getContextRootPath() + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + "databaseDefinitions.xml";
 		File file = new File(databaseDefinitions);
-		databasesXML = FileHelper.getFileAsString(file);
+		if(file.exists())
+			databasesXML = FileHelper.getFileAsString(file);
 		
 		databases = DatabaseDefinitionsController.getController().getDatabaseDefinitions();
 		
@@ -95,7 +97,7 @@ public class ViewDatabaseSettingsAction extends InfoGlueAbstractAction
 		this.databasesXML = databasesXML;
 	}
 
-	public List getDatabases()
+	public Map getDatabases()
 	{
 		return databases;
 	}

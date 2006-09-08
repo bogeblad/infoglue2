@@ -28,8 +28,10 @@ import java.io.FileInputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.transform.TransformerException;
 
@@ -50,6 +52,7 @@ import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.entities.workflow.impl.simple.EventImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.w3c.dom.Document;
@@ -104,45 +107,107 @@ public class DatabaseDefinitionsController
 	}
 
 	/**
-	 * Returns a List of CategoryInfos for the category atributes of the NodeList
+	 * Returns a List of DatabaseDefintions from the file
 	 */
 	
-	public List getDatabaseDefinitions()
+	public Map getDatabaseDefinitions()
 	{
-		List databases = new ArrayList();
+		Map databases = new HashMap();
 		
 		Document document = getDatabaseDefinitionsDocument();
 		
-		NodeList databaseNodeList = document.getDocumentElement().getElementsByTagName("database");
-		
-		for(int i=0; i < databaseNodeList.getLength(); i++)
+		if(document != null)
 		{
-			Element databaseElement = (Element)databaseNodeList.item(i);
-			String id = databaseElement.getAttribute("id");
-			NodeList propertyNodeList = databaseElement.getElementsByTagName("property");
+			NodeList databaseNodeList = document.getDocumentElement().getElementsByTagName("database");
 			
-			Map database = new HashMap();
-			database.put("id", id);
-			
-			for(int j=0; j < propertyNodeList.getLength(); j++)
+			for(int i=0; i < databaseNodeList.getLength(); i++)
 			{
-				Element propertyElement = (Element)propertyNodeList.item(j);
-				String name = propertyElement.getAttribute("name");
-				String value = propertyElement.getAttribute("value");
+				Element databaseElement = (Element)databaseNodeList.item(i);
+				String id = databaseElement.getAttribute("id");
+				NodeList propertyNodeList = databaseElement.getElementsByTagName("property");
 				
-				database.put(name, value);
+				Map database = new HashMap();
+				database.put("id", id);
+				
+				for(int j=0; j < propertyNodeList.getLength(); j++)
+				{
+					Element propertyElement = (Element)propertyNodeList.item(j);
+					String name = propertyElement.getAttribute("name");
+					String value = propertyElement.getAttribute("value");
+					
+					database.put(name, value);
+				}
+				
+				databases.put(id, database);
 			}
-			
-			databases.add(database);
 		}
-	
+		
 		return databases;
 	}
 
-	public BaseEntityVO getNewVO()
+	/**
+	 * Returns a List of DatabaseDefintions from the file
+	 */
+	
+	public Map getDatabaseDefinition(String id)
 	{
-		return null;
-	}		
+		Map definitions = getDatabaseDefinitions();
+		
+		return (Map)definitions.get(id);
+	}
 
-
+	
+	/**
+	 * Returns a Castor database definition xml string
+	 */
+	
+	public File getCastorDatabaseDefinitionFile(String id) 
+	{
+		Map databaseDefinition = DatabaseDefinitionsController.getController().getDatabaseDefinition("default");
+    	String engine = (String)databaseDefinition.get("driverEngine");
+    	String driverClass = (String)databaseDefinition.get("driverClass");
+    	String url = (String)databaseDefinition.get("url");
+    	String user = (String)databaseDefinition.get("user");
+    	String password = (String)databaseDefinition.get("password");
+    	String useUnicode = (String)databaseDefinition.get("useUnicode");
+    	String encoding = (String)databaseDefinition.get("encoding");
+    	String maxConnections = (String)databaseDefinition.get("maxConnections");
+    	String mapping = (String)databaseDefinition.get("mapping");
+    	
+    	url = url.replaceAll("&", "&amp;");
+    	
+    	StringBuffer sb = new StringBuffer();
+		sb.append("<jdo-conf>");
+		sb.append("	<database name=\"INFOGLUE_CMS\" engine=\"" + engine + "\">");
+		sb.append("		<data-source class-name=\"org.apache.commons.dbcp.BasicDataSource\">");
+		sb.append("			<param name=\"driver-class-name\" value=\"" + driverClass + "\"/>");
+		sb.append("			<param name=\"username\" value=\"" + user + "\"/>");
+		sb.append("			<param name=\"password\" value=\"" + password + "\"/>");
+		sb.append("			<param name=\"url\" value=\"" + url + "\"/>");
+		sb.append("			<param name=\"max-active\" value=\"" + maxConnections + "\"/>");
+		sb.append("			<param name=\"connection-properties\" value=\"useUnicode=" + useUnicode + ";characterEncoding=" + encoding + "\"/>");
+		sb.append("		</data-source>");
+		sb.append("		<mapping href=\"classes/" + mapping + "\"/>");
+		sb.append("	</database>");
+		sb.append(" <transaction-demarcation mode=\"local\"/>");
+		sb.append("</jdo-conf>");
+		
+		String xml = sb.toString();
+		System.out.println("xml:" + xml);
+		
+		String databaseDefinitions = CmsPropertyHandler.getContextRootPath() + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + "currentDatabase.xml";
+		
+		File file = new File(databaseDefinitions);
+		
+		try 
+		{
+			FileHelper.writeToFile(file, xml, false);
+		} 
+		catch (Exception e) 
+		{
+			logger.error("Could not write currentDatabase.xml:" + e.getMessage(), e);
+		}
+		
+		return file;
+	}
 }
