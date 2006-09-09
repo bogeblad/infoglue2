@@ -35,6 +35,10 @@ public abstract class TreeViewAbstractAction extends InfoGlueAbstractAction
         setNodes(this.initialize(getExp()));
     	getResponse().setBufferSize(0);
         
+    	getResponse().setHeader("Cache-Control","no-cache"); 
+    	getResponse().setHeader("Pragma","no-cache");
+    	getResponse().setDateHeader ("Expires", 0);
+	   
         // return
         return "success";
     }

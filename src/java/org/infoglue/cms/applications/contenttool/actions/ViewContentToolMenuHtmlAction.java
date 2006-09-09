@@ -50,7 +50,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	private BaseNode rootNode = null;
 	private String[] allowedContentTypeIds = null;
 	private String bodyClass;
-	
+		
 	/* Experiment 2003-09-11 TODO:
 	 * Provide a list of content-type definition, so that
 	 * we can populate a contenxt menu, to support the

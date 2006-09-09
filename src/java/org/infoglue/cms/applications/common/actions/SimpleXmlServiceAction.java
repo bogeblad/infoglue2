@@ -76,7 +76,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 {
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.16 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.17 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -149,6 +149,10 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
     protected String out(String string) throws IOException
     {
 		getResponse().setContentType("text/xml; charset=" + ENCODING);
+    	getResponse().setHeader("Cache-Control","no-cache"); 
+    	getResponse().setHeader("Pragma","no-cache");
+    	getResponse().setDateHeader ("Expires", 0);
+
 		PrintWriter out = getResponse().getWriter();
 		out.println(string);
 		return null;
