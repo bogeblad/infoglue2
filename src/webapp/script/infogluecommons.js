@@ -34,6 +34,43 @@ function openDiv(id)
 	document.getElementById(id).style.display = 'block';
 }
 
+function toggleDivVisibility(id)
+{
+	var div = document.getElementById(id);
+	if(div && div.style.visibility == "visible")
+		div.style.visibility = "hidden";
+	else
+		div.style.visibility = "visible";
+}
+
+function toggleDivExpansion(id)
+{
+	var div = document.getElementById(id);
+	if(div && div.style.display == "block")
+		div.style.display = "none";
+	else
+		div.style.display = "block";
+
+	var statusImage = document.getElementById(id + "Image");
+	if(div && div.style.display == "block")
+		statusImage.src = "images/arrowDown.gif";
+	else
+		statusImage.src = "images/arrowright.gif";		
+}
+
+
+function ddListClick(listFieldId, targetFieldId)
+{
+	// Show / hide list
+	var tt = document.getElementById(targetFieldId);
+	var list = document.getElementById(listFieldId);
+	var val = list.options[list.selectedIndex].value
+	tt.value=val;
+	list.style.visibility = "hidden";
+	// alert(val);
+}
+
+
 /**
  * This method moves a layer.
  */
