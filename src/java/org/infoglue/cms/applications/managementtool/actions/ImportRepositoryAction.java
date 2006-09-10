@@ -71,6 +71,7 @@ import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FileUploadHelper;
 
 import webwork.action.ActionContext;
@@ -83,6 +84,7 @@ import webwork.action.ActionContext;
 
 public class ImportRepositoryAction extends InfoGlueAbstractAction
 {
+	private String onlyLatestVersions = "true";
 	
 	/**
 	 * This shows the dialog before export.
@@ -107,6 +109,8 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		{
 			//now restore the value and list what we get
 			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
+			//File file = new File("C:/Program/Apache Software Foundation/Tomcat 5.5/webapps/infoglueCMS/digitalAssets/Import_1157890175468Export_TCS-DE_2006-09-07.xml");
+			
 			String encoding = "UTF-8";
 			int version = 1;
 			
@@ -297,6 +301,35 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		}
 
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
+		
+		if(onlyLatestVersions.equalsIgnoreCase("true"))
+		{
+		    getLogger().info("org siteNodeVersions:" + siteNodeVersions.size());
+			List selectedSiteNodeVersions = new ArrayList();
+			Iterator realSiteNodeVersionsIterator = siteNodeVersions.iterator();
+			while(realSiteNodeVersionsIterator.hasNext())
+			{
+				SiteNodeVersion siteNodeVersion = (SiteNodeVersion)realSiteNodeVersionsIterator.next();			
+				Iterator selectedSiteNodeVersionsIterator = selectedSiteNodeVersions.iterator();
+				boolean addVersion = true;
+				while(selectedSiteNodeVersionsIterator.hasNext())
+				{
+					SiteNodeVersion currentSiteNodeVersion = (SiteNodeVersion)selectedSiteNodeVersionsIterator.next();
+					if(siteNodeVersion.getIsActive().booleanValue() && siteNodeVersion.getSiteNodeVersionId().intValue() > currentSiteNodeVersion.getSiteNodeVersionId().intValue())
+					{
+						getLogger().info("A later version was found... removing this one..");
+						selectedSiteNodeVersionsIterator.remove();
+						addVersion = true;
+					}						
+				}
+	
+				if(addVersion)
+					selectedSiteNodeVersions.add(siteNodeVersion);
+			}	
+			
+			siteNodeVersions = selectedSiteNodeVersions;
+		}
+
 		Iterator siteNodeVersionsIterator = siteNodeVersions.iterator();
 		while(siteNodeVersionsIterator.hasNext())
 		{
@@ -447,6 +480,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			}
 	    }
 	    
+	    getLogger().info("Creating content:" + content.getName());
 		db.create(content);
 		
 		allContents.add(content);
@@ -455,11 +489,51 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		idMap.put(originalContentId.toString(), newContentId.toString());
 		
 		Collection contentVersions = content.getContentVersions();
+	    
+		if(onlyLatestVersions.equalsIgnoreCase("true"))
+		{
+			getLogger().info("org contentVersions:" + contentVersions.size());
+			List selectedContentVersions = new ArrayList();
+			Iterator realContentVersionsIterator = contentVersions.iterator();
+			while(realContentVersionsIterator.hasNext())
+			{
+				ContentVersion contentVersion = (ContentVersion)realContentVersionsIterator.next();			
+				Iterator selectedContentVersionsIterator = selectedContentVersions.iterator();
+				boolean addLanguageVersion = true;
+				boolean noLanguageVersionFound = true;
+				while(selectedContentVersionsIterator.hasNext())
+				{
+					ContentVersion currentContentVersion = (ContentVersion)selectedContentVersionsIterator.next();
+					getLogger().info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
+					if(currentContentVersion.getLanguage().getLanguageCode().equals(contentVersion.getLanguage().getLanguageCode()))
+					{
+						noLanguageVersionFound = false;
+						
+						getLogger().info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
+						if(contentVersion.getIsActive().booleanValue() && contentVersion.getContentVersionId().intValue() > currentContentVersion.getContentVersionId().intValue())
+						{
+							getLogger().info("A later version was found... removing this one..");
+							selectedContentVersionsIterator.remove();
+							addLanguageVersion = true;
+						}						
+					}
+				}
+	
+				if(addLanguageVersion || noLanguageVersionFound)
+					selectedContentVersions.add(contentVersion);
+			}	
+			
+			contentVersions = selectedContentVersions;
+		}
+		
+		getLogger().info("new contentVersions:" + contentVersions.size());
+		//Collection contentVersions = content.getContentVersions();
 		Iterator contentVersionsIterator = contentVersions.iterator();
 		while(contentVersionsIterator.hasNext())
 		{
 			ContentVersion contentVersion = (ContentVersion)contentVersionsIterator.next();
 			Language language = LanguageController.getController().getLanguageWithCode(contentVersion.getLanguage().getLanguageCode(), db);
+			getLogger().info("Creating contentVersion for language:" + contentVersion.getLanguage().getLanguageCode() + " on content " + content.getName());
 
 			contentVersion.setOwningContent((ContentImpl)content);
 			contentVersion.setLanguage((LanguageImpl)language);
@@ -586,6 +660,14 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	            contentVersion.setVersionValue(contentVersionValue);
 	        }
 	    }
+	}
+
+	public String getOnlyLatestVersions() {
+		return onlyLatestVersions;
+	}
+
+	public void setOnlyLatestVersions(String onlyLatestVersions) {
+		this.onlyLatestVersions = onlyLatestVersions;
 	}
 
 	/*

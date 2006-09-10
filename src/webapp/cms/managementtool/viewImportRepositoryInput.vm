@@ -59,13 +59,19 @@
 		<td>
 			$ui.getString("tool.managementtool.importRepository.introduction")<br/><br/>
 		</td>
-	</tr>		
+	</tr>	
 	<tr>
 		<td>
 			$ui.getString("tool.managementtool.importRepository.fileUploadFileLabel")<br/>
-			<input size=30 type="FILE" name="file1"><p>
+			<input size=30 type="FILE" name="file1">
 		</td>
-	</tr>		
+	</tr>
+	<tr>
+		<td>
+			$ui.getString("tool.managementtool.importRepository.onlyLatestVersionsLabel")<br/>
+			<input type="checkbox" name="onlyLatestVersions" value="true" checked="1">
+		</td>
+	</tr>
 	<tr>
 		<td>
 			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
