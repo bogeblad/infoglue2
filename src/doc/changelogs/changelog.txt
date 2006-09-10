@@ -42,6 +42,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added new JDBC/Infoglue authorization module which can combine those two sources.
 - Worked more on having a single source for database definitions for all frameworks which are also manageable through a interface. This is to be able to drop the infoglue wars in the app server and then just set up the database connection and go from there.
 - Defeated the IE cache refresh bug which before made tree not update after change in Internet Explorer.
+- Fixed an option when importing so only the latest versions are imported.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
