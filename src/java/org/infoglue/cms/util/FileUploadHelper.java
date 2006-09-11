@@ -68,6 +68,7 @@ public class FileUploadHelper
 					String name = (String)names.nextElement();
 						            	
 					File file = mpr.getFile(name);
+					logger.info("file:" + file.getPath() + ":" + file.exists());
 					if(file != null)
 					{
 						//String contentType    = mpr.getContentType(name);
@@ -81,6 +82,7 @@ public class FileUploadHelper
 		            	
 						renamedFile = new File(fileSystemName);
 						boolean isRenamed = file.renameTo(renamedFile);
+						logger.info("renamed file:" + renamedFile.getPath() + ":" + renamedFile.exists() + ":" + isRenamed);
 					}
 				}
 			}
