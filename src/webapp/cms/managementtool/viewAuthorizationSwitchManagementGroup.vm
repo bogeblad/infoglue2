@@ -9,30 +9,31 @@ function reloadMenu()
 }
 </script>
 
-#beginManagementTool("tool.managementtool.redirectList.header" "tool.managementtool.redirectList.header" "")
+#beginManagementTool("tool.managementtool.viewAuthorizationSwitchManagementGroup.header" "tool.managementtool.viewAuthorizationSwitchManagementGroup.header" "")
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="AuthorizationSwitchManagement!updateGroup.action">
 <input type="hidden" name="groupName" value="$groupName"/>
 <table>
 	<tr>
-		<td colspan="2">$groupName</td>
-	</tr>		
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<td colspan="2" class="biglabel">Which new groupname should all occurrancies of $groupName be complemented with</td>
+		<td colspan="2" class="biglabel">$ui.getString("tool.managementtool.viewAuthorizationSwitchManagementGroup.intro", $groupName)</td>
 	</tr>
 	<tr>
 		<td colspan="2" class="biglabel">
 			<select name="newGroupName" id="newGroupName"> 	
-			#foreach ($groupName in $groups)
-				<option id="$groupName">$groupName</option>
+			#foreach ($group in $groups)
+				<option id="$group.name">$group.name</option>
 			#end
 			</select>
 		</td>
 	</tr>
+	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">$ui.getString("tool.managementtool.viewAuthorizationSwitchManagementGroup.info", $accessRights.size())</td>
+	</tr>	
 	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>

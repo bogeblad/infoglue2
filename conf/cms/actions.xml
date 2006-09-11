@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.28 2006/09/07 20:23:44 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.29 2006/09/11 12:24:21 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1405,6 +1405,9 @@
 		<view name="inputUser">/cms/managementtool/viewAuthorizationSwitchManagementUser.vm</view>
 		<view name="inputRole">/cms/managementtool/viewAuthorizationSwitchManagementRole.vm</view>
 		<view name="inputGroup">/cms/managementtool/viewAuthorizationSwitchManagementGroup.vm</view>
+		<view name="successUser">ViewSystemUser.action</view>
+		<view name="successRole">ViewRole.action</view>
+		<view name="successGroup">ViewGroup.action</view>
 		<view name="success">/cms/managementtool/viewListInvalidAuthorization.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>

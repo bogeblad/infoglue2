@@ -9,30 +9,30 @@ function reloadMenu()
 }
 </script>
 
-#beginManagementTool("tool.managementtool.redirectList.header" "tool.managementtool.redirectList.header" "")
+#beginManagementTool("tool.managementtool.viewAuthorizationSwitchManagementRole.header" "tool.managementtool.viewAuthorizationSwitchManagementRole.header" "")
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="AuthorizationSwitchManagement!updateRole.action">
 <input type="hidden" name="roleName" value="$roleName"/>
 <table>
 	<tr>
-		<td colspan="2">$roleName</td>
-	</tr>		
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<td colspan="2" class="biglabel">Which new rolename should all occurrancies of $roleName be complemented with</td>
+		<td colspan="2" class="biglabel">$ui.getString("tool.managementtool.viewAuthorizationSwitchManagementRole.intro", $roleName)</td>
 	</tr>
 	<tr>
 		<td colspan="2" class="biglabel">
 			<select name="newRoleName" id="newRoleName"> 	
-			#foreach ($roleName in $roles)
-				<option id="$roleName">$roleName</option>
+			#foreach ($role in $roles)
+				<option id="$role.name">$role.name</option>
 			#end
 			</select>
 		</td>
 	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">$ui.getString("tool.managementtool.viewAuthorizationSwitchManagementRole.info", $accessRights.size())</td>
+	</tr>	
 	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>

@@ -463,6 +463,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		if(contentTypeDefinitionVOList.size() > 0)
 			buttons.add(new ImageButton("ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(this.userName, URIEncoding), URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewSystemUserProperties"), "View User Properties"));
 		
+		buttons.add(new ImageButton("AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(this.userName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferUserAccessRights"), "Transfer Users Access Rights"));
+
 		return buttons;				
 	}
 
@@ -493,6 +495,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		if(contentTypeDefinitionVOList.size() > 0)
 			buttons.add(new ImageButton("ViewRoleProperties.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.roleName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewRoleProperties"), "View Role Properties"));
 		
+		buttons.add(new ImageButton("AuthorizationSwitchManagement!inputRole.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.roleName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferRoleAccessRights"), "Transfer Roles Access Rights"));
+
 		return buttons;				
 	}
 	
@@ -523,6 +527,8 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		if(contentTypeDefinitionVOList.size() > 0)
 			buttons.add(new ImageButton("ViewGroupProperties.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.groupName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewGroupProperties"), "View Group Properties"));
 		
+		buttons.add(new ImageButton("AuthorizationSwitchManagement!inputGroup.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.groupName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferGroupAccessRights"), "Transfer Groups Access Rights"));
+				
 		return buttons;				
 	}
 

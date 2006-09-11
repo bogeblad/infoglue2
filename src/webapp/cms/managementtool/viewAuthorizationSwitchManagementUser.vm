@@ -9,30 +9,31 @@ function reloadMenu()
 }
 </script>
 
-#beginManagementTool("tool.managementtool.redirectList.header" "tool.managementtool.redirectList.header" "")
+#beginManagementTool("tool.managementtool.viewAuthorizationSwitchManagementUser.header" "tool.managementtool.viewAuthorizationSwitchManagementUser.header" "")
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="AuthorizationSwitchManagement!updateUser.action">
 <input type="hidden" name="userName" value="$userName"/>
 <table>
 	<tr>
-		<td colspan="2">$userName</td>
-	</tr>		
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<td colspan="2" class="biglabel">Which new username should all occurrancies of $userName be complemented with</td>
+		<td colspan="2" class="biglabel">$ui.getString("tool.managementtool.viewAuthorizationSwitchManagementUser.intro", $userName)</td>
 	</tr>
 	<tr>
 		<td colspan="2" class="biglabel">
 			<select name="newUserName" id="newUserName"> 	
-			#foreach ($userName in $users)
-				<option id="$userName">$userName</option>
+			#foreach ($user in $users)
+				<option id="$user.name">$user.name</option>
 			#end
 			</select>
 		</td>
 	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">$ui.getString("tool.managementtool.viewAuthorizationSwitchManagementUser.info", $accessRights.size())</td>
+	</tr>	
+	
 	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>

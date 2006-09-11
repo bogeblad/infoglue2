@@ -43,6 +43,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Worked more on having a single source for database definitions for all frameworks which are also manageable through a interface. This is to be able to drop the infoglue wars in the app server and then just set up the database connection and go from there.
 - Defeated the IE cache refresh bug which before made tree not update after change in Internet Explorer.
 - Fixed an option when importing so only the latest versions are imported.
+- Made intuitive rights transfer GUI:s so one can duplicate one user's/group's/role's rights to another. This makes it easier to move between authorization systems. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

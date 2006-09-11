@@ -70,6 +70,8 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
     private List roles = new ArrayList();
     private List groups = new ArrayList();
 
+    private List accessRights = new ArrayList();
+
     private String userName;
     private String roleName;
     private String groupName;
@@ -81,34 +83,15 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
     public String doInputUser() throws Exception
     {    	
     	this.users = UserControllerProxy.getController().getAllUsers();
+    	this.accessRights = getAccessRightsUser();
     	
         return INPUT + "User";
-    }
-
-    public String doUpdateUser() throws Exception
-    {    	
-    	updateAccessRightsUser(userName, newUserName);
-    	
-    	return doExecute();
-    }
-
-    public String doUpdateRole() throws Exception
-    {    	
-    	updateAccessRightsUser(roleName, newRoleName);
-    	
-    	return doExecute();
-    }
-
-    public String doUpdateGroup() throws Exception
-    {    	
-    	updateAccessRightsUser(groupName, newGroupName);
-    	
-    	return doExecute();
     }
 
     public String doInputRole() throws Exception
     {   
     	this.roles = RoleControllerProxy.getController().getAllRoles();
+    	this.accessRights = getAccessRightsRole();
     	
         return INPUT + "Role";
     }
@@ -116,19 +99,151 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
     public String doInputGroup() throws Exception
     {
     	this.groups = GroupControllerProxy.getController().getAllGroups();
+    	this.accessRights = getAccessRightsGroup();
     	
         return INPUT + "Group";
     }
 
-    public String doExecute() throws Exception
+    public String doUpdateUser() throws Exception
     {    	
+    	updateAccessRightsUser(userName, newUserName);
+    	
+    	return "successUser";
+    }
+
+    public String doUpdateRole() throws Exception
+    {    	
+    	updateAccessRightsRole(roleName, newRoleName);
+    	
+    	return "successRole";
+    }
+
+    public String doUpdateGroup() throws Exception
+    {    	
+    	updateAccessRightsGroup(groupName, newGroupName);
+    	
+    	return "successGroup";
+    }
+
+    public String doExecute() throws Exception
+    {   
+    	/*
     	this.invalidUsers = getInvalidAccessRightsUser();
     	this.invalidRoles = getInvalidAccessRightsRole();
     	this.invalidGroups = getInvalidAccessRightsGroup();
-
+    	*/
+    	
         return SUCCESS;
     }
 
+
+    private List getAccessRightsUser() throws Exception
+    {
+    	List accessRightUserList = new ArrayList();
+
+        Database db = CastorDatabaseService.getDatabase();
+        
+        db.begin();
+
+        try
+        {
+	
+	        try
+	        {
+	        	accessRightUserList = AccessRightController.getController().getAccessRightUserList(userName, db);
+	        }
+	        catch(Exception e)
+	        {
+	        	e.printStackTrace();
+	        }
+	        
+	        db.commit();
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            db.rollback();
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+            db.close();
+        }
+        
+        return accessRightUserList;
+    }
+
+    private List getAccessRightsRole() throws Exception
+    {
+    	List accessRightRoleList = new ArrayList();
+
+        Database db = CastorDatabaseService.getDatabase();
+        
+        db.begin();
+
+        try
+        {
+	
+	        try
+	        {
+	        	accessRightRoleList = AccessRightController.getController().getAccessRightRoleList(roleName, db);
+	        }
+	        catch(Exception e)
+	        {
+	        	e.printStackTrace();
+	        }
+	        
+	        db.commit();
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            db.rollback();
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+            db.close();
+        }
+        
+        return accessRightRoleList;
+    }
+
+    private List getAccessRightsGroup() throws Exception
+    {
+    	List accessRightGroupList = new ArrayList();
+
+        Database db = CastorDatabaseService.getDatabase();
+        
+        db.begin();
+
+        try
+        {
+	
+	        try
+	        {
+	        	accessRightGroupList = AccessRightController.getController().getAccessRightGroupList(groupName, db);
+	        }
+	        catch(Exception e)
+	        {
+	        	e.printStackTrace();
+	        }
+	        
+	        db.commit();
+        }
+        catch(Exception e)
+        {
+            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            db.rollback();
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+            db.close();
+        }
+        
+        return accessRightGroupList;
+    }
 
     
     private List getInvalidAccessRightsUser() throws Exception
@@ -348,12 +463,23 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	                AccessRightUser accessRightUser = (AccessRightUser)i.next(); 
 	                AccessRight accessRight = accessRightUser.getAccessRight();
 
-	                //accessRightUser.setUserName(newUserName);
-	                
-				    AccessRightUserVO accessRightUserVO = new AccessRightUserVO();
-				    accessRightUserVO.setUserName(newUserName);
-				    AccessRightUser newAccessRightUser = AccessRightController.getController().createAccessRightUser(db, accessRightUserVO, accessRight);
-				    accessRight.getUsers().add(newAccessRightUser);
+	                boolean exists = false;
+	                Iterator usersIterator = accessRight.getUsers().iterator();
+	                while(usersIterator.hasNext())
+	                {
+	                	AccessRightUser currentAccessRightUser = (AccessRightUser)usersIterator.next();
+	                	if(currentAccessRightUser.getUserName().equals(newUserName))
+	                		exists = true;
+	                }
+
+	                if(!exists)
+	                {
+		                //accessRightUser.setUserName(newUserName);
+					    AccessRightUserVO accessRightUserVO = new AccessRightUserVO();
+					    accessRightUserVO.setUserName(newUserName);
+					    AccessRightUser newAccessRightUser = AccessRightController.getController().createAccessRightUser(db, accessRightUserVO, accessRight);
+					    accessRight.getUsers().add(newAccessRightUser);
+	                }
 	            }	            
 	        }
 	        catch(Exception e)
@@ -394,12 +520,23 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	                AccessRightRole accessRightRole = (AccessRightRole)i.next(); 
 	                AccessRight accessRight = accessRightRole.getAccessRight();
 
-	                //accessRightRole.setRoleName(newRoleName);
+	                boolean exists = false;
+	                Iterator rolesIterator = accessRight.getRoles().iterator();
+	                while(rolesIterator.hasNext())
+	                {
+	                	AccessRightRole currentAccessRightRole = (AccessRightRole)rolesIterator.next();
+	                	if(currentAccessRightRole.getRoleName().equals(newRoleName))
+	                		exists = true;
+	                }
 	                
-				    AccessRightRoleVO accessRightRoleVO = new AccessRightRoleVO();
-				    accessRightRoleVO.setRoleName(newRoleName);
-				    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, accessRightRoleVO, accessRight);
-				    accessRight.getRoles().add(newAccessRightRole);
+	                if(!exists)
+	                {
+		                //accessRightRole.setRoleName(newRoleName);
+					    AccessRightRoleVO accessRightRoleVO = new AccessRightRoleVO();
+					    accessRightRoleVO.setRoleName(newRoleName);
+					    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, accessRightRoleVO, accessRight);
+					    accessRight.getRoles().add(newAccessRightRole);
+	                }
 	            }	            
 	        }
 	        catch(Exception e)
@@ -440,12 +577,23 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	                AccessRightGroup accessRightGroup = (AccessRightGroup)i.next(); 
 	                AccessRight accessRight = accessRightGroup.getAccessRight();
 
-	                //accessRightGroup.setGroupName(newGroupName);
+	                boolean exists = false;
+	                Iterator groupsIterator = accessRight.getGroups().iterator();
+	                while(groupsIterator.hasNext())
+	                {
+	                	AccessRightGroup currentAccessRightGroup = (AccessRightGroup)groupsIterator.next();
+	                	if(currentAccessRightGroup.getGroupName().equals(newGroupName))
+	                		exists = true;
+	                }
 	                
-				    AccessRightGroupVO accessRightGroupVO = new AccessRightGroupVO();
-				    accessRightGroupVO.setGroupName(newGroupName);
-				    AccessRightGroup newAccessRightGroup = AccessRightController.getController().createAccessRightGroup(db, accessRightGroupVO, accessRight);
-				    accessRight.getGroups().add(newAccessRightGroup);
+	                if(!exists)
+	                {
+		                //accessRightGroup.setGroupName(newGroupName);
+					    AccessRightGroupVO accessRightGroupVO = new AccessRightGroupVO();
+					    accessRightGroupVO.setGroupName(newGroupName);
+					    AccessRightGroup newAccessRightGroup = AccessRightController.getController().createAccessRightGroup(db, accessRightGroupVO, accessRight);
+					    accessRight.getGroups().add(newAccessRightGroup);
+	                }
 	            }	            
 	        }
 	        catch(Exception e)
@@ -555,6 +703,11 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	public List getUsers()
 	{
 		return users;
+	}
+
+	public List getAccessRights()
+	{
+		return accessRights;
 	}
 
 }
