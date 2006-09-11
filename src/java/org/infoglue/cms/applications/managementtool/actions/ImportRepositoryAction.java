@@ -110,6 +110,8 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			//now restore the value and list what we get
 			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
 			//File file = new File("C:/Program/Apache Software Foundation/Tomcat 5.5/webapps/infoglueCMS/digitalAssets/Import_1157890175468Export_TCS-DE_2006-09-07.xml");
+			if(file == null || !file.exists())
+				throw new SystemException("The file upload must have gone bad as no file reached the import utility.");
 			
 			String encoding = "UTF-8";
 			int version = 1;
