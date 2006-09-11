@@ -475,8 +475,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	/*
 	public SiteNodeVersion getLatestActiveSiteNodeVersion(Integer siteNodeId, Database db) throws SystemException, Exception
 	{
-	    System.out.println("\n\nAAAAAAAAAAAAAA start");
-	    
 	    SiteNodeVersion siteNodeVersion = null;
 		
 		getLogger().info("Loading siteNode " + siteNodeId);
@@ -501,8 +499,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 				}
 			}
 		}
-
-		System.out.println("AAAAAAAAAAAAAA end\n\n");
 	    
 		return siteNodeVersion;
 	}

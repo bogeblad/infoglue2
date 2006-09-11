@@ -199,8 +199,6 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	
 	public InfoGlueRole getAuthorizedInfoGlueRole(String roleName) throws Exception
 	{
-		System.out.println("AAAAAAAAAAAA");
-		
 		InfoGlueRole infoglueRole = null;
 
 		RoleVO roleVO = null;
@@ -214,7 +212,6 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		    roleVO = RoleController.getController().getRoleWithName(roleName, transactionObject).getValueObject();
 		}
 		
-		System.out.println("this:" + this);
 		infoglueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), this);
 				
 		return infoglueRole;
