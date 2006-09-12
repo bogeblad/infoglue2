@@ -106,21 +106,30 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 
     public String doUpdateUser() throws Exception
     {    	
-    	updateAccessRightsUser(userName, newUserName);
-    	
+    	if(this.getInfoGluePrincipal().getIsAdministrator())
+    		updateAccessRightsUser(userName, newUserName);
+    	else
+    		throw new SystemException("You are not allowed to perform this action.");
+    		
     	return "successUser";
     }
 
     public String doUpdateRole() throws Exception
     {    	
-    	updateAccessRightsRole(roleName, newRoleName);
+    	if(this.getInfoGluePrincipal().getIsAdministrator())
+    		updateAccessRightsRole(roleName, newRoleName);
+    	else
+    		throw new SystemException("You are not allowed to perform this action.");
     	
     	return "successRole";
     }
 
     public String doUpdateGroup() throws Exception
     {    	
-    	updateAccessRightsGroup(groupName, newGroupName);
+    	if(this.getInfoGluePrincipal().getIsAdministrator())
+    		updateAccessRightsGroup(groupName, newGroupName);
+    	else
+    		throw new SystemException("You are not allowed to perform this action.");
     	
     	return "successGroup";
     }
