@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.security;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -41,6 +43,13 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.HasControls;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
+import javax.naming.ldap.SortControl;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.management.GroupVO;
@@ -58,7 +67,7 @@ import org.infoglue.deliver.util.CacheController;
  * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class JNDIBasicAuthorizationModule implements AuthorizationModule
+public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(JNDIBasicAuthorizationModule.class.getName());
 
@@ -133,7 +142,50 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		
 		return ctx;
 	}
+
+	/**
+	 * This method gets a Context - either by an anonymous bind or a real bind
+	 */
 	
+	public DirContext getContext(Control[] controls) throws Exception
+	{
+		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
+		String ldapVersion			= this.extraProperties.getProperty("ldapVersion");
+		String socketFactory		= this.extraProperties.getProperty("socketFactory");
+		String authenticationMethod	= this.extraProperties.getProperty("authenticationMethod");
+		String connectionName		= this.extraProperties.getProperty("connectionName");
+		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
+
+		// Create a Hashtable object.
+		Hashtable env = new Hashtable();
+		
+		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+
+		env.put(Context.PROVIDER_URL, connectionURL);
+		if(ldapVersion != null && !ldapVersion.equals("3"))
+			env.put("java.naming.ldap.version", ldapVersion); 		
+		else
+			env.put("java.naming.ldap.version", "3"); 
+		
+		if(socketFactory != null && !socketFactory.equals(""))
+			env.put("java.naming.ldap.factory.socket", "org.infoglue.cms.security.DummySSLSocketFactory");
+		
+		if(authenticationMethod != null && authenticationMethod.equals("none"))
+		{
+			env.put(Context.SECURITY_AUTHENTICATION, "none");
+		}
+		else
+		{
+			env.put(Context.SECURITY_AUTHENTICATION, "simple");
+			env.put(Context.SECURITY_PRINCIPAL, connectionName);
+			env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
+		}
+				
+		DirContext ctx = new InitialLdapContext(env, controls); 
+		
+		return ctx;
+	}
+
 	/**
 	 * Gets an authorized InfoGluePrincipal 
 	 */
@@ -310,6 +362,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				searchFilter = "(" + groupName + ")";
 				
 			logger.info("searchFilter:" + searchFilter);
+			logger.info("baseDN:" + baseDN);
 			logger.info("groupSearchScope:" + groupSearchScope);
 			
 			String groupsAttribute = "distinguishedName";
@@ -333,8 +386,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
 
 			if(!answer.hasMore())
+			{
 				throw new Exception("The was no groups found in the JNDI Data Source.");
-		
+			}
+			
 			logger.info("-----------------------\n");
 			while (answer.hasMore()) 
 			{
@@ -408,6 +463,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 	protected Map getUserAttributes(String userName, DirContext ctx) throws NamingException, Exception
 	{
+		logger.info("userName:" + userName);
+		
 		Map userAttributes = new HashMap();
 		
 		String roleBase 			= this.extraProperties.getProperty("roleBase");
@@ -441,6 +498,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				attributesFilter = userAttributesFilter;
 			
 			String[] attrID = attributesFilter.split(",");
+			String[] userMailAttributeFilterAttributeId = userMailAttributeFilter.split(",");
 			
 			logger.info("baseDN:" + baseDN);
 			logger.info("searchFilter:" + searchFilter);
@@ -465,18 +523,21 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				{
 					logger.info("attrID[i]:" + attrID[i]);
 					Attribute attribute = attributes.get(attrID[i]);
-					if(attribute == null)
+					if(attribute == null && !attrID[i].equals("mail"))
 					{
 						throw new Exception("The attribute " + attrID[i] + " was not found among the user attributes. [" + attributes + "]");
 					}
 					
-					logger.info("attribute:" + attribute.toString());
-					NamingEnumeration allEnum = attribute.getAll();
-					while(allEnum.hasMore())
+					if(attribute != null)
 					{
-						String value = (String)allEnum.next();
-						logger.info("value:" + value);
-						userAttributes.put(attrID[i], value);
+						logger.info("attribute:" + attribute.toString());
+						NamingEnumeration allEnum = attribute.getAll();
+						while(allEnum.hasMore())
+						{
+							String value = (String)allEnum.next();
+							logger.info("value:" + value);
+							userAttributes.put(attrID[i], value);
+						}
 					}
 				}	
 				
@@ -486,12 +547,21 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				logger.info("userFirstNameAttribute:" + userFirstNameAttribute.toString());
 				Attribute userLastNameAttribute = attributes.get(userLastNameAttributeFilter);
 				logger.info("userLastNameAttribute:" + userLastNameAttribute.toString());
-				Attribute userMailAttribute = attributes.get(userMailAttributeFilter);
+				
+				Attribute userMailAttribute = null;
+				for(int i=0; i<userMailAttributeFilterAttributeId.length; i++)
+				{
+					userMailAttribute = attributes.get(userMailAttributeFilterAttributeId[i]);
+					if(userMailAttribute != null)
+						break;
+				}
+				
+				//Attribute userMailAttribute = attributes.get(userMailAttributeFilter);
 				logger.info("userMailAttribute:" + userMailAttribute.toString());
 				
 				userAttributes.put("firstName", userFirstNameAttribute.get().toString());
 				userAttributes.put("lastName", userLastNameAttribute.get().toString());
-				//userAttributes.put("firstName", userFirstNameAttribute);
+				userAttributes.put("mail", userMailAttribute.get().toString());
 				//userAttributes.put("firstName", userFirstNameAttribute);
 				//Attribute memberOfAttribute = attributes.get(memberOfAttributeFilter);
 				//logger.info("memberOfAttribute:" + memberOfAttribute.toString());
@@ -500,7 +570,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 		catch (Exception e) 
 		{
-			logger.info(e);
+			logger.warn(e);
 			throw e;
 		}
 
@@ -552,7 +622,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		logger.info("userName:" + userName);
 		
 		List roles = new ArrayList();
-		
+		List allRoles = getRoles(ctx);
+
 		String roleBase 			= this.extraProperties.getProperty("roleBase").toLowerCase().trim();
 		String userBase				= this.extraProperties.getProperty("userBase").toLowerCase().trim();
 		String userSearch			= this.extraProperties.getProperty("userSearch");
@@ -645,10 +716,13 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					
 					if(roleFilter.equalsIgnoreCase("*") || roleName.indexOf(roleFilter) > -1)
 					{
-						InfoGlueRole infoGlueRole = getAuthorizedInfoGlueRole(roleName);
-					    //InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source");
-						logger.info("Adding role.................:" + fullRoleName);
-						roles.add(infoGlueRole);
+						InfoGlueRole infoGlueRole = getAuthorizedInfoGlueRole(roleName, ctx);
+					    if(allRoles.contains(infoGlueRole))
+					    {
+							//InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source");
+							logger.info("Adding role.................:" + fullRoleName);
+							roles.add(infoGlueRole);
+					    }
 					}
 				}
 				
@@ -709,9 +783,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		logger.info("userName:" + userName);
 		
 		List groups = new ArrayList();
-		
-		String groupBase 			= this.extraProperties.getProperty("groupBase");
-		String userBase				= this.extraProperties.getProperty("userBase");
+		List allGroups = getGroups(ctx);
+	    
+		String groupBase 			= this.extraProperties.getProperty("groupBase").toLowerCase().trim();;
+		String userBase				= this.extraProperties.getProperty("userBase").toLowerCase().trim();;
 		String userSearch			= this.extraProperties.getProperty("userSearch");
 		String memberOfAttribute	= this.extraProperties.getProperty("memberOfAttributeFilter");
 		String groupsAttributeFilter = this.extraProperties.getProperty("groupsAttributesFilter");
@@ -738,12 +813,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			String memberOfAttributeFilter = "memberOf";
 			if(memberOfAttribute != null && memberOfAttribute.length() > 0)
 			    memberOfAttributeFilter = memberOfAttribute;
+			memberOfAttributeFilter = memberOfAttributeFilter.toLowerCase().trim();
 			
 			String[] attrID = memberOfAttributeFilter.split(",");
 			
 			String groupsAttribute = "distinguishedName";
 			if(groupsAttributeFilter != null && groupsAttributeFilter.length() > 0)
 				groupsAttribute = groupsAttributeFilter;
+			groupsAttribute = groupsAttribute.toLowerCase().trim();
 			
 			logger.info("baseDN:" + baseDN);
 			logger.info("searchFilter:" + searchFilter);
@@ -770,11 +847,12 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				{
 					Object groupNameObject = allEnum.next();
 					
-					String groupName = groupNameObject.toString();
+					String fullGroupName = groupNameObject.toString().toLowerCase().trim();
+					String groupName = fullGroupName;
 					logger.info("groupName:" + groupName);
 					logger.info("groupBase:" + groupBase);
 					logger.info("indexOf:" + groupName.indexOf(groupBase));
-					if(groupBase != null && groupName.indexOf(groupBase) > -1)
+					if(groupBase != null && fullGroupName.indexOf(groupBase) > -1)
 					{
 					    groupName = groupName.substring(0, groupName.indexOf(groupBase));
 					    groupName = groupName.substring(0, groupName.lastIndexOf(","));
@@ -793,12 +871,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					}
 					
 					logger.info("groupName:" + groupName);
-					logger.info("groupName:" + groupName);
 					if(groupFilter.equalsIgnoreCase("*") || groupName.indexOf(groupFilter) > -1)
 					{
-					    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", this);
-						logger.info("Adding group.................:" + groupName);
-						groups.add(infoGlueGroup);
+						InfoGlueGroup infoGlueGroup = getAuthorizedInfoGlueGroup(groupName, ctx);
+					    if(allGroups.contains(infoGlueGroup))
+					    {
+							logger.info("Adding group.................:" + groupName);
+							groups.add(infoGlueGroup);
+					    }
 					}
 				}
 				
@@ -814,14 +894,40 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		return groups;
 	}
 	
+	
+    /**
+     * This method returns a list of all roles available to InfoGlue.
+     */
+    public List getRoles() throws Exception
+    {
+    	List roles = null;
+    	
+		DirContext ctx = getContext();
+		
+		roles = getRoles(ctx);
+		
+		ctx.close();
+
+		return roles;
+    }
 	/**
 	 * This method gets a list of roles
 	 */
 	
-	public List getRoles() throws Exception
+	public List getRoles(DirContext ctx) throws Exception
 	{
 	    logger.info("getRoles start....");
-		List roles = new ArrayList();
+
+		String roleCacheTimeout = this.extraProperties.getProperty("roleCacheTimeout", "1800");
+
+	    String key = "allRoles";
+		List roles = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(roleCacheTimeout).intValue());
+		if(roles != null)
+			return roles;
+		
+		roles = new ArrayList();
+
+		//List roles = new ArrayList();
 
 		String roleBase 			= this.extraProperties.getProperty("roleBase");
 		String rolesFilter 			= this.extraProperties.getProperty("rolesFilter");
@@ -831,8 +937,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 
 		try 
 		{
-			DirContext ctx = getContext();
-			
 			logger.info("Connected...");
 
 			String baseDN = roleBase;
@@ -898,6 +1002,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		}
 	    logger.info("getRoles end....");
 
+	    if(roles != null)
+	    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, roles, null, false);
+
 		return roles;
 	}
 
@@ -909,8 +1016,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	{
 	    logger.info("getUsers start...");
 	    
+		String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
+
 		String key = "allUsers";
-		List users = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, 500000);
+		List users = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
 		if(users != null)
 			return users;
 		
@@ -932,7 +1041,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		try 
 		{
 			DirContext ctx = getContext();
-		
+			 
 			String baseDN = userBase;
 			String searchFilter = "(CN=*)";
 			if(userListSearch != null && userListSearch.length() > 0)
@@ -943,8 +1052,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				attributesFilter = userAttributesFilter;
 						
 			String[] attrID = attributesFilter.split(",");
-
-			logger.info("attributesFilter" + attributesFilter);
+			String[] userMailAttributeFilterAttributeId = userMailAttributeFilter.split(",");
+			
+			logger.info("attributesFilter:" + attributesFilter);
+			logger.info("userMailAttributeFilterAttributeId:" + userMailAttributeFilterAttributeId);
 			logger.info("baseDN:" + baseDN);
 			logger.info("searchFilter:" + searchFilter);
 			//logger.info("attrID" + attrID);
@@ -959,7 +1070,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			    
 		    ctls.setSearchScope(userSearchScopeInt);
 			ctls.setReturningAttributes(attrID);
-	
+
 			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
 
 			if(!answer.hasMore())
@@ -977,7 +1088,15 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 					Attribute userNameAttribute = attributes.get(userNameAttributeFilter);
 					Attribute userFirstNameAttribute = attributes.get(userFirstNameAttributeFilter);
 					Attribute userLastNameAttribute = attributes.get(userLastNameAttributeFilter);
-					Attribute userMailAttribute = attributes.get(userMailAttributeFilter);
+					
+					Attribute userMailAttribute = null;
+					for(int i=0; i<userMailAttributeFilterAttributeId.length; i++)
+					{
+						userMailAttribute = attributes.get(userMailAttributeFilterAttributeId[i]);
+						if(userMailAttribute != null)
+							break;
+					}
+					
 					Attribute memberOfAttribute = attributes.get(memberOfAttributeFilter);
 					Attribute memberOfGroupsAttribute = attributes.get(memberOfAttributeFilter);
 					
@@ -1069,14 +1188,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 				}
 				catch(Exception e)
 				{
-					logger.info("An error occurred when we tried to read user: " + e.getMessage(), e);
+					logger.warn("An error occurred when we tried to read user: " + e.getMessage(), e);
 				}
 			} 
 			ctx.close();
 		}
 		catch (Exception e) 
 		{
-			logger.info("Could not find Groups: " + e.getMessage(), e);
+			logger.warn("Could not find Groups: " + e.getMessage(), e);
 		}
 	    logger.info("getUsers end...");
 
@@ -1129,15 +1248,15 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 		
 		try 
 		{
-		    logger.warn("roleName:" + roleName);
+		    logger.info("roleName:" + roleName);
 
 			String baseDN = roleBase;
 			String searchFilter = "(cn=" + roleName + ")";
 			if(roleName.indexOf("cn=") > -1)
 				searchFilter = "(" + roleName + ")";
 
-		    logger.warn("searchFilter:" + searchFilter);
-		    logger.warn("baseDN:" + baseDN);
+		    logger.info("searchFilter:" + searchFilter);
+		    logger.info("baseDN:" + baseDN);
 			
 			String rolesAttribute = "distinguishedName";
 			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
@@ -1145,7 +1264,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 			String[] attrID = rolesAttribute.split(",");
 
-		    logger.warn("Before search...");
+		    logger.info("Before search...");
 
 			SearchControls ctls = new SearchControls(); 
 			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -1153,7 +1272,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 	
 			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
 
-		    logger.warn("After search...");
+		    logger.info("After search...");
 
 			if(!answer.hasMore())
 				throw new Exception("The was no roles found in the JNDI Data Source.");
@@ -1161,29 +1280,29 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			while (answer.hasMore()) 
 			{
 				SearchResult sr = (SearchResult)answer.next();
-				logger.warn("Role:" + sr.toString() + "\n");
+				logger.info("Role:" + sr.toString() + "\n");
 				
 				Attributes attributes = sr.getAttributes();
-				logger.warn("attributes:" + attributes.toString());
-				logger.warn("roleNameAttribute:" + roleNameAttribute);
+				logger.info("attributes:" + attributes.toString());
+				logger.info("roleNameAttribute:" + roleNameAttribute);
 				Attribute attribute = attributes.get(roleNameAttribute);
 				logger.info("attribute:" + attribute.toString());
 				NamingEnumeration allEnum = attribute.getAll();
 				while(allEnum.hasMore())
 				{
 					String roleNameCandidate = (String)allEnum.next();
-					logger.warn("roleNameCandidate:" + roleNameCandidate);
+					logger.info("roleNameCandidate:" + roleNameCandidate);
 					
 					if(roleNameCandidate.equals(roleName))
 					{
 					    Attribute usersAttribute = attributes.get(usersAttributeFilter);
-						logger.warn("usersAttribute:" + usersAttribute.toString());
+						logger.info("usersAttribute:" + usersAttribute.toString());
 						
 						NamingEnumeration allUsersEnum = usersAttribute.getAll();
 						while(allUsersEnum.hasMore())
 						{
 							String userName = (String)allUsersEnum.next();
-							logger.warn("userName:" + userName);
+							logger.info("userName:" + userName);
 							logger.info("userBase:" + userBase);
 							
 							if(roleBase != null && userName.indexOf(userBase) > -1)
@@ -1192,7 +1311,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 							    userName = userName.substring(0, userName.lastIndexOf(","));
 							}
 							
-							logger.warn("userNameAttribute:" + userNameAttribute);
+							logger.info("userNameAttribute:" + userNameAttribute);
 							logger.info("userName:" + userName);
 							logger.info("indexOf:" + userName.indexOf(userNameAttribute));
 
@@ -1265,7 +1384,16 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
     public List getGroups(DirContext ctx) throws Exception
     {
 	    logger.info("getGroups start....");
-		List groups = new ArrayList();
+
+		String groupCacheTimeout = this.extraProperties.getProperty("groupCacheTimeout", "1800");
+
+		String key = "allGroups";
+		List groups = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(groupCacheTimeout).intValue());
+		if(groups != null)
+			return groups;
+		
+		groups = new ArrayList();
+		//List groups = new ArrayList();
 		
 		String groupBase 			= this.extraProperties.getProperty("groupBase");
 		String groupsFilter 		= this.extraProperties.getProperty("groupsFilter");
@@ -1335,6 +1463,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule
 			logger.info("Could not find Groups: " + e.getMessage());
 		}
 	    logger.info("getRoles end....");
+
+	    if(groups != null)
+	    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, groups, null, false);
 
 		return groups;
     }

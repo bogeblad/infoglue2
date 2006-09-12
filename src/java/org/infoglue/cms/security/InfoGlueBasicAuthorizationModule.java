@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.security;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -52,7 +53,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class InfoGlueBasicAuthorizationModule extends BaseController implements AuthorizationModule
+public class InfoGlueBasicAuthorizationModule extends BaseController implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(InfoGlueBasicAuthorizationModule.class.getName());
 

@@ -45,6 +45,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Fixed an option when importing so only the latest versions are imported.
 - Made intuitive rights transfer GUI:s so one can duplicate one user's/group's/role's rights to another. This makes it easier to move between authorization systems. 
 - Added fix so that internal http-calls from InfoGlue does not trigger the update cache filter as that can lead to locks in working environment and a hung system. 
+- Made JNDI adaptor more efficient and adding a possibility to cache roles, users and groups for a period of time (definable for each in properties).
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

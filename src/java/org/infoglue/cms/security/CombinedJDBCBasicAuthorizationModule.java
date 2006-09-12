@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.security;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,7 +65,7 @@ import org.infoglue.cms.util.sorters.ReflectionComparator;
  * This authorization module works firstly against an JDBC source and second against the ordinary infoglue database.
  */
 
-public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule
+public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(CombinedJDBCBasicAuthorizationModule.class.getName());
 

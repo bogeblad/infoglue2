@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.security;
 
+import java.io.Serializable;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.HashMap;
