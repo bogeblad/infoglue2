@@ -433,7 +433,11 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 						buttons.add(getPublishButton());
 				}
 				buttons.add(getSyncTreeButton());
-		    }		    
+		    }
+		    else
+		    {
+				buttons.add(getDeleteVersionButton());
+		    }
 		}
 		catch(Exception e)
 		{
@@ -452,7 +456,6 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		try
 		{
 		    buttons.add(getCompareButton());
-			//buttons.add(getDeleteButton());
 		}
 		catch(Exception e)
 		{
@@ -509,10 +512,20 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	{
 		try
 		{
-			//return new ImageButton("Confirm.action?header=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.header"), "UTF-8") + "&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContent.action?title=Content&contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode(getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.text"), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), getLocalizedString(getSession().getLocale(), "tool.contenttool.deleteContent.header"));
 			String url = "Confirm.action?header=tool.contenttool.deleteContent.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContent.action?title=Content&contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.deleteContent.text";
-			
-		    return new ImageButton(url, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), "tool.contenttool.deleteContent.header");
+			return new ImageButton(url, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), "tool.contenttool.deleteContent.header");
+		}
+		catch(Exception e){e.printStackTrace();}
+
+		return null;
+	}
+
+	private ImageButton getDeleteVersionButton()
+	{
+		try
+		{
+			String url = "Confirm.action?header=tool.contenttool.deleteContentVersion.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContentVersion.action?contentVersionId=" + this.contentVersionId + "&repositoryId=" + this.repositoryId + "&contentId=" + this.contentId, "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContentVersionHistory.action", "UTF-8"), "UTF-8") + "&message=tool.contenttool.deleteContentVersion.text";
+			return new ImageButton(url, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContentVersion"), "tool.contenttool.deleteContentVersion.header");
 		}
 		catch(Exception e){e.printStackTrace();}
 
