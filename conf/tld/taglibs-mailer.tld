@@ -34,7 +34,7 @@ from="bar@home.net" subject="mail taglib"&gt;
 
 &lt;!-- Using a JNDI named JavaMail Session object defined by the --&gt;
 &lt;!-- session attribute. --&gt;
-&lt;mt:mail session="java:/comp/env/session" to="foo@home.net"
+&lt;mt:mail session="java:comp/env/session" to="foo@home.net"
 from="bar@home.net" subject="mail taglib"&gt;
     &lt;mt:message&gt;[body of message]&lt;/mt:message&gt;
     &lt;mt:send/&gt;
@@ -42,7 +42,7 @@ from="bar@home.net" subject="mail taglib"&gt;
 
 &lt;!-- Or using a JNDI named JavaMail MimePartDataSource object --&gt;
 &lt;!--  defined by mimeMessage attribute. --&gt;
-&lt;mt:mail mimeMessage="java:/comp/env/message" to="foo@home.net"
+&lt;mt:mail mimeMessage="java:comp/env/message" to="foo@home.net"
 from="bar@home.net" subject="mail taglib"&gt;
     &lt;mt:message&gt;[body of message]&lt;/mt:message&gt;
     &lt;mt:send/&gt;
@@ -67,6 +67,11 @@ How e-mail is delivered depends on the JavaMail SMTP host settings.  The
     <bodycontent>JSP</bodycontent>
     <attribute>
       <name>server</name>
+      <required>no</required>
+      <rtexprvalue>yes</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>port</name>
       <required>no</required>
       <rtexprvalue>yes</rtexprvalue>
     </attribute>
@@ -132,6 +137,11 @@ How e-mail is delivered depends on the JavaMail SMTP host settings.  The
     <bodycontent>JSP</bodycontent>
   </tag>
   <tag>
+    <name>port</name>
+    <tagclass>org.apache.taglibs.mailer.PortTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+  </tag>
+  <tag>
     <name>message</name>
     <tagclass>org.apache.taglibs.mailer.MessageTag</tagclass>
     <bodycontent>JSP</bodycontent>
@@ -140,6 +150,21 @@ How e-mail is delivered depends on the JavaMail SMTP host settings.  The
       <required>no</required>
       <rtexprvalue>no</rtexprvalue>
     </attribute>
+    <attribute>
+      <name>charset</name>
+      <required>no</required>
+      <rtexprvalue>no</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+    <name>user</name>
+    <tagclass>org.apache.taglibs.mailer.UserTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+  </tag>
+  <tag>
+    <name>password</name>
+    <tagclass>org.apache.taglibs.mailer.PasswordTag</tagclass>
+    <bodycontent>JSP</bodycontent>
   </tag>
   <tag>
     <name>header</name>
