@@ -110,6 +110,8 @@ public class CmsPropertyHandler
 	    try
 		{
 	    	Timer timer = new Timer();
+	    	timer.setActive(false);
+	    	
 			System.out.println("**************************************");
 			System.out.println("Initializing properties from file.....");
 			
