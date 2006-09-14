@@ -48,6 +48,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Made JNDI adaptor more efficient and adding a possibility to cache roles, users and groups for a period of time (definable for each in properties).
 - Added possiblity to delete old content versions so one can clean up a huge database. A new button comes up when you enter a earlier version than the latest.
 - Changed so table width when used in FCKEditor by default is set to 75% instead of pixels
+- Upgraded to FCKEditor 2.3.1 from the 2.2 version we had before
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
