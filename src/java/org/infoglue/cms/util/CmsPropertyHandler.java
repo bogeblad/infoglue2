@@ -109,9 +109,9 @@ public class CmsPropertyHandler
 	{
 	    try
 		{
+	    	Timer timer = new Timer();
 			System.out.println("**************************************");
 			System.out.println("Initializing properties from file.....");
-			System.out.println("**************************************");
 			
 			cachedProperties = new Properties();
 			if(propertyFile != null)
@@ -129,6 +129,8 @@ public class CmsPropertyHandler
 				}
 			}
 			
+		    timer.printElapsedTime("Initializing properties from file took");
+
 	        Map args = new HashMap();
 		    args.put("globalKey", "infoglue");
 		    try
@@ -142,6 +144,8 @@ public class CmsPropertyHandler
 		    	logger.error("Could not get property set: " + e.getMessage(), e);
 		    }
 		    
+		    timer.printElapsedTime("Initializing properties from jdbc");
+
 		    serverNodeName = cachedProperties.getProperty("serverNodeName");
 		    
 		    if(serverNodeName == null || serverNodeName.length() == 0)
@@ -160,6 +164,10 @@ public class CmsPropertyHandler
 		    System.out.println("serverNodeName:" + serverNodeName);
 		    
 		    initializeLocalServerNodeId();
+		    
+		    timer.printElapsedTime("Initializing properties from local server jdbc");
+
+			System.out.println("**************************************");
 		}	
 		catch(Exception e)
 		{
