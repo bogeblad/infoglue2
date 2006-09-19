@@ -192,14 +192,13 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 
         try
         {
-	
 	        try
 	        {
-	        	accessRightRoleList = AccessRightController.getController().getAccessRightRoleList(roleName, db);
+	        	accessRightRoleList = AccessRightController.getController().getAccessRightRoleList(roleName, db, true);
 	        }
 	        catch(Exception e)
 	        {
-	        	e.printStackTrace();
+	            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
 	        }
 	        
 	        db.commit();
@@ -207,12 +206,26 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         catch(Exception e)
         {
             getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
-            db.rollback();
+            try
+	        {
+            	db.rollback();
+	        }
+	        catch(Exception e2)
+	        {
+	            getLogger().error("An error occurred so we should not complete the transaction:" + e2.getMessage());
+	        }
             throw new SystemException(e.getMessage());
         }
         finally
         {
-            db.close();
+        	try
+	        {
+        		db.close();
+	        }
+	        catch(Exception e2)
+	        {
+	            getLogger().error("An error occurred so we should not complete the transaction:" + e2.getMessage());
+	        }
         }
         
         return accessRightRoleList;
@@ -520,7 +533,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         {
 	        try
 	        {
-	            List accessRightRoleList = AccessRightController.getController().getAccessRightRoleList(roleName, db);
+	            List accessRightRoleList = AccessRightController.getController().getAccessRightRoleList(roleName, db, false);
 	            
 	            Iterator i = accessRightRoleList.iterator();
 	            

@@ -1464,7 +1464,7 @@ public class AccessRightController extends BaseController
 		return accessRightUserList;		
 	}
 
-	public List getAccessRightRoleList(String roleName, Database db) throws SystemException, Bug
+	public List getAccessRightRoleList(String roleName, Database db, boolean readOnly) throws SystemException, Bug
 	{
 		List accessRightRoleList = new ArrayList();
 		
@@ -1475,12 +1475,17 @@ public class AccessRightController extends BaseController
 	    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl f WHERE f.roleName = $1");
 			oql.bind(roleName);
 
-			QueryResults results = oql.execute();
-
+			QueryResults results;
+			if(readOnly)
+				results = oql.execute(Database.ReadOnly);
+			else
+				results = oql.execute();
+				
 			while (results.hasMore()) 
 			{
 				AccessRightRole accessRightRole = (AccessRightRole)results.next();
 				accessRightRoleList.add(accessRightRole);
+				System.out.println("accessRightRole:" + accessRightRole.getAccessRightRoleId() + ":" + accessRightRole.getRoleName());
 			}
 			
 			results.close();
