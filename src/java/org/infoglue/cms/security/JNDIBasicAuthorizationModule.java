@@ -730,7 +730,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		}
 		catch (Exception e) 
 		{
-			logger.info("Could not find Group for empID: " + userName + e);
+			logger.warn("Could not find Group for empID: " + userName + e);
 			throw e;
 		}
 
@@ -883,7 +883,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 				}
 				
 			} 
-			ctx.close();
 		}
 		catch (Exception e) 
 		{
@@ -993,8 +992,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 				
 			} 
 			logger.info("-----------------------\n");
-
-			ctx.close();
 		}
 		catch (Exception e) 
 		{

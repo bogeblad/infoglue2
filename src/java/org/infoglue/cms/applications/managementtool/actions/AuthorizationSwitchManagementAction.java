@@ -528,24 +528,28 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	            {
 	                AccessRightRole accessRightRole = (AccessRightRole)i.next(); 
 	                AccessRight accessRight = accessRightRole.getAccessRight();
-
-	                boolean exists = false;
-	                Iterator rolesIterator = accessRight.getRoles().iterator();
-	                while(rolesIterator.hasNext())
-	                {
-	                	AccessRightRole currentAccessRightRole = (AccessRightRole)rolesIterator.next();
-	                	if(currentAccessRightRole.getRoleName().equals(newRoleName))
-	                		exists = true;
-	                }
 	                
-	                if(!exists)
+	                if(accessRight != null)
 	                {
-		                //accessRightRole.setRoleName(newRoleName);
-					    AccessRightRoleVO accessRightRoleVO = new AccessRightRoleVO();
-					    accessRightRoleVO.setRoleName(newRoleName);
-					    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, accessRightRoleVO, accessRight);
-					    accessRight.getRoles().add(newAccessRightRole);
-	                }
+		                boolean exists = false;
+
+		                Iterator rolesIterator = accessRight.getRoles().iterator();
+		                while(rolesIterator.hasNext())
+		                {
+		                	AccessRightRole currentAccessRightRole = (AccessRightRole)rolesIterator.next();
+		                	if(currentAccessRightRole.getRoleName().equals(newRoleName))
+		                		exists = true;
+		                }
+	                
+		                if(!exists)
+		                {
+			                //accessRightRole.setRoleName(newRoleName);
+						    AccessRightRoleVO accessRightRoleVO = new AccessRightRoleVO();
+						    accessRightRoleVO.setRoleName(newRoleName);
+						    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, accessRightRoleVO, accessRight);
+						    accessRight.getRoles().add(newAccessRightRole);
+		                }
+	                }	                
 	            }	            
 	        }
 	        catch(Exception e)
