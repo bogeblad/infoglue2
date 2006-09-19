@@ -1484,8 +1484,11 @@ public class AccessRightController extends BaseController
 			while (results.hasMore()) 
 			{
 				AccessRightRole accessRightRole = (AccessRightRole)results.next();
-				accessRightRoleList.add(accessRightRole);
-				System.out.println("accessRightRole:" + accessRightRole.getAccessRightRoleId() + ":" + accessRightRole.getRoleName());
+				System.out.println("accessRightRole:" + accessRightRole.getAccessRightRoleId() + ":" + accessRightRole.getRoleName() + ":" + accessRightRole.getAccessRight());
+					if(!readOnly && accessRightRole.getAccessRight() == null)
+					db.remove(accessRightRole);
+				else
+					accessRightRoleList.add(accessRightRole);
 			}
 			
 			results.close();

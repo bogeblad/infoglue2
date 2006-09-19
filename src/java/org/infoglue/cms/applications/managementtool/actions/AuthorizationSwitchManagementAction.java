@@ -194,7 +194,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         {
 	        try
 	        {
-	        	accessRightRoleList = AccessRightController.getController().getAccessRightRoleList(roleName, db, true);
+	        	accessRightRoleList = AccessRightController.getController().getAccessRightRoleList(roleName, db, false);
 	        }
 	        catch(Exception e)
 	        {
