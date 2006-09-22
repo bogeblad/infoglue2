@@ -65,7 +65,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.27 $ $Date: 2006/08/21 13:36:58 $
+ * @version $Revision: 1.28 $ $Date: 2006/09/22 09:39:07 $
  */
 public class WorkflowFacade
 {
@@ -618,8 +618,19 @@ public class WorkflowFacade
 	{
 		List stepVOs = new ArrayList();
 		for (Iterator i = steps.iterator(); i.hasNext();)
-			stepVOs.add(createStepVO(workflowVO, (Step)i.next()));
-
+		{
+			Step step = null;
+			try
+			{
+				step = (Step)i.next();
+				stepVOs.add(createStepVO(workflowVO, step));
+			}
+			catch(Exception e)
+			{
+				logger.warn("There was an invalid step:" + workflowVO.getName() + "-" + workflowVO.getId() + "[" + step.getActionId() + "-" + step.getId() + "]", e);
+			}
+		}
+		
 		return stepVOs;
 	}
 
@@ -735,7 +746,7 @@ public class WorkflowFacade
 	 * @param step the desired step
 	 * @return a new WorkflowStepVO representing step.
 	 */
-	private WorkflowStepVO createStepVO(final WorkflowVO workflowVO, final Step step)
+	private WorkflowStepVO createStepVO(final WorkflowVO workflowVO, final Step step) throws Exception
 	{
 		logger.info("step:" + step + ':' + step.getId());
 		logger.info("Owner:" + step.getOwner());
@@ -751,10 +762,17 @@ public class WorkflowFacade
 		stepVO.setCaller(step.getCaller());
 
 		StepDescriptor stepDescriptor = workflowDescriptor.getStep(step.getStepId());
-		stepVO.setName(stepDescriptor.getName());
-		for (Iterator i = stepDescriptor.getActions().iterator(); i.hasNext();)
-			stepVO.addAction(createActionVO((ActionDescriptor)i.next()));
-
+		if(stepDescriptor != null)
+		{
+			stepVO.setName(stepDescriptor.getName());
+			for (Iterator i = stepDescriptor.getActions().iterator(); i.hasNext();)
+				stepVO.addAction(createActionVO((ActionDescriptor)i.next()));
+		}
+		else
+		{
+			throw new SystemException("No stepDescriptor found for " + step.getStepId());
+		}
+		
 		return stepVO;
 	}
 
