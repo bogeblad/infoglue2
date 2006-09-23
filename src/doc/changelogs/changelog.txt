@@ -49,6 +49,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added possiblity to delete old content versions so one can clean up a huge database. A new button comes up when you enter a earlier version than the latest.
 - Changed so table width when used in FCKEditor by default is set to 75% instead of pixels
 - Upgraded to FCKEditor 2.3.1 from the 2.2 version we had before
+- Improved import utility by adding failchecks, better handling of errors and also fixed bug which did not account for relations to contents and pages created by a relation editor.'
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
