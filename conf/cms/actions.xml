@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.29 2006/09/11 12:24:21 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.30 2006/09/24 21:49:37 ss Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -781,6 +781,13 @@
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
 
+	<!-- AssetList (Work in progress, Stefan Sik)--> 
+	<action name="org.infoglue.cms.applications.contenttool.actions.ViewAssetListAction" alias="ViewAssetList">
+		<view name="success">/cms/contenttool/viewAssetList.vm</view>
+		<view name="browser">/cms/contenttool/viewAssetBrowser.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
+	</action>	
+	
 	<!-- ContentVersion -->
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentVersionAction" alias="ViewContentVersion">
 		<view name="success">/cms/contenttool/viewContentVersion.vm</view>
