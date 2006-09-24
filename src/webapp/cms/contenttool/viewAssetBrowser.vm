@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<title>Image Browser</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="css/cms.css" />
+<script type="text/javascript" src="script/listview.js"></script>
+
+<script language="JavaScript">
+	<!--		
+		#set($exp = $this.getExpansion($oldContentId))
+		var exp = "$exp";
+		
+		var contentId;
+		var assetKey;
+		
+		
+	    function notifyExp(v)
+	    {
+	    	//alert("v:" + v);
+	    	// The html tree notifies this page about the
+	    	// current expansion key, so that we can reload
+	    	// the tree with the same expansion.
+	    	exp=v;
+	    }
+
+		function notifyIsLoaded()
+	    {
+	    	//alert("Tree was loaded - notifyIsLoaded");
+	    	treeIsLoaded = true;
+	    }
+			    
+		function resize() 
+		{
+	    	//alert("resize");
+	    	var w_newWidth,w_newHeight;
+		    var w_maxWidth=1600, w_maxHeight=1200;
+
+			if (window.innerWidth || window.innerHeight){ 
+				w_newWidth = window.innerWidth; 
+				w_newHeight = window.innerHeight; 
+			} 
+			//IE Mozilla 
+			if (document.body.clientWidth || document.body.clientHeight){ 
+				w_newWidth = document.body.clientWidth; 
+				w_newHeight = document.body.clientHeight - 10; 
+			} 
+			
+ 		    if (w_newWidth>w_maxWidth)
+			    w_newWidth=w_maxWidth;
+			
+			if (w_newHeight>w_maxHeight)
+			    w_newHeight=w_maxHeight;
+
+			if (w_newHeight < 1) //For firebird cases
+			    w_newHeight=window.innerHeight - 10;
+			
+			try 
+			{
+				treeView().setSize(w_newWidth - 10,w_newHeight - 50);
+				treeView().style.visibility = "visible";
+			}
+			catch(e)
+			{
+			}
+			
+        	treeView().width  = w_newWidth - 10;
+			treeView().height = w_newHeight - 50;
+		}
+		
+		function treeView()
+		{
+			try 
+			{ 
+			return document.getElementById("itreeFrame");
+				}
+			catch(er) 
+			{
+				alert("Error:" + er);
+			} 
+		}
+		
+		function changeRepository(selectBox)
+		{
+			var repositoryId = selectBox.value;
+			var url = "ViewAssetList!browser.action?repositoryId=" + repositoryId + "&contentId=-1&languageId=$languageId&treatAsLink=$treatAsLink";
+			document.location.href = url;
+		}
+		
+		function htmlTreeItemClick(entityId, repositoryId, path)
+		{
+		// Work in progress, Stefan Sik
+			var url = "ViewAssetList.action?contentId=" + entityId + "&languageId=$languageId&treatAsLink=$treatAsLink";
+			document.getElementById("contentVersionAssetsFrame").src = url;
+		}
+		function syncWithTree(path)
+		{
+			document.frames("itreeFrame").syncWithTree(path);
+		}
+		
+		function markAsset(aContentId, anAssetId, anAssetKey, contentPath)
+		{
+			contentId = aContentId;
+			assetKey = anAssetKey;
+		}
+			
+		function onOk()
+		{
+			var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+			window.top.opener.SetUrl( url );
+			window.top.close();
+			window.top.opener.focus();
+		}
+		
+		function getDownloadUrl(contentId, assetKey)
+		{
+			return "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+		}
+		
+		function onCancel() 
+		{
+			window.top.close();
+			window.top.opener.focus();
+		}	
+
+		function getRequestParameter(url, parameterName)
+		{
+			value = "";
+			valueIndex = url.indexOf(parameterName + "=");
+			if(valueIndex > -1)
+			{
+				//alert("valueIndex:" + valueIndex);
+				endIndex = url.indexOf("&", valueIndex);
+				if(endIndex != -1)
+					value = url.substring(valueIndex + parameterName.length + 1, endIndex);
+				else
+					value = url.substring(valueIndex + parameterName.length + 1);
+				//alert("value:" + value);
+			}
+			return value;
+		}
+		
+		function init() 
+		{
+			contentId = "$!contentId";
+			languageId = "$!languageId";
+			assetKey = "$!assetKey";
+			
+			document.getElementById("entityId").value = contentId;
+			document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
+			document.getElementById("contentVersionAssetsFrame").src = "ViewAssetList.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink";
+		}
+		
+		-->
+	</script>
+
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="expires" CONTENT="-1" />
+</head>
+
+<!--frameset cols="30%,70%">
+<frame name="itreeFrame" id="itreeFrame" src="">
+<frame frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="">
+</frameset-->
+
+<body class="contenttool" onload="init();">
+
+<form name="inputForm" action=""><input type="hidden"
+	id="entityId" name="entityId" value=""><input type="hidden"
+	name="repositoryId" value=""><input type="hidden" name="path"
+	value=""><input type="hidden" name="qualifyerXML" value="">
+</form>
+
+<table border="0" width="100%" height="100%" cellspacing="4">
+	<tr height="0">
+		<td colspan="2" height="0"><select size="1" name="repositoryId"
+			class="sitedropbox" onChange="javascript:changeRepository(this);"
+			class="contenttool">
+			<option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+			#foreach ($repositoryVO in $repositories)
+			<option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+			#end
+		</select></td>
+	</tr>
+
+	<tr height="100%">
+		<td height="100%" width="20%"><IFRAME marginwidth="0"
+			marginheight="0" frameborder="0" name="itreeFrame" id="itreeFrame"
+			src="" width="100%" height="100%"></IFRAME></td>
+
+		<td height="100%" width="80%"><IFRAME frameborder="1"
+			name="contentVersionAssetsFrame" id="contentVersionAssetsFrame"
+			src="" width="100%" height="100%" align="baseline"></IFRAME></td>
+	</tr>
+	<tr height="0">
+		<td colspan="2" height="0" align="right">
+			<a href="javascript:onOk();"><img src="$ui.getString("images.structuretool.buttons.save")" border="0"></a>
+			<a href="javascript:onCancel();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
+		</td>
+	</tr>
+</table>
+
+</body>
+</html>

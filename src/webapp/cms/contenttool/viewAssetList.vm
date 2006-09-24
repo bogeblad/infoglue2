@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Digital Asset Browser</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="expires" CONTENT="-1" />	
+
+<!-- Work in progress, Stefan Sik -->
+
+<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+<script type="text/javascript" src="script/listview.js"></script>
+<script language="JavaScript">
+<!--
+var selectedAssetElement;
+var contentId;
+var assetKey;
+var firstAssetKey;
+	
+function markAsset(aContentId, anAssetId, anAssetKey, contentPath)
+{
+	if(selectedAssetElement)
+	{
+		selectedAssetElement.style.background = "";
+ 		selectedAssetElementTool.style.display = "none";
+	}
+	contentId = aContentId;	
+	assetId = anAssetId;	
+	assetKey = anAssetKey;	
+	
+	selectedAssetElement = document.getElementById("digitalAsset" + assetId);
+	selectedAssetElementTool = document.getElementById("tool" + assetId);
+	if(selectedAssetElement)
+	{
+ 		selectedAssetElement.style.background = "#C7D1B3";
+ 		selectedAssetElementTool.style.display = "";
+	}
+
+	// parent.syncWithTree(contentPath);
+	parent.markAsset(aContentId, anAssetId, anAssetKey, contentPath);
+}
+		
+function initSub() 
+{
+	#if($assetKey && $assetKey != "")
+	assetKey = "$assetKey";
+	contentId = "$!contentId";
+	selectedAssetElement = document.getElementById("digitalAsset" + assetKey);
+	#else
+	// markAsset('$!contentId', firstAssetKey);
+	#end
+}
+-->
+</script>
+	
+<style>
+.asset 
+{ 
+		width: 200px; 
+		height:175px; 
+		float: left; 
+		padding: 10px; 
+		text-align: left; 
+		cursor: hand;
+		color: 333333;
+		vertical-align: middle;
+		border-right: 1px dotted #AAAAAA;
+		border-bottom: 1px dotted #AAAAAA;
+}
+
+.newasset 
+{ 
+		width: 100px; 
+		height:25px; 
+		text-align: center; 
+		cursor: hand;
+		color: 333333;
+		vertical-align: middle;
+		border-right: 1px outset #AAAAAA;
+		border-bottom: 1px outset #AAAAAA;
+		border-top: 1px outset #AAAAAA;
+		border-left: 1px outset #AAAAAA;
+		float: none; 
+		clear: both;
+}
+
+.thumbnail
+{ 
+		width: 76px; 
+		height:76px;
+		border-right: 1px solid #BBBBBB;
+		border-bottom: 1px solid #BBBBBB;
+		border-top: 1px solid #BBBBBB;
+		border-left: 1px solid #BBBBBB;
+		background: white;
+		text-align: center;
+		align: middle;
+		vertical-align: middle;
+}
+		
+.header 
+{ 
+		padding: 15px 5px 5px 5px; 
+		text-align: left;
+		color: #333333; 
+		font-weight: bold;   
+		border-bottom: 2px solid #888888;
+		float: none; 
+		clear: both;
+}
+
+.group 
+{ 
+		text-align: left;
+		float: none;
+		clear: both;
+}
+</style>
+
+</head>
+## class="contenttooledit" 
+<body class="contenttooledit" onload="initSub();">
+#set($counter = 0)
+#set($master = $inheritedDigitalAssets)
+
+#if($contentVersionVO.id && $master.size() == 1 && $master.get(0).assets.size() == 0)
+<div class="group">
+	<div class="header">$master.get(0).contentName ($master.get(0).assets.size())&nbsp;&nbsp;&nbsp;&nbsp;[<a href="javascript:parent.syncWithTree('$master.get(0).contentPath');">Reveal in tree</a>]</div>
+</div>
+#end
+
+#foreach($digitalAssetCol in $master)
+	#if($digitalAssetCol.assets.size() > 0)
+		<div class="group">
+			<div class="header">$digitalAssetCol.contentName ($digitalAssetCol.assets.size())&nbsp;&nbsp;&nbsp;&nbsp;[<a href="javascript:parent.syncWithTree('$digitalAssetCol.contentPath');">Reveal in tree</a>]</div>
+		
+			#foreach($digitalAsset in $digitalAssetCol.assets)
+				<div class="asset" id="digitalAsset$digitalAsset.getDigitalAssetId()" onclick="javascript:markAsset($!digitalAssetCol.contentId, '$digitalAsset.getDigitalAssetId()', '$digitalAsset.assetKey()', '$digitalAssetCol.contentPath');">
+					<div class="thumbnail"><img border="0" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)"></div>
+					<table cellspacing="4" cellpadding="0" border="0" width="100%">
+						<tr>
+							<td valign="top">Key</td><td valign="top"><b>$digitalAsset.assetKey</b></td>
+						</tr>
+				
+						<tr>
+							<td valign="top">Type</td><td valign="top"><b>$digitalAsset.assetContentType</b></td>
+						</tr>
+						<tr>
+							<td valign="top">Size</td><td valign="top"><b>$this.mathHelper.fileSize($digitalAsset.assetFileSize.longValue())</b></td>
+						</tr>
+						<tr>
+							<td colspan="2" style="border-top: 1px solid #333333;" id="tool$digitalAsset.getDigitalAssetId()" style="display:none;">
+							<a href="javascript:openPopup('$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)','Preview','width=600,height=500,resizable=yes');">	view</a> | <font color="gray">update</font> | <font color="gray">delete</font>
+							</td>
+						</tr>
+					</table>
+				</div>
+				#set($counter = $counter + 1)
+			#end
+		</div>
+	#end
+#end
+
+#if($counter == 0)
+	<div id="digitalAsset$digitalAsset.assetKey" valign="bottom" align="center" class="header">
+	#if($contentVersionVO.id)
+	<br/>No images available<br/><br/>
+	#else
+	<br/>No images available or no content selected<br/><br/>
+	#end
+	</div>
+#end
+
+#if($contentVersionVO.id)
+	<br/>
+	<img src="images/trans.gif" height="10"><br/>
+	<div class="group">
+	<div class="newasset" onclick="javascript:openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');">
+	<img src="$ui.getString("images.contenttool.buttons.newAsset")" border="0">
+	</div>
+	</div>
+#end
+	
+<script type="text/javascript">
+	setTimeout("initSub()", 500);
+</script>
+
+</body>
+</html>
