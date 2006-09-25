@@ -53,11 +53,13 @@ import org.infoglue.deliver.util.MathHelper;
 public class ViewAssetListAction extends InfoGlueAbstractAction
 {
 	/**
-	 * 
+	 * Action class for the DigitalAsset Browser. 
+     * TODO: Improve performance by adding more specialized
+     * methods in DigitalAssetController to search and filter assets
 	 */
 	private static final long serialVersionUID = 1707633990701035545L;
 
-	private Integer digitalAssetId = null;
+    private String displayPart = "";
 	public ContentTypeDefinitionVO contentTypeDefinitionVO;
 	public List availableLanguages = null;
 	
@@ -115,24 +117,23 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
     public String doBrowser() throws Exception
     {
         this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+        
+        /*
+         * TODO: Create the filters through some configuration
+         */
+        
         filters = new ArrayList();
         filters.add(new FilterVO("All", ""));
-        filters.add(new FilterVO("images", ".*gif|.*jpeg|.*png"));
-        filters.add(new FilterVO("gif images", ".*gif"));
-        filters.add(new FilterVO("jpeg images", ".*jpeg"));
-        filters.add(new FilterVO("png images", ".*png"));
-        filters.add(new FilterVO("documents", ".*application.vnd.*"));
+        filters.add(new FilterVO("Images", "image/.*"));
+        filters.add(new FilterVO("GIF Images", ".*gif"));
+        filters.add(new FilterVO("JPEG Images", ".*jpeg"));
+        filters.add(new FilterVO("PNG Images", ".*png"));
+        filters.add(new FilterVO("Documents", ".*word.*|.*excel.*|.*pdf.*"));
         filters.add(new FilterVO("compressed", ".*compressed"));
         
         return "browser";
     }
     
-    
-    public static void main(String arg[])
-    {
-    	System.out.println("immage/gif".matches(".*gif|.*jpeg|.*png"));
-    	
-    }
     
     public String getContentPath(Integer contentId) throws ConstraintException, SystemException, Bug, Exception
     {
@@ -195,11 +196,6 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
         return this.languageId;
     }
 	
-	public void setDigitalAssetId(Integer digitalAssetId)
-	{
-		this.digitalAssetId = digitalAssetId;
-	}
-	
     public String getName()
     {
         return this.contentVO.getName();
@@ -229,26 +225,28 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 		{
             for(Iterator i = contentMap.keySet().iterator();i.hasNext();)
             {
-                Integer cid = (Integer) i.next();
-                DigitalAssetCollection collection = new DigitalAssetCollection(cid, (String) contentMap.get(cid));
-                collection.setContentPath(getContentPath(cid));
+                Integer _contentId = (Integer) i.next();
+                DigitalAssetCollection collection = new DigitalAssetCollection(_contentId, (String) contentMap.get(_contentId));
+                collection.setContentPath(getContentPath(_contentId));
                 
-                if(filter != "")
+                if(filter.length() > 0)
                 {
-                	for(Iterator ii=DigitalAssetController.getDigitalAssetVOList(cid, this.languageId, true).iterator();ii.hasNext();)
+                	for(Iterator assetIterator=DigitalAssetController.getDigitalAssetVOList(_contentId, this.languageId, true).iterator();assetIterator.hasNext();)
                 	{
-                		DigitalAssetVO vo = (DigitalAssetVO) ii.next();
-                		if(vo.getAssetContentType().matches(filter))
+                		DigitalAssetVO digitalAssetVO = (DigitalAssetVO) assetIterator.next();
+                		if(digitalAssetVO.getAssetContentType().matches(filter))
                 		{
-                			collection.getAssets().add(vo);
+                			collection.getAssets().add(digitalAssetVO);
                 		}
                 	}
                 }
                 else
-                	collection.getAssets().addAll(DigitalAssetController.getDigitalAssetVOList(cid, this.languageId, true));
+                {
+                	collection.getAssets().addAll(DigitalAssetController.getDigitalAssetVOList(_contentId, this.languageId, true));
+                }
                 
                 
-                ContentVersionVO contentVersionVO = getLatestContentVersionVO(cid);
+                ContentVersionVO contentVersionVO = getLatestContentVersionVO(_contentId);
                 if(contentVersionVO != null)
                 {
                     collection.setContentVersionId(contentVersionVO.getContentVersionId());
@@ -535,4 +533,14 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 	public void setFilter(String filter) {
 		this.filter = filter;
 	}
+
+    public String getDisplayPart()
+    {
+        return displayPart;
+    }
+
+    public void setDisplayPart(String displayPart)
+    {
+        this.displayPart = displayPart;
+    }
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Digital Asset Browser</title>
+<title>DigitalAsset Browser</title>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 <META HTTP-EQUIV="expires" CONTENT="-1" />	
@@ -143,7 +143,7 @@ function initSub()
 			</div>
 		
 			#foreach($digitalAsset in $digitalAssetCol.assets)
-				<div class="asset" id="digitalAsset$digitalAsset.getDigitalAssetId()" onclick="javascript:_markAsset($!digitalAssetCol.contentId, '$digitalAsset.getDigitalAssetId()', '$digitalAsset.assetKey()', '$digitalAssetCol.contentPath');">
+				<div class="asset" id="digitalAsset$digitalAsset.getDigitalAssetId()" onclick="javascript:_markAsset($!digitalAssetCol.contentId, '$digitalAsset.getDigitalAssetId()', '$digitalAsset.assetKey', '$digitalAssetCol.contentPath');">
 					<div class="thumbnail">
 						<img class="thumbnailimage" valign="middle" border="0" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)"/>
 					</div>
