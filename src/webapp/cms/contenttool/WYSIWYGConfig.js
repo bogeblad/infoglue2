@@ -53,8 +53,12 @@ FCKConfig.LinkBrowserURL = "$request.contextPath/ViewLinkDialog!viewLinkDialogFo
 FCKConfig.LinkBrowserWindowWidth	= "770" ;
 FCKConfig.LinkBrowserWindowHeight	= "660" ;
 FCKConfig.ImageBrowser = true ;
+
+// Work in progress, new DigitalAsset Browser /Stefan
 FCKConfig.ImageBrowserURL = "$request.contextPath/ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")";	
-FCKConfig.ImageBrowserWindowWidth  = "750" ;
+//FCKConfig.ImageBrowserURL = "$request.contextPath/ViewAssetList!browser.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")";	
+
+FCKConfig.ImageBrowserWindowWidth  = "880" ;
 FCKConfig.ImageBrowserWindowHeight = "600" ;
 FCKConfig.SmileyPath	= FCKConfig.BasePath + 'images/smiley/msn/' ;
 FCKConfig.SmileyImages	= ['regular_smile.gif','sad_smile.gif','wink_smile.gif','teeth_smile.gif','confused_smile.gif','tounge_smile.gif','embaressed_smile.gif','omg_smile.gif','whatchutalkingabout_smile.gif','angry_smile.gif','angel_smile.gif','shades_smile.gif','devil_smile.gif','cry_smile.gif','lightbulb.gif','thumbs_down.gif','thumbs_up.gif','heart.gif','broken_heart.gif','kiss.gif','envelope.gif'];
