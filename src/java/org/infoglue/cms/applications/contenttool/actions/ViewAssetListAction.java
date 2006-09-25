@@ -28,94 +28,62 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.MathHelper;
 
 
 public class ViewAssetListAction extends InfoGlueAbstractAction
 {
-	private static final long serialVersionUID = 1L;
-	
-	private static CategoryController categoryController = CategoryController.getController();
-	private static ContentCategoryController contentCategoryController = ContentCategoryController.getController();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1707633990701035545L;
 
-	private Integer newContentId = new Integer(0);
-	
 	private Integer digitalAssetId = null;
 	public ContentTypeDefinitionVO contentTypeDefinitionVO;
 	public List availableLanguages = null;
 	
 	private Integer languageId;
 	private Integer repositoryId;
-	private Integer currentEditorId;
-	private String attributeName = "";
-	private String textAreaId = "";
-	private boolean forceWorkingChange = false;
-			
-    private ContentVO contentVO;
-    protected ContentVersionVO contentVersionVO;
+	private ContentVO contentVO;
 	public List attributes = null;
 
 	private List repositories;
+	private List filters;
+	private String filter = "";
 	
-	//This is used for showing navigationdata
-	private Integer siteNodeId;
-
-	private Integer oldContentId 	= null;
 	private String assetKey 		= null;
 	private boolean treatAsLink    = false;
+	private boolean showLeafs		=false;
 	
-	private Map WYSIWYGProperties = null;
-	
-	private String closeOnLoad 		= "false";
-	private String publishOnLoad	= "false";
-
-	private boolean concurrentModification = false;
-	private long oldModifiedDateTime = -1;
-
-
-    private HashMap contentMap = new HashMap();
+	private HashMap contentMap = new HashMap();
     
     public ViewAssetListAction()
     {
-        this(new ContentVO(), new ContentVersionVO());
+        this(new ContentVO());
     }
     
-    public ViewAssetListAction(ContentVO contentVO, ContentVersionVO contentVersionVO)
+    public ViewAssetListAction(ContentVO contentVO)
     {
         this.contentVO = contentVO;
-        this.contentVersionVO = contentVersionVO;
-    }
-
-    protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId) throws Exception
-    {
-        initialize(contentVersionId, contentId, languageId, false);
     }
 
     private void createContentIdList(ContentVO parent) throws ConstraintException, SystemException
@@ -130,94 +98,59 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
         }
     }
     
-    protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId, boolean fallBackToMasterLanguage) throws Exception
+    protected void initialize(Integer contentId, Integer languageId) throws Exception
     {
         this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
         createContentIdList(this.contentVO);
-		    
-        //this.contentVO = ContentController.getContentVOWithId(contentId);
-        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);
-        this.availableLanguages = ContentController.getContentController().getRepositoryLanguages(contentId);
-        
-        if(contentVersionId == null)
-		{	
-			//this.contentVersionVO = ContentVersionControllerProxy.getController().getACLatestActiveContentVersionVO(this.getInfoGluePrincipal(), contentId, languageId);
-			//this.contentVersionVO = ContentVersionController.getLatestActiveContentVersionVO(contentId, languageId);
-			this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
-			if(this.contentVersionVO == null && fallBackToMasterLanguage)
-			{
-			    //getLogger().info("repositoryId:" + repositoryId);
-			    Integer usedRepositoryId = this.repositoryId;
-			    if(this.repositoryId == null && this.contentVO != null)
-			        usedRepositoryId = this.contentVO.getRepositoryId();
-			    
-			    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(usedRepositoryId);
-			    //getLogger().info("MasterLanguage: " + masterLanguageVO);
-			    this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
-			}
-			
-			if(this.contentVersionVO != null)
-				contentVersionId = contentVersionVO.getContentVersionId();
-		}
-
-        if(contentVersionId != null)	
-			this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
-    		//this.contentVersionVO = ContentVersionController.getContentVersionVOWithId(contentVersionId);    		 	
-
-		if(this.forceWorkingChange && contentVersionVO != null && !contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-		{
-		    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, this.getInfoGluePrincipal(), this.getContentId(), new ArrayList());
-		    contentVersionId = contentVersion.getContentVersionId();
-		    contentVersionVO = contentVersion.getValueObject();
-		}
-
-        if(this.contentTypeDefinitionVO != null)
-        {
-            this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
-            this.attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());
-        }
     } 
 
     public String doExecute() throws Exception
     {
         if(getContentId() != null && getContentId().intValue() != -1)
-            this.initialize(getContentVersionId(), getContentId(), this.languageId);
+            this.initialize(getContentId(), this.languageId);
         
    	    return "success";
     }
     
     public String doBrowser() throws Exception
     {
-        if(this.oldContentId != null)
-        {
-            this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getOldContentId());
-        }
-        else
-        {
-            if(getContentId() != null && getContentId().intValue() != -1)
-                this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
-        }
-        
         this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
-
+        filters = new ArrayList();
+        filters.add(new FilterVO("All", ""));
+        filters.add(new FilterVO("images", ".*gif|.*jpeg|.*png"));
+        filters.add(new FilterVO("gif images", ".*gif"));
+        filters.add(new FilterVO("jpeg images", ".*jpeg"));
+        filters.add(new FilterVO("png images", ".*png"));
+        filters.add(new FilterVO("documents", ".*application.vnd.*"));
+        filters.add(new FilterVO("compressed", ".*compressed"));
+        
         return "browser";
+    }
+    
+    
+    public static void main(String arg[])
+    {
+    	System.out.println("immage/gif".matches(".*gif|.*jpeg|.*png"));
+    	
     }
     
     public String getContentPath(Integer contentId) throws ConstraintException, SystemException, Bug, Exception
     {
         ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
         StringBuffer ret = new StringBuffer();
-        // ret.add(0, contentVO);
 
         while (contentVO.getParentContentId() != null)
         {
-            try {
+            try 
+            {
                 contentVO = ContentControllerProxy.getController().getContentVOWithId(contentVO.getParentContentId());
-            } catch (SystemException e) {
-                // TODO Auto-generated catch block
+            } 
+            catch (SystemException e) 
+            {
                 e.printStackTrace();
-            } catch (Bug e) {
-                // TODO Auto-generated catch block
+            } 
+            catch (Bug e) 
+            {
                 e.printStackTrace();
             }
             ret.insert(0, "" + contentVO.getContentId() + ",");
@@ -232,19 +165,6 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
         return new MathHelper();
     }
     
-    public java.lang.Integer getContentVersionId()
-    {
-        if(this.contentVersionVO != null)
-            return this.contentVersionVO.getContentVersionId();
-        else 
-            return null;
-    }
-    
-    public void setContentVersionId(java.lang.Integer contentVersionId)
-    {
-        this.contentVersionVO.setContentVersionId(contentVersionId);
-    }
-        
     public java.lang.Integer getContentId()
     {
         return this.contentVO.getContentId();
@@ -275,38 +195,11 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
         return this.languageId;
     }
 	
-	public void setStateId(Integer stateId)
-	{
-	    if(this.contentVersionVO != null)
-	        this.contentVersionVO.setStateId(stateId);
-	}
-
-	public void setVersionComment(String versionComment)
-	{
-	    if(this.contentVersionVO != null)
-	        this.contentVersionVO.setVersionComment(versionComment);
-	}
-
 	public void setDigitalAssetId(Integer digitalAssetId)
 	{
 		this.digitalAssetId = digitalAssetId;
 	}
 	
-	public String getVersionComment()
-	{
-		return this.contentVersionVO.getVersionComment();
-	}
-	
-	public Integer getStateId()
-	{
-		return this.contentVersionVO.getStateId();
-	}
-
-	public Boolean getIsActive()
-	{
-		return this.contentVersionVO.getIsActive();
-	}
-            
     public String getName()
     {
         return this.contentVO.getName();
@@ -326,30 +219,7 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 	}	
 
 	/**
-	 * Returns a list of digital assets available for this content version.
-	 */
-	
-	public List getDigitalAssets()
-	{
-		List digitalAssets = null;
-		
-		try
-		{
-			if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
-	       	{
-	       		digitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVersionVO.getContentVersionId());
-	       	}
-		}
-		catch(Exception e)
-		{
-			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
-		}
-		
-		return digitalAssets;
-	}	
-	
-	/**
-	 * Returns a list of digital assets available for this content version and all the child versions.
+	 * Returns a list of digital assets available for this content and all the child contents.
 	 */
 	public List getInheritedDigitalAssets()
 	{
@@ -362,7 +232,29 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
                 Integer cid = (Integer) i.next();
                 DigitalAssetCollection collection = new DigitalAssetCollection(cid, (String) contentMap.get(cid));
                 collection.setContentPath(getContentPath(cid));
-                collection.getAssets().addAll(DigitalAssetController.getDigitalAssetVOList(cid, this.languageId, true));
+                
+                if(filter != "")
+                {
+                	for(Iterator ii=DigitalAssetController.getDigitalAssetVOList(cid, this.languageId, true).iterator();ii.hasNext();)
+                	{
+                		DigitalAssetVO vo = (DigitalAssetVO) ii.next();
+                		if(vo.getAssetContentType().matches(filter))
+                		{
+                			collection.getAssets().add(vo);
+                		}
+                	}
+                }
+                else
+                	collection.getAssets().addAll(DigitalAssetController.getDigitalAssetVOList(cid, this.languageId, true));
+                
+                
+                ContentVersionVO contentVersionVO = getLatestContentVersionVO(cid);
+                if(contentVersionVO != null)
+                {
+                    collection.setContentVersionId(contentVersionVO.getContentVersionId());
+                    collection.setLocked(ContentVersionVO.WORKING_STATE.compareTo(contentVersionVO.getStateId())!=0);
+                }
+                
                 digitalAssets.add(collection);
             }
 		}
@@ -463,136 +355,6 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 	}
 	
 
-	
-	
-	/**
-	 * This method returns the attributes in the content type definition for generation.
-	 */
-	
-	public List getContentTypeAttributes()
-	{   		
-		return this.attributes;
-	}
-
-	public ContentVersionVO getContentVersionVO()
-	{
-		return contentVersionVO;
-	}
-
-	
-
-	/**
-	 * Return the listing of Category attributes for this type of Content
-	 */
-	public List getDefinedCategoryKeys()
-	{
-		try
-		{
-			if(contentTypeDefinitionVO != null)
-				return ContentTypeDefinitionController.getController().getDefinedCategoryKeys(contentTypeDefinitionVO.getSchemaValue());
-		}
-		catch(Exception e)
-		{
-			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
-		}
-
-		return Collections.EMPTY_LIST;
-	}
-
-	/**
-	 * Returns the Category tree for the given Category id.
-	 * @param categoryId The base Category
-	 * @return A list of all Children (and their children, etc)
-	 */
-	public List getAvailableCategories(Integer categoryId)
-	{
-		try
-		{	
-		    String protectCategories = CmsPropertyHandler.getProtectCategories();
-		    if(protectCategories != null && protectCategories.equalsIgnoreCase("true"))
-		        return categoryController.getAuthorizedActiveChildren(categoryId, this.getInfoGluePrincipal());
-			else
-			    return categoryController.findAllActiveChildren(categoryId);
-		}
-		catch(Exception e)
-		{
-			getLogger().warn("We could not fetch the list of categories: " + e.getMessage(), e);
-		}
-
-		return Collections.EMPTY_LIST;
-	}
-
-	/**
-	 * Returns all current Category relationships for th specified attrbiute name
-	 * @param attribute
-	 * @return
-	 */
-	public List getRelatedCategories(String attribute)
-	{
-		try
-		{
-			if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
-				return contentCategoryController.findByContentVersionAttribute(attribute, contentVersionVO.getContentVersionId());
-		}
-		catch(Exception e)
-		{
-			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
-		}
-
-		return Collections.EMPTY_LIST;
-	}
-	
-	public ContentVersionVO getMasterContentVersionVO(Integer contentId, Integer repositoryId) throws SystemException, Exception
-	{
-	    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(repositoryId);
-	    return ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
-	}
-
-	public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Exception
-	{
-	    return ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
-	}
-
-	public Integer getCurrentEditorId()
-	{
-		return currentEditorId;
-	}
-
-	public void setCurrentEditorId(Integer integer)
-	{
-		currentEditorId = integer;
-	}
-
-	public String getAttributeName()
-	{
-		return this.attributeName;
-	}
-
-	public void setAttributeName(String attributeName)
-	{
-		this.attributeName = attributeName;
-	}
-
-	public String getTextAreaId()
-	{
-		return this.textAreaId;
-	}
-
-	public void setTextAreaId(String textAreaId)
-	{
-		this.textAreaId = textAreaId;
-	}
-
-	public Integer getSiteNodeId()
-	{
-		return this.siteNodeId;
-	}
-
-	public void setSiteNodeId(Integer siteNodeId)
-	{
-		this.siteNodeId = siteNodeId;
-	}
-
     public void setRepositoryId(Integer repositoryId)
     {
         this.repositoryId = repositoryId;
@@ -613,16 +375,6 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
         this.assetKey = assetKey;
     }
     
-    public Integer getOldContentId()
-    {
-        return oldContentId;
-    }
-    
-    public void setOldContentId(Integer oldContentId)
-    {
-        this.oldContentId = oldContentId;
-    }
-    
     public boolean getTreatAsLink()
     {
         return treatAsLink;
@@ -638,75 +390,74 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 		return contentVO;
 	}
 	
-    public String getCloseOnLoad()
-    {
-        return closeOnLoad;
-    }
-    
-    public void setCloseOnLoad(String closeOnLoad)
-    {
-        this.closeOnLoad = closeOnLoad;
-    }
-    
-    public Integer getNewContentId()
-    {
-        return newContentId;
-    }
-    
-    public void setNewContentId(Integer newContentId)
-    {
-        this.newContentId = newContentId;
-    }
-    
-    public void setContentVersionVO(ContentVersionVO contentVersionVO)
-    {
-        this.contentVersionVO = contentVersionVO;
-    }
-    
-    public ContentTypeDefinitionVO getContentTypeDefinitionVO()
-    {
-        return contentTypeDefinitionVO;
-    }
-
-	public boolean getConcurrentModification() 
+	
+	protected ContentVersionVO getLatestContentVersionVO(Integer contentId) throws SystemException, Exception
 	{
-		return concurrentModification;
-	}
+		Integer contentVersionId = null;
+		ContentVersionVO contentVersionVO = null;
+		contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
 
-	public void setConcurrentModification(boolean concurrentModification) 
+		Integer usedRepositoryId = this.repositoryId;
+	    if(this.repositoryId == null && this.contentVO != null)
+	        usedRepositoryId = this.contentVO.getRepositoryId();
+	    
+	    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(usedRepositoryId);
+	    contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
+		
+		if(contentVersionVO != null)
+			contentVersionId = contentVersionVO.getContentVersionId();
+		
+
+        if(contentVersionId != null)	
+			contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);
+        
+		return contentVersionVO;    		 	
+
+        /*
+		if(this.forceWorkingChange && contentVersionVO != null && !contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+		{
+		    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, this.getInfoGluePrincipal(), this.getContentId(), new ArrayList());
+		    contentVersionId = contentVersion.getContentVersionId();
+		    contentVersionVO = contentVersion.getValueObject();
+		}
+		*/
+		
+	}
+	
+	public class FilterVO
 	{
-		this.concurrentModification = concurrentModification;
+		private String name = null;
+		private String value = null;
+		public FilterVO(String name, String value) {
+			super();
+			this.name = name;
+			this.value = value;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
 	}
-
-	public long getOldModifiedDateTime() 
-	{
-		return oldModifiedDateTime;
-	}
-
-	public void setOldModifiedDateTime(long oldModifiedDateTime) 
-	{
-		this.oldModifiedDateTime = oldModifiedDateTime;
-	}
-    
-    public void setForceWorkingChange(boolean forceWorkingChange)
-    {
-        this.forceWorkingChange = forceWorkingChange;
-    }
-
-	public String getPublishOnLoad() {
-		return publishOnLoad;
-	}
-
-	public void setPublishOnLoad(String publishOnLoad) {
-		this.publishOnLoad = publishOnLoad;
-	}
-    
+	
     public class DigitalAssetCollection
     {
         List assets = new ArrayList();
         String contentPath = null;
         Integer contentId = null;
+        Integer contentVersionId = null;
+        boolean locked = false;
+        Integer languageId = null;
         String contentName = null;
+        
+        
         public DigitalAssetCollection(Integer contentId, String contentName)
         {
             this.contentId = contentId;
@@ -744,6 +495,44 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
         {
             this.contentPath = contentPath;
         }
+		public Integer getContentVersionId() {
+			return contentVersionId;
+		}
+		public void setContentVersionId(Integer contentVersionId) {
+			this.contentVersionId = contentVersionId;
+		}
+		public Integer getLanguageId() {
+			return languageId;
+		}
+		public void setLanguageId(Integer languageId) {
+			this.languageId = languageId;
+		}
+		public boolean isLocked() {
+			return locked;
+		}
+		public void setLocked(boolean locked) {
+			this.locked = locked;
+		}
         
     }
+
+	public boolean isShowLeafs() {
+		return showLeafs;
+	}
+
+	public void setShowLeafs(boolean showLeafs) {
+		this.showLeafs = showLeafs;
+	}
+
+	public List getFilters() {
+		return filters;
+	}
+
+	public String getFilter() {
+		return filter;
+	}
+
+	public void setFilter(String filter) {
+		this.filter = filter;
+	}
 }

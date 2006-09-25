@@ -18,7 +18,7 @@ var contentId;
 var assetKey;
 var firstAssetKey;
 	
-function markAsset(aContentId, anAssetId, anAssetKey, contentPath)
+function _markAsset(aContentId, anAssetId, anAssetKey, contentPath)
 {
 	if(selectedAssetElement)
 	{
@@ -38,7 +38,13 @@ function markAsset(aContentId, anAssetId, anAssetKey, contentPath)
 	}
 
 	// parent.syncWithTree(contentPath);
-	parent.markAsset(aContentId, anAssetId, anAssetKey, contentPath);
+	try {
+		if(parent)
+			parent.markAsset(aContentId, anAssetId, anAssetKey, contentPath);
+	}
+	catch(e)
+	{
+	}
 }
 		
 function initSub() 
@@ -48,7 +54,7 @@ function initSub()
 	contentId = "$!contentId";
 	selectedAssetElement = document.getElementById("digitalAsset" + assetKey);
 	#else
-	// markAsset('$!contentId', firstAssetKey);
+	// _markAsset('$!contentId', firstAssetKey);
 	#end
 }
 -->
@@ -63,40 +69,39 @@ function initSub()
 		padding: 10px; 
 		text-align: left; 
 		cursor: hand;
+		cursor: pointer;
 		color: 333333;
 		vertical-align: middle;
-		border-right: 1px dotted #AAAAAA;
-		border-bottom: 1px dotted #AAAAAA;
+		/* border-right: 1px dotted #AAAAAA; */
+		/* border-bottom: 1px dotted #AAAAAA; */
 }
 
 .newasset 
 { 
-		width: 100px; 
-		height:25px; 
-		text-align: center; 
-		cursor: hand;
-		color: 333333;
+		padding: 4px; 
+		text-align: left; 
 		vertical-align: middle;
-		border-right: 1px outset #AAAAAA;
-		border-bottom: 1px outset #AAAAAA;
-		border-top: 1px outset #AAAAAA;
-		border-left: 1px outset #AAAAAA;
 		float: none; 
 		clear: both;
 }
 
 .thumbnail
 { 
-		width: 76px; 
-		height:76px;
-		border-right: 1px solid #BBBBBB;
-		border-bottom: 1px solid #BBBBBB;
-		border-top: 1px solid #BBBBBB;
-		border-left: 1px solid #BBBBBB;
-		background: white;
+		width: 105px; 
+		height:80px;
+		border-right: 1px solid #888888;
+		border-bottom: 1px solid #888888;
+		border-top: 1px solid #888888;
+		border-left: 1px solid #888888;
+		background-color: #FFFFFF;
+		layer-background-color: #FFFFFF;
 		text-align: center;
-		align: middle;
 		vertical-align: middle;
+}
+.thumbnailimage
+{
+		vertical-align: middle;
+		text-align: center;
 }
 		
 .header 
@@ -121,23 +126,27 @@ function initSub()
 </head>
 ## class="contenttooledit" 
 <body class="contenttooledit" onload="initSub();">
-#set($counter = 0)
+
 #set($master = $inheritedDigitalAssets)
 
-#if($contentVersionVO.id && $master.size() == 1 && $master.get(0).assets.size() == 0)
-<div class="group">
-	<div class="header">$master.get(0).contentName ($master.get(0).assets.size())&nbsp;&nbsp;&nbsp;&nbsp;[<a href="javascript:parent.syncWithTree('$master.get(0).contentPath');">Reveal in tree</a>]</div>
-</div>
-#end
-
 #foreach($digitalAssetCol in $master)
-	#if($digitalAssetCol.assets.size() > 0)
+	#if($digitalAssetCol.assets.size() > 0 || $master.size() == 1)
 		<div class="group">
-			<div class="header">$digitalAssetCol.contentName ($digitalAssetCol.assets.size())&nbsp;&nbsp;&nbsp;&nbsp;[<a href="javascript:parent.syncWithTree('$digitalAssetCol.contentPath');">Reveal in tree</a>]</div>
+			<div class="header">$digitalAssetCol.contentName   
+			#if($digitalAssetCol.locked)
+				<img src="images/locked.gif" title="This content is published. Create a working copy to attach new files.">
+			#end
+			($digitalAssetCol.assets.size())
+			#if($showLeafs)
+			&nbsp;&nbsp;&nbsp;&nbsp;[<a href="javascript:parent.syncWithTree('$digitalAssetCol.contentPath');">Reveal in tree</a>]
+			#end
+			</div>
 		
 			#foreach($digitalAsset in $digitalAssetCol.assets)
-				<div class="asset" id="digitalAsset$digitalAsset.getDigitalAssetId()" onclick="javascript:markAsset($!digitalAssetCol.contentId, '$digitalAsset.getDigitalAssetId()', '$digitalAsset.assetKey()', '$digitalAssetCol.contentPath');">
-					<div class="thumbnail"><img border="0" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)"></div>
+				<div class="asset" id="digitalAsset$digitalAsset.getDigitalAssetId()" onclick="javascript:_markAsset($!digitalAssetCol.contentId, '$digitalAsset.getDigitalAssetId()', '$digitalAsset.assetKey()', '$digitalAssetCol.contentPath');">
+					<div class="thumbnail">
+						<img class="thumbnailimage" valign="middle" border="0" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)"/>
+					</div>
 					<table cellspacing="4" cellpadding="0" border="0" width="100%">
 						<tr>
 							<td valign="top">Key</td><td valign="top"><b>$digitalAsset.assetKey</b></td>
@@ -150,38 +159,33 @@ function initSub()
 							<td valign="top">Size</td><td valign="top"><b>$this.mathHelper.fileSize($digitalAsset.assetFileSize.longValue())</b></td>
 						</tr>
 						<tr>
-							<td colspan="2" style="border-top: 1px solid #333333;" id="tool$digitalAsset.getDigitalAssetId()" style="display:none;">
+							<td colspan="2" style="border-top: 1px solid #333333;display:none;" id="tool$digitalAsset.getDigitalAssetId()">
 							<a href="javascript:openPopup('$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)','Preview','width=600,height=500,resizable=yes');">	view</a> | <font color="gray">update</font> | <font color="gray">delete</font>
 							</td>
 						</tr>
 					</table>
 				</div>
-				#set($counter = $counter + 1)
 			#end
+			
+			## Add new asset....
+			#if($digitalAssetCol.contentVersionId && $digitalAssetCol.locked == false)
+				<div class="newasset">
+				<a href="javascript:openPopup('ViewDigitalAsset.action?contentVersionId=$digitalAssetCol.contentVersionId', 'DigitalAsset', 'width=400,height=200,resizable=no');">
+				<img border="0" src="$ui.getString("images.contenttool.buttons.addButton")" border="0">
+				</a>
+				</div>
+			#end
+			
 		</div>
 	#end
 #end
 
-#if($counter == 0)
+#if($contentId == -1)
 	<div id="digitalAsset$digitalAsset.assetKey" valign="bottom" align="center" class="header">
-	#if($contentVersionVO.id)
-	<br/>No images available<br/><br/>
-	#else
-	<br/>No images available or no content selected<br/><br/>
-	#end
+	<br/>No content selected<br/><br/>
 	</div>
 #end
 
-#if($contentVersionVO.id)
-	<br/>
-	<img src="images/trans.gif" height="10"><br/>
-	<div class="group">
-	<div class="newasset" onclick="javascript:openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');">
-	<img src="$ui.getString("images.contenttool.buttons.newAsset")" border="0">
-	</div>
-	</div>
-#end
-	
 <script type="text/javascript">
 	setTimeout("initSub()", 500);
 </script>
