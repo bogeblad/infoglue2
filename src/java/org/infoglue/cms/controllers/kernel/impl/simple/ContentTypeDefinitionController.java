@@ -51,6 +51,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -554,122 +555,146 @@ public class ContentTypeDefinitionController extends BaseController
 
 	public List getContentTypeAttributes(String schemaValue)
 	{
+		//List attributes = new ArrayList();
+
+	    String key = "schemaValue_" + schemaValue.hashCode();
+	    System.out.println("key:" + key);
+		Object attributesCandidate = (Object)CacheController.getCachedObjectFromAdvancedCache("contentTypeDefinitionCache", key);
+		//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
 		List attributes = new ArrayList();
-
-		try
+			
+		if(attributesCandidate != null)
 		{
-			InputSource xmlSource = new InputSource(new StringReader(schemaValue));
-
-			DOMParser parser = new DOMParser();
-			parser.parse(xmlSource);
-			Document document = parser.getDocument();
-
-			String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
-			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
-			for(int i=0; i < anl.getLength(); i++)
-			{
-				Element child = (Element)anl.item(i);
-				String attributeName = child.getAttribute("name");
-				String attributeType = child.getAttribute("type");
-
-				ContentTypeAttribute contentTypeAttribute = new ContentTypeAttribute();
-				contentTypeAttribute.setPosition(i);
-				contentTypeAttribute.setName(attributeName);
-				contentTypeAttribute.setInputType(attributeType);
-
-				String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '"+ attributeName +"']";
-
-				// Get validators
-				NodeList validatorNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), validatorsXPath);
-				for(int j=0; j < validatorNodeList.getLength(); j++)
-				{
-					Element validatorNode = (Element)validatorNodeList.item(j);
-					if (validatorNode != null)
-					{
-					    Map arguments = new HashMap();
-					    
-					    NodeList varNodeList = validatorNode.getElementsByTagName("var");
-					    for(int k=0; k < varNodeList.getLength(); k++)
-						{
-							Element varNode = (Element)varNodeList.item(k);
-							
-							String varName = getElementValue(varNode, "var-name");
-							String varValue = getElementValue(varNode, "var-value");
-
-							arguments.put(varName, varValue);
-						}	    
-					    
-					    String attribute = ((Element)validatorNode).getAttribute("depends");
-					    String[] depends = attribute.split(",");
-					    for(int dependsIndex=0; dependsIndex < depends.length; dependsIndex++)
-					    {
-					        String name = depends[dependsIndex];
-
-					        ContentTypeAttributeValidator contentTypeAttributeValidator = new ContentTypeAttributeValidator();
-					        contentTypeAttributeValidator.setName(name);
-					        contentTypeAttributeValidator.setArguments(arguments);
-					        contentTypeAttribute.getValidators().add(contentTypeAttributeValidator);					        
-					    }
-					    
-					    
-					}
-				}
+			if(attributesCandidate instanceof NullObject)
+				attributes = new ArrayList();				
+			else
+				attributes = (List)attributesCandidate;
 				
-				// Get extra parameters
-				Node paramsNode = org.apache.xpath.XPathAPI.selectSingleNode(child, "xs:annotation/xs:appinfo/params");
-				if (paramsNode != null)
+			//getLogger().info("There was cached attributes:" + attributes.size());
+		    System.out.println("Returning cached attributes for key " + key);
+		}
+		else
+		{
+			try
+			{
+				InputSource xmlSource = new InputSource(new StringReader(schemaValue));
+	
+				DOMParser parser = new DOMParser();
+				parser.parse(xmlSource);
+				Document document = parser.getDocument();
+	
+				String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
+				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
+				for(int i=0; i < anl.getLength(); i++)
 				{
-					NodeList childnl = ((Element)paramsNode).getElementsByTagName("param");
-					for(int ci=0; ci < childnl.getLength(); ci++)
+					Element child = (Element)anl.item(i);
+					String attributeName = child.getAttribute("name");
+					String attributeType = child.getAttribute("type");
+	
+					ContentTypeAttribute contentTypeAttribute = new ContentTypeAttribute();
+					contentTypeAttribute.setPosition(i);
+					contentTypeAttribute.setName(attributeName);
+					contentTypeAttribute.setInputType(attributeType);
+	
+					String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '"+ attributeName +"']";
+	
+					// Get validators
+					NodeList validatorNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), validatorsXPath);
+					for(int j=0; j < validatorNodeList.getLength(); j++)
 					{
-						Element param = (Element)childnl.item(ci);
-						String paramId = param.getAttribute("id");
-						String paramInputTypeId = param.getAttribute("inputTypeId");
-
-						ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
-						contentTypeAttributeParameter.setId(paramId);
-						if(paramInputTypeId != null && paramInputTypeId.length() > 0)
-							contentTypeAttributeParameter.setType(Integer.parseInt(paramInputTypeId));
-
-						contentTypeAttribute.putContentTypeAttributeParameter(paramId, contentTypeAttributeParameter);
-
-						NodeList valuesNodeList = param.getElementsByTagName("values");
-						for(int vsnli=0; vsnli < valuesNodeList.getLength(); vsnli++)
+						Element validatorNode = (Element)validatorNodeList.item(j);
+						if (validatorNode != null)
 						{
-							NodeList valueNodeList = param.getElementsByTagName("value");
-							for(int vnli=0; vnli < valueNodeList.getLength(); vnli++)
+						    Map arguments = new HashMap();
+						    
+						    NodeList varNodeList = validatorNode.getElementsByTagName("var");
+						    for(int k=0; k < varNodeList.getLength(); k++)
 							{
-								Element value = (Element)valueNodeList.item(vnli);
-								String valueId = value.getAttribute("id");
-
-								ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
-								contentTypeAttributeParameterValue.setId(valueId);
-
-								NamedNodeMap nodeMap = value.getAttributes();
-								for(int nmi =0; nmi < nodeMap.getLength(); nmi++)
+								Element varNode = (Element)varNodeList.item(k);
+								
+								String varName = getElementValue(varNode, "var-name");
+								String varValue = getElementValue(varNode, "var-value");
+	
+								arguments.put(varName, varValue);
+							}	    
+						    
+						    String attribute = ((Element)validatorNode).getAttribute("depends");
+						    String[] depends = attribute.split(",");
+						    for(int dependsIndex=0; dependsIndex < depends.length; dependsIndex++)
+						    {
+						        String name = depends[dependsIndex];
+	
+						        ContentTypeAttributeValidator contentTypeAttributeValidator = new ContentTypeAttributeValidator();
+						        contentTypeAttributeValidator.setName(name);
+						        contentTypeAttributeValidator.setArguments(arguments);
+						        contentTypeAttribute.getValidators().add(contentTypeAttributeValidator);					        
+						    }
+						    
+						    
+						}
+					}
+					
+					// Get extra parameters
+					Node paramsNode = org.apache.xpath.XPathAPI.selectSingleNode(child, "xs:annotation/xs:appinfo/params");
+					if (paramsNode != null)
+					{
+						NodeList childnl = ((Element)paramsNode).getElementsByTagName("param");
+						for(int ci=0; ci < childnl.getLength(); ci++)
+						{
+							Element param = (Element)childnl.item(ci);
+							String paramId = param.getAttribute("id");
+							String paramInputTypeId = param.getAttribute("inputTypeId");
+	
+							ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+							contentTypeAttributeParameter.setId(paramId);
+							if(paramInputTypeId != null && paramInputTypeId.length() > 0)
+								contentTypeAttributeParameter.setType(Integer.parseInt(paramInputTypeId));
+	
+							contentTypeAttribute.putContentTypeAttributeParameter(paramId, contentTypeAttributeParameter);
+	
+							NodeList valuesNodeList = param.getElementsByTagName("values");
+							for(int vsnli=0; vsnli < valuesNodeList.getLength(); vsnli++)
+							{
+								NodeList valueNodeList = param.getElementsByTagName("value");
+								for(int vnli=0; vnli < valueNodeList.getLength(); vnli++)
 								{
-									Node attribute = (Node)nodeMap.item(nmi);
-									String valueAttributeName = attribute.getNodeName();
-									String valueAttributeValue = attribute.getNodeValue();
-									contentTypeAttributeParameterValue.addAttribute(valueAttributeName, valueAttributeValue);
+									Element value = (Element)valueNodeList.item(vnli);
+									String valueId = value.getAttribute("id");
+	
+									ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+									contentTypeAttributeParameterValue.setId(valueId);
+	
+									NamedNodeMap nodeMap = value.getAttributes();
+									for(int nmi =0; nmi < nodeMap.getLength(); nmi++)
+									{
+										Node attribute = (Node)nodeMap.item(nmi);
+										String valueAttributeName = attribute.getNodeName();
+										String valueAttributeValue = attribute.getNodeValue();
+										contentTypeAttributeParameterValue.addAttribute(valueAttributeName, valueAttributeValue);
+									}
+	
+									contentTypeAttributeParameter.addContentTypeAttributeParameterValue(valueId, contentTypeAttributeParameterValue);
 								}
-
-								contentTypeAttributeParameter.addContentTypeAttributeParameterValue(valueId, contentTypeAttributeParameterValue);
 							}
 						}
 					}
+					// End extra parameters
+	
+					attributes.add(contentTypeAttribute);
 				}
-				// End extra parameters
-
-				attributes.add(contentTypeAttribute);
+	
 			}
-
+			catch(Exception e)
+			{
+				getLogger().error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
+			}
 		}
-		catch(Exception e)
-		{
-			getLogger().error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
-		}
-
+		
+		if(attributes != null)
+		    CacheController.cacheObjectInAdvancedCache("contentTypeDefinitionCache", key, attributes, new String[]{}, false);
+		else
+			CacheController.cacheObjectInAdvancedCache("contentTypeDefinitionCache", key, new NullObject(), new String[]{}, false);
+		
 		return attributes;
 	}
 

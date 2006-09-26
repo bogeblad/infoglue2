@@ -127,4 +127,9 @@ public class ComponentDeliveryContext implements UsageListener
     {
         return componentKey;
     }
+
+    public String getPageKey()
+    {
+        return this.deliveryContext.getPageKey();
+    }
 }

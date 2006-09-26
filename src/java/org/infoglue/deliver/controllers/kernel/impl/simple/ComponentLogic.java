@@ -41,6 +41,7 @@ import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
@@ -1128,7 +1129,7 @@ public class ComponentLogic
 			if(property != null)
 			{
 				logger.info("There was an cached property:" + key + ":" + property);
-			    //System.out.println("Returning cached property...");
+			    ////System.out.println("Returning cached property...");
 			}
 			else
 			{
@@ -1196,7 +1197,7 @@ public class ComponentLogic
 					
 					if(property != null && contentVersionIdList.size() > 0)
 			        {
-					    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
+					    ////System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
 					    
 					    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
 					    if(contentVersionId != null)
@@ -1342,22 +1343,31 @@ public class ComponentLogic
 	private Map getInheritedComponentProperty(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, String propertyName) throws Exception
 	{
 	    List contentVersionIdList = new ArrayList();
-	    
-	    //logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
+
+		//logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
 		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
 		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
-		
+
 	    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
-		Map property = (Map)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
-		
-		if(property != null)
+		Object propertyCandidate = (Object)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
+		//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
+		Map property = null;
+			
+		if(propertyCandidate != null)
 		{
+			if(propertyCandidate instanceof NullObject)
+				property = null;				
+			else
+				property = (Map)propertyCandidate;
+				
 			//getLogger().info("There was an cached content attribute:" + attribute);
-		    //System.out.println("Returning cached property...");
+		    //System.out.println("Returning cached property for key " + key);
 		}
 		else
 		{
-		    //System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
+			logger.warn("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
+
+			////System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
         
 			//HashMap property = null;
 			
@@ -1450,21 +1460,44 @@ public class ComponentLogic
 				}
 			}
 			
+			//System.out.println("property:" + property);
 			if(property != null && contentVersionIdList.size() > 0)
 	        {
-			    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
-			    
 			    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
-			    //System.out.println("contentVersionId:" + contentVersionId);
 			    if(contentVersionId != null)
 			    {
 				    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
-					CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
+				    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
+				    CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, property, new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
 			    }
 	        }
-
+			else
+			{
+				//System.out.println("contentVersionIdList.size():" + contentVersionIdList.size());
+				if(property == null && contentVersionIdList.size() > 0)
+				{
+				    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
+				    //System.out.println("contentVersionId: " + contentVersionId);
+				    if(contentVersionId != null)
+				    {
+					    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+					    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ": NullObject");
+					    CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, new NullObject(), new String[]{"contentVersion_" + contentVersionId, "content_" + contentVersion.getValueObject().getContentId()}, true);
+				    }
+				    else
+					{
+					    //System.out.println("Caching property without content versions: NullObject for key " + key);
+					    CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, new NullObject(), new String[]{}, false);
+					}
+				}
+				else
+				{
+				    //System.out.println("Caching property without content versions: NullObject for key " + key);
+				    CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, new NullObject(), new String[]{}, false);
+				}
+			}
 		}
-		
+				
 		return property;
 	}
 
@@ -1531,13 +1564,13 @@ public class ComponentLogic
 		if(properties != null)
 		{
 			//getLogger().info("There was an cached content attribute:" + attribute);
-		    //System.out.println("Returning cached property...");
+		    ////System.out.println("Returning cached property...");
 		}
 		else
 		{
 			properties = new ArrayList();
 			
-		    //System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
+		    ////System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
         
 			//HashMap property = null;
 			
@@ -1584,11 +1617,11 @@ public class ComponentLogic
 						value = getComponentPropertyValue(propertyElement, languageId, name);
 					}					
 					/*
-					System.out.println("name:" + name);
-					System.out.println("type:" + type);
-					System.out.println("entity:" + entity);
-					System.out.println("value:" + value);
-					System.out.println("isMultipleBinding:" + isMultipleBinding);
+					//System.out.println("name:" + name);
+					//System.out.println("type:" + type);
+					//System.out.println("entity:" + entity);
+					//System.out.println("value:" + value);
+					//System.out.println("isMultipleBinding:" + isMultipleBinding);
 					*/
 					Map property = new HashMap();
 					property.put("name", name);
@@ -1624,10 +1657,10 @@ public class ComponentLogic
 			
 			if(properties != null && contentVersionIdList.size() > 0)
 	        {
-			    //System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
+			    ////System.out.println("Caching property: " + contentVersionIdList.get(0) + ":" + property);
 			    
 			    Integer contentVersionId = (Integer)contentVersionIdList.get(0);
-			    //System.out.println("contentVersionId:" + contentVersionId);
+			    ////System.out.println("contentVersionId:" + contentVersionId);
 			    if(contentVersionId != null)
 			    {
 				    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
@@ -1774,7 +1807,7 @@ public class ComponentLogic
 		
 		if(cachedPageComponentsString != null)
 		{
-		    //System.out.println("Returning cachedPageComponentsString..");
+		    ////System.out.println("Returning cachedPageComponentsString..");
 		    if(usedContentVersionId != null)
 		        usedContentVersionId.add(contentVersionId);
 		    

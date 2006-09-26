@@ -55,6 +55,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryContr
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 /**
@@ -98,17 +99,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Document document = new DOMBuilder().getDocument(componentXML);
 
 			List pageComponents = getPageComponents(getDatabase(), document.getRootElement(), "base", this.getTemplateController(), null);
-
 			InfoGlueComponent baseComponent = null;
 			if(pageComponents.size() > 0)
 			{
 				baseComponent = (InfoGlueComponent)pageComponents.get(0);
 			}
-			
+		
 			if(baseComponent != null)
 			{
 				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
-
 				pageContent = renderComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId());
 			}
 		}
@@ -496,6 +495,12 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	private String renderComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId) throws Exception
 	{
+		//logger.warn("\n\n**** Rendering component ****");
+		//logger.warn("id: " + component.getId());
+		//logger.warn("contentId: " + component.getContentId());
+		//logger.warn("name: " + component.getName());
+		//logger.warn("slotName: " + component.getSlotName());
+
 		String decoratedComponent = "";
 		
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
@@ -507,7 +512,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 		String cacheResult 		= templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
 		String updateInterval 	= templateController.getComponentLogic().getPropertyValue("UpdateInterval", true, false);
-
+		String componentCacheKey = templateController.getComponentLogic().getComponentDeliveryContext().getPageKey() + "_" + component.getId() + "_" + component.getSlotName() + "_" + component.getContentId() + "_" + component.getIsInherited();
+		
 		if(cacheResult == null || !cacheResult.equalsIgnoreCase("true"))
 		{
 		    renderComponent = true;
@@ -520,14 +526,20 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		        renderComponent = true;
 		}
 	    
+		//logger.warn("renderComponent:" + renderComponent);
+	    
 	    if(!renderComponent)
 	    {
-            //logger.info("ComponentKey:" + templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
-	        if(updateInterval != null && !updateInterval.equals("") && !updateInterval.equals("-1"))
-	            decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), new Integer(updateInterval).intValue());
+	    	//logger.warn("componentCacheKey:" + componentCacheKey);
+            if(updateInterval != null && !updateInterval.equals("") && !updateInterval.equals("-1"))
+            {
+    	        decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey, new Integer(updateInterval).intValue());
+            }
 		    else
-		        decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey());
-		    
+		        decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey);
+
+        	//logger.warn("decoratedComponent:" + decoratedComponent);
+
 	        if(decoratedComponent == null)
 		        renderComponent = true;
 		}
@@ -546,7 +558,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    	context.put("templateLogic", templateController);
 		    	StringWriter cacheString = new StringWriter();
 				PrintWriter cachedStream = new PrintWriter(cacheString);
+				Timer t = new Timer();
 				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString);
+				t.printElapsedTime("Rendering of " + component.getName() + " took ");
 				componentString = cacheString.toString();
 
 				int offset = 0;
@@ -578,7 +592,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					while(subComponentsIterator.hasNext())
 					{
 						InfoGlueComponent subComponent = (InfoGlueComponent)subComponentsIterator.next();
-						//logger.info(component.getName() + " had subcomponent " + subComponent.getName() + ":" + subComponent.getId());
+						logger.info(component.getName() + " had subcomponent " + subComponent.getName() + ":" + subComponent.getId());
 						String subComponentString = "";
 						if(subComponent != null)
 						{
@@ -602,11 +616,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 		        if(cacheComponent)
 		        {
-		            logger.info("The component used: " + templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities().length);
 		            if(this.getTemplateController().getOperatingMode().intValue() == 3)
-		                CacheController.cacheObjectInAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), false);
+		                CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), false);
 		            else
-		                CacheController.cacheObjectInAdvancedCache("componentCache", templateController.getComponentLogic().getComponentDeliveryContext().getComponentKey(), decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), true);
+		                CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), true);
 		        }	    
 
 			}
@@ -1005,7 +1018,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						if(inheritIndex > -1)
 						{    
 						    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
-						    //System.out.println("inheritString:" + inheritString);
+						    //logger.warn("inheritString:" + inheritString);
 						    inherit = Boolean.getBoolean(inheritString);
 						}
 
