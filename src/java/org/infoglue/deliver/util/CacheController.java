@@ -192,8 +192,7 @@ public class CacheController extends Thread
 		    {
 				synchronized(cacheInstance)
 		        {
-					System.out.println("cacheInstance for [" + cacheName + "] is size:" + cacheInstance.size());
-		            return cacheInstance.get(key);
+					return cacheInstance.get(key);
 		        }
 		    }
 		}
