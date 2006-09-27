@@ -1113,7 +1113,7 @@ public class ComponentLogic
 	/**
 	 * This method gets a property from the sitenode given	.
 	 */
-
+ 
 	public Map getComponentProperty(Integer siteNodeId, Integer languageId, String propertyName)
 	{
 	    try

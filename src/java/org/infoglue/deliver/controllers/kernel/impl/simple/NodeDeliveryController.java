@@ -429,7 +429,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", key);
 		if(siteNodeVersionVO != null)
 		{
-			getLogger().info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
+			Logger logger = getLogger();
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
 		}
 		else
 		{
@@ -454,7 +456,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("pageCacheLatestSiteNodeVersions", key);
 		if(siteNodeVersionVO != null)
 		{
-			getLogger().info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
+			Logger logger = getLogger();
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
 		}
 		else
 		{

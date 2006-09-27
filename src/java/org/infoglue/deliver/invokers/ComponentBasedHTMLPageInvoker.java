@@ -47,6 +47,7 @@ import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentRestriction;
+import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
@@ -96,9 +97,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
    		if(componentXML != null && componentXML.length() != 0)
 		{
-			Document document = new DOMBuilder().getDocument(componentXML);
-
-			List pageComponents = getPageComponents(getDatabase(), document.getRootElement(), "base", this.getTemplateController(), null);
+   			Document document = new DOMBuilder().getDocument(componentXML);
+			
+			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null);
 			InfoGlueComponent baseComponent = null;
 			if(pageComponents.size() > 0)
 			{
@@ -538,9 +539,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    else
 		        decoratedComponent = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey);
 
-        	//logger.warn("decoratedComponent:" + decoratedComponent);
-
-	        if(decoratedComponent == null)
+        	if(decoratedComponent == null)
 		        renderComponent = true;
 		}
 	    
@@ -548,7 +547,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    
 		if(renderComponent)
 	    {
-		    decoratedComponent = "";
+			decoratedComponent = "";
 		    
 			try
 			{
@@ -558,9 +557,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    	context.put("templateLogic", templateController);
 		    	StringWriter cacheString = new StringWriter();
 				PrintWriter cachedStream = new PrintWriter(cacheString);
-				Timer t = new Timer();
+				//Timer t = new Timer();
 				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString);
-				t.printElapsedTime("Rendering of " + component.getName() + " took ");
+				//t.printElapsedTime("Rendering of " + component.getName() + " took ");
 				componentString = cacheString.toString();
 
 				int offset = 0;
@@ -909,159 +908,176 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 * @author mattias
 	 */
 
-	protected List getPageComponents(Database db, Element element, String slotName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
+	protected List getPageComponents(Database db, String componentXML, Element element, String slotName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
 	{
-		List components = new ArrayList();
+		//List components = new ArrayList();
 		
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
 
-		OutputFormat format = OutputFormat.createPrettyPrint();
-		XMLWriter writer = new XMLWriter( System.out, format );
-		//writer.write( element );
-						
-		String componentXPath = "component[@name='" + slotName + "']";
-		List componentElements = element.selectNodes(componentXPath);
-		//logger.info("componentElements:" + componentElements.size());
-		Iterator componentIterator = componentElements.iterator();
-		while(componentIterator.hasNext())
+		String key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName;
+		if(parentComponent != null)
+			key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName + "_" + parentComponent.getId() + "_" + parentComponent.getName() + "_" + parentComponent.getIsInherited();
+			
+		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
+		//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
+		List components = new ArrayList();
+			
+		if(componentsCandidate != null)
 		{
-			Element componentElement = (Element)componentIterator.next();
-		
-			Integer id 			= new Integer(componentElement.attributeValue("id"));
-			Integer contentId 	= new Integer(componentElement.attributeValue("contentId"));
-			String name 	  	= componentElement.attributeValue("name");
-			
-			try
+			if(componentsCandidate instanceof NullObject)
+				components = null;				
+			else
+				components = (List)componentsCandidate;
+		}
+		else
+		{
+			String componentXPath = "component[@name='" + slotName + "']";
+			List componentElements = element.selectNodes(componentXPath);
+			//logger.info("componentElements:" + componentElements.size());
+			Iterator componentIterator = componentElements.iterator();
+			while(componentIterator.hasNext())
 			{
-			    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
+				Element componentElement = (Element)componentIterator.next();
 			
-				InfoGlueComponent component = new InfoGlueComponent();
-				component.setId(id);
-				component.setContentId(contentId);
-				component.setName(contentVO.getName());
-				component.setSlotName(name);
-				component.setParentComponent(parentComponent);
-		
-				//Use this later
-				//getComponentProperties(componentElement, component, locale, templateController);
-				List propertiesNodeList = componentElement.selectNodes("properties");
-				if(propertiesNodeList.size() > 0)
-				{
-					Element propertiesElement = (Element)propertiesNodeList.get(0);
-					
-					List propertyNodeList = propertiesElement.selectNodes("property");
-					Iterator propertyNodeListIterator = propertyNodeList.iterator();
-					while(propertyNodeListIterator.hasNext())
-					{
-						Element propertyElement = (Element)propertyNodeListIterator.next();
-						
-						String propertyName = propertyElement.attributeValue("name");
-						String type = propertyElement.attributeValue("type");
-						String path = propertyElement.attributeValue("path");
-		
-						if(path == null)
-						{
-							LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
-							if(propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode()) != null)
-								path = propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode());
-						}
-							
-						if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null)
-							path = propertyElement.attributeValue("path_" + locale.getLanguage());
+				Integer id 			= new Integer(componentElement.attributeValue("id"));
+				Integer contentId 	= new Integer(componentElement.attributeValue("contentId"));
+				String name 	  	= componentElement.attributeValue("name");
 				
-						Map property = new HashMap();
-						property.put("name", propertyName);
-						property.put("path", path);
-						property.put("type", type);
-						
-						List bindings = new ArrayList();
-						List bindingNodeList = propertyElement.selectNodes("binding");
-						Iterator bindingNodeListIterator = bindingNodeList.iterator();
-						while(bindingNodeListIterator.hasNext())
-						{
-							Element bindingElement = (Element)bindingNodeListIterator.next();
-							String entity = bindingElement.attributeValue("entity");
-							String entityId = bindingElement.attributeValue("entityId");
-							if(entity.equalsIgnoreCase("Content"))
-							{
-								bindings.add(entityId);
-							}
-							else
-							{
-								bindings.add(entityId); 
-							} 
-						}
-		
-						property.put("bindings", bindings);
-						
-						component.getProperties().put(propertyName, property);
-					}
-				}
-				
-				
-				getComponentRestrictions(componentElement, component, locale, templateController);
-				
-				//Getting slots for the component
 				try
 				{
-					String componentString = this.getComponentString(templateController, contentId, component);
-					int offset = 0;
-					int slotStartIndex = componentString.indexOf("<ig:slot", offset);
-					while(slotStartIndex > -1)
-					{
-						int slotStopIndex = componentString.indexOf("</ig:slot>", slotStartIndex);
-						String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
-						String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
-						
-						boolean inherit = true;
-						int inheritIndex = slotString.indexOf("inherit");
-						if(inheritIndex > -1)
-						{    
-						    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
-						    //logger.warn("inheritString:" + inheritString);
-						    inherit = Boolean.getBoolean(inheritString);
-						}
-
-						String[] allowedComponentNamesArray = null;
-						int allowedComponentNamesIndex = slotString.indexOf("allowedComponentNames");
-						if(allowedComponentNamesIndex > -1)
-						{    
-						    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 23, slotString.indexOf("\"", allowedComponentNamesIndex + 23));
-						    //System.out.println("allowedComponentNames:" + allowedComponentNames);
-						    allowedComponentNamesArray = allowedComponentNames.split(",");
-						}
-
-						Slot slot = new Slot();
-						slot.setId(slotId);
-						slot.setInherit(inherit);
-						slot.setAllowedComponentsArray(allowedComponentNamesArray);
-						
-						Element componentsElement = (Element)componentElement.selectSingleNode("components");
-						
-						List subComponents = getPageComponents(db, componentsElement, slotId, templateController, component);
-						//logger.info("subComponents:" + subComponents);
-						slot.setComponents(subComponents);
-						
-						component.getSlotList().add(slot);
+				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
 				
-						offset = slotStopIndex;
-						slotStartIndex = componentString.indexOf("<ig:slot", offset);
+					InfoGlueComponent component = new InfoGlueComponent();
+					component.setId(id);
+					component.setContentId(contentId);
+					component.setName(contentVO.getName());
+					component.setSlotName(name);
+					component.setParentComponent(parentComponent);
+			
+					//Use this later
+					//getComponentProperties(componentElement, component, locale, templateController);
+					List propertiesNodeList = componentElement.selectNodes("properties");
+					if(propertiesNodeList.size() > 0)
+					{
+						Element propertiesElement = (Element)propertiesNodeList.get(0);
+						
+						List propertyNodeList = propertiesElement.selectNodes("property");
+						Iterator propertyNodeListIterator = propertyNodeList.iterator();
+						while(propertyNodeListIterator.hasNext())
+						{
+							Element propertyElement = (Element)propertyNodeListIterator.next();
+							
+							String propertyName = propertyElement.attributeValue("name");
+							String type = propertyElement.attributeValue("type");
+							String path = propertyElement.attributeValue("path");
+			
+							if(path == null)
+							{
+								LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
+								if(propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode()) != null)
+									path = propertyElement.attributeValue("path_" + langaugeVO.getLanguageCode());
+							}
+								
+							if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null)
+								path = propertyElement.attributeValue("path_" + locale.getLanguage());
+					
+							Map property = new HashMap();
+							property.put("name", propertyName);
+							property.put("path", path);
+							property.put("type", type);
+							
+							List bindings = new ArrayList();
+							List bindingNodeList = propertyElement.selectNodes("binding");
+							Iterator bindingNodeListIterator = bindingNodeList.iterator();
+							while(bindingNodeListIterator.hasNext())
+							{
+								Element bindingElement = (Element)bindingNodeListIterator.next();
+								String entity = bindingElement.attributeValue("entity");
+								String entityId = bindingElement.attributeValue("entityId");
+								if(entity.equalsIgnoreCase("Content"))
+								{
+									bindings.add(entityId);
+								}
+								else
+								{
+									bindings.add(entityId); 
+								} 
+							}
+			
+							property.put("bindings", bindings);
+							
+							component.getProperties().put(propertyName, property);
+						}
 					}
+					
+					
+					getComponentRestrictions(componentElement, component, locale, templateController);
+					
+					//Getting slots for the component
+					try
+					{
+						String componentString = this.getComponentString(templateController, contentId, component);
+						int offset = 0;
+						int slotStartIndex = componentString.indexOf("<ig:slot", offset);
+						while(slotStartIndex > -1)
+						{
+							int slotStopIndex = componentString.indexOf("</ig:slot>", slotStartIndex);
+							String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
+							String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
+							
+							boolean inherit = true;
+							int inheritIndex = slotString.indexOf("inherit");
+							if(inheritIndex > -1)
+							{    
+							    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
+							    //logger.warn("inheritString:" + inheritString);
+							    inherit = Boolean.getBoolean(inheritString);
+							}
+	
+							String[] allowedComponentNamesArray = null;
+							int allowedComponentNamesIndex = slotString.indexOf("allowedComponentNames");
+							if(allowedComponentNamesIndex > -1)
+							{    
+							    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 23, slotString.indexOf("\"", allowedComponentNamesIndex + 23));
+							    //System.out.println("allowedComponentNames:" + allowedComponentNames);
+							    allowedComponentNamesArray = allowedComponentNames.split(",");
+							}
+	
+							Slot slot = new Slot();
+							slot.setId(slotId);
+							slot.setInherit(inherit);
+							slot.setAllowedComponentsArray(allowedComponentNamesArray);
+							
+							Element componentsElement = (Element)componentElement.selectSingleNode("components");
+							
+							List subComponents = getPageComponents(db, componentXML, componentsElement, slotId, templateController, component);
+							//logger.info("subComponents:" + subComponents);
+							slot.setComponents(subComponents);
+							
+							component.getSlotList().add(slot);
+					
+							offset = slotStopIndex;
+							slotStartIndex = componentString.indexOf("<ig:slot", offset);
+						}
+					}
+					catch(Exception e)
+					{		
+						logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+					}
+					
+					components.add(component);
 				}
 				catch(Exception e)
-				{		
-					logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+				{
+				    e.printStackTrace();
 				}
-				
-				components.add(component);
-			}
-			catch(Exception e)
-			{
-			    e.printStackTrace();
-			}
-			
-
+			}			
 		}		
+		
+		if(components != null)
+		    CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, components, new String[]{}, false);
+		else
+			CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, new NullObject(), new String[]{}, false);
 		
 		return components;
 	}

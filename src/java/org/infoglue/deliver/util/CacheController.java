@@ -483,7 +483,7 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("componentCache") && entity.indexOf("Registry") == -1)
 					{	
 						clear = true;
-						selectiveCacheUpdate = true;
+						//selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("componentPropertyCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	

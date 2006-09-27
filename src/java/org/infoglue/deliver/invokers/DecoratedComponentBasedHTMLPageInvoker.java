@@ -126,7 +126,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    
 			decoratorTimer.printElapsedTime("After reading document");
 			
-			List pageComponents = getPageComponents(getDatabase(), document.getRootElement(), "base", this.getTemplateController(), null);
+			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null);
 
 			InfoGlueComponent baseComponent = null;
 			if(pageComponents.size() > 0)

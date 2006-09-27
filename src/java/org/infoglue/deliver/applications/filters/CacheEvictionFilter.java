@@ -74,7 +74,8 @@ public class CacheEvictionFilter implements Filter
             String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
             String userAgent = httpRequest.getHeader("user-agent").toLowerCase();
 
-            logger.info("userAgent:" + userAgent);
+            if(logger.isInfoEnabled())
+            	logger.info("userAgent:" + userAgent);
             /*
             System.out.println("Address " + httpRequest.getRemoteAddr());
             

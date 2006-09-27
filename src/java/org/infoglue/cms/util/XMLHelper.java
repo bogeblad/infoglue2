@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.util;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
@@ -213,7 +214,7 @@ public class XMLHelper
 	  
 	public static Document readDocumentFromByteArray(byte[] xml) throws IOException, SAXException
 	{
-		InputSource xmlSource = new InputSource(new ByteArrayInputStream(xml));
+		InputSource xmlSource = new InputSource(new BufferedInputStream(new ByteArrayInputStream(xml)));
 		DOMParser parser = new DOMParser();
 		parser.parse(xmlSource);
 		Document document = parser.getDocument();
