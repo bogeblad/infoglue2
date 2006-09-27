@@ -52,6 +52,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Improved import utility by adding failchecks, better handling of errors and also fixed bug which did not account for relations to contents and pages created by a relation editor.'
 - Fixed bug in component caching which could lead to wrong component being fetched. 
 - Added better caching in some areas (content types, component properties) which improves dynamic pages a lot and decreases the xml/xpath cost.
+- Fixed bug with opener reload in mozilla when in edit on sight mode. We used <body onload="javascript:.." before and that seems to be working bad - changed to window.onload in javascript.
  
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
