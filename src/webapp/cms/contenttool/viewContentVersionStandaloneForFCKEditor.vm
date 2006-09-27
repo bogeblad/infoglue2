@@ -20,6 +20,46 @@
 			e.execCommand(cmd);
 		};
 	
+		//*******************************************
+		//This method refreshes the caller
+		//*******************************************
+	
+		function refreshCaller()
+		{
+			if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
+				window.opener.parent.frames['main'].location.reload();
+			else
+				window.opener.location.reload();	
+	
+			window.close();
+		}
+	
+		//*******************************************
+		//This method submits the content to publishing dialog
+		//*******************************************
+	
+		function submitToPublish()
+		{
+			//if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
+			//	window.opener.parent.frames['main'].location.reload();
+			//else
+			//	window.opener.location.reload();	
+	
+			//window.close();
+			//var returnAddress = document.location.href;
+			var returnAddress = "$formatter.encodeURI("ViewContentVersion!standalone.action?contentId=$contentId&languageId=$languageId&closeOnLoad=true", 'UTF-8')";
+			//alert("returnAddress:" + returnAddress + "$formatter");
+			document.location.href = "ViewListContentVersion.action?contentId=$contentId&returnAddress=" + returnAddress;
+		}
+	
+		#if($closeOnLoad == "true") 
+		window.onLoad = refreshCaller();
+		#end
+		
+		#if($publishOnLoad == "true")
+		window.onLoad = submitToPublish();
+		#end
+		
 		var inlineImageDefaultRepositoryId = null;
 		#set($inlineImageDefaultRepositoryId = $map.get("inlineImageDefaultRepositoryId"))
 		#if($inlineImageDefaultRepositoryId && $inlineImageDefaultRepositoryId != "")
@@ -64,7 +104,7 @@
 #end
 
 
-<body class="contenttooledit" #if($closeOnLoad == "true")onload="javascript:refreshCaller();"#end #if($publishOnLoad == "true")onload="javascript:submitToPublish();"#end onkeypress="hotKeys(event);">
+<body class="contenttooledit" #if($closeOnLoad == "true")onload="refreshCaller();"#end #if($publishOnLoad == "true")onload="submitToPublish();"#end onkeypress="hotKeys(event);">
 
 <script language="javascript" src="script/jsrsClient.js"></script>
 
@@ -137,38 +177,6 @@
 		}
 	}
 	
-	//*******************************************
-	//This method refreshes the caller
-	//*******************************************
-
-	function refreshCaller()
-	{
-		if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
-			window.opener.parent.frames['main'].location.reload();
-		//else
-		//alert("window.opener.location:" + window.opener.location.href);
-		window.opener.location.reload();	
-		
-		window.close();
-	}
-
-	//*******************************************
-	//This method submits the content to publishing dialog
-	//*******************************************
-
-	function submitToPublish()
-	{
-		//if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
-		//	window.opener.parent.frames['main'].location.reload();
-		//else
-		//	window.opener.location.reload();	
-
-		//window.close();
-		//var returnAddress = document.location.href;
-		var returnAddress = "$formatter.encodeURI("ViewContentVersion!standalone.action?contentId=$contentId&languageId=$languageId&closeOnLoad=true", 'UTF-8')";
-		//alert("returnAddress:" + returnAddress + "$formatter");
-		document.location.href = "ViewListContentVersion.action?contentId=$contentId&returnAddress=" + returnAddress;
-	}
 
 	//*******************************************
 	// This is a timer that warns the user about saving his work once in a while so he does not
