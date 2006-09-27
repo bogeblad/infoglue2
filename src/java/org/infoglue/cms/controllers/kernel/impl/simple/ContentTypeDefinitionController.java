@@ -278,6 +278,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		else
 		{
+			getLogger().info("Refetching contentTypeDefinitionVO:" + contentTypeDefinitionVO);
 
 			try
 			{
@@ -558,8 +559,8 @@ public class ContentTypeDefinitionController extends BaseController
 		//List attributes = new ArrayList();
 
 	    String key = "schemaValue_" + schemaValue.hashCode();
-	    System.out.println("key:" + key);
-		Object attributesCandidate = (Object)CacheController.getCachedObjectFromAdvancedCache("contentTypeDefinitionCache", key);
+	    //System.out.println("key:" + key);
+		Object attributesCandidate = CacheController.getCachedObject("contentTypeDefinitionCache", key);
 		//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
 		List attributes = new ArrayList();
 			
@@ -570,8 +571,7 @@ public class ContentTypeDefinitionController extends BaseController
 			else
 				attributes = (List)attributesCandidate;
 				
-			//getLogger().info("There was cached attributes:" + attributes.size());
-		    System.out.println("Returning cached attributes for key " + key);
+			//getLogger().info("Returning cached attributes for key " + key + "-" + attributes);
 		}
 		else
 		{
@@ -689,12 +689,12 @@ public class ContentTypeDefinitionController extends BaseController
 				getLogger().error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
 			}
 		}
-		
+
 		if(attributes != null)
-		    CacheController.cacheObjectInAdvancedCache("contentTypeDefinitionCache", key, attributes, new String[]{}, false);
+		    CacheController.cacheObject("contentTypeDefinitionCache", key, attributes);
 		else
-			CacheController.cacheObjectInAdvancedCache("contentTypeDefinitionCache", key, new NullObject(), new String[]{}, false);
-		
+			CacheController.cacheObject("contentTypeDefinitionCache", key, new NullObject());
+				
 		return attributes;
 	}
 

@@ -1349,7 +1349,7 @@ public class ComponentLogic
 		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
 
 	    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
-		Object propertyCandidate = (Object)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
+		Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 		//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
 		Map property = null;
 			
@@ -1365,7 +1365,7 @@ public class ComponentLogic
 		}
 		else
 		{
-			logger.warn("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
+			logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
 
 			////System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
         

@@ -188,11 +188,11 @@ public class CacheController extends Thread
 		synchronized(caches)
 		{
 			Map cacheInstance = (Map)caches.get(cacheName);
-		    
-		    if(cacheInstance != null)
+			if(cacheInstance != null)
 		    {
-		        synchronized(cacheInstance)
+				synchronized(cacheInstance)
 		        {
+					System.out.println("cacheInstance for [" + cacheName + "] is size:" + cacheInstance.size());
 		            return cacheInstance.get(key);
 		        }
 		    }
@@ -588,9 +588,9 @@ public class CacheController extends Thread
 					
 					if(clear)
 					{	
-					    //System.out.println("clearing:" + e.getKey());
 					    logger.info("clearing:" + e.getKey());
 						Object object = e.getValue();
+						
 						if(object instanceof Map)
 						{
 							Map cacheInstance = (Map)e.getValue();
@@ -658,7 +658,7 @@ public class CacheController extends Thread
 							    	}
 
 							    }
-							    else if(selectiveCacheUpdate && entity.indexOf("Content") > 0 && useSelectivePageCacheUpdate)
+							    else if(selectiveCacheUpdate && (entity.indexOf("Content") > 0 && entity.indexOf("ContentTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
 							    	cacheInstance.flushGroup("content_" + entityId);
 							    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");

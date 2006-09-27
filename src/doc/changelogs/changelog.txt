@@ -50,7 +50,9 @@ Abbreviated Changelog from 2.3.5 Final
 - Changed so table width when used in FCKEditor by default is set to 75% instead of pixels
 - Upgraded to FCKEditor 2.3.1 from the 2.2 version we had before
 - Improved import utility by adding failchecks, better handling of errors and also fixed bug which did not account for relations to contents and pages created by a relation editor.'
-
+- Fixed bug in component caching which could lead to wrong component being fetched. 
+- Added better caching in some areas (content types, component properties) which improves dynamic pages a lot and decreases the xml/xpath cost.
+ 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
 -------------------------------------------------------------------------------------
