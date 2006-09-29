@@ -248,9 +248,9 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 	{
 		String returnAddress = null;
 
-		//System.out.println("loginUrl:" + this.loginUrl);
-		//System.out.println("logoutUrl:" + this.logoutUrl);
-		//System.out.println("successLoginUrl:" + this.successLoginUrl);
+		System.out.println("loginUrl:" + this.loginUrl);
+		System.out.println("logoutUrl:" + this.logoutUrl);
+		System.out.println("successLoginUrl:" + this.successLoginUrl);
 		/*
 	    String referer = request.getHeader("Referer");
 		
@@ -274,11 +274,10 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 		logger.warn("redirectAddress in InfoGlueBasicAuth module:" + returnAddress);
 		response.sendRedirect(returnAddress);
 		*/
-		//System.out.println("applicationName:" + CmsPropertyHandler.getApplicationName());
 		if(CmsPropertyHandler.getApplicationName().equals("cms"))
 		{
-			String redirectAddress = "" + this.logoutUrl + "?returnAddress=" + URLEncoder.encode(request.getContextPath() + "/ViewCMSTool.action", "utf-8");
-			//logger.warn("redirectAddress in InfoGlueBasicAuth module:" + redirectAddress);
+			String redirectAddress = "" + this.logoutUrl + "?returnAddress=" + URLEncoder.encode("/infoglueCMS/ViewCMSTool.action", "utf-8");
+			logger.info("redirectAddress in InfoGlueBasicAuth module:" + redirectAddress);
 			response.sendRedirect(redirectAddress);
 			
 			//response.sendRedirect("/infoglueCMS/ViewCMSTool.action");
