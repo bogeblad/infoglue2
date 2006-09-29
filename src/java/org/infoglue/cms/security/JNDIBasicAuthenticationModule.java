@@ -80,6 +80,7 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
         //otherwise, we need to authenticate somehow
         String userName = request.getParameter("j_username");
         String password = request.getParameter("j_password");
+        String disableRedirect = (String)request.getAttribute("disableRedirect");
         
         // no userName?  abort request processing and redirect
         if (userName == null || userName.equals(""))
@@ -110,15 +111,16 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
             
             if(requestURI.indexOf("?") > 0)
             {
-                redirectUrl = loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+                redirectUrl = loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8") + "&returnAddress=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
             }
             else
             {
-                redirectUrl = loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+                redirectUrl = loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8") + "&returnAddress=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
             }
             
             logger.info("redirectUrl:" + redirectUrl);
-            response.sendRedirect(redirectUrl);
+            if(!disableRedirect.equals("true"))
+                response.sendRedirect(redirectUrl);
             
             return null;
         }
@@ -144,13 +146,15 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
             String redirectUrl = "";
             
             if(referringUrl.indexOf("?") > 0)
-                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
+                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8") + "&returnAddress=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
             else
-                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "?errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
+                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "?errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8") + "&returnAddress=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
             
             //String redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
             logger.info("redirectUrl:" + redirectUrl);
-            response.sendRedirect(redirectUrl);
+            if(!disableRedirect.equals("true"))
+            	response.sendRedirect(redirectUrl);
+            
             return null;
         }
         
@@ -199,6 +203,30 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
 	
 	public String getLoginDialogUrl(HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
+		if(CmsPropertyHandler.getApplicationName().equals("deliver"))
+		{
+			logger.info("It was a deliver request... let's keep it simple...");
+			String returnAddress = null;
+	
+		    String referer = request.getHeader("Referer");
+			
+			if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
+				referer = "/"; 
+	
+			logger.info("successLoginUrl:" + successLoginUrl);
+			if(successLoginUrl != null)
+			{
+				returnAddress = successLoginUrl;
+			}
+			else
+			{
+				returnAddress = request.getRequestURL().toString() + "?" + request.getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+			}
+			
+			logger.info("returnAddress:" + returnAddress);
+			return request.getContextPath() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
+		}
+		
 		String url = null;
 
         //otherwise, we need to authenticate somehow
@@ -234,11 +262,11 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
             
             if(requestURI.indexOf("?") > 0)
             {
-                redirectUrl = loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+                redirectUrl = loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8") + "&returnAddress=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
             }
             else
             {
-                redirectUrl = loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+                redirectUrl = loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8") + "&returnAddress=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
             }
             
             logger.info("redirectUrl:" + redirectUrl);
@@ -266,9 +294,9 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
             String redirectUrl = "";
             
             if(referringUrl.indexOf("?") > 0)
-                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
+                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8") + "&returnAddress=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
             else
-                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "?errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
+                redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "?errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8") + "&returnAddress=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
             
             //String redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
             logger.info("redirectUrl:" + redirectUrl);
