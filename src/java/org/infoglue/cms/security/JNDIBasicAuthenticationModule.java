@@ -119,7 +119,7 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
             }
             
             logger.info("redirectUrl:" + redirectUrl);
-            if(!disableRedirect.equals("true"))
+            if(disableRedirect == null || !disableRedirect.equals("true"))
                 response.sendRedirect(redirectUrl);
             
             return null;
@@ -152,7 +152,7 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
             
             //String redirectUrl = invalidLoginUrl + "?userName=" + URLEncoder.encode(userName, "UTF-8") + "&errorMessage=" + URLEncoder.encode("Invalid login - please try again..", "UTF-8") + "&referringUrl=" + URLEncoder.encode(referringUrl + requestQueryString, "UTF-8");
             logger.info("redirectUrl:" + redirectUrl);
-            if(!disableRedirect.equals("true"))
+            if(disableRedirect == null || !disableRedirect.equals("true"))
             	response.sendRedirect(redirectUrl);
             
             return null;
