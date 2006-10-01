@@ -35,6 +35,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.dbcp.ConnectionFactory;
+import org.apache.commons.dbcp.DriverManagerConnectionFactory;
+import org.apache.commons.dbcp.PoolableConnectionFactory;
+import org.apache.commons.dbcp.PoolingDriver;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
 import com.opensymphony.module.propertyset.InvalidPropertyTypeException;
@@ -42,6 +48,7 @@ import com.opensymphony.module.propertyset.PropertyException;
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.database.JDBCPropertySet;
 import com.opensymphony.util.Data;
+
 
 
 /**
@@ -84,13 +91,18 @@ import com.opensymphony.util.Data;
  *  <li><b>col.number</b> - column name for the number value</li>
  * </ul>
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author <a href="mailto:epesh@hotmail.com">Joseph B. Ottinger</a>
  * @author <a href="mailto:plightbo@hotmail.com">Pat Lightbody</a>
  */
 public class InfoGlueJDBCPropertySet extends JDBCPropertySet 
 {
     private final static Logger logger = Logger.getLogger(InfoGlueJDBCPropertySet.class.getName());
+
+    private static ObjectPool connectionPool;
+    private static ConnectionFactory connectionFactory;
+    private static PoolableConnectionFactory poolableConnectionFactory;
+    private static PoolingDriver driver;
 
     // config
     //DataSource ds;
@@ -434,12 +446,29 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     {
         Connection conn = null;
 		
-        logger.info("Establishing connection to database '" + this.url + "'");
-
 		try 
 		{
-	        Class.forName(this.driverClassName).newInstance();
-			conn = DriverManager.getConnection(url, this.userName, this.password);
+	        if(connectionPool == null)
+	        {
+	            logger.info("Establishing connection to database '" + this.url + "'");
+		        
+		        try 
+	            {
+	                setupDriver(url, this.userName, this.password);
+	            } 
+	            catch (Exception e) 
+	            {
+	                e.printStackTrace();
+	            }
+	            logger.info("Done.");
+	        }
+
+	        conn = DriverManager.getConnection("jdbc:apache:commons:dbcp:infoGlueJDBCPropertySet");
+	        logger.info("Fetched connection from pool...");
+            printDriverStats();
+	        
+            //System.out.println("Creating connection.");
+            //conn = DriverManager.getConnection(url, this.userName, this.password);
 		} 
 		catch (Exception ex) 
 		{
@@ -458,4 +487,37 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
            logger.error("Could not close connection");
         }
     }
+    
+    public void setupDriver(String connectURI, String userName, String password) throws Exception 
+    {
+    	String validationQuery = "SELECT count(*) FROM " + tableName;
+    	
+    	logger.info("Setting up driver.");
+        Class.forName(this.driverClassName).newInstance();
+
+        connectionPool = new GenericObjectPool(null);
+        connectionFactory = new DriverManagerConnectionFactory(connectURI, userName, password);
+        poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,validationQuery,false,true);
+
+        Class.forName("org.apache.commons.dbcp.PoolingDriver");
+        driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
+
+        driver.registerPool("infoGlueJDBCPropertySet",connectionPool);
+    }
+
+    public void printDriverStats() throws Exception 
+    {
+        PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
+        ObjectPool connectionPool = driver.getConnectionPool("infoGlueJDBCPropertySet");
+        
+        logger.info("NumActive: " + connectionPool.getNumActive());
+        logger.info("NumIdle: " + connectionPool.getNumIdle());
+    }
+
+    public void shutdownDriver() throws Exception 
+    {
+        PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
+        driver.closePool("infoGlueJDBCPropertySet");
+    }
+ 
 } 

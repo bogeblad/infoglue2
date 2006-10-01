@@ -53,6 +53,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Fixed bug in component caching which could lead to wrong component being fetched. 
 - Added better caching in some areas (content types, component properties) which improves dynamic pages a lot and decreases the xml/xpath cost.
 - Fixed bug with opener reload in mozilla when in edit on sight mode. We used <body onload="javascript:.." before and that seems to be working bad - changed to window.onload in javascript.
+- Added dbcp-pool on InfoGlueJDBCPropertySet until we completely remove it. Decreases the load on the database server quite a bit.
  
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
