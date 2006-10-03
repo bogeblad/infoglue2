@@ -686,7 +686,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	{
 	    //logger.info("slotId");
 	    //logger.info("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
-		
 		List inheritedComponents = new ArrayList();
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
@@ -732,9 +731,21 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			String componentXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
 			//logger.info("componentXML:" + componentXML);
 			//logger.info("id:" + id);
-		
-			Document document = new DOMBuilder().getDocument(componentXML);
-						
+			
+			String key = "" + parentSiteNodeVO.getId() + "_" + componentXML.hashCode();
+			Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
+			Document document = null;
+			if(componentsCandidate == null)
+			{
+				System.out.println("Parsing dom document..." + key);
+				document = new DOMBuilder().getDocument(componentXML);
+				//CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, document, new String[]{}, false);
+			}
+			else
+			{
+				document = (Document)componentsCandidate;
+			}
+			
 			Map components = getComponent(db, document.getRootElement(), id, templateController, component);
 			//logger.info("components:" + components.size());
 			
