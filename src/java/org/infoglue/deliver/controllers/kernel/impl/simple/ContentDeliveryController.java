@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -65,6 +66,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class ContentDeliveryController extends BaseDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(ContentDeliveryController.class.getName());
+
 	private URLComposer urlComposer = null; 
 	private VisualFormatter formatter = new VisualFormatter();
 	
@@ -618,10 +621,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			while(filePath != null)
 			{
-			    if(masterFile == null)
-			        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-				else
-				    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+				try
+				{
+					if(masterFile == null)
+				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					else
+					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+				}
+				catch(Exception e)
+				{
+					logger.warn("An file could not be written:" + e.getMessage(), e);
+				}
 			    
 			    i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
@@ -738,10 +748,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
-				    if(masterFile == null)
-				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-				    else
-				        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+					try
+					{
+					    if(masterFile == null)
+					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					    else
+					        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+					}
+					catch(Exception e)
+					{
+						logger.warn("An file could not be written:" + e.getMessage(), e);
+					}
 					
 				    i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
@@ -809,14 +826,24 @@ public class ContentDeliveryController extends BaseDeliveryController
 				int i = 0;
 				File masterFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				//System.out.println("filePath:" + filePath);
 				while(filePath != null)
 				{
-				    if(masterFile == null)
-				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);	
-					else
-					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+					try
+					{
+					    if(masterFile == null)
+					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);	
+						else
+						    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+					}
+					catch(Exception e)
+					{
+						logger.warn("An file could not be written:" + e.getMessage(), e);
+					}
+				    
 				    i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+					//System.out.println("filePath:" + filePath);
 				}
 
 				//String filePath = CmsPropertyHandler.getDigitalAssetPath();
@@ -851,15 +878,24 @@ public class ContentDeliveryController extends BaseDeliveryController
 					int i = 0;
 					File masterFile = null;
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+					//System.out.println("filePath:" + filePath);
 					while(filePath != null)
 					{
-					    if(masterFile == null)
-					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-						else
-						    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
-
+						try
+						{
+						    if(masterFile == null)
+						        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+							else
+							    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+						}
+						catch(Exception e)
+						{
+							logger.warn("An file could not be written:" + e.getMessage(), e);
+						}
+						
 						i++;
 						filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+						//System.out.println("filePath:" + filePath);
 					}
 
 					//String filePath = CmsPropertyHandler.getDigitalAssetPath();
@@ -923,16 +959,23 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
-				    if(masterFile == null)
-				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-					else
-					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
-				    
-				    if(masterThumbFile == null)
-				        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
-				    else
-				        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
-				    
+					try
+					{
+					    if(masterFile == null)
+					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+						else
+						    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+					    
+					    if(masterThumbFile == null)
+					        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+					    else
+					        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+					}
+					catch(Exception e)
+					{
+						logger.warn("An file could not be written:" + e.getMessage(), e);
+					}
+					
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				}
@@ -998,15 +1041,22 @@ public class ContentDeliveryController extends BaseDeliveryController
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 				while(filePath != null)
 				{
-				    if(masterFile == null)
-						masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-					else
-						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-				    
-				    if(masterThumbFile == null)
-				        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
-					else
-					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+					try
+					{
+					    if(masterFile == null)
+							masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+						else
+							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					    
+					    if(masterThumbFile == null)
+					        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+						else
+						    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+					}
+					catch(Exception e)
+					{
+						logger.warn("An file could not be written:" + e.getMessage(), e);
+					}
 					
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);

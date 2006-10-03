@@ -41,6 +41,7 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
@@ -54,6 +55,7 @@ import org.infoglue.deliver.controllers.kernel.URLComposer;
 
 public class DigitalAssetDeliveryController extends BaseDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(DigitalAssetDeliveryController.class.getName());
 
 	class FilenameFilterImpl implements FilenameFilter 
 	{
@@ -105,11 +107,21 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			
 			int i = 0;
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			//System.out.println("filePath:" + filePath);
 			while(filePath != null)
 			{
-				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+				try
+				{
+					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+				}
+				catch(Exception e)
+				{
+					logger.warn("An file could not be written:" + e.getMessage(), e);
+				}
+
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				//System.out.println("filePath:" + filePath);
 			}
 
 			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
@@ -143,8 +155,16 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			while(filePath != null)
 			{
-				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-				DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+				try
+				{
+					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+				}
+				catch(Exception e)
+				{
+					logger.warn("An file could not be written:" + e.getMessage(), e);
+				}
+				
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
@@ -189,11 +209,15 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		long timer = System.currentTimeMillis();
 		
 		File outputFile = new File(filePath + File.separator + fileName);
-		if(outputFile.exists())
+		//System.out.println("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
+		if(outputFile.exists() && outputFile.length() > 0)
 		{
-			getLogger().info("The file allready exists so we don't need to dump it again..");
+			//getLogger().info("The file allready exists so we don't need to dump it again..");
 			return outputFile;
 		}
+		
+		//System.out.println("outputFile:" + filePath + File.separator + fileName);
+		outputFile.createNewFile();
 		
 		FileOutputStream fis = new FileOutputStream(outputFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fis);
@@ -210,7 +234,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
         bis.close();
 		fis.close();
 		bos.close();
-        getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		//getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
         
         return outputFile;
 	}
@@ -226,11 +250,15 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		long timer = System.currentTimeMillis();
 		
 		File outputFile = new File(filePath + File.separator + fileName);
-		if(outputFile.exists())
+		//System.out.println("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
+		if(outputFile.exists() && outputFile.length() > 0)
 		{
-			getLogger().info("The file allready exists so we don't need to dump it again..");
+			//getLogger().info("The file allready exists so we don't need to dump it again..");
 			return outputFile;
 		}
+		
+		//System.out.println("outputFile:" + filePath + File.separator + fileName);
+		outputFile.createNewFile();
 		
 		FileOutputStream fis = new FileOutputStream(outputFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fis);
@@ -247,7 +275,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
         bis.close();
 		fis.close();
 		bos.close();
-        getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		//getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
         
         return outputFile;
 	}
