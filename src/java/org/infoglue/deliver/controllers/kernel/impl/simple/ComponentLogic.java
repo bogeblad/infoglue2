@@ -41,7 +41,7 @@ import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.databeans.NullObject;
+import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
@@ -1360,7 +1360,7 @@ public class ComponentLogic
 			else
 				property = (Map)propertyCandidate;
 				
-			//getLogger().info("There was an cached content attribute:" + attribute);
+			//logger.info("There was an cached content attribute:" + attribute);
 		    //System.out.println("Returning cached property for key " + key);
 		}
 		else
@@ -1419,9 +1419,15 @@ public class ComponentLogic
 					    value = propertyElement.getAttribute("path");
 	
 					    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
-	
+					    //System.out.println("locale:" + languageId + ":" + locale.getDisplayLanguage());
+						Locale masterLocale = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getLocale();
+						//System.out.println("masterLocale:" + masterLocale.getDisplayLanguage());
+						
 					    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
 						    value = propertyElement.getAttribute("path_" + locale.getLanguage());
+
+					    if((value == null || value.equals("")) && propertyElement.hasAttribute("path_" + masterLocale.getLanguage()))
+					        value = propertyElement.getAttribute("path_" + masterLocale.getLanguage());
 					}
 					else
 					{
@@ -1563,7 +1569,7 @@ public class ComponentLogic
 		
 		if(properties != null)
 		{
-			//getLogger().info("There was an cached content attribute:" + attribute);
+			//logger.info("There was an cached content attribute:" + attribute);
 		    ////System.out.println("Returning cached property...");
 		}
 		else
