@@ -85,6 +85,8 @@
 	<path id="build.classpath">
 		<pathelement location="${build.classes}"/>
 		<fileset refid="build.libs"/>
+		<fileset refid="core.libs"/>
+		<fileset refid="jdbc.libs"/>
 	</path>
 
 	<path id="test.classpath">
