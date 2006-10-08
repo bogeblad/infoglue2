@@ -26,6 +26,7 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -34,6 +35,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -203,41 +206,161 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
    	 * that means that the file is allready cached on the server. If not we take out the stream from the 
    	 * digitalAsset-object and dumps it.
    	 */
-   	
+/*
+    public File dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
+    {
+		long timer = System.currentTimeMillis();
+
+		File outputFile = outputFile = new File(filePath, fileName);
+
+        // Check existing files
+        if (outputFile.exists() && outputFile.createNewFile() == false)
+        {
+            return outputFile;
+        }
+
+        FileOutputStream fileOutputStream = null;
+        BufferedOutputStream bufferedOutputStream = null;
+        BufferedInputStream bufferedInputStream = null;
+        FileDescriptor fileDescriptor = null;
+        FileChannel fileChannel = null;
+        FileLock fileLock = null;
+        try
+        {
+
+            fileOutputStream = new FileOutputStream(outputFile);
+            fileDescriptor = fileOutputStream.getFD();
+            fileChannel = fileOutputStream.getChannel();
+            fileLock = fileChannel.tryLock();
+            if (fileLock == null)
+            {
+                // if lock is taken return existing file
+                return outputFile;
+            }
+
+            bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            bufferedInputStream = new BufferedInputStream(digitalAsset.getAssetBlob());
+
+            byte[] buf = new byte[4096];
+            int c = 0;
+            while ((c = bufferedInputStream.read(buf)) != -1)
+            {
+                bufferedOutputStream.write(buf, 0, c);
+            }
+        }
+        catch (Exception exception)
+        {
+            throw exception;
+        }
+        finally
+        {
+            if (bufferedOutputStream != null)
+            {
+                bufferedOutputStream.flush();
+            }
+            if (fileDescriptor != null)
+            {
+                fileDescriptor.sync();
+            }
+            if (fileLock != null)
+            {
+                fileLock.release();
+            }
+            if (fileChannel != null)
+            {
+                fileChannel.close();
+            }
+            if (bufferedInputStream != null)
+            {
+                bufferedInputStream.close();
+            }
+            if (fileOutputStream != null)
+            {
+                fileOutputStream.close();
+            }
+            if (bufferedOutputStream != null)
+            {
+                bufferedOutputStream.close();
+            }
+            fileLock = null;
+            fileChannel = null;
+            bufferedInputStream = null;
+            fileOutputStream = null;
+            bufferedOutputStream = null;
+            fileDescriptor = null;
+        }
+
+        getLogger().warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+
+        return outputFile;
+    }
+*/
+	
 	public File dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
 		long timer = System.currentTimeMillis();
-		
 		File outputFile = new File(filePath + File.separator + fileName);
-		//System.out.println("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
-		if(outputFile.exists() && outputFile.length() > 0)
+		//getLogger().warn("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
+		if(outputFile.exists())
 		{
-			//getLogger().info("The file allready exists so we don't need to dump it again..");
+			//getLogger().warn("The file allready exists so we don't need to dump it again..");
 			return outputFile;
 		}
+
+		try 
+		{
+			//System.out.println("outputFile:" + filePath + File.separator + fileName);
+			outputFile.createNewFile();
+
+			//Thread.sleep(5000);
+			
+			InputStream inputStream = digitalAsset.getAssetBlob();
+			synchronized(inputStream)
+			{
+				//System.out.println("inputStream: " + inputStream + ":" + inputStream.available());
+				if(inputStream.available() > 0)
+				{
+					FileOutputStream fos = new FileOutputStream(outputFile);
+					BufferedOutputStream bos = new BufferedOutputStream(fos);
+					BufferedInputStream bis = new BufferedInputStream(inputStream);
+					
+					//BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
+					
+					int character;
+					int i=0;
+			        while ((character = bis.read()) != -1)
+			        {
+						bos.write(character);
+						i++;
+			        }
+			        
+			        if(i == 0)
+			        	getLogger().warn("Wrote " + i + " chars...");
+			        
+					bos.flush();
+				    fos.close();
+					bos.close();
+						
+			        bis.close();
+				}
+			}
+			
+			//getLogger().warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+
+			if(outputFile.length() == 0)
+				getLogger().warn("written file:" + outputFile.length());
+				
+			//FileDescriptor fd = fos.getFD();
+			//fd.sync();
+		}
+		catch (IOException e) 
+		{
+			throw new Exception("Could not write file " + outputFile.getAbsolutePath() + " - error reported:" + e.getMessage(), e);
+	    }
 		
-		//System.out.println("outputFile:" + filePath + File.separator + fileName);
-		outputFile.createNewFile();
-		
-		FileOutputStream fis = new FileOutputStream(outputFile);
-		BufferedOutputStream bos = new BufferedOutputStream(fis);
-		
-		BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
-		
-		int character;
-        while ((character = bis.read()) != -1)
-        {
-			bos.write(character);
-        }
-		bos.flush();
-		
-        bis.close();
-		fis.close();
-		bos.close();
-		//getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
-        
         return outputFile;
 	}
+
 
  	/**
    	 * This method checks if the given file exists on disk. If it does it's ignored because
@@ -257,26 +380,36 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			return outputFile;
 		}
 		
-		//System.out.println("outputFile:" + filePath + File.separator + fileName);
-		outputFile.createNewFile();
+		try 
+		{
+			//System.out.println("outputFile:" + filePath + File.separator + fileName);
+			outputFile.createNewFile();
+			
+			FileOutputStream fis = new FileOutputStream(outputFile);
+			BufferedOutputStream bos = new BufferedOutputStream(fis);
+	
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(masterFile));
+			
+			int character;
+	        while ((character = bis.read()) != -1)
+	        {
+				bos.write(character);
+	        }
+			bos.flush();
+			
+	        bis.close();
+			fis.close();
+			bos.close();
+			//getLogger().warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+	
+			//FileDescriptor fd = fis.getFD();
+			//fd.sync();
+		}
+		catch (IOException e) 
+		{
+			throw new Exception("Could not write file " + outputFile.getAbsolutePath() + " - error reported:" + e.getMessage(), e);
+	    }
 		
-		FileOutputStream fis = new FileOutputStream(outputFile);
-		BufferedOutputStream bos = new BufferedOutputStream(fis);
-		
-		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(masterFile));
-		
-		int character;
-        while ((character = bis.read()) != -1)
-        {
-			bos.write(character);
-        }
-		bos.flush();
-		
-        bis.close();
-		fis.close();
-		bos.close();
-		//getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
-        
         return outputFile;
 	}
 

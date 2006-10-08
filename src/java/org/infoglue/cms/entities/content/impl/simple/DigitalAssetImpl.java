@@ -186,7 +186,7 @@ public class DigitalAssetImpl implements DigitalAsset
         this.assetBlob = assetBlob;
     }
 
-    public InputStream getAssetBlob()
+    public synchronized InputStream getAssetBlob()
     {
         InputStream inputStream = null;
         if(this.assetBytes != null)
