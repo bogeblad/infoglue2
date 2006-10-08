@@ -72,7 +72,9 @@ public class CacheEvictionFilter implements Filter
         try
         {
             String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
-            String userAgent = httpRequest.getHeader("user-agent").toLowerCase();
+            String userAgent = httpRequest.getHeader("user-agent");
+            if(userAgent != null) 
+            	userAgent = userAgent.toLowerCase();
 
             if(logger.isInfoEnabled())
             	logger.info("userAgent:" + userAgent);
@@ -89,7 +91,7 @@ public class CacheEvictionFilter implements Filter
             System.out.println("userAgent:" + userAgent);
             */
             
-            if (!uriMatcher.matches(requestURI) && userAgent.indexOf("java") == -1) 
+            if (!uriMatcher.matches(requestURI) && userAgent != null && userAgent.indexOf("java") == -1) 
             {
                 CacheController.evictWaitingCache();
             }
