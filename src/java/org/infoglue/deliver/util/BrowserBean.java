@@ -252,4 +252,27 @@ public final class BrowserBean implements Serializable
     {
         return firefox;
     }
+    
+    public String toString()
+    {
+    	StringBuffer sb = new StringBuffer();
+
+    	sb.append("useragent=" + useragent + "\n");
+    	sb.append("languages=" + languages + "\n");
+    	sb.append("netEnabled=" + netEnabled + "\n");
+    	sb.append("ie=" + ie + "\n");
+    	sb.append("ns7=" + ns7 + "\n");
+    	sb.append("ns6=" + ns6 + "\n");
+    	sb.append("ns4=" + ns4 + "\n");
+    	sb.append("opera=" + opera + "\n");
+    	sb.append("mozilla=" + mozilla + "\n");
+    	sb.append("safari=" + safari + "\n");
+    	sb.append("firefox=" + firefox + "\n");
+    	sb.append("os=" + os + "\n");
+    	sb.append("isWindows=" + isWindows + "\n");
+    	sb.append("isMac=" + isMac + "\n");
+    	sb.append("isLinux=" + isLinux + "\n");
+    	
+    	return sb.toString();
+    }
 }
